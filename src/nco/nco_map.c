@@ -2201,7 +2201,11 @@ nco_map_chk /* Map-file evaluation */
     if(mask_b_zro == sz) (void)fprintf(stdout,"WARNING mask_b has no unmasked values, i.e., has no 1's. This is possibly a bookkeeping issue with the map generator for this algorithm (because the generator would have failed outright if there were truly no valid source gridcells) and not itself an issue with the weights, which may well be valid and usable. 20200901: this is a known issue with the NCO DWE algorithm that will soon be fixed. Also, the other WARNINGs below can probably be ignored for DWE maps. These warnings will be quieted in a future version.\n");
   } /* !var_mask_b */
 
-  /* Check consistency of output weights with mask_a and mask_b */
+  /* Check consistency of output weights with mask_a and mask_b
+     This block warns about weights in S (which should all be non-zero, 
+     by definition of a sparse array) that extract from a masked source cell,
+     or contribute to a masked destination cell, or both.
+     Such violations are called "mask errors" */
   size_t mask_a_err;
   size_t mask_b_err;
   mask_a_err=0L;
@@ -2211,20 +2215,22 @@ nco_map_chk /* Map-file evaluation */
     int *ival_b;
     size_t idx_col;
     size_t idx_row;
+    /* Reduce indirection */
     if(has_mask_a) ival_a=var_mask_a->val.ip;
     if(has_mask_b) ival_b=var_mask_b->val.ip;
     sz=var_S->sz;
     val=var_S->val.dp;
     for(idx=0;idx<sz;idx++){
-      /* var_row and var_col are one-based, guard against bogus row-indices */
+      /* var_row and var_col are one-based (Fortran) indices on disk, adjust to C indices */
       idx_row=var_row->val.ip[idx]-1L;
       idx_col=var_col->val.ip[idx]-1L;
+      /* Maps may have millions of mask errors so print individual ones when dbg >= 2 */
       if(has_mask_a && ival_a[idx_col] == 0){
-	fprintf(stdout,"WARNING Grid A cell [%lu,%+g,%+g] is masked yet contributes weight S(%lu) = % 0.16e to Grid B cell [%lu,%+g,%+g]\n",idx_col+1UL,var_yc_a->val.dp[idx_col],var_xc_a->val.dp[idx_col],idx+1UL,val[idx],idx_row+1UL,var_yc_b->val.dp[var_row->val.ip[idx_row]-1],var_xc_b->val.dp[var_row->val.ip[idx_row]-1]);
 	mask_a_err++;
+	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"WARNING Grid A cell [%lu,%+g,%+g] is masked yet contributes weight S(%lu) = % 0.16e to Grid B cell [%lu,%+g,%+g]\n",idx_col+1UL,var_yc_a->val.dp[idx_col],var_xc_a->val.dp[idx_col],idx+1UL,val[idx],idx_row+1UL,var_yc_b->val.dp[var_row->val.ip[idx_row]-1],var_xc_b->val.dp[var_row->val.ip[idx_row]-1]);
       } /* !has_mask_a */
       if(has_mask_b && ival_b[idx_row] == 0){
-	fprintf(stdout,"WARNING Grid B cell [%lu,%+g,%+g] is masked yet receives weight S(%lu) = % 0.16e from Grid A cell [%lu,%+g,%+g]\n",idx_row+1UL,var_yc_b->val.dp[idx_row],var_xc_b->val.dp[idx_row],idx+1UL,val[idx],idx_col+1UL,var_yc_a->val.dp[var_col->val.ip[idx_col]-1],var_xc_a->val.dp[var_col->val.ip[idx_col]-1]);
+	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"WARNING Grid B cell [%lu,%+g,%+g] is masked yet receives weight S(%lu) = % 0.16e from Grid A cell [%lu,%+g,%+g]\n",idx_row+1UL,var_yc_b->val.dp[idx_row],var_xc_b->val.dp[idx_row],idx+1UL,val[idx],idx_col+1UL,var_yc_a->val.dp[var_col->val.ip[idx_col]-1],var_xc_a->val.dp[var_col->val.ip[idx_col]-1]);
 	mask_b_err++;
       } /* !has_mask_b */
     } /* !idx */
@@ -2316,7 +2322,7 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"Grid A size n_a: %lu // Number of columns/sources\n",var_area_a->sz);
     if(var_mask_a) fprintf(stdout,"mask_a 0's, 1's: %lu, %lu\n",mask_a_zro,mask_a_one); else fprintf(stdout,"mask_a 0's, 1's: map-file omits mask_a\n");
     if(var_mask_a) fprintf(stdout,"mask_a min, max: %.0f, %.0f\n",mask_a_min,mask_a_max); else fprintf(stdout,"mask_a min, max: map-file omits mask_a\n");
-    if(var_mask_a) fprintf(stdout,"mask_a # errors: %lu\n",mask_a_err); else fprintf(stdout,"mask_a violated: map-file omits mask_a\n");
+    if(var_mask_a) fprintf(stdout,"mask_a S errors: %lu\n",mask_a_err); else fprintf(stdout,"mask_a S errors: map-file omits mask_a\n");
     if(has_area_a){
       fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
       fprintf(stdout,"area_a min, max: %0.16e, %0.16e\n",area_a_min,area_a_max);
@@ -2334,7 +2340,7 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"Grid B size n_b: %lu // Number of rows/destinations\n",var_area_b->sz);
     if(var_mask_b) fprintf(stdout,"mask_b 0's, 1's: %lu, %lu\n",mask_b_zro,mask_b_one); else fprintf(stdout,"mask_b 0's, 1's: map-file omits mask_b\n");
     if(var_mask_b) fprintf(stdout,"mask_b min, max: %.0f, %.0f\n",mask_b_min,mask_b_max); else fprintf(stdout,"mask_b min, max: map-file omits mask_b\n");
-    if(var_mask_b) fprintf(stdout,"mask_b # errors: %lu\n",mask_b_err); else fprintf(stdout,"mask_b violated: map-file omits mask_b\n");
+    if(var_mask_b) fprintf(stdout,"mask_b S errors: %lu\n",mask_b_err); else fprintf(stdout,"mask_b S errors: map-file omits mask_b\n");
     if(has_area_b){
       fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
       fprintf(stdout,"area_b min, max: %0.16e, %0.16e\n",area_b_min,area_b_max);

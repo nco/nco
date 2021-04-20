@@ -727,38 +727,29 @@ int *pl_cnt_vrl_ret){
   int pl_cnt_dbg=0;
   int tot_nan_cnt=0;
   int tot_wrp_cnt=0;
-
   /* approx number of input cells each thread will process */
   int thr_quota;
   /* reporting step */
   int thr_quota_step;
 
-
   size_t idx;
-  size_t ldx;
+  //  size_t ldx;
 
   int lcl_thr_nbr;
   omp_mem_sct *mem_lst=NULL_CEWI;
 
-
-
   double tot_area=0.0;
 
-
-  void** void_lst_vrl=NULL_CEWI;
-  poly_sct** pl_lst_dbg=NULL_CEWI;
+  void **void_lst_vrl=NULL_CEWI;
+  poly_sct **pl_lst_dbg=NULL_CEWI;
 
   FILE * const fp_stderr=stderr;
-  
-
 
   lcl_thr_nbr=omp_get_max_threads();
 
-
   mem_lst=(omp_mem_sct*)nco_malloc(sizeof(omp_mem_sct)*lcl_thr_nbr);
 
-  for(idx=0;idx<lcl_thr_nbr;idx++)
-  {
+  for(idx=0;idx<lcl_thr_nbr;idx++){
     mem_lst[idx].pl_lst=NULL_CEWI;
     mem_lst[idx].wgt_lst=NULL_CEWI;
     mem_lst[idx].blk_nbr=0;
@@ -774,8 +765,6 @@ int *pl_cnt_vrl_ret){
    */
     /* remember this modifies kd_list, kd_blk_nbr   */
     kd_list_realloc(&mem_lst[idx],1 );
-
-
   }
 
   thr_quota=pl_cnt_in/lcl_thr_nbr;
@@ -784,7 +773,7 @@ int *pl_cnt_vrl_ret){
     thr_quota_step=2000;
 
 /* NB: "OpenMP notes" section of nco_rgr.c has detailed discussion of these settings
-     Henry, please keep the variables in alphabetical order within a clause and remember to update Intel */
+   Henry, please keep the variables in alphabetical order within a clause and remember to update Intel */
 #ifdef __GNUG__
   # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
 # if GCC_LIB_VERSION < 490
@@ -800,7 +789,7 @@ int *pl_cnt_vrl_ret){
 #  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,bSort,grd_lon_typ,mem_lst, nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
-  for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
+  for(idx=0;idx<pl_cnt_in;idx++){
     nco_bool bSplit=False;
 
     int vrl_cnt = 0;
@@ -816,48 +805,39 @@ int *pl_cnt_vrl_ret){
     kd_box size2;
 
     // (void) nco_poly_set_priority(max_nbr_vrl, list);
-
     thr_idx=omp_get_thread_num();
-
 
     if (0 && nco_dbg_lvl_get() >= nco_dbg_dev)
       fprintf(fp_stderr, "%s(): idx=%lu thr=%d\n",fnc_nm,  idx, thr_idx);
-
 
     if(pl_lst_in[idx]->bmsk==False)
       goto cont_msk;  /* need to iterate mem_lst diagnostics at end of loop*/
 
     mem_lst[thr_idx].kd_cnt=0;
 
-    if(mem_lst[thr_idx].kd_blk_nbr >1 )
+    if(mem_lst[thr_idx].kd_blk_nbr > 1)
       kd_list_realloc( &mem_lst[thr_idx],1);
 
-
-
-
     /* if a wrapped polygon then split and do two searches  */
-    bSplit=nco_poly_minmax_split(pl_lst_in[idx],grd_lon_typ, size1,size2 );
-    if(bSplit )
-    {
+    bSplit=nco_poly_minmax_split(pl_lst_in[idx],grd_lon_typ,size1,size2);
+    if(bSplit){
 
       vrl_cnt=kd_nearest_intersect(tree, nbr_tr, size1, &mem_lst[thr_idx], False);
       vrl_cnt=kd_nearest_intersect(tree, nbr_tr, size2, &mem_lst[thr_idx], False);
 
-    }else
+    }else{
       vrl_cnt=kd_nearest_intersect(tree, nbr_tr, size1, &mem_lst[thr_idx], False);
+    }
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
-
 
     /* nb this func below sorts list - and then places duplicates at the end, then returns the  new size  */
     if(vrl_cnt)
-      vrl_cnt=kd_list_sort_omp(&mem_lst[thr_idx], vrl_cnt);
+      vrl_cnt=kd_list_sort_omp(&mem_lst[thr_idx],vrl_cnt);
 
-
-    for (jdx = 0; jdx < vrl_cnt; jdx++) {
+    for(jdx=0;jdx<vrl_cnt;jdx++){
 
       poly_sct *pl_vrl = NULL_CEWI;
       poly_sct *pl_out = (poly_sct *) mem_lst[thr_idx].kd_list[jdx]->elem->item;
-
 
       /* for area debug only */
       mem_lst[thr_idx].kd_list[jdx]->area=-1.0;
@@ -870,10 +850,7 @@ int *pl_cnt_vrl_ret){
       }
       */
 
-
-
-      if(pl_typ== poly_rll)
-      {
+      if(pl_typ== poly_rll){
 
         pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, 0, (char*)NULL);
 
@@ -891,34 +868,24 @@ int *pl_cnt_vrl_ret){
          *     pl_out
          */
 
-
-
-        if(!pl_vrl)
-        {
-          if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out))
-            pl_vrl = nco_poly_dpl(pl_out);
-          else if (nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
-            pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
-
+        if(!pl_vrl){
+          if(nco_poly_in_poly_minmax(pl_lst_in[idx],pl_out))
+            pl_vrl=nco_poly_dpl(pl_out);
+          else if(nco_poly_in_poly_minmax(pl_out,pl_lst_in[idx]))
+            pl_vrl=nco_poly_dpl(pl_lst_in[idx]);
         }
 
-        if(pl_vrl)
-        {
+        if(pl_vrl){
           /* add area nb also sets wrapping */
           nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
 
           /* REMEMBER  poly_rll area uses minmax limits AND NOT VERTEX's */
           nco_poly_area_add(pl_vrl);
         }
-
-
-
       }
 
-      if(pl_typ== poly_sph ) {
-
-
-        int lret = 0;
+      if(pl_typ == poly_sph){
+        int lret=0;
         int lret2=0;
 
         /* [flg] set by nco_sph_intersect_pre - if True it means that scan hase detected a genuine intersection so
@@ -938,126 +905,83 @@ int *pl_cnt_vrl_ret){
         if(0 && nco_dbg_lvl_get() >= nco_dbg_dev)
           (void)fprintf(stderr,"%s:%s(): sp_sng=%s \n",nco_prg_nm_get(),fnc_nm, in_sng  );
 
-
         lret = nco_sph_process_pre(pl_out, in_sng, &bGenuine);
 
-        switch(lret)
-        {
-
+        switch(lret){
           case 1:
             pl_vrl = nco_poly_dpl(pl_out);
             break;
-
-
           case 2:
             pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, flg_snp_to, (char *)NULL);
             break;
-
           case 3:
             pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, flg_snp_to, in_sng);
             break;
-
-
           case 4:
             pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, flg_snp_to,  (char*)NULL);
             break;
-
           case 5:
             pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, flg_snp_to, in_sng);
             break;
-
-
         }
 
-        if(pl_vrl)
-        {
-          double min_area= ( pl_out->area < pl_lst_in[idx]->area ? pl_out->area : pl_lst_in[idx]->area  );
+        if(pl_vrl){
+          double min_area= (pl_out->area < pl_lst_in[idx]->area ? pl_out->area : pl_lst_in[idx]->area);
           /* add area nb also sets wrapping */
           nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
 
           /* REMEMBER  poly_rll area uses minmax limits AND NOT VERTEX's */
           nco_poly_area_add(pl_vrl);
 
-          if( isnan( pl_vrl->area) || pl_vrl->area == 0.0 || (pl_vrl->area - min_area)/ min_area  > 1.0e-04 ) {
-
+          if( isnan( pl_vrl->area) || pl_vrl->area == 0.0 || (pl_vrl->area - min_area)/ min_area  > 1.0e-04 ){
             pl_vrl = nco_poly_free(pl_vrl);
             bBadArea=True;
           }
-
         }
 
-
-
         /* swap args around and try again */
-        if(!pl_vrl &&   ( (bGenuine==False && lret !=1 ) || bBadArea ) )
-          //if(!pl_vrl &&   ( (bGenuine==False && lret !=1 ) || bBadArea ) )
-        {
-
+        if(!pl_vrl && ((bGenuine == False && lret != 1) || bBadArea)){
           flg_snp_to=1;
 
           nco_sph_intersect_pre(pl_out, pl_lst_in[idx], out_sng);
           lret2 = nco_sph_process_pre(pl_lst_in[idx], out_sng, &bGenuine);
 
-
-          switch(lret2)
-          {
-
+          switch(lret2){
             case 1:
               pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
               break;
-
-
             case 2:
               pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to, (char *)NULL);
               break;
-
             case 3:
               pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to, out_sng);
               break;
-
-
             case 4:
               pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to, (char*)NULL);
               break;
-
             case 5:
               pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to,  out_sng);
               break;
-
-
           }
 
-          if(pl_vrl)
-          {
+          if(pl_vrl){
             nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
             nco_poly_area_add(pl_vrl);
           }
-
         }
 
-
-        if(bDirtyRats )
+        if(bDirtyRats)
           sprintf(mem_lst[thr_idx].kd_list[jdx]->dbg_sng, "lret=%d in_sng=%s   lret2=%d  out_sng=%s\n",lret, in_sng, lret2, out_sng);
 
-
-        if(bDirtyRats && pl_vrl && !nco_sph_is_convex(pl_vrl->shp, pl_vrl->crn_nbr) )
-        {
-
+        if(bDirtyRats && pl_vrl && !nco_sph_is_convex(pl_vrl->shp,pl_vrl->crn_nbr)){
           (void) fprintf(stderr, "/************* concave overlap plygon***********/\n");
           nco_poly_prn(pl_lst_in[idx],0);
           nco_poly_prn(pl_out,0);
           nco_poly_prn(pl_vrl, 0);
           (void) fprintf(stderr, "/***********************************************/\n");
-
         }
 
-
-
-
       } /* end if poly_sph */
-
-
-
 
       if (pl_vrl) {
         // nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
@@ -1065,10 +989,6 @@ int *pl_cnt_vrl_ret){
         /* add aprropriate id's */
         pl_vrl->src_id = pl_lst_in[idx]->src_id;
         pl_vrl->dst_id = pl_out->src_id;
-
-
-
-
 
         /* shp not needed */
         nco_poly_shp_free(pl_vrl);
@@ -1079,11 +999,10 @@ int *pl_cnt_vrl_ret){
         /* add lat/lon centers */
         nco_poly_ctr_add(pl_vrl, grd_lon_typ);
 
-
         wrp_cnt+=pl_vrl->bwrp;
 
-        if( isnan(pl_vrl->area) || pl_vrl->area ==0.0 )
-        { nan_cnt++;
+        if(isnan(pl_vrl->area) || pl_vrl->area == 0.0){
+	  nan_cnt++;
           pl_vrl->area=0.0;
 
           pl_vrl=nco_poly_free(pl_vrl);
@@ -1092,8 +1011,6 @@ int *pl_cnt_vrl_ret){
 
         /* for input polygon wgt is used to calculate frac_a */
         pl_lst_in[idx]->wgt+= ( pl_vrl->area / pl_lst_in[idx]->area );
-
-
 
         /*
 #ifdef _OPENMP
@@ -1104,18 +1021,15 @@ int *pl_cnt_vrl_ret){
 
         }
 */
-
         vrl_area += pl_vrl->area;
         mem_lst[thr_idx].kd_list[jdx]->area=pl_vrl->area;
 
-
-        if( mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE <  mem_lst[thr_idx].pl_cnt +1 ){
-          if(lst_out_typ==1)
+        if( mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE <  mem_lst[thr_idx].pl_cnt + 1){
+          if(lst_out_typ == 1)
             mem_lst[thr_idx].wgt_lst= (wgt_sct**)nco_realloc(mem_lst[thr_idx].wgt_lst, sizeof(wgt_sct*) * ++mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE );
-          else if(lst_out_typ==2)
-            mem_lst[thr_idx].pl_lst= (poly_sct**)nco_realloc(mem_lst[thr_idx].pl_lst, sizeof(poly_sct*) * ++mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE );
+          else if(lst_out_typ == 2)
+            mem_lst[thr_idx].pl_lst= (poly_sct**)nco_realloc(mem_lst[thr_idx].pl_lst, sizeof(poly_sct*) * ++mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE);
         }
-
 
         if(lst_out_typ==1) {
           wgt_sct *wgt_lcl=(wgt_sct*)nco_calloc(1,sizeof(wgt_sct));
@@ -1133,17 +1047,8 @@ int *pl_cnt_vrl_ret){
         vrl_cnt_on++;
 
         /* for area debug only */
-
-
-
-
-
       }
-
-
     } /* end jdx */
-
-
 
     if (nco_dbg_lvl_get() >= nco_dbg_dev) {
 
@@ -1154,12 +1059,11 @@ int *pl_cnt_vrl_ret){
         tot_nan_cnt += nan_cnt;
         tot_wrp_cnt += wrp_cnt;
         tot_area += vrl_area;
-
       } /* end OMP critical */
 
       /* area diff by more than 10% */
       int kdx;
-      double eps = 1e-8;
+      double eps = 1.0e-8;
       double frc = vrl_area / pl_lst_in[idx]->area;
       if (frc < (1 - eps) || frc > 1 + eps) {
         (void) fprintf(fp_stderr,
@@ -1167,8 +1071,7 @@ int *pl_cnt_vrl_ret){
                        nco_prg_nm_get(), idx, vrl_cnt, vrl_cnt_on, pl_lst_in[idx]->area, vrl_area,
                        (pl_lst_in[idx]->area - vrl_area), bSplit);
 
-
-        if (bDirtyRats) {
+        if(bDirtyRats){
           //if (pl_lst_in[idx]->bwrp ) {
 
           if (1) {
@@ -1179,36 +1082,23 @@ int *pl_cnt_vrl_ret){
               nco_poly_prn((poly_sct *) mem_lst[thr_idx].kd_list[kdx]->elem->item, 0);
               (void)fprintf(fp_stderr, "# vrl_area=%.15e\n",mem_lst[thr_idx].kd_list[kdx]->area );
               (void)fprintf(fp_stderr, "# dbg_sng=%s\n",mem_lst[thr_idx].kd_list[kdx]->dbg_sng );
-
             }
-
             (void) fprintf(stderr, "/************* end dirty rats ***************/\n");
           }
 
-          if(1 && vrl_cnt_on>0 && lst_out_typ==2 ) {
-
-
+          if(1 && vrl_cnt_on > 0 && lst_out_typ == 2){
             pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + vrl_cnt_on));
 
             /* write overlaps maybe */
-            for (kdx = 0; kdx < vrl_cnt_on; kdx++) {
+            for (kdx = 0; kdx < vrl_cnt_on; kdx++){
               poly_sct * lcl_poly=mem_lst[thr_idx].pl_lst[mem_lst[thr_idx].pl_cnt - vrl_cnt_on + kdx];
 
               if(lcl_poly->src_id== pl_lst_in[idx]->src_id )
                 pl_lst_dbg[pl_cnt_dbg++] = nco_poly_dpl(lcl_poly);
-
             }
-
-
-
           }
-
-
-
         }
-
       }
-
     } /* end dbg */
 
     cont_msk: ;
@@ -1227,10 +1117,9 @@ int *pl_cnt_vrl_ret){
     (void) fprintf(stderr, "%s: total overlaps=%d, total_area=%.15f (area=%3.10f%%) total num wrapped= %d total nan nbr=%d \n", nco_prg_nm_get(), pl_cnt_vrl, tot_area, tot_area /4.0 / M_PI *100.0, tot_wrp_cnt, tot_nan_cnt);
 
   /* write filtered polygons to file */
-  if(bDirtyRats && pl_cnt_dbg)
-  {
+  if(bDirtyRats && pl_cnt_dbg){
     nco_msh_poly_lst_wrt("tst-wrt-dbg.nc", pl_lst_dbg, pl_cnt_dbg, grd_lon_typ,NC_FORMAT_NETCDF4);
-    pl_lst_dbg=(poly_sct**)nco_poly_lst_free(pl_lst_dbg, pl_cnt_dbg);
+    pl_lst_dbg=(poly_sct **)nco_poly_lst_free(pl_lst_dbg, pl_cnt_dbg);
   }
 
   /* concatenate memory list, place results into first member list */
@@ -1240,14 +1129,12 @@ int *pl_cnt_vrl_ret){
   for(idx=0;idx<lcl_thr_nbr;idx++)
     kd_list_realloc(&mem_lst[idx],0);
 
-
-
   *pl_cnt_vrl_ret=mem_lst[0].pl_cnt;
 
-  if(lst_out_typ==1)
-    void_lst_vrl=(void**) mem_lst[0].wgt_lst;
-  else if( lst_out_typ==2 )
-    void_lst_vrl=(void**) mem_lst[0].pl_lst;
+  if(lst_out_typ == 1)
+    void_lst_vrl=(void **)mem_lst[0].wgt_lst;
+  else if(lst_out_typ == 2)
+    void_lst_vrl=(void **)mem_lst[0].pl_lst;
 
   mem_lst=(omp_mem_sct*)nco_free(mem_lst);
 

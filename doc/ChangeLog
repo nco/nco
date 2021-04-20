@@ -1,10 +1,16 @@
-2021-04-19  Charlie Zender  <zender@uci.edu>
+2021-04-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha04: Aliso Summit';git push
-	git tag -a 4.9.9-alpha04 -m 'ncremap crv area wrn, ccw_chk fix';git push --tags
+	git tag -a 4.9.9-alpha04 -m 'ncremap crv area wrn, ccw_chk fix,	msk fix, chk_map msk';git push --tags
 
-	* Merge Henry's fixes that provide area for masked cells
+	* nco_chk_map() print full mask_a/b error diagnostics only at higher debug level
+
+	* Tidy nco_ply_lst.c
+
+2021-04-19  Charlie Zender  <zender@uci.edu>
+
+	* Merge Henry's fixes that provide area for masked cells and fix borken masks
 
 	* Tidy nco_kd.c and brethen
 
