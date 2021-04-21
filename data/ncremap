@@ -486,7 +486,7 @@ wgt_opt_esmf='--no_log --ignore_unmapped' # [sng] ESMF_RegridWeightGen weight-ge
 #wgt_opt_esmf='--ignore_unmapped --ignore_degenerate' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF >= 7.1.0r) (ignore_degenerate is required for CICE regridding with ESMF >= 7.1.0r, and is not supported or required with ESMF < 7.1.0r)
 wgt_opt_nco='-O --dmm_in_mk' # [sng] NCO weight-generation options
 wgt_opt_tps='' # [sng] TempestRemap weight-generation options
-msh_opt_tps='' # [sng] TempestRemap mesh-generation options
+msh_opt_tps='--allow_no_overlap' # [sng] TempestRemap mesh-generation options (20210421: add allow_no_overlap required by regional-to-regional grids like GrIS)
 xcl_flg='No' # [sng] Exclude rather than extract variable list
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
 xtr_nsp=8 # [nbr] Extrapolation number of source points (for ESMF & NCO only)

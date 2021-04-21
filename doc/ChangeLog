@@ -1,8 +1,16 @@
+2021-04-21  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.9-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha05: Aliso Summit';git push
+	git tag -a 4.9.9-alpha05 -m 'ncremap tr allow_no_overlap';git push --tags
+
+	* ncremap add TR GenerateOverlapMesh option --allow_no_overlap for regional-to-regional grids like GrIS
+
 2021-04-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha04: Aliso Summit';git push
-	git tag -a 4.9.9-alpha04 -m 'ncremap crv area wrn, ccw_chk fix,	msk fix, chk_map msk';git push --tags
+	git tag -a 4.9.9-alpha04 -m 'ncremap crv area wrn, ccw_chk fix, msk fix, chk_map msk';git push --tags
 
 	* nco_chk_map() print full mask_a/b error diagnostics only at higher debug level
 
