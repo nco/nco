@@ -2322,7 +2322,7 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"Grid A size n_a: %lu // Number of columns/sources\n",var_area_a->sz);
     if(var_mask_a) fprintf(stdout,"mask_a 0's, 1's: %lu, %lu\n",mask_a_zro,mask_a_one); else fprintf(stdout,"mask_a 0's, 1's: map-file omits mask_a\n");
     if(var_mask_a) fprintf(stdout,"mask_a min, max: %.0f, %.0f\n",mask_a_min,mask_a_max); else fprintf(stdout,"mask_a min, max: map-file omits mask_a\n");
-    if(var_mask_a) fprintf(stdout,"mask_a S errors: %lu%s\n",mask_a_err,mask_a_err ? " <--- # of masked source cells that, in violation of mask_a, contribute to destination gridcells WARNING WARNING WARNING" : ""); else fprintf(stdout,"mask_a S errors: map-file omits mask_a\n");
+    if(var_mask_a) fprintf(stdout,"mask_a S errors: %lu%s\n",mask_a_err,mask_a_err ? " <--- # of weights that, in violation of mask_a, contribute from masked source cells to destination gridcells WARNING WARNING WARNING" : ""); else fprintf(stdout,"mask_a S errors: map-file omits mask_a\n");
     if(has_area_a){
       fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
       fprintf(stdout,"area_a min, max: %0.16e, %0.16e\n",area_a_min,area_a_max);
@@ -2340,7 +2340,7 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"Grid B size n_b: %lu // Number of rows/destinations\n",var_area_b->sz);
     if(var_mask_b) fprintf(stdout,"mask_b 0's, 1's: %lu, %lu\n",mask_b_zro,mask_b_one); else fprintf(stdout,"mask_b 0's, 1's: map-file omits mask_b\n");
     if(var_mask_b) fprintf(stdout,"mask_b min, max: %.0f, %.0f\n",mask_b_min,mask_b_max); else fprintf(stdout,"mask_b min, max: map-file omits mask_b\n");
-    if(var_mask_b) fprintf(stdout,"mask_b S errors: %lu%s\n",mask_b_err,mask_b_err ? " <--- # of masked destination cells that, in violation of mask_b, receive contributions from source grid WARNING WARNING WARNING" : ""); else fprintf(stdout,"mask_b S errors: map-file omits mask_b\n");
+    if(var_mask_b) fprintf(stdout,"mask_b S errors: %lu%s\n",mask_b_err,mask_b_err ? " <--- # of weights that, in violation of mask_b, contribute from source gridcells to masked destination gridcells WARNING WARNING WARNING" : ""); else fprintf(stdout,"mask_b S errors: map-file omits mask_b\n");
     if(has_area_b){
       fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
       fprintf(stdout,"area_b min, max: %0.16e, %0.16e\n",area_b_min,area_b_max);
