@@ -645,6 +645,7 @@ variables:
 	int long_var;
 	long_var:long_name = "long";
 	long_var:purpose = "Variable of CDL type=long, which is deprecated for int. Included to test back-compatibility";
+	long_var:notes = "This check will fail with netCDF 4.8.0 if CDL type of variable is long not int. This failure with 4.8.0 was fixed in netCDF master within a few weeks and the problem should not be present in subsequent  (or prior) netCDF versions.";
 
 	short short_var;
 	short_var:long_name = "short";

@@ -1,8 +1,12 @@
-2021-04-21  Charlie Zender  <zender@uci.edu>
+2021-04-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha05: Aliso Summit';git push
 	git tag -a 4.9.9-alpha05 -m 'ncremap tr allow_no_overlap';git push --tags
+
+	* Merge latest GBG code from Juan
+
+2021-04-21  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add TR GenerateOverlapMesh option --allow_no_overlap for regional-to-regional grids like GrIS
 
