@@ -817,6 +817,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       
     }else if(nco_baa_cnv_get() == nco_baa_gbg){ /* JPT 20210102: baa_gbg (granualar bit grooming), brute force compression of each individual data point */
       bool x;
+      bool c;
       const unsigned int msk_rst32 = msk_f32_u32_zro; /* resets the mask to orginal garuntee mask */
       float err_max32;
       float raw32;
@@ -830,19 +831,23 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	    raw32 = op1.fp[idx];
 	    msk_f32_u32_zro = msk_rst32;
 	    op1.uip[idx]&=msk_f32_u32_zro;
-	    xpn32=log10f(raw32);
+	    xpn32=log10f(fabs(raw32));
 	    xpn_flr32=floor(xpn32);
 	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
+	    c = True;
 	    if(op1.fp[idx] != 0.0 && op1.fp[idx] != 1.0){
-	      while(fabs(raw32 - op1.fp[idx]) <= err_max32 && op1.fp[idx] != 1.0){
-		temp32=op1.fp[idx];
-		msk_f32_u32_zro<<=1;
-		op1.uip[idx]&=msk_f32_u32_zro;
-		//		fflush(stdout);
-	      } // close while loop
-	      op1.fp[idx] = temp32;
+		while(c){
+		  temp32=op1.fp[idx];
+		  msk_f32_u32_zro<<=1;
+		  op1.uip[idx]&=msk_f32_u32_zro;
+		  if((fabs(raw32) - fabs(op1.fp[idx])) >= err_max32) c = False;
+		  if(op1.fp[idx] == 1.0) c = False;
+		  if(op1.fp[idx] == 0.0) c = False;
+		  if(op1.fp[idx] != op1.fp[idx]) c = False;
+		  fflush(stdout);
+		} // close while loop
+		op1.fp[idx] = temp32;
 	    } // close if before while
-	    //	    if(fabs(raw32 - op1.fp[idx]) >= err_max32) printf("Failed\n"); //test
 	  } //close if !=0	  
 	} // close shave loop
 	
@@ -852,21 +857,24 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  msk_f32_u32_one=~msk_f32_u32_zro; 
           if(op1.fp[idx] != 0U){ /* Never quantize upwards floating point values of zero */
 	    op1.uip[idx]|=msk_f32_u32_one;
-	    xpn32=log10f(raw32);
+	    xpn32=log10f(fabs(raw32));
 	    xpn_flr32=floor(xpn32);
 	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
 	    x = False;
-	    while(fabs(raw32 - op1.fp[idx]) <= err_max32){
+	    c = True;
+	    while(c){
 	      x = True;
 	      temp32 = op1.fp[idx];
 	      msk_f32_u32_zro <<= 1;
 	      msk_f32_u32_one =~ msk_f32_u32_zro;
 	      op1.uip[idx] |= msk_f32_u32_one;
+	      if( fabs((fabs(raw32) - fabs(op1.fp[idx]))) >= err_max32) c = False;
+	      if(op1.fp[idx] == 1) c = False;
+	      if(op1.fp[idx] != op1.fp[idx]) c = False;
 	      fflush(stdout);
 	    } //close while
 	    if(x) op1.fp[idx] = temp32;
 	  } // close if > 0
-	  //	  if(fabs(raw32 - op1.fp[idx]) >= err_max32) printf("Failed\n"); // test
 	} // close set loop
       } // close if(!has_mss_val)
       
@@ -877,41 +885,51 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	    raw32 = op1.fp[idx];
 	    msk_f32_u32_zro = msk_rst32;
 	    op1.uip[idx]&=msk_f32_u32_zro;
-	    xpn32=log10f(raw32);
+	    xpn32=log10f(fabs(raw32));
 	    xpn_flr32=floor(xpn32);
 	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
-	    if(op1.fp[idx] != 0.0 && op1.fp[idx] != 1.0){
-	      while(fabs(raw32 - op1.fp[idx]) <= err_max32 && op1.fp[idx] != 1.0){
-		temp32=op1.fp[idx];
-		msk_f32_u32_zro<<=1;
-		op1.uip[idx]&=msk_f32_u32_zro;
-		fflush(stdout);
-	      } // close while loop
-	      op1.fp[idx] = temp32;
-	    } // close if before while
-	  } // close if 
-	} // close shave loop
+            c = True;
+            if(op1.fp[idx] != 0.0 && op1.fp[idx] != 1.0){
+                while(c){
+                temp32=op1.fp[idx];
+                msk_f32_u32_zro<<=1;
+                op1.uip[idx]&=msk_f32_u32_zro;
+                if((fabs(raw32) - fabs(op1.fp[idx])) >= err_max32) c = False;
+                if(op1.fp[idx] == 1.0) c = False;
+                if(op1.fp[idx] == 0.0) c = False;
+                if(op1.fp[idx] != op1.fp[idx]) c = False;
+                fflush(stdout);
+              } // close while loop
+		op1.fp[idx] = temp32;
+            } // close if before while
+          } //close if !=0
+        } // close shave loop
+	    
         for(idx=1L;idx<sz;idx+=2L){
           if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != 0U){
 	    raw32 = op1.fp[idx];
 	    msk_f32_u32_zro = msk_rst32;
 	    msk_f32_u32_one=~msk_f32_u32_zro;
 	    op1.uip[idx]|=msk_f32_u32_one;
-	    xpn32=log10f(raw32);
+	    xpn32=log10f(fabs(raw32));
 	    xpn_flr32=floor(xpn32);
 	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
 	    x = False;
-	    while(fabs(raw32 - op1.fp[idx]) <= err_max32){
-	      x = True;
-	      temp32 = op1.fp[idx];
-	      msk_f32_u32_zro <<= 1;
-	      msk_f32_u32_one =~ msk_f32_u32_zro;
-	      op1.uip[idx] |= msk_f32_u32_one;
-	      fflush(stdout);
-	    } //close while
-	    if(x) op1.fp[idx] = temp32;
-	  } // close if
-	} // close set loop 
+            while(c){
+              x = True;
+              temp32 = op1.fp[idx];
+              msk_f32_u32_zro <<= 1;
+              msk_f32_u32_one =~ msk_f32_u32_zro;
+              op1.uip[idx] |= msk_f32_u32_one;
+              if( fabs((fabs(raw32) - fabs(op1.fp[idx]))) >= err_max32) c = False;
+              if(op1.fp[idx] == 1) c = False;
+              if(op1.fp[idx] != op1.fp[idx]) c = False;
+              fflush(stdout);
+            } //close while
+            if(x) op1.fp[idx] = temp32;
+          } // close if > 0
+        } // close set loop
+      
       } /* end else */
     }else abort();
     break; /* !NC_FLOAT */
@@ -1021,6 +1039,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       int xpn_flr64;
       double err_max64;
       bool x;
+      bool c;
       
       if(!has_mss_val){
 	for(idx=0L;idx<sz;idx+=2L){ // shave loop
@@ -1028,19 +1047,23 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	    raw64 = op1.dp[idx];
 	    msk_f64_u64_zro = msk_rst64;
 	    u64_ptr[idx]&=msk_f64_u64_zro;
-	    xpn64=log10(raw64);
+	    xpn64=log10(fabs(raw64));
 	    xpn_flr64=floor(xpn64);
 	    err_max64=0.5*pow(10.0,xpn_flr64-nsd+1);
+	    c = True;
 	    if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0){
-	      while(fabs(raw64 - op1.dp[idx]) <= err_max64 && op1.dp[idx] != 1.0){
+	      while(c){
 		temp64  = op1.dp[idx];
 		msk_f64_u64_zro<<=1;
 		u64_ptr[idx]&=msk_f64_u64_zro;
+		if((fabs(raw64) - fabs(op1.dp[idx])) >= err_max64) c = False;
+		if(op1.dp[idx] == 1.0) c = False;
+                if(op1.dp[idx] == 0.0) c = False;
+                if(op1.dp[idx] != op1.dp[idx]) c = False;
 		fflush(stdout);
 	      } // close while loop
 	      op1.dp[idx] = temp64;
 	    } // close if before while
-	    //if(fabs(raw64 - op1.dp[idx]) >= err_max64) printf("Failed\n"); //test
 	  } // close if != 0
 	} // close shave loop
 	
@@ -1050,63 +1073,80 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  msk_f64_u64_one=~msk_f64_u64_zro;
           if(op1.dp[idx] != 0U){ /* Never quantize upwards floating point values of zero */
             u64_ptr[idx]|=msk_f64_u64_one;
-	    xpn64=log10(raw64);
+	    xpn64=log10(fabs(raw64));
 	    xpn_flr64=floor(xpn64);
 	    err_max64=0.5*pow(10.0,xpn_flr64-nsd+1);
 	    x = False;
-	    while(fabs(raw64 - op1.dp[idx]) <= err_max64){
+	    c = True;
+	    while(c){
 	      x = True;
 	      temp64 = op1.dp[idx];
 	      msk_f64_u64_zro <<= 1;
 	      msk_f64_u64_one =~ msk_f64_u64_zro;
 	      u64_ptr[idx]|= msk_f64_u64_one;
+	      if(fabs((fabs(raw64) - fabs(op1.dp[idx]))) >= err_max64) c = False;
+              if(op1.dp[idx] == 1) c = False;
+              if(op1.dp[idx] != op1.dp[idx]) c = False;
 	      fflush(stdout);
 	    } //close while
 	    if(x) op1.dp[idx] = temp64;
 	  } // close if 0
 	} // close set loop
+
       }else{
+
 	const double mss_val_dbl=*mss_val.dp;
 	for(idx=0L;idx<sz;idx+=2L){
 	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != 0.0){
 	    raw64 = op1.dp[idx];
 	    msk_f64_u64_zro = msk_rst64;
 	    u64_ptr[idx]&=msk_f64_u64_zro;
-	    xpn64=log10(raw64);
+	    xpn64=log10(fabs(raw64));
 	    xpn_flr64=floor(xpn64);
 	    err_max64=0.5*pow(10.0,xpn_flr64-nsd+1);
-	    if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0){
-	      while(fabs(raw64 - op1.dp[idx]) <= err_max64 && op1.dp[idx] != 1.0){
-		temp64  = op1.dp[idx];
-		msk_f64_u64_zro<<=1;
-		u64_ptr[idx]&=msk_f64_u64_zro;
-		fflush(stdout);
-	      } // close while loop
-	      op1.dp[idx] = temp64;
-	    } // close if before while
-	  } // close if     
-	} // close shave loop 
+	    c = True;
+            if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0){
+              while(c){
+                temp64  = op1.dp[idx];
+                msk_f64_u64_zro<<=1;
+                u64_ptr[idx]&=msk_f64_u64_zro;
+                if((fabs(raw64) - fabs(op1.dp[idx])) >= err_max64) c = False;
+                if(op1.dp[idx] == 1.0) c = False;
+                if(op1.dp[idx] == 0.0) c = False;
+                if(op1.dp[idx] != op1.dp[idx]) c = False;
+                fflush(stdout);
+              } // close while loop
+              op1.dp[idx] = temp64;
+            } // close if before while
+          } // close if != 0
+        } // close shave loop 
+	
 	for(idx=1L;idx<sz;idx+=2L){
 	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != 0ULL){
 	    raw64 = op1.dp[idx];
 	    msk_f64_u64_zro = msk_rst64;
 	    msk_f64_u64_one=~msk_f64_u64_zro;
 	    u64_ptr[idx]|=msk_f64_u64_one;
-	    xpn64=log10(raw64);
+	    xpn64=log10(fabs(raw64));
 	    xpn_flr64=floor(xpn64);
 	    err_max64=0.5*pow(10.0,xpn_flr64-nsd+1);
 	    x = False;
-	    while(fabs(raw64 - op1.dp[idx]) <= err_max64){
-	      x = True;
-	      temp64 = op1.dp[idx];
-	      msk_f64_u64_zro <<= 1;
-	      msk_f64_u64_one =~ msk_f64_u64_zro;
-	      u64_ptr[idx]|= msk_f64_u64_one;
-	      fflush(stdout);
-	    } //close while
-	    if(x) op1.dp[idx] = temp64;
-	  } // close if != 
-	} //close set loop
+            c = True;
+            while(c){
+              x = True;
+              temp64 = op1.dp[idx];
+              msk_f64_u64_zro <<= 1;
+              msk_f64_u64_one =~ msk_f64_u64_zro;
+              u64_ptr[idx]|= msk_f64_u64_one;
+              if(fabs((fabs(raw64) - fabs(op1.dp[idx]))) >= err_max64) c = False;
+              if(op1.dp[idx] == 1) c = False;
+              if(op1.dp[idx] != op1.dp[idx]) c = False;
+              fflush(stdout);
+            } //close while
+            if(x) op1.dp[idx] = temp64;
+          } // close if 0
+        } // close set loop
+	
       }//close else
     } else // closes baa_gbg
       abort();
