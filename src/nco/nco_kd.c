@@ -2498,12 +2498,7 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_
 
   nco_bool bAddPnt=False;
 
-
-
-
-  char fnc_nm[]="kd_neighbour_intersect3";
-
-
+  //char fnc_nm[]="kd_neighbour_intersect3";
 
   /* horizonal */
   if( stateH <2  &&   (disc == 0 || disc==2 ) )
@@ -2780,32 +2775,21 @@ void kd_list_realloc( omp_mem_sct *omp_mem,  int blk_nbr_nw   )
      omp_mem->kd_list[idx]=(KDPriority*)nco_free(omp_mem->kd_list[idx]);
 
     omp_mem->kd_list=(KDPriority**)nco_realloc(omp_mem->kd_list, sizeof(KDPriority*)*blk_nbr_nw*NCO_VRL_BLOCKSIZE);
-
-
-
   }
 
   omp_mem->kd_blk_nbr=blk_nbr_nw;
 
   return;
-
-
-
 }
-
-
 
 int kd_nearest_intersect(KDTree** rTree, int nbr_tr, kd_box Xq, omp_mem_sct *omp_mem, int bSort)
 {
   int idx;
-  int nw_lcl_cnt=0;
+  //int nw_lcl_cnt=0;
   int ret_cnt=0;
-
-
 
    for(idx=0;idx < nbr_tr;idx++)
      (void)kd_neighbour_intersect3(rTree[idx]->tree,0,Xq, omp_mem,0,0);
-
 
    ret_cnt=omp_mem->kd_cnt;
 
@@ -2815,23 +2799,16 @@ int kd_nearest_intersect(KDTree** rTree, int nbr_tr, kd_box Xq, omp_mem_sct *omp
 int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem)
 {
   /* count duplicates for dbg */
-  int ret_cnt_nw=0;
-
-
+  //int ret_cnt_nw=0;
 
   nco_bool bSort=False;
 
   //  const char fnc_nm[]="kd_nearest_intersect_wrp():";
   // (void)fprintf(stderr,"%s:%s: just entered function\n", nco_prg_nm_get(),fnc_nm );
 
-
   (void)kd_nearest_intersect(rTree, nbr_tr,Xq, omp_mem, bSort);
 
   (void)kd_nearest_intersect(rTree,nbr_tr, Xr, omp_mem, bSort);
-
-
-
-
 
   return omp_mem->kd_cnt;
 }
