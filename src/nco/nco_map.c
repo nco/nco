@@ -1813,6 +1813,7 @@ nco_map_var_min_max_ttl
 (var_sct *var,
  double *area,
  nco_bool flg_area_wgt,
+ int *mask,
  double *min,
  size_t *idx_min,
  double *max,
@@ -1827,15 +1828,28 @@ nco_map_var_min_max_ttl
   const size_t sz=var->sz;
   double *area_lcl=NULL;
   double area_ttl=0.0;
+  int *mask_lcl=NULL;
   int idx=0;
+  size_t mask_one_sz=0UL;
 
   area_lcl=(double *)nco_malloc(sz*sizeof(double));
-  if(flg_area_wgt && area != NULL)
+  mask_lcl=(int *)nco_malloc(sz*sizeof(int));
+  if(flg_area_wgt && area)
     (void)memcpy(area_lcl,area,sz*sizeof(double));
   else
     for(idx=0;idx<sz;idx++) area_lcl[idx]=1.0;
+
+  if(mask)
+    (void)memcpy(mask_lcl,mask,sz*sizeof(int));
+  else
+    for(idx=0;idx<sz;idx++) mask_lcl[idx]=1;
   
-  for(idx=0;idx<sz;idx++) area_ttl+=area_lcl[idx];
+  for(idx=0;idx<sz;idx++){
+    if(mask_lcl[idx]){
+      area_ttl+=area_lcl[idx];
+      mask_one_sz++;
+    } /* !mask_lcl */
+  } /* !idx */
 
   if(var->type == NC_DOUBLE){
 
@@ -1850,28 +1864,32 @@ nco_map_var_min_max_ttl
     
     (void)cast_void_nctype(NC_DOUBLE,&(var->val));
     for(idx=0;idx<sz;idx++){
-      /* De-reference */
-      dval=var->val.dp[idx];
-      ttl_dp+=dval*area_lcl[idx];
-      mebs_dp+=fabs(dval-one)*area_lcl[idx];
-      rms_dp+=(dval-one)*(dval-one)*area_lcl[idx];
-      if(dval < min_dp){
-	min_dp=dval;
-	*idx_min=idx;
-      } /* !dval */
-      if(dval > max_dp){
-	max_dp=dval;
-	*idx_max=idx;
-      } /* !dval */
+      if(mask_lcl[idx]){
+	/* De-reference */
+	dval=var->val.dp[idx];
+	ttl_dp+=dval*area_lcl[idx];
+	mebs_dp+=fabs(dval-one)*area_lcl[idx];
+	rms_dp+=(dval-one)*(dval-one)*area_lcl[idx];
+	if(dval < min_dp){
+	  min_dp=dval;
+	  *idx_min=idx;
+	} /* !dval */
+	if(dval > max_dp){
+	  max_dp=dval;
+	  *idx_max=idx;
+	} /* !dval */
+      } /* !mask_lcl */
     } /* !idx */
     avg_dp=ttl_dp/area_ttl;
     mebs_dp/=area_ttl;
     rms_dp=sqrt(rms_dp/area_ttl);
     for(idx=0;idx<sz;idx++){
-      dval=var->val.dp[idx];
-      sdn_dp+=(dval-avg_dp)*(dval-avg_dp);
+      if(mask_lcl[idx]){
+	dval=var->val.dp[idx];
+	sdn_dp+=(dval-avg_dp)*(dval-avg_dp);
+      } /* !mask_lcl */
     } /* !idx */
-    sdn_dp=sqrt(sdn_dp/(sz-1ULL));
+    sdn_dp=sqrt(sdn_dp/(mask_one_sz-1ULL));
     (void)cast_nctype_void(NC_DOUBLE,&(var->val));
 
     *min=min_dp;
@@ -1895,6 +1913,7 @@ nco_map_var_min_max_ttl
 
     (void)cast_void_nctype(NC_INT,&(var->val));
     for(idx=0;idx<sz;idx++){
+      if(mask_lcl[idx]){
 	/* De-reference */
 	ival=var->val.ip[idx];
 	ttl_dp+=ival;
@@ -1908,15 +1927,18 @@ nco_map_var_min_max_ttl
 	  max_ip=ival;
 	  *idx_max=idx;
 	} /* !ival */
+      } /* !mask_lcl */
     } /* !idx */
-    avg_dp=ttl_dp/sz;
-    mebs_dp/=sz;
-    rms_dp=sqrt(rms_dp/sz);
+    avg_dp=ttl_dp/mask_one_sz;
+    mebs_dp/=mask_one_sz;
+    rms_dp=sqrt(rms_dp/mask_one_sz);
     for(idx=0;idx<sz;idx++){
-      ival=var->val.ip[idx];
-      sdn_dp+=((double)ival-avg_dp)*((double)ival-avg_dp);
+      if(mask_lcl[idx]){
+	ival=var->val.ip[idx];
+	sdn_dp+=((double)ival-avg_dp)*((double)ival-avg_dp);
+      } /* !mask_lcl */
     } /* !idx */
-    sdn_dp=sqrt(sdn_dp/(sz-1ULL));
+    sdn_dp=sqrt(sdn_dp/(mask_one_sz-1ULL));
     (void)cast_nctype_void(NC_INT,&(var->val));
 
     *min=(double)min_ip;
@@ -1930,6 +1952,7 @@ nco_map_var_min_max_ttl
   } /* !NC_INT */
   
   if(area_lcl) area_lcl=(double *)nco_free(area_lcl);
+  if(mask_lcl) mask_lcl=(int *)nco_free(mask_lcl);
 
   return;
 } /* !nco_map_var_min_max_ttl() */
@@ -2250,8 +2273,8 @@ nco_map_chk /* Map-file evaluation */
     double row_min,row_max,row_ttl;
     double s_min,s_max,s_ttl;
 
-    nco_map_var_min_max_ttl(var_col,(double *)NULL,flg_area_wgt,&col_min,&idx_min,&col_max,&idx_max,&col_ttl,&avg,&mebs,&rms,&sdn);
-    nco_map_var_min_max_ttl(var_row,(double *)NULL,flg_area_wgt,&row_min,&idx_min,&row_max,&idx_max,&row_ttl,&avg,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_col,(double *)NULL,flg_area_wgt,(int *)NULL,&col_min,&idx_min,&col_max,&idx_max,&col_ttl,&avg,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_row,(double *)NULL,flg_area_wgt,(int *)NULL,&row_min,&idx_min,&row_max,&idx_max,&row_ttl,&avg,&mebs,&rms,&sdn);
 
     if(col_min < 1){fprintf(stdout,"WARNING: minimum column index = %.0f < 1\n",col_min);}
     else if(col_max > var_area_a->sz){fprintf(stdout,"WARNING: maximum col index = %.0f > n_a\n",col_max);}
@@ -2266,13 +2289,13 @@ nco_map_chk /* Map-file evaluation */
     nco_map_hst_mk(var_col,var_area_a->sz,hst_col,hst_sz);
     nco_map_hst_mk(var_row,var_area_b->sz,hst_row,hst_sz);
 
-    if(has_area_a) nco_map_var_min_max_ttl(var_area_a,(double *)NULL,flg_area_wgt,&area_a_min,&idx_min,&area_a_max,&idx_max,&area_a_ttl,&avg,&mebs,&rms,&sdn);
-    if(var_mask_a) nco_map_var_min_max_ttl(var_mask_a,(double *)NULL,flg_area_wgt,&mask_a_min,&idx_min,&mask_a_max,&idx_max,&mask_a_ttl,&avg,&mebs,&rms,&sdn);
+    if(has_area_a) nco_map_var_min_max_ttl(var_area_a,(double *)NULL,flg_area_wgt,(int *)NULL,&area_a_min,&idx_min,&area_a_max,&idx_max,&area_a_ttl,&avg,&mebs,&rms,&sdn);
+    if(var_mask_a) nco_map_var_min_max_ttl(var_mask_a,(double *)NULL,flg_area_wgt,(int *)NULL,&mask_a_min,&idx_min,&mask_a_max,&idx_max,&mask_a_ttl,&avg,&mebs,&rms,&sdn);
 
     fprintf(stdout,"Characterization of map-file %s\n",fl_in);
     fprintf(stdout,"Cell triplet elements : [Fortran (1-based) index, center latitude, center longitude]\n");
     fprintf(stdout,"Sparse-matrix size n_s: %lu\n",var_S->sz);
-    nco_map_var_min_max_ttl(var_S,(double *)NULL,flg_area_wgt,&s_min,&idx_min,&s_max,&idx_max,&s_ttl,&avg,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_S,(double *)NULL,flg_area_wgt,(int *)NULL,&s_min,&idx_min,&s_max,&idx_max,&s_ttl,&avg,&mebs,&rms,&sdn);
     idx_sng_lng_max=(long)ceil(log10((double)var_S->sz));
     if(idx_sng_lng_max == (long)log10((double)var_S->sz)) idx_sng_lng_max++;
     (void)sprintf(idx_sng_fmt,"%%%dlu",idx_sng_lng_max);
@@ -2334,8 +2357,8 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"Column (source cell) indices utilized min, max: %.0f, %.0f\n",col_min,col_max);
     fprintf(stdout,"Ignored source cells (empty columns): %d\n\n",hst_col[0]);
 
-    if(has_area_b) nco_map_var_min_max_ttl(var_area_b,(double *)NULL,flg_area_wgt,&area_b_min,&idx_min,&area_b_max,&idx_max,&area_b_ttl,&avg,&mebs,&rms,&sdn);
-    if(var_mask_b) nco_map_var_min_max_ttl(var_mask_b,(double *)NULL,flg_area_wgt,&mask_b_min,&idx_min,&mask_b_max,&idx_max,&mask_b_ttl,&avg,&mebs,&rms,&sdn);
+    if(has_area_b) nco_map_var_min_max_ttl(var_area_b,(double *)NULL,flg_area_wgt,(int *)NULL,&area_b_min,&idx_min,&area_b_max,&idx_max,&area_b_ttl,&avg,&mebs,&rms,&sdn);
+    if(var_mask_b) nco_map_var_min_max_ttl(var_mask_b,(double *)NULL,flg_area_wgt,(int *)NULL,&mask_b_min,&idx_min,&mask_b_max,&idx_max,&mask_b_ttl,&avg,&mebs,&rms,&sdn);
 
     fprintf(stdout,"Grid B size n_b: %lu // Number of rows/destinations\n",var_area_b->sz);
     if(var_mask_b) fprintf(stdout,"mask_b 0's, 1's: %lu, %lu\n",mask_b_zro,mask_b_one); else fprintf(stdout,"mask_b 0's, 1's: map-file omits mask_b\n");
@@ -2353,14 +2376,14 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"Ignored destination cells (empty rows): %d\n\n",hst_row[0]);
 
     /* Compute frac_a statistics from frac_a disk values */
-    if(has_frac_a) nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
+    if(has_frac_a) nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,var_mask_a->val.ip,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
     /* Compute and report frac_a as area_b-weighted column sums/area_a */
     nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
-    nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,var_mask_a->val.ip,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
     
     /* Ignore frac_a values when area_a or area_b are all invalid or zero */
     if(!has_area_a || !has_area_b) fprintf(stdout,"HINT: The following frac_a metrics may be safely ignored because either or both area_a and area_b are everywhere undefined or zero\n");
-    fprintf(stdout,"Conservation metrics (column-sums of area_b-weighted weights normalized by area_a) and errors\nPerfect metrics for global Grid B are avg = min = max = 1.0, mbs = rms = sdn = 0.0:\n");
+    fprintf(stdout,"Conservation metrics (column-sums of area_b-weighted weights normalized by area_a) and errors\nPerfect metrics for global unmasked Grid B are avg = min = max = 1.0, mbs = rms = sdn = 0.0:\n");
     fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_a ? "Area-weighted m" : "M");
     fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Minimum in grid A cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
     fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Maximum in grid A cell [%lu,%+g,%+g]\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);
@@ -2385,7 +2408,7 @@ nco_map_chk /* Map-file evaluation */
       if(var_area_a->val.dp[idx] == 0.0) cnt_zro++;
 
     if(has_area_a && has_area_b)
-      if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_b_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
+      if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_b_tiles_sphere && !mask_b_zro && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
     
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       sz=var_frac_a->sz;
@@ -2410,13 +2433,13 @@ nco_map_chk /* Map-file evaluation */
     } /* !dbg */
 
     /* Compute frac_b statistics from frac_b disk values */
-    if(has_frac_b) nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
+    if(has_frac_b) nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,var_mask_b->val.ip,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
     /* Compute and report frac_b as row sums */
     nco_map_frac_b_clc(var_S,var_row,var_frac_b);
-    nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,var_mask_b->val.ip,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
 
     fprintf(stdout,"\n");
-    fprintf(stdout,"Consistency metrics (row-sums of weights) and errors\nPerfect metrics for global Grid A are avg = min = max = 1.0, mbs = rms = sdn = 0.0:\n");
+    fprintf(stdout,"Consistency metrics (row-sums of weights) and errors\nPerfect metrics for global unmasked Grid A are avg = min = max = 1.0, mbs = rms = sdn = 0.0:\n");
     fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_b ? "Area-weighted m" : "M");
     fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Minimum in grid B cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_b->val.dp[idx_min],var_xc_b->val.dp[idx_min]);
     fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Maximum in grid B cell [%lu,%+g,%+g]\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_b->val.dp[idx_max],var_xc_b->val.dp[idx_max]);
@@ -2434,7 +2457,7 @@ nco_map_chk /* Map-file evaluation */
       
     /* NB: fabs() does not enclose frac_max_cmp below yet does in corresponding expression for frac_a above
        I think this is correct, or at least harmless, and rejects some false positive WARNINGs */
-    if(frac_max_cmp-1.0 > eps_max_wrn || (grid_a_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) or min(frac_b) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\n%sWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn,(frac_max_cmp-1.0 > eps_max_wrn) ? "\tFor example, a source grid that overlaps itself will usually result in frac_b >> 1\n" : "");
+    if(frac_max_cmp-1.0 > eps_max_wrn || (grid_a_tiles_sphere && !mask_a_zro && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) or min(frac_b) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\n%sWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn,(frac_max_cmp-1.0 > eps_max_wrn) ? "\tFor example, a source grid that overlaps itself will usually result in frac_b >> 1\n" : "");
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       sz=var_frac_b->sz;

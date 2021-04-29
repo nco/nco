@@ -1,8 +1,10 @@
 2021-04-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha05: Aliso Summit';git push
-	git tag -a 4.9.9-alpha05 -m 'ncremap tr allow_no_overlap';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha05: Back in Black';git push
+	git tag -a 4.9.9-alpha05 -m 'ncremap tr allow_no_overlap, no wrn msk min(frac_a/b)';git push --tags
+
+	* nco_map_chk() stop inappropriate WARNINGS for min(frac_a/b) when masks are used
 
 	* Merge latest GBG code from Juan
 

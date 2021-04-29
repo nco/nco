@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.9-alpha04
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 15 April 2021
+@set update-date 27 April 2021
 @set update-month April 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16954,7 +16954,7 @@ Nearest integer to @var{x} is returned in floating-point format.
 Exceptions are raised for @dfn{inexact conversions}.
 Example: 
 @tex
-rint$(0.1) = 0$
+rint$(0.1) = 0.0$
 @end tex
 @ifinfo
 @math{rint(0.1) = 0}
@@ -24860,6 +24860,7 @@ added as canonical options for @command{ncremap}.
 @cindex @code{--big2ltl}
 @cindex @code{--l2s}
 @cindex @code{--lrg2sml}
+@cindex @code{--allow_no_overlap}
 @item --a2o (@code{--a2o}, @code{--atm2ocn}, @code{--b2l}, @code{--big2ltl}, @code{--l2s}, @code{--lrg2sml})
 Use one of these flags (that take no arguments) to cause TempestRemap to
 generate mapping weights from a source grid that has more coverage than
@@ -24908,12 +24909,14 @@ an error (and a potential workaround) like this:
     --allow_no_overlap
 ....EXCEPTION (../src/OverlapMesh.cpp, Line 1738) Exiting
 @end example
-The @samp{--a2o} switch and its synonyms are available in @acronym{NCO}
+The @samp{--a2o} switch and its synonyms are available in 
 version 4.7.3 (March, 2018) and later.
-Currently (January, 2018) @code{ncremap} has no means of transmitting
-options (like @samp{--allow_no_overlap} to
-@command{GenerateOverlapMesh}.
-Please let us know if this capability is important to you.
+As of @acronym{NCO} version 4.9.9 (May, 2021), @code{ncremap}
+automatically transmits the option @samp{--allow_no_overlap} to
+@command{GenerateOverlapMesh} so that regional meshes that do
+not completely overlap may be intersected.
+This is thought to have no effect on global mappings.
+Please let us know if these capabilities do not work for you.
 
 @html
 <a name="config"></a> <!-- http://nco.sf.net/nco.html#config -->

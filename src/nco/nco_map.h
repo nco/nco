@@ -116,6 +116,7 @@ extern "C" {
   (var_sct *var,
    double *area,
    nco_bool flg_area_wgt,
+   int *mask,
    double *min,
    size_t *idx_min,
    double *max,
