@@ -1,3 +1,11 @@
+2021-05-07  Charlie Zender  <zender@uci.edu>
+
+	* ncremap update custom paths on Cori for mbtempest
+
+2021-05-04  Charlie Zender  <zender@uci.edu>
+
+	* ncks add/distinguish mtd_glb/mtd_lcl metadata_global/metadata_local options
+
 2021-04-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-alpha05 release procedure:

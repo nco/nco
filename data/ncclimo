@@ -158,7 +158,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export PATH='/home/zender/bin_cooley'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
 	cori* )
-	    # 20160407: Separate cori from edison binary locations to allow for different system libraries
 	    # 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
 	    # Not necessary for interactive, nor for CSZ non-interactive, batch submisssions
 	    # Must be due to home environment differences between CSZ and other users
@@ -168,10 +167,18 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    # 20191023 NERSC incident INC0143724: ncl/6.5.0 provides broken ERWG, use 6.4.0 
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		module load ncl/6.5.0
+		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
+		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
 	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 	    fi # !NCARG_ROOT
+	    if [ -n "${MOAB_ROOT}" ]; then
+		export PATH="${PATH}:${MOAB_ROOT}/bin"
+	    fi # !MOAB_ROOT
+	    if [ -n "${TEMPESTREMAP_ROOT}" ]; then
+		export PATH="${PATH}:${TEMPESTREMAP_ROOT}/bin"
+	    fi # !TEMPESTREMAP_ROOT
 	    export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
             export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
 	mira* )

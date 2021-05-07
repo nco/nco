@@ -547,16 +547,18 @@ netCDF4 user-defined types support;
 <tt>ncremap</tt> small-circle weights;</li>
 <li><b>NCO 4.9.9</b>: (<i>In Progress, features in-progress or complete include</i>)
 <tt>all</tt> re-tune digit rounding;
-<tt>ncclimo --day_[srt/end]</tt> in splitter;
-<li><b>NCO 4.9.8</b>: 
+<tt>ncks --chk_map</tt> account for masks;
+<tt>ncclimo --day_[srt/end]</tt> in splitter, fix tpd, dpf inferral;
+<tt>ncremap</tt> curvilinear inferral, mask fixes, integer rounding;</li>
+<li><b>NCO 4.9.8</b>: (<i>Current Stable Release</i>) 
 <tt>ncclimo/ncremap</tt> MALI climos;
 <tt>ncclimo --mth_[srt/end]</tt> in splitter;
 <tt>ncremap</tt> fix MPAS grid inferral;
-<tt>ncremap</tt> deconvolve S1D sparse matrix fields (for CLM/ELM);
-<li><b>NCO 4.9.7</b>: (<i>Current Stable Release</i>)
+<tt>ncremap</tt> deconvolve S1D sparse matrix fields (for CLM/ELM);</li>
+<li><b>NCO 4.9.7</b>:
 <tt>ncap2 --ccr=Filter</tt> link to CCR filters;
-<tt>ncclimo --glb_avg</tt> Fixed;</li>
-<tt>ncclimo --tpd</tt> Fixed;</li>
+<tt>ncclimo --glb_avg</tt> Fixed;
+<tt>ncclimo --tpd</tt> Fixed;
 <tt>ncremap</tt> Infer MPAS grids from restart files;</li>
 <li><b>NCO 4.9.6</b>: 
 <tt>ncclimo/ncremap</tt> Cori MPI/cmem support;
@@ -1084,7 +1086,7 @@ The ANTLR 2.x source file <tt>CharScanner.hpp</tt> must include this line:
 compile (<a href="http://dust.ess.uci.edu/nco/antlr-2.7.7.tar.gz">this</a>
 ANTLR tarball is already patched).
 Recent versions of netCDF will automatically build OPeNDAP and UDUnits.
-Be sure your netCDF was built with <tt>--enable-dap --enable-logging</t>.
+Be sure your netCDF was built with <tt>--enable-dap --enable-logging</tt>.
 NCO is mostly written in&nbsp;C99, and although you <i>may</i> mix and
 match compilers, this is often difficult in practice and is not recommended.
 The exception is <tt>ncap2</tt> which is written in&nbsp;C++.
@@ -1264,16 +1266,17 @@ is usually untagged.
   <tt>export PATH="~zender/bin:${PATH}"</tt>,
   <tt>export LD_LIBRARY_PATH="~zender/lib:${LD_LIBRARY_PATH}"</tt>
 <ul>
-<li>ANL ALCF Cooley <tt>cooley.alcf.anl.gov</tt>: <tt>~zender/bin</tt></li>
+<li>ANL OLCF Chrysalis <tt>chrysalis.lcrc.anl.gov</tt>: <tt>~ac.zender/bin_chrysalis</tt></li>
 <li>ANL ALCF Mira <tt>mira.alcf.anl.gov</tt>: <tt>~zender/bin</tt></li>
-<li>ANL LCRC Blues <tt>blues.lcrc.anl.gov</tt>: <tt>~zender/bin</tt></li>
+<li>ANL LCRC Blues <tt>blues.lcrc.anl.gov</tt>: <tt>~zender/bin_blues</tt></li>
 <li>LLNL <tt>acme1.llnl.gov</tt>: <tt>~zender1/bin</tt></li>
 <li>NCAR CISL <tt>cheyenne.ucar.edu</tt>: <tt>~zender/bin</tt></li>
 <li>NERSC Cori <tt>cori.nersc.gov</tt>: <tt>~zender/bin_cori</tt></li>
-<li>ORNL OLCF Rhea <tt>rhea.ccs.ornl.gov</tt>: <tt>~zender/bin_rhea</tt></li>
+<li>ORNL OLCF Andes <tt>andes.olcf.ornl.gov</tt>: <tt>~zender/bin_andes</tt></li>
 <li>ORNL OLCF Titan <tt>titan.ccs.ornl.gov</tt>: <tt>~zender/bin_titan</tt></li>
 <li>PNNL Compy <tt>compy.pnl.gov</tt>: <tt>~zender/bin</tt></li>
 <li>UCI ESS <tt>greenplanet.ps.uci.edu</tt>: <tt>~zender/bin</tt></li>
+<li>UCI HPC3 <tt>hpc3.rcic.uci.edu</tt>: <tt>~zender/bin</tt></li>
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#NCAR -->
@@ -1384,8 +1387,8 @@ Comments welcome. Updates will be posted right here.
 <!-- http://nco.sf.net#bug_nc4_rename -->
 <a name="bug_nc4_rename"></a>
 <li><i>netCDF4 Renaming bugs:</i>
-Unforunately from 2007&ndash;present (February, 2015) the netCDF
-library (versions 4.0.0&ndash;4.3.3) contained bugs or limitations
+Unfortunately from 2007&ndash;present (April, 2021) the netCDF
+library (versions 4.0.0&ndash;4.8.0) has bugs and/or limitations
 that prevent <tt>ncrename</tt> (and other netCDF4-based software) 
 from correctly renaming coordinate variables, dimensions, groups, 
 and attributes in netCDF4 files.
@@ -1397,7 +1400,7 @@ of netCDF4 is maintained in the online manual
 <a href="http://nco.sf.net/nco.html#bug_nc4_rename">here</a>.
 Important updates will also be posted here on the homepage.
 There are still known bugs with renaming features as of netCDF library
-version 4.4.1.1 (November, 2016). 
+version 4.8.0 (March, 2021). 
 </li>
 </ul>
 
@@ -1453,7 +1456,7 @@ The solution is to upgrade to NCO&nbsp;4.4.5.
 <li><i><tt>ncwa</tt> mask condition bug:</i>
 All versions through 4.4.3 of <tt>ncwa</tt> could return incorrect
 mask values for negative numbers. 
-Thanks to Keith Lindsay for report, and to Henry Butowsky for fix. 
+Thanks to Keith Lindsay for report, and Henry Butowsky for the fix. 
 Prior to this fix, the <tt>ncwa lexer</tt> would drop the negative
 sign, if any, from the comparators appearing in the mask condition,
 e.g., <tt>ncwa --mask_condition "lat < -20"</tt> was parsed as 

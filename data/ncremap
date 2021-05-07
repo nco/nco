@@ -168,7 +168,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export PATH='/home/zender/bin_cooley'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
 	cori* )
-	    # 20160407: Separate cori from edison binary locations to allow for different system libraries
 	    # 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
 	    # Not necessary for interactive, nor for CSZ non-interactive, batch submisssions
 	    # Must be due to home environment differences between CSZ and other users
@@ -178,10 +177,21 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    # 20191023 NERSC incident INC0143724: ncl/6.5.0 provides broken ERWG, use 6.4.0 
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		module load ncl/6.5.0
+		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
+		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
 	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
+		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 	    fi # !NCARG_ROOT
+	    if [ -n "${MOAB_ROOT}" ]; then
+		export PATH="${PATH}:${MOAB_ROOT}/bin"
+		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MOAB_ROOT}/lib"
+	    fi # !MOAB_ROOT
+	    if [ -n "${TEMPESTREMAP_ROOT}" ]; then
+		export PATH="${PATH}:${TEMPESTREMAP_ROOT}/bin"
+		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${TEMPESTREMAP_ROOT}/lib"
+	    fi # !TEMPESTREMAP_ROOT
 	    export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
             export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
 	mira* )
@@ -208,6 +218,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Test cases ($DATA/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
+# Debugging:
+# ncremap --dbg=2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
 # Map-only:
 # ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=nco_con --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=nco_dwe --xtr_nsp=8 --xtr_xpn=2.0 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_dwe.20200901.nc
@@ -281,8 +293,6 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --dbg=1 --a2o -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
 # Atmosphere->Atmosphere:
 # ncremap --dbg=1 -a se2se --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/ne30.g -m ~/map_ne30np4_to_ne30np4_se2se.20190301.nc
-# Debugging and Benchmarking:
-# ncremap -D 1 -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc > ~/ncremap.out 2>&1 &
 # RRG (201807):
 # ncremap -D 1 -a conserve --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_rgn=${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc > ~/ncremap.out 2>&1 &
 # ncremap -D 0 --vrb=1 -a conserve --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
@@ -1875,6 +1885,11 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: alg_opt  = ${alg_opt}\n"
     printf "dbg: att_flg  = ${att_flg}\n"
     printf "dbg: cln_flg  = ${cln_flg}\n"
+    printf "dbg: cmd_esm  = ${cmd_wgt_esmf}\n"
+    printf "dbg: cmd_mbt  = ${cmd_wgt_mbt}\n"
+    printf "dbg: cmd_nco  = ${cmd_wgt_nco}\n"
+    printf "dbg: cmd_tps  = ${cmd_wgt_tps}\n"
+    printf "dbg: cmd_tps  = ${cmd_msh_tps}\n"
     printf "dbg: d2f_flg  = ${d2f_flg}\n"
     printf "dbg: d2f_opt  = ${d2f_opt}\n"
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
