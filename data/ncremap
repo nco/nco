@@ -220,8 +220,10 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Test cases ($DATA/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
 # Debugging:
 # ncremap --dbg=2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
+# ncks -O --dbg=2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
 # Map-only:
 # ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=nco_con --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncks -O --dbg=5 --thr_nbr=6 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ~/nco/data/in.nc ~/foo.nc
 # ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=nco_dwe --xtr_nsp=8 --xtr_xpn=2.0 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_dwe.20200901.nc
 # ncremap --dbg=1 --alg_typ=bilin   --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
 # ncremap --dbg=1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
@@ -318,6 +320,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/rgr ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-0[123].nc 
 # ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-0[12].nc ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.000101_000103.nc
 # ncremap --dbg=3 -v FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.000101_000102.nc ~/foo.nc
+# MBT
+# ncremap --dbg=1 --vrb=3 --devnull=No --mbt --alg_typ=se2fv_flx --grd_src=${DATA}/grids/ne30.g --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_mbt.20210701.nc
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -416,7 +420,6 @@ flg_hrz='No' # [flg] Perform horizontal regridding
 # 20200119 appending attribute containing remap_command causes ncatted to fail, temporarily remove it
 #gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_command=\"'${cmd_ln}'\" --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
 gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
-gll_fl='' # [sng] GLL grid metadata (geometry+connectivity+Jacobian) file
 grd_dst='' # [sng] Destination grid-file
 grd_dst_xmp='grd_dst.nc' # [sng] Destination grid-file for examples
 grd_sng='' # [sng] Grid string
@@ -538,7 +541,6 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation arguments (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means none, i.e., infer from dst_fl or use map_fl) (default ${fnt_bld}${grd_dst}${fnt_nrm}) [${fnt_tlc}grd_dst, grid_dest, dst_grd, dest_grid, destination_grid${fnt_nrm}]"
-#    echo " ${fnt_bld}--gll_fl${fnt_nrm}   GLL metadata (SE grid geometry+connectivity+Jacobian) file (default ${fnt_bld}${gll_fl}${fnt_nrm}) [${fnt_tlc}gll_fl, gll_mtd, se_gmt, se_mtd${fnt_nrm}]" # Deprecate unused option
 #    echo " ${fnt_bld}--hrd_pth${fnt_nrm}  Use hard-coded paths on known machines (e.g., cheyenne, cori) [${fnt_tlc}hrd_pth, hard_path, csz_exe, csz_bin_lib${fnt_nrm}]"
     echo "${fnt_rvr}-I${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}in_fl${fnt_nrm}    Input file (empty means pipe to stdin or drc_in) (default ${fnt_bld}${in_fl}${fnt_nrm}) [${fnt_tlc}in_fl, in_file, input_file${fnt_nrm}]"
@@ -715,7 +717,6 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       dt_sng=?* | date_string=?* ) dt_sng="${LONG_OPTARG}" ;; # # Date string for MWF map names
 	       esmf_typ=?* | esmf_mth=?* | esmf_extrap_type=?* | esmf_extrap_method=?* ) esmf_typ="${LONG_OPTARG}" ;; # # ESMF extrapolation type (nearestidavg|neareststod|none)
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
-	       gll_fl=?* | gll_mtd=?* | se_gmt=?* | se_mtd=?* ) gll_fl="${LONG_OPTARG}" ;; # # GLL grid metadata (geometry+connectivity+Jacobian) file
 	       hrd_pth=?* | hard_path=?* | csz_exe=?* | csz_bin_lib=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
 	       in_fl=?* | in_file=?* | input_file=?* ) in_fl="${LONG_OPTARG}" ;; # -i # Input file
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
@@ -870,6 +871,11 @@ if [ ${vrs_prn} = 'Yes' ]; then
     else
 	printf "Config: MPAS depth coordinate addition command ${dpt_exe_mpas} not found\n"
     fi # !err
+    if [ -n "${cmd_wgt_nco}" ]; then
+	printf "Config: NCO mesh- and weight-generation command ${wgt_exe_nco} found as ${cmd_wgt_nco}\n"
+    else
+	printf "Config: NCO mesh- and weight-generation command ${wgt_exe_nco} not found\n"
+    fi # !err
     if [ -n "${cmd_wgt_tps}" ]; then
 	printf "Config: TempestRemap weight-generation command ${wgt_exe_tps} found as ${cmd_wgt_tps}\n"
     else
@@ -1016,52 +1022,62 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
 	printf "${spt_nm}: INFO Specifying the TempestRemap default algorithm '--alg_typ=tempest' without giving any additional options with -W (--wgt_opt) works only for the default TR configuration where both input and output grids are Finite Volume (FV) grids. The default TR algorithm is conservative and non-monotonic.\n"
     fi # !wgt_opt_usr    
 elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # alg_sng='mono'
+    wgt_opt_mbt="--method cgll --order ${np_se_nbr} --global_id GLOBAL_DOFS --method fv --monotonic 1 --global_id GLOBAL_ID"
     wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono --correct_areas"
     alg_opt='se2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2fv' ]; then # alg_sng='highorder'
+    wgt_opt_mbt="--method cgll --order ${np_se_nbr} --method fv"
     wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --correct_areas"
     alg_opt='se2fv_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_se2fv' ]; then # alg_sng='intbilin'
+    wgt_opt_mbt="--method cgll --order ${np_se_nbr} --method fv --monotonic 3 --noconserve"
     wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono3 --noconserve --correct_areas"
     alg_opt='se2fv_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'conservative_monotone_se2se' ]; then # alg_sng='se2se'
     # 20190227: Add mono for se2se per recommendation of Mark Taylor
+    wgt_opt_mbt="--method cgll --order ${np_se_nbr} --method cgll --order ${np_se_nbr} --monotonic 1"
     wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type cgll --out_np ${np_se_nbr} --mono"
     alg_opt='se2se'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # alg_sng='monotr'
     # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
+    wgt_opt_mbt="--method cgll --order ${np_se_nbr} --method fv --monotonic 1"
     wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono --correct_areas"
     alg_opt='fv2se_flx'
     wgt_typ='tempest'
     trn_map='Yes'
 elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # alg_sng='highorder'
     # 20190716: Remove "--volumetric" from fv2se_stt per Mark Taylor and Paul Ullrich
+    wgt_opt_mbt="--method fv --order 2 --method cgll --order ${np_se_nbr}"
     wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np ${np_se_nbr}"
     alg_opt='fv2se_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # alg_sng='mono'
     # 20200525: Remove "--volumetric" from fv2se_mono per Mark Taylor modifying Confluence instructions
+    wgt_opt_mbt="--method fv --order 1 --method cgll --order ${np_se_nbr} --monotonic 1"
     wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np ${np_se_nbr} --mono"
     alg_opt='fv2se_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ]; then # alg_sng='highorder'
-    # 20190227: Add --mono3 --noconserve for fv2fv per (misinterpreted)recommendation of Mark Taylor
+    # 20190227: Add --mono3 --noconserve for fv2fv per (misinterpreted) recommendation of Mark Taylor
     # 20200115: Replace --mono3 --noconserve with --in_np 2 per recommendation of Mark Taylor and Paul Ullrich
+    wgt_opt_mbt='--method fv --order 2 --method fv'
     wgt_opt_tps='--in_type fv --in_np 2 --out_type fv'
     alg_opt='fv2fv'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv_flx' ] || [ ${alg_typ} = 'fv2fv_mono' ] || [ ${alg_typ} = 'conservative_monotone_fv2fv' ]; then # alg_sng='mono'
     # 20191115: Add per recommendation of Paul Ullrich
     # 20200221: Add --out_np 1 per (new?) settings in on Transition to TR page
+    wgt_opt_mbt='--method fv --order 1 --method fv --order 1'
     wgt_opt_tps='--in_type fv --in_np 1 --out_type fv --out_np 1 --correct_areas'
     alg_opt='fv2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2fv' ]; then # alg_sng='highorder'
     # 20191115: Add per recommendation of Paul Ullrich
+    wgt_opt_mbt='--method fv --order 2 --method fv'
     wgt_opt_tps='--in_type fv --in_np 2 --out_type fv --correct_areas'
     alg_opt='fv2fv_stt'
     wgt_typ='tempest'
@@ -1078,17 +1094,10 @@ else
     echo "${spt_nm}: HINT Valid TempestRemap weight-generation options and synonyms are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | se2se,cs2cs | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se | fv2fv,rll2rll"
     exit 1
 fi # !alg_typ
-# NB: As of 20190215 ncremap has never used gll_fl for E3SM, though I think Tempest does support it
-if [ -n "${gll_fl}" ]; then
-    if [ "${alg_opt}" = 'se2fv_flx' ] || [ "${alg_opt}" = 'se2fv_stt' ] || [ "${alg_opt}" = 'se2fv_alt' ] || [ "${alg_opt}" = 'fv2se_flx' ]; then
-	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
-    elif [ "${alg_opt}" = 'fv2se_stt' ] || [ "${alg_opt}" = 'fv2se_alt' ]; then
-	wgt_opt_tps="${wgt_opt_tps} --out_meta ${gll_fl}"
-    fi # !se2fv || fv2se_flx
-fi # !gll_fl
 if [ -n "${fl_fmt}" ]; then
     if [ "${fl_fmt}" = '3' ] || [ "${fl_fmt}" = 'classic' ] || [ "${fl_fmt}" = 'netcdf3' ]; then
 	nco_fl_fmt='--fl_fmt=classic'
+	wgt_opt_mbt="${wgt_opt_tps} --out_format Classic"
 	wgt_opt_tps="${wgt_opt_tps} --out_format Classic"
 	msh_opt_tps="${msh_opt_tps} --out_format Classic"
     fi # !fl_fmt
@@ -1099,6 +1108,7 @@ if [ -n "${fl_fmt}" ]; then
 		wgt_opt_esmf="${wgt_opt_esmf} --netcdf4"
 	    fi # !erwg_vrs_mjr
 	fi # !erwg_vrs_mjr
+	wgt_opt_mbt="${wgt_opt_tps} --out_format Netcdf4"
 	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4"
 	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4"
     fi # !fl_fmt
@@ -1109,6 +1119,7 @@ if [ -n "${fl_fmt}" ]; then
     if [ "${fl_fmt}" = '6' ] || [ "${fl_fmt}" = '64bit_offset' ] || [ "${fl_fmt}" = '64' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_offset'
 	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset"
+	wgt_opt_mbt="${wgt_opt_tps} --out_format Offset64Bits"
 	wgt_opt_tps="${wgt_opt_tps} --out_format Offset64Bits"
 	msh_opt_tps="${msh_opt_tps} --out_format Offset64Bits"
     fi # !fl_fmt
@@ -1119,6 +1130,7 @@ if [ -n "${fl_fmt}" ]; then
 		wgt_opt_esmf="${wgt_opt_esmf} --netcdf4" # Change when ERWG supports netCDF7
 	    fi # !erwg_vrs_mjr
 	fi # !erwg_vrs_mjr
+	wgt_opt_mbt="${wgt_opt_tps} --out_format Netcdf4Classic"
 	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4Classic"
 	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4Classic"
     fi # !fl_fmt
@@ -1144,6 +1156,9 @@ if [ -n "${esmf_typ}" ]; then
     fi # !esmf_typ
     wgt_opt_esmf="${wgt_opt_esmf} --extrap_method ${esmf_opt} --extrap_num_src_pnts ${xtr_nsp} --extrap_dist_exponent ${xtr_xpn}"
 fi # !esmf_typ
+if [ ${wgt_typ} = 'tempest' ] && [ ${mbt_flg} = 'Yes' ]; then
+    wgt_typ='mbtempest'
+fi # !wgt_typ
 if [ ${wgt_typ} = 'esmf' ]; then
     wgt_cmd="${wgt_exe_esmf}"
     wgt_exe="${wgt_exe_esmf}"
@@ -1155,6 +1170,10 @@ elif [ ${wgt_typ} = 'nco' ]; then
     wgt_cmd="${wgt_exe_nco}"
     wgt_exe="${wgt_exe_nco}"
     wgt_opt="${wgt_opt_nco}"
+elif [ ${wgt_typ} = 'mbtempest' ]; then
+    wgt_cmd="${wgt_exe_mbt}"
+    wgt_exe="${wgt_exe_mbt}"
+    wgt_opt="${wgt_opt_mbt}"
 elif [ ${wgt_typ} = 'tempest' ]; then
     wgt_cmd="${wgt_exe_tps}"
     wgt_exe="${wgt_exe_tps}"
@@ -1908,7 +1927,6 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: fl_nbr   = ${fl_nbr}\n"
     printf "dbg: flg_hrz  = ${flg_hrz}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
-    printf "dbg: gll_fl   = ${gll_fl}\n"
     printf "dbg: grd_dst  = ${grd_dst}\n"
     printf "dbg: grd_sng  = ${grd_sng}\n"
     printf "dbg: grd_src  = ${grd_src}\n"
@@ -1965,6 +1983,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: vrt_xtr  = ${vrt_xtr}\n"
     printf "dbg: wgt_cmd  = ${wgt_cmd}\n"
     printf "dbg: wgt_opt  = ${wgt_opt}\n"
+    printf "dbg: wgt_typ  = ${wgt_typ}\n"
     printf "dbg: wgt_usr  = ${wgt_usr}\n"
     printf "dbg: xtr_nsp  = ${xtr_nsp}\n"
     printf "dbg: xtr_xpn  = ${xtr_xpn}\n"
@@ -2153,7 +2172,7 @@ if [ "${flg_hrz}" = 'Yes' ]; then
 	    printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
 	fi # !vrb_lvl
 	if [ ${flg_grd_only} != 'Yes' ]; then
-	    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT The Conda 'nco' package and some NCL packages provide ESMF_RegridWeightGen. Tempest executables can be installed from source (https://github.com/ClimateGlobalChange/tempestremap) or obtained via the Conda 'tempest-remap' package (which the Conda 'nco' package also automatically provides).\n"; exit 1; }
+	    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, and/or change your PATH to find it.\n${spt_nm}: HINT The Conda 'nco' package and some NCL packages provide ESMF_RegridWeightGen. Tempest executables can be installed from source (https://github.com/ClimateGlobalChange/tempestremap) or obtained via the Conda 'tempest-remap' package (which the Conda 'nco' package also automatically provides).\n"; exit 1; }
 	fi # !flg_grd_only
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    if [ ${fl_nbr} -ge 2 ]; then 
@@ -2307,6 +2326,8 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt}${devnull}"
     elif [ "${wgt_typ}" = 'nco' ]; then 
 	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
+    elif [ "${wgt_typ}" = 'mbtempest' ]; then 
+	cmd_map[${fl_idx}]="${wgt_cmd} --type 5 --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'tempest' ]; then 
 	cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	if [ "${a2o_flg}" = 'Yes' ]; then 

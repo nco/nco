@@ -1,4 +1,10 @@
+2021-05-09  Charlie Zender  <zender@uci.edu>
+
+	* ncremap translate TR map-generation options to MBTR for all algorithms
+
 2021-05-07  Charlie Zender  <zender@uci.edu>
+
+	* ncremap remove support for gll_fl
 
 	* ncremap update custom paths on Cori for mbtempest
 
