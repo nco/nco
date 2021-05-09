@@ -1,10 +1,14 @@
 2021-05-09  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.9-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.9-beta01: Black in Back';git push
+	git tag -a 4.9.9-beta01 -m 'ncks -M/m synonyms;ncremap mbtr stubs;';git push --tags
+
 	* ncremap translate TR map-generation options to MBTR for all algorithms
 
 2021-05-07  Charlie Zender  <zender@uci.edu>
 
-	* ncremap remove support for gll_fl
+	* ncremap remove gll_fl support
 
 	* ncremap update custom paths on Cori for mbtempest
 

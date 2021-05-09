@@ -1457,7 +1457,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 	if(!strcmp(fl_lst_abb[5],"yyyymm")) flg_yyyymm=True;
       } /* end if */
 
-      /* Is there a .nc, .h5, .cdf, .hdf, .hd5, or .he5 suffix? */
+      /* Is there a .nc, .h5, .nc4, .cdf, .hdf, .hd5, or .he5 suffix? */
       if(!strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".nc",3))
 	fl_nm_sfx_lng=3;
       if(!strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".h5",3))
@@ -1469,6 +1469,8 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       else if(!strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hd5",4))
 	fl_nm_sfx_lng=4;
       else if(!strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".he5",4))
+	fl_nm_sfx_lng=4;
+      else if(!strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".nc4",4))
 	fl_nm_sfx_lng=4;
 
       /* Initialize static information useful for future invocations */

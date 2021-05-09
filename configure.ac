@@ -54,7 +54,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOSX will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[4.9.9-alpha05],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.9.9-beta01],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -348,7 +348,7 @@ if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes'))
     if (test "x$enable_gpu" != 'xno'); then
 	AC_DEFINE([ENABLE_GPU],[1],[Enable GPU offloading support])
 	case ${CC} in
-	    gcc* | g\+\+* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -foffload=nvptx-none" ;;
+	    *gcc* | *g\+\+* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -foffload=nvptx-none" ;;
 	    clang* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -fopenmp-targets=nvptx64-nvidia-cuda" ;;
 	    # Intel compilers do not yet support Nvidia GPU offloading
 	esac
@@ -851,7 +851,7 @@ case ${host} in
 	;;
     powerpc-ibm-aix* )
 	case ${CC} in
-	    gcc* ) CFLAGS="${CFLAGS} -maix64" ; ;;
+	    *gcc* ) CFLAGS="${CFLAGS} -maix64" ; ;;
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
 # -qlanglvl=extc99: Include orthogonal extensions to C99 standard
@@ -931,6 +931,7 @@ fi
 AC_ARG_ENABLE(debug-custom,AS_HELP_STRING([--enable-debug-custom],[Activate all known, helpful compile-time and run-time debugging checks such as pedantic warnings, bounds checking (slowest execution). Automatically activates --enable-debug-symbols. NB: This option may interact unfavorably with some versions of Flex. De-activate this if building fails with with errors involving "yyget_leng()". [default=no]]),enable_debug_custom=${enableval},enable_debug_custom=no)
 if test "${enable_debug_custom}" = 'yes'; then
     AC_DEFINE(ENABLE_DEBUG_CUSTOM,1,[Custom debugging: Pedantic, bounds checking (slowest execution)])
+    # 20210509: fxm tests fail for Anaconda compiler names like x86_64-conda-linux-gnu-gcc
     if (test "x${GCC}" = 'xyes'); then
 	CC="${CC} ${GCC_CMD_ARGS}"
         GCC_CUSTOM_FLAGS='-g -Wall -Wuninitialized -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wmissing-prototypes -fno-common'
@@ -1104,9 +1105,10 @@ if test "${enable_optimize_custom}" = 'yes'; then
 			clang* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
-		gcc* | g\+\+* ) CFLAGS="${CFLAGS} -march=native"
+		# 20210509: fxm tests fail for Anaconda compiler names like x86_64-conda-linux-gnu-gcc
+		*gcc* | *g\+\+* ) CFLAGS="${CFLAGS} -march=native"
 		    case ${CXX} in
-			g\+\+* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
+			*g\+\+* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 	    	    esac
 	    	    ;;
 		#icc* ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
@@ -1195,14 +1197,14 @@ fi
 
 # Drop C99 switches when compiling NCO with C++ compiler, e.g., CC=g++
 case ${CC} in
-    g\+\+* | icpc* ) CC=`echo "${CC}" | sed -e 's/ -std=c99//'` ; CC=`echo "${CC}" | sed -e 's/ -pedantic//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/ -std=c99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/ -Wmissing-prototypes//'` ; ;;
-    xlC* ) CC=`echo "${CC}" | sed -e 's/ -qlanglvl=extc99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/ -qlanglvl=extc99//'` ; CFLAGS="${CFLAGS} -qlonglong" ; ;;
+    *g\+\+* | icpc* ) CC=`echo "${CC}" | sed -e 's/ -std=c99//'` ; CC=`echo "${CC}" | sed -e 's/ -pedantic//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/ -std=c99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/ -Wmissing-prototypes//'` ; ;;
+    *xlC* ) CC=`echo "${CC}" | sed -e 's/ -qlanglvl=extc99//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/ -qlanglvl=extc99//'` ; CFLAGS="${CFLAGS} -qlonglong" ; ;;
 esac
 
 # Drop C99 switches accidentally incorporated into CXXFLAGS
 # (for when laziness led me to copy CXXFLAGS from CFLAGS)
 case ${CXX} in
-    g\+\+* | icpc* | pathCC* ) CXX=`echo "${CXX}" | sed -e 's/ -std=c99//'` ; CXXFLAGS=`echo "${CXXFLAGS}" | sed -e 's/ -std=c99//'` ; ;;
+    *g\+\+* | icpc* | pathCC* ) CXX=`echo "${CXX}" | sed -e 's/ -std=c99//'` ; CXXFLAGS=`echo "${CXXFLAGS}" | sed -e 's/ -std=c99//'` ; ;;
     pgCC* ) CXX=`echo "${CXX}" | sed -e 's/ -c9x//'` ; CXXFLAGS=`echo "${CXXFLAGS}" | sed -e 's/ -c9x//'` ; ;;
 esac
 
