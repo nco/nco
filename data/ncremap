@@ -221,8 +221,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Debugging:
 # ncremap --dbg=2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
 # ncks -O --dbg=2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
-# Map-only:
-# ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=nco_con --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# Map-only, threading:
+# ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=5' --alg_typ=nco_con --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
 # ncks -O --dbg=5 --thr_nbr=6 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ~/nco/data/in.nc ~/foo.nc
 # ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=nco_dwe --xtr_nsp=8 --xtr_xpn=2.0 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_dwe.20200901.nc
 # ncremap --dbg=1 --alg_typ=bilin   --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc

@@ -1536,12 +1536,12 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
     nco_bool is_url;
     char *sng;
 
-    /* Remote access detection; this should be replaced with NC_testurl; DAP-URL = "http://" host [ ":" port ] [ abs-path ] */
+    /* Remote access detection; fxm generalize for NC_testurl; DAP-URL = "http://" host [ ":" port ] [ abs-path ] */
     if(strlen(fl_pth) < 8UL) is_url=False; else{
-      sng=(char *)nco_malloc(8);
-      sng=strncpy(sng,fl_pth,8);
-      sng[7]='\0';    
-      if(!strcmp("http://",sng)) is_url=True; else is_url=False;
+      sng=(char *)nco_malloc(9);
+      sng=strncpy(sng,fl_pth,9);
+      sng[8]='\0';    
+      if(strstr("http://",sng) || strstr("https://",sng)) is_url=True; else is_url=False;
       sng=(char *)nco_free(sng);
     } /* end else */
 

@@ -1,4 +1,18 @@
+2021-05-10  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.9-beta02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.9-beta02: ';git push
+	git tag -a 4.9.9-beta02 -m 'https DAP wnd; ncks chk_map msk_a/b dgn, msk no wrn min frac_a/b; ncclimo hfs mth_srt/end, nfr dpf, fix tpd; ncremap ccw_chk fix, msk fix, tr allow_no_overlap, rgr_wgt rint() int;';git push --tags
+
+	* Add ncks -r check for Conda
+
+	* Add UDUnits checks for Conda
+
 2021-05-09  Charlie Zender  <zender@uci.edu>
+
+	* Add DAP-access checks to Conda nco-feedstock recipes/run_test.[sh/bat] for Linux, Windows
+
+	* Fix https:// protocol DAP-access under Windows
 
 	* NCO 4.9.9-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-beta01: Black in Back';git push

@@ -1780,11 +1780,11 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array
     
 #ncks #10
-    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d time_udunits,'1999-12-08 12:00:0.0','1999-12-09 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H --trd -s '%6.0f' -d time_udunits,'1999-12-08 18:00:0.0','1999-12-09 12:00:0.0',2 -v time_udunits $in_pth_arg in.nc";
+#ncks -C -H --trd -s '%6.0f' -d time_udunits,'1999-12-08 18:00:0.0','1999-12-09 12:00:0.0',2 -v time_udunits in.nc
+    $tst_cmd[0]="ncks -C -H --trd -s '%6.0f' -d time_udunits,'1999-12-08 18:00:0.0','1999-12-09 12:00:0.0',2 -v time_udunits $in_pth_arg in.nc";
     $dsc_sng="dimension slice using UDUnits library (fails without UDUnits library support)";
-    $tst_cmd[2]="876018";
-    $tst_cmd[3]="SS_OK";
+    $tst_cmd[1]="876018";
+    $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
