@@ -807,7 +807,8 @@ variables:
 	att_var:double_att = 73.0,72.0,71.0,70.010,69.0010,68.010000,67.01000100;
 
 	int att_var_jsn;
-        att_var_jsn:char\ att\ with\ whitespace = "cf-json.org <http://cf-json.org>";
+        // 20210512: HDF4 ncgen fails on character attributes with whitespace
+	att_var_jsn:char\ att\ with\ whitespace = "cf-json.org <http://cf-json.org>";
         att_var_jsn:double\ att\ with\ whitespace = 3.14;
         att_var_jsn:int\ att\ with\ whitespace = 1;
         att_var_jsn:int_array\ att\ with\ whitespace = 1,2;
