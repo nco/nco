@@ -1112,13 +1112,13 @@ dependencies the "devel" versions
 <dt><a name="anaconda"></a></dt> <!-- http://nco.sf.net#anaconda_bld -->
 For Conda-based systems (any OS, particularly useful for building NCO with newer versions of base libraries in personal directories):
 <tt>
-<dt>conda install antlr # ANTLR</dt>
+<dt>conda install antlr=2.7.7 # ANTLR</dt>
 <dt>conda install curl # DAP-prereqs</dt>
 <dt>conda install expat # expat XML parser, a UDUnits-prereq</dt>
 <dt>conda install bison cmake flex # GNU toolchain</dt>
 <dt>conda install esmf # ESMF_RegridWeightGen (external executable for ncremap)</dt>
 <dt>conda install gsl # GSL</dt>
-<dt>conda install netcdf4 # netCDF</dt>
+<dt>conda install libnetcdf # netCDF</dt>
 <dt>conda install tempest-remap # (external executables for ncremap)</dt>
 <dt>conda install udunits2 # UDUnits</dt>
 </tt>
@@ -1319,70 +1319,13 @@ LAM installs easily with our own testing environment (latest Ubuntu).
 <!-- http://nco.sf.net#bug -->
 <dt><a name="bug"></a></dt> <!-- http://nco.sf.net#bug -->
 <dt><a name="prb"></a></dt> <!-- http://nco.sf.net#prb -->
-<h2>Known Problems from 2013 (version 4.2.4) Onwards</h2>
+<h2>Known Problems from 2021 (version 4.9.9) Onwards</h2>
 
-<ul><b>Recent Generic Run-time Problems:</b>
+<ul><b>Generic NCO Run-time Problems:</b>
+No known generic NCO run-time problems with recent releases.
+</ul>
 
-<!-- http://nco.sf.net#bug_cdf5 -->
-<a name="bug_cdf5"></a>
-<li><i>netCDF CDF5 corruption:</i>
-  netCDF libraries 4.4.0+ supports the CDF5 binary format.
-  Unfortunately the CDF5 implementation is buggy for large (> 4&nbsp;GiB)
-  variables in library versions 4.4.0&ndash;4.6.0. 
-  We identified this netCDF CDF5 bug on 20170906. 
-  Writing CDF5 files with large variables is buggy unless there is
-  only one such &ldquo;large&rdquo; variable and it is the last to be defined.
-  If the file is an input dataset (i.e., NCO <i>reads</i> it) written
-  by PnetCDF then the input data are fine (because PnetCDF writes CDF5
-  through a different mechanism than serial programs like NCO&rsquo;s
-  writer).
-  And if the CDF5 dataset was originally written by any netCDF version
-  4.6.1 or greater, then it is unaffected by this bug.
-  However, a CDF5 input file with large variables written by any serial
-  netCDF writer (like NCO) employing netCDF library 4.4.0&ndash;4.6.0, is likely
-  corrupt and variables were silently truncated when writing it.
-  Output files (that NCO wrote) with large variables will definitely
-  be corrupt if NCO was linked to netCDF library version 4.4.0&ndash;4.6.0 (so
-  upgrade to netCDF 4.6.1+ ASAP).
-  Here are two potential workarounds for data affected by this bug:
-  1. Re-write (using any netCDF version) original input files in
-  netCDF4 format instead of CDF5, then process these as normal and
-  write netCDF4 output (instead of CDF5); 
-  2. Re-compile NCO with netCDF library 4.6.1+ or later and use it to
-  convert non-corrupt datasets to netCDF4 format, then process the
-  data.
-  For more information on this nasty bug, see
-  <a href="https://github.com/Unidata/netcdf-c/issues/463">here</a> and
-  <a href="https://github.com/Unidata/netcdf-c/pull/478">here</a>.
-  <b>UPDATE</b>: Unidata released netCDF 4.5.0 on 20171020.
-  Unfortunately the patch to fix the CDF5 bug was not included.
-  <b>UPDATE</b>: Unidata released netCDF 4.6.0 on 20180124.
-  Unfortunately the patch to fix the CDF5 bug was not included.
-  <b>UPDATE</b>: Unidata released netCDF 4.6.1 on 20180319.
-  netCDF version 4.6.1 includes the patch that fixes the CDF5 bug. Yay!
-</li>
-  
-  <!-- http://nco.sf.net#bug_nc4_srd -->
-<a name="bug_nc4_srd"></a>
-<li><i>netCDF4 Strided Hyperslab bug:</i>
-Multiple users complain that access to strided hyperslabs of
-netCDF4 datasets is orders of magnitude slower than expected. 
-This occurs with NCO and also with related software like NCL.  
-The cause appears to be that all recent versions of netCDF up
-to&nbsp;4.3.3 access strided hyperslabs via an algorithm
-(in <tt>nc_get_vars()</tt>) that becomes unwieldy and error-prone
-for large datasets. 
-We developed and implemented a transparent workaround (that avoids
-the troublesome algorithm) for the most common case which is where
-strides are taken in only one dimension, e.g., <tt>-d time,0,,12</tt>.  
-With the workaround introduced in NCO&nbsp;4.4.6, strided access to
-netCDF4 datasets now completes in nearly the same amount of time as
-non-strided. 
-This workaround works transparently with any version of netCDF. 
-We are not yet sure that we have fully and correctly diagnosed the 
-cause nor that our workaround is always effective.
-Comments welcome. Updates will be posted right here.
-</li>
+<ul><b>Operator-specific Run-time Problems:</b>
 
 <!-- http://nco.sf.net#bug_nc4_rename -->
 <a name="bug_nc4_rename"></a>
@@ -1404,140 +1347,12 @@ version 4.8.0 (March, 2021).
 </li>
 </ul>
 
-<ul><b>Recent Operator-specific Run-time Problems:</b>
-<!-- http://nco.sf.net#bug_ncwa_hyp_msk_wgt -->
-<a name="bug_ncwa_hyp_msk_wgt"></a>
-<li><i>Hyperslabbing masked and/or weighted variables bug:</i>
-Versions 4.2.4&mdash;4.6.7 of <tt>ncwa</tt> incorrectly handle
-masking and weighting of hyperslabbed variables.
-Performing these actions simultaneously causes subtle arithmetic
-errors (the worst kind!), unless the hyperslab happens to start
-with the first element of the variable.
-In other words, results from commands of the form
-<tt>ncwa -d ... -m ... </tt> and
-<tt>ncwa -d ... -w ... </tt> are suspect.
-The workaround is to downgrade to NCO&nbsp;4.2.3.
-The solution is to upgrade to NCO&nbsp;4.6.8.
-</li>
-
-<!-- http://nco.sf.net#bug_ncwa_pck_min_max -->
-<a name="bug_ncwa_pck_min_max"></a>
-<li><i>Minimization/maximization of packed variables bug:</i>
-Versions 4.3.y&mdash;4.4.5 of <tt>ncwa</tt> 
-incorrectly handled packed variables during these operations.
-The two workarounds are to unpack first or to perform the
-statistics in single precision with the <tt>--flt</tt> option.
-The solution is to upgrade to NCO&nbsp;4.4.6.
-</li>
-
-<!-- http://nco.sf.net#bug_ncra_dbl_pck_mss -->
-<a name="bug_ncra_dbl_pck_mss"></a>
-<li><i>Promoting packed records with missing values bug:</i>
-Versions 4.3.X&mdash;4.4.5 of <tt>ncra</tt> could produce (wildly)
-inaccurate statistics when promoting (e.g., to double- from
-single-precision) variables that are packed and that have missing
-values.
-The two workarounds are to unpack first or to perform the
-statistics in single precision with the <tt>--flt</tt> option.
-The solution is to upgrade to NCO&nbsp;4.4.6.
-</li>
-
-<!-- http://nco.sf.net#bug_cnk_hyp -->
-<a name="bug_cnk_hyp"></a>
-<li><i>Chunking while hyperslabbing bug:</i>
-Versions 4.3.X&mdash;4.4.4 of most operators could send incorrect
-chunking requests to the netCDF library, resulting in failures.
-This occurred only while simultaneously hyperslabbing.
-The solution is to upgrade to NCO&nbsp;4.4.5.
-</li>
-
-<!-- http://nco.sf.net#bug_ncwa_mask_condition -->
-<a name="bug_ncwa_mask_condition"></a>
-<li><i><tt>ncwa</tt> mask condition bug:</i>
-All versions through 4.4.3 of <tt>ncwa</tt> could return incorrect
-mask values for negative numbers. 
-Thanks to Keith Lindsay for report, and Henry Butowsky for the fix. 
-Prior to this fix, the <tt>ncwa lexer</tt> would drop the negative
-sign, if any, from the comparators appearing in the mask condition,
-e.g., <tt>ncwa --mask_condition "lat < -20"</tt> was parsed as 
-<tt>"lat < 20"</tt> not <tt>"lat < -20"</tt>. 
-Hence, users of <tt>ncwa --mask_condition</tt> (or of <tt>-B</tt>)
-should upgrade. NB: The <tt>-m -M -T</tt> form of <tt>ncwa</tt>
-masking is/was not buggy. 
-Thus the workaround is to use the <tt>-m -M -T</tt> form
-of <tt>ncwa</tt> masking, while the long-term solution is to upgrade  
-to NCO&nbsp;4.4.4+.
-</li>
-
-<!-- http://nco.sf.net#bug_ncra_no_fl_close -->
-<a name="bug_ncra_no_fl_close"></a>
-<li><i><tt>ncra</tt>, <tt>ncea</tt>, and <tt>ncrcat</tt> file close bug:</i>
-Versions 4.3.9&mdash;4.4.0 of <tt>ncra</tt>, <tt>ncea</tt>,
-and <tt>ncrcat</tt> failed to correctly close and optionally remove
-input files. 
-This could cause NCO to exceed system limits on the maximum number of
-open files when hundreds-to-thousands of input files were specified
-per NCO invocation. 
-The exact failure point is OS-dependent (NCO commands on Mac OS X 10.9
-would fail when processing more than 256 files at a time). 
-This is embarassing because NCO has always been designed to work with
-arbitrary numbers of input files and we want power users to be
-comfortable running it on hundreds of thousands of input files.
-The workaround is to avoid versions 4.3.9&mdash;4.4.0, while the
-long-term solution is to upgrade to NCO&nbsp;4.4.1+.
-</li>
-
-<!-- http://nco.sf.net#bug_ncra_mro_mss_val -->
-<a name="bug_ncra_mro_mss_val"></a>
-<li><i><tt>ncra</tt> MRO missing value bug:</i>
-Versions 4.3.6&mdash;4.3.9 of <tt>ncra</tt> could treat missing values
-incorrectly during double-precision arithmetic. 
-A symptom was that missing values could be replaced by strange numbers
-like, well, infinity or zero. 
-This mainly affects <tt>ncra</tt> in MRO (multi-record output) mode,
-and the symptoms should be noticeable. 
-The workaround is to run the affected versions of ncra using the 
-<tt>--flt</tt> switch, so that single-precision floating point numbers
-are not promoted prior to arithmetic.
-The solution is to upgrade to NCO 4.4.0+.
-</li>
-
-<!-- http://nco.sf.net#bug_ncwa_lmt -->
-<a name="bug_ncwa_lmt"></a>
-<li><i><tt>ncwa</tt> hyperslabbing while averaging bug:</i>
-Versions 4.3.3&mdash;4.3.5 of <tt>ncwa</tt> could return incorrect
-answers when user-specified hyperslabs were simultaneously extracted. 
-In such cases, hyperslab limits were not consistently applied.
-This could produce incorrect answers that look correct.
-This bug only affected hyperslabbed statistics (those produced
-by simultaneously invoking <tt>-a</tt> and <tt>-d</tt> switches);
-&ldquo;global averages&rdquo; were unaffected.
-We urge all <tt>ncwa</tt> users to upgrade to NCO 4.3.6+.
-</li>
-
-<!-- http://nco.sf.net#bug_ncpdq_upk -->
-<a name="bug_ncpdq_upk"></a>
-<li><i><tt>ncpdq</tt> unpacking bug with auxiliary coordinates:</i>
-Versions 4.3.2&ndash;4.3.3 of <tt>ncpdq</tt> did not correctly 
-store unpacked variables.
-These versions unpacked (when specified with <tt>-U</tt> or <tt>-P
-upk</tt>) the values, but inadvertently stored their original packing
-attributes with the unpacked values. 
-This would lead further operators to assume that the values were still
-packed. 
-Hence consecutive operations could lead to incorrect values.
-Fixed in version 4.3.4.
-All <tt>ncpdq</tt> users are encouraged to upgrade.
-NB: this bug did not affect the other arithmetic operators which
-unpack data prior to arithmetic.
-</li>
-</ul>
-
 <ul><b>Recent Platform-specific Run-time Problems:</b>
 No known platform-specific problems with recent releases.
 </ul>
 
-<li><a href="./problems_old.shtml">Known Problems through 2012 (version 4.2.3)</a></li>
+<li><a href="./problems_v2.7.4_2013_v4.9.9_2021.shtml">Older Problems 2013 (version 2.7.4) through 2021 (version 4.9.9)</a></li>
+<li><a href="./problems_v2.7.3_2003_v4.2.3_2012.shtml">Oldest Problems 2003 (version 2.7.3) through 2012 (version 4.2.3)</a></li>
 
 </ul>
 <p><hr></p>

@@ -1,8 +1,14 @@
-2021-05-10  Charlie Zender  <zender@uci.edu>
+2021-05-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-beta02: ';git push
 	git tag -a 4.9.9-beta02 -m 'https DAP wnd; ncks chk_map msk_a/b dgn, msk no wrn min frac_a/b; ncclimo hfs mth_srt/end, nfr dpf, fix tpd; ncremap ccw_chk fix, msk fix, tr allow_no_overlap, rgr_wgt rint() int;';git push --tags
+
+	* index.shtml: move problems to problems_v4.2.4_2013_v4.9.9_2021.shtml
+
+	* index.shtml: update Conda install package names, versions
+
+2021-05-10  Charlie Zender  <zender@uci.edu>
 
 	* Add ncks -r check for Conda
 

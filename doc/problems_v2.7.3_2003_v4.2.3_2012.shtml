@@ -3,13 +3,13 @@
 Purpose: Problems archive
 
 URL:
-http://nco.sf.net/problems_old.shtml
-http://dust.ess.uci.edu/nco/problems_old.shtml
-file:///home/zender/nco/doc/problems_old.shtml
+http://nco.sf.net/problems_v2.7.3_2003_v4.2.3_2012.shtml
+http://dust.ess.uci.edu/nco/problems_v2.7.3_2003_v4.2.3_2012.shtml
+file:///home/zender/nco/doc/problems_v2.7.3_2003_v4.2.3_2012.shtml
 
 Usage:
-/usr/bin/scp ~/nco/doc/problems_old.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-scp -p ~/nco/doc/problems_old.shtml dust.ess.uci.edu:/var/www/html/nco
+/usr/bin/scp ~/nco/doc/problems_v2.7.3_2003_v4.2.3_2012.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
+scp -p ~/nco/doc/problems_v2.7.3_2003_v4.2.3_2012.shtml dust.ess.uci.edu:Sites/nco
 -->
 
 <!doctype html public "-//W3C//DTD HTML 3.2//EN">
