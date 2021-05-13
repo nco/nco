@@ -1,10 +1,12 @@
 2021-05-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.9: Pfizer';git push
+	cd ~/nco;git commit -a -m 'Version 4.9.9: Gesundheit!';git push
 	git tag -a 4.9.9 -m 'bld noyywrap, https DAP wnd; ncks chk_map msk_a/b dgn, msk no wrn min frac_a/b; ncclimo hfs mth_srt/end, nfr dpf, fix tpd; ncremap ccw_chk fix, msk fix, tr allow_no_overlap, rgr_wgt rint() int;';git push --tags
 
 2021-05-13  Charlie Zender  <zender@uci.edu>
+
+	* nco-feedstock add OpenMP diagnostic to run_test.[sh/bat]
 
 	* NCO 4.9.9-beta04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-beta04: Gesundheit!';git push
