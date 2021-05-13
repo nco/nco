@@ -1,4 +1,24 @@
+2021-05-14  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.9 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.9: Pfizer';git push
+	git tag -a 4.9.9 -m 'https DAP wnd; ncks chk_map msk_a/b dgn, msk no wrn min frac_a/b; ncclimo hfs mth_srt/end, nfr dpf, fix tpd; ncremap ccw_chk fix, msk fix, tr allow_no_overlap, rgr_wgt rint() int;';git push --tags
+
 2021-05-12  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.9-beta03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.9-beta03: Watson';git push
+	git tag -a 4.9.9-beta03 -m 'https DAP wnd; ncks chk_map msk_a/b dgn, msk no wrn min frac_a/b; ncclimo hfs mth_srt/end, nfr dpf, fix tpd; ncremap ccw_chk fix, msk fix, tr allow_no_overlap, rgr_wgt rint() int;';git push --tags
+
+	* docs: prepare 4.9.9 release docs
+
+	* nco.texi: document dpf
+
+	* nco.texi: distinguish tpd, tpd_in, and tpd_out
+
+	* run_test.[sh,bat] add regex test for Conda
+
+	* configure.ac fiddle with LEX macros to fix Linux pipeline (OSX, Windows are fine)
 
 	* NCO 4.9.9.beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9.beta02: Sherlock';git push

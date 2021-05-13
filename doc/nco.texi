@@ -125,8 +125,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.9.9.beta02
-@set doc-edition 4.9.9.beta02
+@set nco-edition 4.9.9-beta03
+@set doc-edition 4.9.9-beta03
 @set copyright-years 1995--2021
 @set update-year 2021
 @set update-date 12 May 2021
@@ -7209,8 +7209,8 @@ overwritten (its contents are immaterial).
 @html
 <a name="map"></a> <!-- http://nco.sf.net/nco.html#map -->
 <a name="esmf"></a> <!-- http://nco.sf.net/nco.html#esmf -->
-<a name="esmf"></a> <!-- http://nco.sf.net/nco.html#tr -->
-<a name="esmf"></a> <!-- http://nco.sf.net/nco.html#tempest -->
+<a name="tr"></a> <!-- http://nco.sf.net/nco.html#tr -->
+<a name="tempest"></a> <!-- http://nco.sf.net/nco.html#tempest -->
 <a name="scrip"></a> <!-- http://nco.sf.net/nco.html#scrip -->
 <a name="rgr"></a> <!-- http://nco.sf.net/nco.html#rgr -->
 <a name="rgr_map"></a> <!-- http://nco.sf.net/nco.html#rgr_map -->
@@ -18320,7 +18320,7 @@ SYNTAX
 @example
 ncclimo [-3] [-4] [-5] [-6] [-7] 
 [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}]
-[-d @var{dbg_lvl}] [--d2f]  [--dpt_fl=@var{dpt_fl}] [-E @var{yr_prv}] [-e @var{yr_end}]
+[-d @var{dbg_lvl}] [--d2f] [--dpf=@var{dpf}] [--dpt_fl=@var{dpt_fl}] [-E @var{yr_prv}] [-e @var{yr_end}]
 [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [--glb_avg] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}]
 [-m @var{mdl_nm}] [--mth_end=@var{mth_end}] [--mth_srt=@var{mth_srt}]
@@ -18328,7 +18328,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-P @var{prc_typ}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}]
-[-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [--uio] [-v @var{var_lst}] [--var_xtr=@var{var_xtr}] [--version] 
+[-t @var{thr_nbr}] [--tpd=@var{tpd}] [--uio] [-v @var{var_lst}] [--var_xtr=@var{var_xtr}] [--version] 
 [--vrt_fl=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}]
 [-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
@@ -18621,6 +18621,21 @@ variables to single precision in the regridded file.
 This switch has no effect on files that are not regridded.
 To demote the precision in such files, use @command{ncpdq} to apply
 the @code{dbl_flt} packing map to the file directly.
+
+@html
+<a name="dpf"></a> <!-- http://nco.sf.net/nco.html#dpf -->
+@end html
+@cindex @code{--dpf=@var{dpf}}
+@cindex @var{dpf}
+@cindex @code{--dpf}
+@cindex @code{--days-per-file}
+@item --dpf=@var{dpf} (@code{--dpf}, @code{--days_per_file})
+The number of days-per-file in files ingested by @command{ncclimo}.
+It can sometimes be difficult for @command{ncclimo} to infer the
+number of days-per-file in high-frequency input files, i.e., those
+with 1 or more timesteps-per-day.
+In such cases, users may override the inferred value by explicitly
+specifying @code{--dpf=@var{dpf}}.
 
 @cindex @code{--dpt_fl=@var{dpt_fl}}
 @cindex @var{dpt_fl}
@@ -19275,13 +19290,27 @@ Hence @command{ncclimo} defaults to @var{thr_nbr}=2.
 @html
 <a name="tpd"></a> <!-- http://nco.sf.net/nco.html#tpd -->
 @end html
-@cindex @code{--tpd_out=@var{tpd_out}}
-@cindex @var{tpd_out}
-@cindex @code{--tpd_out}
+@cindex @code{--tpd@var{tpd_out}}
 @cindex @code{--tpd}
-@item --tpd_out=@var{tpd_out} (@code{--tpd_out}, @code{--tpd}, @code{--timesteps_per_day})
-The number of timesteps-per-day in output created by @command{ncclimo}'s
-climatology generator in daily average mode.
+@cindex @code{--tpd_out}
+@cindex @code{--timesteps_per_day}
+@cindex @var{tpd}
+@item --tpd=@var{tpd} (@code{--tpd_out}, @code{--tpd}, @code{--timesteps_per_day})
+Normally, the number of timesteps-per-day in files ingested by
+@command{ncclimo}.
+It can sometimes be difficult for @command{ncclimo} to infer the
+number of timesteps-per-day in high-frequency input files, i.e., those
+with 1 or more timesteps-per-day.
+In such cases, users may override the inferred value by explicitly
+specifying @code{--tpd=@var{tpd}}.
+
+The value of @var{tpd_out} in daily-average climatology mode
+@code{clm_md=dly} (which is generally not used outside of ice-sheet
+models) is different, and actually refers to the number of timesteps
+per day that ncclimo will output, regardless of its value in the input
+files.
+Hence in this mode only we refer to the variable as @var{tpd_out} rather
+than @var{tpd}.
 The climatology output from input files at daily or sub-daily resolution
 is, by default, averaged to daily resolution, i.e., @var{tpd_out}=1. 
 If the number of timesteps per day in each input file is @var{tpd_in},
@@ -19292,6 +19321,12 @@ resolution), can be used to produce climatological output at 3, 6,
 or 12-hourly resolution by setting @var{tpd_out} to 8, 4, or 2,
 respectively. 
 This option only takes effect in daily-average climatology mode.
+
+For full generality, the @code{--tpd} option should probably be split
+into separate options @code{--tpd_in} and @code{--tpd_out}.
+However, because it is unlikely that anyone will need to specify these
+to different values, we leave only one option.
+If this hinders you, please let us know and we will split the options.
 
 @cindex @code{-v @var{var_lst}}
 @cindex @var{var_lst}
@@ -24858,6 +24893,7 @@ added as canonical options for @command{ncremap}.
 <a name="big2ltl"></a> <!-- http://nco.sf.net/nco.html#big2ltl -->
 <a name="l2s"></a> <!-- http://nco.sf.net/nco.html#l2s -->
 <a name="lrg2sml"></a> <!-- http://nco.sf.net/nco.html#lrg2sml -->
+<a name="allow_no_overlap"></a> <!-- http://nco.sf.net/nco.html#allow_no_overlap -->
 @end html
 @cindex @command{GenerateOverlapMesh}
 @cindex @var{a2o}

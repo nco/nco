@@ -492,11 +492,7 @@ nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  
   *q_edg_typ= ( isQ_LatCircle ? nco_edg_smc : nco_edg_gtc );
 
   return EXIT_SUCCESS;
-
 }
-
-
-
 
 char  nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p, double *q)
 {

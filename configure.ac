@@ -54,7 +54,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOSX will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[4.9.9.beta02],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.9.9-beta03],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -178,7 +178,8 @@ AC_PROG_CPP
 AC_PROG_CXXCPP
 # 20210321 autoupdate suggests but then autoconf fails with this:
 #AC_REQUIRE(AC_PROG_CC)
-# 20210321 autoconf after autoupdate say AC_PROG_LEX without either yywrap or noyywrap argument is obsolete
+# 20210321 autoconf after autoupdate says AC_PROG_LEX without either yywrap or noyywrap argument is obsolete
+# 20210512 autoconf after autoupdate on 20210512 works on MacOS but produces crippled yywrap line on Linux, so tried changing from AC_PROG_LEX(yywrap) to AM_PROG_LEX(yywrap) as recommended here: https://www.gnu.org/software/automake/manual/automake.html, unfortunately that configure.ac produced warnings when processed by autoconf
 AC_PROG_LEX(yywrap)
 # AC_PROG_YACC
 AC_PROG_INSTALL

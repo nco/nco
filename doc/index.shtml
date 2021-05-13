@@ -70,7 +70,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Bienvenue sur le netCDF Operator (NCO) site</h1>
 
 <p><h2>
-Current stable NCO version is 4.9.8 released <!--#flastmod file="src/nco-4.9.8.tar.gz"-->
+Current stable NCO version is 4.9.9 released <!--#flastmod file="src/nco-4.9.9.tar.gz"-->
 </h2>
 
 <table border=0 width=100%>
@@ -151,7 +151,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2021 Jun&nbsp;XX: 4.9.9 <i>In Progress...</i>
+<li>2021 Sep&nbsp;XX: 5.0.0 <i>In Progress...</i>
+<li>2021 May&nbsp;14: 4.9.9 Small fixes/features
 <li>2021 Mar&nbsp;21: 4.9.8 Small features/fixes
 <li>2020 Dec&nbsp;27: 4.9.7 Small features/fixes
 <li>2020 Nov&nbsp;30: 4.9.6 Small features/fixes
@@ -535,7 +536,7 @@ Identical copies of those tarballs are also stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge for historical
 continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
-<tt>git clone -b 4.9.8 http://github.com/nco/nco.git nco-4.9.8</tt></a>.
+<tt>git clone -b 4.9.9 http://github.com/nco/nco.git nco-4.9.9</tt></a>.
 <ul>
 <li><b>NCO 5.0.1</b>: (<i>Distant Future</i>)
 netCDF4 user-defined types support;
@@ -713,7 +714,7 @@ Or, alternatively, permanently add conda-forge (which teems with goodies besides
 &lsquo;<tt>conda config --add channels conda-forge</tt>&rsquo;, then
 install NCO with &lsquo;<tt>conda install nco</tt>&rsquo;.
 The default NCO installed by <tt>conda</tt> is generally within a month of the latest release. 
-<li><a href="https://github.com/conda-forge/nco-feedstock">nco-4.9.8</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
+<li><a href="https://github.com/conda-forge/nco-feedstock">nco-4.9.9</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
 Thanks to Rich Signell, Filipe Fernandes, Pedro Vicente, Xylar Asay-Davis and others for developing and maintaining the NCO package for conda.
 </ul>
 
@@ -722,7 +723,7 @@ Thanks to Rich Signell, Filipe Fernandes, Pedro Vicente, Xylar Asay-Davis and ot
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.9.8</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.9.9</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="https://launchpad.net/ubuntu/+source/nco">Ubuntu NCO</a> homepages.
@@ -730,8 +731,8 @@ Thanks to Rich Signell, Filipe Fernandes, Pedro Vicente, Xylar Asay-Davis and ot
 NCO packages in the Debian/Ubuntu repositories (e.g., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="https://github.com/nco/nco/tree/master/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.9.8-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="https://launchpad.net/ubuntu/+source/nco/4.9.8-1">nco_4.9.8-1_amd64.deb</a> : Executables AMD64-compatible</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.9.9-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="https://launchpad.net/ubuntu/+source/nco/4.9.9-1">nco_4.9.9-1_amd64.deb</a> : Executables AMD64-compatible</li>
 Thanks to Daniel Baumann, Sebastian Couwenberg, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -775,10 +776,10 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <!-- 
 # Mac OS X 11.0 (Big Sur) systems (firn, sastrugi):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin;tar cvzf ${DATA}/nco-4.9.8.macosx.11.2.tar.gz nc*;scp ${DATA}/nco-4.9.8.macosx.11.2.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-4.9.9.macosx.11.2.tar.gz nc*;scp ${DATA}/nco-4.9.9.macosx.11.2.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date executables are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.9.8.macosx.11.0.tar.gz">nco-4.9.8.macosx.11.0.tar.gz</a> (<!--#fsize file="src/nco-4.9.8.macosx.11.0.tar.gz"-->): Executables MacOSX 11.0-compatible (last updated <!--#flastmod file="src/nco-4.9.8.macosx.11.0.tar.gz"-->). 
+<li><a href="src/nco-4.9.9.macosx.11.0.tar.gz">nco-4.9.9.macosx.11.0.tar.gz</a> (<!--#fsize file="src/nco-4.9.9.macosx.11.0.tar.gz"-->): Executables MacOSX 11.0-compatible (last updated <!--#flastmod file="src/nco-4.9.9.macosx.11.0.tar.gz"-->). 
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
@@ -813,7 +814,7 @@ To build NCO from source yourself using MSVC with CMake, please see example in <
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.9.8.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.9.9.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 <li><a href="src/nco-4.9.5.windows.mvs.exe">nco-4.9.5.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.5.windows.mvs.exe"-->): Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.5.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
@@ -985,12 +986,12 @@ On the <a href="https://sourceforge.net/p/nco/bugs">Bug Tickets</a> site.</li>
 The simplest way to acquire the source is to download the compressed tarball:
 <ul>
 <li>
-<!-- scp ${DATA}/nco-4.9.8.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
-<a href="https://github.com/nco/nco/archive/4.9.8.tar.gz">nco-4.9.8.tar.gz</a> 
-(<!--#fsize file="src/nco-4.9.8.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.9.8.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.9.8.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha256 src/nco-4.9.8.tar.gz"--> 
+<!-- scp ${DATA}/nco-4.9.9.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
+<a href="https://github.com/nco/nco/archive/4.9.9.tar.gz">nco-4.9.9.tar.gz</a> 
+(<!--#fsize file="src/nco-4.9.9.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.9.9.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.9.9.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha256 src/nco-4.9.9.tar.gz"--> 
 </li>
 </ul>
 
@@ -1011,8 +1012,8 @@ To avoid the churn that comes with using the latest snapshot,
 potential contributors may wish to retrieve a recent tagged (i.e.,
 stable and released) version, 
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
-then checks out NCO version <tt>4.9.8</tt>:
-<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 4.9.8</tt></p>
+then checks out NCO version <tt>4.9.9</tt>:
+<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 4.9.9</tt></p>
 However, the most efficient way to actively track and develop NCO is to
 retrieve the current (&ldquo;bleeding edge&rdquo;) NCO snapshot.
 This command retrieves the latest NCO master branch into a local
@@ -1022,12 +1023,12 @@ directory named <tt>nco</tt>:
 Track changes to the development version using
 <p><tt>cd nco;git pull</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>4.9.8</tt>) and the development version is that the
+(e.g., <tt>4.9.9</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.9.8</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.9.9</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 Snapshots will include the sub-version and patch-level in the version
-information (e.g., <tt>4.9.8-alpha06</tt>). 
+information (e.g., <tt>4.9.9-alpha06</tt>). 
 
 <a name="doxy"></a>
 <h3>Developer NCO Source Documentation</h3>
@@ -1186,9 +1187,9 @@ As of 20131101 there is no Cygwin package for ANTLR, and the Cygwin netCDF packa
 
 <li>Once you have installed the pre-requisites as shown above, you may then build the latest stable NCO and install it in, e.g., <tt>/usr/local</tt> with: 
 <tt>
-<dt>wget https://github.com/nco/nco/archive/4.9.8.tar.gz</dt>
-<dt>tar xvzf 4.9.8.tar.gz</dt>
-<dt>cd nco-4.9.8</dt>
+<dt>wget https://github.com/nco/nco/archive/4.9.9.tar.gz</dt>
+<dt>tar xvzf 4.9.9.tar.gz</dt>
+<dt>cd nco-4.9.9</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>

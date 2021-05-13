@@ -6,44 +6,91 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.9.9 contains a few cool features. These include splitting
-daily resolution timeseries that do not begin/end in Jan/Dec, fxm
+Version 4.9.9 contains more fixes than features, and can probably be
+skipped by those who do not use ncremap or ncclimo. ncclimo now
+supports the mth_srt/end options for high resolution timeseries that
+do not begin/end in Jan/Dec (previously it only supported those
+arguments for monthly resolution). ncremap has crucial fixes for
+weight generation and map-checking for masked grids, fixes for
+curvilinear grid inferral, and automatic rounding when regridding
+integer-valued fields (like masks).  
 
 Work on NCO 5.0.0 has commenced and will continue improving support
 for analysis of land surface datasets packed into sparse-1D formats,
-and more ncremap support for the MOAB regridding package. 
+and ncremap support for the MOAB regridding package mbtempest. 
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo supports new options --day_srt and --day_end in splitter
-   mode. The arguments to these options specify the (1-based) day in
-   which the requested timeseries will begin and end, respectively,
-   and these default to . To extract
-   14-month timeseries from individual monthly input files one would
+A. ncclimo now supports options --mth_srt and --mth_end in
+   high-frequency splitter mode. Previously it only supported those 
+   arguments for monthly resolution timeseries. The arguments specify
+   the (1-based) month in which the requested high-frequency
+   timeseries should begin and end, respectively. These default to 1
+   (January) and 12 (December). To extract 14-month timeseries from
+   high frequency (e.g., daily-resolution) input files one would 
    use, e.g.,
-   ncclimo --yr_srt=1 --yr_end=2 --mth_srt=4 --mth_end=5 ...
+   ncclimo --clm_md=hfs --yr_srt=1 --yr_end=2 --mth_srt=4 --mth_end=5 ...
    http://nco.sf.net/nco.html#ncclimo
-   http://nco.sf.net/nco.html#day_srt
-   http://nco.sf.net/nco.html#day_end
+   http://nco.sf.net/nco.html#mth_srt
+   http://nco.sf.net/nco.html#mth_end
 
-A. ncks now supports unpacking sparse 1D (S1D) ELM/CLM data and
-   restart files for plant functional types (PFTs) and multiple
-   elevation classes (MECs).
-   ncks --s1d -v cols1d_topoglc --hrz=elm_mali_ig_history.nc \
-        elm_mali_restart.nc out.nc
-   ncks --s1d -v GPP,pfts1d_wtgcell elm_crop_history.nc out.nc
-   After such S1D datasets have been "unpacked", they may easily
-   be regridded with, e.g., ncremap.
-   This feature is under continued development and user-feedback
-   would be appreciated. Documentation does not yet exist.
-   http://nco.sf.net/nco.html#ncks
+B. ncclimo is now much smarter about inferring both the temporal
+   resolution of high frequency timeseries, and the number of
+   timesteps per file. As a result, explicit invocation of the tpd
+   (timesteps-per-day) and dpf (days-per-file) option should no longer
+   be necessary. Explicitly specifying these options will, of course,
+   prevent ncclimo from trying to infer them.
+   ncclimo --clm_md=hfs           ... # This should work fine
+   ncclimo --clm_md=hfs --tpd=8   ... # No longer necessary
+   ncclimo --clm_md=hfs --dpf=10  ... # No longer necessary
+   http://nco.sf.net/nco.html#ncclimo
+   http://nco.sf.net/nco.html#tpd
+   http://nco.sf.net/nco.html#dpf
+
+C. ncremap now automatically rounds integer-valued fields, such as
+   masks. Previously when ncremap regridded an integer-valued field,
+   it used implicit type-conversion rules to convert the regridded
+   destination value to an integer value for output. However, users
+   generally expect a regridded value of, say, 1.9999999, to be
+   converted to the integer 2 not 1. Hence, ncremap now automatically
+   applies the rint() function to internal floating point values
+   before converting them to integers for output. Regrid integer
+   valued fields such as masks now generally behave as desired.
+
+D. ncremap now always invokes TempestRemap's GenerateOverlapMesh with
+   its --allow_no_overlap option. This option permits TR to generate
+   meshes from not-completely-overlapped regional grids. This is often
+   useful in post-processing regional data, for example.
+   http://nco.sf.net/nco.html#tr
+   http://nco.sf.net/nco.html#allow_no_overlap
+
+E. Conda builds should now be more robust, due to extensive testing.
+   Thanks to Xylar Asay-Davis for helping us understand and alter the
+   nco-feedstock for Conda. 
 
 BUG FIXES:
 
-A. Hi
+A. NCO now treats masks self-consistently. Its internal
+   weight-generator adheres to the rules that no masked source
+   gridcell shall contribute to a destination gridcell, and that 
+   no masked destination gridcell shall receive any contributions.
+   Moreover, the ncks map-checker now reports whether, and how often
+   map-files violate these rules. Previously, NCO's weight generator
+   would incorrectly hand grids with masked regions. There is no
+   workaround, and the only solution is to upgrade.
+   http://nco.sf.net/nco.html#rgr
+   http://nco.sf.net/nco.html#chk_map
+
+B. ncremap now correctly infers grids from curvi-linear data files.
+   Previously, the inferral mechanism could inadvertently omit about
+   half of the area of each inferred gridcell. Note that this only
+   affected inferral of grids from curvilinear data files. Explicitly
+   specified curvilinear grids (with full vertice information) have
+   always worked correctly. There is no workaround, and the only
+   solution is to upgrade. 
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
