@@ -120,7 +120,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_sng[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler string */
 #endif /* !unknown */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports compiler name is \"%s\"\n%s\n",nco_prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports underlying compiler standardized name is \"%s\"\n%s\n",nco_prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
 
   return cmp_nm;
 } /* end nco_cmp_get() */
