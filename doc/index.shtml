@@ -538,22 +538,24 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 4.9.9 http://github.com/nco/nco.git nco-4.9.9</tt></a>.
 <ul>
-<li><b>NCO 5.0.1</b>: (<i>Distant Future</i>)
+<li><b>NCO 5.0.2</b>: (<i>Distant Future</i>)
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncclimo -v</tt> splitter support for regular expressions?;
 <tt>ncremap</tt> support <tt>mbtempest</tt>?;</li>
-<li><b>NCO 5.0.0</b>: (<i>Future</i>)
+<li><b>NCO 5.0.1</b>: (<i>Future</i>)
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
-<li><b>NCO 4.9.9</b>: (<i>In Progress, features in-progress or complete include</i>)
+<li><b>NCO 5.0.0</b>: (<i>In Progress, features in-progress or complete include</i>)
 <tt>all</tt> re-tune digit rounding;
+<li><b>NCO 4.9.9</b>: (<i>Current Stable Release</i>) 
+<tt>Windows</tt> fix DAP https support;
 <tt>ncks --chk_map</tt> account for masks;
-<tt>ncclimo --day_[srt/end]</tt> in splitter, fix tpd, dpf inferral;
-<tt>ncremap</tt> curvilinear inferral, mask fixes, integer rounding;</li>
-<li><b>NCO 4.9.8</b>: (<i>Current Stable Release</i>) 
+<tt>ncclimo --mth_[srt/end]</tt> in high-frequency splitter, fix tpd, dpf inferral;
+<tt>ncremap</tt> curvilinear inferral, mask fixes, integer rounding, tr allow_no_overlap;</li>
+<li><b>NCO 4.9.8</b>: 
 <tt>ncclimo/ncremap</tt> MALI climos;
-<tt>ncclimo --mth_[srt/end]</tt> in splitter;
+<tt>ncclimo --mth_[srt/end]</tt> in monthly splitter;
 <tt>ncremap</tt> fix MPAS grid inferral;
 <tt>ncremap</tt> deconvolve S1D sparse matrix fields (for CLM/ELM);</li>
 <li><b>NCO 4.9.7</b>:
