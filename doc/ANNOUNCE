@@ -37,7 +37,7 @@ A. ncclimo now supports options --mth_srt and --mth_end in
    http://nco.sf.net/nco.html#mth_srt
    http://nco.sf.net/nco.html#mth_end
 
-B. ncclimo is now much smarter about inferring both the temporal
+B. ncclimo is now smarter about inferring both the temporal
    resolution of high frequency timeseries, and the number of
    timesteps per file. As a result, explicit invocation of the tpd
    (timesteps-per-day) and dpf (days-per-file) option should no longer
@@ -80,7 +80,8 @@ A. NCO now treats masks self-consistently. Its internal
    Moreover, the ncks map-checker now reports whether, and how often
    map-files violate these rules. Previously, NCO's weight generator
    would incorrectly hand grids with masked regions. There is no
-   workaround, and the only solution is to upgrade.
+   workaround, and the only solution is to upgrade. Thanks to Henry
+   Butowsky for fixing the weight-generation issues.
    http://nco.sf.net/nco.html#rgr
    http://nco.sf.net/nco.html#chk_map
 
@@ -91,6 +92,11 @@ B. ncremap now correctly infers grids from curvi-linear data files.
    specified curvilinear grids (with full vertice information) have
    always worked correctly. There is no workaround, and the only
    solution is to upgrade. 
+
+C. DAP access to files via the https protocol now works with Windows.
+   Previously, only http worked with Windows. There is no workaround,
+   and the only solution is to upgrade. Thanks to Pedro Vicente for
+   identifying this bug.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
