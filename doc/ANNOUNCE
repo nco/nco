@@ -81,9 +81,10 @@ A. NCO now treats masks self-consistently. Its internal
    no masked destination gridcell shall receive any contributions.
    Moreover, the ncks map-checker now reports whether, and how often
    map-files violate these rules. Previously, NCO's weight generator
-   would incorrectly hand grids with masked regions. There is no
-   workaround, and the only solution is to upgrade. Thanks to Henry
-   Butowsky for fixing the weight-generation issues.
+   would incorrectly handle, with obviously detrimental outcomes,
+   grids with masked regions. There is no workaround, and the only
+   solution is to upgrade. Thanks to Henry Butowsky for fixing the
+   weight-generation issues. 
    http://nco.sf.net/nco.html#rgr
    http://nco.sf.net/nco.html#chk_map
 

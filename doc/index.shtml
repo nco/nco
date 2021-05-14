@@ -152,7 +152,7 @@ and
 
 <ul>
 <li>2021 Sep&nbsp;XX: 5.0.0 <i>In Progress...</i>
-<li>2021 May&nbsp;14: 4.9.9 Small fixes/features
+<li>2021 May&nbsp;14: 4.9.9 ncremap masks, fixes
 <li>2021 Mar&nbsp;21: 4.9.8 Small features/fixes
 <li>2020 Dec&nbsp;27: 4.9.7 Small features/fixes
 <li>2020 Nov&nbsp;30: 4.9.6 Small features/fixes
@@ -552,7 +552,7 @@ netCDF4 user-defined types support;
 <tt>Windows</tt> fix DAP https support;
 <tt>ncks --chk_map</tt> account for masks;
 <tt>ncclimo --mth_[srt/end]</tt> in high-frequency splitter, fix tpd, dpf inferral;
-<tt>ncremap</tt> curvilinear inferral, mask fixes, integer rounding, tr allow_no_overlap;</li>
+<tt>ncremap</tt> curvilinear inferral, mask fixes, integer rounding, TR allow_no_overlap;</li>
 <li><b>NCO 4.9.8</b>: 
 <tt>ncclimo/ncremap</tt> MALI climos;
 <tt>ncclimo --mth_[srt/end]</tt> in monthly splitter;
@@ -1032,6 +1032,7 @@ tagged release operators will print a valid version number (e.g.,
 Snapshots will include the sub-version and patch-level in the version
 information (e.g., <tt>4.9.9-alpha06</tt>). 
 
+<!--
 <a name="doxy"></a>
 <h3>Developer NCO Source Documentation</h3>
 <p>Automated source documentation, created by the
@@ -1043,6 +1044,7 @@ relationships in the code.</p>
 Source documentation for NCO and netCDF4(alpha13)</a></li>
 </ul>
 <p>The Doxygen documentation is infrequently (i.e., never since Daniel left) updated.</p>
+-->
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#src -->
@@ -1116,12 +1118,14 @@ dependencies the "devel" versions
 For Conda-based systems (any OS, particularly useful for building NCO with newer versions of base libraries in personal directories):
 <tt>
 <dt>conda install antlr=2.7.7 # ANTLR</dt>
-<dt>conda install curl # DAP-prereqs</dt>
-<dt>conda install expat # expat XML parser, a UDUnits-prereq</dt>
 <dt>conda install bison cmake flex # GNU toolchain</dt>
+<dt>conda install curl # DAP-prereqs</dt>
 <dt>conda install esmf # ESMF_RegridWeightGen (external executable for ncremap)</dt>
+<dt>conda install expat # expat XML parser, a UDUnits-prereq</dt>
 <dt>conda install gsl # GSL</dt>
+<dt>conda install libgomp # OpenMP [linux]</dt>
 <dt>conda install libnetcdf # netCDF</dt>
+<dt>conda install llvm-openmp # OpenMP [osx]</dt>
 <dt>conda install tempest-remap # (external executables for ncremap)</dt>
 <dt>conda install udunits2 # UDUnits</dt>
 </tt>
