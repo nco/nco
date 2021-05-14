@@ -93,7 +93,7 @@ sub tst_rgr {
     # Low 7 bits are signal process died from, if any, and high 8 bits are actual exit value
     my $exit_value=$? >> 8;
     
-    # 20150619: nco_exit_lbr_vrs() deducts offset of 300 so rcd < 255
+    # 20150619: nco_ctl.c/nco_exit_lbr_rcd() deducts offset of 300 so rcd < 255
     # Verify exit status in shell with "echo $?"
     # Library 4.3.3 should return $? = 133
     $exit_value+=300;

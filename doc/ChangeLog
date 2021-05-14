@@ -1,5 +1,11 @@
 2021-05-14  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.0-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha01: V for Victory';git push
+	git tag -a 5.0.0-alpha01 -m 'Functionally identical to 4.9.9';git push --tags
+
+	* Protect nco_map_var_min_max_ttl() from dereferencing NULL mask pointers from mbtempest
+
 	* NCO 4.9.9 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9: Gesundheit!';git push
 	git tag -a 4.9.9 -m 'bld noyywrap, https DAP wnd; ncks chk_map msk_a/b dgn, msk no wrn min frac_a/b; ncclimo hfs mth_srt/end, nfr dpf, fix tpd; ncremap ccw_chk fix, msk fix, tr allow_no_overlap, rgr_wgt rint() int;';git push --tags

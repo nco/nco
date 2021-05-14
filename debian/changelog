@@ -1,6 +1,12 @@
+nco (5.0.0-1) unstable; urgency=low
+
+  * new upstream version fxm:
+
+ -- Charlie Zender <zender@uci.edu>  Fri, 14 Sep 2021 12:25:48 -0700
+
 nco (4.9.9-1) unstable; urgency=low
 
-  * new upstream version Pfizer: https DAP wnd; ncks chk_map msk_a/b dgn, msk no wrn min frac_a/b; ncclimo hfs mth_srt/end, nfr dpf, fix tpd; ncremap ccw_chk fix, msk fix, tr allow_no_overlap, rgr_wgt rint() int
+  * new upstream version Gesundheit!: https DAP wnd; ncks chk_map msk_a/b dgn, msk no wrn min frac_a/b; ncclimo hfs mth_srt/end, nfr dpf, fix tpd; ncremap ccw_chk fix, msk fix, tr allow_no_overlap, rgr_wgt rint() int
 
  -- Charlie Zender <zender@uci.edu>  Fri, 14 May 2021 12:25:47 -0700
 

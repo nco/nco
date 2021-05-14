@@ -581,7 +581,7 @@ nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code 
 {
   /* Purpose: Exit with status equaling a numeric code determined by netCDF library version
      Exit status must be 0-255
-     Modern netCDF versions range from 300-470
+     Modern netCDF versions range from 300-480
      Hence program returns netCDF version minus an offset of 300 so version 4.4.0 exit()s with $?=140
      Usage: ncks --lbr_rcd
      Verify exit status with "echo $?" */

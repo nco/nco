@@ -768,20 +768,20 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <a name="mac"></a> <!-- http://nco.sf.net#mac -->
 <a name="darwin"></a> <!-- http://nco.sf.net#darwin -->
 <a name="drw"></a> <!-- http://nco.sf.net#drw -->
-<a name="macosx"></a> <!-- http://nco.sf.net#macosx -->
+<a name="macos"></a> <!-- http://nco.sf.net#macos -->
 <a name="osx"></a> <!-- http://nco.sf.net#osx -->
 <a name="macports"></a> <!-- http://nco.sf.net#macports -->
 <a name="homebrew"></a> <!-- http://nco.sf.net#homebrew -->
 <a name="fink"></a> <!-- http://nco.sf.net#fink -->
-<h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
+<h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;Darwin</a></h3>
 <ul>
 <!-- 
-# Mac OS X 11.0 (Big Sur) systems (firn, sastrugi):
+# Mac OS X 11.3 (Big Sur) systems (firn, sastrugi):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin;tar cvzf ${DATA}/nco-4.9.9.macosx.11.2.tar.gz nc*;scp ${DATA}/nco-4.9.9.macosx.11.2.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-4.9.9.macos.11.3.tar.gz nc*;scp ${DATA}/nco-4.9.9.macos.11.3.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date executables are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.9.9.macosx.11.0.tar.gz">nco-4.9.9.macosx.11.0.tar.gz</a> (<!--#fsize file="src/nco-4.9.9.macosx.11.0.tar.gz"-->): Executables MacOSX 11.0-compatible (last updated <!--#flastmod file="src/nco-4.9.9.macosx.11.0.tar.gz"-->). 
+<li><a href="src/nco-4.9.9.macos.11.3.tar.gz">nco-4.9.9.macos.11.3.tar.gz</a> (<!--#fsize file="src/nco-4.9.9.macos.11.3.tar.gz"-->): Executables MacOS 11.3-compatible (last updated <!--#flastmod file="src/nco-4.9.9.macos.11.3.tar.gz"-->). 
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>

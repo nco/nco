@@ -2200,6 +2200,11 @@ nco_map_chk /* Map-file evaluation */
   if(var_mask_a) has_mask_a=True;
   if(var_mask_b) has_mask_b=True;
 
+  int *mask_a_val=NULL;
+  int *mask_b_val=NULL;
+  if(has_mask_a) mask_a_val=var_mask_a->val.ip;
+  if(has_mask_b) mask_b_val=var_mask_b->val.ip;
+
   size_t mask_a_one=0UL;
   size_t mask_a_zro=0UL;
   if(has_mask_a){
@@ -2376,10 +2381,10 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"Ignored destination cells (empty rows): %d\n\n",hst_row[0]);
 
     /* Compute frac_a statistics from frac_a disk values */
-    if(has_frac_a) nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,var_mask_a->val.ip,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
+    if(has_frac_a) nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,mask_a_val,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
     /* Compute and report frac_a as area_b-weighted column sums/area_a */
     nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
-    nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,var_mask_a->val.ip,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,mask_a_val,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
     
     /* Ignore frac_a values when area_a or area_b are all invalid or zero */
     if(!has_area_a || !has_area_b) fprintf(stdout,"HINT: The following frac_a metrics may be safely ignored because either or both area_a and area_b are everywhere undefined or zero\n");
@@ -2433,10 +2438,10 @@ nco_map_chk /* Map-file evaluation */
     } /* !dbg */
 
     /* Compute frac_b statistics from frac_b disk values */
-    if(has_frac_b) nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,var_mask_b->val.ip,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
+    if(has_frac_b) nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,mask_b_val,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
     /* Compute and report frac_b as row sums */
     nco_map_frac_b_clc(var_S,var_row,var_frac_b);
-    nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,var_mask_b->val.ip,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,mask_b_val,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
 
     fprintf(stdout,"\n");
     fprintf(stdout,"Consistency metrics (row-sums of weights) and errors\nPerfect metrics for global unmasked Grid A are avg = min = max = 1.0, mbs = rms = sdn = 0.0:\n");
