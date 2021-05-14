@@ -6,6 +6,10 @@
 
 2021-05-13  Charlie Zender  <zender@uci.edu>
 
+	* nco.texi clarify HDF4 ncgen names
+
+	* nco-feedstock add llvm-openmp and libgomp to meta.yaml build and host sections
+
 	* nco-feedstock add OpenMP diagnostic to run_test.[sh/bat]
 
 	* NCO 4.9.9-beta04 release procedure:

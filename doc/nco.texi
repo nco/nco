@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.9-beta04
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 12 May 2021
+@set update-date 13 May 2021
 @set update-month May 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -21966,28 +21966,28 @@ ncgen -k netCDF-4 -b -o ~/in.nc ~/in.cdl
 ncks -v one ~/in.nc
 @end example
 The @acronym{HDF4} version of @command{ncgen}, often named
-@command{hncgen}, @command{h4_ncgen}, or @command{ncgen-hdf}, converts netCDF3 @acronym{CDL}
-into an @acronym{HDF} file:  
+@command{hncgen}, @command{h4_ncgen}, or @command{ncgen-hdf},
+(usually) converts netCDF3 @acronym{CDL} into an @acronym{HDF} file:
 @example
 cd ~/nco/data
-/usr/hdf4/bin/ncgen -b -o in.hdf in.cdl # Failure expected
-/usr/hdf4/bin/ncgen -b -o hdf.hdf hdf.cdl # HDF ncgen (local builds)
-/usr/bin/hncgen     -b -o hdf.hdf hdf.cdl # Same as HDF ncgen (RPM packages?)
-/usr/bin/h4_ncgen   -b -o hdf.hdf hdf.cdl # Same as HDF ncgen (Anaconda)
-/usr/bin/ncgen-hdf  -b -o hdf.hdf hdf.cdl # Same as HDF ncgen (Debian packages?)
-hdp dumpsds hdf.hdf                        # ncdump/h5dump-equivalent for HDF4
-h4_ncdump dumpsds hdf.hdf                  # ncdump/h5dump-equivalent for HDF4
+ncgen      -b -o hdf.hdf hdf.cdl # HDF ncgen is sometimes named...ncgen
+ncgen      -b -o in.hdf  in.cdl  # Fails: Some valid netCDF CDL breaks HDF ncgen
+hncgen     -b -o hdf.hdf hdf.cdl # HDF ncgen is hncgen in some RPM packages
+h4_ncgen   -b -o hdf.hdf hdf.cdl # HDF ncgen is h4_ncgen in Anaconda packages
+ncgen-hdf  -b -o hdf.hdf hdf.cdl # HDF ncgen is ncgen-hdf in some Debian packages
+hdp dumpsds hdf.hdf              # ncdump/h5dump-equivalent for HDF4
+h4_ncdump dumpsds hdf.hdf        # ncdump/h5dump-equivalent for HDF4
 @end example
-Note that @acronym{HDF4} does not support netCDF-style groups, so the
+Note that @acronym{HDF4} does not support netCDF-style groups, so the 
 above commands fail when the input file contains groups.
 Only netCDF4 and @acronym{HDF5} support groups.
-In our experience the @acronym{HDF} @command{ncgen} command, by whatever 
-name installed, is not robust and fails on many valid netCDF3
+In our experience the @acronym{HDF} @command{ncgen} command, by
+whatever name installed, is not robust and fails on many valid netCDF3 
 @acronym{CDL} constructs.
 The @acronym{HDF4} version of @command{ncgen} will definitely fail on
 the default @acronym{NCO} input file @file{nco/data/in.cdl}.
 The @acronym{NCO} source code distribution provides
-@file{nco/data/hdf.cdl} that will work with the @acronym{HDF4} version
+@file{nco/data/hdf.cdl} that works with the @acronym{HDF4} version
 of @command{ncgen}, and can be used to test @acronym{HDF} files.
 
 @html

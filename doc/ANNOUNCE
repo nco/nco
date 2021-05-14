@@ -69,7 +69,9 @@ D. ncremap now always invokes TempestRemap's GenerateOverlapMesh with
 
 E. Conda builds should now be more robust, due to extensive testing.
    Thanks to Xylar Asay-Davis for helping us understand and alter the
-   nco-feedstock for Conda. 
+   nco-feedstock for Conda. As a result of this, OpenMP should work
+   on all MacOS Conda installations, and thus make map-file generation
+   much faster for high-resolution maps.
 
 BUG FIXES:
 
