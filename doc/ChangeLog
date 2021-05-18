@@ -1,8 +1,14 @@
-2021-05-17  Charlie Zender  <zender@uci.edu>
+2021-05-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha02: Hangar24';git push
-	git tag -a 5.0.0-alpha02 -m '';git push --tags
+	git tag -a 5.0.0-alpha02 -m 'ncremap MPI fix';git push --tags
+
+	* ncclimo/ncremap deprecate rhea, aims4
+
+	* ncremap fix MPI node-indexing on ncremap DOH!
+
+2021-05-17  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo fix statement to print months beyond an integral year in splitter segment length
 
