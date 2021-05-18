@@ -364,7 +364,7 @@ maintenance provided by these institutions and programs:
 @acronym{LLNL-B625903}, @acronym{LLNL-B632442}, 
 @acronym{NASA} @acronym{ACCESS} @acronym{NNX12AF48A} and
 @acronym{NNX14AH55A}, and @acronym{NSF} @acronym{SEI}
-@acronym{IIS-0431203} and @acronym{AGS-1541031}. 
+@acronym{IIS-0431203}, @acronym{AGS-1541031}, and @acronym{OAC-2004993}. 
 This research was supported as part of the Energy Exascale Earth System
 Model (@acronym{E3SM}) project, formerly known as Accelerated Climate
 Modeling for Energy (@acronym{ACME}),

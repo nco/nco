@@ -168,12 +168,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export PATH='/home/zender/bin_cooley'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
 	cori* )
-	    # 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
-	    # Not necessary for interactive, nor for CSZ non-interactive, batch submisssions
-	    # Must be due to home environment differences between CSZ and other users
-	    # Loading gsl and udunits seems to do no harm, so always do it
-	    # This is equivalent to LD_LIBRARY_PATH method used for netCDF and SZIP on rhea
-	    # Why does cori require workarounds for different packages?
 	    # 20191023 NERSC incident INC0143724: ncl/6.5.0 provides broken ERWG, use 6.4.0 
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		module load ncl/6.5.0
@@ -219,8 +213,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Test cases ($DATA/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
 # Debugging:
-# ncremap --dbg=2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
-# ncks -O --dbg=2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
+# ncremap --dbg=1 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
+# ncks -O --dbg=1 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
 # Map-only, threading:
 # ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=5' --alg_typ=nco_con --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
 # ncks -O --dbg=5 --thr_nbr=6 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ~/nco/data/in.nc ~/foo.nc

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Purpose: Climatology script tailored to CESM'ish monthly input and E3SM output guidelines
-# Produces and optionally regrids climatological monthly means, seasonal means, annual mean
+# Produces (and optionally regrids) climatological monthly means, seasonal means, annual mean
 
 # Copyright (C) 2015--present Charlie Zender
 # This file is part of NCO, the netCDF Operators. NCO is free software.
@@ -158,12 +158,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export PATH='/home/zender/bin_cooley'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
 	cori* )
-	    # 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
-	    # Not necessary for interactive, nor for CSZ non-interactive, batch submisssions
-	    # Must be due to home environment differences between CSZ and other users
-	    # Loading gsl and udunits seems to do no harm, so always do it
-	    # This is equivalent to LD_LIBRARY_PATH method used for netCDF and SZIP on rhea
-	    # Why does cori require workarounds for different packages?
 	    # 20191023 NERSC incident INC0143724: ncl/6.5.0 provides broken ERWG, use 6.4.0 
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		module load ncl/6.5.0
@@ -312,7 +306,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Andes:  salloc  -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo # Bigmem: --partition=gpu
 #   Blues:  salloc  -A condo --nodes=1 --partition=acme-small --time=00:30:00 --job-name=ncclimo
 #   Cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
-#   Chrysalis: salloc  -A e3sm --nodes=1 --partition=compute --time=00:30:00 --job-name=ncclimo
+#   Chrysalis: salloc  -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # Use compute queue instead if debug is slow to grant resources
 #   Compy:  salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo
 #   Cooley: qsub -I -A OceanClimate_2 --nodecount=1 --time=00:30:00 --jobname=ncclimo
 #   Cori:   salloc  -A e3sm -C knl --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
@@ -630,7 +624,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "andes : salloc  -A CLI115 --nodes=1 --time=00:30:00 --partition=gpu --job-name=ncclimo # Bigmem\n"
     printf "blues : salloc  -A condo --nodes=1 --partition=acme-small --time=00:30:00 --job-name=ncclimo\n"
     printf "cheyen: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
-    printf "chrysa: salloc  -A e3sm --nodes=1 --partition=compute --time=00:30:00 --job-name=ncclimo\n"
+    printf "chrysa: salloc  -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo\n"
     printf "compy : salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "cooley: qsub -I -A OceanClimate_2 --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
     printf "cori  : salloc  -A e3sm -C haswell --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
