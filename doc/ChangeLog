@@ -1,3 +1,15 @@
+2021-05-17  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.0-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha02: V for Victory';git push
+	git tag -a 5.0.0-alpha02 -m '';git push --tags
+
+	* ncclimo fix statement to print months beyond an integral year in splitter segment length
+
+2021-05-16  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add stubs (prt_nbr) to configure various MOAB executables
+
 2021-05-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-alpha01 release procedure:

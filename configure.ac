@@ -210,7 +210,9 @@ AC_CHECK_FUNCS([canonicalize_file_name floor gethostname getpagesize getrusage m
 # Check for header files
 # Autoupdate added the next two lines to ensure that your configure
 # script's behavior did not change.  They are probably safe to remove.
-AC_CHECK_INCLUDES_DEFAULT
+# 20210515: Following line broke pre-autoconf 2.7.0 builds on Debian and Cygwin
+# Commenting out next line is workaround suggested by Bas Couwenburg
+#AC_CHECK_INCLUDES_DEFAULT
 AC_PROG_EGREP
 
 AC_CHECK_HEADERS([getopt.h libintl.h limits.h locale.h netinet/in.h stdlib.h string.h strings.h unistd.h])

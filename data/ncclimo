@@ -499,6 +499,7 @@ drc_xtn='' # [sng] Directory containing extended climatology
 dpy=365 # [nbr] Days-per-year
 fl_fmt='' # [enm] Output file format
 fl_nbr=0 # [nbr] Number of files to split
+fl_rmd=0 # [nbr] Number of files/months beyond an integral number of years
 fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experiment')
 gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
 glb_avg='No' # [sng] Global average timeseries
@@ -1935,7 +1936,11 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    if [ ${clm_md} = 'hfs' ]; then 
 		printf "Will split data for each variable into one timeseries of length ${yr_sbs} years\n"
 	    else
-		printf "Will split data for each variable into one timeseries of length ${yr_sbs} years and ${fl_rmd} months\n"
+		if [ "${mth_flg}" = 'Yes' ]; then
+		    printf "Will split data for each variable into one timeseries of length ${yr_sbs} years and ${sgm_rmd} months\n"
+		else
+		    printf "Will split data for each variable into one timeseries of length ${yr_sbs} years and ${fl_rmd} months\n"
+		fi # !mth_flg
 	    fi # !clm_md
 	fi # !mth_nbr
     fi # !sgm_nbr

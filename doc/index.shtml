@@ -541,13 +541,13 @@ You may retrieve the source of tagged versions directly with, e.g.,
 <li><b>NCO 5.0.2</b>: (<i>Distant Future</i>)
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
-<tt>ncclimo -v</tt> splitter support for regular expressions?;
-<tt>ncremap</tt> support <tt>mbtempest</tt>?;</li>
+<tt>ncclimo -v</tt> splitter support for regular expressions?;</li>
 <li><b>NCO 5.0.1</b>: (<i>Future</i>)
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
 <li><b>NCO 5.0.0</b>: (<i>In Progress, features in-progress or complete include</i>)
-<tt>all</tt> re-tune digit rounding;
+<tt>ncremap</tt> support <tt>mbtempest</tt>?
+<tt>all</tt> re-tune digit rounding;</li>
 <li><b>NCO 4.9.9</b>: (<i>Current Stable Release</i>) 
 <tt>Windows</tt> fix DAP https support;
 <tt>ncks --chk_map</tt> account for masks;
@@ -824,11 +824,10 @@ To build NCO from source yourself using MSVC with CMake, please see example in <
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
 <h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> (running <a href="http://www.cygwin.org">Cygwin</a> environment, compiled with GNU-toolchain)</h3>
 <ul>
-<li><a href="src/nco-4.4.4.win32.cygwin.tar.gz">nco-4.4.4.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.4.4.win32.cygwin.tar.gz"-->): Executables Cygwin-compatible (last updated <!--#flastmod file="src/nco-4.4.4.win32.cygwin.tar.gz"-->). Maintained by NCO Project.</li>
+<li><a href="http://matzeri.altervista.org/x86_64/release/nco">nco-4.9.9</a> Cygwin-compatible release.</li>
 </ul>
-Before using, first install <tt>curl</tt> (in the "Web" category of Cygwin Setup), and set <tt>export UDUNITS2_XML_PATH='/usr/local/share/udunits/udunits2.xml'</tt> (or wherever <tt>udunits2.xml</tt> is installed).
-Thanks to Mark Hadfield and Pedro Vicente for creating Cygwin tarballs.
-Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin over the years. 
+Thanks to Marco Atzeri, Mark Hadfield, and Pedro Vicente for creating Cygwin tarballs over the years.
+Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin.
 
 <a name="python"></a> <!-- http://nco.sf.net#python -->
 <a name="NCOpy"></a> <!-- http://nco.sf.net#NCOpy -->
