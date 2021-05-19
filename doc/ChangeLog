@@ -1,8 +1,12 @@
-2021-05-18  Charlie Zender  <zender@uci.edu>
+2021-05-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha02: Hangar24';git push
 	git tag -a 5.0.0-alpha02 -m 'ncremap MPI fix';git push --tags
+
+	* ncremap skip stdin check when -i in_fl used
+
+2021-05-18  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo/ncremap deprecate rhea, aims4
 

@@ -805,10 +805,15 @@ done # !getopts
 shift $((OPTIND-1)) # Advance one argument
 psn_nbr=$#
 if [ ${psn_nbr} -ge 1 ]; then
+    # 20200430 Input files as positional command-line arguments mean we need not check standard-input
     inp_psn='Yes'
-    # 20200430 Input files on command-line mean we need not check standard-input
     std_chk='No'
 fi # !psn_nbr
+if [ -n "${in_fl}" ]; then
+    # 20200430 Input file as single optional command-line argument means we need not check standard-input
+    inp_aut='Yes'
+    std_chk='No'
+fi # !in_fl
 if [ "${d2f_flg}" != 'Yes' ]; then
     d2f_opt=''
 fi # !d2f_flg
@@ -1196,9 +1201,6 @@ else # !drc_in
     fi # !drc_in
     drc_in_usr_flg='Yes'
 fi # !drc_in
-if [ -n "${in_fl}" ]; then
-    inp_aut='Yes'
-fi # !in_fl
 if [ -n "${job_usr}" ]; then 
     job_nbr="${job_usr}"
 fi # !job_usr
