@@ -2437,54 +2437,37 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    # that may contain an extra file or two in case year-boundaries are intermediate records.
 	    # 20210331: Prior to now, output high-frequency timeseries always start/end on year boundaries
 	    # 20210331: Support high-frequency splitter mode mth_srt/end != Jan/Dec
-	    # However, the number of files read in each segment may differ, and is not known a priori
+	    # However, the number of files to read in each segment may differ, and is not known a priori
 	    # NB: High-frequency timeseries underestimate fpy by [0,1) when fpy=dpy/dpf is non-integral
 	    # 20210329: Current formulation assumes manual minimal file list is specified
 	    # Extraneous (more than one non-overlapping) files at beginning of list will cause failure
 	    # fxm: Omit extraneous files at start of list (extraneous at end are OK now)
 	    let fpyp1=${fpy}+1
-	    if [ "${mth_flg}" = 'Yes' ]; then
-		# 20210331 Peings
-		let fl_idx_srt=${sgm_idx}*${ypf_max}*${dpy}/${dpf} # NB: dpy/dpf more accurate than fpy
-		let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: use fpyp1 to overestimate fl_idx_end
-		let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
-		let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
-		if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
+	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${dpy}/${dpf} # NB: dpy/dpf more accurate than fpy
+	    let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: use fpyp1 to overestimate fl_idx_end
+	    let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
+	    let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
+	    if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
+		if [ "${mth_flg}" = 'Yes' ]; then
+		    # 20210331 Peings
 		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}
 		    let yr_end_sgm=${yr_end_rth}
-		fi # !sgm_nbrm1
-		# Fuzzify list by including files nominally before and after first and last expected files
-		if [ ${fl_idx_srt} -ne 0 ]; then
-		    let fl_idx_srt=${fl_idx_srt}-1
-		fi # !fl_idx_srt
-		# Fuzziness may generate indices that are too large
-		if [ ${fl_idx_end} -gt ${fl_nbr} ]; then
-		    let fl_idx_end=${fl_nbr}
-		fi # !fl_idx_end
-		if [ ${fl_idx_end} -lt ${fl_nbr} ]; then
-		    let fl_idx_end=${fl_idx_end}+1
-		fi # !fl_idx_end
-	    else # !mth_flg
-		let fl_idx_srt=${sgm_idx}*${ypf_max}*${dpy}/${dpf} # NB: dpy/dpf more accurate than fpy
-		let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: use fpyp1 to overestimate fl_idx_end
-		let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
-		let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
-		if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
+		else # !mth_flg
 		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpyp1} # NB: use fpyp1 to overestimate fl_idx_end
 		    let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
-		fi # !sgm_nbrm1
-		# Fuzzify list by including files nominally before and after first and last expected files
-		if [ ${fl_idx_srt} -ne 0 ]; then
-		    let fl_idx_srt=${fl_idx_srt}-1
-		fi # !fl_idx_srt
-		# Fuzziness may generate indices that are too large
-		if [ ${fl_idx_end} -gt ${fl_nbr} ]; then
-		    let fl_idx_end=${fl_nbr}
-		fi # !fl_idx_end
-		if [ ${fl_idx_end} -lt ${fl_nbr} ]; then
-		    let fl_idx_end=${fl_idx_end}+1
-		fi # !fl_idx_end
-	    fi # !mth_flg
+		fi # !mth_flg
+	    fi # !sgm_rmd || !sgm_nbrm1
+	    # Fuzzify list by including files nominally before and after first and last expected files
+	    if [ ${fl_idx_srt} -ne 0 ]; then
+		let fl_idx_srt=${fl_idx_srt}-1
+	    fi # !fl_idx_srt
+	    # Fuzziness may generate indices that are too large
+	    if [ ${fl_idx_end} -gt ${fl_nbr} ]; then
+		let fl_idx_end=${fl_nbr}
+	    fi # !fl_idx_end
+	    if [ ${fl_idx_end} -lt ${fl_nbr} ]; then
+		let fl_idx_end=${fl_idx_end}+1
+	    fi # !fl_idx_end
 	fi # !clm_md
 	
 	# NB: fl_idx_srt is zero-based while fl_idx_end one-based, i.e., the count, one more than the index

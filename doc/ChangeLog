@@ -2,7 +2,9 @@
 
 	* NCO 5.0.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha02: Hangar24';git push
-	git tag -a 5.0.0-alpha02 -m 'ncremap MPI fix';git push --tags
+	git tag -a 5.0.0-alpha02 -m 'ncremap MPI fix, stdin fix';git push --tags
+
+	* ncclimo combine duplicated ncclimo mth_srt/end hfs code with default code
 
 	* ncremap skip stdin check when -i in_fl used
 
