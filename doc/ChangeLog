@@ -1,5 +1,9 @@
 2021-05-20  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.0-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha03: Hangar24';git push
+	git tag -a 5.0.0-alpha03 -m '';git push --tags
+
 	* NCO 5.0.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha02: Hangar24';git push
 	git tag -a 5.0.0-alpha02 -m 'ncremap MPI fix, stdin fix, MBTR stubs, E3SM-U paths';git push --tags
