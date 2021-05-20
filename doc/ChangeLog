@@ -1,8 +1,12 @@
-2021-05-19  Charlie Zender  <zender@uci.edu>
+2021-05-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha02: Hangar24';git push
-	git tag -a 5.0.0-alpha02 -m 'ncremap MPI fix, stdin fix';git push --tags
+	git tag -a 5.0.0-alpha02 -m 'ncremap MPI fix, stdin fix, MBTR stubs';git push --tags
+
+	* ncremap change E3SM-U location to latest_e3sm_unified
+
+2021-05-19  Charlie Zender  <zender@uci.edu>
 
 	* nco_rgr_wgt() implement MBTR map-file type-specific checks
 

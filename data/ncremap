@@ -134,27 +134,27 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     case "${HOSTNAME}" in 
 	acme1* )
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		E3SM_UNIFIED_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0'
+		E3SM_UNIFIED_ROOT='/usr/local/e3sm_unified/envs/base/envs/latest_e3sm_unified'
 	    fi # !ncremap
-	    export PATH='/export/zender1/bin:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/export/zender1/lib:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/export/zender1/bin:/usr/local/e3sm_unified/envs/base/envs/latest_e3sm_unified/bin'\:${PATH}
+            export LD_LIBRARY_PATH='/export/zender1/lib:/usr/local/e3sm_unified/envs/base/envs/latest_e3sm_unified/lib'\:${LD_LIBRARY_PATH} ; ;;
 	andes* )
 	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		E3SM_UNIFIED_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.4.0'
+		E3SM_UNIFIED_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/latest_e3sm_unified'
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_andes'\:${PATH}
-	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/ccs/proj/cli900/sw/andes/e3sm-unified/base/envs/e3sm_unified_1.4.0/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/ccs/proj/cli900/sw/andes/e3sm-unified/base/envs/latest_e3sm_unified/lib'\:${LD_LIBRARY_PATH} ; ;;
 	blues* | blogin* | b[0123456789][0123456789][0123456789] )
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		E3SM_UNIFIED_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_1.4.0'
+		E3SM_UNIFIED_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/latest_e3sm_unified'
 	    fi # !ncremap
 	    export PATH='/home/zender/bin_blues'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_blues'\:${LD_LIBRARY_PATH} ; ;;
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		E3SM_UNIFIED_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_1.4.0'
+		E3SM_UNIFIED_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/latest_e3sm_unified'
 	    fi # !ncremap
 	    export PATH='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy/bin:/home/zender/bin_chrysalis'\:${PATH}
 	    export LD_LIBRARY_PATH='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy/lib:/home/zender/lib_chrysalis'\:${LD_LIBRARY_PATH} ; ;;
@@ -173,7 +173,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		# 20210519: This script takes noticeaable time (5-10 seconds) to load
 		source /compyfs/software/mbtempest.envs.sh
-		E3SM_UNIFIED_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_1.4.0'
+		E3SM_UNIFIED_ROOT='/share/apps/E3SM/conda_envs/base/envs/latest_e3sm_unified'
 	    fi # !ncremap
 	    export PATH='/qfs/people/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
@@ -188,7 +188,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		MOAB_DIR=/project/projectdirs/e3sm/software/moab
 		TEMPESTREMAP_DIR=/project/projectdirs/e3sm/software/tempestremap
-		E3SM_UNIFIED_ROOT='/global/cfs/cdirs/e3sm/software/anaconda_envs/base/envs/e3sm_unified_1.4.0'
+		E3SM_UNIFIED_ROOT='/global/cfs/cdirs/e3sm/software/anaconda_envs/base/envs/latest_e3sm_unified'
 	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
