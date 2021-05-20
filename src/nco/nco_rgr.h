@@ -77,6 +77,7 @@ extern "C" {
     nco_rgr_mpf_Tempest,
     nco_rgr_mpf_ESMF_weight_only,
     nco_rgr_mpf_NCO, 
+    nco_rgr_mpf_MBTR,
     nco_rgr_mpf_unknown /* e.g., CDO */
   } nco_rgr_mpf_typ_enm;
 

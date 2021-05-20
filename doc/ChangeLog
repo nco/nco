@@ -4,6 +4,14 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha02: Hangar24';git push
 	git tag -a 5.0.0-alpha02 -m 'ncremap MPI fix, stdin fix';git push --tags
 
+	* nco_rgr_wgt() implement MBTR map-file type-specific checks
+
+	* ncremap provide E3SM-U on binaries on all machines
+
+	* ncremap check for mbconvert, ConvertSCRIPToExodus, mbpart
+
+	* ncclimo/ncremap add mbtempest machine-specific paths for compy/chrysalis
+
 	* ncclimo combine duplicated ncclimo mth_srt/end hfs code with default code
 
 	* ncremap skip stdin check when -i in_fl used

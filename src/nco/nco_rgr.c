@@ -2477,6 +2477,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      ESMF: title = "ESMF Offline Regridding Weight Generator"
      ESMF_weight_only: title = "ESMF Regrid Weight Generator"
      NCO: Title = "netCDF Operators (NCO) Offline Regridding Weight Generator"
+     MBTR: Title = "MOAB-TempestRemap Online Regridding Weight Generator"
      SCRIP: conventions = "SCRIP"
      Tempest: Title = "TempestRemap Offline Regridding Weight Generator" */
   char *att_val;
@@ -2488,7 +2489,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   char att_sng_Cnv[]="Conventions"; /* [sng] Unidata standard     string (uppercase) */
   char att_sng_cnv[]="conventions"; /* [sng] Unidata non-standard string (lowercase) */
   char att_sng_gnr[]="weight_generator"; /* [sng] CMIP6 standard string */
-  char att_sng_Ttl[]="Title"; /* [sng] NCO and Tempest use "Title" attribute, and Tempest does not use "Conventions" */
+  char att_sng_Ttl[]="Title"; /* [sng] MBTR, NCO, and Tempest use "Title" attribute. MBTR and Tempest do not use "Conventions" */
   char att_sng_ttl[]="title"; /* [sng] ERWG 7.1 weight_only uses "title" not "Conventions" attribute */
   char name0_sng[]="name0"; /* [sng] Attribute where Tempest stores least-rapidly-varying dimension name */
   
@@ -2507,6 +2508,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(nco_rgr_mpf_typ == nco_rgr_mpf_nil && att_ttl_val){
     if(strstr(att_ttl_val,"ESMF Offline Regridding Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF;
     else if(strstr(att_ttl_val,"netCDF Operators")) nco_rgr_mpf_typ=nco_rgr_mpf_NCO;
+    else if(strstr(att_ttl_val,"MOAB-TempestRemap")) nco_rgr_mpf_typ=nco_rgr_mpf_MBTR;
     else if(strstr(att_ttl_val,"Tempest")) nco_rgr_mpf_typ=nco_rgr_mpf_Tempest;
     else if(strstr(att_ttl_val,"ESMF Regrid Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF_weight_only;
   } /* !att_ttl_val */
@@ -2539,6 +2541,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd+=nco_inq_dimid(in_id,"n_s",&num_links_id);
     break;
   case nco_rgr_mpf_ESMF:
+  case nco_rgr_mpf_MBTR:
   case nco_rgr_mpf_NCO:
   case nco_rgr_mpf_Tempest:
   case nco_rgr_mpf_unknown:
@@ -2577,7 +2580,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd+=nco_inq_dimlen(in_id,src_grid_rank_id,&mpf.src_grid_rank);
     rcd+=nco_inq_dimlen(in_id,dst_grid_rank_id,&mpf.dst_grid_rank);
     /* TempestRemap does not generate num_wgts */
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || num_wgts_id == NC_MIN_INT){
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_MBTR || nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || num_wgts_id == NC_MIN_INT){
       mpf.num_wgts=int_CEWI;
     }else{
       rcd+=nco_inq_dimlen(in_id,num_wgts_id,&mpf.num_wgts);
@@ -2605,7 +2608,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     /* 20150712: Tempest does not store a normalization attribute
        20170620: ESMF weight_only does not store a normalization attribute
        20190312: NCO does not yet store a normalization attribute */
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_NCO || nco_rgr_mpf_typ == nco_rgr_mpf_unknown || nco_rgr_mpf_typ == nco_rgr_mpf_ESMF_weight_only) nco_rgr_nrm_typ=nco_rgr_nrm_unknown;
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_MBTR || nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_NCO || nco_rgr_mpf_typ == nco_rgr_mpf_unknown || nco_rgr_mpf_typ == nco_rgr_mpf_ESMF_weight_only) nco_rgr_nrm_typ=nco_rgr_nrm_unknown;
   } /* endif normalization */
   assert(nco_rgr_nrm_typ != nco_rgr_nrm_nil);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
@@ -2620,7 +2623,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
   }else{
     /* Tempest does not store a map_method attribute */
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_NCO || nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_unknown) nco_rgr_mth_typ=nco_rgr_mth_unknown;
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_MBTR || nco_rgr_mpf_typ == nco_rgr_mpf_NCO || nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_unknown) nco_rgr_mth_typ=nco_rgr_mth_unknown;
   } /* endif */
   if(nco_rgr_mth_typ == nco_rgr_mth_nil) (void)fprintf(stdout,"%s: WARNING %s reports map global attribute %s = %s does not match SCRIP/ESMF conventions that support only values of \"Conservative\" and \"Bilinear\" for this attribute. Proceeding anyway...\n",nco_prg_nm_get(),fnc_nm,cnv_sng,att_val);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
@@ -2686,6 +2689,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     break;
   case nco_rgr_mpf_ESMF:
   case nco_rgr_mpf_ESMF_weight_only:
+  case nco_rgr_mpf_MBTR:
   case nco_rgr_mpf_NCO:
   case nco_rgr_mpf_Tempest:
   case nco_rgr_mpf_unknown:
@@ -2723,12 +2727,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     case nco_rgr_mpf_SCRIP:
       rcd+=nco_inq_varid(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
       break;
+    case nco_rgr_mpf_MBTR:
     case nco_rgr_mpf_Tempest:
     case nco_rgr_mpf_unknown:
-      /* 20190315: TempestRemap did not propagate mask_b (or mask_a) until ~201902 */
+      /* 20190315: TempestRemap did not propagate mask_a/b until ~201902
+	 20210519: MBTR did not propagate mask_a/b as of ~202105 */
       rcd+=nco_inq_varid_flg(in_id,"mask_b",&msk_dst_id);
       if(rcd == NC_ENOTVAR){
-	(void)fprintf(stderr,"%s: INFO %s reports map-file lacks mask_b. %sContinuing anyway without masks...\n",nco_prg_nm_get(),fnc_nm,(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest) ? "Probably this TempestRemap map-file was created before ~201902 when TR began to propagate mask_a/b variables." : "");
+	(void)fprintf(stderr,"%s: INFO %s reports map-file lacks mask_b. %sContinuing anyway without masks...\n",nco_prg_nm_get(),fnc_nm,(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_MBTR) ? "Probably this is either a TempestRemap map-file created before ~201902 when TR began to propagate mask_a/b variables, or it is a MOAB-TempestRemap file which has never (as of 202105) propagated mask_a/b variables" : "");
       } /* !rcd */
       rcd=NC_NOERR;
       break;
@@ -6239,6 +6245,7 @@ nco_rgr_mpf_sng /* [fnc] Convert mapfile generator enum to string */
   case nco_rgr_mpf_Tempest: return "TempestRemap (GenerateOfflineMap)";
   case nco_rgr_mpf_ESMF_weight_only: return "ESMF Offline Regridding Weight Generator (ERWG), either from ESMF_RegridWeightGen directly or via NCL, with --weight_only option from ERWG 7.1+";
   case nco_rgr_mpf_NCO: return "netCDF Operators (NCO) Offline Regridding Weight Generator";
+  case nco_rgr_mpf_MBTR: return "MOAB-TempestRemap Online Regridding Weight Generator";
   case nco_rgr_mpf_unknown: return "Unknown Weight Generator";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */

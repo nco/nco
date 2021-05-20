@@ -133,19 +133,31 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
     case "${HOSTNAME}" in 
 	acme1* )
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		E3SM_UNIFIED_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0'
+	    fi # !ncremap
 	    export PATH='/export/zender1/bin:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0/bin'\:${PATH}
             export LD_LIBRARY_PATH='/export/zender1/lib:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0/lib'\:${LD_LIBRARY_PATH} ; ;;
 	andes* )
 	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		module load esmf
+		E3SM_UNIFIED_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.4.0'
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_andes'\:${PATH}
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/ccs/proj/cli900/sw/andes/e3sm-unified/base/envs/e3sm_unified_1.4.0/lib'\:${LD_LIBRARY_PATH} ; ;;
-	blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
-	    export PATH='/home/zender/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+	blues* | blogin* | b[0123456789][0123456789][0123456789] )
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		E3SM_UNIFIED_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_1.4.0'
+	    fi # !ncremap
+	    export PATH='/home/zender/bin_blues'\:${PATH}
+	    export LD_LIBRARY_PATH='/home/zender/lib_blues'\:${LD_LIBRARY_PATH} ; ;;
+	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		E3SM_UNIFIED_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_1.4.0'
+	    fi # !ncremap
+	    export PATH='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy/bin:/home/zender/bin_chrysalis'\:${PATH}
+	    export LD_LIBRARY_PATH='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy/lib:/home/zender/lib_chrysalis'\:${LD_LIBRARY_PATH} ; ;;
 	*cheyenne* )
 	    # 20180112: Cheyenne support not yet tested in batch mode
 	    if [ ${spt_nm} = 'ncremap' ]; then
@@ -158,6 +170,11 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
             export PATH='/glade/u/home/zender/bin'\:${PATH}
             export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0/lib:/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib:/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	compy* )
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# 20210519: This script takes noticeaable time (5-10 seconds) to load
+		source /compyfs/software/mbtempest.envs.sh
+		E3SM_UNIFIED_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_1.4.0'
+	    fi # !ncremap
 	    export PATH='/qfs/people/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	cooley* | cc[0123456789][0123456789][0123456789] )
@@ -168,24 +185,15 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export PATH='/home/zender/bin_cooley'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
 	cori* )
-	    # 20191023 NERSC incident INC0143724: ncl/6.5.0 provides broken ERWG, use 6.4.0 
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		module load ncl/6.5.0
-		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
-		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
+		MOAB_DIR=/project/projectdirs/e3sm/software/moab
+		TEMPESTREMAP_DIR=/project/projectdirs/e3sm/software/tempestremap
+		E3SM_UNIFIED_ROOT='/global/cfs/cdirs/e3sm/software/anaconda_envs/base/envs/e3sm_unified_1.4.0'
 	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 	    fi # !NCARG_ROOT
-	    if [ -n "${MOAB_ROOT}" ]; then
-		export PATH="${PATH}:${MOAB_ROOT}/bin"
-		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MOAB_ROOT}/lib"
-	    fi # !MOAB_ROOT
-	    if [ -n "${TEMPESTREMAP_ROOT}" ]; then
-		export PATH="${PATH}:${TEMPESTREMAP_ROOT}/bin"
-		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${TEMPESTREMAP_ROOT}/lib"
-	    fi # !TEMPESTREMAP_ROOT
 	    export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
             export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
 	mira* )
@@ -209,12 +217,25 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	* ) # Default fall-through
 	    hrd_pth_fnd='No' ; ;;
     esac # !HOSTNAME
+    if [ -n "${MOAB_DIR}" ]; then
+	export PATH="${PATH}:${MOAB_DIR}/bin"
+	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MOAB_DIR}/lib"
+    fi # !MOAB_DIR
+    if [ -n "${TEMPESTREMAP_DIR}" ]; then
+	export PATH="${PATH}:${TEMPESTREMAP_DIR}/bin"
+	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${TEMPESTREMAP_DIR}/lib"
+    fi # !TEMPESTREMAP_DIR
+    # 20210519: E3SM-U supplies many uncommon executables, e.g., ESMF_RegridWeightGen
+    # Append E3SM-U to end of PATH so NCO binaries not redirected, e.g., from CSZ's development directory to E3SM-U
+    if [ -n "${E3SM_UNIFIED_ROOT}" ]; then
+	export PATH="${PATH}:${E3SM_UNIFIED_ROOT}/bin"
+    fi # !MOAB_DIR
 fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Test cases ($DATA/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
 # Debugging:
-# ncremap --dbg=1 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
-# ncks -O --dbg=1 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
+# ncremap --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
+# ncks -O --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
 # Map-only, threading:
 # ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=5' --alg_typ=nco_con --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
 # ncks -O --dbg=5 --thr_nbr=6 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ~/nco/data/in.nc ~/foo.nc
@@ -390,6 +411,8 @@ bch_slr='No' # [sng] SLURM batch (non-interactive) job
 chk_map='Yes' # [flg] Check map-file quality
 cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
 clm_flg='No' # [flg] Invoked by ncclimo script
+cnv_exe_mbt='mbconvert' # [sng] MOAB-Tempest SCRIP/Exodus conversion to H5M executable
+cnv_exe_tps='ConvertSCRIPToExodus' # [sng] TempestRemap SCRIP-to-Exodus conversion executable
 d2f_flg='No' # [flg] Convert double-precision fields to single-precision
 d2f_opt='-M dbl_flt' # [sng] Option string to convert double-precision fields to single-precision
 dbg_lvl=0 # [nbr] Debugging level
@@ -437,9 +460,11 @@ map_mk='No' # [flg] Generate map-file (i.e., map does not yet exist)
 map_usr_flg='No' # [flg] User supplied argument to --map option
 map_xmp='map.nc' # [sng] Map-file for examples
 mbt_flg='No' # [flg] mbtempest front-end to TempestRemap
+mbt_typ_map=5 # [flg] mbtempest --type argument to generate weights (and not, e.g., grids)
 mem_mb=20000 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
+msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
 msh_fl='' # [sng] Mesh-file (for Tempest)
 msk_dst='' # [sng] Mask-template variable in destination file
 msk_out='' # [sng] Mask variable in regridded file
@@ -456,6 +481,7 @@ par_typ="${par_srl}" # [sng] Parallelism type
 pdq_opt='' # [sng] ncpdq dimension permutation option
 ppc_prc='' # [nbr] Precision-preserving compression number of significant digits
 prc_typ='' # [sng] Procedure type
+prt_exe_mbt='mbpart' # [sng] MOAB-Tempest H5M partition executable
 prt_nbr=128 # [nbr] Partition number for mbpart
 prs_stt='' # [sng] Preserved statistic ('integral' or 'mean')
 qea_flg='No' # [sng] Quasi-equal area mode for TempestRemap
@@ -487,7 +513,6 @@ wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable (weight generation o
 wgt_exe_mbt='mbtempest' # [sng] MOAB-Tempest executable (both mesh- and weight-generation)
 wgt_exe_nco='ncks' # [sng] NCO executable (both mesh- and weight-generation)
 wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap weight-generation executable 
-msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
 wgt_typ='' # [sng] Weight-generator program ('esmf' or 'nco' or 'tempest')
 wgt_opt='' # [sng] Weight-generator options
 wgt_opt_esmf='--no_log --ignore_unmapped' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF < 7.1.0r)
@@ -836,11 +861,14 @@ if [ "$?" -eq 0 ]; then
 	wgt_opt_esmf="${wgt_opt_esmf} --ignore_degenerate"
     fi # !erwg_vrs_mjr
 fi # !err
+cmd_cnv_mbt=`command -v ${cnv_exe_mbt} 2> /dev/null`
+cmd_cnv_tps=`command -v ${cnv_exe_tps} 2> /dev/null`
+cmd_dpt_mpas=`command -v ${dpt_exe_mpas} --no_log 2> /dev/null`
+cmd_prt_mbt=`command -v ${prt_exe_mbt} 2> /dev/null`
 cmd_wgt_mbt=`command -v ${wgt_exe_mbt} 2> /dev/null`
 cmd_wgt_nco=`command -v ${wgt_exe_nco} 2> /dev/null`
 cmd_wgt_tps=`command -v ${wgt_exe_tps} 2> /dev/null`
 cmd_msh_tps=`command -v ${msh_exe_tps} 2> /dev/null`
-cmd_dpt_mpas=`command -v ${dpt_exe_mpas} --no_log 2> /dev/null`
 if [ ${vrs_prn} = 'Yes' ]; then
     printf "${spt_nm}, the NCO regridder and grid, map, and weight-generator, version ${nco_vrs} \"${nco_sng}\"\n"
     printf "Copyright (C) 2016--present Charlie Zender\n"
@@ -857,7 +885,7 @@ if [ ${vrs_prn} = 'Yes' ]; then
     else
 	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
     fi # !hrd_pth_fnd
-    printf "Config: External (non-NCO) program availability:\n"
+    printf "Config: Grid & weight-generation tool availability:\n"
     if [ -n "${cmd_wgt_esmf}" ]; then
 	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} version ${erwg_vrs_sng} found as ${cmd_wgt_esmf}\n"
     else
@@ -867,6 +895,16 @@ if [ ${vrs_prn} = 'Yes' ]; then
 	printf "Config: MOAB-Tempest mesh- and weight-generation command ${wgt_exe_mbt} found as ${cmd_wgt_mbt}\n"
     else
 	printf "Config: MOAB-Tempest mesh- and weight-generation command ${wgt_exe_mbt} not found\n"
+    fi # !err
+    if [ -n "${cmd_cnv_mbt}" ]; then
+	printf "Config: MOAB-Tempest SCRIP/Exodus conversion to H5M command ${cnv_exe_mbt} found as ${cmd_cnv_mbt}\n"
+    else
+	printf "Config: MOAB-Tempest SCRIP/Exodus conversion to H5M command ${cnv_exe_mbt} not found\n"
+    fi # !err
+    if [ -n "${cmd_prt_mbt}" ]; then
+	printf "Config: MOAB-Tempest H5M partition command ${prt_exe_mbt} found as ${cmd_prt_mbt}\n"
+    else
+	printf "Config: MOAB-Tempest H5M partition command ${prt_exe_mbt} not found\n"
     fi # !err
     if [ -n "${cmd_dpt_mpas}" ]; then
 	printf "Config: MPAS depth coordinate addition command ${dpt_exe_mpas} found as ${cmd_dpt_mpas}\n"
@@ -887,6 +925,11 @@ if [ ${vrs_prn} = 'Yes' ]; then
 	printf "Config: TempestRemap mesh-generation command ${msh_exe_tps} found as ${cmd_msh_tps}\n"
     else
 	printf "Config: TempestRemap weight-generation command ${msh_exe_tps} not found\n"
+    fi # !err
+    if [ -n "${cmd_cnv_tps}" ]; then
+	printf "Config: TempestRemap SCRIP-to-Exodus conversion command ${cnv_exe_tps} found as ${cmd_cnv_tps}\n"
+    else
+	printf "Config: TempestRemap SCRIP-to-Exodus conversion command ${cnv_exe_tps} not found\n"
     fi # !err
     exit 0
 fi # !vrs_prn
@@ -1386,6 +1429,8 @@ fi # !mpas
 if [ "${prc_typ}" = 'mwf' ]; then 
     [[ ${dbg_lvl} -ge 1 ]] && date_mwf=$(date +"%s")
     # Assume destination grid-files that end in .nc are SCRIP (and thus FV), and .g means Exodus (and thus SE)
+    # 20210519: TR input files are increasingly used including .g FV files, so this assumption untenable
+    # An independent option to distinguish FV from SE files would be useful
     # https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
     if [[ ${grd_dst} == *.g ]]; then
 	alg_lst='fv2se_flx fv2se_stt fv2se_alt'
@@ -1968,6 +2013,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: sgs_msk  = ${sgs_msk}\n"
     printf "dbg: sgs_nrm  = ${sgs_nrm}\n"
     printf "dbg: skl_fl   = ${skl_fl}\n"
+    printf "dbg: spt_nm   = ${spt_nm}\n"
     printf "dbg: spt_pid  = ${spt_pid}\n"
     printf "dbg: std_chk  = ${std_chk}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
@@ -2327,7 +2373,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
     elif [ "${wgt_typ}" = 'nco' ]; then 
 	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'mbtempest' ]; then 
-	cmd_map[${fl_idx}]="${wgt_cmad} --type 5 --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
+	cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'tempest' ]; then 
 	cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	if [ "${a2o_flg}" = 'Yes' ]; then 
