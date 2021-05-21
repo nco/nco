@@ -815,121 +815,114 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !idx */
       } /* !has_mss_val */
       
-    }else if(nco_baa_cnv_get() == nco_baa_gbg){ /* JPT 20210102: baa_gbg (granualar bit grooming), brute force compression of each individual data point */
-      bool x;
-      bool c;
-      const unsigned int msk_rst32 = msk_f32_u32_zro; /* resets the mask to orginal garuntee mask */
-      float err_max32;
-      float raw32;
-      float temp32;
-      float xpn32;
-      int xpn_flr32;
-
+    }else if(nco_baa_cnv_get() == nco_baa_gbg){ /* JPT 20210102: baa_gbg (Granular Bit Grooming), brute force compression of each individual data point */
+      const unsigned int msk_rst32=msk_f32_u32_zro; /* Set mask to original BG mask */
+      nco_bool flg_trm_nxt_bit; /* [flg] Trim (set or shave) next bit */
+      nco_bool x; /* [flg] */
+      float err_max32;  /* Maximum quantization error allowed by user-specified NSD */
+      float raw32; /* Unquantized value of current element */
+      float tmp32; /* Provisional quantized value of current element */
+      float xpn32; /* Base 10 exponent of current element: log10(abs(raw32))) */
+      float xpn_flr32; /* Floor of base 10 exponent of current element: floor(xpn32) */
       if(!has_mss_val){
-        for(idx=0L;idx<sz;idx+=2L){ // shave loop
-	  if(op1.fp[idx] != 0.0 && op1.fp[idx] != 1.0){
-	    raw32 = op1.fp[idx];
-	    msk_f32_u32_zro = msk_rst32;
+        for(idx=0L;idx<sz;idx+=2L){ // Shave loop
+	  if(op1.fp[idx] != 0.0f && op1.fp[idx] != 1.0f){
+	    raw32=op1.fp[idx];
+	    msk_f32_u32_zro=msk_rst32;
 	    op1.uip[idx]&=msk_f32_u32_zro;
-	    xpn32=log10f(fabs(raw32));
-	    xpn_flr32=floor(xpn32);
-	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
-	    c = True;
-	    if(op1.fp[idx] != 0.0 && op1.fp[idx] != 1.0){
-		while(c){
-		  temp32=op1.fp[idx];
-		  msk_f32_u32_zro<<=1;
-		  op1.uip[idx]&=msk_f32_u32_zro;
-		  if((fabs(raw32) - fabs(op1.fp[idx])) >= err_max32) c = False;
-		  if(op1.fp[idx] == 1.0) c = False;
-		  if(op1.fp[idx] == 0.0) c = False;
-		  if(op1.fp[idx] != op1.fp[idx]) c = False;
-		  fflush(stdout);
-		} // close while loop
-		op1.fp[idx] = temp32;
-	    } // close if before while
-	  } //close if !=0	  
-	} // close shave loop
-	
-	for(idx=1L;idx<sz;idx+=2L){ // set loop
-	  raw32 = op1.fp[idx];
-	  msk_f32_u32_zro = msk_rst32;
+	    xpn32=log10f(fabsf(raw32));
+	    xpn_flr32=floorf(xpn32);
+	    err_max32=0.5f*powf(10.0f,xpn_flr32-nsd+1.0f);
+	    flg_trm_nxt_bit=True;
+	    if(op1.fp[idx] != 0.0f && op1.fp[idx] != 1.0f){
+	      while(flg_trm_nxt_bit){
+		tmp32=op1.fp[idx];
+		msk_f32_u32_zro<<=1;
+		op1.uip[idx]&=msk_f32_u32_zro;
+		if((fabsf(raw32)-fabsf(op1.fp[idx])) >= err_max32) flg_trm_nxt_bit=False;
+		if(op1.fp[idx] == 1.0f || op1.fp[idx] == 0.0f) flg_trm_nxt_bit=False;
+		fflush(stdout);
+	      } // !flg_trm_nxt_bit
+	      op1.fp[idx]=tmp32;
+	    } // !0.0 || 1.0
+	  } // !0.0 || 1.0
+	} // !idx
+	for(idx=1L;idx<sz;idx+=2L){ // Set loop
+	  raw32=op1.fp[idx];
+	  msk_f32_u32_zro=msk_rst32;
 	  msk_f32_u32_one=~msk_f32_u32_zro; 
-          if(op1.fp[idx] != 0U){ /* Never quantize upwards floating point values of zero */
+          if(op1.fp[idx] != 0.0f){ /* Never quantize upwards floating point values of zero */
 	    op1.uip[idx]|=msk_f32_u32_one;
-	    xpn32=log10f(fabs(raw32));
-	    xpn_flr32=floor(xpn32);
-	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
-	    x = False;
-	    c = True;
-	    while(c){
-	      x = True;
-	      temp32 = op1.fp[idx];
-	      msk_f32_u32_zro <<= 1;
-	      msk_f32_u32_one =~ msk_f32_u32_zro;
-	      op1.uip[idx] |= msk_f32_u32_one;
-	      if( fabs((fabs(raw32) - fabs(op1.fp[idx]))) >= err_max32) c = False;
-	      if(op1.fp[idx] == 1) c = False;
-	      if(op1.fp[idx] != op1.fp[idx]) c = False;
+	    xpn32=log10f(fabsf(raw32));
+	    xpn_flr32=floorf(xpn32);
+	    err_max32=0.5f*powf(10.0f,xpn_flr32-nsd+1.0f);
+	    x=False;
+	    flg_trm_nxt_bit=True;
+	    while(flg_trm_nxt_bit){
+	      x=True;
+	      tmp32=op1.fp[idx];
+	      msk_f32_u32_zro<<=1;
+	      msk_f32_u32_one=~msk_f32_u32_zro;
+	      op1.uip[idx]|=msk_f32_u32_one;
+	      if(fabsf((fabsf(raw32)-fabsf(op1.fp[idx]))) >= err_max32) flg_trm_nxt_bit=False;
+	      if(op1.fp[idx] == 1.0f) flg_trm_nxt_bit=False;
 	      fflush(stdout);
-	    } //close while
-	    if(x) op1.fp[idx] = temp32;
-	  } // close if > 0
-	} // close set loop
-      } // close if(!has_mss_val)
-      
-      else{
+	    } // !flg_trm_nxt_bit
+	    if(x) op1.fp[idx]=tmp32;
+	  } // !0.0
+	} // !idx
+      }else{ // has_mss_val
         const float mss_val_flt=*mss_val.fp;
         for(idx=0L;idx<sz;idx+=2L){
           if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != 0.0){
-	    raw32 = op1.fp[idx];
-	    msk_f32_u32_zro = msk_rst32;
+	    raw32=op1.fp[idx];
+	    msk_f32_u32_zro=msk_rst32;
 	    op1.uip[idx]&=msk_f32_u32_zro;
-	    xpn32=log10f(fabs(raw32));
+	    xpn32=log10f(fabsf(raw32));
 	    xpn_flr32=floor(xpn32);
 	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
-            c = True;
+            flg_trm_nxt_bit=True;
             if(op1.fp[idx] != 0.0 && op1.fp[idx] != 1.0){
-                while(c){
-                temp32=op1.fp[idx];
+	      while(flg_trm_nxt_bit){
+                tmp32=op1.fp[idx];
                 msk_f32_u32_zro<<=1;
                 op1.uip[idx]&=msk_f32_u32_zro;
-                if((fabs(raw32) - fabs(op1.fp[idx])) >= err_max32) c = False;
-                if(op1.fp[idx] == 1.0) c = False;
-                if(op1.fp[idx] == 0.0) c = False;
-                if(op1.fp[idx] != op1.fp[idx]) c = False;
+                if((fabsf(raw32) - fabsf(op1.fp[idx])) >= err_max32) flg_trm_nxt_bit=False;
+                if(op1.fp[idx] == 1.0) flg_trm_nxt_bit=False;
+                if(op1.fp[idx] == 0.0) flg_trm_nxt_bit=False;
+                if(op1.fp[idx] != op1.fp[idx]) flg_trm_nxt_bit=False;
                 fflush(stdout);
               } // close while loop
-		op1.fp[idx] = temp32;
+	      op1.fp[idx]=tmp32;
             } // close if before while
           } //close if !=0
         } // close shave loop
-	    
+	
         for(idx=1L;idx<sz;idx+=2L){
           if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != 0U){
-	    raw32 = op1.fp[idx];
-	    msk_f32_u32_zro = msk_rst32;
+	    raw32=op1.fp[idx];
+	    msk_f32_u32_zro=msk_rst32;
 	    msk_f32_u32_one=~msk_f32_u32_zro;
 	    op1.uip[idx]|=msk_f32_u32_one;
-	    xpn32=log10f(fabs(raw32));
+	    xpn32=log10f(fabsf(raw32));
 	    xpn_flr32=floor(xpn32);
 	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
-	    x = False;
-            while(c){
-              x = True;
-              temp32 = op1.fp[idx];
+	    x=False;
+            while(flg_trm_nxt_bit){
+              x=True;
+              tmp32=op1.fp[idx];
               msk_f32_u32_zro <<= 1;
               msk_f32_u32_one =~ msk_f32_u32_zro;
               op1.uip[idx] |= msk_f32_u32_one;
-              if( fabs((fabs(raw32) - fabs(op1.fp[idx]))) >= err_max32) c = False;
-              if(op1.fp[idx] == 1) c = False;
-              if(op1.fp[idx] != op1.fp[idx]) c = False;
+              if( fabsf((fabsf(raw32) - fabsf(op1.fp[idx]))) >= err_max32) flg_trm_nxt_bit=False;
+              if(op1.fp[idx] == 1) flg_trm_nxt_bit=False;
+              if(op1.fp[idx] != op1.fp[idx]) flg_trm_nxt_bit=False;
               fflush(stdout);
             } //close while
-            if(x) op1.fp[idx] = temp32;
+            if(x) op1.fp[idx]=tmp32;
           } // close if > 0
         } // close set loop
-      
+	
       } /* end else */
     }else abort();
     break; /* !NC_FLOAT */
@@ -1038,8 +1031,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       double xpn64;
       int xpn_flr64;
       double err_max64;
-      bool x;
-      bool c;
+      nco_bool x;
+      nco_bool c;
       
       if(!has_mss_val){
 	for(idx=0L;idx<sz;idx+=2L){ // shave loop

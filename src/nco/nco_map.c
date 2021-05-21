@@ -2400,9 +2400,9 @@ nco_map_chk /* Map-file evaluation */
     double cmp_dsk_dff;
     if(has_frac_a){
       cmp_dsk_dff=frac_min_cmp-frac_min_dsk;
-      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of min(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_cmp,frac_min_dsk,cmp_dsk_dff);}
+      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of min(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_cmp,frac_min_dsk,cmp_dsk_dff);}
       cmp_dsk_dff=frac_max_cmp-frac_max_dsk;
-      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of max(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_cmp,frac_max_dsk,cmp_dsk_dff);}
+      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of max(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_cmp,frac_max_dsk,cmp_dsk_dff);}
     } /* !has_frac_a */
     
     const double eps_max_wrn=1.0e-1; /* [frc] Maximum error in column-sum/row-sums before WARNING is printed */
@@ -2455,9 +2455,9 @@ nco_map_chk /* Map-file evaluation */
     /* Inform/Warn if difference between disk and computed values */
     if(has_frac_b){
       cmp_dsk_dff=frac_min_cmp-frac_min_dsk;
-      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of min(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_cmp,frac_min_dsk,cmp_dsk_dff);}
+      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of min(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_cmp,frac_min_dsk,cmp_dsk_dff);}
       cmp_dsk_dff=frac_max_cmp-frac_max_dsk;
-      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of max(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_cmp,frac_max_dsk,cmp_dsk_dff);}
+      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of max(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_cmp,frac_max_dsk,cmp_dsk_dff);}
     } /* !has_frac_b */
       
     /* NB: fabs() does not enclose frac_max_cmp below yet does in corresponding expression for frac_a above

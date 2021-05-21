@@ -1,8 +1,16 @@
-2021-05-20  Charlie Zender  <zender@uci.edu>
+2021-05-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha03: Hangar24';git push
 	git tag -a 5.0.0-alpha03 -m '';git push --tags
+
+	* in.cdl add pi1-pi7 arrays to test GBG
+
+	* ncremap temporarily switch back to e3sm_unified_1.4.0
+
+	* nco_ppc: Tidy GBG
+
+2021-05-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha02: Hangar24';git push
