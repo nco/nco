@@ -2142,7 +2142,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     if [ "${prc_mpas}" = 'Yes' ]; then
 	printf "MPAS input specified: will automatically renormalize (with --rnr=0.0) regridding\n"
 	if [ "${clm_flg}" = 'No' ]; then
- 	    printf "MPAS input specified: will automatically annotate NC_DOUBLE variables with _FillValue = ${mss_val} prior to regridding\n"
+ 	    printf "MPAS input specified: will automatically annotate NC_FLOAT and NC_DOUBLE variables with _FillValue = ${mss_val} prior to regridding\n"
 	fi # !clm_flg
 	if [ "${dpt_flg}" = 'Yes' ]; then
  	    printf "MPAS input specified: will add depth coordinate to all 3D variables prior to regridding\n"

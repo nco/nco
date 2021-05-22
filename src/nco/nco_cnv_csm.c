@@ -121,6 +121,11 @@ nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating
 
   /* Allocate */
   cnv=(cnv_sct *)nco_malloc(sizeof(cnv_sct));
+  /* Set defaults */
+  cnv->CCM_CCSM_CF=False;
+  cnv->MPAS=False;
+  cnv->Group=False;
+  cnv->cf_vrs=1.0;
     
   /* Look for signature of a CCM/CCSM/CF-format file */
   cnv_sng=cnv_sng_UC;

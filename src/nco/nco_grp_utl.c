@@ -8886,33 +8886,33 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 	    /* Loop common names, insert template and fixed template variables */
 	    for(int idx_nm=0;idx_nm<nbr_cmn_nm;idx_nm++){
 
-                /* Define variable full name (use trv_1) */
-                char *var_nm_fll=nco_bld_nm_fll(trv_1.grp_nm_fll,cmn_lst[idx_nm].nm);
+	      /* Define variable full name (use trv_1) */
+	      char *var_nm_fll=nco_bld_nm_fll(trv_1.grp_nm_fll,cmn_lst[idx_nm].nm);
+	      
+	      trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
+	      
+	      nco_bool var_is_fix=False;  /* [fnc] Variable should be treated as a fixed variable */
+	      
+	      if(cnv->CCM_CCSM_CF || cnv->MPAS) var_is_fix=nco_var_is_fix(var_trv->nm,nco_prg_id,nco_pck_plc,cnv);
+	      
+	      /* Define as either fixed template or template  */
+	      if(var_trv->is_crd_var || var_trv->is_rec_var || var_is_fix){
+		
+		trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr++;
+		int skp_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr;
+		trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll,skp_nbr*sizeof(char *));
+		trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]=(char *)strdup(var_trv->nm_fll);
+		
+		if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s inserted fixed template <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]);
 
-                trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
+	      }else{
+		
+		trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr++;
+		int tpl_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr;
+		trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm,tpl_nbr*sizeof(char *));
+		trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm[tpl_nbr-1]=(char *)strdup(var_trv->nm);
 
-                nco_bool var_is_fix=False;  /* [fnc] Variable should be treated as a fixed variable */
-
-                if(cnv->CCM_CCSM_CF || cnv->MPAS) var_is_fix=nco_var_is_fix(var_trv->nm,nco_prg_id,nco_pck_plc,cnv);
-
-                /* Define as either fixed template or template  */
-                if(var_trv->is_crd_var || var_trv->is_rec_var || var_is_fix){
-
-                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr++;
-                  int skp_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nbr;
-                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll,skp_nbr*sizeof(char *));
-                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]=(char *)strdup(var_trv->nm_fll);
-
-                  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s inserted fixed template <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].skp_nm_fll[skp_nbr-1]);
-
-                }else{
-
-                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr++;
-                  int tpl_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_nbr;
-                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm,tpl_nbr*sizeof(char *));
-                  trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm[tpl_nbr-1]=(char *)strdup(var_trv->nm);
-
-                  if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s inserted template <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm[tpl_nbr-1]=(char *)strdup(var_trv->nm));
+		if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s inserted template <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[trv_tbl->nsm_nbr-1].tpl_mbr_nm[tpl_nbr-1]=(char *)strdup(var_trv->nm));
 
                 } /* Define as either fixed template or template  */
               } /* Loop common names, insert template and fixed template variables */
@@ -8944,7 +8944,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   /* Loop ensembles */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
 
-    /* Loop table  */
+    /* Loop table */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_sct trv=trv_tbl->lst[idx_tbl];
 
@@ -8954,69 +8954,69 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 	 trv.nbr_var > 0 && 
 	 strcmp(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,trv.grp_nm_fll_prn) == 0){
 
-          int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
-          trv_tbl->nsm[idx_nsm].mbr_nbr++;
-          trv_tbl->nsm[idx_nsm].mbr=(nsm_grp_sct *)nco_realloc(trv_tbl->nsm[idx_nsm].mbr,(mbr_nbr+1)*sizeof(nsm_grp_sct));
-          trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].mbr_nm_fll=(char *)strdup(trv.grp_nm_fll);
-          trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr=0;
-          trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=NULL;
-
-          /* Define offsets */
-          trv_tbl->nsm[idx_nsm].mbr_srt=0;
-          trv_tbl->nsm[idx_nsm].mbr_end=trv_tbl->nsm[idx_nsm].mbr_nbr;
-
-          int tpl_nbr=trv_tbl->nsm[idx_nsm].tpl_nbr;
-
-          /* Insert members by builing name from group and template */
-          for(int idx_tpl=0;idx_tpl<tpl_nbr;idx_tpl++){ 
-
-            /* Define variable full name */
-            char *var_nm_fll=nco_bld_nm_fll(trv.nm_fll,trv_tbl->nsm[idx_nsm].tpl_mbr_nm[idx_tpl]);
-
-            /* Inquire if variable exists */
-            trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
-
-            if(!var_trv){
-              (void)fprintf(stderr,"%s: ERROR expected member ensemble <%s> does not exist\n",nco_prg_nm_get(),var_nm_fll);
-              nco_exit(EXIT_FAILURE);
-            } /* endif */
-
+	int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
+	trv_tbl->nsm[idx_nsm].mbr_nbr++;
+	trv_tbl->nsm[idx_nsm].mbr=(nsm_grp_sct *)nco_realloc(trv_tbl->nsm[idx_nsm].mbr,(mbr_nbr+1)*sizeof(nsm_grp_sct));
+	trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].mbr_nm_fll=(char *)strdup(trv.grp_nm_fll);
+	trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr=0;
+	trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=NULL;
+	
+	/* Define offsets */
+	trv_tbl->nsm[idx_nsm].mbr_srt=0;
+	trv_tbl->nsm[idx_nsm].mbr_end=trv_tbl->nsm[idx_nsm].mbr_nbr;
+	
+	int tpl_nbr=trv_tbl->nsm[idx_nsm].tpl_nbr;
+	
+	/* Insert members by builing name from group and template */
+	for(int idx_tpl=0;idx_tpl<tpl_nbr;idx_tpl++){ 
+	  
+	  /* Define variable full name */
+	  char *var_nm_fll=nco_bld_nm_fll(trv.nm_fll,trv_tbl->nsm[idx_nsm].tpl_mbr_nm[idx_tpl]);
+	  
+	  /* Inquire if variable exists */
+	  trv_sct *var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
+	  
+	  if(!var_trv){
+	    (void)fprintf(stderr,"%s: ERROR expected member ensemble <%s> does not exist\n",nco_prg_nm_get(),var_nm_fll);
+	    nco_exit(EXIT_FAILURE);
+	  } /* endif */
+	  
             /* Mark variables as ensemble members */
-
+	  
             /* If not the first group member, then it's not a template */
-            if(mbr_nbr == 0) flg_nsm_tpl=True; else flg_nsm_tpl=False;
+	  if(mbr_nbr == 0) flg_nsm_tpl=True; else flg_nsm_tpl=False;
+	  
+	  /* Mark ensemble member flag in table for "var_nm_fll" */
+	  (void)trv_tbl_mrk_nsm_mbr(var_nm_fll,flg_nsm_tpl,trv.grp_nm_fll_prn,trv_tbl); 
+	  
+	  /* Insert variable in table ensemble struct */
+	  trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr++;
+	  trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll,trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr*sizeof(char *));
+	  trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]=(char *)strdup(var_nm_fll);
 
-            /* Mark ensemble member flag in table for "var_nm_fll" */
-            (void)trv_tbl_mrk_nsm_mbr(var_nm_fll,flg_nsm_tpl,trv.grp_nm_fll_prn,trv_tbl); 
+	  if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]);             
 
-            /* Insert variable in table ensemble struct */
-            trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr++;
-            trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll,trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nbr*sizeof(char *));
-            trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]=(char *)strdup(var_nm_fll);
-
-            if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].mbr[mbr_nbr].var_nm_fll[idx_tpl]);             
-
-            /* Free */
-            var_nm_fll=(char *)nco_free(var_nm_fll);
-
-          } /* Insert members by building name from group and template */
-
+	  /* Free */
+	  var_nm_fll=(char *)nco_free(var_nm_fll);
+	  
+	} /* Insert members by building name from group and template */
+	
           /* Mark fixed templates as non extracted */
-          if(flg_fix_xtr){
-            /* List of fixed templates  */
-            for(int idx_skp=0;idx_skp<trv_tbl->nsm[idx_nsm].skp_nbr;idx_skp++){
-              /* Get variable  */
-              trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl);
-              /* Define variable full name (using group name and relative name of fixed template) */
-              char *skp_nm_fll=nco_bld_nm_fll(trv.nm_fll,var_trv->nm);
-              /* Mark the skip names as non extracted variables */ 
-              (void)trv_tbl_mrk_xtr(skp_nm_fll,False,trv_tbl); 
-              /*And its group too... */ 
-              (void)trv_tbl_mrk_grp_xtr(trv.nm_fll,False,trv_tbl); 
-              /* Free */
-              skp_nm_fll=(char *)nco_free(skp_nm_fll);
-            } /* List of fixed templates  */
-          } /* Mark fixed templates as non extracted */
+	if(flg_fix_xtr){
+	  /* List of fixed templates  */
+	  for(int idx_skp=0;idx_skp<trv_tbl->nsm[idx_nsm].skp_nbr;idx_skp++){
+	    /* Get variable  */
+	    trv_sct *var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].skp_nm_fll[idx_skp],trv_tbl);
+	    /* Define variable full name (using group name and relative name of fixed template) */
+	    char *skp_nm_fll=nco_bld_nm_fll(trv.nm_fll,var_trv->nm);
+	    /* Mark the skip names as non extracted variables */ 
+	    (void)trv_tbl_mrk_xtr(skp_nm_fll,False,trv_tbl); 
+	    /*And its group too... */ 
+	    (void)trv_tbl_mrk_grp_xtr(trv.nm_fll,False,trv_tbl); 
+	    /* Free */
+	    skp_nm_fll=(char *)nco_free(skp_nm_fll);
+	  } /* List of fixed templates  */
+	} /* Mark fixed templates as non extracted */
       } /* Match */
     } /* Loop table */
   } /* Loop ensembles */
@@ -9033,13 +9033,13 @@ nco_wrt_atr
   /* Copy variable's attributes */
   int var_id; /* [id] Variable ID */
   int grp_id; /* [id] Group ID */
-
+  
   /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
-
+  
   /* Get variable ID */
   (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
-
+  
   (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,True);
 } /* nco_wrt_atr() */
 

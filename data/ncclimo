@@ -217,8 +217,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # High-frequency climos:
 # drc_in=${DATA}/ne30/raw
 # caseid=famipc5_ne30_v0.3_00007.cam.h4 # 3-hour resolution
-# cd ${drc_in};ls ${caseid}*.nc | ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc
-# ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/PRECT_200101_200212.nc
+# cd ${drc_in};ls ${caseid}*.nc | ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20181001.nc # Multi-file input
+# ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20181001.nc ~/PRECT_200101_200212.nc # Single file input
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS,TREFHT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
