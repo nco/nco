@@ -1,8 +1,12 @@
-2021-05-21  Charlie Zender  <zender@uci.edu>
+2021-05-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha03: Hangar24';git push
 	git tag -a 5.0.0-alpha03 -m '';git push --tags
+
+	* ncremap add xgrid, ygrid dimensions to support NOAA SSM/I, AMSR-E, SMMR
+
+2021-05-21  Charlie Zender  <zender@uci.edu>
 
 	* nco_cnv_ini() initialize all cnv members to defaults before dereferencing in nco_bld_trv_tbl()
 

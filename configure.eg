@@ -495,7 +495,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # 20200131 Optimize build for Cori KNL (use NERSC compiler wrappers)
 # This "works" yet shows no weight-generation speed advantages compared to Haswell
 # 20200203: KNL-optimized binaries on login nodes (Haswell) cause "Illegal Instruction" errors
-# However, default (Haswell-optimized) binaries on compute nodes (KNL) have not yet caused "Illegal Instruction" errors
+# However, default (Haswell-optimized) binaries on compute nodes (KNL) do not cause "Illegal Instruction" errors
 # Until/unless speed advantage is demonstrated, avoid KNL-optimized environment for compilation
 module swap craype-haswell craype-mic-knl
 module swap PrgEnv-intel PrgEnv-gnu

@@ -3715,6 +3715,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
     else if((rcd=nco_inq_dimid_flg(in_id,"y1",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y1"); /* NSIDC EASE */
+    else if((rcd=nco_inq_dimid_flg(in_id,"ygrid",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("ygrid"); /* SSM/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"ygrid_0",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("ygrid_0"); /* NWS HRRR */
     else{
       (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports unable to find latitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input latitude dimension name with \"ncks --rgr lat_nm_in=name\" or \"ncremap -R '--rgr lat_nm_in=name'\"\n",nco_prg_nm_get(),fnc_nm);
@@ -3753,6 +3754,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("y"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
     else if((rcd=nco_inq_dimid_flg(in_id,"x1",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x1"); /* NSIDC EASE */
+    else if((rcd=nco_inq_dimid_flg(in_id,"xgrid",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("xgrid"); /* SSM/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"xgrid_0",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("xgrid_0"); /* NWS HRRR */
     else{
       (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports unable to find longitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input longitude dimension name with \"ncks --rgr lon_nm_in=name\" or \"ncremap -R '--rgr lon_nm_in=name'\"\n",nco_prg_nm_get(),fnc_nm);
