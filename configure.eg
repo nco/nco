@@ -932,9 +932,9 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 # 20210511 Use updated netCDF from Anaconda
 CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_ROOT="${HOME}/anaconda" UDUNITS_PATH="${HOME}/anaconda/include" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-# 20210511 with CCR borken due to missing ccr.h
+# 20210511 with CCR: borken due to missing ccr.h
 CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_ROOT="${HOME}/anaconda" UDUNITS_PATH="${HOME}/anaconda/include" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-# 20210520 with CCR borken due to unresolved -lhdf5 -lhdf5_hl -lnetcdff which must be manually linked
+# 20210520 with CCR: borken due to unresolved -lhdf5 -lhdf5_hl -lnetcdff which must be manually linked
 CC=${LINUX_CC} CFLAGS="-Wall -DNCO_ABORT_ON_ERROR -I${HOME}/include" CXX=${LINUX_CXX} CXXFLAGS="-Wall -I${HOME}/include" LDFLAGS="-lhdf5 -lhdf5_hl -lnetcdff" NETCDF_ROOT="${HOME}/anaconda" UDUNITS_PATH="${HOME}/anaconda/include" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
