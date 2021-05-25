@@ -1,12 +1,12 @@
 2021-05-25  Charlie Zender  <zender@uci.edu>
 
-	* configure.ac replace '-std=c99' with '-std=gnu11'
-
-2021-05-24  Charlie Zender  <zender@uci.edu>
-
 	* NCO 5.0.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha03: Hangar24';git push
 	git tag -a 5.0.0-alpha03 -m '';git push --tags
+
+	* configure.ac replace '-std=c99' with '-std=gnu11'
+
+2021-05-24  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add xgrid, ygrid dimensions to support NOAA SSM/I, AMSR-E, SMMR
 
