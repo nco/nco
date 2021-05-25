@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha03: Hangar24';git push
 	git tag -a 5.0.0-alpha03 -m '';git push --tags
 
+	* ncremap/ncclimo add hash -r HINT to mixed NCO location warning
+
 	* configure.ac replace '-std=c99' with '-std=gnu11'
 
 2021-05-24  Charlie Zender  <zender@uci.edu>
