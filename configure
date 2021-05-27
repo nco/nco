@@ -18736,8 +18736,8 @@ printf "%s\n" "$ac_cv_prog_c_openmp" >&6; }
   fi
 
 
-	#skatreka++
-	# GPU offloading depends upon OpenMP presence
+    #skatreka++
+    # GPU offloading depends upon OpenMP presence
     # Check whether --enable-gpu was given.
 if test ${enable_gpu+y}
 then :
@@ -18753,7 +18753,7 @@ printf "%s\n" "#define ENABLE_GPU 1" >>confdefs.h
 
 	case ${CC} in
 	    *gcc* | *g\+\+* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -foffload=nvptx-none" ;;
-	    clang* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -fopenmp-targets=nvptx64-nvidia-cuda" ;;
+	    *clang* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -fopenmp-targets=nvptx64-nvidia-cuda" ;;
 	    # Intel compilers do not yet support Nvidia GPU offloading
 	esac
     fi
@@ -21346,9 +21346,9 @@ printf "%s\n" "#define ENABLE_OPTIMIZE_CUSTOM 1" >>confdefs.h
 	x86_64*-linux* )
 	    case ${CC} in
 		#skatreka++
-		clang* ) CFLAGS="${CFLAGS} -march=native"
+		*clang* ) CFLAGS="${CFLAGS} -march=native"
 		    case ${CXX} in
-			clang* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
+			*clang* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 		# 20210509: fxm tests fail for Anaconda compiler names like x86_64-conda-linux-gnu-gcc

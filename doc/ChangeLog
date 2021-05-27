@@ -1,8 +1,16 @@
-2021-05-25  Charlie Zender  <zender@uci.edu>
+2021-05-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha03: Hangar24';git push
 	git tag -a 5.0.0-alpha03 -m '';git push --tags
+
+	* nco_aux: handle branch cut rules correctly when WESN bounding	box wraps in longitude
+
+	* Disabling OpenMP fixes MacOS Conda regridder!
+
+	* configure.ac use *clang* instead of clang* to match compiler names
+
+2021-05-25  Charlie Zender  <zender@uci.edu>
 
 	* ncremap/ncclimo add hash -r HINT to mixed NCO location warning
 

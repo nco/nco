@@ -110,7 +110,7 @@ nco_find_lat_lon
 
   return True;
 
-} /* end nco_find_lat_lon() */
+} /* !nco_find_lat_lon() */
 
 int /* [enm] Return status */
 nco_get_dmn_info
@@ -121,7 +121,7 @@ nco_get_dmn_info
  long *dmn_sz)
 {
   /* Purpose: Get dimension information associated with specified variable
-     In our case, this is lat or lon---they are presumed to be identical */
+     In our case, this is either lat or lon, and they are treated identically */
   
   int rcd=NC_NOERR;
   
@@ -141,7 +141,7 @@ nco_get_dmn_info
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_dmn_info() unable to get dimension information");
 
   return rcd;
-} /* end nco_get_dmn_info() */
+} /* !nco_get_dmn_info() */
 
 lmt_sct **
 nco_aux_evl
@@ -151,7 +151,7 @@ nco_aux_evl
  int *lmt_nbr,
  char *nm_dmn)                     /* O [sng] Dimension name */ 
 {
-  /* Purpose: Create lmt structure of slabs of continguous cells that match rectangular region specified by -X arguments
+  /* Purpose: Create lmt structure of slabs of contiguous cells that match rectangular region specified by -X arguments
      Intended for use with non-monotonic grids
      Requires CF-1.0 conventions
      Uses latitude/longitude centers rather than cell_bounds to detect matches
@@ -197,6 +197,7 @@ nco_aux_evl
   void *vp_lon; /* [dgr] Longitude coordinate array, float or double */
 
   nco_bool has_lat_lon;
+  nco_bool wrp_lon; /* [flg] Bounding box wraps dateline _and_ 360 was added to lon_max */
 
   *lmt_nbr=0;
 
@@ -255,7 +256,7 @@ nco_aux_evl
   /* Loop over user-specified bounding boxes */
   for(aux_idx=0;aux_idx<aux_nbr;aux_idx++){
     /* Parse into lon_min,lat_min,lon_max,lon_max, accounting for units */
-    nco_aux_prs(aux_arg[aux_idx],units,&lon_min,&lon_max,&lat_min,&lat_max);
+    nco_aux_prs(aux_arg[aux_idx],units,&lon_min,&lon_max,&lat_min,&lat_max,&wrp_lon);
     /* Current cell assumed to lay outside current bounding box */
     cll_idx_min=-1;
     /* Initialize number of consecutive cells inside current bounding box */
@@ -331,12 +332,13 @@ nco_aux_evl
 
 void 
 nco_aux_prs
-(const char *bnd_bx_sng,
- const char *units,
- double *lon_min,
- double *lon_max,
- double *lat_min,
- double *lat_max)
+(const char *bnd_bx_sng, /* [sng] User-specified bounding-box string in degrees in WESN order */
+ const char *units, /* [sng] Units used by lat/lon coordinates on disk */
+ double *lon_min, /* [rdn/dgr] Longitude of western side of bounding box, in coordinate units */
+ double *lon_max, /* [rdn/dgr] Longitude of eastern side of bounding box, in coordinate units */
+ double *lat_min, /* [rdn/dgr] Latitude of southern side of bounding box, in coordinate units */
+ double *lat_max, /* [rdn/dgr] Latitude of northern side of bounding box, in coordinate units */
+ nco_bool *wrp_lon) /* [flg] Bounding box wraps in longitude _and_ 360 or pi was added to lon_max */
 {
   /* Purpose: Parse command-line arguments of form:
      lon_min,lon_max,lat_min,lat_max */
@@ -357,13 +359,23 @@ nco_aux_prs
   
   if(bnd_bx_sng_tmp) bnd_bx_sng_tmp=(char *)nco_free(bnd_bx_sng_tmp);
   
+  *wrp_lon=False;
+  if(*lon_min > *lon_max){
+    /* 20210526: Algorithm in nco_aux_evl() checks if current lon from disk satisfies 
+       lon_min <= lon_crr <= lon_max
+       Hence bounding box corners must strictly satisfy westernmost_longitude < easternmost_longitude */
+    *lon_max+=360.0;
+    *wrp_lon=True;
+  } /* !*lon_min */
+
   if(!strcmp(units,"radians")){
+    /* 20210526: Convert user-supplied bounding box in degrees to radians used by coordinates on disk */
     const double dgr2rdn=M_PI/180.0;
     *lon_min*=dgr2rdn;
     *lon_max*=dgr2rdn;
     *lat_min*=dgr2rdn;
     *lat_max*=dgr2rdn;
-  } /* endif radians */
+  } /* !radians */
 } /* nco_aux_prs */
 
 lmt_sct **                           /* O [lst] Auxiliary coordinate limits */
@@ -417,6 +429,8 @@ nco_aux_evl_trv
   lmt_sct **lmt=NULL; /* [sct] List of returned lmt structures */
 
   long dmn_sz=0;
+
+  nco_bool wrp_lon; /* [flg] Bounding box wraps dateline _and_ 360 was added to lon_max */
 
   void *vp_lat; /* [dgr] Latitude coordinate array, float or double */
   void *vp_lon; /* [dgr] Longitude coordinate array, float or double */
@@ -479,7 +493,13 @@ nco_aux_evl_trv
   /* Loop over user-specified bounding boxes */
   for(aux_idx=0;aux_idx<aux_nbr;aux_idx++){
     /* Parse into lon_min,lat_min,lon_max,lon_max, accounting for units */
-    nco_aux_prs(aux_arg[aux_idx],units,&lon_min,&lon_max,&lat_min,&lat_max);
+    nco_aux_prs(aux_arg[aux_idx],units,&lon_min,&lon_max,&lat_min,&lat_max,&wrp_lon);
+
+    double lon_crr_fst=0.0;
+    if(wrp_lon){
+      if(!strcmp(units,"radians")) lon_crr_fst=2.0*M_PI; else lon_crr_fst=360.0;
+    } /* !wrp_lon */
+    
     /* Current cell assumed to lay outside current bounding box */
     cll_idx_min=-1;
     /* Initialize number of consecutive cells inside current bounding box */
@@ -498,6 +518,8 @@ nco_aux_evl_trv
     for(cll_idx=0;cll_idx<dmn_sz;cll_idx++){
       if(lat.type == NC_FLOAT) lat_crr=((float *)vp_lat)[cll_idx]; else lat_crr=((double *)vp_lat)[cll_idx];
       if(lon.type == NC_FLOAT) lon_crr=((float *)vp_lon)[cll_idx]; else lon_crr=((double *)vp_lon)[cll_idx];
+      if(wrp_lon && lon_crr >= 0.0) lon_crr+=lon_crr_fst;
+      
       if(lon_crr >= lon_min && lon_crr <= lon_max && lat_crr >= lat_min && lat_crr <= lat_max){
           if(cll_idx_min == -1){
             /* First cell within current bounding box */
@@ -636,7 +658,7 @@ nco_check_nm_aux
   /* Purpose: Check that variable var_trv fits the criteria for being an auxiliary coordinate  
      Must be 1D and NOT a record var and NOT a standard coordinate variable
      Also must have a "units" attribute   
-     If all critera met - then return some information about variable */
+     If all critera are met, then return some information about variable */
 
   const char fnc_nm[]="nco_check_nm_aux()";
 

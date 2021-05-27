@@ -347,15 +347,15 @@ AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [de
 # Enable OpenMP unless told not to
 if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes')); then
     AC_OPENMP
-	#skatreka++
-	# GPU offloading depends upon OpenMP presence
+    #skatreka++
+    # GPU offloading depends upon OpenMP presence
     AC_ARG_ENABLE(gpu,AS_HELP_STRING([--enable-gpu],[Enable OpenMP GPU offloading for Nvidia GPUs [default=no]]),enable_gpu=${enableval},enable_gpu=no)
 
     if (test "x$enable_gpu" != 'xno'); then
 	AC_DEFINE([ENABLE_GPU],[1],[Enable GPU offloading support])
 	case ${CC} in
 	    *gcc* | *g\+\+* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -foffload=nvptx-none" ;;
-	    clang* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -fopenmp-targets=nvptx64-nvidia-cuda" ;;
+	    *clang* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -fopenmp-targets=nvptx64-nvidia-cuda" ;;
 	    # Intel compilers do not yet support Nvidia GPU offloading
 	esac
     fi
@@ -1107,9 +1107,9 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	x86_64*-linux* )
 	    case ${CC} in
 		#skatreka++
-		clang* ) CFLAGS="${CFLAGS} -march=native"
+		*clang* ) CFLAGS="${CFLAGS} -march=native"
 		    case ${CXX} in
-			clang* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
+			*clang* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
 		# 20210509: fxm tests fail for Anaconda compiler names like x86_64-conda-linux-gnu-gcc

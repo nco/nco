@@ -58,13 +58,14 @@ nco_get_dmn_info
 
 void 
 nco_aux_prs
-(const char *bnd_bx_sng, 
- const char *units, 
- double *lon_min, 
- double *lon_max, 
- double *lat_min, 
- double *lat_max);
-
+(const char *bnd_bx_sng, /* [sng] User-specified bounding-box string in degrees in WESN order */
+ const char *units, /* [sng] Units used by lat/lon coordinates on disk */
+ double *lon_min, /* [rdn/dgr] Longitude of western side of bounding box, in coordinate units */
+ double *lon_max, /* [rdn/dgr] Longitude of eastern side of bounding box, in coordinate units */
+ double *lat_min, /* [rdn/dgr] Latitude of southern side of bounding box, in coordinate units */
+ double *lat_max, /* [rdn/dgr] Latitude of northern side of bounding box, in coordinate units */
+ nco_bool *wrp_lon); /* [flg] Bounding box wraps in longitude _and_ 360 or pi was added to lon_max */
+  
 lmt_sct **                           /* O [lst] Auxiliary coordinate limits */
 nco_aux_evl_trv
 (const int nc_id,                    /* I [ID] netCDF file ID */

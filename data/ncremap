@@ -2248,7 +2248,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     fi # !rnm_sng
     if [ -n "${rnm_sng}" ]; then 
 	if [ -n "${bb_wesn}" ]; then 
-	    echo "${spt_nm}: INFO Will use explicitly specified comma-separated rectangular WESN bounding box string ${bb_west} instead of parsing string suffix ${rnm_sng}."
+	    echo "${spt_nm}: INFO Will use explicitly specified comma-separated rectangular WESN bounding box string ${bb_wesn} instead of parsing string suffix ${rnm_sng}."
 	else # !bb_wesn
 	    rnm_rx='^_(.*)_to_(.*)_(.*)_to_(.*)$'
 	    if [[ "${rnm_sng}" =~ ${rnm_rx} ]]; then
@@ -2264,6 +2264,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
 		    lon_min=${lon1}
 		    lon_max=${lon2}
 		else
+		    # 20210526 Until today we swapped the W,E bounds incorrectly
 		    lon_min=${lon2}
 		    lon_max=${lon1}
 		fi # !lon1

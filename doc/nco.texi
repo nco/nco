@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.0-alpha02
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 14 May 2021
+@set update-date 26 May 2021
 @set update-month May 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6543,7 +6543,7 @@ And the coordinates must be one-dimensional---multidimensional
 coordinates will not work.
 
 This infrastructure allows @acronym{NCO} to identify, interpret, and
-process (e.g., hyperslab) the variables on cell-based grids as easily
+process (i.e., hyperslab) the variables on cell-based grids as easily
 as it works with regular grids.
 To time-average all the values between zero and @w{180 degrees}
 longitude and between plus and minus @w{30 degress} latitude, we use
@@ -6563,7 +6563,7 @@ so that these two commands produce identical results
 ncra -X 0.,180.,-30.,30. in.nc out.nc
 ncra -X 0,180,-30,30 in.nc out.nc
 @end example
-In contrast, arguments to @samp{-d} require decimal places to be
+By contrast, arguments to @samp{-d} require decimal places to be
 recognized as coordinates not indices (@pxref{Hyperslabs}).  
 We recommend always using decimal points with @samp{-X} arguments
 to avoid confusion.
