@@ -1,12 +1,12 @@
 2021-05-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha03: Hangar24';git push
-	git tag -a 5.0.0-alpha03 -m '';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha03: Electric Dreams';git push
+	git tag -a 5.0.0-alpha03 -m 'ncks aux wrp fix; ncremap nfr SSM/I grd';git push --tags
 
 	* nco_aux: handle branch cut rules correctly when WESN bounding	box wraps in longitude
 
-	* Disabling OpenMP fixes MacOS Conda regridder!
+	* nco-feedstock disable OpenMP to fix MacOS Conda regridder
 
 	* configure.ac use *clang* instead of clang* to match compiler names
 
