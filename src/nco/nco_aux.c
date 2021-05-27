@@ -518,7 +518,7 @@ nco_aux_evl_trv
     for(cll_idx=0;cll_idx<dmn_sz;cll_idx++){
       if(lat.type == NC_FLOAT) lat_crr=((float *)vp_lat)[cll_idx]; else lat_crr=((double *)vp_lat)[cll_idx];
       if(lon.type == NC_FLOAT) lon_crr=((float *)vp_lon)[cll_idx]; else lon_crr=((double *)vp_lon)[cll_idx];
-      if(wrp_lon && lon_crr >= 0.0) lon_crr+=lon_crr_fst;
+      if(wrp_lon && lon_crr >= 0.0 && lon_crr <= 180.0) lon_crr+=lon_crr_fst;
       
       if(lon_crr >= lon_min && lon_crr <= lon_max && lat_crr >= lat_min && lat_crr <= lat_max){
           if(cll_idx_min == -1){
