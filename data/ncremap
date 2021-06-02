@@ -337,6 +337,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --dbg=3 -v FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.000101_000102.nc ~/foo.nc
 # MBT
 # ncremap --dbg=1 --vrb=3 --devnull=No --mbt --alg_typ=se2fv_flx --grd_src=${DATA}/grids/ne30.g --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_mbt.20210701.nc
+# CDO
+# cdo verifygrid grid_CMN-5x5.nc
+# ncremap --dbg=1 --vrb=3 --devnull=No --alg_typ=cdo_bil --in_fl=${DATA}/grids/t42_skl.nc --dst_fl=${DATA}/ne30/rgr/hfc_ANN_200001_200012_climo.nc --map=${DATA}/maps/map_t42_to_cmip6_180x360_cdo.20210701.nc
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -509,12 +512,14 @@ vrt_nm='' # [sng] Vertical coordinate name
 vrt_opt='' # [sng] Vertical options (e.g., '--rgr xtr_mth=mss_val')
 vrt_ntp='' # [sng] Vertical interpolation type (lin|log)
 vrt_xtr='' # [sng] Vertical extrapolation type (mss_val|nrs_ngh)
+wgt_exe_cdo='cdo' # [sng] ESMF executable (weight generation only)
 wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable (weight generation only)
 wgt_exe_mbt='mbtempest' # [sng] MOAB-Tempest executable (both mesh- and weight-generation)
 wgt_exe_nco='ncks' # [sng] NCO executable (both mesh- and weight-generation)
 wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap weight-generation executable 
 wgt_typ='' # [sng] Weight-generator program ('esmf' or 'nco' or 'tempest')
 wgt_opt='' # [sng] Weight-generator options
+wgt_opt_cdo='' # [sng] CDO weight-generation options
 wgt_opt_esmf='--no_log --ignore_unmapped' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF < 7.1.0r)
 #wgt_opt_esmf='--ignore_unmapped --ignore_degenerate' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF >= 7.1.0r) (ignore_degenerate is required for CICE regridding with ESMF >= 7.1.0r, and is not supported or required with ESMF < 7.1.0r)
 wgt_opt_nco='-O --dmm_in_mk' # [sng] NCO weight-generation options
@@ -865,6 +870,7 @@ cmd_cnv_mbt=`command -v ${cnv_exe_mbt} 2> /dev/null`
 cmd_cnv_tps=`command -v ${cnv_exe_tps} 2> /dev/null`
 cmd_dpt_mpas=`command -v ${dpt_exe_mpas} --no_log 2> /dev/null`
 cmd_prt_mbt=`command -v ${prt_exe_mbt} 2> /dev/null`
+cmd_wgt_cdo=`command -v ${wgt_exe_cdo} 2> /dev/null`
 cmd_wgt_mbt=`command -v ${wgt_exe_mbt} 2> /dev/null`
 cmd_wgt_nco=`command -v ${wgt_exe_nco} 2> /dev/null`
 cmd_wgt_tps=`command -v ${wgt_exe_tps} 2> /dev/null`
@@ -886,6 +892,11 @@ if [ ${vrs_prn} = 'Yes' ]; then
 	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
     fi # !hrd_pth_fnd
     printf "Config: Grid & weight-generation tool availability:\n"
+    if [ -n "${cmd_wgt_cdo}" ]; then
+	printf "Config: CDO weight-generation command ${wgt_exe_cdo} found as ${cmd_wgt_cdo}\n"
+    else
+	printf "Config: CDO weight-generation command ${wgt_exe_cdo} not found\n"
+    fi # !err
     if [ -n "${cmd_wgt_esmf}" ]; then
 	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} version ${erwg_vrs_sng} found as ${cmd_wgt_esmf}\n"
     else
@@ -1037,7 +1048,13 @@ tmp_out_fl=${tmp_out_fl}${unq_sfx}
 znl_fl=${znl_fl}${unq_sfx}
 
 # Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|nco
-if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bilin' ] || [ ${alg_typ} = 'blin' ] || [ ${alg_typ} = 'bln' ]; then 
+if [ ${alg_typ} = 'cdo_con' ] || [ ${alg_typ} = 'cdo_cns' ] || [ ${alg_typ} = 'cdo_conserve' ] || [ ${alg_typ} = 'cdo' ]; then 
+    alg_opt='gencon'
+    wgt_typ='cdo'
+elif [ ${alg_typ} = 'cdo_bil' ] || [ ${alg_typ} = 'cdo_bilin' ] || [ ${alg_typ} = 'cdo_bilinear' ]; then 
+    alg_opt='genbil'
+    wgt_typ='cdo'
+elif [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bilin' ] || [ ${alg_typ} = 'blin' ] || [ ${alg_typ} = 'bln' ]; then 
     alg_opt='bilinear'
     wgt_typ='esmf'
 elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ] || [ ${alg_typ} = 'c1' ] || [ ${alg_typ} = 'aave' ]; then 
@@ -1134,9 +1151,10 @@ elif [ ${alg_typ} = 'nco_dwe' ] || [ ${alg_typ} = 'dwe' ] || [ ${alg_typ} = 'nco
     wgt_typ='nco'
 else 
     echo "${spt_nm}: ERROR ${alg_typ} is not a valid weight-generation algorithm"
+    echo "${spt_nm}: HINT Valid CDO weight-generation algorithms and synonyms are cdo_bil,cdo_bilin,cdo_bilinear | cdo_con,cdo_cns,cdo_conserve"
     echo "${spt_nm}: HINT Valid ESMF weight-generation algorithms and synonyms are bilinear,bilin,bln | conserve,cns,c1,aave | conserve2nd,c2,c2nd | nearestdtos,nds,dtos | neareststod,nsd,stod | patch,pch"
     echo "${spt_nm}: HINT Valid NCO weight-generation algorithms and synonyms are nco_con,nco_cns,nco_conserve,nco | nco_dwe,nco_nni"
-    echo "${spt_nm}: HINT Valid TempestRemap weight-generation options and synonyms are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | se2se,cs2cs | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se | fv2fv,rll2rll"
+    echo "${spt_nm}: HINT Valid TempestRemap (and MOAB-TempestRemap) weight-generation options and synonyms are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | se2se,cs2cs | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se | fv2fv,rll2rll"
     exit 1
 fi # !alg_typ
 if [ -n "${fl_fmt}" ]; then
@@ -1204,7 +1222,11 @@ fi # !esmf_typ
 if [ ${wgt_typ} = 'tempest' ] && [ ${mbt_flg} = 'Yes' ]; then
     wgt_typ='mbtempest'
 fi # !wgt_typ
-if [ ${wgt_typ} = 'esmf' ]; then
+if [ ${wgt_typ} = 'cdo' ]; then
+    wgt_cmd="${wgt_exe_cdo}"
+    wgt_exe="${wgt_exe_cdo}"
+    wgt_opt="${wgt_opt_cdo}"
+elif [ ${wgt_typ} = 'esmf' ]; then
     wgt_cmd="${wgt_exe_esmf}"
     wgt_exe="${wgt_exe_esmf}"
     wgt_opt="${wgt_opt_esmf}"
@@ -1946,8 +1968,10 @@ fi # !mpi_flg
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: a2o_flg  = ${a2o_flg}\n"
     printf "dbg: alg_opt  = ${alg_opt}\n"
+    printf "dbg: alg_typ  = ${alg_typ}\n"
     printf "dbg: att_flg  = ${att_flg}\n"
     printf "dbg: cln_flg  = ${cln_flg}\n"
+    printf "dbg: cmd_cdo  = ${cmd_wgt_cdo}\n"
     printf "dbg: cmd_esm  = ${cmd_wgt_esmf}\n"
     printf "dbg: cmd_mbt  = ${cmd_wgt_mbt}\n"
     printf "dbg: cmd_nco  = ${cmd_wgt_nco}\n"
@@ -2178,7 +2202,7 @@ if [ "${flg_hrz}" = 'Yes' ]; then
 		fi # !vrb_lvl
 	    fi # !grd_dst_usr_flg
 	    if [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
-		printf "${spt_nm}: ERROR No destination grid specified with -g, inferral file specified with -d, or grid string specified with -G\n"
+		printf "${spt_nm}: WARNING No destination grid specified with -g, template/inferral file specified with -d, or grid string specified with -G\n"
 	    fi # !grd_dst_usr_flg
 	    if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
 		# 20180903 Must quote grd_sng otherwise whitespace and shell redirection characters (e.g., in ttl argument) will confuse interpreter
@@ -2194,23 +2218,25 @@ if [ "${flg_hrz}" = 'Yes' ]; then
 	fi # !dst_usr_flg
 	if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
 	    # Block 1 Loop 2: Execute and/or echo commands
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_dst[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_dst[${fl_idx}]}
-		if [ "$?" -ne 0 ]; then
-		    if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
-			printf "${spt_nm}: ERROR Failed to generate grid from user-supplied grid-string. Debug this:\n${cmd_dst[${fl_idx}]}\n"
-		    else # !grd_sng_usr_flg
-			printf "${spt_nm}: ERROR Failed to infer destination grid. Debug this:\n${cmd_dst[${fl_idx}]}\n"
+	    if [ ${wgt_typ} != 'cdo' ]; then
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_dst[${fl_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -ne 2 ]; then
+		    eval ${cmd_dst[${fl_idx}]}
+		    if [ "$?" -ne 0 ]; then
+			if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
+			    printf "${spt_nm}: ERROR Failed to generate grid from user-supplied grid-string. Debug this:\n${cmd_dst[${fl_idx}]}\n"
+			else # !grd_sng_usr_flg
+			    printf "${spt_nm}: ERROR Failed to infer destination grid. Debug this:\n${cmd_dst[${fl_idx}]}\n"
+			fi # !grd_sng_usr_flg
+			exit 1
+		    fi # !err
+		    if [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
+			/bin/rm -f ${tmp_out_fl}
 		    fi # !grd_sng_usr_flg
-		    exit 1
-		fi # !err
-		if [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
-		    /bin/rm -f ${tmp_out_fl}
-		fi # !grd_sng_usr_flg
-	    fi # !dbg
+		fi # !dbg
+	    fi # !cdo
 	fi # !dst_usr_flg || grd_dst_usr_flg
 	if [ ${vrb_lvl} -ge ${vrb_3} ] && [ ${flg_grd_only} != 'Yes' ]; then
 	    printf "Weight-generation type: ${wgt_typ}\n"
@@ -2265,6 +2291,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
 		    lon_max=${lon2}
 		else
 		    # 20210526 Until today we swapped the W,E bounds incorrectly
+		    # if wrapped nco_aux_prs() adds 360 degrees to lon_max to ensure lon_min < lon_max
 		    lon_min=${lon2}
 		    lon_max=${lon1}
 		fi # !lon1
@@ -2358,7 +2385,10 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	printf "Grid(src): ${grd_src}\n"
 	printf "Grid(dst): ${grd_dst}\n"
     fi # !vrb_lvl
-    if [ "${wgt_typ}" = 'esmf' ]; then 
+    if [ "${wgt_typ}" = 'cdo' ]; then 
+	cmd_map[${fl_idx}]="${wgt_cmd} -gencon,\"${dst_fl}\" \"${in_fl}\" \"${map_fl}\"${devnull}"
+	#cmd_map[${fl_idx}]="${wgt_cmd} -gencon,\"${grd_dst}\" \"${grd_src}\" \"${map_fl}\"${devnull}"
+    elif [ "${wgt_typ}" = 'esmf' ]; then 
 	rgn_opt=''
 	if [ -n "${hnt_src}" ]; then
 	    rgn_opt="${rgn_opt} ${hnt_src}"
@@ -2537,20 +2567,23 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
 	    fi # ! -f
-	    # Infer source grid-file from input data file
-	    cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${in_fl}\" \"${tmp_out_fl}\""
+
+	    if [ "${wgt_typ}" != 'cdo' ]; then 
+		# Infer source grid-file from input data file
+		cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${in_fl}\" \"${tmp_out_fl}\""
 	
-	    # Block 2 Loop 2: Execute and/or echo commands
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_src[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_src[${fl_idx}]}
-		if [ "$?" -ne 0 ]; then
-		    printf "${spt_nm}: ERROR Failed to infer source grid. Debug this:\n${cmd_src[${fl_idx}]}\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
+		# Block 2 Loop 2: Execute and/or echo commands
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_src[${fl_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -ne 2 ]; then
+		    eval ${cmd_src[${fl_idx}]}
+		    if [ "$?" -ne 0 ]; then
+			printf "${spt_nm}: ERROR Failed to infer source grid. Debug this:\n${cmd_src[${fl_idx}]}\n"
+			exit 1
+		    fi # !err
+		fi # !dbg
+	    fi # !cdo
 	    
 	    # Block 3: Source->destination maps
 	    # Block 3 Loop 1: Map-file commands
@@ -2558,8 +2591,11 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		printf "Grid(src): ${grd_src}\n"
 		printf "Grid(dst): ${grd_dst}\n"
 	    fi # !vrb_lvl
-	    if [ "${wgt_typ}" = 'esmf' ]; then 
-		rgn_opt=''
+	    if [ "${wgt_typ}" = 'cdo' ]; then 
+		cmd_map[${fl_idx}]="${wgt_cmd} -gencon,\"${dst_fl}\" \"${in_fl}\" \"${map_fl}\"${devnull}"
+		#cmd_map[${fl_idx}]="${wgt_cmd} -gencon,\"${grd_dst}\" \"${grd_src}\" \"${map_fl}\"${devnull}"
+	    elif [ "${wgt_typ}" = 'esmf' ]; then 
+	    	rgn_opt=''
 		if [ -n "${hnt_src}" ]; then
 		    rgn_opt="${rgn_opt} ${hnt_src}"
 		elif [ -f "${hnt_src_fl}" ]; then

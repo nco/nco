@@ -7236,6 +7236,13 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     rcd=nco_char_att_put(out_id,area_nm,"long_name","Solid angle subtended by gridcell");
     rcd=nco_char_att_put(out_id,area_nm,"standard_name","solid_angle");
     rcd=nco_char_att_put(out_id,area_nm,"units","steradian");
+
+    char *crd_val_sng; /* CF-standard coordinates values string */
+    size_t crd_val_sng_lng=strlen(lat_nm_out)+strlen(lon_nm_out)+1L;
+    crd_val_sng=(char *)nco_malloc(crd_val_sng_lng*sizeof(char)+1L);
+    (void)sprintf(crd_val_sng,"%s %s",lat_nm_out,lon_nm_out);
+    rcd=nco_char_att_put(out_id,area_nm,"coordinates",crd_val_sng);
+    if(crd_val_sng) crd_val_sng=(char *)nco_free(crd_val_sng);
     
     rcd=nco_char_att_put(out_id,lat_nm_out,"long_name","Latitude of Grid Cell Centers");
     rcd=nco_char_att_put(out_id,lat_nm_out,"standard_name","latitude");
@@ -7741,7 +7748,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(cf->dmn_nm[1]) cf->dmn_nm[1]=(char *)nco_free(cf->dmn_nm[1]);
     if(cf->unt_sng[0]) cf->unt_sng[0]=(char *)nco_free(cf->unt_sng[0]);
     if(cf->unt_sng[1]) cf->unt_sng[1]=(char *)nco_free(cf->unt_sng[1]);
-    //    if(foo) foo=(char *)nco_free(foo);
   } /* !rgr_var */
 
   /* goto skp_cf */
