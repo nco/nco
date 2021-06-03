@@ -29,6 +29,7 @@
 #include "nco_cnf_typ.h" /* Conform variable types nco_typ_ntg() */
 #include "nco_fl_utl.h" /* File manipulation */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_mss_val.h" /* Missing value utilities */
 #include "nco_omp.h" /* OpenMP utilities */
 #include "nco_s1d.h" /* Sparse-1D CLM/ELM datasets */
 #include "nco_sng_utl.h" /* String utilities */

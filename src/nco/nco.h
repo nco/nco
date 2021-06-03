@@ -1214,6 +1214,7 @@ typedef enum nco_xtr_typ_enm
     int area_mth; /* [enm]  area method used calculating grid cell area */
     long idx_dbg; /* [idx] Index of gridcell for debugging */
     long tst; /* [enm] Generic key for testing (undocumented) */
+    nco_bool flg_add_fll; /* [flg] Add _FillValue to fields with empty destination cells */
     nco_bool flg_area_out; /* [flg] Add area to output */
     nco_bool flg_cll_msr; /* [flg] Add cell_measures attribute */
     nco_bool flg_crv; /* [flg] Use curvilinear coordinates */

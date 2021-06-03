@@ -1741,36 +1741,36 @@ poly_sct *pl){
 
 nco_bool
 nco_map_hst_mk /* Create histogram */
-(var_sct * var_row,
- int row_max,
- int hst_ar[],
+(var_sct *var_row_or_col,
+ int row_or_col_max,
+ int *hst_arr,
  int hst_sz )
 {
   int idx;
   int sz;
-  int idx_row=0;
-  int *row_bin=NULL_CEWI;
+  int idx_row_or_col=0;
+  int *row_or_col_bin=NULL_CEWI;
   
-  (void)cast_void_nctype(NC_DOUBLE,&(var_row->val));
+  (void)cast_void_nctype(NC_DOUBLE,&(var_row_or_col->val));
   
-  sz=var_row->sz;
+  sz=var_row_or_col->sz;
   
-  row_bin=(int *)nco_calloc(row_max+1,sizeof(int));
+  row_or_col_bin=(int *)nco_calloc(row_or_col_max+1,sizeof(int));
   
-  /* Row count: var_row and row_bin are one-based */
+  /* Row or column count: var_row_or_col and row_or_col_bin are one-based */
   for(idx=0;idx<sz;idx++)
-    if((idx_row=var_row->val.ip[idx]) <= row_max)
-      row_bin[idx_row]++;
+    if((idx_row_or_col=var_row_or_col->val.ip[idx]) <= row_or_col_max)
+      row_or_col_bin[idx_row_or_col]++;
   
   /* Histogram count is one-based */
-  for(idx=1;idx<=row_max;idx++){
-    idx_row=row_bin[idx];
-    if(idx_row < hst_sz) hst_ar[idx_row]++; else hst_ar[hst_sz]++;
+  for(idx=1;idx<=row_or_col_max;idx++){
+    idx_row_or_col=row_or_col_bin[idx];
+    if(idx_row_or_col < hst_sz) hst_arr[idx_row_or_col]++; else hst_arr[hst_sz]++;
   } /* !idx */
   
-  (void)cast_nctype_void(NC_INT,&(var_row->val));
+  (void)cast_nctype_void(NC_INT,&(var_row_or_col->val));
 
-  row_bin=(int*)nco_free(row_bin);
+  row_or_col_bin=(int*)nco_free(row_or_col_bin);
 
   return True;
 } /* !nco_map_hst_mk() */
@@ -1958,12 +1958,12 @@ nco_map_var_min_max_ttl
 } /* !nco_map_var_min_max_ttl() */
 
 nco_bool
-nco_map_frac_b_clc /* Compute frac_b as row sums of the weight matrix S */
+nco_map_frac_b_clc /* Compute frac_b as row-sums of the weight matrix S */
 (var_sct *var_S,
  var_sct *var_row,
  var_sct *var_frac_b)
 {
-  /* Purpose: Compute frac_b as row sums of the weight matrix S */
+  /* Purpose: Compute frac_b as row-sums of the weight matrix S */
   int idx_row;
 
   size_t idx;
@@ -1992,7 +1992,7 @@ nco_map_frac_b_clc /* Compute frac_b as row sums of the weight matrix S */
 } /* !nco_map_frac_b_clc() */
 
 nco_bool
-nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weight matrix S normalized by area_a */
+nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column-sums of the weight matrix S normalized by area_a */
 (var_sct *var_S,
  var_sct *var_row,
  var_sct *var_col,
@@ -2000,7 +2000,7 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
  var_sct *var_area_b,
  var_sct *var_frac_a)
 {
-  /* Purpose: Compute frac_a as area_b-weighted column sums of the weight matrix S normalized by area_a */
+  /* Purpose: Compute frac_a as area_b-weighted column-sums of the weight matrix S normalized by area_a */
 
   //char fnc_nm[]="nco_map_frac_a_clc()";
   int idx_row;
@@ -2040,7 +2040,7 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
   }else{
     for(idx=0;idx<sz;idx++){
       if(var_area_a->val.dp[idx] != 0.0) var_frac_a->val.dp[idx]/=var_area_a->val.dp[idx]; else
-	(void)fprintf(stdout,"WARNING area_a = %g for grid A cell %lu: Unable to normalize area_b-weighted column sum to compute frac_a for this gridcell\n",var_area_a->val.dp[idx],idx+1UL);
+	(void)fprintf(stdout,"WARNING area_a = %g for grid A cell %lu: Unable to normalize area_b-weighted column-sum to compute frac_a for this gridcell\n",var_area_a->val.dp[idx],idx+1UL);
     } /* !idx */
   }  /* !cnt_zro */
     
@@ -2289,8 +2289,8 @@ nco_map_chk /* Map-file evaluation */
     int hst_sz=31;
     int *hst_row;
     int *hst_col;
-    hst_row=(int*)nco_calloc(hst_sz+1,sizeof(int));
-    hst_col=(int*)nco_calloc(hst_sz+1,sizeof(int));
+    hst_row=(int *)nco_calloc(hst_sz+1,sizeof(int));
+    hst_col=(int *)nco_calloc(hst_sz+1,sizeof(int));
     nco_map_hst_mk(var_col,var_area_a->sz,hst_col,hst_sz);
     nco_map_hst_mk(var_row,var_area_b->sz,hst_row,hst_sz);
 
@@ -2382,7 +2382,7 @@ nco_map_chk /* Map-file evaluation */
 
     /* Compute frac_a statistics from frac_a disk values */
     if(has_frac_a) nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,mask_a_val,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
-    /* Compute and report frac_a as area_b-weighted column sums/area_a */
+    /* Compute and report frac_a as area_b-weighted column-sums/area_a */
     nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
     nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,mask_a_val,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
     
@@ -2400,9 +2400,9 @@ nco_map_chk /* Map-file evaluation */
     double cmp_dsk_dff;
     if(has_frac_a){
       cmp_dsk_dff=frac_min_cmp-frac_min_dsk;
-      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of min(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_cmp,frac_min_dsk,cmp_dsk_dff);}
+      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column-sums/area_a) and disk-values of min(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_cmp,frac_min_dsk,cmp_dsk_dff);}
       cmp_dsk_dff=frac_max_cmp-frac_max_dsk;
-      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of max(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_cmp,frac_max_dsk,cmp_dsk_dff);}
+      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column-sums/area_a) and disk-values of max(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_cmp,frac_max_dsk,cmp_dsk_dff);}
     } /* !has_frac_a */
     
     const double eps_max_wrn=1.0e-1; /* [frc] Maximum error in column-sum/row-sums before WARNING is printed */
@@ -2439,7 +2439,7 @@ nco_map_chk /* Map-file evaluation */
 
     /* Compute frac_b statistics from frac_b disk values */
     if(has_frac_b) nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,mask_b_val,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
-    /* Compute and report frac_b as row sums */
+    /* Compute and report frac_b as row-sums */
     nco_map_frac_b_clc(var_S,var_row,var_frac_b);
     nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,mask_b_val,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
 
@@ -2455,9 +2455,9 @@ nco_map_chk /* Map-file evaluation */
     /* Inform/Warn if difference between disk and computed values */
     if(has_frac_b){
       cmp_dsk_dff=frac_min_cmp-frac_min_dsk;
-      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of min(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_cmp,frac_min_dsk,cmp_dsk_dff);}
+      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row-sums) and disk-values of min(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_cmp,frac_min_dsk,cmp_dsk_dff);}
       cmp_dsk_dff=frac_max_cmp-frac_max_dsk;
-      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of max(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_cmp,frac_max_dsk,cmp_dsk_dff);}
+      if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row-sums) and disk-values of max(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 100*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_cmp,frac_max_dsk,cmp_dsk_dff);}
     } /* !has_frac_b */
       
     /* NB: fabs() does not enclose frac_max_cmp below yet does in corresponding expression for frac_a above
@@ -2502,9 +2502,9 @@ nco_map_chk /* Map-file evaluation */
 	} /* !msk */
       } /* !idx_row */
       if(wrn_nbr > 0){
-	/* Compute frac_a as area_b-weighted column sums/area_a with renormalized weights */
+	/* Compute frac_a as area_b-weighted column-sums/area_a with renormalized weights */
 	nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
-	/* Compute frac_b as row sums with re-normalized weights */
+	/* Compute frac_b as row-sums with re-normalized weights */
 	nco_map_frac_b_clc(var_S,var_row,var_frac_b);
 	(void)fprintf(stdout,"%s: INFO Re-writing S, frac_a, and frac_b arrays to fix %d (presumed) self-overlaps detected via frac_b >> 1.0 search\nNB: The \"fixed\" file should no longer report any frac_b WARNINGs because the weights have been normalized to prevent this. However, the fixed file is expected to produce frac_a WARNINGs because weights of the self-overlapping grid_a cells were reduced to compensate for the self-overlap. So long as all affected grid_a cells contain valid data the net result should be correct. The best solution is to remove/re-bin the self-overlapping grid_a cells before remapping.\n",nco_prg_nm_get(),wrn_nbr);
 	rcd=nco_put_var(in_id,var_frac_a->id,var_frac_a->val.vp,(nc_type)NC_DOUBLE);

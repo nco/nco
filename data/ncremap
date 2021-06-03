@@ -407,6 +407,7 @@ vrb_4=4 # [enm] Verbosity level: Pedantic
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 a2o_flg='No' # [flg] Atmosphere-to-ocean (only used by Tempest mesh generator)
+add_fll='No' # [flg] Add _FillValue to fields with empty destination cells
 alg_typ='nco_con' # [sng] Algorithm for remapping (bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|nco_con|nco_dwe)
 att_flg='No' # [flg] Add/alter attributes (e.g., _FillValue) before regridding
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
@@ -481,6 +482,7 @@ np_se_nbr=4 # [nbr] Polynomial order for TempestRemap SE maps
 out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ="${par_srl}" # [sng] Parallelism type
+pdq_flg='Yes' # [sng] Permute dimensions before regridding
 pdq_opt='' # [sng] ncpdq dimension permutation option
 ppc_prc='' # [nbr] Precision-preserving compression number of significant digits
 prc_typ='' # [sng] Procedure type
@@ -551,10 +553,12 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
+    echo "            CDO algorithms: cdo_bilinear|cdo_conservative (same as ESMF)"
     echo "            ESMF algorithms: bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch"
     echo "            NCO algorithms: nco_con (1st order conservative algorithm similar to \"conserve\"), nco_dwe (distance-weighted interpolation/extrapolation)"
-    echo "            Tempest algorithms: fv2fv|fv2fv_flx|fv2fv_stt|fv2se_flx|fv2se_stt|fv2se_alt|se2fv_flx|se2fv_stt|se2fv_alt|se2se|tempest"
+    echo "            Tempest (and MOAB-Tempest) algorithms: fv2fv|fv2fv_flx|fv2fv_stt|fv2se_flx|fv2se_stt|fv2se_alt|se2fv_flx|se2fv_stt|se2fv_alt|se2se|tempest"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
+    echo " ${fnt_bld}--add_fll${fnt_nrm}  Add _FillValue to fields with empty destination cells (default ${fnt_bld}${add_msv}${fnt_nrm}) [${fnt_tlc}add_fll, add_fill_value, fll_mpt, fill_empty${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng, or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, tpl, tpl_fl, template, template_file${fnt_nrm}]"
     echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
@@ -584,15 +588,16 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--nm_src${fnt_nrm}   Short name of source grid (required for MWF, no default) [${fnt_tlc}nm_src, name_src, nm_sht_src, short_name_source${fnt_nrm}]"
     echo " ${fnt_bld}--no_cll_msr${fnt_nrm}  Omit cell_measures variables (e.g., 'area') [${fnt_tlc}no_area, no_cll_msr, no_cell_measures${fnt_nrm}]"
     echo " ${fnt_bld}--no_frm_trm${fnt_nrm}  Omit formula_terms variables (e.g., 'hyba', 'PS') [${fnt_tlc}no_frm_trm, no_formula_terms${fnt_nrm}]"
+    echo " ${fnt_bld}--no_permute${fnt_nrm}  Do not permute dimensions before regridding [${fnt_tlc}no_no_prm, no_pdq, no_ncpdq${fnt_nrm}]"
     echo " ${fnt_bld}--no_stg_grd${fnt_nrm}  Omit staggered grid variables ('slat, slon, w_stag') [${fnt_tlc}no_stg_grd, no_stg, no_stagger, no_staggered_grid${fnt_nrm}]"
     echo " ${fnt_bld}--no_stdin${fnt_nrm} Do not check stdin for input file list [${fnt_tlc}no_stdin, no_inp_std, no_redirect, no_standard_input${fnt_nrm}]"
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}out_fl${fnt_nrm}   Output-file (regridded file) (empty copies Input filename) (default ${fnt_bld}${out_fl}${fnt_nrm}) [${fnt_tlc}out_fl, out_file, output_file${fnt_nrm}]"
     echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, pdq_typ, prm_typ, procedure${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
+    echo " ${fnt_bld}--pdq_opt${fnt_nrm}  ncpdq dimension permutation string (empty means none) (default ${fnt_bld}${pdq_opt}${fnt_nrm}) [${fnt_tlc}pdq, pdq_opt, prm, prm_opt, permute${fnt_nrm}]"
 # 20171101: Implement but do not yet advertise PPC in ncremap
 # 20200618: Document and advertise PPC in ncremap
-    echo " ${fnt_bld}--pdq_opt${fnt_nrm}  ncpdq dimension permutation string (empty means none) (default ${fnt_bld}${pdq_opt}${fnt_nrm}) [${fnt_tlc}pdq, pdq_opt, prm, prm_opt, permute${fnt_nrm}]"
     echo " ${fnt_bld}--ppc_prc${fnt_nrm}  Precision-preserving compression (empty means none) (default ${fnt_bld}${ppc_prc}${fnt_nrm}) [${fnt_tlc}ppc, ppc_prc, precision, quantize${fnt_nrm}]"
     echo " ${fnt_bld}--preserve${fnt_nrm} Preserved statistic (empty preserves integral, except mean for MPAS) (default ${fnt_bld}${prs_stt}${fnt_nrm}) [${fnt_tlc}preserve, prs_stt, preserved_statistic${fnt_nrm}]"
     echo " ${fnt_bld}--prt_nbr${fnt_nrm}  Partition number for MOAB parallelism (default ${fnt_bld}${prt_nbr}${fnt_nrm}) [${fnt_tlc}prt_nbr, prt, partition_number${fnt_nrm}]"
@@ -725,6 +730,8 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       # Long options with short counterparts, ordered by short option key
 	       a2o | atm2ocn | b2l | big2ltl | l2s | lrg2sml ) a2o_flg='Yes' ;; # # Atmosphere-to-ocean
 	       a2o=?* | atm2ocn=?* | b2l=?* | big2ltl=?* | l2s=?* | lrg2sml=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Atmosphere-to-ocean
+	       add_fll | add_fill_value | fll_mpt | fill_empty ) add_fll='Yes' ;; # # Add _FillValue to fields with empty destination cells
+	       add_fll=?* | add_fill_value=?* | fll_mpt=?* | fill_empty=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Add _FillValue to fields with empty destination cells
 	       alg_typ=?* | algorithm=?* | regrid_algorithm=?* ) alg_typ="${LONG_OPTARG}" ;; # -a # Algorithm
 	       clm_flg | climatology_flag ) clm_flg='Yes' ;; # -C # Climo flag (undocumented)
 	       clm_flg=?* | climatology_flag=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # clm_flg
@@ -764,11 +771,13 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       no_area=?* | no_cell_msr=?* | no_cell_measures=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit cell_measures variables
 	       no_frm_trm | no_frm | no_formula_terms ) no_frm_trm='Yes' ;; # # Omit formula_terms variables
 	       no_frm_trm=?* | no_frm=?* | no_formula_terms=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit formula_terms variables
+	       no_permute | no_prm | no_pdq | no_ncpdq ) pdq_flg='No' ;; # # Do not permute dimensions before regridding
+	       no_permute=?* | no_prm=?* | no_pdq=?* | no_ncpdq=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Do not permute dimensions before regridding
 	       drc_out=?* | out_drc=?* | dir_out=?* | out_dir=?* | output=?* ) drc_usr="${LONG_OPTARG}" ;; # -O # Output directory
 	       out_fl=?* | output_file=?* | out_file=?* ) out_fl="${LONG_OPTARG}" ;; # -o # Output file
 	       prc_typ=?* | pdq_typ=?* | prm_typ=?* | procedure=?* ) prc_typ="${LONG_OPTARG}" ;; # -P # Procedure type
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
-	       pdq=?* | pdq_opt=?* | prm=?* | prm_opt=?* | permute=?* ) pdq_opt="${LONG_OPTARG}" ;; # # ncpdq dimension permutation option
+	       pdq=?* | prm=?* | prm_opt=?* | permute=?* ) pdq_opt="${LONG_OPTARG}" ;; # # ncpdq dimension permutation option
 	       ppc=?* | ppc_prc=?* | precision=?* | quantize=?* ) ppc_prc="${LONG_OPTARG}" ;; # # Precision-preserving compression
 	       prs_stt=?* | preserve=?* | preserved_statistic=?* ) prs_stt="${LONG_OPTARG}" ;; # # Preserved statistic
 	       prt=?* | prt_nbr=?* | partition_number=?* ) prt_nbr="${LONG_OPTARG}" ;; # # Partition number for MOAB parallelism
@@ -1305,6 +1314,9 @@ fi # !no_frm_trm
 if [ "${no_stg_grd}" = 'Yes' ]; then 
     rgr_opt="${rgr_opt} --rgr no_stagger"
 fi # !no_stg_grd
+if [ "${add_fll}" = 'Yes' ]; then 
+    rgr_opt="${rgr_opt} --rgr add_fill_value"
+fi # !add_fll
 if [ -n "${prs_stt}" ]; then 
     if [ "${prs_stt}" != 'mean' ] && [ "${prs_stt}" != 'integral' ]; then 
 	echo "${spt_nm}: ERROR \"${prs_stt}\" is an invalid value for preserved_statistic"
@@ -1428,14 +1440,14 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 	fi # !err
 	dpt_flg='Yes'
     fi # !dpt_fl
-    if [ -z "${pdq_opt}" ]; then
+    if [ -z "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then
 #	pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # MPAS-Ocean
 #	pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # MPAS-SeaIce
 #	pdq_opt='-a Time,nVertInterfaces,nCells' # 20210226: MALI
 #	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,ONE,TWO,nEdges,nCells' # MPAS LI,O,SI and depth
 #	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20190806: MPAS LI,O,SI,depth and BGC in one swell foop
 	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,maxEdges,nEdges,nCells' # 20210226: MPAS LI,O,SI,depth and new SI BGC in one swell foop
-    fi # !pdq_opt
+    fi # !pdq_opt && pdq_flg
     if [ -n "${rnr_thr}" ]; then 
 	# rnr_thr='off' in MPAS mode turns-off renormalization
 	if [ "${rnr_thr}" != 'off' ]; then 
@@ -1967,6 +1979,7 @@ fi # !mpi_flg
 # Print initial state
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: a2o_flg  = ${a2o_flg}\n"
+    printf "dbg: add_fll  = ${add_fll}\n"
     printf "dbg: alg_opt  = ${alg_opt}\n"
     printf "dbg: alg_typ  = ${alg_typ}\n"
     printf "dbg: att_flg  = ${att_flg}\n"
@@ -2021,6 +2034,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: np_se_nbr= ${np_se_nbr}\n"
     printf "dbg: out_fl   = ${out_fl}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
+    printf "dbg: pdq_flg  = ${pdq_flg}\n"
     printf "dbg: pdq_opt  = ${pdq_opt}\n"
     printf "dbg: ppc_prc  = ${ppc_prc}\n"
     printf "dbg: prs_stt  = ${prs_stt}\n"
@@ -2157,7 +2171,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     if [ ${fl_nbr} -eq 0 ]; then
 	printf "Map/grid-only run: no input data detected therefore will exit after generating map and/or grid\n"
     fi # !fl_nbr
-    if [ -n "${pdq_opt}" ]; then 
+    if [ -n "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then 
 	printf "Input data shaped in \"${prc_typ}\"-order, will first permute with \"ncpdq ${pdq_opt}\"\n"
     fi # !pdq_opt
     if [ "${d2f_flg}" = 'Yes' ]; then

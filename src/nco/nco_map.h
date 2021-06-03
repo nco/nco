@@ -69,14 +69,14 @@ extern "C" {
   
   poly_sct *           /* return a ply_sct with lat/lon minmax and total area */
   nco_msh_stats
-  (double *area,       /* I [sr] Area of  grid */
-   int *msk,           /* I [flg] Mask on  grid */
-   double *lat_ctr,    /* I [dgr] Latitude  centers of  grid */
-   double *lon_ctr,    /* I [dgr] Longitude centers of  grid */
-   double *lat_crn,    /* I [dgr] Latitude  corners of  grid */
-   double *lon_crn,    /* I [dgr] Longitude corners of  grid */
-   size_t grd_sz,      /* I [nbr] Number of elements in single layer of  grid */
-   long grd_crn_nbr); /* I [nbr] Maximum number of corners in  gridcell */
+  (double *area,       /* I [sr] Area of grid */
+   int *msk,           /* I [flg] Mask on grid */
+   double *lat_ctr,    /* I [dgr] Latitude  centers of grid */
+   double *lon_ctr,    /* I [dgr] Longitude centers of grid */
+   double *lat_crn,    /* I [dgr] Latitude  corners of grid */
+   double *lon_crn,    /* I [dgr] Longitude corners of grid */
+   size_t grd_sz,      /* I [nbr] Number of elements in single layer of grid */
+   long grd_crn_nbr);  /* I [nbr] Maximum number of corners in gridcell */
   
   void
   nco_msh_lon_crr
@@ -89,11 +89,10 @@ extern "C" {
   void
   nco_msh_poly_lst_wrt
   (const char *fl_out,
-   poly_sct ** pl_lst,
+   poly_sct **pl_lst,
    int pl_nbr,
    nco_grd_lon_typ_enm grd_lon_typ,
-   int fl_out_fmt
-   );
+   int fl_out_fmt);
   
   int
   nco_msh_att_char
@@ -101,14 +100,13 @@ extern "C" {
    int var_id,
    const char *var_nm,
    const char *att_nm,
-   const char *att_val
-   );
+   const char *att_val);
 
   nco_bool
   nco_map_hst_mk
-  (var_sct* var_row,
-   int row_max,
-   int hst_ar[],
+  (var_sct *var_row_or_col,
+   int row_or_col_max,
+   int *hst_arr,
    int hst_sz);
   
   void
@@ -134,7 +132,7 @@ extern "C" {
    nco_bool flg_area_wgt);
   
   nco_bool
-  nco_map_frac_b_clc   /* calculate frac from mapping weights */
+  nco_map_frac_b_clc /* Calculate frac_b from mapping weights */
   (var_sct *var_S,
    var_sct *var_row,
    var_sct *var_frac_b);
@@ -149,7 +147,7 @@ extern "C" {
    var_sct *var_frac_a);
 
   /* create tree */
-  KDTree**
+  KDTree **
   nco_map_kd(
   poly_sct **pl_lst,
   int pl_cnt,
@@ -165,7 +163,6 @@ extern "C" {
   void
   nco_poly_area_add
   (poly_sct *pl);
-
 
 #ifdef __cplusplus
 } /* end extern "C" */

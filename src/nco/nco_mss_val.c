@@ -13,8 +13,10 @@ ptr_unn /* O [sct] Default missing value for type type */
 nco_mss_val_mk /* [fnc] Return default missing value for type type */
 (const nc_type type) /* I [enm] netCDF type of operand */
 {
-  /* Threads: Routine is thread safe and makes no unsafe routines */
-  /* Purpose: Return pointer union containing default missing value for type type */
+  /* Threads: Routine is thread-safe and makes no unsafe routines */
+
+  /* Purpose: Return pointer union containing default missing value for type type
+     NB: Calling routine must free memory */
 
   ptr_unn mss_val;
 
@@ -47,6 +49,38 @@ nco_mss_val_mk /* [fnc] Return default missing value for type type */
   return mss_val;
 
 } /* end nco_mss_val_mk() */
+  
+val_unn /* O [sct] Default missing value for type type */
+nco_mss_val_dfl_get /* [fnc] Return default missing value for type type */
+(const nc_type type) /* I [enm] netCDF type of operand */
+{
+  /* Threads: Routine is thread-safe and makes no unsafe routines */
+
+  /* Purpose: Return pointer union containing default missing value for type type */
+
+  val_unn mss_val;
+
+  mss_val.i=int_CEWI;
+
+  switch(type){
+  case NC_FLOAT: mss_val.f=NC_FILL_FLOAT; break; 
+  case NC_DOUBLE: mss_val.d=NC_FILL_DOUBLE; break; 
+  case NC_INT: mss_val.i=NC_FILL_INT; break;
+  case NC_SHORT: mss_val.s=NC_FILL_SHORT; break;
+  case NC_CHAR: mss_val.c=NC_FILL_CHAR; break;
+  case NC_BYTE: mss_val.b=NC_FILL_BYTE; break;
+  case NC_UBYTE: mss_val.ub=NC_FILL_UBYTE; break;
+  case NC_USHORT: mss_val.us=NC_FILL_USHORT; break;
+  case NC_UINT: mss_val.ui=NC_FILL_UINT; break;
+  case NC_INT64: mss_val.i64=NC_FILL_INT64; break;
+  case NC_UINT64: mss_val.ui64=NC_FILL_UINT64; break;
+  case NC_STRING: mss_val.sng=NC_FILL_STRING; break;
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* !type */
+
+  return mss_val;
+
+} /* !nco_mss_val_dfl_get() */
   
 nco_bool /* O [flg] One or both operands have missing value */
 nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 */
@@ -238,7 +272,7 @@ nco_mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
 (const var_sct * const var1, /* I [sct] Variable with template missing value to copy */
  var_sct * const var2) /* I/O [sct] Variable with missing value to fill-in/overwrite */
 {
-  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Threads: Routine is thread-safe and calls no unsafe routines */
   /* Purpose: Copy missing value from var1 to var2
      On exit, var2 contains has_mss_val, and mss_val identical to var1
      Type of mss_val in var2 will agree with type of var2

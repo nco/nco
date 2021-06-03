@@ -2,7 +2,15 @@
 
 	* NCO 5.0.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha04: Pichetti';git push
-	git tag -a 5.0.0-alpha04 -m '';git push --tags
+	git tag -a 5.0.0-alpha04 -m 'ncremap CDO stubs, add_fll, no_permute';git push --tags
+
+	* nco_mss_val.c add nco_mss_val_dfl_get()
+
+	* ncks handle --add_fll request during file lay-out
+
+	* ncremap add --add_fll flag to add _FillValue to fields with empty destination cells
+
+	* ncremap add --no_permute flag to turn-off dimension permutation with MPAS
 
 	* ncremap add "coordinates" attribute to area variable in inferred skeleton files
 

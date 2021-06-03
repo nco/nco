@@ -298,6 +298,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_msh=NULL; /* [sng] Name of SCRIP intersection mesh file to create */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
   rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
+  rgr->flg_add_fll=False; /* [flg] Add _FillValue to fields with empty destination cells */
   rgr->flg_area_out=True; /* [flg] Add area to output */
   rgr->flg_cf_units=False; /* [flg] Generate CF-compliant (breaks ERWG 7.1.0r-) units fields in SCRIP-format grid files */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
@@ -389,6 +390,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_msk_out=True;
       continue;
     } /* !mask */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"add_fll") || !strcmp(rgr_lst[rgr_var_idx].key,"add_fill_value") || !strcmp(rgr_lst[rgr_var_idx].key,"fll_mpt") || !strcmp(rgr_lst[rgr_var_idx].key,"fill_empty")){
+      rgr->flg_add_fll=True;
+      continue;
+    } /* !add_fll */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"cell_measures") || !strcmp(rgr_lst[rgr_var_idx].key,"cll_msr")){
       rgr->flg_cll_msr=True;
       continue;
@@ -750,7 +755,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     } /* !wgt_typ */
     (void)fprintf(stderr,"%s: ERROR %s reports unrecognized key-value option to --rgr switch: %s\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key);
     nco_exit(EXIT_FAILURE);
-  } /* end for */
+  } /* !rgr_var_idx */
 
   /* Eliminate sticky wickets: Give nfr precedence over grd */
   if(rgr->flg_nfr && rgr->flg_grd) rgr->flg_grd=False; 
@@ -1764,7 +1769,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	} /* !flg_add_msv_att */
       } /* !rcd */
     } /* !var */
-  } /* end idx_tbl */
+  } /* !idx_tbl */
   
   /* Free pre-allocated array space */
   if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
@@ -3405,7 +3410,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd=nco_get_vars(in_id,wgt_raw_id,dmn_srt,dmn_cnt,dmn_srd,wgt_raw,NC_DOUBLE);
   } /* !SCRIP */
 
-  /* Pre-subtract one from row/column addresses (stored, by convention, as Fortran indices) to optimize access with C indices */
+  /* Pre-subtract one from row/column addresses (stored, by convention, as Fortran indices) to optimize later access with C indices */
   size_t lnk_nbr; /* [nbr] Number of links */
   size_t lnk_idx; /* [idx] Link index */
   lnk_nbr=mpf.num_links;
@@ -4195,6 +4200,28 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     } /* !flg_msk_out */
   } /* !flg_grd_out_rct */
 
+  /* Add _FillValue to empty destination cells, if requested */
+  nco_bool flg_add_fll=rgr->flg_add_fll; /* [flg] Add _FillValue to fields with empty destination cells */
+  nco_bool flg_dst_mpt=False; /* [flg] At least one destination cell is empty */
+  size_t dst_idx; /* [idx] Index on destination grid */
+  /* Determine whether any destination cells are, in fact, empty */
+  if(flg_add_fll){
+    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){ /* For each destination cell... */
+      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){ /* ...does any weight... */
+	if(row_dst_adr[lnk_idx] == dst_idx){ /* ...contribute to that cell? */
+	  /* If so, break lnk_idx loop and continue to next iteration of dst_idx loop */
+	  break;
+	} /* !row_dst_adr */
+      } /* !lnk_idx */
+      /* If weight loop reached end without a match, then this destination cell is empty */
+      if(lnk_idx == lnk_nbr){
+	flg_dst_mpt=True;
+	break;
+      } /* !lnk_idx */
+    } /* !dst_idx */
+    if(flg_add_fll && flg_dst_mpt && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one destination cell, Fortran (1-based) row index %lu, is empty. User requested (with --add_fll) that empty cells receive _FillValue, so will ensure that all regridded fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm,dst_idx+1L);
+  } /* !flg_add_fll */
+  
   /* Pre-allocate dimension ID and cnt/srt space */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
   int dmn_in_fst; /* [idx] Offset of input- relative to output-dimension due to non-MRV dimension insertion */
@@ -4239,7 +4266,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  dmn_in_fst=0;
 	  rcd=nco_inq_var_packing(in_id,var_id_in,&flg_pck);
 	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
-	  has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,(double *)NULL);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
 	    /* Is horizontal dimension last, i.e., most-rapidly-varying? */
@@ -4358,10 +4384,20 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    aed_mtd_cll_msr.id=var_id_out;
 	    (void)nco_aed_prc(out_id,var_id_out,aed_mtd_cll_msr);
 	  } /* !flg_cll_msr */
+	  /* 20210602: Ensure all regridded variables have _FillValue if user requested _FillValue in empty cells and there are empty cells */
+	  if(flg_add_fll && flg_dst_mpt){
+	    /* Check for _FillValue here iff user requests non-default behavior */
+	    has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,(double *)NULL);
+	    if(!has_mss_val){
+	      val_unn mss_val_dfl; /* [] Default _FillValue */
+	      mss_val_dfl=nco_mss_val_dfl_get(var_typ_out);
+	      rcd=nco_put_att(out_id,var_id_out,"_FillValue",var_typ_out,1L,(void *)(&mss_val_dfl));
+	    } /* !has_mss_val */
+	  } /* !flg_add_fll */
 	} /* !flg_rgr */
       } /* !rcd */
     } /* !var */
-  } /* end idx_tbl */
+  } /* !idx_tbl */
 
   /* Free pre-allocated array space */
   /* col_nm_in will not otherwise be free'd if it was guessed as usual suspect */
@@ -4651,7 +4687,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   int lvl_idx; /* [idx] Level index */
   int lvl_nbr; /* [nbr] Number of levels */
   int thr_idx; /* [idx] Thread index */
-  size_t dst_idx; 
   size_t idx_in; /* [idx] Input grid index */
   size_t idx_out; /* [idx] Output grid index */
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
