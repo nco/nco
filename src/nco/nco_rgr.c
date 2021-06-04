@@ -3352,7 +3352,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   } /* !sometimes non-unity */
   if(flg_frc_nrm && rgr->flg_rnr){
     // 20190918: Weaken from WARNING to INFO because NCO no longer renormalizes when using "destarea" maps unless specifically requested to with --rnr_thr
-    (void)fprintf(stdout,"%s: INFO %s reports manual request to renormalize fields to preserve gridcell mean-values (rather than area-integrated values) in destination gridcells that are incompletely covered by valid data in source gridcells (i.e., non-unity frc_dst = dst_frac = frac_b)\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: INFO %s reports manual request to renormalize partially overlapped destination gridcells (i.e., gridcells with non-unity frc_dst = dst_frac = frac_b) to preserve mean-value of valid fraction of source gridcells (usually most useful for state variables), rather than dilute valid-fraction mean over total destination gridcell area to preserve area-integral of source data (the default, often most useful for ensuring global conservation of fluxes).\n",nco_prg_nm_get(),fnc_nm);
     //(void)fprintf(stdout,"%s: INFO %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b at same time global metadata specifies normalization type = %s. Normalizing twice can be an error, depending on intent of each. Charlie is all ears on how NCO should handle this :)\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
     //nco_exit(EXIT_FAILURE);
   } /* !flg_rnr */
