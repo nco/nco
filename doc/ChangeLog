@@ -2,9 +2,11 @@
 
 	* NCO 5.0.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha04: Pichetti';git push
-	git tag -a 5.0.0-alpha04 -m 'ncremap CDO stubs, add_fll, no_permute';git push --tags
+	git tag -a 5.0.0-alpha04 -m 'ncremap CDO stubs, add_fll, no_permute, msk_nm, fix map mask_a/b';git push --tags
 
-	* nco_map_mk() allocate msk_in, msk_out as integers so output is correct
+	* nco_map_mk() allocate msk_in/out as integer not double so output mask is correct (potentially large bug for maps created with 4.9.9)
+
+	* nco_rgr_wgt() search for, and output if requested, mask_b in maps from all weight generators
 
 	* ncremap pass mask_out to mask_nm not mask_var so name gets used in regridded files
 

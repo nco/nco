@@ -826,7 +826,8 @@ To build NCO from source yourself using MSVC with CMake, please see example in <
 <ul>
 <li><a href="http://matzeri.altervista.org/x86_64/release/nco">nco-4.9.9</a> Cygwin-compatible release.</li>
 </ul>
-Thanks to Marco Atzeri, Mark Hadfield, and Pedro Vicente for creating Cygwin tarballs over the years.
+In June, 2021 NCO became an officially supported Cygwin package, and can now be installed via the Cygwin setup installer.
+Thanks to Marco Atzeri, Mark Hadfield, and Pedro Vicente for creating Cygwin ports and tarballs over the years.
 Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin.
 
 <a name="python"></a> <!-- http://nco.sf.net#python -->
