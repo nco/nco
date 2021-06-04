@@ -4134,7 +4134,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
     if(flg_msk_out){
-      rcd+=nco_def_var(out_id,msk_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&msk_out_id);
+      rcd+=nco_def_var(out_id,msk_nm_out,(nc_type)NC_INT,dmn_nbr_2D,dmn_ids_out,&msk_out_id);
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,msk_out_id,shuffle,deflate,dfl_lvl);
       var_crt_nbr++;
     } /* !flg_msk_out */
@@ -4192,7 +4192,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
     if(flg_msk_out){
-      rcd+=nco_def_var(out_id,msk_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&msk_out_id);
+      rcd+=nco_def_var(out_id,msk_nm_out,(nc_type)NC_INT,dmn_nbr_2D,dmn_ids_out,&msk_out_id);
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,msk_out_id,shuffle,deflate,dfl_lvl);
       var_crt_nbr++;
     } /* !flg_msk_out */
@@ -4600,7 +4600,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(flg_msk_out){
       dmn_srt_out[0]=0L;
       dmn_cnt_tuo[0]=col_nbr_out;
-      (void)nco_put_vara(out_id,msk_out_id,dmn_srt_out,dmn_cnt_tuo,msk_out,crd_typ_out);
+      (void)nco_put_vara(out_id,msk_out_id,dmn_srt_out,dmn_cnt_tuo,msk_out,(nc_type)NC_INT);
     } /* !flg_msk_out */
   } /* !flg_grd_out_1D */
   if(flg_grd_out_crv){
@@ -4616,7 +4616,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_tuo,frc_out,crd_typ_out);
     } /* !flg_frc_out_wrt */
     if(flg_msk_out){
-      (void)nco_put_vara(out_id,msk_out_id,dmn_srt_out,dmn_cnt_tuo,msk_out,crd_typ_out);
+      (void)nco_put_vara(out_id,msk_out_id,dmn_srt_out,dmn_cnt_tuo,msk_out,(nc_type)NC_INT);
     } /* !flg_msk_out */
     dmn_srt_out[0]=dmn_srt_out[1]=dmn_srt_out[2]=0L;
     dmn_cnt_tuo[0]=lat_nbr_out;
@@ -4666,7 +4666,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_tuo,frc_out,crd_typ_out);
     } /* !flg_frc_out_wrt */
     if(flg_msk_out){
-      (void)nco_put_vara(out_id,msk_out_id,dmn_srt_out,dmn_cnt_tuo,msk_out,crd_typ_out);
+      (void)nco_put_vara(out_id,msk_out_id,dmn_srt_out,dmn_cnt_tuo,msk_out,(nc_type)NC_INT);
     } /* !flg_msk_out */
   } /* !flg_grd_out_rct */
 
