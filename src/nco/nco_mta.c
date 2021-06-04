@@ -175,24 +175,28 @@ nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
 {
   const char fnc_nm[]="nco_opt_is_flg()"; /* [sng] Function name */
   const char *rgr_flags[]={
-    "no_area",
-    "no_area_out",
+    "add_fill_value",
+    "add_fll",
+    "cell_area_nco",
+    "cell_area_quad",
     "cell_measures",
     "cll_msr",
-    "no_cell_measures",
-    "no_cll_msr",
-    "curvilinear",
     "crv",
+    "curvilinear",
     "dgn_area",
-    "diagnose_area",
     "dgn_bnd",
+    "diagnose_area",
     "diagnose_bounds",
+    "fill_empty",
+    "fll_mpt",
     "infer",
     "nfr",
+    "no_area",
+    "no_area_out",
+    "no_cell_measures",
+    "no_cll_msr",
     "no_stagger",
-    "no_stg",
-    "cell_area_nco",
-    "cell_area_quad"
+    "no_stg"
     };
   const char *gaa_flags[]={""};
   const char *trr_flags[]={""};
@@ -216,25 +220,25 @@ nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
   (void)fprintf(stderr, "%s: ERROR %s Multi-Argument (MTA) parser reports unrecognized option \"%s\"\n%s: HINT Lack of equals sign indicates this may be a mis-typed flag rather than an erroneous key-value pair specification. Valid MTA flags are listed below. Synonyms for each flag are listed on the same line. A leading \"--\" is optional. MTA documentation is at http://nco.sf.net/nco.html#mta\n",nco_prg_nm_get(),fnc_nm,flag,nco_prg_nm_get());
 
   (void)fprintf(stderr, "Regridder flags (\"rgr\" indicator):\n");
-  for(unsigned int index=0;index<sizeof(rgr_flags)/sizeof(char *);index++){
-    (void)fprintf(stderr,"  %2d. %s\n",index+1,rgr_flags[index]);
-  }
+  for(unsigned int flg_idx=0;flg_idx<sizeof(rgr_flags)/sizeof(char *);flg_idx++){
+    (void)fprintf(stderr,"  %2d. %s\n",flg_idx+1,rgr_flags[flg_idx]);
+  } /* !flg_idx */
   /*
     (void)fprintf(stderr, "ncks gaa (Global Attribute Adding) flags:\n");
-    for(unsigned int index=0;index<sizeof(gaa_flags)/sizeof(char *);index++)
+    for(unsigned int flg_idx=0;flg_idx<sizeof(gaa_flags)/sizeof(char *);flg_idx++)
     {
-      (void)fprintf(stderr, "%s\n",gaa_flags[index]);
+      (void)fprintf(stderr, "%s\n",gaa_flags[flg_idx]);
     }
   
   (void)fprintf(stderr, "ncks trr (Terraref) flags:\n");
-  for(unsigned int index=0;index<sizeof(trr_flags)/sizeof(char *);index++)
+  for(unsigned int flg_idx=0;flg_idx<sizeof(trr_flags)/sizeof(char *);flg_idx++)
     {
-      (void)fprintf(stderr, "%s\n",trr_flags[index]);
+      (void)fprintf(stderr, "%s\n",trr_flags[flg_idx]);
     }
   (void)fprintf(stderr, "ncks ppc (Precision-Preserving Compression) flags:\n");
-  for(unsigned int index=0;index<sizeof(ppc_flags)/sizeof(char *);index++)
+  for(unsigned int flg_idx=0;flg_idx<sizeof(ppc_flags)/sizeof(char *);flg_idx++)
     {
-      (void)fprintf(stderr, "%s\n",ppc_flags[index]);
+      (void)fprintf(stderr, "%s\n",ppc_flags[flg_idx]);
     }
   */
   
@@ -275,12 +279,12 @@ nco_count_blocks // [fnc] Check number of string blocks that will be split with 
  const char *delimiter) // I [sng] Delimiter
 {
   int sng_nbr=1;
-  const char *crnt_chr=strstr(args,delimiter);
+  const char *crr_chr=strstr(args,delimiter);
   
-  while(crnt_chr){
-    if((crnt_chr-1L)[0] != '\\') sng_nbr++;
-    crnt_chr=strstr(crnt_chr+1L,delimiter);
-  }
+  while(crr_chr){
+    if((crr_chr-1L)[0] != '\\') sng_nbr++;
+    crr_chr=strstr(crr_chr+1L,delimiter);
+  } /* !crr_chr */
   return sng_nbr;
 } /* !nco_count_blocks() */
 

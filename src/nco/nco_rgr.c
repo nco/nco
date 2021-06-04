@@ -2725,28 +2725,26 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   msk_dst_id=NC_MIN_INT;
   if(flg_msk_out){
     switch(nco_rgr_mpf_typ){
-    case nco_rgr_mpf_ESMF:
-    case nco_rgr_mpf_NCO:
-      rcd+=nco_inq_varid(in_id,"mask_b",&msk_dst_id); /* SCRIP: dst_grid_imask */
-      break;
     case nco_rgr_mpf_SCRIP:
-      rcd+=nco_inq_varid(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
+      rcd=nco_inq_varid_flg(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
       break;
+    case nco_rgr_mpf_ESMF:
     case nco_rgr_mpf_MBTR:
+    case nco_rgr_mpf_NCO:
     case nco_rgr_mpf_Tempest:
     case nco_rgr_mpf_unknown:
       /* 20190315: TempestRemap did not propagate mask_a/b until ~201902
 	 20210519: MBTR did not propagate mask_a/b as of ~202105 */
-      rcd+=nco_inq_varid_flg(in_id,"mask_b",&msk_dst_id);
-      if(rcd == NC_ENOTVAR){
-	(void)fprintf(stderr,"%s: INFO %s reports map-file lacks mask_b. %sContinuing anyway without masks...\n",nco_prg_nm_get(),fnc_nm,(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_MBTR) ? "Probably this is either a TempestRemap map-file created before ~201902 when TR began to propagate mask_a/b variables, or it is a MOAB-TempestRemap file which has never (as of 202105) propagated mask_a/b variables" : "");
-      } /* !rcd */
-      rcd=NC_NOERR;
+      rcd=nco_inq_varid_flg(in_id,"mask_b",&msk_dst_id); /* SCRIP: dst_grid_imask */
       break;
     default:
       (void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unknown map-file type\n",nco_prg_nm_get(),fnc_nm);
       nco_dfl_case_generic_err();
     } /* !nco_rgr_mpf_typ */
+    if(rcd == NC_ENOTVAR){
+      (void)fprintf(stderr,"%s: INFO %s reports map-file lacks mask_b. %sContinuing anyway without masks...\n",nco_prg_nm_get(),fnc_nm,(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_MBTR) ? "Probably this is either a TempestRemap map-file created before ~201902 when TR began to propagate mask_a/b variables, or it is a MOAB-TempestRemap file which has never (as of 202105) propagated mask_a/b variables" : "");
+      rcd=NC_NOERR;
+    } /* !rcd */
     if(msk_dst_id == NC_MIN_INT) flg_msk_out=False;
   } /* !flg_msk_out */
   /* Obtain fields whose names are independent of mapfile type */
@@ -4219,7 +4217,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	break;
       } /* !lnk_idx */
     } /* !dst_idx */
-    if(flg_add_fll && flg_dst_mpt && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one destination cell, Fortran (1-based) row index %lu, is empty. User requested (with --add_fll) that empty cells receive _FillValue, so will ensure that all regridded fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm,dst_idx+1L);
+    if(flg_add_fll && flg_dst_mpt && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one destination cell, Fortran (1-based) row index %lu, is empty. User requested (with --add_fll) that empty cells receive _FillValue, so regridder will ensure that all regridded fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm,dst_idx+1L);
   } /* !flg_add_fll */
   
   /* Pre-allocate dimension ID and cnt/srt space */
@@ -4893,6 +4891,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt_out[dmn_idx];
 	/* Missing value setup */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
+
+	/* 20210602 fxm Must obtain mss_val from output not input file so --add_fll takes effect */
 
 	/* Memory requirements of next four malloc's (i.e., exclusive of wgt_raw) sum to ~7*sizeof(uncompressed var) for NC_FLOAT and ~3.5*sizeof(uncompressed var) for NC_DOUBLE */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");

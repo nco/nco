@@ -1,8 +1,14 @@
-2021-06-02  Charlie Zender  <zender@uci.edu>
+2021-06-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha04: Pichetti';git push
 	git tag -a 5.0.0-alpha04 -m 'ncremap CDO stubs, add_fll, no_permute';git push --tags
+
+	* nco_map_mk() allocate msk_in, msk_out as integers so output is correct
+
+	* ncremap pass mask_out to mask_nm not mask_var so name gets used in regridded files
+
+2021-06-02  Charlie Zender  <zender@uci.edu>
 
 	* nco_mss_val.c add nco_mss_val_dfl_get()
 

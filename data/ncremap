@@ -340,6 +340,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # CDO
 # cdo verifygrid grid_CMN-5x5.nc
 # ncremap --dbg=1 --vrb=3 --devnull=No --alg_typ=cdo_bil --in_fl=${DATA}/grids/t42_skl.nc --dst_fl=${DATA}/ne30/rgr/hfc_ANN_200001_200012_climo.nc --map=${DATA}/maps/map_t42_to_cmip6_180x360_cdo.20210701.nc
+# add_fll
+# ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=1' --add_fll --map=${DATA}/maps/map_racmo_566x438_icemask_to_greenland_r025_100x250_nco.20210501.nc ${HOME}/racmo.smb.nofill.nc ~/foo_nco.nofill.nc
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -1350,7 +1352,7 @@ if [ -n "${msk_dst}" ]; then
     nco_msk_dst="--rgr msk_var=${msk_dst}"
 fi # !msk_dst
 if [ -n "${msk_out}" ]; then 
-    nco_msk_out="--rgr msk_var=${msk_out}"
+    nco_msk_out="--rgr msk_nm=${msk_out}"
 fi # !msk_out
 if [ -n "${msk_src}" ]; then 
     nco_msk_src="--rgr msk_var=${msk_src}"

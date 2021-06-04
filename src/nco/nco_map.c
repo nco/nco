@@ -304,7 +304,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   area_in=(double *)nco_malloc(grd_sz_in*nco_typ_lng(crd_typ));
   frc_in=(double *)nco_malloc(grd_sz_in*nco_typ_lng(crd_typ));
-  msk_in=(int *)nco_malloc(grd_sz_in*nco_typ_lng(crd_typ));
+  msk_in=(int *)nco_malloc(grd_sz_in*nco_typ_lng(NC_INT));
   lon_ctr_in=(double *)nco_malloc(grd_sz_in*nco_typ_lng(crd_typ));
   lat_ctr_in=(double *)nco_malloc(grd_sz_in*nco_typ_lng(crd_typ));
   lon_crn_in=(double *)nco_malloc(mpf.src_grid_corners*grd_sz_in*nco_typ_lng(crd_typ));
@@ -320,7 +320,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   area_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ));
   frc_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ));
-  msk_out=(int *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ));
+  msk_out=(int *)nco_malloc(grd_sz_out*nco_typ_lng(NC_INT));
   lon_ctr_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ));
   lat_ctr_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ));
   lon_crn_out=(double *)nco_malloc(mpf.dst_grid_corners*grd_sz_out*nco_typ_lng(crd_typ));
@@ -330,7 +330,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   // if(area_out_id == NC_MIN_INT)
   for(idx=0;idx<grd_sz_out;idx++) area_out[idx]=-1.0;
 
-  /* If msk_out is not in file then set entire mask to True */
+  /* If msk_out is not in destination grid then set entire mask to True */
   if(msk_out_id == NC_MIN_INT)
     for(idx=0;idx<grd_sz_out;idx++) msk_out[idx]=1;
 
