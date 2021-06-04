@@ -24334,7 +24334,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
+ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o] [--add_fll] 
 [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f] [--dpt] [--dpt_fl=@var{dpt_fl}]
 [--dt_sng=@var{dt_sng}] [--esmf_typ=@var{esmf_typ}] 
 [--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}]
@@ -24342,7 +24342,7 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [-M] [-m @var{map_fl}] [--msh_fl=@var{msh_fl}]
 [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
 [-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
-[--no_cll_msr] [--no_frm_trm] [--no_pdq] [--no_stg_grd]
+[--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
 [--pdq=@var{pdq_opt}] [--ppc=@var{ppc_opt}] [--preserve=@var{prs_stt}]
 [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src] [--rnr_thr=@var{rnr_thr}] 

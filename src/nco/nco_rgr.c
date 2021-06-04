@@ -3301,7 +3301,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     nco_exit(EXIT_FAILURE);
   } /* !tst */
 
-  /* Verify frc_out is sometimes non-zero
+  /* Verify that frc_out is sometimes non-zero
      ESMF: "The grid frac arrays (frac_a and frac_b) are calculated by ESMF_RegridWeightGen. For conservative remapping, the grid frac array returns the area fraction of the grid cell which participates in the remapping. For bilinear and patch remapping, the destination grid frac array [frac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero."
      SCRIP: Similar to ESMF
      For both ESMF+SCRIP frac_[ab] are computed by the weight-generation algorithm and are not specified as part of the input grids
@@ -3319,7 +3319,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(frc_out[idx] == 0.0) break;
   if(nco_dbg_lvl_get() >= nco_dbg_std)
     if(idx != (long)grd_sz_out)
-      (void)fprintf(stdout,"%s: INFO %s reports frc_out == frac_b contains zero-elements (e.g., at 1D idx=%ld)\n",nco_prg_nm_get(),fnc_nm,idx);
+      (void)fprintf(stdout,"%s: INFO %s reports frc_out == frac_b contains zero-elements (e.g., at 1D idx = %ld)\n",nco_prg_nm_get(),fnc_nm,idx);
   /* Normalizing by frc_out is redundant iff frc_out == 1.0, so we can save time without sacrificing accuracy
      However, frc_out is often (e.g., for CS <-> RLL maps) close but not equal to unity (ESMF_RegridWeightGen issue?)
      Hence, decide whether to normalize by frc_out by diagnosing the furthest excursion of frc_out from unity */
@@ -4202,7 +4202,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   nco_bool flg_add_fll=rgr->flg_add_fll; /* [flg] Add _FillValue to fields with empty destination cells */
   nco_bool flg_dst_mpt=False; /* [flg] At least one destination cell is empty */
   size_t dst_idx; /* [idx] Index on destination grid */
-  /* Determine whether any destination cells are, in fact, empty */
+  /* Determine whether any destination cells are, in fact, empty
+     Logic here could be replaced by examining frac_b variable, if we trust input frac_b
+     And we do trust input frac_b since it is already used for renormalization */
   if(flg_add_fll){
     for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){ /* For each destination cell... */
       for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){ /* ...does any weight... */
@@ -4820,15 +4822,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 # endif /* 900 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 # else /* !old g++ */
 #  if defined(GXX_WITH_OPENMP5_GPU_SUPPORT) && 0
-#   pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#   pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #  else
-#   pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#   pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #  endif /* !GCC >= 9.0 */
 # endif /* !GCC < 4.9 */
 #endif /* !__INTEL_COMPILER */
@@ -4892,8 +4894,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Missing value setup */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 
-	/* 20210602 fxm Must obtain mss_val from output not input file so --add_fll takes effect */
-
 	/* Memory requirements of next four malloc's (i.e., exclusive of wgt_raw) sum to ~7*sizeof(uncompressed var) for NC_FLOAT and ~3.5*sizeof(uncompressed var) for NC_DOUBLE */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
@@ -4922,7 +4922,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	if(nco_dbg_lvl_get() >= nco_dbg_var) tm_srt=clock();
  
 	/* This first block is for "normal" variables without sub-gridscale fractions */
-	  if(!sgs_frc_out){
+	if(!sgs_frc_out){
 	  /* Apply weights */
 	  if(!has_mss_val){
 	    if(lvl_nbr == 1){
@@ -5150,12 +5150,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  } /* !sgs_msk_nm */
 	} /* !sgs_frc_out */
 
-	if(nco_dbg_lvl_get() >= nco_dbg_var){
-	  tm_end=clock();
-	  tm_drn=(float)(tm_end-tm_srt)/CLOCKS_PER_SEC;
-	  (void)fprintf(fp_stdout,"%s: INFO Compute time for %s (thread %d/%d): %g s\n",nco_prg_nm_get(),trv.nm,thr_idx,omp_get_num_threads(),tm_drn);
-	} /* !dbg */
-
 	if(nco_typ_ntg(var_typ_out)){
 	  /* 20210407: Round, with rint(), integer fields before sending to netCDF for output
 	     Otherwise implicit type conversion will truncate (rather than round) output values
@@ -5170,6 +5164,24 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      var_val_dbl_out[dst_idx]=rint(var_val_dbl_out[dst_idx]);
 	  } /* !has_mss_val */
 	} /* !nco_typ_ntg() */
+
+	if(flg_add_fll && !has_mss_val){
+	  /* 20210604: If --add_fll is requested, then initialize fields without _FillValue in input file to the default missing value in unmapped destination cells
+	     Otherwise empty destination cells will be zero (not _FillValue) in output file */
+	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+	    if(frc_out[dst_idx] == 0.0){
+	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]=NC_FILL_DOUBLE;
+	      } /* !lvl_idx */
+	    } /* !frc_out */
+	  } /* !dst_idx */
+	} /* !flg_add_fll */
+	
+	if(nco_dbg_lvl_get() >= nco_dbg_var){
+	  tm_end=clock();
+	  tm_drn=(float)(tm_end-tm_srt)/CLOCKS_PER_SEC;
+	  (void)fprintf(fp_stdout,"%s: INFO Compute time for %s (thread %d/%d): %g s\n",nco_prg_nm_get(),trv.nm,thr_idx,omp_get_num_threads(),tm_drn);
+	} /* !dbg */
 
 #pragma omp critical
 	{ /* begin OpenMP critical */
