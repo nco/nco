@@ -151,7 +151,7 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2021 Sep&nbsp;XX: 5.0.0 <i>In Progress...</i>
+<li>2021 Jun&nbsp;XX: 5.0.0 <i>In Progress...</i>
 <li>2021 May&nbsp;14: 4.9.9 ncremap masks, fixes
 <li>2021 Mar&nbsp;21: 4.9.8 Small features/fixes
 <li>2020 Dec&nbsp;27: 4.9.7 Small features/fixes
@@ -681,7 +681,7 @@ Sanitize input/output filenames;
 
 <p>Pre-built binary executables are available for many platforms.
 Our source tarballs are always up-to-date, and work on our
-development systems (Fedora, Ubuntu, and Mac OS&nbsp;X).
+development systems (Fedora, Ubuntu, and MacOS).
 We also attempt to provide (theoretically) platform-independent sources
 in the most common Linux package formats (Debian and RPM).
 Below are one-line installation instructions and links to these and to
@@ -776,7 +776,7 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;Darwin</a></h3>
 <ul>
 <!-- 
-# Mac OS X 11.3 (Big Sur) systems (firn, sastrugi):
+# MacOS 11.3 (Big Sur) systems (firn, sastrugi):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
 cd ~/bin;tar cvzf ${DATA}/nco-4.9.9.macos.11.3.tar.gz nc*;scp ${DATA}/nco-4.9.9.macos.11.3.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
@@ -785,7 +785,7 @@ The most up-to-date executables are probably those in the tarball below. Those u
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
-<li><a href="src/nco-4.0.7_x86_10.6.dmg">nco-4.0.7_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.7_x86_10.6.dmg"-->): For Mac OS 10.6 (last updated <!--#flastmod file="src/nco-4.0.7_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
+<li><a href="src/nco-4.0.7_x86_10.6.dmg">nco-4.0.7_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.7_x86_10.6.dmg"-->): For MacOS 10.6 (last updated <!--#flastmod file="src/nco-4.0.7_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
 <li><a href="http://fink.sf.net">Fink</a> packages for <a href="http://fink.sf.net/pdb/package.php/nco">NCO</a>: Currently NCO 3.9.5. Maintained by Alexander Hansen.</li> 
 <li><a href="http://brew.sh">Homebrew</a> packages for <a href="https://github.com/Homebrew/homebrew-science/nco.rb">NCO</a>: Currently NCO 4.6.X. Install with &lsquo;<tt>brew install nco</tt>&rsquo;. Maintained by Ian Lancaster (Alejandro Soto&rsquo;s instructions <a href="http://alejandrosoto.net/blog/2014/01/22/setting-up-my-mac-for-scientific-research">here</a>).</li> 
 <li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>: <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a>: Currently NCO 4.6.6. Install with &lsquo;<tt>sudo port install nco</tt>&rsquo;. Maintained by Takeshi Enomoto.</li>
@@ -912,7 +912,7 @@ The NCO project has various Q&amp;A and discussion forums described
 Pre-built executables of some versions of NCO for the operating
 systems <a href="#Download">described above</a> (Debian-compatible
 GNU/Linux, Fedora/RedHat GNU/Linux, Gentoo GNU/Linux, and
-Mac&nbsp;OS&nbsp;X). 
+MacOS). 
 Otherwise, you may be on your own.</li>
 <a name="NCAR"></a> <!-- http://nco.sf.net#NCAR -->
 <a name="ncar"></a> <!-- http://nco.sf.net#ncar -->
@@ -1063,12 +1063,12 @@ Source documentation for NCO and netCDF4(alpha13)</a></li>
 we recommend that you first try the pre-built executables for your
 system, e.g.,  
 <tt>
-<dt>brew install nco          # Mac (after installing Homebrew)</dt>
-<dt>conda install -c conda-forge nco # Any Linux or Mac (after installing Anaconda)</dt>
+<dt>brew install nco          # Linux or MacOS with Homebrew</dt>
+<dt>conda install -c conda-forge nco # Linux or MacOS with Anaconda</dt>
 <dt>sudo aptitude install nco # Debian-based Linux systems like Debian, Mint, Ubuntu</dt>
 <dt>sudo dnf-install nco      # Newer RPM-based Linux systems like CentOS, Fedora, openSUSE, RHEL</dt>
 <dt>sudo yum-install nco      # Older RPM-based Linux systems like CentOS, Fedora, openSUSE, RHEL</dt>
-<dt>sudo port install nco     # Mac (after installing MacPorts on Mac OS X)</dt>
+<dt>sudo port install nco     # MacOS MacPorts </dt>
 </tt>
 If pre-built executables do not satisfy you (e.g., are out-of-date)
 and you want the latest, greatest features, then the first steps to
@@ -1161,9 +1161,21 @@ For RPM-based systems like Fedora and CentOS (substitute <tt>yum</tt> for <tt>dn
 <dt>sudo dnf install udunits2 udunits2-devel -y # UDUnits</dt>
 </tt>
 
+<dt><a name="brew"></a></dt> <!-- http://nco.sf.net#brew -->
+<dt><a name="homebrew"></a></dt> <!-- http://nco.sf.net#homebrew -->
+For Homebrew-based systems (MacOS or Linux):
+<tt>
+<dt>brew install antlr2 # ANTLR</dt>
+<dt>brew install cmake # Alternate build-engine</dt>
+<dt>brew install curl # DAP-prereqs</dt>
+<dt>brew install gsl # GSL</dt>
+<dt>brew install libnetcdf # netCDF</dt>
+<dt>brew install udunits # UDUnits</dt>
+</tt>
+
 <dt><a name="port"></a></dt> <!-- http://nco.sf.net#port -->
 <dt><a name="bld_macports"></a></dt> <!-- http://nco.sf.net#bld_macports -->
-For Mac OS X with MacPorts:
+For MacOS with MacPorts:
 <tt>
 <dt>sudo port install antlr # Antlr</dt>
 <dt>sudo port install cmake # CMake</dt>

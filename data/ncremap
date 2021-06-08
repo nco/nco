@@ -342,6 +342,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --dbg=1 --vrb=3 --devnull=No --alg_typ=cdo_bil --in_fl=${DATA}/grids/t42_skl.nc --dst_fl=${DATA}/ne30/rgr/hfc_ANN_200001_200012_climo.nc --map=${DATA}/maps/map_t42_to_cmip6_180x360_cdo.20210701.nc
 # add_fll
 # ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=1' --add_fll --map=${DATA}/maps/map_racmo_566x438_icemask_to_greenland_r025_100x250_nco.20210501.nc ${HOME}/racmo.smb.nofill.nc ~/foo_nco.nofill.nc
+# msk_apl
+# ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=1' --msk_apl --map=${DATA}/maps/map_racmo_566x438_icemask_to_greenland_r025_100x250_nco.20210501.nc ${HOME}/racmo.smb.nofill.nc ~/foo_nco.nofill.nc
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -472,8 +474,9 @@ mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
 msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
 msh_fl='' # [sng] Mesh-file (for Tempest)
+msk_apl='No' # [flg] Apply msk_out to variables after regridding
 msk_dst='' # [sng] Mask-template variable in destination file
-msk_out='' # [sng] Mask variable in regridded file
+msk_out='No' # [flg] Put mask variable in regridded file
 msk_src='' # [sng] Mask-template variable in source file
 mss_val='-9.99999979021476795361e+33' # [frc] Missing value for MPAS (ocean+seaice)
 #mss_val='-1.0e36' # [frc] Missing value for MALI
@@ -560,7 +563,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "            NCO algorithms: nco_con (1st order conservative algorithm similar to \"conserve\"), nco_dwe (distance-weighted interpolation/extrapolation)"
     echo "            Tempest (and MOAB-Tempest) algorithms: fv2fv|fv2fv_flx|fv2fv_stt|fv2se_flx|fv2se_stt|fv2se_alt|se2fv_flx|se2fv_stt|se2fv_alt|se2se|tempest"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
-    echo " ${fnt_bld}--add_fll${fnt_nrm}  Add _FillValue to fields with empty destination cells (default ${fnt_bld}${add_msv}${fnt_nrm}) [${fnt_tlc}add_fll, add_fill_value, fll_mpt, fill_empty${fnt_nrm}]"
+    echo " ${fnt_bld}--add_fll${fnt_nrm}  Add _FillValue to fields with empty destination cells (default ${fnt_bld}${add_fll}${fnt_nrm}) [${fnt_tlc}add_fll, add_fill_value, fll_mpt, fill_empty${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng, or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, tpl, tpl_fl, template, template_file${fnt_nrm}]"
     echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
@@ -581,8 +584,9 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
     echo " ${fnt_bld}--mbt${fnt_nrm}      Use MOAB-Tempest (mbtempest) front-end to TempestRemap (default ${fnt_bld}${mbt_flg}${fnt_nrm}) [${fnt_tlc}mbt, mbtempest, moabtempest, tfe_mbt${fnt_nrm}]"
     echo " ${fnt_bld}--msh_fl${fnt_nrm}   Mesh-file for grid intersection (empty means generate internally or not at all) (default ${fnt_bld}${msh_fl}${fnt_nrm}) [${fnt_tlc}msh_fl, msh, mesh, mesh_file${fnt_nrm}]"
+    echo " ${fnt_bld}--msk_apl${fnt_nrm}  Apply msk_out to variables after regridding (default ${fnt_bld}${msk_apl}${fnt_nrm}) [${fnt_tlc}msk_apl, mask_apply, msk_app${fnt_nrm}]"
     echo " ${fnt_bld}--msk_dst${fnt_nrm}  Mask-template variable in destination file (empty means none) (default ${fnt_bld}${msk_dst}${fnt_nrm}) [${fnt_tlc}msk_dst, dst_msk, mask_destination, mask_dst${fnt_nrm}]"
-    echo " ${fnt_bld}--msk_out${fnt_nrm}  Mask variable in regridded file (empty means none) (default ${fnt_bld}${msk_out}${fnt_nrm}) [${fnt_tlc}msk_out, out_msk, mask_output, mask_rgr${fnt_nrm}]"
+    echo " ${fnt_bld}--msk_out${fnt_nrm}  Put mask variable in regridded file, argument is name (default ${fnt_bld}${msk_out}${fnt_nrm}) [${fnt_tlc}msk_out, out_msk, mask_output, mask_rgr${fnt_nrm}]"
     echo " ${fnt_bld}--msk_src${fnt_nrm}  Mask-template variable in source file (empty means none) (default ${fnt_bld}${msk_src}${fnt_nrm}) [${fnt_tlc}msk_src, src_msk, mask_source, mask_src${fnt_nrm}]"
     echo " ${fnt_bld}--mss_val${fnt_nrm}  Missing value for MPAS (empty means none) (default ${fnt_bld}${mss_val}${fnt_nrm}) [${fnt_tlc}mss_val, fll_val, missing_value, fill_value${fnt_nrm}]"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco_options${fnt_nrm}]"
@@ -762,8 +766,10 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       mlt_map | multimap | no_multimap | nomultimap ) mlt_map_flg='No' ;; # -M # Multi-map flag
 	       mlt_map=?* | multimap=?* | no_multimap=?* | nomultimap=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -M # Multi-map flag
 	       msh_fl=?* | msh=?* | mesh=?* | mesh_file=?* ) msh_fl="${LONG_OPTARG}" ;; # # Mesh file
+	       msk_apl | mask_apply | msk_app ) msk_apl='Yes' ;; # # Apply msk_out to variables after regridding
+	       msk_apl=?* | mask_apply=?* | msk_app=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Apply msk_out to variables after regridding
 	       msk_dst=?* | dst_msk=?* | mask_destination=?* | mask_dst=?* ) msk_dst="${LONG_OPTARG}" ;; # # Mask-template variable in destination file
-	       msk_out=?* | out_msk=?* | mask_output=?* | mask_out=?* ) msk_out="${LONG_OPTARG}" ;; # # Mask variable in regridded file
+	       msk_out=?* | out_msk=?* | mask_output=?* | mask_out=?* ) msk_out="${LONG_OPTARG}" ;; # # Put mask variable in regridded file, argument is name
 	       msk_src=?* | src_msk=?* | mask_source=?* | mask_src=?* ) msk_src="${LONG_OPTARG}" ;; # # Mask-template variable in source file
 	       mss_val=?* | fll_val=?* | missing_value=?* | fill_value=?* ) mss_val_usr="${LONG_OPTARG}" ;; # # Missing value for MPAS
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_opt="${LONG_OPTARG} ${nco_opt}" ;; # -n # NCO options
@@ -1313,12 +1319,15 @@ fi # !no_cll_msr
 if [ "${no_frm_trm}" = 'Yes' ]; then 
     nco_opt="${nco_opt} --no_frm_trm"
 fi # !no_frm_trm
-if [ "${no_stg_grd}" = 'Yes' ]; then 
-    rgr_opt="${rgr_opt} --rgr no_stagger"
-fi # !no_stg_grd
 if [ "${add_fll}" = 'Yes' ]; then 
     rgr_opt="${rgr_opt} --rgr add_fill_value"
 fi # !add_fll
+if [ "${msk_apl}" = 'Yes' ]; then 
+    rgr_opt="${rgr_opt} --rgr mask_apply"
+fi # !msk_apl
+if [ "${no_stg_grd}" = 'Yes' ]; then 
+    rgr_opt="${rgr_opt} --rgr no_stagger"
+fi # !no_stg_grd
 if [ -n "${prs_stt}" ]; then 
     if [ "${prs_stt}" != 'mean' ] && [ "${prs_stt}" != 'integral' ]; then 
 	echo "${spt_nm}: ERROR \"${prs_stt}\" is an invalid value for preserved_statistic"
@@ -1351,7 +1360,7 @@ fi # !var_lst
 if [ -n "${msk_dst}" ]; then 
     nco_msk_dst="--rgr msk_var=${msk_dst}"
 fi # !msk_dst
-if [ -n "${msk_out}" ]; then 
+if [ "${msk_out}" != 'No' ]; then 
     nco_msk_out="--rgr msk_nm=${msk_out}"
 fi # !msk_out
 if [ -n "${msk_src}" ]; then 
@@ -2028,6 +2037,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: mlt_map  = ${mlt_map_flg}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
     printf "dbg: msh_fl   = ${msh_fl}\n"
+    printf "dbg: msk_apl  = ${msk_apl}\n"
     printf "dbg: msk_dst  = ${msk_dst}\n"
     printf "dbg: msk_out  = ${msk_out}\n"
     printf "dbg: msk_src  = ${msk_src}\n"

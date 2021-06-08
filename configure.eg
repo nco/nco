@@ -27,7 +27,7 @@ LINUXALPHA	Y					Y	Y
 LINUXAMD64		Y				Y	Y
 LINUXPPC	Y					Y	N(9)
 LINUXSPARC64	Y					Y	Y
-MACOSX		Y					Y	Y
+MACOS		Y					Y	Y
 NECSX
 SGIMP64 cc/CC	Y	Y				Y	N(6)
 SGIMP64 gcc/g++	N(7)					Y
@@ -874,7 +874,7 @@ Linux sand.ess.uci.edu 2.6.8.1-4-amd64-generic #1 Thu Dec 16 11:44:05 UTC 2004 x
 x86_64-unknown-linux-gnu
 
 # gcc/g++ Regular (non-root) users build NCO with system-supplied netCDF and install in your own directories
-# Zender uses this on MACOSX sastrugi/firn as well
+# Zender uses this on MACOS sastrugi/firn as well
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 # Pre-20180729 (antlr from macports seems to have stopped linking, so build it from scratch)
@@ -1056,15 +1056,15 @@ End LINUXSPARC64
 ************************************************************************
 
 ************************************************************************
-Start MACOSX
+Start MACOS
 Status: works. rorik Thu Oct 30 12:09:15 AKST 2003
-MACOSX requires netCDF3.x be built with CFLAGS=-fno-common to link with NCO 
+MACOS requires netCDF3.x be built with CFLAGS=-fno-common to link with NCO 
 This may also be the case for netCDF4.
-NCO's configure detects MACOSX adds '-fno-common' automatically to CFLAGS
-MACOSX also requires '--disable-shared' on the configure line
+NCO's configure detects MACOS adds '-fno-common' automatically to CFLAGS
+MACOS also requires '--disable-shared' on the configure line
 ************************************************************************
 zender@cg1:~/nco/bld$ ~/sh/pvmgetarch;uname -a;~/nco/autobld/config.guess
-MACOSX
+MACOS
 Darwin cg1.calit2.uci.edu 8.2.0 Darwin Kernel Version 8.2.0: Fri Jun 24 17:46:54 PDT 2005; root:xnu-792.2.4.obj~3/RELEASE_PPC Power Macintosh powerpc
 powerpc-apple-darwin8.2.0
 
@@ -1079,7 +1079,7 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 ************************************************************************
-End MACOSX
+End MACOS
 ************************************************************************
 
 ************************************************************************

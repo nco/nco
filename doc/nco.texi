@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.0-alpha04
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 4 June 2021
+@set update-date 7 June 2021
 @set update-month June 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -21487,9 +21487,9 @@ The map @var{S} is a matrix of @var{M} rows and @var{N} columns of
 weights, where @var{M} is the number of gridcells (or degrees of
 freedom, @acronym{DOF}s) in the destination grid, and @var{N} is the
 number of gridcells (or @acronym{DOFs}) in the source grid. 
-An individual weight @var{S(m,n)} represents the fractional
-contribution to destination gridcell @var{m} by source gridcell
-@var{n}. 
+An individual weight @var{S}(@var{m},@var{n}) represents the
+fractional contribution to destination gridcell @var{m} by source
+gridcell @var{n}. 
 By convention the weights are normalized to sum to unity in each row 
 (destination gridcell) that completely overlaps the input grid.
 Thus the weights in a single row are all equivalent to the fractional
@@ -21525,8 +21525,8 @@ further below.
 Storing the entire weight-matrix @b{S} is unnecessary because only a
 relative handful of gridcells in the source grid contribute to a given 
 destination gridcell, and visa versa.
-Instead, map-files store only the non-zero @var{S(m,n)}, and encode
-them as a sparse-matrix.
+Instead, map-files store only the non-zero @var{S}(@var{m},@var{n}),
+and encode them as a sparse-matrix.
 Storing @b{S} as a sparse matrix rather than a full matrix reduces
 overall storage sizes by a factor on the order of the ratio of the
 product of the grid sizes to their sum, or about 10,000 for grids with
@@ -21655,10 +21655,10 @@ Consistency metrics meet the acceptable error tolerances.
 The map-checker computes the Consistency (@var{frac_b}) as row-sums of 
 the weights stored in @code{S} and compares these to the stored values
 of @code{frac_b}. 
-(Note how the definition of weights @var{S(m,n)} as the fractional
-contribution to destination gridcell @var{m} by source gridcell
-@var{n} makes calculation of @var{frac_b} almost trivial in comparison
-to @var{frac_a}). 
+(Note how the definition of weights @var{S}(@var{m},@var{n}) as the
+fractional contribution to destination gridcell @var{m} by source
+gridcell @var{n} makes calculation of @var{frac_b} almost trivial in
+comparison to @var{frac_a}). 
 Nevertheless, @code{frac_b} in the file may differ from the computed
 row-sum for example if the map-file generator artificially limits the
 stored @code{frac_b} value for any cell @w{to 1.0} for those row-sums
@@ -24340,7 +24340,7 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o] [--add_fll]
 [--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}]
 [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}] [-L @var{dfl_lvl}]
 [-M] [-m @var{map_fl}] [--msh_fl=@var{msh_fl}]
-[--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
+[--msk_apl] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
 [-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
 [--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]

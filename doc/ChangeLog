@@ -1,10 +1,26 @@
+2021-06-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.0-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha05: Astoria';git push
+	git tag -a 5.0.0-alpha05 -m 'ncremap msk_apl';git push --tags
+
+	* ncremap cause --msk_apl to trigger --add_fll to ensure masked fields regridded with TR maps have _FillValue
+
+2021-06-07  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add --flg_rnr to OpenMP shared clauses
+
+	* ncremap --msk_apl applies msk_out (i.e., mask_b) to variables after regridding
+
+	* nco.texi on sastrugi fix TeXInfo to come from Homebrew
+
 2021-06-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha04: Pichetti';git push
 	git tag -a 5.0.0-alpha04 -m 'ncremap CDO stubs, add_fll, no_permute, msk_nm, fix map mask_a/b';git push --tags
 
-	* ncremap --add_fll uses frac_b to initialize fields without _FillValue in input file to the default missing value in unmapped destination cells
+	* ncremap --add_fll uses frac_b to initialize input fields without _FillValue to the default missing value in unmapped destination cells
 
 	* nco_rgr_wgt() clarify renormalization INFO message
 

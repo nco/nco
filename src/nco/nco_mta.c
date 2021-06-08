@@ -190,6 +190,8 @@ nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
     "fill_empty",
     "fll_mpt",
     "infer",
+    "mask_apply",
+    "msk_apl",
     "nfr",
     "no_area",
     "no_area_out",

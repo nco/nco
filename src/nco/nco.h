@@ -1225,6 +1225,7 @@ typedef enum nco_xtr_typ_enm
     nco_bool flg_grd; /* [flg] Create SCRIP-format grid file */
     nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
     nco_bool flg_grd_src; /* [flg] User-specified input grid */
+    nco_bool flg_msk_apl; /* [flg] Apply msk_out to variables after regridding */
     nco_bool flg_msk_out; /* [flg] Add mask to output */
     nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */

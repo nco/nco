@@ -307,6 +307,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_dgn_bnd=False; /* [flg] Diagnose rather than copy inferred bounds */
   rgr->flg_erwg_units=True; /* [flg] Generate ERWG 7.1.0r-compliant SCRIP-format grid files */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
+  rgr->flg_msk_apl=False; /* [flg] Apply msk_out to variables after regridding */
   rgr->flg_msk_out=False; /* [flg] Add mask to output */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
   rgr->flg_s1d=False; /* [flg] Unpack sparse-1D CLM/ELM variables */
@@ -386,6 +387,13 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_msk_out=False;
       continue;
     } /* !msk */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"msk_apl") || !strcmp(rgr_lst[rgr_var_idx].key,"mask_apply")){
+      rgr->flg_msk_apl=True;
+      /* Ensure masked fields regridded with TR maps have _FillValue to guarantee BFB arithmetic 
+	 with masked fields regridded with other maps that adhere to SCRIP/ESMF mask rules */
+      rgr->flg_add_fll=True;
+      continue;
+    } /* !msk_apl */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"msk_out") || !strcmp(rgr_lst[rgr_var_idx].key,"mask_out")){
       rgr->flg_msk_out=True;
       continue;
@@ -776,7 +784,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   if(!rgr->lon_bnd_nm) rgr->lon_bnd_nm=(char *)strdup("lon_bnds"); /* [sng] Name of rectangular boundary variable for longitude */
   if(!rgr->lon_nm_in) rgr->lon_nm_in=(char *)strdup("lon"); /* [sng] Name of dimension to recognize as longitude */
   if(!rgr->lon_vrt_nm) rgr->lon_vrt_nm=(char *)strdup("lon_vertices"); /* [sng] Name of non-rectangular boundary variable for longitude */
-  if(!rgr->msk_nm) rgr->msk_nm=(char *)strdup("mask"); /* [sng] Name of variable containing destination mask */
+  if(!rgr->msk_nm) rgr->msk_nm=(char *)strdup("mask_b"); /* [sng] Name of variable containing destination mask */
   if(!rgr->vrt_nm) rgr->vrt_nm=(char *)strdup("nv"); /* [sng] Name of dimension to employ for vertices */
   if(!rgr->plev_nm_in) rgr->plev_nm_in=(char *)strdup("plev"); /* [sng] Name of variable to recognize as pure pressure coordinate */
 
@@ -2722,8 +2730,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
   /* Obtain fields whose presence depends on mapfile type */
   nco_bool flg_msk_out=rgr->flg_msk_out; /* [flg] Add mask to output */
+  nco_bool flg_msk_apl=rgr->flg_msk_apl; /* [flg] Apply msk_out to variables after regridding */
   msk_dst_id=NC_MIN_INT;
-  if(flg_msk_out){
+  if(flg_msk_out || flg_msk_apl){
     switch(nco_rgr_mpf_typ){
     case nco_rgr_mpf_SCRIP:
       rcd=nco_inq_varid_flg(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
@@ -2742,6 +2751,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       nco_dfl_case_generic_err();
     } /* !nco_rgr_mpf_typ */
     if(rcd == NC_ENOTVAR){
+      if(flg_msk_apl){
+	(void)fprintf(stderr,"%s: ERROR %s reports that user requested (with --mask_apply) the regridder to apply the destination mask field to variables after regridding. Unfortunately, the map-file lacks a destination mask of the expected name (usually \"mask_b\").\n",nco_prg_nm_get(),fnc_nm);
+	nco_exit(EXIT_FAILURE);
+      } /* flg_msk_apl */
       (void)fprintf(stderr,"%s: INFO %s reports map-file lacks mask_b. %sContinuing anyway without masks...\n",nco_prg_nm_get(),fnc_nm,(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_MBTR) ? "Probably this is either a TempestRemap map-file created before ~201902 when TR began to propagate mask_a/b variables, or it is a MOAB-TempestRemap file which has never (as of 202105) propagated mask_a/b variables" : "");
       rcd=NC_NOERR;
     } /* !rcd */
@@ -4203,23 +4216,30 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   nco_bool flg_dst_mpt=False; /* [flg] At least one destination cell is empty */
   size_t dst_idx; /* [idx] Index on destination grid */
   /* Determine whether any destination cells are, in fact, empty
-     Logic here could be replaced by examining frac_b variable, if we trust input frac_b
-     And we do trust input frac_b since it is already used for renormalization */
+     Logic here could be replaced by examining frac_b variable, if we trust input frac_b...
+     ...and we do trust input frac_b since it is already used for renormalization */
   if(flg_add_fll){
-    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){ /* For each destination cell... */
-      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){ /* ...does any weight... */
-	if(row_dst_adr[lnk_idx] == dst_idx){ /* ...contribute to that cell? */
-	  /* If so, break lnk_idx loop and continue to next iteration of dst_idx loop */
+    if(flg_msk_apl){
+      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
+	if(msk_out[dst_idx] == 0) break;
+      if(dst_idx < grd_sz_out) flg_dst_mpt=True;
+      if(flg_dst_mpt && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one destination cell, Fortran (1-based) row index %lu, is empty. User requested (with --msk_apl) that masked cells receive _FillValue, so regridder will ensure that all regridded fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm,dst_idx+1L);
+    }else{
+      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){ /* For each destination cell... */
+	for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){ /* ...does any weight... */
+	  if(row_dst_adr[lnk_idx] == dst_idx){ /* ...contribute to that cell? */
+	    /* If so, break lnk_idx loop and continue to next iteration of dst_idx loop */
+	    break;
+	  } /* !row_dst_adr */
+	} /* !lnk_idx */
+	/* If weight loop reached end without a match, then this destination cell is empty */
+	if(lnk_idx == lnk_nbr){
+	  flg_dst_mpt=True;
 	  break;
-	} /* !row_dst_adr */
-      } /* !lnk_idx */
-      /* If weight loop reached end without a match, then this destination cell is empty */
-      if(lnk_idx == lnk_nbr){
-	flg_dst_mpt=True;
-	break;
-      } /* !lnk_idx */
-    } /* !dst_idx */
-    if(flg_add_fll && flg_dst_mpt && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one destination cell, Fortran (1-based) row index %lu, is empty. User requested (with --add_fll) that empty cells receive _FillValue, so regridder will ensure that all regridded fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm,dst_idx+1L);
+	} /* !lnk_idx */
+      } /* !dst_idx */
+      if(flg_dst_mpt && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one destination cell, Fortran (1-based) row index %lu, is empty. User requested (with --add_fll) that empty cells receive _FillValue, so regridder will ensure that all regridded fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm,dst_idx+1L);
+    } /* !flg_msk_apl */
   } /* !flg_add_fll */
   
   /* Pre-allocate dimension ID and cnt/srt space */
@@ -4822,15 +4842,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 # endif /* 900 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 # else /* !old g++ */
 #  if defined(GXX_WITH_OPENMP5_GPU_SUPPORT) && 0
-#   pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#   pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #  else
-#   pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#   pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #  endif /* !GCC >= 9.0 */
 # endif /* !GCC < 4.9 */
 #endif /* !__INTEL_COMPILER */
@@ -5166,12 +5186,29 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	} /* !nco_typ_ntg() */
 
 	if(flg_add_fll && !has_mss_val){
-	  /* 20210604: If --add_fll is requested, then initialize fields without _FillValue in input file to the default missing value in unmapped destination cells
-	     Otherwise empty destination cells will be zero (not _FillValue) in output file */
+	  /* 20210604: Initialize fields without _FillValue in input file to default missing value in unmapped destination cells
+	     Otherwise empty destination cells will be zero (not _FillValue) in output file
+	     Fields with input _FillValue are already _FillValue in output where tally is non-zero */
 	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 	    if(frc_out[dst_idx] == 0.0){
 	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 		var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]=NC_FILL_DOUBLE;
+	      } /* !lvl_idx */
+	    } /* !frc_out */
+	  } /* !dst_idx */
+	} /* !flg_add_fll */
+	
+	if(flg_msk_apl){
+	  /* 20210607: Overwrite output values with _FillValue where destination cell is masked
+	     Same procedure regardless of whether input variables already have _FillValue
+	     NB: This is separate, and presumably independent, from above flg_add_fll loop
+	     Fields with flg_msk_apl will (harmlessly?) go through both loops */
+	  double mss_val_msk; /* [frc] Missing value to apply where mask is false */
+	  if(has_mss_val) mss_val_msk=mss_val_dbl; else mss_val_msk=NC_FILL_DOUBLE;
+	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+	    if(msk_out[dst_idx] == 0){
+	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]=mss_val_msk;
 	      } /* !lvl_idx */
 	    } /* !frc_out */
 	  } /* !dst_idx */
@@ -8099,6 +8136,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Otherwise search database */
     if((rcd=nco_inq_varid_flg(in_id,"mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("mask");
     else if((rcd=nco_inq_varid_flg(in_id,"Mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("Mask");
+    else if((rcd=nco_inq_varid_flg(in_id,"mask_b",&msk_id)) == NC_NOERR) msk_nm_in=strdup("mask_b");
     else if((rcd=nco_inq_varid_flg(in_id,"grid_imask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("grid_imask");
     else if((rcd=nco_inq_varid_flg(in_id,"landmask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("landmask"); /* ALM/CLM */
     else if((rcd=nco_inq_varid_flg(in_id,"tmask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("tmask"); /* CICE */
