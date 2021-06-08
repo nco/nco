@@ -4,11 +4,13 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha05: Astoria';git push
 	git tag -a 5.0.0-alpha05 -m 'ncremap msk_apl';git push --tags
 
+	* ncremap revert flg_rnr as shared for Cori, enable Homebrew LLVM to get OpenMP
+
 	* ncremap cause --msk_apl to trigger --add_fll to ensure masked fields regridded with TR maps have _FillValue
 
 2021-06-07  Charlie Zender  <zender@uci.edu>
 
-	* ncremap add --flg_rnr to OpenMP shared clauses
+	* ncremap add --flg_rnr to OpenMP shared clauses (patch had to be reverted for Cori)
 
 	* ncremap --msk_apl applies msk_out (i.e., mask_b) to variables after regridding
 

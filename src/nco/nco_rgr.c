@@ -4826,7 +4826,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      firstprivate(): Pointers that could be inadvertently free()'d if they lost their NULL-initialization
      private(): Almost everything else
      shared(): uggh...shared clause depends on both compiler and compiler-version
-     1. All const variables are default shared for gcc >= 4.9.2,
+     1. Const variables (e.g., flg_rnr,fnc_nm,wgt_vld_thr) are default shared for gcc >= 4.9.2,
      2. fnc_nm (only!) must be explicit shared for g++ 4.6.3 (travis)
      3. flg_rnr,fnc_nm,wgt_vld_thr must be explicit shared for icc 13.1.3 (rhea)
      4. assert() cannot be used in OpenMP blocks
@@ -4850,7 +4850,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 #  if defined(GXX_WITH_OPENMP5_GPU_SUPPORT) && 0
 #   pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #  else
-#   pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#   pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #  endif /* !GCC >= 9.0 */
 # endif /* !GCC < 4.9 */
 #endif /* !__INTEL_COMPILER */
