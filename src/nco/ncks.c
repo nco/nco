@@ -134,6 +134,8 @@ main(int argc,char **argv)
   char *dlm_sng=NULL;
   char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
   char *fl_in=NULL;
+  char *fl_in_dpl=NULL; /* [sng] Duplicate of fl_in */
+  char *fl_in_stub=NULL; /* [sng] Filename component of fl_in */
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
   char *fl_prn=NULL; /* [sng] Formatted text output file */
@@ -1111,6 +1113,9 @@ main(int argc,char **argv)
   if(flg_dmm_in) nco_fl_dmm_mk(fl_in);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
+  fl_in_dpl=strdup(fl_in);
+  fl_in_stub=strrchr(fl_in_dpl,'/');
+  if(fl_in_stub) fl_in_stub++; else fl_in_stub=fl_in_dpl;
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   if(SHARE_OPEN) md_open=md_open|NC_SHARE;
@@ -1240,7 +1245,22 @@ main(int argc,char **argv)
       if(gaa_nbr > 0) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
       if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
       if(thr_nbr > 1 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
-
+      char att_sng_ttl[]="title"; /* [sng] NUG-documented title string */
+      char *att_ttl_val=NULL;
+      att_ttl_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_ttl);
+      if(!att_ttl_val){
+	/* Panoply prints the value of global attribute "title", if any, in its file selector menu
+	   Otherwise it prints "UNKNOWN", which is ... not helpful
+	   NUG and CF endorse "title" as a global attribute that succinctly describes file contents
+	   Construct a useful value when none exists in input
+	   20210609: "Regridded version of "+fl_in_stub */
+	att_ttl_val=(char *)nco_malloc((strlen(fl_in_stub)+21L+1L)*sizeof(char));
+	att_ttl_val=strcpy(att_ttl_val,"Regridded version of ");
+	att_ttl_val=strcpy(att_ttl_val,fl_in_stub);
+	rcd=nco_char_att_put(out_id,NULL,att_sng_ttl,att_ttl_val);
+	if(att_ttl_val) att_ttl_val=(char *)nco_free(att_ttl_val);
+      } /* !att_ttl_val */
+      
       /* Generate grids/maps or regrid horizontally/vertically */
       rcd=nco_rgr_ctl(rgr_nfo,trv_tbl);
       /* Change from NCO_NOERR to NC_NOERR */
@@ -1318,8 +1338,6 @@ main(int argc,char **argv)
 
     nco_bool ALPHA_BY_FULL_GROUP=False; /* [flg] Print alphabetically by full group */
     nco_bool ALPHA_BY_STUB_GROUP=True; /* [flg] Print alphabetically by stub group */
-    char *fl_nm_stub;
-    char *fl_in_dpl=NULL;
     char *sfx_ptr;
 
     /* Update all GTT dimensions with hyperslabbed size */
@@ -1340,14 +1358,11 @@ main(int argc,char **argv)
     prn_flg.hdn=PRN_HDN;
     prn_flg.udt=PRN_UDT;
     prn_flg.rad=RETAIN_ALL_DIMS;
-    /* CDL must print filename stub */
+    /* CDL must print filename stub (filename without path or suffix) */
     if(prn_flg.cdl || prn_flg.xml){
-      fl_in_dpl=strdup(fl_in);
-      fl_nm_stub=strrchr(fl_in_dpl,'/');
-      if(fl_nm_stub) fl_nm_stub++; else fl_nm_stub=fl_in_dpl;
-      sfx_ptr=strrchr(fl_nm_stub,'.');
+      sfx_ptr=strrchr(fl_in_stub,'.');
       if(sfx_ptr) *sfx_ptr='\0';
-      prn_flg.fl_stb=fl_nm_stub;
+      prn_flg.fl_stb=fl_in_stub;
     } /* endif CDL */
     /* JSON and XML need filename (unless location will be omitted) */
     if(prn_flg.xml || prn_flg.jsn) prn_flg.fl_in=fl_in;
@@ -1487,7 +1502,6 @@ main(int argc,char **argv)
 	nco_exit(EXIT_FAILURE);
       } /* !fp_prn */
     } /* !fl_prn */
-    if(fl_in_dpl) fl_in_dpl=(char *)nco_free(fl_in_dpl);
 
   } /* !fl_out */
 
@@ -1504,6 +1518,7 @@ close_and_free:
   if(flg_mmr_cln){
     /* ncks-specific memory */
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
+    if(fl_in_dpl) fl_in_dpl=(char *)nco_free(fl_in_dpl);
     if(fl_prn) fl_prn=(char *)nco_free(fl_prn);
     if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
