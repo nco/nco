@@ -1115,7 +1115,7 @@ main(int argc,char **argv)
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
   fl_in_dpl=strdup(fl_in);
 #ifdef WIN32
-  const char sls_chr='\';   /* [chr] Slash character */
+  const char sls_chr='\\';   /* [chr] Slash character */
 #else /* !WIN32 */
   const char sls_chr='/';   /* [chr] Slash character */
 #endif /* !WIN32 */
