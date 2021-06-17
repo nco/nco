@@ -1,10 +1,16 @@
+2021-06-17  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.0 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.0: Bend';git push
+	git tag -a 5.0.0 -m 'ncks aux wrp; ncremap add_fll, E3SM-U pth, mask_a/b, MPI fix, msk_apl, msk_nm, no_prm, stdin, ttl, SSM/I';git push --tags
+
+	* NCO 5.0.0-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.0-beta01: Astoria';git push
+	git tag -a 5.0.0-beta01 -m 'all: sls_chr win32; ncremap msk_apl, ttl';git push --tags
+
 2021-06-16  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.0.0-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.0-alpha05: Astoria';git push
-	git tag -a 5.0.0-alpha05 -m 'all: sls_chr win32; ncremap msk_apl, ttl';git push --tags
-
-	* Document add_fll, msk_apl, no_permute
+	* Document add_fll, msk_apl, no_permute, and update ANNOUNCE
 
 2021-06-10  Charlie Zender  <zender@uci.edu>
 

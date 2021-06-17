@@ -6,16 +6,22 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.0 contains more ncremap features and a few fixes.
-You can skip this release unless you use ncremap or ncclimo.
-ncremap has crucial fixes for applying and exporting the mask
-field, if any. It also provides new flags to control the application
-of _FillValue attributes in empty destination cells, and to accomodate
+Version 5.0.0 contains mostly ncremap features and fixes.
+You can probably skip this release unless you use ncremap.
+ncremap has crucial fixes for applying and exporting the mask field,
+if any. It also provides new flags to control the application of
+_FillValue attributes in empty destination cells, and to accomodate 
 map-files that ignore or violate proper treatment of masked grids.
+ncks auxiliary coordinates (-X) support wrapped longitude regions.
 
-Work on NCO 5.0.0 has commenced and will continue improving support
-for analysis of land surface datasets packed into sparse-1D formats,
-and ncremap support for the MOAB regridding package mbtempest. 
+Work on NCO 5.0.1 has commenced and and it targeted to offer ncremap
+support for the MOAB offline regridding package mbtempest.
+
+A slightly "meta" question on version numbering: NCO 4.0.0 was
+released Jan 5, 2010, and subsequent versions were bumped by ~0.0.1
+increments for about eleven years. We might change to YY.MM-numbering,
+e.g., 21.6, or something similar, in subsequent releases. What do you
+think would be a better version system for NCO? 
 
 Enjoy,
 Charlie
@@ -118,7 +124,7 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 5.0.0 built/tested under
-   MacOS 11.3.1 with netCDF 4.8.0 on HDF5 1.10.7 and with
+   MacOS 11.4 with netCDF 4.8.0 on HDF5 1.12.0 and with
    Linux with netCDF 4.8.0 on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)

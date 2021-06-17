@@ -73,7 +73,6 @@ Method 3. Recommended/current custom ./configure invocation
 ************************************************************************
 To build NCO versions > 2.9.9 with netCDF versions < 3.6, define the
 pre-processor token NC_64BIT_OFFSET to '0', e.g., CPPFLAGS='-DNC_64BIT_OFFSET=0'
-
 ************************************************************************
 Start AIX
 status: Appears to work
