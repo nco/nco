@@ -8,7 +8,10 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 What's new?
 Version 5.0.0 contains more ncremap features and a few fixes.
 You can skip this release unless you use ncremap or ncclimo.
-ncremap has crucial fixes for
+ncremap has crucial fixes for applying and exporting the mask
+field, if any. It also provides new flags to control the application
+of _FillValue attributes in empty destination cells, and to accomodate
+map-files that ignore or violate proper treatment of masked grids.
 
 Work on NCO 5.0.0 has commenced and will continue improving support
 for analysis of land surface datasets packed into sparse-1D formats,
@@ -25,7 +28,7 @@ A. The ncremap regridder now creates a "title" global attribute in the
    Moreover, the Panoply file catalog uses it to describe open files.
    http://nco.sf.net/nco.html#ncremap
 
-A. ncremap now accepts a --no_prm (--no_permute) flag that causes 
+B. ncremap now accepts a --no_prm (--no_permute) flag that causes 
    the regridder to skip the default permutation of dimensions
    before regridding (notably MPAS) datasets known to store data
    with most-rapidly varying dimensions that are not horizontal.
@@ -39,7 +42,7 @@ A. ncremap now accepts a --no_prm (--no_permute) flag that causes
    http://nco.sf.net/nco.html#no_prm
    http://nco.sf.net/nco.html#ncremap
 
-A. ncremap now accepts a --add_fll (--add_fill_value) flag that causes 
+C. ncremap now accepts a --add_fll (--add_fill_value) flag that causes 
    the regridder to add a _FillValue attribute to fields with empty
    destination cells. Empty destination cells are those that have no
    non-zero weights from the source grids. Should a field (e.g.,
@@ -55,7 +58,7 @@ A. ncremap now accepts a --add_fll (--add_fill_value) flag that causes
    http://nco.sf.net/nco.html#add_fll
    http://nco.sf.net/nco.html#ncremap
 
-A. ncremap now accepts a --msk_apl (--mask_apply) flag that causes
+D. ncremap now accepts a --msk_apl (--mask_apply) flag that causes
    the regridder to apply msk_out (i.e., mask_b) to variables after
    regridding. Some weight generators (e.g., Tempest) ignore masks
    and thus produce non-zero weights for masked destination cells,
@@ -70,7 +73,7 @@ A. ncremap now accepts a --msk_apl (--mask_apply) flag that causes
    http://nco.sf.net/nco.html#msk_apl
    http://nco.sf.net/nco.html#ncremap
 
-A. ncremap now includes the coordinates xgrid, ygrid in its internal
+E. ncremap now includes the coordinates xgrid, ygrid in its internal
    database so that it can automatically recognize and infer grids
    from NOAA SSM/I, AMSR-E, and SMMR Climate Data Record (CDR)
    datasets. Thanks to Mat Maltrud of LANL for prompting this. 
@@ -85,22 +88,28 @@ A. MacOS Conda builds now behave correctly with OpenMP, which was
    faster for high-resolution maps.
    Thanks to Xylar Asay-Davis of LANL for helping to test this.
 
-A. ncremap fixes a recently introduced problem with node-indexing
+B. ncremap fixes a recently introduced problem with node-indexing
    in MPI mode. The workaround is to use background mode, and the
    solution is to upgrade.
    http://nco.sf.net/nco.html#par_typ_ncremap
 
-A. ncremap now skips the stdin check when -i in_fl is used.
+C. ncremap now skips the stdin check when -i in_fl is used.
    The previous behavior led to hangs with some queuing systems
    (Slurm) on some machines (Chrysalis) that reserve stdin for
    the batch queue commands (srun). The workaround is to use the
    --no_stdin flag, and the solution is to upgrade. Thanks to Xylar
    Asay-Davis of LANL for reporting this issue.
 
-A. ncks -X now handles branch cut rules correctly when WESN bounding
+D. ncks -X now handles branch cut rules correctly when WESN bounding
    box of auxiliary (e.g., unstructured) coordinate grids wrap in
    longitude. This permits ncremap RRG to work correctly in those same
    situations. Thanks to Po-Lun Ma of PNNL for prompting this fix.
+
+E. ncremap corrects a few issues that prevented --msk_out from
+   working correctly. In particular, msk_out will be correctly
+   stored as an integer field, with name specified by msk_nm,
+   if provided. Otherwise it will be named mask_b. There is no
+   workaround, the solution is to upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
