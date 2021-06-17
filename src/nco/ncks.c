@@ -1114,7 +1114,12 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
   fl_in_dpl=strdup(fl_in);
-  fl_in_stub=strrchr(fl_in_dpl,'/');
+#ifdef WIN32
+  const char sls_chr='\';   /* [chr] Slash character */
+#else /* !WIN32 */
+  const char sls_chr='/';   /* [chr] Slash character */
+#endif /* !WIN32 */
+  fl_in_stub=strrchr(fl_in_dpl,sls_chr);
   if(fl_in_stub) fl_in_stub++; else fl_in_stub=fl_in_dpl;
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
@@ -1248,16 +1253,18 @@ main(int argc,char **argv)
       char att_sng_ttl[]="title"; /* [sng] NUG-documented title string */
       char *att_ttl_val=NULL;
       att_ttl_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_ttl);
-      if(!att_ttl_val){
+      (void)fprintf(stdout,"%s: DEBUG input title attribute is: %s\n",nco_prg_nm_get(),att_ttl_val);
+      if(!att_ttl_val || (att_ttl_val && (!strcmp(att_ttl_val,"UNSET")))){
 	/* Panoply prints the value of global attribute "title", if any, in its file selector menu
-	   Otherwise it prints "UNKNOWN", which is ... not helpful
+	   Otherwise it prints "UNSET", which is ... unsettling
 	   NUG and CF endorse "title" as a global attribute that succinctly describes file contents
 	   Construct a useful value when none exists in input
 	   20210609: "Regridded version of "+fl_in_stub */
-	att_ttl_val=(char *)nco_malloc((strlen(fl_in_stub)+21L+1L)*sizeof(char));
+	att_ttl_val=(char *)nco_realloc(att_ttl_val,(strlen(fl_in_stub)+21L+1L)*sizeof(char));
 	att_ttl_val=strcpy(att_ttl_val,"Regridded version of ");
-	att_ttl_val=strcpy(att_ttl_val,fl_in_stub);
+	att_ttl_val=strcat(att_ttl_val,fl_in_stub);
 	rcd=nco_char_att_put(out_id,NULL,att_sng_ttl,att_ttl_val);
+	(void)fprintf(stdout,"%s: DEBUG output title attribute is: %s\n",nco_prg_nm_get(),att_ttl_val);
 	if(att_ttl_val) att_ttl_val=(char *)nco_free(att_ttl_val);
       } /* !att_ttl_val */
       

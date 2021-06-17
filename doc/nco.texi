@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.0-alpha04
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 7 June 2021
+@set update-date 16 June 2021
 @set update-month June 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16308,7 +16308,7 @@ a2 = 1, 1, 6, 9, 11, 13, 13, 15, 16, 19 ;
 
 @end example
 
-@noindent The following example produces an @code{ncap2} runtime error. This is because the chose rng algorithm has a maximum value greater than @code{ NC_MAX_INT=2147483647 }; the wrapper functions to @code{gsl_rng_get()} and @code{gsl_rng_uniform_int()} return variable of type @code{NC_INT}. Please be aware of this when using random number distribution functions functions from the @acronym{GSL} library which return @code{unsigned int}. Examples of these are @code{gsl_ran_geometric()} and @code{gsl_ran_pascal()}. 
+@noindent The following example produces an @code{ncap2} runtime error. This is because the chose rng algorithm has a maximum value greater than @code{NC_MAX_INT=2147483647}; the wrapper functions to @code{gsl_rng_get()} and @code{gsl_rng_uniform_int()} return variable of type @code{NC_INT}. Please be aware of this when using random number distribution functions functions from the @acronym{GSL} library which return @code{unsigned int}. Examples of these are @code{gsl_ran_geometric()} and @code{gsl_ran_pascal()}. 
 
 @example
 export GSL_RNG_TYPE=mt19937
@@ -19252,10 +19252,15 @@ only for @command{ncclimo}), or by invoking the @samp{--no_stdin} flag
 @html
 <a name="no_stdin"></a> <!-- http://nco.sf.net/nco.html#no_stdin -->
 @end html
+@cindex Chrysalis
 @cindex Common Workflow Language
 @cindex Azure @acronym{CI}
+@cindex @acronym{SLURM}
 @cindex @acronym{CWL}
 @cindex @code{--no_stdin}
+@cindex @code{--no_inp_std}
+@cindex @code{--no_standard_input}
+@cindex @code{--no_redirect}
 @item --no_stdin (@code{--no_stdin}, @code{--no_inp_std}, @code{--no_redirect}, @code{--no_standard_input})
 First introduced in @acronym{NCO} version 4.8.0 (released May, 2019),
 this switch (which takes no argument) disables checking standard input
@@ -19264,13 +19269,22 @@ This is useful because @command{ncclimo} and @command{ncremap} may
 mistakenly expect input to be provided on @code{stdin} in environments
 that use @code{stdin} for other purposes. 
 Some non-interactive environments (e.g., @command{crontab},
-@code{nohup}, Azure @acronym{CI}, @acronym{CWL}), use standard input 
-for their own purposes, and thus confuse @acronym{NCO} into thinking
-that you provided the input files names via the @code{stdin}
-mechanism. 
+@code{nohup}, Azure @acronym{CI}, @acronym{CWL}), may
+use standard input for their own purposes, and thus confuse
+@acronym{NCO} into thinking that you provided the input files names
+via the @code{stdin} mechanism. 
 In such cases users may disable the automatic checks for standard
 input by explicitly invoking the @samp{--no_stdin} flag.
-This switch is never required for jobs run in an interactive shell. 
+This switch is usually not required for jobs in an interactive shell.
+Interactive @acronym{SLURM} shells can also commandeer @code{stdin},
+as is the case on the @code{DOE} machine named Chrysalis.
+This behavior appears to vary depending on the @acronym{SLURM}
+implementation.
+@example
+@verbatim
+ncclimo --no_stdin -v T -s 2000 -e 2001 --ypf=10 -i in -o out
+@end verbatim
+@end example
 
 @cindex @code{-t @var{thr_nbr}}
 @cindex @var{thr_nbr}
@@ -24342,7 +24356,7 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o] [--add_fll]
 [-M] [-m @var{map_fl}] [--msh_fl=@var{msh_fl}]
 [--msk_apl] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
 [-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
-[--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stg_grd]
+[--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stdin] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
 [--pdq=@var{pdq_opt}] [--ppc=@var{ppc_opt}] [--preserve=@var{prs_stt}]
 [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src] [--rnr_thr=@var{rnr_thr}] 
@@ -24962,6 +24976,41 @@ This is thought to have no effect on global mappings.
 Please let us know if these capabilities do not work for you.
 
 @html
+<a name="add_fill_value"></a> <!-- http://nco.sf.net/nco.html#add_fill_value -->
+<a name="add_fll"></a> <!-- http://nco.sf.net/nco.html#add_fll -->
+<a name="fill_empty"></a> <!-- http://nco.sf.net/nco.html#fill_empty -->
+<a name="fll_mpt"></a> <!-- http://nco.sf.net/nco.html#fll_mpt -->
+@end html
+@cindex missing value
+@cindex @code{_FillValue}
+@cindex @code{--add_fll}
+@cindex @code{--add_fill_value}
+@cindex @code{--fll_mpt}
+@cindex @code{--fill_empty}
+@item --add_fll (@code{--add_fll}, @code{--add_fill_value}, @code{--fll_mpt}, @code{--fill_empty})
+Introduced in @acronym{NCO} version 5.0.0 (released June, 2021),
+this switch (which takes no argument) causes the regridder to add a
+@code{_FillValue} attribute to fields with empty destination cells.
+Empty destination cells are those that have no non-zero weights from
+the source grids.
+When a contiguous geophysical field (e.g., air temperature) without a
+@code{_FillValue} is mapped to such a destination grid, the empty
+destination values are normally set to zero (because no source grid
+cells contribute).
+However, zero is a valid value for many geophysical fields.
+Use this switch to ensure that empty destination gridcells are always
+set to @code{_FillValue}.
+The default @code{_FillValue} will be used in the output file for
+input fields that lack a @code{_FillValue}.
+This flag has no effect on input fields that already have a
+@code{_FillValue}.
+@example
+@verbatim
+ncremap --add_fll -v FLNS -m map.nc in.nc out.nc
+@end verbatim
+@end example
+
+@html
 <a name="config"></a> <!-- http://nco.sf.net/nco.html#config -->
 <a name="cnf"></a> <!-- http://nco.sf.net/nco.html#cnf -->
 @end html
@@ -25562,6 +25611,39 @@ mesh-file whose name was specified with @samp{--msh_fl=@var{msh_fl}}.
 This provenance includes a @code{history} attribute that contains
 the command invoking @command{ncremap}, and the map-generating command
 invoked by @command{ncremap}.
+
+@html
+<a name="msk_apl"></a> <!-- http://nco.sf.net/nco.html#msk_apl -->
+<a name="mask_apply"></a> <!-- http://nco.sf.net/nco.html#mask_apply -->
+<a name="msk_app"></a> <!-- http://nco.sf.net/nco.html#msk_app -->
+<a name="fill_empty"></a> <!-- http://nco.sf.net/nco.html#fill_empty -->
+@end html
+@cindex missing value
+@cindex @code{_FillValue}
+@cindex @code{--msk_apl}
+@cindex @code{--mask_apply}
+@cindex @code{--msk_app}
+@item --msk_apl (@code{--msk_apl}, @code{--mask_apply}, @code{--msk_app})
+Introduced in @acronym{NCO} version 5.0.0 (released June, 2021),
+this switch (which takes no argument) causes the regridder to
+apply @var{msk_out} (i.e., @code{mask_b}) to variables after
+regridding.
+Some weight generators (e.g., Tempest) ignore masks and thus produce
+non-zero weights for masked destination cells, and/or from masked
+source cells.
+This flag causes regridded files produced with such map-files to
+adhere to the destination mask rules (though source mask rules may
+still be violated).
+This feature is especially useful in placing missing values (aka,
+@code{_FillValue}) in destination cells that should be empty, so that 
+regridded files have @code{_FillValue} distributions identical with
+output from other weight-generators such as @acronym{ESMF} and
+@acronym{NCO}. 
+@example
+@verbatim
+ncremap --msk_apl -v FLNS -m map.nc in.nc out.nc
+@end verbatim
+@end example
 
 @html
 <a name="msk_dst"></a> <!-- http://nco.sf.net/nco.html#msk_dst -->
@@ -26354,6 +26436,29 @@ ncremap --pdq='-a time,new_dim,lat,lon' --map=map.nc in.nc out.nc
 @end example
 
 @html
+<a name="no_permute"></a> <!-- http://nco.sf.net/nco.html#no_permute -->
+@end html
+@cindex permute
+@cindex @command{ncpdq}
+@cindex @acronym{SLURM}
+@cindex @acronym{CWL}
+@cindex @code{--no_permute}
+@item --no_permute (@code{--no_permute}, @code{--no_prm}, @code{--no_pdq}, @code{--no_ncpdq})
+Introduced in @acronym{NCO} version 5.0.0 (released June, 2021),
+this switch (which takes no argument) causes the regridder to skip the
+default permutation of dimensions before regridding (notably
+@acronym{MPAS}) datasets known to store data with non-horizontal
+most-rapidly varying dimensions.
+@command{ncremap} normally ensures that input fields are stored in the 
+shape expected by regridder weights (horizontal dimensions last)
+by permuting the dimensions with @command{ncpdq}.
+However, permutation consumes time and generates an extra intermediate
+file. 
+Avoid this time penalty by using the @samp{--no_permute} flag if the
+input fields are known to already have trailing horizontal
+dimensions. 
+
+@html
 <a name="preserve"></a> <!-- http://nco.sf.net/nco.html#preserve -->
 @end html
 @cindex @code{--preserve=@var{prs_stt}}
@@ -26541,9 +26646,15 @@ instructions in @var{grd_sng} perform as expected.
 @html
 <a name="no_stdin"></a> <!-- http://nco.sf.net/nco.html#no_stdin -->
 @end html
+@cindex Chrysalis
+@cindex Common Workflow Language
 @cindex Azure @acronym{CI}
+@cindex @acronym{SLURM}
 @cindex @acronym{CWL}
 @cindex @code{--no_stdin}
+@cindex @code{--no_inp_std}
+@cindex @code{--no_standard_input}
+@cindex @code{--no_redirect}
 @item --no_stdin (@code{--no_stdin}, @code{--no_inp_std}, @code{--no_redirect}, @code{--no_standard_input})
 First introduced in @acronym{NCO} version 4.8.0 (released May, 2019),
 this switch (which takes no argument) disables checking standard input
@@ -26552,13 +26663,23 @@ This is useful because @command{ncclimo} and @command{ncremap} may
 mistakenly expect input to be provided on @code{stdin} in environments
 that use @code{stdin} for other purposes. 
 Some non-interactive environments (e.g., @command{crontab},
-@code{nohup}, Azure @acronym{CI}, @acronym{CWL}), use standard input 
-for their own purposes, and thus confuse @acronym{NCO} into thinking
-that you provided the input files names via the @code{stdin}
-mechanism. 
+@code{nohup}, Azure @acronym{CI}, @acronym{CWL}), may
+use standard input for their own purposes, and thus confuse
+@acronym{NCO} into thinking that you provided the input files names
+via the @code{stdin} mechanism. 
 In such cases users may disable the automatic checks for standard
 input by explicitly invoking the @samp{--no_stdin} flag.
-This switch is never required for jobs run in an interactive shell. 
+This switch is usually not required for jobs in an interactive shell.
+Interactive @acronym{SLURM} shells can also commandeer @code{stdin},
+as is the case on the @code{DOE} machine named Chrysalis.
+This behavior appears to vary depending on the @acronym{SLURM}
+implementation.
+@example
+@verbatim
+srun -N 1 -n 1 ncremap --no_stdin -m map.nc in.nc out.nc
+@end verbatim
+@end example
+
 
 @html
 <a name="tmp_drc"></a> <!-- http://nco.sf.net/nco.html#tmp_drc -->

@@ -206,7 +206,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   /* Before changing metadata, change missing values to new missing value if warranted 
      This capability is add-on feature not implemented too cleanly or efficiently
      If every variable has "_FillValue" attribute and "_FillValue" is changed
-     globally, then algorithm goes into and out of define mode for each variable,
+     globally, then algorithm enters and exits define mode for each variable,
      rather than collecting all information in first pass and replacing all data in second pass.
      This is because ncatted was originally designed to change only metadata and so was
      architected differently from other NCO operators. */
@@ -215,6 +215,8 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
      && strcmp(aed.att_nm,nco_mss_val_sng_get()) == 0 /* Current attribute is "_FillValue" */
      && var_id != NC_GLOBAL /* Current attribute is not global */
      && (aed.mode == aed_modify || aed.mode == aed_overwrite)  /* Modifying or overwriting existing value */
+     /* 20210610: Until today, only change values equal to _FillValue
+	However, values equal to the netCDF default missing value for each type should probably also be changed */
      && rcd_inq_att == NC_NOERR /* Only when existing _FillValue attribute is modified */
      && att_sz == 1L /* Old _FillValue attribute must be of size 1 */
      && aed.sz == 1L /* New _FillValue attribute must be of size 1 */
@@ -276,6 +278,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     /* Sanity check */
     if(var->has_mss_val == False){
       (void)fprintf(stdout,"%s: ERROR variable \"%s\" does not have \"%s\" attribute in %s\n",nco_prg_nm_get(),var_nm,nco_mss_val_sng_get(),fnc_nm);
+      //      (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" does not have \"%s\" attribute to modify or overwrite. However, variable may have values equal to the netCDF default _FillValue for type %s. Routine will search for and change these values instead, and create a _FillValue attribute with the new value.\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_mss_val_sng_get(),nco_typ_sng(var->type));
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
@@ -2185,8 +2188,9 @@ nco_char_att_put /* [fnc] Get a character string attribute from an open file */
  const char * const att_val_sng) /* [sng] Attribute value */
 {
   /* Put a character string attribute into an open file
-     Return NC_NOERR on success
-     This routine allocates no externally visible memory */
+     Uses attribute 'overwrite' mode and so should always succeed
+     Returns NC_NOERR on success
+     Routine allocates no externally visible memory */
 
   char *var_nm; /* [sng] Variable name */
   char *att_nm; /* [sng] Attribute name */
@@ -2206,7 +2210,7 @@ nco_char_att_put /* [fnc] Get a character string attribute from an open file */
   if(att_val_sng) aed_mtd.sz=strlen(att_val); else aed_mtd.sz=0L;
   aed_mtd.type=NC_CHAR;
   aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
+  aed_mtd.mode=aed_overwrite;
 
   (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
 

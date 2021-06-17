@@ -356,7 +356,7 @@ nm2sng_jsn /* [fnc] Turn variable/dimension/attribute name into legal JSON */
          case '\t': 
          case '\\': 
          case '\"': 
-	 /* According to json spec control char  '/' should be escaped but this is mangles filepaths so leave it out for now */
+	 /* According to JSON specification, control char '/' should be escaped but this mangles filepaths so leave it out for now */
          /* case '\/': */
          case '\0':
            *chr_out_ptr++='\\';

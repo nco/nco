@@ -3363,7 +3363,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports global metadata specifies conservative remapping with normalization of type = %s. Furthermore, destination fractions frc_dst = dst_frac = frac_b = frc_out contain non-unity elements (maximum deviation from unity of %g exceeds hard-coded (in variable eps_rlt) relative-epsilon threshold of %g for frc_out[%ld] = %g). Thus normalization issues will be explicitly treated. Will apply \'destarea\' normalization (i.e., divide by non-zero frc_out[dst_idx]) to all regridded arrays.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ),frc_out_dff_one_max,eps_rlt,idx_max_dvn,frc_out[idx_max_dvn]);
     if(nco_dbg_lvl_get() >= nco_dbg_std && flg_frc_out_wrt) (void)fprintf(stdout,"%s: INFO %s Maximum deviation %g exceeds threshold of %g that triggers automatic writing of fractional destination area as variable named frac_b in regridded output.\n",nco_prg_nm_get(),fnc_nm,frc_out_dff_one_max,eps_rlt_wrt_thr);
   } /* !sometimes non-unity */
-  if(flg_frc_nrm && rgr->flg_rnr){
+  if(nco_dbg_lvl_get() >= nco_dbg_std && flg_frc_nrm && rgr->flg_rnr){
     // 20190918: Weaken from WARNING to INFO because NCO no longer renormalizes when using "destarea" maps unless specifically requested to with --rnr_thr
     (void)fprintf(stdout,"%s: INFO %s reports manual request to renormalize partially overlapped destination gridcells (i.e., gridcells with non-unity frc_dst = dst_frac = frac_b) to preserve mean-value of valid fraction of source gridcells (usually most useful for state variables), rather than dilute valid-fraction mean over total destination gridcell area to preserve area-integral of source data (the default, often most useful for ensuring global conservation of fluxes).\n",nco_prg_nm_get(),fnc_nm);
     //(void)fprintf(stdout,"%s: INFO %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b at same time global metadata specifies normalization type = %s. Normalizing twice can be an error, depending on intent of each. Charlie is all ears on how NCO should handle this :)\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
@@ -4735,10 +4735,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     sgs_id=in_id;
     if((rcd=nco_inq_varid_flg(sgs_id,var_nm,&var_id_in)) != NC_NOERR){
       /* If sgs_frc_nm is not in input file then search for it in external area file */
+#ifdef WIN32
+  const char sls_chr='\\';   /* [chr] Slash character */
+#else /* !WIN32 */
+  const char sls_chr='/';   /* [chr] Slash character */
+#endif /* !WIN32 */
       char *sls_ptr; /* [sng] Pointer to last slash character (' ') */
-      sls_ptr=strrchr(var_nm,'/');
+      sls_ptr=strrchr(var_nm,sls_chr);
       if(!sls_ptr){
-	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unable to find sgs_frc_nm = %s in current input file, and unable to identify filename (ending with slash '/') portion of that string to serve as local external file for sgs_frc input, exiting\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm);
+	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unable to find sgs_frc_nm = %s in current input file, and unable to identify filename (ending with slash '/' or backslash '\\', as appropriate) portion of that string to serve as local external file for sgs_frc input, exiting\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm);
 	nco_exit(EXIT_FAILURE);
       } /* !sls_ptr */
       sgs_frc_nm=(char *)strdup(sls_ptr+1L); /* Copy variable-name portion of string */

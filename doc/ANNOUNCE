@@ -1,19 +1,14 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.9.9 have arrived.
+The netCDF Operators NCO version 5.0.0 have arrived.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.9.9 contains more fixes than features, and can probably be
-skipped by those who do not use ncremap or ncclimo. ncclimo now
-supports the mth_srt/end options for high resolution timeseries that
-do not begin/end in Jan/Dec (previously it only supported those
-arguments for monthly resolution). ncremap has crucial fixes for
-weight generation and map-checking for masked grids, fixes for
-curvilinear grid inferral, and automatic rounding when regridding
-integer-valued fields (like masks).  
+Version 5.0.0 contains more ncremap features and a few fixes.
+You can skip this release unless you use ncremap or ncclimo.
+ncremap has crucial fixes for
 
 Work on NCO 5.0.0 has commenced and will continue improving support
 for analysis of land surface datasets packed into sparse-1D formats,
@@ -24,88 +19,88 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo now supports options --mth_srt and --mth_end in
-   high-frequency splitter mode. Previously it only supported those 
-   arguments for monthly resolution timeseries. The arguments specify
-   the (1-based) month in which the requested high-frequency
-   timeseries should begin and end, respectively. These default to 1
-   (January) and 12 (December). To extract 14-month timeseries from
-   high frequency (e.g., daily-resolution) input files one would 
-   use, e.g.,
-   ncclimo --clm_md=hfs --yr_srt=1 --yr_end=2 --mth_srt=4 --mth_end=5 ...
-   http://nco.sf.net/nco.html#ncclimo
-   http://nco.sf.net/nco.html#mth_srt
-   http://nco.sf.net/nco.html#mth_end
+A. The ncremap regridder now creates a "title" global attribute in the
+   the output file if the input file did not already have a title.
+   This title attribute is described and supported by the NUG and CF.
+   Moreover, the Panoply file catalog uses it to describe open files.
+   http://nco.sf.net/nco.html#ncremap
 
-B. ncclimo is now smarter about inferring both the temporal
-   resolution of high frequency timeseries, and the number of
-   timesteps per file. As a result, explicit invocation of the tpd
-   (timesteps-per-day) and dpf (days-per-file) option should no longer
-   be necessary. Explicitly specifying these options will, of course,
-   prevent ncclimo from trying to infer them.
-   ncclimo --clm_md=hfs           ... # This should work fine
-   ncclimo --clm_md=hfs --tpd=8   ... # No longer necessary
-   ncclimo --clm_md=hfs --dpf=10  ... # No longer necessary
-   http://nco.sf.net/nco.html#ncclimo
-   http://nco.sf.net/nco.html#tpd
-   http://nco.sf.net/nco.html#dpf
+A. ncremap now accepts a --no_prm (--no_permute) flag that causes 
+   the regridder to skip the default permutation of dimensions
+   before regridding (notably MPAS) datasets known to store data
+   with most-rapidly varying dimensions that are not horizontal.
+   ncremap normally ensures that input fields are stored in the
+   shape expected by regridder weights (horizontal dimensions last)
+   by permuting the dimensions with ncpdq. However, permutation
+   consumes time and generates an extra intermediate file.
+   Avoid this time penalty by using the --no_prm flag if the input
+   fields are known to have trailing horizontal dimensions.
+   ncremap --no_prm -P mpas -v sic -m map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#no_prm
+   http://nco.sf.net/nco.html#ncremap
 
-C. ncremap now automatically rounds integer-valued fields, such as
-   masks. Previously when ncremap regridded an integer-valued field,
-   it used implicit type-conversion rules to convert the regridded
-   destination value to an integer value for output. However, users
-   generally expect a regridded value of, say, 1.9999999, to be
-   converted to the integer 2 not 1. Hence, ncremap now automatically
-   applies the rint() function to internal floating point values
-   before converting them to integers for output. Regrid integer
-   valued fields such as masks now generally behave as desired.
+A. ncremap now accepts a --add_fll (--add_fill_value) flag that causes 
+   the regridder to add a _FillValue attribute to fields with empty
+   destination cells. Empty destination cells are those that have no
+   non-zero weights from the source grids. Should a field (e.g.,
+   air temperature) without a _FillValue be mapped to such a grid,
+   the empty destination values are normally set to 0.0, since no
+   source grid cells contribute. However, 0.0 is a valid value for
+   many geophysical fields. Use this switch to ensure that empty
+   destination gridcells are always set to _FillValue. The default
+   _FillValue will be used in the output file for input fields that
+   lack a _FillValue. This flag has no effect on input fields that
+   already have a _FillValue.
+   ncremap --add_fll -v FLNS -m map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#add_fll
+   http://nco.sf.net/nco.html#ncremap
 
-D. ncremap now always invokes TempestRemap's GenerateOverlapMesh with
-   its --allow_no_overlap option. This option permits TR to generate
-   meshes from not-completely-overlapped regional grids. This is often
-   useful in post-processing regional data, for example.
-   http://nco.sf.net/nco.html#tr
-   http://nco.sf.net/nco.html#allow_no_overlap
+A. ncremap now accepts a --msk_apl (--mask_apply) flag that causes
+   the regridder to apply msk_out (i.e., mask_b) to variables after
+   regridding. Some weight generators (e.g., Tempest) ignore masks
+   and thus produce non-zero weights for masked destination cells,
+   and/or from masked source cells. This flag causes regridded files 
+   produced with such map-files to adhere to the destination mask
+   rules (though source mask rules may still be violated). This 
+   feature is especially useful in placing missing values (aka,
+   _FillValue) in destination cells that should be empty, so that
+   regridded files have distributions of _FillValues identical
+   with output from other weight-generators such as ESMF and NCO.
+   ncremap --msk_apl -v FLNS -m map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#msk_apl
+   http://nco.sf.net/nco.html#ncremap
 
-E. Conda builds should now be more robust, due to extensive testing.
-   Thanks to Xylar Asay-Davis for helping us understand and alter the
-   nco-feedstock for Conda. As a result of this, OpenMP should work
-   on all MacOS Conda installations, and thus make map-file generation
-   much faster for high-resolution maps.
-
-F. This version works-around a regression in netCDF 4.7.4 (fixed in
-   4.8.0) that prevents NCO from manipulating HDF4 files, and a
-   regression in netCDF 4.8.0 (subsequently fixed in 4.8.1) that
-   prevents NCO from building its main test file from CDL, and thus
-   prevents NCO from building without manual intervention.
+A. ncremap now includes the coordinates xgrid, ygrid in its internal
+   database so that it can automatically recognize and infer grids
+   from NOAA SSM/I, AMSR-E, and SMMR Climate Data Record (CDR)
+   datasets. Thanks to Mat Maltrud of LANL for prompting this. 
+   ncremap -d ~/ssmi_cdr_raw.nc -g ${DATA}/grids/ssmi_304x448.nc
+   http://nco.sf.net/nco.html#ncremap
 
 BUG FIXES:
 
-A. NCO now treats masks self-consistently. Its internal
-   weight-generator adheres to the rules that no masked source
-   gridcell shall contribute to a destination gridcell, and that 
-   no masked destination gridcell shall receive any contributions.
-   Moreover, the ncks map-checker now reports whether, and how often
-   map-files violate these rules. Previously, NCO's weight generator
-   would incorrectly handle, with obviously detrimental outcomes,
-   grids with masked regions. There is no workaround, and the only
-   solution is to upgrade. Thanks to Henry Butowsky for fixing the
-   weight-generation issues. 
-   http://nco.sf.net/nco.html#rgr
-   http://nco.sf.net/nco.html#chk_map
+A. MacOS Conda builds now behave correctly with OpenMP, which was
+   buggy with 4.9.9 on MacOS with Conda.
+   This will make map-file generation with the NCO algorithms much
+   faster for high-resolution maps.
+   Thanks to Xylar Asay-Davis of LANL for helping to test this.
 
-B. ncremap now correctly infers grids from curvi-linear data files.
-   Previously, the inferral mechanism could inadvertently omit about
-   half of the area of each inferred gridcell. Note that this only
-   affected inferral of grids from curvilinear data files. Explicitly
-   specified curvilinear grids (with full vertice information) have
-   always worked correctly. There is no workaround, and the only
-   solution is to upgrade. 
+A. ncremap fixes a recently introduced problem with node-indexing
+   in MPI mode. The workaround is to use background mode, and the
+   solution is to upgrade.
+   http://nco.sf.net/nco.html#par_typ_ncremap
 
-C. DAP access to files via the HTTPS protocol now works with Windows.
-   Previously, only HTTP worked with Windows. There is no workaround,
-   and the only solution is to upgrade. Thanks to Pedro Vicente for
-   finding the cause of this bug.
+A. ncremap now skips the stdin check when -i in_fl is used.
+   The previous behavior led to hangs with some queuing systems
+   (Slurm) on some machines (Chrysalis) that reserve stdin for
+   the batch queue commands (srun). The workaround is to use the
+   --no_stdin flag, and the solution is to upgrade. Thanks to Xylar
+   Asay-Davis of LANL for reporting this issue.
+
+A. ncks -X now handles branch cut rules correctly when WESN bounding
+   box of auxiliary (e.g., unstructured) coordinate grids wrap in
+   longitude. This permits ncremap RRG to work correctly in those same
+   situations. Thanks to Po-Lun Ma of PNNL for prompting this fix.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

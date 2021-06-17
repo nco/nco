@@ -1629,12 +1629,16 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 } /* end nco_fl_open() */
 
 size_t /* [B] Blocksize */
-nco_fl_blocksize /* [fnc] Find blocksize of filesystem will or does contain this file */
+nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain this file */
 (const char * const fl_out) /* [sng] Filename */
 {
   /* Purpose: Find blocksize of filesystem will or does contain this file */
   const char fnc_nm[]="nco_fl_blocksize()"; /* [sng] Function name */
+#ifdef WIN32
+  const char sls_chr='\\';   /* [chr] Slash character */
+#else /* !WIN32 */
   const char sls_chr='/';   /* [chr] Slash character */
+#endif /* !WIN32 */
   
   char *drc_out; /* [sng] Directory containing output file */
   char *sls_ptr; /* [sng] Pointer to slash */
