@@ -1,0 +1,19 @@
+// -*-C++-*-
+
+// Purpose: CDL file to generate ncZarr test file for NCO
+
+// Usage:
+// ncgen -7 -b -o ${HOME}/nco/data/zarr.nc ${HOME}/nco/data/zarr.cdl
+// ncgen -7 -lb -o "file://zarr#mode=nczarr,file" ${HOME}/nco/data/zarr.cdl
+
+netcdf zarr {
+  dimensions:
+    dmn = 2 ;
+  variables:
+    int var(dmn) ;
+    var:purpose = "var" ;
+    var:_FillValue = -32767 ;
+
+    data:
+      var = 1, _ ;
+} // group /

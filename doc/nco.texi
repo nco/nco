@@ -6458,9 +6458,19 @@ grid-mappings using the @acronym{CF}-convention (@pxref{CF Conventions})
 Currently, @acronym{NCO} understands auxiliary coordinate variables 
 pointed to by the @code{standard_name} attributes for @var{latitude} and  
 @var{longitude}.   
-Cells that contain a value within the user-specified range 
+Cells that contain a value within the user-specified
+West-East-South-North (aka @acronym{WESN}) bounding box 
 [@var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}] are
-included in the output hyperslab.  
+included in the output hyperslab.
+
+The sides of the @acronym{WESN}) bounding box must be specified in
+degrees (not radians).
+The specified coordinates must be within the valid data range.
+This includes boxes that wrap the origin of the longitude coordinate.
+For example, if the longitude coordinate is stored in [0,360], then
+a bounding box that straddles the Greenwich meridian in Africa would
+be specified as, e.g., @math{[350,10,-20,20]}, not as
+@math{[350,370,-20,20]}. 
 
 @cindex unstructured grid
 @cindex cell-based grid
