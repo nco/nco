@@ -1,8 +1,12 @@
-2021-06-17  Charlie Zender  <zender@uci.edu>
+2021-06-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0: Bend';git push
 	git tag -a 5.0.0 -m 'ncks aux wrp; ncremap add_fll, E3SM-U pth, mask_a/b, MPI fix, msk_apl, msk_nm, no_prm, stdin, ttl, SSM/I';git push --tags
+
+	* ncks eliminate debugging output
+
+2021-06-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.0-beta01: Astoria';git push

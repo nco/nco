@@ -1253,7 +1253,7 @@ main(int argc,char **argv)
       char att_sng_ttl[]="title"; /* [sng] NUG-documented title string */
       char *att_ttl_val=NULL;
       att_ttl_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_ttl);
-      (void)fprintf(stdout,"%s: DEBUG input title attribute is: %s\n",nco_prg_nm_get(),att_ttl_val);
+      //(void)fprintf(stdout,"%s: DEBUG input title attribute is: %s\n",nco_prg_nm_get(),att_ttl_val);
       if(!att_ttl_val || (att_ttl_val && (!strcmp(att_ttl_val,"UNSET")))){
 	/* Panoply prints the value of global attribute "title", if any, in its file selector menu
 	   Otherwise it prints "UNSET", which is ... unsettling
@@ -1264,7 +1264,7 @@ main(int argc,char **argv)
 	att_ttl_val=strcpy(att_ttl_val,"Regridded version of ");
 	att_ttl_val=strcat(att_ttl_val,fl_in_stub);
 	rcd=nco_char_att_put(out_id,NULL,att_sng_ttl,att_ttl_val);
-	(void)fprintf(stdout,"%s: DEBUG output title attribute is: %s\n",nco_prg_nm_get(),att_ttl_val);
+	//(void)fprintf(stdout,"%s: DEBUG output title attribute is: %s\n",nco_prg_nm_get(),att_ttl_val);
 	if(att_ttl_val) att_ttl_val=(char *)nco_free(att_ttl_val);
       } /* !att_ttl_val */
       
