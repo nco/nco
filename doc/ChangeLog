@@ -1,3 +1,7 @@
+2021-06-21  Charlie Zender  <zender@uci.edu>
+
+	* Change MACOSX to MACOS everywhere: Makefiles, pvmgetarch, configure.ac, ncoGrammer.g, NCO_rgr.pm, CMakeLists.txt, nco_mmr.c, nco_var_lst.h, nco_lst_utl.h
+
 2021-06-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.0 release procedure:

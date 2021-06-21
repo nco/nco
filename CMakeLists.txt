@@ -711,11 +711,11 @@ if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
   
   #//////////////////////////
   # macros used in ncap2 to use advanced math: erf, erfc, gamma
-  # LINUX LINUXAMD64 MACOSX
+  # LINUX LINUXAMD64 MACOS
   #//////////////////////////
   
   if(APPLE)
-    add_definitions(-DMACOSX)
+    add_definitions(-DMACOS)
   endif() 
   if(UNIX AND NOT APPLE)
    add_definitions(-DLINUX)

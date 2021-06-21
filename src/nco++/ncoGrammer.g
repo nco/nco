@@ -654,7 +654,7 @@ INCLUDE
 		std::string f_nm=f->getText();
 
 		std::ifstream* input=new std::ifstream(f_nm.c_str());
-        // if(*input==NULL){ // 20150413: Trips clang 6.0 MACOSX Yosemite warning from -Wnull-arithmetic and subsequent error "invalid operands to binary expression" 
+        // if(*input==NULL){ // 20150413: Trips clang 6.0 MACOS Yosemite warning from -Wnull-arithmetic and subsequent error "invalid operands to binary expression" 
 		if(!(*input)){
           // only search include paths if f_nm NOT an absolute path  
           // add include paths and stop if opened ok  

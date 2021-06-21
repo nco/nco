@@ -22,9 +22,9 @@
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, getenv, exit */
 #include <string.h> /* strcmp() */
-#ifdef MACOSX
+#ifdef MACOS
 # include <sys/time.h> /* machine time (needed by Mac OS X for struct rusage) */ 
-#endif /* !MACOSX */
+#endif /* !MACOS */
 #ifdef HAVE_GETRUSAGE
 # include <sys/resource.h> /* Resource usage and limits */
 #endif /* !HAVE_GETRUSAGE */

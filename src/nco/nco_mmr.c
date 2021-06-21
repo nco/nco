@@ -572,9 +572,9 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
 #if (defined LINUX) || (defined LINUXAMD64)
   (void)fprintf(stdout,"%s: INFO %s reports system type is LINUX so getrusage() does implement ru_maxrss [kB] and DOES NOT implement ru_ixrss, ru_idrss, and ru_idrss. Page size is %d B.\n",nco_prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !LINUX */
-#ifdef MACOSX
-  (void)fprintf(stdout,"%s: INFO %s reports system type is MACOSX so rusage structure elements ru_utime and ru_stime are of type 'int' not 'long int'.\n",nco_prg_nm_get(),fnc_nm);
-#endif /* !MACOSX */
+#ifdef MACOS
+  (void)fprintf(stdout,"%s: INFO %s reports system type is MACOS so rusage structure elements ru_utime and ru_stime are of type 'int' not 'long int'.\n",nco_prg_nm_get(),fnc_nm);
+#endif /* !MACOS */
 #ifdef NECSX
   (void)fprintf(stdout,"%s: INFO %s reports system type is NECSX so getrusage() units for page size and time are unknown.\n",nco_prg_nm_get(),fnc_nm);
 #endif /* !NECSX */
@@ -589,7 +589,7 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
   int rcd_sys; /* [enm] Return code for system call */
   rcd_sys=getrusage(RUSAGE_SELF,&usg);
   if(rcd_sys) rcd_sys+=0; /* CEWI */
-  /* MACOSX rusage structure elements ru_utime and ru_stime are of type 'int' not 'long int' */
+  /* MACOS rusage structure elements ru_utime and ru_stime are of type 'int' not 'long int' */
   if(nco_dbg_lvl_get() > nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports: rusage.ru_utime.tv_sec = user time used = %li s, rusage.ru_utime.tv_usec = user time used = %li us, rusage.ru_stime.tv_sec = system time used = %li s, rusage.ru_stime.tv_usec = system time used = %li us, rusage.ru_maxrss = maximum resident set size = %li [sz], rusage.ru_ixrss = integral shared memory size =  %li [sz tm], rusage.ru_idrss = integral unshared data size = %li [sz], rusage.ru_isrss = integral unshared stack size = %li [sz], rusage.ru_minflt = page reclaims = %li, rusage.ru_majflt = page faults = %li, rusage.ru_nswap = swaps = %li\n",nco_prg_nm_get(),fnc_nm,usg.ru_utime.tv_sec,(long int)usg.ru_utime.tv_usec,usg.ru_stime.tv_sec,(long int)usg.ru_stime.tv_usec,usg.ru_maxrss,usg.ru_ixrss,usg.ru_idrss,usg.ru_isrss,usg.ru_minflt,usg.ru_majflt,usg.ru_nswap);
 
   return (long)usg.ru_maxrss; /* [B] Maximum resident set size */

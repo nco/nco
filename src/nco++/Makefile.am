@@ -45,7 +45,7 @@ nco_gsl.cc
 NCO_AND_ANTLR_STUFF = ../nco/libnco.la -lantlr
 #ncap2_LDFLAGS = ../nco/libnco.la -lantlr
 
-# fxm: 20080515 Takeshi Enomoto reports that MACOSX needs
+# fxm: 20080515 Takeshi Enomoto reports that MACOS needs
 # ncap2_LDFLAGS = ../nco/.libs/libnco.dylib -lantlr
 
 # fxm: 20140730 Ed Anderson reports that PGI- and GCC-compiled ncap2 need

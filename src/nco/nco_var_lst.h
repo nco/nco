@@ -25,9 +25,9 @@
 
 #ifdef HAVE_REGEX_H 
 /* 20120213: Linux GCC 4.6 man page says regex.h depends on (non-present) sys/types.h */
-# ifdef MACOSX
+# ifdef MACOS
 #  include <sys/types.h> /*19950312: _res, 20040822: Mac OS X off_t required by regex.h */
-# endif /* !MACOSX */
+# endif /* !MACOS */
 # include <regex.h> /* POSIX regular expressions library */
 #endif /* HAVE_REGEX_H */
 

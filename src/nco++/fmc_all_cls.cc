@@ -1565,12 +1565,12 @@ var_sct * bsc_cls::getdims_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &f
       sym_vtr.push_back(sym_cls("floor",floor,floorf)); /* Round down to nearest integer */
       
       /* Advanced math: erf, erfc, gamma
-	 LINUX*, MACOSX*, and SUN* provide these functions with C89
+	 LINUX*, MACOS*, and SUN* provide these functions with C89
 	 20020122 and 20020422: AIX, CRAY, SGI*, WIN32 do not define erff(), erfcf(), gammaf() with C89
 	 20050610: C99 mandates support for erf(), erfc(), tgamma()
 	 Eventually users without C99 will forego ncap */
       
-#if defined(LINUX) || defined(LINUXAMD64) || defined(MACOSX) || defined(_MSC_VER)
+#if defined(LINUX) || defined(LINUXAMD64) || defined(MACOS) || defined(_MSC_VER)
       sym_vtr.push_back(sym_cls("erf",erf,erff));
       sym_vtr.push_back(sym_cls("erfc",erfc,erfcf));
       sym_vtr.push_back(sym_cls("gamma",tgamma,tgammaf));
@@ -1579,9 +1579,9 @@ var_sct * bsc_cls::getdims_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &f
        /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh
 	  20020703: AIX, SGI*, WIN32 do not define acoshf, asinhf, atanhf
 	  20050610: C99 mandates support for acosh(), asinh(), atanh(), cosh(), sinh(), tanh()
-	  20160515: Add hyperbolic function support to MACOSX
+	  20160515: Add hyperbolic function support to MACOS
 	  Eventually users without C99 will forego ncap */
-#if defined(LINUX) || defined(LINUXAMD64) || defined(MACOSX)
+#if defined(LINUX) || defined(LINUXAMD64) || defined(MACOS)
       sym_vtr.push_back(sym_cls("acosh",acosh,acoshf));
       sym_vtr.push_back(sym_cls("asinh",asinh,asinhf));
       sym_vtr.push_back(sym_cls("atanh",atanh,atanhf));
@@ -1592,9 +1592,9 @@ var_sct * bsc_cls::getdims_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &f
       
       /* Advanced Rounding: nearbyint, rint, round, trunc */
       /* Advanced Rounding: nearbyint, round, trunc */
-      /* 20020703: AIX, MACOSX, SGI*, WIN32 do not define rintf()
+      /* 20020703: AIX, MACOS, SGI*, WIN32 do not define rintf()
 	 Only LINUX* supplies all of these and I do not care about them enough
-	 to activate them on LINUX* but not on MACOSX* and SUN* */
+	 to activate them on LINUX* but not on MACOS* and SUN* */
       /* 20130326: Re-activate these functions on all architectures */
       sym_vtr.push_back(sym_cls("nearbyint",nearbyint,nearbyintf)); /* Round to integer value in floating point format using current rounding direction, do not raise inexact exceptions */
       sym_vtr.push_back(sym_cls("rint",rint,rintf)); /* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */

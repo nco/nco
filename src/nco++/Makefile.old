@@ -538,7 +538,7 @@ CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY
 ifneq (${PVM_ARCH},CRAY)
  CPP_TKN_OS += -DHAVE_MKSTEMP
 endif # CRAY
-ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSXWIN32))
+ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWIN32))
  CPP_TKN_OS += -DHAVE_GETOPT_H -DHAVE_GETOPT_LONG
 endif # !LINUX
 ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
@@ -776,8 +776,8 @@ ${MY_OBJ_DIR}/%.o : %.f
 endif
 # endif CRAY
 
-# Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOSX
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOSX))
+# Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOS
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOS))
 # 20161001 Linux ar with Ubuntu Xenial began using deterministic mode. -U undoes that.
 # 20161001 GNU ar -s is equivalent to ranlib
 # ar -D: Operate in deterministic mode (breaks NCO build on Ubuntu)
@@ -794,7 +794,7 @@ else ifneq (${null},$(findstring titan,${HOSTNAME}))
 else ifneq (${null},$(findstring ys,${HOSTNAME}))
  ARFLAGS := rsv
 endif # !rhea,titan,yellowstone
-ifeq (${PVM_ARCH},MACOSX)
+ifeq (${PVM_ARCH},MACOS)
  ARFLAGS := rsv
 endif # !aerosol,firn
 CXX := ${LINUX_CXX}
@@ -805,9 +805,9 @@ CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} ${OTHER_CFLAGS}
 FC := ${LINUX_FC}
 LD := ld
 LDFLAGS += ${OTHER_LDFLAGS}
-ifeq (${PVM_ARCH},MACOSX)
+ifeq (${PVM_ARCH},MACOS)
  LDFLAGS += -lresolv
-endif # endif MACOSX
+endif # endif MACOS
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1055,9 +1055,9 @@ ifeq (${OMP},Y)
  LDFLAGS := ${OMP_FLG_C} ${LDFLAGS}
 endif # endif OMP
 endif
-# endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOSX
+# endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOS
 
-ifeq (${PVM_ARCH},MACOSXOLD)
+ifeq (${PVM_ARCH},MACOSOLD)
 CXX := c++
 CC := cc
 CFLAGS := -Wall
@@ -1089,7 +1089,7 @@ ifeq (${OMP},Y)
  LDFLAGS := ${OMP_FLG} ${LDFLAGS}
 endif # endif OMP
 endif
-# endif MACOSXOLD
+# endif MACOSOLD
 
 ifeq (${PVM_ARCH},NECSX)
 ifeq (${OMP},Y)

@@ -52,7 +52,7 @@
 # Process configure input with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)
 # 20170808: Choose between traditional version and Git-based version
-# If Git, consider that Linux dynamic libraries will have full messy name, MacOSX will not
+# If Git, consider that Linux dynamic libraries will have full messy name, MacOS will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
 AC_INIT([NCO netCDF Operators],[5.0.0],[nco-bugs@lists.sourceforge.net],[nco])
 
@@ -131,7 +131,7 @@ case ${host} in
 	;;
     mips*-sgi-irix* ) AC_DEFINE(SGIMP64,1,Compatibility pvmgetarch token for IRIX on SGI MIPS)
 	;;
-    *-apple-darwin* ) AC_DEFINE(MACOSX,1,Compatibility pvmgetarch token for Apple Mac OSX) MACOSX=1 ;
+    *-apple-darwin* ) AC_DEFINE(MACOS,1,Compatibility pvmgetarch token for Apple Mac OSX) MACOS=1 ;
 	;;
     powerpc-ibm-aix* ) AC_DEFINE(AIX,1,Compatibility pvmgetarch token for AIX on IBM PowerPC)
 	;;
@@ -295,7 +295,7 @@ AC_ARG_VAR([NETCDF_ROOT],[Root directory of netCDF4 installation (contains bin, 
 # Test if user set NETCDF_ROOT and it exists
 if test "x${enable_netcdf4}" = 'xyes'; then
     if test -z "${NETCDF_ROOT}"; then
-	# 20160901: Branch fails on Fedora Core 23+ (not MacOSX, not Ubuntu) due to mysterious emission of "Using <pathname>/nf-config" text as if warning user about security hole
+	# 20160901: Branch fails on Fedora Core 23+ (not MacOS, not Ubuntu) due to mysterious emission of "Using <pathname>/nf-config" text as if warning user about security hole
 	NETCDF_CONFIG='nc-config'
 	NETCDF_ROOT="`nc-config --prefix`"
     else
@@ -433,11 +433,11 @@ NCO_CHECK_FUNCS([strdup strcasecmp strsep strcasestr])
 NCO_CHECK_FUNCS([htonl htons ntohl ntohs __builtin_bswap16 __builtin_bswap32 __builtin_bswap64])
 
 echo "##########################################################"
-echo "#     Sorting out MacOSX build parameters                #"
+echo "#     Sorting out MacOS build parameters                #"
 echo "##########################################################"
-#echo "DEBUG: enable_libnco = ${enable_libnco} and MACOSX = ${MACOSX}"
-if ((test "${enable_libnco}" = 'yes') && (test "${MACOSX}" != 1)); then
-    echo "Phew, NOT MacOSX, adding -lnco to LIBS"
+#echo "DEBUG: enable_libnco = ${enable_libnco} and MACOS = ${MACOS}"
+if ((test "${enable_libnco}" = 'yes') && (test "${MACOS}" != 1)); then
+    echo "Phew, NOT MacOS, adding -lnco to LIBS"
     LIBS="-lnco ${LIBS}"
 fi
 #echo "DEBUG: After library checks LIBS=$LIBS"
@@ -1196,7 +1196,7 @@ if test $ac_compiler_gnu = 'yes'; then
     # 20210525: Replace '-std=c99' with '-std=gnu11' 
     CFLAGS="${CFLAGS} -std=gnu11 -D_BSD_SOURCE -D_POSIX_SOURCE"
     case ${host} in
-# MacOSX does not understand shared libraries
+# MacOS does not understand shared libraries
 # clang -O4 DNE, highest clang optimization is -O3 
 	*-apple-darwin* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-O4/-O3/'` ; CFLAGS="-fno-common ${CFLAGS}" ; enable_shared='no' ;;
 # Solaris has problems with time.h

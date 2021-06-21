@@ -327,15 +327,15 @@ ifeq (${PNETCDF},Y)
  MPI := Y
 endif # !PNETCDF
 
-LINUX_OR_MACOSX := N
+LINUX_OR_MACOS := N
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
- LINUX_OR_MACOSX := Y
+ LINUX_OR_MACOS := Y
 endif
-ifneq (${null},$(findstring MACOSX,${PVM_ARCH}))
- LINUX_OR_MACOSX := Y
+ifneq (${null},$(findstring MACOS,${PVM_ARCH}))
+ LINUX_OR_MACOS := Y
 endif
 # Decide among the plethora of compilers. Use names like LINUX_CC for historical reasons.
-ifeq (${LINUX_OR_MACOSX},Y)
+ifeq (${LINUX_OR_MACOS},Y)
 ifndef LINUX_CXX
 # C++ compiler for Linux
  LINUX_CXX := g++
@@ -366,7 +366,7 @@ ifndef LINUX_FC
  #LINUX_FC := pathf95
  #LINUX_FC := pgf90
 endif # endif LINUX_CC
-endif # endif LINUX_OR_MACOSX
+endif # endif LINUX_OR_MACOS
 
 # OpenMP
 ifeq (${OMP},Y)
@@ -398,29 +398,29 @@ ifdef ESMF_INC
  ESMF_INC_FLG := -I${ESMF_INC}
 else
 ifdef ESMF_ROOT
-ifeq (${PVM_ARCH},MACOSX)
+ifeq (${PVM_ARCH},MACOS)
    ESMF_INC_FLG := -I${ESMF_ROOT}/include/esmf
 else
    ESMF_INC_FLG := -I${ESMF_ROOT}/include
-endif # endif MACOSX
+endif # endif MACOS
 else
   ESMF_INC_FLG := -I/usr/local/include
 endif # endif ESMF_ROOT
 endif # endif ESMF_INC
 # 20150319: For some reason, ESMC.h #includes ESMC_VM.h which #includes mpi.h
-ifeq (${PVM_ARCH},MACOSX)
+ifeq (${PVM_ARCH},MACOS)
 # Use stub header for uniprocessor MPI emulation provided by ESMF
  ESMF_INC_FLG += -I/Users/zender/data/esmf/src/Infrastructure/stubs/mpiuni
  ESMF_LIB_RT := ${null}
  ESMF_LIB_LAPACK := -llapack
  ESMF_LIB_XERCES := -lxerces-c
-else # endif MACOSX
+else # endif MACOS
 # Use real MPI
  ESMF_INC_FLG += -I/usr/include/openmpi-x86_64
  ESMF_LIB_RT := -lrt
  ESMF_LIB_LAPACK := ${null}
  ESMF_LIB_XERCES := ${null}
-endif # endif MACOSX
+endif # endif MACOS
 ifdef ESMF_LIB
  ESMF_LIB_FLG := -L${ESMF_LIB} -lesmf ${ESMF_LIB_LAPACK} ${ESMF_LIB_RT} ${ESMF_LIB_XERCES} -lgfortran -ldl -lnetcdff -lnetcdf_c++
 else
@@ -699,7 +699,7 @@ endif # !grele
 ifneq (${PVM_ARCH},CRAY)
  CPP_TKN_OS += -DHAVE_MKSTEMP
 endif # CRAY
-ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSXWIN32))
+ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWIN32))
  CPP_TKN_OS += -DHAVE_GETOPT_H -DHAVE_GETOPT_LONG
 endif # !LINUX
 ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
@@ -960,8 +960,8 @@ endif
 endif
 # endif HPPA
 
-# Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOSX
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOSX))
+# Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOS
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOS))
 # 20161001 Linux ar with Ubuntu Xenial began using deterministic mode. -U undoes that.
 # 20161001 GNU ar -s is equivalent to ranlib
 # ar -D: Operate in deterministic mode (breaks NCO build on Ubuntu)
@@ -978,7 +978,7 @@ else ifneq (${null},$(findstring titan,${HOSTNAME}))
 else ifneq (${null},$(findstring ys,${HOSTNAME}))
  ARFLAGS := rsv
 endif # !rhea,titan,yellowstone
-ifeq (${PVM_ARCH},MACOSX)
+ifeq (${PVM_ARCH},MACOS)
  ARFLAGS := rsv
 endif # !aerosol,firn
 CXX := ${LINUX_CXX}
@@ -990,9 +990,9 @@ CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} ${OTHER_CFLAGS}
 FC := ${LINUX_FC}
 LD := ld
 LDFLAGS += ${OTHER_LDFLAGS} -lm
-ifeq (${PVM_ARCH},MACOSX)
+ifeq (${PVM_ARCH},MACOS)
  LDFLAGS += -lresolv
-endif # endif MACOSX
+endif # endif MACOS
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1315,12 +1315,12 @@ ifeq (${OMP},Y)
  LDFLAGS := ${OMP_FLG_C} ${LDFLAGS}
 endif # endif OMP
 endif
-# endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, FREEBSD, MACOSX
+# endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, FREEBSD, MACOS
 
-# NB: Deprecated as of 201403. Now LINUX* subsumes MACOSX
-ifeq (${PVM_ARCH},MACOSXOLD)
+# NB: Deprecated as of 201403. Now LINUX* subsumes MACOS
+ifeq (${PVM_ARCH},MACOSOLD)
 CXX := ${LINUX_CXX}
-# NB: -D_POSIX_SOURCE breaks MACOSX build in nco_fl_utl.c, nco_mmr.c
+# NB: -D_POSIX_SOURCE breaks MACOS build in nco_fl_utl.c, nco_mmr.c
 #CC := cc -std=c99 -pedantic -D_BSD_SOURCE
 CC := ${LINUX_CC} -std=c99 -pedantic -D_BSD_SOURCE
 CPP := ${CC}
@@ -1353,7 +1353,7 @@ ifeq (${OMP},Y)
  LDFLAGS := ${OMP_FLG} ${LDFLAGS}
 endif # endif OMP
 endif
-# endif MACOSXOLD
+# endif MACOSOLD
 
 ifeq (${PVM_ARCH},NECSX)
 ifeq (${OMP},Y)
@@ -1584,7 +1584,7 @@ endif # endif CUDA
 # Internationalize NCO with i18n features
 ifeq (${I18N},Y)
  CPPFLAGS += -DI18N
-ifneq (${null},$(findstring MACOSX,${PVM_ARCH}))
+ifneq (${null},$(findstring MACOS,${PVM_ARCH}))
  LDFLAGS += -lintl
 endif
 endif
@@ -1970,11 +1970,11 @@ love:
 # Targets in lib
 library: lib
 lib : inc ${libnco}.a
-ifeq (${PVM_ARCH},MACOSX)
+ifeq (${PVM_ARCH},MACOS)
 	ranlib ${libnco}.a
 endif # endif LINUX
 # If not using glibc, build Sittler's getopt() and getopt_long() functions
-ifeq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSXWIN32))
+ifeq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWIN32))
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_getopt.o)
 endif # endif not glibc
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \

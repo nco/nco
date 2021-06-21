@@ -571,7 +571,7 @@ if($USER eq 'zender'){
 	$#tst_cmd=0; # Reset array
 
 #ncatted #4
-# Fragile: Test fails when command length changes, e.g., on MACOSX
+# Fragile: Test fails when command length changes, e.g., on MACOS
 # ncatted -O --hdr_pad=1000 -a missing_value,val_one_mss,m,f,0.0 ~/nco/data/in.nc ~/foo.nc
 # ncks -M --trd ~/foo.nc | grep hdr_pad | wc > ~/foo
 # cut -c 14-15 ~/foo
@@ -1406,7 +1406,7 @@ if($USER eq 'zender'){
 
     if($RUN_NETCDF4_TESTS == 1){
 
-# Fragile, depends on cut, expect failure on MACOSX
+# Fragile, depends on cut, expect failure on MACOS
 # ncks -C -h -O -v area -p ~/nco/data in.nc ~/foo.nc
 # ncecat -C -h -O -G ensemble -d lat,1,1 -v area ~/foo.nc ~/foo.nc ~/foo2.nc
 # ncks -C -O -h -m --trd -v area ~/foo2.nc | grep "ensemble../area" | wc | cut -c 7

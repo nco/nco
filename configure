@@ -3747,8 +3747,8 @@ printf "%s\n" "#define SGIMP64 1" >>confdefs.h
 
 	;;
     *-apple-darwin* )
-printf "%s\n" "#define MACOSX 1" >>confdefs.h
- MACOSX=1 ;
+printf "%s\n" "#define MACOS 1" >>confdefs.h
+ MACOS=1 ;
 	;;
     powerpc-ibm-aix* )
 printf "%s\n" "#define AIX 1" >>confdefs.h
@@ -18457,7 +18457,7 @@ fi # !netCDF4
 # Test if user set NETCDF_ROOT and it exists
 if test "x${enable_netcdf4}" = 'xyes'; then
     if test -z "${NETCDF_ROOT}"; then
-	# 20160901: Branch fails on Fedora Core 23+ (not MacOSX, not Ubuntu) due to mysterious emission of "Using <pathname>/nf-config" text as if warning user about security hole
+	# 20160901: Branch fails on Fedora Core 23+ (not MacOS, not Ubuntu) due to mysterious emission of "Using <pathname>/nf-config" text as if warning user about security hole
 	NETCDF_CONFIG='nc-config'
 	NETCDF_ROOT="`nc-config --prefix`"
     else
@@ -19841,11 +19841,11 @@ fi
 
 
 echo "##########################################################"
-echo "#     Sorting out MacOSX build parameters                #"
+echo "#     Sorting out MacOS build parameters                #"
 echo "##########################################################"
-#echo "DEBUG: enable_libnco = ${enable_libnco} and MACOSX = ${MACOSX}"
-if ((test "${enable_libnco}" = 'yes') && (test "${MACOSX}" != 1)); then
-    echo "Phew, NOT MacOSX, adding -lnco to LIBS"
+#echo "DEBUG: enable_libnco = ${enable_libnco} and MACOS = ${MACOS}"
+if ((test "${enable_libnco}" = 'yes') && (test "${MACOS}" != 1)); then
+    echo "Phew, NOT MacOS, adding -lnco to LIBS"
     LIBS="-lnco ${LIBS}"
 fi
 #echo "DEBUG: After library checks LIBS=$LIBS"
@@ -21480,7 +21480,7 @@ if test $ac_compiler_gnu = 'yes'; then
     # 20210525: Replace '-std=c99' with '-std=gnu11'
     CFLAGS="${CFLAGS} -std=gnu11 -D_BSD_SOURCE -D_POSIX_SOURCE"
     case ${host} in
-# MacOSX does not understand shared libraries
+# MacOS does not understand shared libraries
 # clang -O4 DNE, highest clang optimization is -O3
 	*-apple-darwin* ) CFLAGS=`echo "${CFLAGS}" | sed -e 's/-D_POSIX_SOURCE//'` ; CFLAGS=`echo "${CFLAGS}" | sed -e 's/-O4/-O3/'` ; CFLAGS="-fno-common ${CFLAGS}" ; enable_shared='no' ;;
 # Solaris has problems with time.h

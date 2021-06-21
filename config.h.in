@@ -431,7 +431,7 @@
 #undef LT_OBJDIR
 
 /* Compatibility pvmgetarch token for Apple Mac OSX */
-#undef MACOSX
+#undef MACOS
 
 /* Building TeXInfo documentation requires version greater than 4.8 */
 #undef MAKEINFO_VERSION
