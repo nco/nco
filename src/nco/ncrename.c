@@ -642,7 +642,9 @@ main(int argc,char **argv)
 
 #ifdef _OPENMP
   /* fxm: hack to get libxlsmp library linked in */
-  (void)omp_in_parallel();
+  nco_bool flg_omp; /* [flg] In active OpenMP region */
+  flg_omp=omp_in_parallel();
+  if(flg_omp) (void)fprintf(stderr,"%s: WARNING omp_in_parallel() is unexpectedly running in active OpenMP region\n",nco_prg_nm_get());
 #endif /* !_OPENMP */
 
   /* 20141010: Avoid nc_rename_var/dim() bug */
