@@ -103,6 +103,7 @@ fi # HOSTNAME
 # Default input and output directory is ${DATA}
 if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
+	acme1* ) DATA="/export/${USER}" ; ;; # LLNL acme1 
 	andes* | titan* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC blues compute nodes named bNNN, 36|64 cores|GB/node 
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
@@ -115,6 +116,24 @@ if [ -z "${DATA}" ]; then
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
+
+# Default prefix for MPI-enabled weight generators in E3SM-Unified environments
+if [ -n "${E3SMU_MPI}" ] && [ "${E3SMU_MPI}" = 'SYSTEM' ] ; then
+    case "${HOSTNAME}" in 
+	acme1* ) mpi_pfx='srun -n 1' ; ;; 
+	andes* | titan* ) mpi_pfx='srun -n 1' ; ;; 
+	blues* | blogin* | b[0123456789][0123456789][0123456789] ) mpi_pfx='srun -n 1' ; ;; 
+	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) mpi_pfx='srun -n 1' ; ;; 
+	*cheyenne* ) mpi_pfx='mpirun -n 1' ; ;; 
+	compy* ) mpi_pfx='srun --mpi=pmi2 -n 1' ; ;; 
+	constance* | node* ) mpi_pfx='mpirun -n 1' ; ;; 
+	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) mpi_pfx='mpirun -n 1' ; ;;
+	cori* ) mpi_pfx='srun -n 1' ; ;; 
+	theta* ) mpi_pfx='aprun -n 1' ; ;; 
+	* ) mpi_pfx='mpirun -n 1' ; ;; # Other
+    esac # !HOSTNAME
+fi # !E3SMU_MPI
+
 # 20190423 Speed-up OpenMP processes on Cori KNL Intel builds (and possibly others)
 # Environmental settings (e.g., OMP_PROC_BIND=spread or KMP_PROC_BIND=intel) may place all threads on same hardware core
 # Problem only known to manifest when multiple instances of NCO are spawned on single node
@@ -173,7 +192,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		# 20210519: This script takes significant time (5-10 seconds) to load
 		source /compyfs/software/mbtempest.envs.sh
-		E3SM_UNIFIED_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_1.4.0'
+		E3SM_UNIFIED_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_1.5.0rc5_compy'
 	    fi # !ncremap
 	    export PATH='/qfs/people/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
@@ -232,7 +251,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     fi # !MOAB_DIR
 fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
-# Test cases ($DATA/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
+# Test cases ($mpi_pfx/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
 # Debugging:
 # ncremap --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
 # ncks -O --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
@@ -767,7 +786,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       mem_mb=?* ) mem_mb="${LONG_OPTARG}" ;; # # Megabytes of RAM per srun job in Cori SLURM in MPI mode
 	       mlt_map | multimap | no_multimap | nomultimap ) mlt_map_flg='No' ;; # -M # Multi-map flag
 	       mlt_map=?* | multimap=?* | no_multimap=?* | nomultimap=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -M # Multi-map flag
-	       mpi_pfx=?* | mpi_prefix=?* | srun_cmd=?* | srun_command=?* ) mpi_pfx="${LONG_OPTARG}" ;; # # Prefix for MPI-enabled weight generators
+	       mpi_pfx=?* | mpi_prefix=?* | srun_cmd=?* | srun_command=?* ) mpi_usr="${LONG_OPTARG}" ;; # # Prefix for MPI-enabled weight generators
 	       msh_fl=?* | msh=?* | mesh=?* | mesh_file=?* ) msh_fl="${LONG_OPTARG}" ;; # # Mesh file
 	       msk_apl | mask_apply | msk_app ) msk_apl='Yes' ;; # # Apply msk_out to variables after regridding
 	       msk_apl=?* | mask_apply=?* | msk_app=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Apply msk_out to variables after regridding
@@ -1301,6 +1320,9 @@ fi # !drc_in
 if [ -n "${job_usr}" ]; then 
     job_nbr="${job_usr}"
 fi # !job_usr
+if [ -n "${mpi_usr}" ]; then 
+    mpi_pfx="${mpi_usr}"
+fi # !mpi_usr
 if [ -n "${mss_val_usr}" ]; then 
     mss_val=${mss_val_usr}
     att_flg='Yes'

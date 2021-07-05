@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.1-alpha02: Nomadland';git push
 	git tag -a 5.0.1-alpha02 -m 'ncremap mpi_pfx, ERWG vrs';git push --tags
 
+	* ncremap add default MPI prefixes when E3SMU_MPI=SYSTEM in E3SM-Unified environments
+
 	* ncremap add mpi_pfx option for MPI-enabled weight generators
 
 	* Avoid invoking ERWG to determine version unless actual algorithm requires ERWG
