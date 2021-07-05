@@ -379,7 +379,7 @@ lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 # Detect and warn about mixed modules (for Qi Tang 20170531)
 if [ "${drc_spt}" != "${drc_nco}" ]; then
     echo "WARNING: Possible mixture of NCO versions from different locations. Script ${spt_nm} is from directory ${drc_spt} while NCO binaries are from directory ${drc_nco}. Normally the script and binaries are from the same executables directory. This WARNING may be safely ignored for customized scripts and/or binaries that the user has intentionally split into different directories."
-    echo "HINT (All-users): Conflicting script and binary directories may result from 1) Hardcoding an NCO script and/or binary pathnames, 2) Incomplete NCO installations in one or more directories in the \$PATH environment variable, 3) (Re-)Installing or (re-)building NCO without issuing a \"hash -r\" command afterward to update the executable pathnames that the shell remembers from before."
+    echo "HINT: Conflicting script and binary directories may result from 1) Hardcoding an NCO script and/or binary pathnames, 2) Incomplete NCO installations in one or more directories in the \$PATH environment variable, 3) (Re-)Installing or (re-)building NCO without issuing a \"hash -r\" command afterward to update the executable pathnames that the shell remembers from before."
 fi # drc_spt
 
 # When running in a terminal window (not in an non-interactive batch queue)...
@@ -472,6 +472,7 @@ mbt_typ_map=5 # [flg] mbtempest --type argument to generate weights (and not, e.
 mem_mb=20000 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
+mpi_pfx='' # [sng] Prefix for MPI-enabled weight generators
 msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
 msh_fl='' # [sng] Mesh-file (for Tempest)
 msk_apl='No' # [flg] Apply msk_out to variables after regridding
@@ -524,7 +525,7 @@ wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable (weight generation o
 wgt_exe_mbt='mbtempest' # [sng] MOAB-Tempest executable (both mesh- and weight-generation)
 wgt_exe_nco='ncks' # [sng] NCO executable (both mesh- and weight-generation)
 wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap weight-generation executable 
-wgt_typ='' # [sng] Weight-generator program ('esmf' or 'nco' or 'tempest')
+wgt_typ='' # [sng] Weight-generator program ('esmf', 'mbtempest', 'nco', or 'tempest')
 wgt_opt='' # [sng] Weight-generator options
 wgt_opt_cdo='' # [sng] CDO weight-generation options
 wgt_opt_esmf='--no_log --ignore_unmapped' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF < 7.1.0r)
@@ -583,6 +584,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one map-file per input file) [${fnt_tlc}mlt_map, no_multimap${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
     echo " ${fnt_bld}--mbt${fnt_nrm}      Use MOAB-Tempest (mbtempest) front-end to TempestRemap (default ${fnt_bld}${mbt_flg}${fnt_nrm}) [${fnt_tlc}mbt, mbtempest, moabtempest, tfe_mbt${fnt_nrm}]"
+    echo " ${fnt_bld}--mpi_pfx${fnt_nrm}  Prefix for MPI-enabled weight generators (empty means weight generator is not MPI-enabled) (default ${fnt_bld}${mpi_pfx}${fnt_nrm}) [${fnt_tlc}mpi_pfx, mpi_prefix, srun_cmd, srun_command${fnt_nrm}]"
     echo " ${fnt_bld}--msh_fl${fnt_nrm}   Mesh-file for grid intersection (empty means generate internally or not at all) (default ${fnt_bld}${msh_fl}${fnt_nrm}) [${fnt_tlc}msh_fl, msh, mesh, mesh_file${fnt_nrm}]"
     echo " ${fnt_bld}--msk_apl${fnt_nrm}  Apply msk_out to variables after regridding (default ${fnt_bld}${msk_apl}${fnt_nrm}) [${fnt_tlc}msk_apl, mask_apply, msk_app${fnt_nrm}]"
     echo " ${fnt_bld}--msk_dst${fnt_nrm}  Mask-template variable in destination file (empty means none) (default ${fnt_bld}${msk_dst}${fnt_nrm}) [${fnt_tlc}msk_dst, dst_msk, mask_destination, mask_dst${fnt_nrm}]"
@@ -765,6 +767,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       mem_mb=?* ) mem_mb="${LONG_OPTARG}" ;; # # Megabytes of RAM per srun job in Cori SLURM in MPI mode
 	       mlt_map | multimap | no_multimap | nomultimap ) mlt_map_flg='No' ;; # -M # Multi-map flag
 	       mlt_map=?* | multimap=?* | no_multimap=?* | nomultimap=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -M # Multi-map flag
+	       mpi_pfx=?* | mpi_prefix=?* | srun_cmd=?* | srun_command=?* ) mpi_pfx="${LONG_OPTARG}" ;; # # Prefix for MPI-enabled weight generators
 	       msh_fl=?* | msh=?* | mesh=?* | mesh_file=?* ) msh_fl="${LONG_OPTARG}" ;; # # Mesh file
 	       msk_apl | mask_apply | msk_app ) msk_apl='Yes' ;; # # Apply msk_out to variables after regridding
 	       msk_apl=?* | mask_apply=?* | msk_app=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Apply msk_out to variables after regridding
@@ -865,24 +868,8 @@ if [ "${d2f_flg}" != 'Yes' ]; then
     d2f_opt=''
 fi # !d2f_flg
 
+# https://stackoverflow.com/questions/37056192/which-vs-command-v-in-bash
 cmd_wgt_esmf=`command -v ${wgt_exe_esmf} --no_log 2> /dev/null`
-if [ "$?" -eq 0 ]; then
-    # 20180830 Add --ignore_degenerate to default ERWG options for ESMF >= 7.1.0r
-    # 20181114 Add --no_log so ERWG does not try to write logfile into current (possibly write-protected) directory 
-    erwg_vrs_sng=`ESMF_RegridWeightGen --no_log --version | grep ESMF_VERSION_STRING | cut -f 2 -d ':'`
-    # Remove whitespace, answer should be something like "7.1.0r" or "6.3.0rp1"
-    erwg_vrs_sng="${erwg_vrs_sng#"${erwg_vrs_sng%%[![:space:]]*}"}"
-    # Extract first character
-    erwg_vrs_mjr="${erwg_vrs_sng:0:1}"
-    if [ -z "${erwg_vrs_mjr}" ]; then
-	# Version can fail when ERWG fails, e.g., due to dynamic link issues
-	printf "${spt_nm}: WARNING ${wgt_exe_esmf} (ERWG) found though does not run as expected. Possible dynamic linking issue due, e.g., to LD_LIBRARY_PATH configuration. Unable to determine ERWG version. ERWG may not be needed so continuing anyway...\n"
-	erwg_vrs_sng='ERWG_VERSION_NOT_FOUND'
-	erwg_vrs_mjr=7
-    elif [ "${erwg_vrs_mjr}" -ge 7 ]; then
-	wgt_opt_esmf="${wgt_opt_esmf} --ignore_degenerate"
-    fi # !erwg_vrs_mjr
-fi # !err
 cmd_cnv_mbt=`command -v ${cnv_exe_mbt} 2> /dev/null`
 cmd_cnv_tps=`command -v ${cnv_exe_tps} 2> /dev/null`
 cmd_dpt_mpas=`command -v ${dpt_exe_mpas} --no_log 2> /dev/null`
@@ -915,7 +902,7 @@ if [ ${vrs_prn} = 'Yes' ]; then
 	printf "Config: CDO weight-generation command ${wgt_exe_cdo} not found\n"
     fi # !err
     if [ -n "${cmd_wgt_esmf}" ]; then
-	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} version ${erwg_vrs_sng} found as ${cmd_wgt_esmf}\n"
+	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} found as ${cmd_wgt_esmf}\n"
     else
 	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} not found\n"
     fi # !err
@@ -1174,6 +1161,27 @@ else
     echo "${spt_nm}: HINT Valid TempestRemap (and MOAB-TempestRemap) weight-generation options and synonyms are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | se2se,cs2cs | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se | fv2fv,rll2rll"
     exit 1
 fi # !alg_typ
+
+# ERWG requires special handling for version-specific options
+# 20210705: Avoid invoking ERWG to determine version unless actual algorithm requires ERWG
+if [ ${wgt_typ} = 'esmf' ]; then
+    # 20180830 Add --ignore_degenerate to default ERWG options for ESMF >= 7.1.0r
+    # 20181114 Add --no_log so ERWG does not try to write logfile into current (possibly write-protected) directory 
+    erwg_vrs_sng=`${mpi_pfx} ${wgt_exe_esmf} --no_log --version | grep ESMF_VERSION_STRING | cut -f 2 -d ':'`
+    # Remove whitespace, answer should be something like "7.1.0r" or "6.3.0rp1"
+    erwg_vrs_sng="${erwg_vrs_sng#"${erwg_vrs_sng%%[![:space:]]*}"}"
+    # Extract first character
+    erwg_vrs_mjr="${erwg_vrs_sng:0:1}"
+    if [ -z "${erwg_vrs_mjr}" ]; then
+	# Version can fail when ERWG fails, e.g., due to dynamic link issues
+	printf "${spt_nm}: WARNING ${wgt_exe_esmf} (ERWG) found though does not run as expected. Possible dynamic linking issue due, e.g., to LD_LIBRARY_PATH configuration. Unable to determine ERWG version. ERWG may not be needed so continuing anyway...\n"
+	erwg_vrs_sng='ERWG_VERSION_NOT_FOUND'
+	erwg_vrs_mjr=7
+    elif [ "${erwg_vrs_mjr}" -ge 7 ]; then
+	wgt_opt_esmf="${wgt_opt_esmf} --ignore_degenerate"
+    fi # !erwg_vrs_mjr
+fi # !err
+
 if [ -n "${fl_fmt}" ]; then
     if [ "${fl_fmt}" = '3' ] || [ "${fl_fmt}" = 'classic' ] || [ "${fl_fmt}" = 'netcdf3' ]; then
 	nco_fl_fmt='--fl_fmt=classic'
@@ -1222,7 +1230,9 @@ fi # !xtr_nsp_usr
 if [ -n "${xtr_xpn_usr}" ]; then
     xtr_xpn=${xtr_xpn_usr}
 fi # !xtr_xpn_usr
+
 if [ -n "${esmf_typ}" ]; then
+    # Configure ERWG options, if necessary
     if [ ${esmf_typ} = 'neareststod' ] || [ ${esmf_typ} = 'stod' ] || [ ${esmf_typ} = 'nsd' ]; then 
 	esmf_opt='neareststod'
     elif [ ${esmf_typ} = 'nearestidavg' ] || [ ${esmf_typ} = 'idavg' ] || [ ${esmf_typ} = 'id' ]; then 
@@ -1270,6 +1280,11 @@ fi # !wgt_typ
 if [ -n "${wgt_opt_usr}" ]; then 
     wgt_opt=${wgt_opt_usr}
 fi # !wgt_opt_usr    
+if [ -n "${mpi_pfx}" ]; then 
+    if [ ${wgt_typ} = 'esmf' ] || [ ${wgt_typ} = 'mbtempest' ] ; then
+	wgt_cmd="${mpi_pfx} ${wgt_cmd}"
+    fi # !wgt_typ
+fi # !mpi_pfx
 if [ -n "${wgt_usr}" ]; then 
     wgt_cmd=${wgt_usr}
 fi # !wgt_usr    
@@ -2036,6 +2051,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: mbt_flg  = ${mbt_flg}\n"
     printf "dbg: mlt_map  = ${mlt_map_flg}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
+    printf "dbg: mpi_pfx  = ${mpi_pfx}\n"
     printf "dbg: msh_fl   = ${msh_fl}\n"
     printf "dbg: msk_apl  = ${msk_apl}\n"
     printf "dbg: msk_dst  = ${msk_dst}\n"

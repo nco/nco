@@ -1,3 +1,9 @@
+2021-07-05  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add mpi_pfx option for MPI-enabled weight generators
+
+	* Avoid invoking ERWG to determine version unless actual algorithm requires ERWG
+
 2021-07-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.1-alpha01 release procedure:
