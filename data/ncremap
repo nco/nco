@@ -251,7 +251,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     fi # !MOAB_DIR
 fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
-# Test cases ($mpi_pfx/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
+# Test cases (${DATA]/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
 # Debugging:
 # ncremap --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
 # ncks -O --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
@@ -491,7 +491,6 @@ mbt_typ_map=5 # [flg] mbtempest --type argument to generate weights (and not, e.
 mem_mb=20000 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
-mpi_pfx='' # [sng] Prefix for MPI-enabled weight generators
 msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
 msh_fl='' # [sng] Mesh-file (for Tempest)
 msk_apl='No' # [flg] Apply msk_out to variables after regridding
@@ -1299,6 +1298,9 @@ fi # !wgt_typ
 if [ -n "${wgt_opt_usr}" ]; then 
     wgt_opt=${wgt_opt_usr}
 fi # !wgt_opt_usr    
+if [ -n "${mpi_usr}" ]; then 
+    mpi_pfx="${mpi_usr}"
+fi # !mpi_usr
 if [ -n "${mpi_pfx}" ]; then 
     if [ ${wgt_typ} = 'esmf' ] || [ ${wgt_typ} = 'mbtempest' ] ; then
 	wgt_cmd="${mpi_pfx} ${wgt_cmd}"
@@ -1320,9 +1322,6 @@ fi # !drc_in
 if [ -n "${job_usr}" ]; then 
     job_nbr="${job_usr}"
 fi # !job_usr
-if [ -n "${mpi_usr}" ]; then 
-    mpi_pfx="${mpi_usr}"
-fi # !mpi_usr
 if [ -n "${mss_val_usr}" ]; then 
     mss_val=${mss_val_usr}
     att_flg='Yes'
