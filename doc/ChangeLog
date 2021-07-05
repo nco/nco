@@ -1,5 +1,9 @@
 2021-07-05  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.1-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.1-alpha02: Nomadland';git push
+	git tag -a 5.0.1-alpha02 -m 'ncremap mpi_pfx, ERWG vrs';git push --tags
+
 	* ncremap add mpi_pfx option for MPI-enabled weight generators
 
 	* Avoid invoking ERWG to determine version unless actual algorithm requires ERWG
