@@ -624,7 +624,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "andes : salloc  -A CLI115 --nodes=1 --time=00:30:00 --partition=gpu --job-name=ncclimo # Bigmem\n"
     printf "blues : salloc  -A condo --nodes=1 --partition=acme-small --time=00:30:00 --job-name=ncclimo\n"
     printf "cheyen: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
-    printf "chrysa: salloc  -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo\n"
+    printf "chrysa: salloc  -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo\n" # Login node
+    printf "chrysa: srun -N 1 --time=30 --pty bash\n" # Compute node
     printf "compy : salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "cooley: qsub -I -A OceanClimate_2 --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
     printf "cori  : salloc  -A e3sm -C haswell --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"

@@ -117,23 +117,6 @@ if [ -z "${DATA}" ]; then
     esac # !HOSTNAME
 fi # DATA
 
-# Default prefix for MPI-enabled weight generators in E3SM-Unified environments
-if [ -n "${E3SMU_MPI}" ] && [ "${E3SMU_MPI}" = 'SYSTEM' ] ; then
-    case "${HOSTNAME}" in 
-	acme1* ) mpi_pfx='srun -n 1' ; ;; 
-	andes* | titan* ) mpi_pfx='srun -n 1' ; ;; 
-	blues* | blogin* | b[0123456789][0123456789][0123456789] ) mpi_pfx='srun -n 1' ; ;; 
-	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) mpi_pfx='srun -n 1' ; ;; 
-	*cheyenne* ) mpi_pfx='mpirun -n 1' ; ;; 
-	compy* ) mpi_pfx='srun --mpi=pmi2 -n 1' ; ;; 
-	constance* | node* ) mpi_pfx='mpirun -n 1' ; ;; 
-	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) mpi_pfx='mpirun -n 1' ; ;;
-	cori* ) mpi_pfx='srun -n 1' ; ;; 
-	theta* ) mpi_pfx='aprun -n 1' ; ;; 
-	* ) mpi_pfx='mpirun -n 1' ; ;; # Other
-    esac # !HOSTNAME
-fi # !E3SMU_MPI
-
 # 20190423 Speed-up OpenMP processes on Cori KNL Intel builds (and possibly others)
 # Environmental settings (e.g., OMP_PROC_BIND=spread or KMP_PROC_BIND=intel) may place all threads on same hardware core
 # Problem only known to manifest when multiple instances of NCO are spawned on single node
@@ -491,6 +474,7 @@ mbt_typ_map=5 # [flg] mbtempest --type argument to generate weights (and not, e.
 mem_mb=20000 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
+mpi_nbr=1 # [sng] Number of tasks-per-node that MPI-enabled weight generators will request
 msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
 msh_fl='' # [sng] Mesh-file (for Tempest)
 msk_apl='No' # [flg] Apply msk_out to variables after regridding
@@ -602,6 +586,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one map-file per input file) [${fnt_tlc}mlt_map, no_multimap${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
     echo " ${fnt_bld}--mbt${fnt_nrm}      Use MOAB-Tempest (mbtempest) front-end to TempestRemap (default ${fnt_bld}${mbt_flg}${fnt_nrm}) [${fnt_tlc}mbt, mbtempest, moabtempest, tfe_mbt${fnt_nrm}]"
+    echo " ${fnt_bld}--mpi_nbr${fnt_nrm}  Number of tasks-per-node that MPI-enabled weight generators will request (default ${fnt_bld}${mpi_nbr}${fnt_nrm}) [${fnt_tlc}mpi_nbr, mpi_number, tsk_nbr, task_number${fnt_nrm}]"
     echo " ${fnt_bld}--mpi_pfx${fnt_nrm}  Prefix for MPI-enabled weight generators (empty means weight generator is not MPI-enabled) (default ${fnt_bld}${mpi_pfx}${fnt_nrm}) [${fnt_tlc}mpi_pfx, mpi_prefix, srun_cmd, srun_command${fnt_nrm}]"
     echo " ${fnt_bld}--msh_fl${fnt_nrm}   Mesh-file for grid intersection (empty means generate internally or not at all) (default ${fnt_bld}${msh_fl}${fnt_nrm}) [${fnt_tlc}msh_fl, msh, mesh, mesh_file${fnt_nrm}]"
     echo " ${fnt_bld}--msk_apl${fnt_nrm}  Apply msk_out to variables after regridding (default ${fnt_bld}${msk_apl}${fnt_nrm}) [${fnt_tlc}msk_apl, mask_apply, msk_app${fnt_nrm}]"
@@ -785,6 +770,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       mem_mb=?* ) mem_mb="${LONG_OPTARG}" ;; # # Megabytes of RAM per srun job in Cori SLURM in MPI mode
 	       mlt_map | multimap | no_multimap | nomultimap ) mlt_map_flg='No' ;; # -M # Multi-map flag
 	       mlt_map=?* | multimap=?* | no_multimap=?* | nomultimap=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -M # Multi-map flag
+	       mpi_nbr=?* | mpi_number=?* | tsk_nbr=?* | task_number=?* ) mpi_nbr="${LONG_OPTARG}" ;; # # Number of tasks-per-node that MPI-enabled weight generators will request
 	       mpi_pfx=?* | mpi_prefix=?* | srun_cmd=?* | srun_command=?* ) mpi_usr="${LONG_OPTARG}" ;; # # Prefix for MPI-enabled weight generators
 	       msh_fl=?* | msh=?* | mesh=?* | mesh_file=?* ) msh_fl="${LONG_OPTARG}" ;; # # Mesh file
 	       msk_apl | mask_apply | msk_app ) msk_apl='Yes' ;; # # Apply msk_out to variables after regridding
@@ -1180,6 +1166,26 @@ else
     exit 1
 fi # !alg_typ
 
+# Default prefix for MPI-enabled weight generators in E3SM-Unified environments
+if [ -n "${E3SMU_MPI}" ] && [ "${E3SMU_MPI}" = 'SYSTEM' ] ; then
+    case "${HOSTNAME}" in 
+	acme1* ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
+	andes* | titan* ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
+	blues* | blogin* | b[0123456789][0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
+	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
+	*cheyenne* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
+	compy* ) mpi_pfx="srun --mpi=pmi2 -n ${mpi_nbr}" ; ;; 
+	constance* | node* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
+	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;;
+	cori* ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
+	theta* ) mpi_pfx="aprun -n ${mpi_nbr}" ; ;; 
+	* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; # Other
+    esac # !HOSTNAME
+fi # !E3SMU_MPI
+if [ -n "${mpi_usr}" ]; then 
+    mpi_pfx="${mpi_usr}"
+fi # !mpi_usr
+
 # ERWG requires special handling for version-specific options
 # 20210705: Avoid invoking ERWG to determine version unless actual algorithm requires ERWG
 if [ ${wgt_typ} = 'esmf' ]; then
@@ -1298,9 +1304,6 @@ fi # !wgt_typ
 if [ -n "${wgt_opt_usr}" ]; then 
     wgt_opt=${wgt_opt_usr}
 fi # !wgt_opt_usr    
-if [ -n "${mpi_usr}" ]; then 
-    mpi_pfx="${mpi_usr}"
-fi # !mpi_usr
 if [ -n "${mpi_pfx}" ]; then 
     if [ ${wgt_typ} = 'esmf' ] || [ ${wgt_typ} = 'mbtempest' ] ; then
 	wgt_cmd="${mpi_pfx} ${wgt_cmd}"
@@ -2072,6 +2075,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: mbt_flg  = ${mbt_flg}\n"
     printf "dbg: mlt_map  = ${mlt_map_flg}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
+    printf "dbg: mpi_nbr  = ${mpi_nbr}\n"
     printf "dbg: mpi_pfx  = ${mpi_pfx}\n"
     printf "dbg: msh_fl   = ${msh_fl}\n"
     printf "dbg: msk_apl  = ${msk_apl}\n"
