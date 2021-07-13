@@ -19333,8 +19333,9 @@ The value of @var{tpd_out} in daily-average climatology mode
 models) is different, and actually refers to the number of timesteps
 per day that ncclimo will output, regardless of its value in the input
 files.
-Hence in this mode only we refer to the variable as @var{tpd_out} rather
-than @var{tpd}.
+Hence in daily-average mode (only), we refer to this variable as
+@var{tpd_out}.
+
 The climatology output from input files at daily or sub-daily resolution
 is, by default, averaged to daily resolution, i.e., @var{tpd_out}=1. 
 If the number of timesteps per day in each input file is @var{tpd_in},

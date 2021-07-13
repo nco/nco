@@ -308,7 +308,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
 #   Chrysalis: salloc  -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # Use compute queue instead if debug is slow to grant resources
 #   Compy:  salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo
-#   Cooley: qsub -I -A OceanClimate_2 --nodecount=1 --time=00:30:00 --jobname=ncclimo
+#   Cooley: qsub -I -A ClimateEnergy_4 --nodecount=1 --time=00:30:00 --jobname=ncclimo
 #   Cori:   salloc  -A e3sm -C knl --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
 #   Oldrhea:qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
 # Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[cobalt|pbs|slurm] b) qsub ncclimo.[cobalt|pbs|slurm]
@@ -334,7 +334,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Blues b):  qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cheyenne b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
-#   Cooley b): qsub -A OceanClimate_2 --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
+#   Cooley b): qsub -A ClimateEnergy_4 --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
 #   Cori b): sbatch -A e3sm -C haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Oldrhea b):qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 # NB: stdout/stderr files returned from batch jobs are read-protected, need 'chmod 644 ~/ncclimo.out' afterwards
@@ -430,9 +430,9 @@ lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 
 # Detect and warn about mixed modules (for Qi Tang 20170531)
 if [ "${drc_spt}" != "${drc_nco}" ]; then
-    echo "WARNING: Possible mixture of NCO versions from different locations. Script ${spt_nm} is from directory ${drc_spt} while NCO binaries are from directory ${drc_nco}. Normally this script and the binaries are from the same executables directory. This WARNING may be safely ignored for customized scripts and/or binaries that the user has intentionally split into different directories."
+    echo "INFO: Mixture of NCO scripts and binaries from different locations. Script ${spt_nm} is from directory ${drc_spt} while NCO binaries are from directory ${drc_nco}. Normally this script and the binaries are from the same executables directory. This INFO may be safely ignored for customized scripts and/or binaries that the user has intentionally split into different directories."
     echo "HINT (All-users): Conflicting script and binary directories may result from 1) Hardcoding an NCO script and/or binary pathnames, 2) Incomplete NCO installations in one or more directories in the \$PATH environment variable, 3) (Re-)Installing or (re-)building NCO without issuing a \"hash -r\" command afterward to update the executable pathnames that the shell remembers from before."
-    echo "HINT (E3SM-only): In a Conda-based NCO environment, such as E3SM-Unified (which uses NCO in MPAS Analysis and E3SM-Diags), it is possible that some features may be unavailable because the upstream packages (e.g., UDUnits) were not properly linked by Conda. The ncclimo and ncremap scripts contain a mechanism to access the (presumably correctly linked) NCO binary executable and library paths in C. Zender's home directories on the major E3SM machines. Users may turn-on the machine-dependent, hard-coded path by invoking ncclimo and/or ncremap after altering their environment with: \"export NCO_PATH_OVERRIDE=Yes\")."
+    echo "HINT (E3SM-only): In a Conda-based NCO environment, such as E3SM-Unified (which uses NCO in MPAS Analysis and E3SM-Diags), it is possible that some features may be unavailable because the upstream packages (e.g., UDUnits) were not properly linked by Conda. The ncclimo and ncremap scripts contain a mechanism to access the (presumably correctly linked) NCO binary executable and library paths in C. Zender's home directories on the major E3SM machines. Users may turn-on the machine-dependent, hard-coded path by invoking ncclimo and/or ncremap after altering their environment with: \"export NCO_PATH_OVERRIDE=Yes\"."
 fi # drc_spt
 
 # When running in a terminal window (not in an non-interactive batch queue)...
@@ -627,7 +627,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "chrysa: salloc  -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo\n" # Login node
     printf "chrysa: srun -N 1 --time=30 --pty bash\n" # Compute node
     printf "compy : salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
-    printf "cooley: qsub -I -A OceanClimate_2 --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
+    printf "cooley: qsub -I -A ClimateEnergy_4 --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
     printf "cori  : salloc  -A e3sm -C haswell --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
     printf "cori  : salloc  -A e3sm -C knl --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
     printf "cori  : salloc  -A e3sm -C amd --nodes=1 --time=00:30:00 --job-name=ncclimo # Bigmem\n"
