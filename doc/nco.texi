@@ -24364,7 +24364,7 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o] [--add_fll]
 [--dt_sng=@var{dt_sng}] [--esmf_typ=@var{esmf_typ}] 
 [--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}]
 [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}] [-L @var{dfl_lvl}]
-[-M] [-m @var{map_fl}] [--msh_fl=@var{msh_fl}]
+[-M] [-m @var{map_fl}] [--mpi_nbr=@var{mpi_nbr}] [--mpi_pfx=@var{mpi_pfx}] [--msh_fl=@var{msh_fl}]
 [--msk_apl] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
 [-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
 [--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stdin] [--no_stg_grd]
@@ -25604,6 +25604,71 @@ the command invoking @command{ncremap}, and the map-generating command
 invoked by @command{ncremap}.
 
 @html
+<a name="mpi_pfx"></a> <!-- http://nco.sf.net/nco.html#mpi_pfx -->
+<a name="mpi_prefix"></a> <!-- http://nco.sf.net/nco.html#mpi_prefix -->
+<a name="srun_cmd"></a> <!-- http://nco.sf.net/nco.html#srun_cmd -->
+<a name="srun_command"></a> <!-- http://nco.sf.net/nco.html#srun_command -->
+<a name="mpi_nbr"></a> <!-- http://nco.sf.net/nco.html#mpi_nbr -->
+<a name="mpi_number"></a> <!-- http://nco.sf.net/nco.html#mpi_number -->
+<a name="tsk_nbr"></a> <!-- http://nco.sf.net/nco.html#tsk_nbr -->
+<a name="task_number"></a> <!-- http://nco.sf.net/nco.html#task_number -->
+@end html
+@cindex @code{--mpi_pfx=@var{mpi_pfx}}
+@cindex @var{mpi_pfx}
+@cindex @code{--mpi_pfx}
+@cindex @code{--mpi_prefix}
+@cindex @code{--srun_cmd}
+@cindex @code{--srun_command}
+@item @code{--mpi_pfx=@var{mpi_pfx}} (@code{--mpi_pfx}, @code{--mpi_prefix}, @code{--srun_cmd}, @code{--srun_command})
+@cindex @code{--mpi_nbr=@var{mpi_nbr}}
+@cindex @var{mpi_nbr}
+@cindex @code{--mpi_nbr}
+@cindex @code{--mpi_number}
+@cindex @code{--tsk_nbr}
+@cindex @code{--task_nbr}
+@item @code{--mpi_nbr=@var{mpi_nbr}} (@code{--mpi_nbr}, @code{--mpi_number}, @code{--tsk_nbr}, @code{--task_number})
+The @samp{--mpi_pfx=@var{mpi_pfx}} option specifies an appropriate job
+scheduler prefix for @acronym{MPI}-enabled weight-generation
+executables such as @acronym{ESMF}'s @command{ESMF_RegridWeightGen}
+and MoabTempest's (@command{mbtempest}).
+Other weight generators (@command{ncks}, @command{GenerateOfflineMap}) 
+are unaffected by this option since they are not
+@acronym{MPI}-enabled. 
+@var{mpi_pfx} defaults to @code{mpirun -n $@{@var{mpi_nbr}@}} on all
+machines except those whose @code{$HOSTNAME} matches an internal
+database of @acronym{DOE}-operated supercomputers where 
+@var{mpi_pfx} defaults to @code{srun -n $@{@var{mpi_nbr}@}}.
+When invoking @samp{--mpi_pfx}, be sure to explicitly define the
+number of @acronym{MPI} tasks-per-node, e.g.,
+@example
+@verbatim
+ncremap --mpi_pfx='srun -n 16' ...
+ncremap --mpi_pfx='srun --mpi=pmi2 -n 4' ...
+@end verbatim
+@end example
+The separate @samp{--mpi_nbr=@var{mpi_nbr}} option specifies the
+number of tasks-per-node that @acronym{MPI}-enabled weight generators
+will request.
+It preserves the default job scheduler prefix (@command{srun} or
+@command{mpirun}):
+@example
+@verbatim
+ncremap --mpi_nbr=4 ... # 16 MPI tasks-per-node for ERWG/mbtempest 
+ncremap --mpi_nbr=16 ... # 4 MPI tasks-per-node for ERWG/mbtempest 
+@end verbatim
+@end example
+Thus @samp{--mpi_nbr=@var{mpi_nbr}} can be used to create
+host-independent @command{ncremap} commands to facilitate benchmarking
+the scaling of weight-generators across hosts that work with the
+default value of @var{mpi_pfx}.
+The @samp{--mpi_pfx} option will prevail and @samp{--mpi_nbr} will be
+ignored if both are used in the same @command{ncremap} invocation.
+Note that @samp{mpi_pfx} is only used internally by @command{ncremap}
+to exploit the @acronym{MPI} capabilities of select weight-generators.
+It is not used to control and does not affect the distribution of
+multiple @command{ncremap} commands among a cluster of nodes.
+
+@html
 <a name="msh_fl"></a> <!-- http://nco.sf.net/nco.html#msh_fl -->
 @end html
 @cindex @code{--msh_fl=@var{msh_fl}}
@@ -25612,7 +25677,7 @@ invoked by @command{ncremap}.
 @cindex @code{--msh}
 @cindex @code{--mesh}
 @cindex @code{--mesh_file}
-@item -m @var{msh_fl} (@code{--msh_fl}, @code{--msh}, @code{--mesh}, @code{--mesh_file})
+@item @code{--msh_fl=@var{msh_fl}} (@code{--msh_fl}, @code{--msh}, @code{--mesh}, @code{--mesh_file})
 Specifies a meshfile (aka intersection mesh, aka overlap mesh) that
 stores the grid formed by the intersection of the source and 
 destination grids.

@@ -2,9 +2,11 @@
 
 	* NCO 5.0.1 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.1: AshMart';git push
-	git tag -a 5.0.1 -m 'ncremap mpi_nbr, mpi_pfx, ERWG vrs, E3SMU_MPI';git push --tags
+	git tag -a 5.0.1 -m 'ncremap mpi_nbr, mpi_pfx, ERWG vrs, E3SMU_MPI, E3SMU_ROOT';git push --tags
 
-	* ncremap point to e3sm_unified_latest for generic machines and	cori, 1.5.0_$hostname for anvil, chrysalis, and compy
+	* nco.texi document mpi_pfx, mpi_nbr
+
+	* ncremap point E3SMU_ROOT to e3sm_unified_latest for generic machines and cori, 1.5.0_$hostname for anvil, chrysalis, and compy
 
 2021-07-07  Charlie Zender  <zender@uci.edu>
 
