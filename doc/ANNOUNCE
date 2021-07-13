@@ -6,126 +6,66 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.1 contains mostly ncremap features and fixes.
+Version 5.0.1 contains the necessary options for ncremap to exploit
+MPI-enabled weight generators such as ESMF_RegridWeightGen.
 You can probably skip this release unless you use ncremap.
-ncremap has crucial fixes for applying and exporting the mask field,
-if any. It also provides new flags to control the application of
-_FillValue attributes in empty destination cells, and to accomodate 
-map-files that ignore or violate proper treatment of masked grids.
-ncks auxiliary coordinates (-X) support wrapped longitude regions.
 
 Work on NCO 5.0.2 has commenced and and it targeted to offer ncremap
 support for the MOAB offline regridding package mbtempest.
-
-A slightly "meta" question on version numbering: NCO 4.0.0 was
-released Jan 5, 2010, and subsequent versions were bumped by ~0.0.1
-increments for about eleven years. We might change to YY.MM-numbering,
-e.g., 21.6, or something similar, in subsequent releases. What do you
-think would be a better version system for NCO? 
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. The ncremap regridder now creates a "title" global attribute in the
-   the output file if the input file did not already have a title.
-   This title attribute is described and supported by the NUG and CF.
-   Moreover, the Panoply file catalog uses it to describe open files.
-   http://nco.sf.net/nco.html#ncremap
-
-B. ncremap now accepts a --no_prm (--no_permute) flag that causes 
-   the regridder to skip the default permutation of dimensions
-   before regridding (notably MPAS) datasets known to store data
-   with most-rapidly varying dimensions that are not horizontal.
-   ncremap normally ensures that input fields are stored in the
-   shape expected by regridder weights (horizontal dimensions last)
-   by permuting the dimensions with ncpdq. However, permutation
-   consumes time and generates an extra intermediate file.
-   Avoid this time penalty by using the --no_prm flag if the input
-   fields are known to have trailing horizontal dimensions.
-   ncremap --no_prm -P mpas -v sic -m map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#no_prm
-   http://nco.sf.net/nco.html#ncremap
-
-C. ncremap now accepts a --add_fll (--add_fill_value) flag that causes 
-   the regridder to add a _FillValue attribute to fields with empty
-   destination cells. Empty destination cells are those that have no
-   non-zero weights from the source grids. Should a field (e.g.,
-   air temperature) without a _FillValue be mapped to such a grid,
-   the empty destination values are normally set to 0.0, since no
-   source grid cells contribute. However, 0.0 is a valid value for
-   many geophysical fields. Use this switch to ensure that empty
-   destination gridcells are always set to _FillValue. The default
-   _FillValue will be used in the output file for input fields that
-   lack a _FillValue. This flag has no effect on input fields that
-   already have a _FillValue.
-   ncremap --add_fll -v FLNS -m map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#add_fll
-   http://nco.sf.net/nco.html#ncremap
-
-D. ncremap now accepts a --msk_apl (--mask_apply) flag that causes
-   the regridder to apply msk_out (i.e., mask_b) to variables after
-   regridding. Some weight generators (e.g., Tempest) ignore masks
-   and thus produce non-zero weights for masked destination cells,
-   and/or from masked source cells. This flag causes regridded files 
-   produced with such map-files to adhere to the destination mask
-   rules (though source mask rules may still be violated). This 
-   feature is especially useful in placing missing values (aka,
-   _FillValue) in destination cells that should be empty, so that
-   regridded files have distributions of _FillValues identical
-   with output from other weight-generators such as ESMF and NCO.
-   ncremap --msk_apl -v FLNS -m map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#msk_apl
-   http://nco.sf.net/nco.html#ncremap
-
-E. ncremap now includes the coordinates xgrid, ygrid in its internal
-   database so that it can automatically recognize and infer grids
-   from NOAA SSM/I, AMSR-E, and SMMR Climate Data Record (CDR)
-   datasets. Thanks to Mat Maltrud of LANL for prompting this. 
-   ncremap -d ~/ssmi_cdr_raw.nc -g ${DATA}/grids/ssmi_304x448.nc
-   http://nco.sf.net/nco.html#ncremap
-
+A. ncremap accepts two new and related options, mpi_pfx and mpi_nbr.
+  The --mpi_pfx=mpi_pfx option specifies an appropriate job
+  scheduler prefix for MPI-enabled weight-generation
+  executables such as ESMF's ESMF_RegridWeightGen and MoabTempest's
+  mbtempest. Other weight generators (ncks, GenerateOfflineMap) 
+  are unaffected by this option since they are not MPI-enabled. 
+  mpi_pfx defaults to mpirun -n $mpi_nbr on all machines except those
+  whose $HOSTNAME matches an internal database of DOE-operated
+  supercomputers where mpi_pfx defaults to srun -n $mpi_nbr.
+  When invoking --mpi_pfx, be sure to explicitly define the
+  number of MPI tasks-per-node, e.g.,
+  
+  ncremap --mpi_pfx='srun -n 16' ...
+  ncremap --mpi_pfx='srun --mpi=pmi2 -n 4' ...
+  
+  The separate --mpi_nbr=mpi_nbr option specifies the
+  number of tasks-per-node that MPI-enabled weight generators
+  will request. It preserves the default job scheduler prefix (srun or 
+  mpirun):
+  
+  ncremap --mpi_nbr=4 ... # 16 MPI tasks-per-node for ERWG/mbtempest 
+  ncremap --mpi_nbr=16 ... # 4 MPI tasks-per-node for ERWG/mbtempest 
+  
+  Thus --mpi_nbr=mpi_nbr can be used to create host-independent ncremap
+  commands to facilitate benchmarking the scaling of weight-generators
+  across hosts that work with the default value of mpi_pfx.
+  The --mpi_pfx option will prevail and --mpi_nbr will be ignored if
+  both are used in the same ncremap invocation. Note that mpi_pfx is
+  only used internally by ncremap to exploit the MPI capabilities of
+  select weight-generators. It is not used to control and does not
+  affect the distribution of multiple ncremap commands among a cluster
+  of nodes. 
+  http://nco.sf.net/nco.html#mpi_pfx
+  http://nco.sf.net/nco.html#mpi_nbr
+  
 BUG FIXES:
-
-A. MacOS Conda builds now behave correctly with OpenMP, which was
-   buggy with 4.9.9 on MacOS with Conda.
-   This will make map-file generation with the NCO algorithms much
-   faster for high-resolution maps.
-   Thanks to Xylar Asay-Davis of LANL for helping to test this.
-
-B. ncremap fixes a recently introduced problem with node-indexing
-   in MPI mode. The workaround is to use background mode, and the
-   solution is to upgrade.
-   http://nco.sf.net/nco.html#par_typ_ncremap
-
-C. ncremap now skips the stdin check when -i in_fl is used.
-   The previous behavior led to hangs with some queuing systems
-   (Slurm) on some machines (Chrysalis) that reserve stdin for
-   the batch queue commands (srun). The workaround is to use the
-   --no_stdin flag, and the solution is to upgrade. Thanks to Xylar
-   Asay-Davis of LANL for reporting this issue.
-
-D. ncks -X now handles branch cut rules correctly when WESN bounding
-   box of auxiliary (e.g., unstructured) coordinate grids wrap in
-   longitude. This permits ncremap RRG to work correctly in those same
-   situations. Thanks to Po-Lun Ma of PNNL for prompting this fix.
-
-E. ncremap corrects a few issues that prevented --msk_out from
-   working correctly. In particular, msk_out will be correctly
-   stored as an integer field, with name specified by msk_nm,
-   if provided. Otherwise it will be named mask_b. There is no
-   workaround, the solution is to upgrade.
-
+   
+A. No bug fixes this release
+    
 Full release statement at http://nco.sf.net/ANNOUNCE
-
+    
 KNOWN PROBLEMS DUE TO NCO:
 
-   This section of ANNOUNCE reports and reminds users of the
-   existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 5.0.1 built/tested under
-   MacOS 11.4 with netCDF 4.8.0 on HDF5 1.12.0 and with
-   Linux with netCDF 4.8.0 on HDF5 1.8.19.
+This section of ANNOUNCE reports and reminds users of the
+existence and severity of known, not yet fixed, problems. 
+These problems occur with NCO 5.0.1 built/tested under
+MacOS 11.5 with netCDF 4.8.0 on HDF5 1.12.0 and with
+Linux with netCDF 4.8.0 on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments

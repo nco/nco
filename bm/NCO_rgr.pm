@@ -688,7 +688,8 @@ if($USER eq 'zender'){
 #ncatted #14
 # ncatted -O -a ,att_var,d,, ~/nco/data/in.nc ~/foo.nc
 # ncks -C -m --trd -v att_var ~/foo.nc | wc | cut -d ' ' -f 7
-# Counting lines of output to verify no attributes remain
+# Count lines of output to verify no attributes remain
+# 20210713 fails on MacOS with Homebrew due to cut -f X being 1-based not 0-based?
 	$dsc_sng="Delete all attributes";
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a ,att_var,d,, $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -m --trd -v att_var %tmp_fl_00% | wc | cut -d ' ' -f 7";

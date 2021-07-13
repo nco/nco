@@ -125,8 +125,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.0.1-alpha02
-@set doc-edition 5.0.1-alpha02
+@set nco-edition 5.0.1
+@set doc-edition 5.0.1
 @set copyright-years 1995--2021
 @set update-year 2021
 @set update-date 16 June 2021
@@ -25630,7 +25630,7 @@ invoked by @command{ncremap}.
 The @samp{--mpi_pfx=@var{mpi_pfx}} option specifies an appropriate job
 scheduler prefix for @acronym{MPI}-enabled weight-generation
 executables such as @acronym{ESMF}'s @command{ESMF_RegridWeightGen}
-and MoabTempest's (@command{mbtempest}).
+and MoabTempest's @command{mbtempest}.
 Other weight generators (@command{ncks}, @command{GenerateOfflineMap}) 
 are unaffected by this option since they are not
 @acronym{MPI}-enabled. 
