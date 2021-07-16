@@ -295,7 +295,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   nco_bool need_clm=False; /* [flg] At least one variable to unpack needs column dimension */
   nco_bool need_grd=False; /* [flg] At least one variable to unpack needs gridcell dimension */
   nco_bool need_lnd=False; /* [flg] At least one variable to unpack needs landunit dimension */
-  nco_bool need_mec=False; /* [flg] At least one variable to unpack needs MEC dimension */
+  //  nco_bool need_mec=False; /* [flg] At least one variable to unpack needs MEC dimension */
   nco_bool need_pft=False; /* [flg] At least one variable to unpack needs PFT dimension */ 
   trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
   /* Define unpacking flag for each variable */

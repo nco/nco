@@ -1,3 +1,11 @@
+2021-07-16  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.2-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha01: Accuss';git push
+	git tag -a 5.0.2-alpha01 -m 'Functionally identical to 5.0.1, bgr mss_val_dfl';git push --tags
+
+	* Do not PPC or BitGroom NC_FILL_FLOAT or NC_FILL_DOUBLE
+
 2021-07-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.1 release procedure:

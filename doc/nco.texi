@@ -125,12 +125,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.0.1
-@set doc-edition 5.0.1
+@set nco-edition 5.0.2-alpha01
+@set doc-edition 5.0.2-alpha01
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 16 June 2021
-@set update-month June 2021
+@set update-date 16 July 2021
+@set update-month July 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -7427,8 +7427,8 @@ ncks --rnr=0.1 --map=map.nc in.nc out.nc # Renormalized (mean-preserving with th
 ncks --rnr=0.0 --map=map.nc in.nc out.nc # Renormalized (mean-preserving)
 @end verbatim
 @end example
-The first example uses the default conservative algorithm.
-The second example specifies that valid values must cover at least 10%
+The first and second examples use the default conservative algorithm.
+The third example specifies that valid values must cover at least 10%
 of the destination gridcell to meet the threshold for a non-missing
 destination value. 
 With valid destination areas of, say 25% or 50%, the renormalized
@@ -7452,6 +7452,18 @@ A counter-example is fluxes, which should be physically conserved under
 areal-regridding.
 One should consider both the type of field and its conservation
 properties when choosing a regridding strategy.
+
+@ifhtml
+@cartouche
+@html
+<p><b>Note to readers of the NCO User Guide in HTML format</b>: 
+<b>The <a href="./nco.pdf">NCO User Guide in PDF format</a> 
+(also on <a href="http://nco.sf.net/nco.pdf">SourceForge</a>)
+contains the complete NCO documentation, including complex
+mathematical formulae relevant to this section regridding</b>.
+@end html
+@end cartouche
+@end ifhtml
 
 @tex
 The regridded value of a variable $\xxx$ at a destination location

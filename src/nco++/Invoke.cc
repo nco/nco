@@ -128,7 +128,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
   
   const std::string fnc_nm("parse_antlr"); // [sng] Function name
   bool bExit=false;
-  int iret;
+  int rcd=0;
   int idx;
   int thd_nbr=(int)prs_vtr.size();  
   std::string filename(fl_spt_usr);
@@ -235,9 +235,9 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
     {
       bExit=true;
       // remember ExitEXception ONLY returns an int in a string
-      iret=atoi(strExit.getMessage().c_str());
+      rcd=atoi(strExit.getMessage().c_str());
       if(nco_dbg_lvl_get() >= nco_dbg_fl) 
-         cerr<<"Exit Exception "<<iret<< endl;
+         cerr << "Exit Exception " << rcd << endl;
     }
     catch(std::exception& e) 
     {
@@ -257,7 +257,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
   //(void)nco_free(filename);
   
   if(bExit)
-    return iret;
+    return rcd;
   else
     return 0;  
 
