@@ -15275,8 +15275,8 @@ for(*idx=0;idx<sz;idx++){
   @var_nm=@all(idx);
   if(*@var_nm.ndims() >= 3){
     *@var_nm=*@var_nm.float();
-    // The push function also takes a call-by-ref att -if it  doesnt already exist then it is created
-    // the call below is pushing a NC_STRING to an att so the end result is a list of NC_STRINGS   
+    // The push function also takes a call-by-ref attribute: if it does not already exist then it will be created
+    // The call below pushes a NC_STRING to an att so the end result is a list of NC_STRINGS   
     push(&@prc,@var_nm); 
   }
 } 

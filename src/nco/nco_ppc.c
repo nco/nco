@@ -690,10 +690,12 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       }else{
 	const float mss_val_flt=*mss_val.fp;
 	for(idx=0L;idx<sz;idx+=2L)
-	  if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt) u32_ptr[idx]&=msk_f32_u32_zro;
+	  if(op1.fp[idx] != mss_val_flt)
+	    u32_ptr[idx]&=msk_f32_u32_zro;
 	for(idx=1L;idx<sz;idx+=2L)
-	  if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt && u32_ptr[idx] != 0U) u32_ptr[idx]|=msk_f32_u32_one;
-      } /* end else */
+	  if(op1.fp[idx] != mss_val_flt && u32_ptr[idx] != 0U)
+	    u32_ptr[idx]|=msk_f32_u32_one;
+      } /* !has_mss_val */
     }else if(nco_baa_cnv_get() == nco_baa_shv){
       /* Bit-Shave: always shave LSBs */
       if(!has_mss_val){
@@ -702,8 +704,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       }else{
 	const float mss_val_flt=*mss_val.fp;
 	for(idx=0L;idx<sz;idx++)
-	  if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt) u32_ptr[idx]&=msk_f32_u32_zro;
-      } /* end else */
+	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32_zro;
+      } /* !has_mss_val */
     }else if(nco_baa_cnv_get() == nco_baa_set){
       /* Bit-Set: always set LSBs */
       if(!has_mss_val){
@@ -713,9 +715,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       }else{
 	const float mss_val_flt=*mss_val.fp;
 	for(idx=0L;idx<sz;idx++)
-	  if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
+	  if(op1.fp[idx] != mss_val_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
 	    u32_ptr[idx]|=msk_f32_u32_one;
-      } /* end else */
+      } /* !has_mss_val */
     }else if(nco_baa_cnv_get() == nco_baa_dgr){
       /* Digit Rounding (GCD19), an unfinished work in progress...
 	 Test DGR:
@@ -798,7 +800,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       }else{ /* !has_mss_val */
 	const float mss_val_flt=*mss_val.fp;
 	for(idx=0L;idx<sz;idx++){
-	  if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt){ 
+	  if(op1.fp[idx] != mss_val_flt){ 
             u32_ptr[idx]+=msk_f32_u32_hshv;/* add 1 to the MSB of LSBs*/
             u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
 	  } /* !mss_val_flt */
@@ -818,7 +820,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       }else{
 	const float mss_val_flt=*mss_val.fp;
 	for(idx=0L;idx<sz;idx++){
-	  if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt){
+	  if(op1.fp[idx] != mss_val_flt){
 	    u32_ptr[idx]&=msk_f32_u32_zro; /* Shave as normal */
 	    u32_ptr[idx]|=msk_f32_u32_hshv; /* Set MSB of LSBs */
 	  } /* !mss_val_flt */
@@ -884,7 +886,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       }else{ // has_mss_val
         const float mss_val_flt=*mss_val.fp;
         for(idx=0L;idx<sz;idx+=2L){
-          if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt && op1.fp[idx] != 0.0){
+          if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != 0.0){
 	    raw32=op1.fp[idx];
 	    msk_f32_u32_zro=msk_rst32;
 	    op1.uip[idx]&=msk_f32_u32_zro;
@@ -909,7 +911,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
         } // close shave loop
 	
         for(idx=1L;idx<sz;idx+=2L){
-          if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != mss_val_dfl_flt && op1.fp[idx] != 0U){
+          if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != 0U){
 	    raw32=op1.fp[idx];
 	    msk_f32_u32_zro=msk_rst32;
 	    msk_f32_u32_one=~msk_f32_u32_zro;
@@ -953,17 +955,20 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       /* Bit-Groom: alternately shave and set LSBs */
       if(!has_mss_val){
 	for(idx=0L;idx<sz;idx+=2L)
-	  if(op1.dp[idx] != mss_val_dfl_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
+	  if(op1.dp[idx] != mss_val_dfl_dbl)
+	    u64_ptr[idx]&=msk_f64_u64_zro;
 	for(idx=1L;idx<sz;idx+=2L)
 	  if(op1.dp[idx] != mss_val_dfl_dbl && u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
 	    u64_ptr[idx]|=msk_f64_u64_one;
       }else{
 	const double mss_val_dbl=*mss_val.dp;
 	for(idx=0L;idx<sz;idx+=2L)
-	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
+	  if(op1.dp[idx] != mss_val_dbl)
+	    u64_ptr[idx]&=msk_f64_u64_zro;
 	for(idx=1L;idx<sz;idx+=2L)
-	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl && u64_ptr[idx] != 0ULL) u64_ptr[idx]|=msk_f64_u64_one;
-      } /* end else */
+	  if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0ULL)
+	    u64_ptr[idx]|=msk_f64_u64_one;
+      } /* !has_mss_val */
     }else if(nco_baa_cnv_get() == nco_baa_shv){
       /* Bit-Shave: always shave LSBs */
       if(!has_mss_val){
@@ -972,8 +977,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       }else{
 	const double mss_val_dbl=*mss_val.dp;
 	for(idx=0L;idx<sz;idx++)
-	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
-      } /* end else */
+	  if(op1.dp[idx] != mss_val_dbl)
+	    u64_ptr[idx]&=msk_f64_u64_zro;
+      } /* !has_mss_val */
     }else if(nco_baa_cnv_get() == nco_baa_set){
       /* Bit-Set: always set LSBs */
       if(!has_mss_val){
@@ -983,8 +989,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       }else{
 	const double mss_val_dbl=*mss_val.dp;
 	for(idx=0L;idx<sz;idx++)
-	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl && u64_ptr[idx] != 0UL) u64_ptr[idx]|=msk_f64_u64_one;
-      } /* end else */
+	  if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0UL)
+	    u64_ptr[idx]|=msk_f64_u64_one;
+      } /* !has_mss_val */
     }else if(nco_baa_cnv_get() == nco_baa_bg2){
       /* Bit-Grooming Version 2: alternately shave and set LSBs with dynamic masks, an unfinished work in progress... */
       if(!has_mss_val){
@@ -996,10 +1003,12 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       }else{
 	const double mss_val_dbl=*mss_val.dp;
 	for(idx=0L;idx<sz;idx+=2L)
-	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
+	  if(op1.dp[idx] != mss_val_dbl)
+	    u64_ptr[idx]&=msk_f64_u64_zro;
 	for(idx=1L;idx<sz;idx+=2L)
-	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl && u64_ptr[idx] != 0UL) u64_ptr[idx]|=msk_f64_u64_one;
-      } /* end else */
+	  if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0UL)
+	    u64_ptr[idx]|=msk_f64_u64_one;
+      } /* !has_mss_val */
     }else if(nco_baa_cnv_get() == nco_baa_rnd){
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask
@@ -1014,7 +1023,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       }else{ /* !has_mss_val */
 	const double mss_val_dbl=*mss_val.dp;
 	for(idx=0L;idx<sz;idx++){
-	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl){
+	  if(op1.dp[idx] != mss_val_dbl){
             u64_ptr[idx]+=msk_f64_u64_hshv; /* Add 1 at MSB of LSBs */
             u64_ptr[idx]&=msk_f64_u64_zro; /* Shave it */
 	  } /* !mss_val_dbl */
@@ -1034,7 +1043,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       }else{
 	const double mss_val_dbl=*mss_val.dp;
 	for(idx=0L;idx<sz;idx++){
-	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl){
+	  if(op1.dp[idx] != mss_val_dbl){
 	    u64_ptr[idx]&=msk_f64_u64_zro; /* Shave as normal */
 	    u64_ptr[idx]|=msk_f64_u64_hshv; /* Set MSB of LSBs */
           } /* !mss_val_dbl */
@@ -1107,7 +1116,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 
 	const double mss_val_dbl=*mss_val.dp;
 	for(idx=0L;idx<sz;idx+=2L){
-	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != 0.0 && op1.dp[idx] != mss_val_dfl_dbl){
+	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != 0.0){
 	    raw64 = op1.dp[idx];
 	    msk_f64_u64_zro = msk_rst64;
 	    u64_ptr[idx]&=msk_f64_u64_zro;
@@ -1132,7 +1141,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
         } // close shave loop 
 	
 	for(idx=1L;idx<sz;idx+=2L){
-	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != mss_val_dfl_dbl && op1.dp[idx] != 0ULL){
+	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != 0ULL){
 	    raw64 = op1.dp[idx];
 	    msk_f64_u64_zro = msk_rst64;
 	    msk_f64_u64_one=~msk_f64_u64_zro;
