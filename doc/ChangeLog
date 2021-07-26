@@ -1,3 +1,7 @@
+2021-07-26  Charlie Zender  <zender@uci.edu>
+
+	* nco_rgr_wgt() add msk_out to shared OpenMP clause (Thanks to Matt Thompson of NASA)
+
 2021-07-16  Charlie Zender  <zender@uci.edu>
 
 	* OK to PPC/BitGroom NC_FILL_FLOAT or NC_FILL_DOUBLE if _FillValue is explicitly defined
