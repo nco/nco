@@ -88,7 +88,7 @@ class fmc_cls;
    }
 
    // = operator
-   prs_cls& operator= (const prs_cls &prs_cpy)  {
+   prs_cls operator= (const prs_cls &prs_cpy)  {
       
      *this=prs_cpy;
      return *this;  
