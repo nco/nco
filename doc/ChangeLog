@@ -1,3 +1,7 @@
+2021-08-11  Charlie Zender  <zender@uci.edu>
+
+	* Refactor PPC/BitGrooming routines to compare to explicit/implicit missing value in same loop
+
 2021-07-26  Charlie Zender  <zender@uci.edu>
 
 	* nco_rgr_wgt() add msk_out to shared OpenMP clause (Thanks to Matt Thompson of NASA)
