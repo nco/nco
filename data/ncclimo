@@ -1347,7 +1347,8 @@ if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
 	# Examine bounds of second timestep in case first timestep is instantaneous (e.g., restart values)
 	tm_var='time'
 	tm_bnds=`ncks --trd -M -m -v ${tm_var} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
-	# 20201220 NB: Using %g not %f in format results in tpd=10 not tpd=8 for 3-hourly EAM data!
+	# 20201220: Using %g not %f in format results in tpd=10 not tpd=8 for 3-hourly EAM data!
+	# 20210815: Hyperslabbing second time index presumes file has multiple timesteps---fails with monthly data
 	tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_bnds} -d ${tm_var},1 -C ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
 	# Ensure result is positive integer
 	[ "${tpd_out}" -ge 0 ] 2>/dev/null && tpd_ntg='Yes' || tpd_ntg='No'
