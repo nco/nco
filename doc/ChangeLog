@@ -12,7 +12,7 @@
 
 2021-07-16  Charlie Zender  <zender@uci.edu>
 
-	* OK to PPC/BitGroom NC_FILL_FLOAT or NC_FILL_DOUBLE if _FillValue is explicitly defined
+	* PPC/BitGroom NC_FILL_FLOAT or NC_FILL_DOUBLE if _FillValue is not explicitly defined
 
 	* NCO 5.0.2-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha01: Accuss';git push
