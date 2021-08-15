@@ -1,3 +1,11 @@
+2021-08-15  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.2-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha03: Goff Island';git push
+	git tag -a 5.0.2-alpha03 -m 'ncclimo: dfl eam';git push --tags
+
+	* ncclimo: Change default model name from cam to eam
+
 2021-08-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-alpha02 release procedure:

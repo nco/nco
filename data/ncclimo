@@ -507,7 +507,7 @@ inp_std='No' # [sng] Input file list from stdin
 job_nbr=12 # [nbr] Job simultaneity for parallelism
 lnk_flg='No' # [sng] Link E3SM-climo to AMWG-climo filenames
 map_opt='' # [sng] Map-file options (e.g., '--map=map.nc')
-mdl_nm='cam' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
+mdl_nm='eam' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
 mdl_nm_usr='' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mem_mb=20000 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode
