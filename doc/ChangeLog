@@ -1,8 +1,12 @@
-2021-08-15  Charlie Zender  <zender@uci.edu>
+2021-08-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha03: Goff Island';git push
 	git tag -a 5.0.2-alpha03 -m 'ncclimo: dfl eam';git push --tags
+
+	* ncclimo: Turn-on splitter mode when clm_md=hfs and inp_glb=Yes
+
+2021-08-15  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo: Change default model name from cam to eam
 

@@ -1132,6 +1132,8 @@ For Conda-based systems (any OS, particularly useful for building NCO with newer
 <dt>conda install llvm-openmp # OpenMP [osx]</dt>
 <dt>conda install tempest-remap # (external executables for ncremap)</dt>
 <dt>conda install udunits2 # UDUnits</dt>
+<p>or, in one giant install,</p>
+<dt>conda install antlr=2.7.7 bison cmake flex curl esmf expat gsl libgomp libnetcdf llvm-openmp tempest-remap udunits2</dt>
 </tt>
 
 For Debian-based systems (like Ubuntu) (<tt>aptitude</tt> is similar to and interchangeable with <tt>apt-get</tt>):

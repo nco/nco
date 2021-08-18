@@ -955,10 +955,10 @@ fi # !drc_in
 
 if [ "${clm_md}" = 'hfs' ] || [ "${clm_md}" = 'mth' ] ; then
     # Subset (split) mode whenever stdin pipe has data or positional arguments are used
-    if [ ${inp_std} = 'Yes' ] || [ ${inp_psn} = 'Yes' ]; then
+    if [ ${inp_std} = 'Yes' ] || [ ${inp_psn} = 'Yes' ] || [ "${clm_md}" = 'hfs' ]; then
 	sbs_flg='Yes'
     fi # !sbs_flg
-    # fxm: When input files are specified by -i drc_in must also specify --ypf to turn-on splitter mode 
+    # fxm: If normal resolution (monthly, not HFS) input files are specified by -i drc_in must also specify --ypf to turn-on splitter mode
     # Otherwise it is ambiguous whether to generate climatology or to split
     if [ -n "${ypf_max_usr}" ]; then 
 	ypf_max=${ypf_max_usr}

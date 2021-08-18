@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.2-alpha03
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 16 July 2021
-@set update-month July 2021
+@set update-date 17 August 2021
+@set update-month August 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
