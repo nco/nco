@@ -2,7 +2,7 @@
 
 	* NCO 5.0.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha03: Goff Island';git push
-	git tag -a 5.0.2-alpha03 -m 'ncclimo: dfl eam';git push --tags
+	git tag -a 5.0.2-alpha03 -m 'ncclimo: dfl eam, hfs=sbs always';git push --tags
 
 	* ncclimo: Turn-on splitter mode when clm_md=hfs and inp_glb=Yes
 
