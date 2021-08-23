@@ -534,7 +534,6 @@ thr_nbr=2 # [nbr] Thread number for regridder
 tpd_out=1 # [nbr] Timesteps-per-day in output
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
-var_lst_rx_xtr='Yes' # [sng] Process var_lst to expand rx
 var_xtr='' # [sng] Extra variables for splitter timeseries
 vrs_prn='No' # [sng] Print version information
 vrt_fl='' # [sng] Vertical coordinate file
@@ -968,7 +967,7 @@ if [ "${clm_md}" = 'hfs' ] || [ "${clm_md}" = 'mth' ] ; then
 	clm_flg='No'
 	dec_md='sdd'
 	if [ -z "${mdl_nm_usr}" ]; then 
-	    mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
+	    mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
 	fi # !mdl_nm_usr
 	# Glob files in splitter mode if other input avenues were not used
 	if [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
@@ -1362,23 +1361,12 @@ fi # !hfc && !hfs
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
 if [ "${sbs_flg}" = 'Yes' ]; then
 
-    # If var_lst contains regular expressions then pre-process extraction list
-    # Pre-processing only necessary in subset mode to extract distinct timeseries
-    # Match var_lst regular expressions first file contents to create real extraction list
+    # 20210823: Pre-process extraction list if it contains a regular expression character
+    # Match var_lst against first file contents to create real extraction list
+    # Only necessary in subset mode to extract distinct timeseries
     # https://stackoverflow.com/questions/26621736/how-to-check-if-a-string-contains-a-special-character
-    if [ -n "${var_lst}" ] && [[ "${var_lst}" == *[\^\$\+\?\.\&\(\)\[\]\{\}\|]* ]] && [ "${var_lst_rx_xtr}" = 'Yes' ] ; then
-	# https://stackoverflow.com/questions/2440414/how-to-retrieve-the-first-word-of-the-output-of-a-command-in-bash
-	if [ ${clm_md} = 'False' ]; then 
-	    fl_arr=( ${fl_all} ) # Create file array
-	    fl_in_tpl=${fl_arr[0]}
-	else 
-	    fl_in_tpl=${fl_in[0]}
-	fi # !clm_md
-	echo "${spt_nm}: DEBUG var_lst before expansion = ${var_lst}"
-	var_lst=`ncks -C -v ${var_lst} --lst_xtr ${drc_in}/${fl_in_tpl}`
-	echo "${spt_nm}: DEBUG var_lst after  expansion = ${var_lst}"
-	#nco_opt="${nco_opt} -v ${var_lst}"
-	var_lst_rx_xtr='No'
+    if [ -n "${var_lst}" ] && [[ "${var_lst}" == *[\^\$\+\?\.\&\(\)\[\]\{\}\|]* ]]; then
+	var_lst=`ncks -C -v ${var_lst} --lst_xtr ${fl_in[0]}`
     fi # !var_lst
     
     if [ -z "${var_lst}" ]; then
@@ -1969,13 +1957,13 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	printf "Splitting climatology from list of ${fl_nbr} raw input files piped to stdin\n"
     fi # !stdin
     if [ ${clm_md} = 'ann' ]; then 
-	printf "Each input file assumed to contain mean of one year\n"
+	printf "Each input file assumed to contain statistic for one year\n"
     elif [ ${clm_md} = 'dly' ]; then 
-	printf "Each input file assumed to contain mean of one day\n"
+	printf "Each input file assumed to contain statistic for one day\n"
     elif [ ${clm_md} = 'hfs' ]; then 
-	printf "Each input file assumed to contain ${dpf} days each comprising ${tpd_out} timesteps\n"
+	printf "Each input file assumed to contain statistics for ${dpf} days each comprising ${tpd_out} timesteps\n"
     elif [ ${clm_md} = 'mth' ]; then 
-	printf "Each input file assumed to contain mean of one month\n"
+	printf "Each input file assumed to contain statistic for one month\n"
     fi # !mth
     printf "Native-grid split files to directory ${drc_out}\n"
     if [ -n "${rgr_opt}" ]; then 
@@ -2026,13 +2014,13 @@ if [ "${clm_flg}" = 'Yes' ]; then
 	printf "Input filenames will be read from globbing, positional arguments, or stdin\n"
     fi # !nm_typ
     if [ ${clm_md} = 'ann' ]; then 
-	printf "Each input file assumed to contain mean of one year\n"
+	printf "Each input file assumed to contain statistic for one year\n"
     elif [ ${clm_md} = 'dly' ]; then 
-	printf "Each input file assumed to contain one or more daily or sub-daily (e.g., 3-hourly) means\n"
+	printf "Each input file assumed to contain statistics for one or more daily or sub-daily (e.g., 3-hourly) means\n"
     elif [ ${clm_md} = 'hfc' ]; then 
-	printf "Each input file assumed to contain an integer number of days each comprising ${tpd_out} timesteps\n"
+	printf "Each input file assumed to contain statistics for an integer number of days each comprising ${tpd_out} timesteps\n"
     elif [ ${clm_md} = 'mth' ]; then 
-	printf "Each input file assumed to contain mean of one month\n"
+	printf "Each input file assumed to contain statistic for one month\n"
     fi # !mth
     if [ "${clm_hfc_or_mth}" = 'Yes' ]; then 
 	if [ ${csn_flg} = 'No' ]; then 
@@ -2408,7 +2396,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	# 20191217 Global average timeseries require area variable
 	var_xtr="${var_xtr},${area_nm}"
     else # !glb_avg
-	# Extract area from model output known to contain it
+	# Extract area variable from model output known to contain it
 	case ${mdl_nm} in
 	    cam* | eam* | mosart* ) var_xtr="${var_xtr},${area_nm}" ;;
 	esac # !mdl_nm

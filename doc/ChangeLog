@@ -2,9 +2,9 @@
 
 	* NCO 5.0.2-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha04: Gluten Free';git push
-	git tag -a 5.0.2-alpha04 -m 'ncclimo: var_lst_rx';git push --tags
+	git tag -a 5.0.2-alpha04 -m 'ncclimo: var_lst rx';git push --tags
 
-	* ncclimo: expand var_lst_rx_xtr if it contains globbing characters: '^$+?.*[]{}|'
+	* ncclimo: expand splitter var_lst if it contains a globbing character: ^$+?.*[]{}|
 
 2021-08-18  Charlie Zender  <zender@uci.edu>
 
