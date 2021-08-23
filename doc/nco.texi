@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.2-alpha03
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 17 August 2021
+@set update-date 19 August 2021
 @set update-month August 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -19396,17 +19396,19 @@ We hope to remove this limitation in the future.
 @end html
 @cindex @var{var_xtr}
 @cindex @code{--var_xtr}
-@cindex @code{--var}
-@cindex @code{--vars}
-@cindex @code{--variables}
-@cindex @code{--variable_list}
+@cindex @code{--var_extra}
+@cindex @code{--extra_variables}
+@cindex @code{--variables_extra}
 @item --var_xtr=@var{var_xtr} (@code{--var_xtr}, @code{--var_xtr}, @code{--var_extra}, @code{--variables_extra}, @code{--extra_variables})
-The @samp{-v} option causes @command{ncclimo} to include the extra
-variables specified in @var{var_xtr} in every timeseries split from
-the raw data.
+The @samp{--var_xtr} option causes @command{ncclimo} to include the extra
+variables list in @var{var_xtr} in every timeseries split from the raw
+data. 
 This is useful when extra variables are desired in timeseries.
 There are no limits on the extra variables---they may be of any rank
 and may be timeseries themselves.
+One useful application of this option, is to ensure that the area
+variable is included with each timeseries, e.g.,
+@samp{--var_xtr=area}. 
 
 @cindex @code{--version}
 @cindex @code{--vrs}

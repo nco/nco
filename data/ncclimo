@@ -534,7 +534,7 @@ thr_nbr=2 # [nbr] Thread number for regridder
 tpd_out=1 # [nbr] Timesteps-per-day in output
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
-var_lst_rx_xtr='No' # [sng] Process var_lst to expand rx
+var_lst_rx_xtr='Yes' # [sng] Process var_lst to expand rx
 var_xtr='' # [sng] Extra variables for splitter timeseries
 vrs_prn='No' # [sng] Print version information
 vrt_fl='' # [sng] Vertical coordinate file
@@ -1362,6 +1362,25 @@ fi # !hfc && !hfs
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
 if [ "${sbs_flg}" = 'Yes' ]; then
 
+    # If var_lst contains regular expressions then pre-process extraction list
+    # Pre-processing only necessary in subset mode to extract distinct timeseries
+    # Match var_lst regular expressions first file contents to create real extraction list
+    # https://stackoverflow.com/questions/26621736/how-to-check-if-a-string-contains-a-special-character
+    if [ -n "${var_lst}" ] && [[ "${var_lst}" == *[\^\$\+\?\.\&\(\)\[\]\{\}\|]* ]] && [ "${var_lst_rx_xtr}" = 'Yes' ] ; then
+	# https://stackoverflow.com/questions/2440414/how-to-retrieve-the-first-word-of-the-output-of-a-command-in-bash
+	if [ ${clm_md} = 'False' ]; then 
+	    fl_arr=( ${fl_all} ) # Create file array
+	    fl_in_tpl=${fl_arr[0]}
+	else 
+	    fl_in_tpl=${fl_in[0]}
+	fi # !clm_md
+	echo "${spt_nm}: DEBUG var_lst before expansion = ${var_lst}"
+	var_lst=`ncks -C -v ${var_lst} --lst_xtr ${drc_in}/${fl_in_tpl}`
+	echo "${spt_nm}: DEBUG var_lst after  expansion = ${var_lst}"
+	#nco_opt="${nco_opt} -v ${var_lst}"
+	var_lst_rx_xtr='No'
+    fi # !var_lst
+    
     if [ -z "${var_lst}" ]; then
 	echo "${spt_nm}: WARNING Splitter mode without explicitly specified variable list (i.e., -v var_lst) splits all variables of rank >= 2 into separate files, thus doubling the on-disk data amount"
 	var_lst=`ncks --lst_rnk_ge2 ${fl_in[0]}`
@@ -2105,21 +2124,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 
 	fi # !clm_md
 
-	if [ -n "${var_lst}" ] && [ "${var_lst_rx_xtr}" = 'Yes' ] ; then
-	    # Match var_lst regular expressions to contents of first file to create real extraction list
-	    # https://stackoverflow.com/questions/2440414/how-to-retrieve-the-first-word-of-the-output-of-a-command-in-bash
-	    if [ ${clm_md} = 'hfc' ]; then 
-		fl_in_tpl=${fl_in[0]}
-	    elif [ ${clm_md} = 'mth' ]; then 
-		fl_arr=( ${fl_all} ) # Create file array
-		fl_in_tpl=${fl_arr[0]}
-	    fi # !clm_md
-	    #echo "${spt_nm}: DEBUG var_lst before expansion = ${var_lst}"
-	    var_lst=`ncks -v ${var_lst} --lst_xtr ${drc_in}/${fl_in_tpl}`
-	    #echo "${spt_nm}: DEBUG var_lst after  expansion = ${var_lst}"
-	    nco_opt="${nco_opt} -v ${var_lst}"
-	    var_lst_rx_xtr='No'
-	fi # !var_lst
+	# 20210819 former location of var_lst_rx_xtr block
 
 	# Common to both high-frequency and monthly-input climos
 	if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
