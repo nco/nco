@@ -7873,6 +7873,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"CO_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("CO_Latitude"); /* MLS */
     else if((rcd=nco_inq_varid_flg(in_id,"S1_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("S1_Latitude"); /* GPM */
     else if((rcd=nco_inq_varid_flg(in_id,"yc",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("yc"); /* RTM */
+    else if((rcd=nco_inq_varid_flg(in_id,"south_north",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("south_north"); /* StackOverflow question https://stackoverflow.com/questions/68896581 */
     else if((rcd=nco_inq_varid_flg(in_id,"gridlat_0",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("gridlat_0"); /* NWS HRRR */
   } /* !lat_ctr_id */
   
@@ -7899,6 +7900,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"CO_Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("CO_Longitude"); /* MLS */
     else if((rcd=nco_inq_varid_flg(in_id,"S1_Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("S1_Longitude"); /* GPM */
     else if((rcd=nco_inq_varid_flg(in_id,"xc",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("xc"); /* RTM */
+    else if((rcd=nco_inq_varid_flg(in_id,"west_east",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("west_east"); /* StackOverflow question https://stackoverflow.com/questions/68896581 */
     else if((rcd=nco_inq_varid_flg(in_id,"gridlon_0",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("gridlon_0"); /* NWS HRRR */
   } /* !lon_ctr_id */
   

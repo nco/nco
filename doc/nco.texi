@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.2-alpha04
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 19 August 2021
+@set update-date 23 August 2021
 @set update-month August 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7536,9 +7536,12 @@ $$
 \frcsgs_{\sss} \sigma_{\sss,\ddd} \xxx_{\sss} \over
 \sum_{\sss=1}^{\sss=\lmnnbr} \mssflg_{\sss} \frcsgs_{\sss} \sigma_{\sss,\ddd}}  
 $$
-
 @end tex
 
+@unnumberedsubsec Regridder Options Table
+@html
+<a name="rgr_tbl"></a> <!-- http://nco.sf.net/nco.html#rgr_tbl -->
+@end html
 @acronym{NCO} automatically annotates the output with relevant metadata
 such as coordinate bounds, axes, and vertices (@w{@`{a} la} @acronym{CF}). 
 These annotations include

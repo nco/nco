@@ -1,8 +1,12 @@
-2021-08-23  Charlie Zender  <zender@uci.edu>
+2021-08-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha04: Gluten Free';git push
 	git tag -a 5.0.2-alpha04 -m 'ncclimo: var_lst rx';git push --tags
+
+	* nco_grd_nfr() add west_east and south_north to coordinate database
+
+2021-08-23  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo: expand splitter var_lst if it contains a globbing character: ^$+?.*[]{}|
 
