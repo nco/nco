@@ -321,7 +321,7 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 export PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
 export LD_LIBRARY_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
 # NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
