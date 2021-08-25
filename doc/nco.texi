@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.2-alpha04
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 23 August 2021
+@set update-date 25 August 2021
 @set update-month August 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -28838,6 +28838,7 @@ Large work-load testing
 @cindex Philip Cameron-Smith
 @cindex Martin Dix
 @cindex Mark Flanner
+@cindex Chris Golaz
 @cindex Barron Henderson
 @cindex Aleksandar Jelenak
 @cindex Markus Liebig
@@ -28852,13 +28853,14 @@ Large work-load testing
 @cindex Rich Signell
 @cindex Bob Simons
 @cindex Gary Strand
+@cindex Qi Tang
 @cindex Matthew Thompson
 @cindex Adrian Tompkins
 @cindex Andrew Wittenberg
 @cindex George White
 @cindex Min Xu
 @cindex Remik Ziemlinski
-@item Xylar Asay-Davis, Sterling Baldwin, Dave Blodgett, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Barron Henderson, Aleksandar Jelenak, Markus Liebig, Keith Lindsay, Daniel Macks, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Matthew Thompson, Adrian Tompkins, George White Andrew Wittenberg, Min Xu, Remik Ziemlinski
+@item Xylar Asay-Davis, Sterling Baldwin, Dave Blodgett, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Chris Golaz, Barron Henderson, Aleksandar Jelenak, Markus Liebig, Keith Lindsay, Daniel Macks, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Matthew Thompson, Qi Tang, Adrian Tompkins, George White Andrew Wittenberg, Min Xu, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @cindex Filipe Fernandes
 @cindex Isuru Fernando

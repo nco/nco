@@ -6,11 +6,10 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.2 contains the necessary options for ncremap to exploit
-MPI-enabled weight generators such as ESMF_RegridWeightGen.
-You can probably skip this release unless you use ncremap.
+Version 5.0.2 contains two new features and one fix.
+You might skip this release unless you use ncremap/ncclimo.
 
-Work on NCO 5.0.2 has commenced and and it targeted to offer ncremap
+Work on NCO 5.0.3 has commenced and and it targeted to offer ncremap
 support for the MOAB offline regridding package mbtempest.
 
 Enjoy,
@@ -18,45 +17,51 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap accepts two new and related options, mpi_pfx and mpi_nbr.
-  The --mpi_pfx=mpi_pfx option specifies an appropriate job
-  scheduler prefix for MPI-enabled weight-generation
-  executables such as ESMF's ESMF_RegridWeightGen and MoabTempest's
-  mbtempest. Other weight generators (ncks, GenerateOfflineMap) 
-  are unaffected by this option since they are not MPI-enabled. 
-  mpi_pfx defaults to mpirun -n $mpi_nbr on all machines except those
-  whose $HOSTNAME matches an internal database of DOE-operated
-  supercomputers where mpi_pfx defaults to srun -n $mpi_nbr.
-  When invoking --mpi_pfx, be sure to explicitly define the
-  number of MPI tasks-per-node, e.g.,
-  
-  ncremap --mpi_pfx='srun -n 16' ...
-  ncremap --mpi_pfx='srun --mpi=pmi2 -n 4' ...
-  
-  The separate --mpi_nbr=mpi_nbr option specifies the
-  number of tasks-per-node that MPI-enabled weight generators
-  will request. It preserves the default job scheduler prefix (srun or 
-  mpirun):
-  
-  ncremap --mpi_nbr=4 ... # 16 MPI tasks-per-node for ERWG/mbtempest 
-  ncremap --mpi_nbr=16 ... # 4 MPI tasks-per-node for ERWG/mbtempest 
-  
-  Thus --mpi_nbr=mpi_nbr can be used to create host-independent ncremap
-  commands to facilitate benchmarking the scaling of weight-generators
-  across hosts that work with the default value of mpi_pfx.
-  The --mpi_pfx option will prevail and --mpi_nbr will be ignored if
-  both are used in the same ncremap invocation. Note that mpi_pfx is
-  only used internally by ncremap to exploit the MPI capabilities of
-  select weight-generators. It is not used to control and does not
-  affect the distribution of multiple ncremap commands among a cluster
-  of nodes. 
-  http://nco.sf.net/nco.html#mpi_pfx
-  http://nco.sf.net/nco.html#mpi_nbr
-  
+A. Bit-Adjustment-Algorithms (BAAs) for lossy quantization
+   (e.g., BitGrooming) now only quantize the values NC_FILL_FLOAT or
+   NC_FILL_DOUBLE for float and double variables, respectively, when
+   the _FillValue attribute has been set to some other value.
+   Previously all BAAs always quantized NC_FILL_FLOAT or
+   NC_FILL_DOUBLE unless they were explicitly set as _FillValue.
+   Thanks to Ed Hartnett of NOAA for this suggestion.
+
+B. ncclimo now expands variable lists that contain regular
+   expressions (RX). Previously the splitter would aggregate
+   all variables specified by an RX into a single timeseries file.
+   Now the splitter places every variable into its own file.
+   Thus using an RX produces the same timeseries files as explicitly
+   specifying every variable. There is no change in the behavior
+   of climo mode; it continues to put all variables in one file.
+   ncclimo --var_lst=_2DMS.? in*.nc
+   ncclimo --var_lst=_2DMS.? --var_xtr=area in*.nc
+   Both commands use an RX in a variable list. The second command
+   explicitly adds the 'area' variable to all output timeseries.
+   The improved functionality should be especially useful to analyze 
+   datasets with large numbers of tracers/species.
+   Thanks to Qi Tang of PNNL for suggesting this feature.
+
+C. ncremap now infers curvilinear grids from data files that include
+   coordinates named west_east and south_north.
+   Thanks to a StackOverflow user for suggesting this feature.
+
+D. ncclimo now assumes the model name string in input files is 'eam'
+   not 'cam'. The old behavior can be recovered by explicitly
+   specifying ncclimo --mdl_nm=cam.
+
 BUG FIXES:
    
-A. No bug fixes this release
-    
+A. ncclimo automatically turns-on splitter mode when clm_md=hfs
+   and files are provided by globbing the input directory.
+   Previously ncclimo would not enter splitter mode automatically
+   under these circumstances. The workaround is to force splitter
+   mode by specifying the --ypf=ypf option. The solution is to
+   upgrade.
+
+B. A minor change to OpenMP behavior now allows Intel compilers
+   to build NCO from source (once again). This bug was introduced
+   in NCO ~4.9.9 and affects only Intel compilers. The solution is to
+   upgrade. Thanks to Matthew Thompson of GSFC for pointing this out.
+
 Full release statement at http://nco.sf.net/ANNOUNCE
     
 KNOWN PROBLEMS DUE TO NCO:
