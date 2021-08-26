@@ -232,6 +232,8 @@ AC_TYPE_UID_T
 AC_CHECK_TYPES([ptrdiff_t])
 AC_CHECK_SIZEOF(int*)
 # 20210321 autoconf after autoupdate complains AC_LANG([C++]) is obsolete here, so I delete it
+# 20210826 AC_CXX_HAVE_VALARRAY is available from Autoconf Macro Archive, though is non-standard
+# Hopefully most C++ compilers have <valarray> these days anyway
 # AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
@@ -570,7 +572,10 @@ fi
 
 # Begin nco_c++
 # If --enable-nco_cplusplus, compile NCO C++ interface library
-AC_ARG_ENABLE(nco_cplusplus,AS_HELP_STRING([--enable-nco_cplusplus],[Build NCO C++ interface library [default=yes]]),enable_nco_cxx=${enableval},enable_nco_cxx=yes)
+AC_MSG_CHECKING([whether NCO C++ interface library libnco_c++ should be built])
+AC_ARG_ENABLE(nco_cplusplus,AS_HELP_STRING([--enable-nco_cplusplus],[Build NCO C++ interface library [default=no]]),enable_nco_cxx=${enableval},enable_nco_cxx=no)
+test "x$enable_nco_cxx" = xyes || enable_nco_cxx=no
+AC_MSG_RESULT([$enable_nco_cxx])
 # End nco_c++
 
 echo "########################################"
@@ -1242,11 +1247,11 @@ fi
 # Begin config
 # Treat essential and man files now, defer doc files (that rely on makeinfo) to below
 AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile man/Makefile])
-if test "${ac_cv_cxx_have_valarray}" = 'yes' && test "${enable_nco_cxx}" = 'yes' ; then
+if test "${enable_nco_cxx}" = 'yes' ; then
     AC_CONFIG_FILES(src/nco_c++/Makefile)
     NCO_CXX="nco_c++"
 else
-    NCO_CXX=
+    NCO_CXX=""
 fi
 AC_SUBST(NCO_CXX)
 

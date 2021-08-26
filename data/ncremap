@@ -338,7 +338,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-0[12].nc ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.000101_000103.nc
 # ncremap --dbg=3 -v FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.000101_000102.nc ~/foo.nc
 # MBT
-# ncremap --dbg=1 --vrb=3 --devnull=No --mbt --alg_typ=se2fv_flx --grd_src=${DATA}/grids/ne30.g --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_mbt.20210701.nc
+# ncremap --dbg=1 --vrb=3 --devnull=No --mbt --alg_typ=se2fv_flx --grd_src=${DATA}/grids/ne30.g --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_mbt.20211001.nc
 # CDO
 # cdo verifygrid grid_CMN-5x5.nc
 # ncremap --dbg=1 --vrb=3 --devnull=No --alg_typ=cdo_bil --in_fl=${DATA}/grids/t42_skl.nc --dst_fl=${DATA}/ne30/rgr/hfc_ANN_200001_200012_climo.nc --map=${DATA}/maps/map_t42_to_cmip6_180x360_cdo.20210701.nc

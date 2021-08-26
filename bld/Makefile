@@ -586,7 +586,7 @@ MDL_DAT_STB := $(addsuffix .nc,${MDL_DAT_STB}) # `make data' creates these files
 MDL_DAT := $(addprefix ${MY_DAT_DIR}/,${MDL_DAT_STB}) # `make distclean' removes these files
 
 # Variables having to do with NCO documentation
-MDL_DOC_SRC := $(addprefix ../,acinclude.m4 CMakeLists.txt configure.ac configure.eg Makefile.am) $(addprefix ${MY_DOC_DIR}/,nco.texi ANNOUNCE MANIFEST NEWS README TODO VERSION beta.txt debian.txt dods.sh index.shtml xmp_cesm.html man_end.txt man_srt.txt ncap.txt nco_news.shtml nco_src_frg.txt opendap.sh) $(addprefix ${MY_DBN_DIR}/,changelog compat control copyright files info rules doc-base) # `make tags' includes these files
+MDL_DOC_SRC := $(addprefix ../,acinclude.m4 CMakeLists.txt configure.ac configure.eg Makefile.am) $(addprefix ${MY_DOC_DIR}/,nco.texi ANNOUNCE MANIFEST TODO VERSION beta.txt debian.txt dods.sh index.shtml xmp_cesm.html man_end.txt man_srt.txt ncap.txt nco_news.shtml nco_src_frg.txt opendap.sh) $(addprefix ${MY_DBN_DIR}/,changelog compat control copyright files info rules doc-base) # `make tags' includes these files
 MDL_DOC_TRG := nco.dvi nco.html nco.info nco.pdf nco.ps nco.txt nco.xml # `make doc' creates these files
 MDL_DOC := $(addprefix ${MY_DOC_DIR}/,${MDL_DOC_TRG}) # `make distclean' removes these files
 
