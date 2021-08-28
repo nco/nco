@@ -2471,6 +2471,13 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
     elif [ "${wgt_typ}" = 'nco' ]; then 
 	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'mbtempest' ]; then 
+	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
+	# if [[ ${grd_src} =~ ^(.*)(.nc.?)$ ]]; then
+	if [[ ${grd_src} == *.g ]]; then
+	    echo "MBT: Converting ${grd_src} to .h5m"
+	else # !grd_src
+	    echo "MBT: Not converting ${grd_src} to .h5m"
+	fi # !grd_src
 	cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'tempest' ]; then 
 	cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
