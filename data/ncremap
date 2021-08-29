@@ -1,4 +1,4 @@
-#!/bin/bash
+p#!/bin/bash
 
 # ncremap, the NCO regridder and grid-file, map-file, and weight-generator
 
@@ -470,7 +470,8 @@ map_mk='No' # [flg] Generate map-file (i.e., map does not yet exist)
 map_usr_flg='No' # [flg] User supplied argument to --map option
 map_xmp='map.nc' # [sng] Map-file for examples
 mbt_flg='No' # [flg] mbtempest front-end to TempestRemap
-mbt_typ_map=5 # [flg] mbtempest --type argument to generate weights (and not, e.g., grids)
+mbt_typ_grd=0 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, OVERLAP_MEMORY=4, OVERLAP_MOAB=5])
+mbt_typ_map=5 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, OVERLAP_MEMORY=4, OVERLAP_MOAB=5])
 mem_mb=20000 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
@@ -486,7 +487,7 @@ mss_val='-9.99999979021476795361e+33' # [frc] Missing value for MPAS (ocean+seai
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-6 -t 1')
 nd_nbr=1 # [nbr] Number of nodes
 no_stg_grd='Yes' # [flg] Omit staggered grid variables
-np_se_nbr=4 # [nbr] Polynomial order for TempestRemap SE maps
+se_np_nbr=4 # [nbr] Spectral Element polynomial order of discretization (for TempestRemap SE grids)
 out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ="${par_srl}" # [sng] Parallelism type
@@ -1024,9 +1025,11 @@ if [ -n "${tmp_usr}" ]; then
 fi # !tmp_usr
 dmm_fl="${drc_tmp}/ncremap_tmp_dmm.nc" # [sng] Dummy input file
 grd_dst_dfl="${drc_tmp}/ncremap_tmp_grd_dst.nc" # [sng] Grid-file (destination) default
-grd_dst_h5m_fl="${drc_tmp}/ncremap_tmp_grd_dst_h5m.nc" # [sng] H5M Grid-file (destination) default
+grd_dst_h5m_dfl="${drc_tmp}/ncremap_tmp_grd_dst_h5m.nc" # [sng] H5M Grid-file (destination) default
+grd_dst_prt_dfl="${drc_tmp}/ncremap_tmp_grd_dst_h5m_prt.nc" # [sng] Partitioned H5M mesh (destination) default
 grd_src_dfl="${drc_tmp}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) default
-grd_src_h5m_fl="${drc_tmp}/ncremap_tmp_grd_src_h5m.nc" # [sng] H5M Grid-file (source) default
+grd_src_h5m_dfl="${drc_tmp}/ncremap_tmp_grd_src_h5m.nc" # [sng] H5M Grid-file (source) default
+grd_src_prt_dfl="${drc_tmp}/ncremap_tmp_grd_src_h5m_prt.nc" # [sng] Partitioned H5M mesh (source) default
 hnt_dst_fl="${drc_tmp}/ncremap_tmp_hnt_dst.txt" # [sng] Hint (for ERWG) destination
 hnt_src_fl="${drc_tmp}/ncremap_tmp_hnt_src.txt" # [sng] Hint (for ERWG) source
 ncwa_fl="${drc_tmp}/ncremap_tmp_ncwa.nc" # [sng] ncwa workflow (HIRDLS, MLS) default
@@ -1047,8 +1050,10 @@ if [ -n "${unq_usr}" ]; then
     fi # !unq_usr
 fi # !unq_usr
 dmm_fl=${dmm_fl}${unq_sfx}
-grd_dst_h5m_fl=${grd_dst_h5m_dfl}${unq_sfx}
-grd_src_h5m_fl=${grd_src_h5m_dfl}${unq_sfx}
+grd_dst_h5m_tmp=${grd_dst_h5m_dfl}${unq_sfx}
+grd_src_h5m_tmp=${grd_src_h5m_dfl}${unq_sfx}
+grd_dst_prt_tmp=${grd_dst_prt_dfl}${unq_sfx}
+grd_src_prt_tmp=${grd_src_prt_dfl}${unq_sfx}
 grd_dst_dfl=${grd_dst_dfl}${unq_sfx}
 grd_src_dfl=${grd_src_dfl}${unq_sfx}
 hnt_dst_fl=${hnt_dst_fl}${unq_sfx}
@@ -1096,46 +1101,62 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
 	printf "${spt_nm}: INFO Specifying the TempestRemap default algorithm '--alg_typ=tempest' without giving any additional options with -W (--wgt_opt) works only for the default TR configuration where both input and output grids are Finite Volume (FV) grids. The default TR algorithm is conservative and non-monotonic.\n"
     fi # !wgt_opt_usr    
 elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # alg_sng='mono'
-    wgt_opt_mbt="--method cgll --order ${np_se_nbr} --global_id GLOBAL_DOFS --method fv --monotonic 1 --global_id GLOBAL_ID"
-    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono --correct_areas"
+    cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_dst="-B"
+    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --global_id GLOBAL_DOFS --method fv --monotonic 1 --global_id GLOBAL_ID"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono --correct_areas"
     alg_opt='se2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2fv' ]; then # alg_sng='highorder'
-    wgt_opt_mbt="--method cgll --order ${np_se_nbr} --method fv"
-    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --correct_areas"
+    cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_dst="-B"
+    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --correct_areas"
     alg_opt='se2fv_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_se2fv' ]; then # alg_sng='intbilin'
-    wgt_opt_mbt="--method cgll --order ${np_se_nbr} --method fv --monotonic 3 --noconserve"
-    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono3 --noconserve --correct_areas"
+    cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_dst="-B"
+    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonic 3 --noconserve"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono3 --noconserve --correct_areas"
     alg_opt='se2fv_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'conservative_monotone_se2se' ]; then # alg_sng='se2se'
+    cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     # 20190227: Add mono for se2se per recommendation of Mark Taylor
-    wgt_opt_mbt="--method cgll --order ${np_se_nbr} --method cgll --order ${np_se_nbr} --monotonic 1"
-    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type cgll --out_np ${np_se_nbr} --mono"
+    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method cgll --order ${se_np_nbr} --monotonic 1"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type cgll --out_np ${se_np_nbr} --mono"
     alg_opt='se2se'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # alg_sng='monotr'
     # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-    wgt_opt_mbt="--method cgll --order ${np_se_nbr} --method fv --monotonic 1"
-    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono --correct_areas"
+    cnv_opt_src="-B"
+    cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
+    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonic 1"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono --correct_areas"
     alg_opt='fv2se_flx'
     wgt_typ='tempest'
     trn_map='Yes'
 elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # alg_sng='highorder'
+    cnv_opt_src="-B"
+    cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     # 20190716: Remove "--volumetric" from fv2se_stt per Mark Taylor and Paul Ullrich
-    wgt_opt_mbt="--method fv --order 2 --method cgll --order ${np_se_nbr}"
-    wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np ${np_se_nbr}"
+    wgt_opt_mbt="--method fv --order 2 --method cgll --order ${se_np_nbr}"
+    wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np ${se_np_nbr}"
     alg_opt='fv2se_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # alg_sng='mono'
+    cnv_opt_src="-B"
+    cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     # 20200525: Remove "--volumetric" from fv2se_mono per Mark Taylor modifying Confluence instructions
-    wgt_opt_mbt="--method fv --order 1 --method cgll --order ${np_se_nbr} --monotonic 1"
-    wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np ${np_se_nbr} --mono"
+    wgt_opt_mbt="--method fv --order 1 --method cgll --order ${se_np_nbr} --monotonic 1"
+    wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np ${se_np_nbr} --mono"
     alg_opt='fv2se_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ]; then # alg_sng='highorder'
+    cnv_opt_src="-B"
+    cnv_opt_dst="-B"
     # 20190227: Add --mono3 --noconserve for fv2fv per (misinterpreted) recommendation of Mark Taylor
     # 20200115: Replace --mono3 --noconserve with --in_np 2 per recommendation of Mark Taylor and Paul Ullrich
     wgt_opt_mbt='--method fv --order 2 --method fv'
@@ -1143,6 +1164,8 @@ elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ]; then # alg_sng='hig
     alg_opt='fv2fv'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv_flx' ] || [ ${alg_typ} = 'fv2fv_mono' ] || [ ${alg_typ} = 'conservative_monotone_fv2fv' ]; then # alg_sng='mono'
+    cnv_opt_src="-B"
+    cnv_opt_dst="-B"
     # 20191115: Add per recommendation of Paul Ullrich
     # 20200221: Add --out_np 1 per (new?) settings in on Transition to TR page
     wgt_opt_mbt='--method fv --order 1 --method fv --order 1'
@@ -1150,6 +1173,8 @@ elif [ ${alg_typ} = 'fv2fv_flx' ] || [ ${alg_typ} = 'fv2fv_mono' ] || [ ${alg_ty
     alg_opt='fv2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2fv' ]; then # alg_sng='highorder'
+    cnv_opt_src="-B"
+    cnv_opt_dst="-B"
     # 20191115: Add per recommendation of Paul Ullrich
     wgt_opt_mbt='--method fv --order 2 --method fv'
     wgt_opt_tps='--in_type fv --in_np 2 --out_type fv --correct_areas'
@@ -2088,7 +2113,6 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: msk_src  = ${msk_src}\n"
     printf "dbg: nco_opt  = ${nco_opt}\n"
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
-    printf "dbg: np_se_nbr= ${np_se_nbr}\n"
     printf "dbg: out_fl   = ${out_fl}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: pdq_flg  = ${pdq_flg}\n"
@@ -2104,6 +2128,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: rrg_glb  = ${grd_glb}\n"
     printf "dbg: rrg_rgn  = ${grd_rgn}\n"
     printf "dbg: rrg_rnm  = ${rnm_sng}\n"
+    printf "dbg: se_np_nbr= ${se_np_nbr}\n"
     printf "dbg: sgs_frc  = ${sgs_frc}\n"
     printf "dbg: sgs_msk  = ${sgs_msk}\n"
     printf "dbg: sgs_nrm  = ${sgs_nrm}\n"
@@ -2476,46 +2501,66 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'mbtempest' ]; then 
 	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
-	# if [[ ${grd_src} =~ ^(.*)(.nc.?)$ ]]; then
-	if [[ ${grd_src} == *.g ]]; then
-	    echo "MBT: Treating ${grd_src} as Exodus file and converting to MOAB (.h5m) format"
-	    grd_src_h5m_fl="${grd_src/.g/.h5m}"
-	    cmd_s5m[${fl_idx}]="${cmd_cnv_mbt} -B \"${grd_src}\" \"${grd_src_h5m_fl}\"${devnull}"
-	    echo "MBT: cmd_h5m[${fl_idx}]=${cmd_s5m[${fl_idx}]}"
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_s5m[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_s5m[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_fl} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_s5m[${fl_idx}]}\n"
-		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	else # !grd_src
-	    grd_src_h5m_fl=${grd_src}
+	if [[ ${grd_src} =~ ^(.*)(.nc.?)$ ]]; then
+	    echo "MBT: Treating $(basename ${grd_src}) as netCDF SCRIP file and converting to Exodus (.g) format"
 	fi # !grd_src
-	if [[ ${grd_dst} == *.g ]]; then
-	    echo "MBT: Treating ${grd_dst} as Exodus file and converting to MOAB (.h5m) format"
-	    grd_dst_h5m_fl="${grd_dst/.g/.h5m}"
-	    cmd_d5m[${fl_idx}]="${cmd_cnv_mbt} -B \"${grd_dst}\" \"${grd_dst_h5m_fl}\"${devnull}"
-	    echo "MBT: cmd_d5m[${fl_idx}]=${cmd_d5m[${fl_idx}]}"
+	if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]]; then
+	    echo "MBT: Treating $(basename ${grd_src}) as Exodus file and converting to MOAB (.h5m) format"
+	    grd_src_h5m_tmp="${grd_src/.g/.h5m}"
+	    cmd_h5s[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
+	    echo "MBT: cmd_h5s[${fl_idx}]=${cmd_h5s[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_d5m[${fl_idx}]}
+		echo ${cmd_h5s[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_d5m[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_d5m[${fl_idx}]}\n"
+		eval ${cmd_h5s[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_tmp} ]; then
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_h5s[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
-	else # !grd_dst
-	    grd_dst_h5m_fl=${grd_dst}
+	    grd_src=${grd_src_h5m_tmp}
+	fi # !grd_src
+	if [[ ${grd_dst} == *.g ]] || [[ ${grd_dst} == *.exo ]]; then
+	    echo "MBT: Treating $(basename ${grd_dst}) as Exodus file and converting to MOAB (.h5m) format"
+	    grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
+	    cmd_h5d[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
+	    echo "MBT: cmd_h5d[${fl_idx}]=${cmd_h5d[${fl_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_h5d[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_h5d[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m} ]; then
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_h5d[${fl_idx}]}\n"
+		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	    grd_dst=${grd_dst_h5m_tmp}
 	fi # !grd_dst
-	cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src_h5m_fl}\" --load \"${grd_dst_h5m_fl}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
+	if [[ ${grd_src} == *.h5m ]]; then
+	    echo "MBT: Treating $(basename ${grd_src}) as unpartitioned MOAB file and partitioning it"
+	    grd_src_prt_tmp="${grd_src/.h5m/_p${prt_nbr}.h5m}"
+#	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+	    echo "MBT: cmd_prs[${fl_idx}]=${cmd_prs[${fl_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_prs[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_prs[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_prt_tmp} ]; then
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_prs[${fl_idx}]}\n"
+		    printf "${spt_nm}: HINT ${prt_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	    grd_src=${grd_src_prt_tmp}
+	fi # !grd_src
+
+	cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'tempest' ]; then 
     	cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	if [ "${a2o_flg}" = 'Yes' ]; then 
@@ -3220,7 +3265,7 @@ if [ "${cln_flg}" = 'Yes' ]; then
 	printf "Clean-up intermediate files...\n"
     fi # !vrb_lvl
 
-    /bin/rm -f ${dmm_fl} ${grd_dst_dfl} ${grd_dst_h5m_fl} ${grd_src_dfl} ${grd_src_h5m_fl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${rgn_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
+    /bin/rm -f ${dmm_fl} ${grd_dst_dfl} ${grd_dst_h5m_tmp} ${grd_src_dfl} ${grd_src_h5m_tmp} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${rgn_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Explicitly instructed not to clean-up intermediate files\n"
