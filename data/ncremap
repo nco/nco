@@ -1,4 +1,4 @@
-p#!/bin/bash
+#!/usr/bin/env bash
 
 # ncremap, the NCO regridder and grid-file, map-file, and weight-generator
 
@@ -2505,7 +2505,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    echo "MBT: Treating $(basename ${grd_src}) as netCDF SCRIP file and converting to Exodus (.g) format"
 	fi # !grd_src
 	if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]]; then
-	    echo "MBT: Treating $(basename ${grd_src}) as Exodus file and converting to MOAB (.h5m) format"
+	    echo "MBT: Treating $(basename ${grd_src}) as Exodus-format source grid and converting to MOAB (.h5m) format"
 	    grd_src_h5m_tmp="${grd_src/.g/.h5m}"
 	    cmd_h5s[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
 	    echo "MBT: cmd_h5s[${fl_idx}]=${cmd_h5s[${fl_idx}]}"
@@ -2523,7 +2523,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    grd_src=${grd_src_h5m_tmp}
 	fi # !grd_src
 	if [[ ${grd_dst} == *.g ]] || [[ ${grd_dst} == *.exo ]]; then
-	    echo "MBT: Treating $(basename ${grd_dst}) as Exodus file and converting to MOAB (.h5m) format"
+	    echo "MBT: Treating $(basename ${grd_dst}) as Exodus-format destination grid and converting to MOAB (.h5m) format"
 	    grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
 	    cmd_h5d[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
 	    echo "MBT: cmd_h5d[${fl_idx}]=${cmd_h5d[${fl_idx}]}"
@@ -2540,10 +2540,10 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    fi # !dbg
 	    grd_dst=${grd_dst_h5m_tmp}
 	fi # !grd_dst
-	if [[ ${grd_src} == *.h5m ]]; then
-	    echo "MBT: Treating $(basename ${grd_src}) as unpartitioned MOAB file and partitioning it"
-	    grd_src_prt_tmp="${grd_src/.h5m/_p${prt_nbr}.h5m}"
-#	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+	if [[ ${grd_src} == *.h5m ]] && [[ ${grd_src} != *p.h5m ]]; then
+	    echo "MBT: Treating $(basename ${grd_src}) as unpartitioned MOAB-format source mesh and partitioning it"
+	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
+#	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}" # 20210829: zoltan not available in moab=5.3.0=*nompi_tempest*
 	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    echo "MBT: cmd_prs[${fl_idx}]=${cmd_prs[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
@@ -2559,7 +2559,24 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    fi # !dbg
 	    grd_src=${grd_src_prt_tmp}
 	fi # !grd_src
-
+	if [[ ${grd_dst} == *.h5m ]] && [[ ${grd_dst} != *p.h5m ]]; then
+	    echo "MBT: Treating $(basename ${grd_dst}) as unpartitioned MOAB-format source mesh and partitioning it"
+	    grd_dst_prt_tmp="${grd_dst/.h5m/_${prt_nbr}p.h5m}"
+	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
+	    echo "MBT: cmd_prs[${fl_idx}]=${cmd_prs[${fl_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_prs[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_prs[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_prt_tmp} ]; then
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_prs[${fl_idx}]}\n"
+		    printf "${spt_nm}: HINT ${prt_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	    grd_dst=${grd_dst_prt_tmp}
+	fi # !grd_dst
 	cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'tempest' ]; then 
     	cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"

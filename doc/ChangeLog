@@ -1,8 +1,16 @@
-2021-08-27  Charlie Zender  <zender@uci.edu>
+2021-08-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha05: HPV';git push
-	git tag -a 5.0.2-alpha05 -m 'fxm';git push --tags
+	git tag -a 5.0.2-alpha05 -m 'autoconf nco_c++=no; ncclimo/ncremap: /usr/bin/env bash, .h5m, p.h5m';git push --tags
+
+	* ncclimo/ncremap: start scripts with #!/usr/bin/env bash instead of #!/bin/bash
+
+	* ncremap partition .h5m to p.h5m
+
+	* ncremap convert .g to .h5m
+
+2021-08-27  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add stubs to convert .g to .h5m
 

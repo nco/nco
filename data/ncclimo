@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Purpose: Climatology script tailored to CESM'ish monthly input and E3SM output guidelines
 # Produces (and optionally regrids) climatological monthly means, seasonal means, annual mean
