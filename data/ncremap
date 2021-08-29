@@ -1024,7 +1024,9 @@ if [ -n "${tmp_usr}" ]; then
 fi # !tmp_usr
 dmm_fl="${drc_tmp}/ncremap_tmp_dmm.nc" # [sng] Dummy input file
 grd_dst_dfl="${drc_tmp}/ncremap_tmp_grd_dst.nc" # [sng] Grid-file (destination) default
+grd_dst_h5m_fl="${drc_tmp}/ncremap_tmp_grd_dst_h5m.nc" # [sng] H5M Grid-file (destination) default
 grd_src_dfl="${drc_tmp}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) default
+grd_src_h5m_fl="${drc_tmp}/ncremap_tmp_grd_src_h5m.nc" # [sng] H5M Grid-file (source) default
 hnt_dst_fl="${drc_tmp}/ncremap_tmp_hnt_dst.txt" # [sng] Hint (for ERWG) destination
 hnt_src_fl="${drc_tmp}/ncremap_tmp_hnt_src.txt" # [sng] Hint (for ERWG) source
 ncwa_fl="${drc_tmp}/ncremap_tmp_ncwa.nc" # [sng] ncwa workflow (HIRDLS, MLS) default
@@ -1045,6 +1047,8 @@ if [ -n "${unq_usr}" ]; then
     fi # !unq_usr
 fi # !unq_usr
 dmm_fl=${dmm_fl}${unq_sfx}
+grd_dst_h5m_fl=${grd_dst_h5m_dfl}${unq_sfx}
+grd_src_h5m_fl=${grd_src_h5m_dfl}${unq_sfx}
 grd_dst_dfl=${grd_dst_dfl}${unq_sfx}
 grd_src_dfl=${grd_src_dfl}${unq_sfx}
 hnt_dst_fl=${hnt_dst_fl}${unq_sfx}
@@ -2474,15 +2478,48 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
 	# if [[ ${grd_src} =~ ^(.*)(.nc.?)$ ]]; then
 	if [[ ${grd_src} == *.g ]]; then
-	    echo "MBT: Converting ${grd_src} to .h5m"
+	    echo "MBT: Treating ${grd_src} as Exodus file and converting to MOAB (.h5m) format"
+	    grd_src_h5m_fl="${grd_src/.g/.h5m}"
+	    cmd_s5m[${fl_idx}]="${cmd_cnv_mbt} -B \"${grd_src}\" \"${grd_src_h5m_fl}\"${devnull}"
+	    echo "MBT: cmd_h5m[${fl_idx}]=${cmd_s5m[${fl_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_s5m[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_s5m[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_fl} ]; then
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_s5m[${fl_idx}]}\n"
+		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
 	else # !grd_src
-	    echo "MBT: Not converting ${grd_src} to .h5m"
+	    grd_src_h5m_fl=${grd_src}
 	fi # !grd_src
-	cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
+	if [[ ${grd_dst} == *.g ]]; then
+	    echo "MBT: Treating ${grd_dst} as Exodus file and converting to MOAB (.h5m) format"
+	    grd_dst_h5m_fl="${grd_dst/.g/.h5m}"
+	    cmd_d5m[${fl_idx}]="${cmd_cnv_mbt} -B \"${grd_dst}\" \"${grd_dst_h5m_fl}\"${devnull}"
+	    echo "MBT: cmd_d5m[${fl_idx}]=${cmd_d5m[${fl_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_d5m[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_d5m[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m} ]; then
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_d5m[${fl_idx}]}\n"
+		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	else # !grd_dst
+	    grd_dst_h5m_fl=${grd_dst}
+	fi # !grd_dst
+	cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src_h5m_fl}\" --load \"${grd_dst_h5m_fl}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'tempest' ]; then 
-	cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
+    	cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	if [ "${a2o_flg}" = 'Yes' ]; then 
-	    cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
+	   cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	fi # !a2o_flg
 	cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_src}\" --out_mesh \"${grd_dst}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_fl}\" ${wgt_opt}${devnull}"
 	if [ "${trn_map}" = 'Yes' ]; then 
@@ -3183,7 +3220,7 @@ if [ "${cln_flg}" = 'Yes' ]; then
 	printf "Clean-up intermediate files...\n"
     fi # !vrb_lvl
 
-    /bin/rm -f ${dmm_fl} ${grd_dst_dfl} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${rgn_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
+    /bin/rm -f ${dmm_fl} ${grd_dst_dfl} ${grd_dst_h5m_fl} ${grd_src_dfl} ${grd_src_h5m_fl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${rgn_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Explicitly instructed not to clean-up intermediate files\n"
