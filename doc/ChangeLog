@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha05: HPV';git push
 	git tag -a 5.0.2-alpha05 -m 'autoconf nco_c++=no; ncclimo/ncremap: /usr/bin/env bash, .h5m, p.h5m';git push --tags
 
+	* ncremap print sample map examination commands
+
 	* ncclimo/ncremap: start scripts with #!/usr/bin/env bash instead of #!/bin/bash
 
 	* ncremap partition .h5m to p.h5m

@@ -3282,7 +3282,7 @@ if [ "${cln_flg}" = 'Yes' ]; then
 	printf "Clean-up intermediate files...\n"
     fi # !vrb_lvl
 
-    /bin/rm -f ${dmm_fl} ${grd_dst_dfl} ${grd_dst_h5m_tmp} ${grd_src_dfl} ${grd_src_h5m_tmp} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${rgn_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
+    /bin/rm -f ${dmm_fl} ${grd_dst_dfl} ${grd_dst_h5m_tmp} ${grd_dst_prt_tmp} ${grd_src_dfl} ${grd_src_h5m_tmp} ${grd_src_prt_tmp} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${rgn_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Explicitly instructed not to clean-up intermediate files\n"
@@ -3292,6 +3292,11 @@ fi # !cln_flg
 date_end=$(date +"%s")
 if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     if [ ${fl_nbr} -eq 0 ]; then
+	if [ "${map_mk}" != 'No' ]; then
+	    echo "Check statistics of generated map-file:"
+	    echo "ncks --chk_map ${map_fl}"
+	    echo "AnalyzeMap --map ${map_fl}"
+	fi # !map_mk
 	printf "Completed generating map/grid-file(s) at `date`.\n"
     else # !fl_nbr
 	printf "Completed regridding data file(s) at `date`.\n"
