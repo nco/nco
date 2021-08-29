@@ -2562,6 +2562,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	if [[ ${grd_dst} == *.h5m ]] && [[ ${grd_dst} != *p.h5m ]]; then
 	    echo "MBT: Treating $(basename ${grd_dst}) as unpartitioned MOAB-format source mesh and partitioning it"
 	    grd_dst_prt_tmp="${grd_dst/.h5m/_${prt_nbr}p.h5m}"
+#	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 --recompute_rcb_box --scale_sphere --project_on_sphere 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}" # 20210829: moab=5.3.0=*nompi_tempest* lacks --recompute_rcb_box and --scale_sphere completely, and must use -p instead of --project_on_sphere
 	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
 	    echo "MBT: cmd_prs[${fl_idx}]=${cmd_prs[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
