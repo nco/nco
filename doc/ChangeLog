@@ -1,8 +1,18 @@
+2021-08-30  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.2-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha06: BTS';git push
+	git tag -a 5.0.2-alpha06 -m 'ncclimo/ncremap: mem_mb=0; ';git push --tags
+
+	* ncremap/ncclimo change mem_mb default from 20000 to 0 (0 indicates unlimited RAM)
+
 2021-08-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha05: HPV';git push
 	git tag -a 5.0.2-alpha05 -m 'autoconf nco_c++=no; ncclimo/ncremap: /usr/bin/env bash, .h5m, p.h5m';git push --tags
+
+	* ncremap HOSTNAME-dependent partition commands for compy, non
 
 	* ncremap print sample map examination commands
 

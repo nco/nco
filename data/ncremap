@@ -472,7 +472,7 @@ map_xmp='map.nc' # [sng] Map-file for examples
 mbt_flg='No' # [flg] mbtempest front-end to TempestRemap
 mbt_typ_grd=0 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, OVERLAP_MEMORY=4, OVERLAP_MOAB=5])
 mbt_typ_map=5 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, OVERLAP_MEMORY=4, OVERLAP_MOAB=5])
-mem_mb=20000 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode
+mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indicates unlimited RAM)
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
 mpi_nbr=1 # [sng] Number of tasks-per-node that MPI-enabled weight generators will request
@@ -2543,8 +2543,13 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	if [[ ${grd_src} == *.h5m ]] && [[ ${grd_src} != *p.h5m ]]; then
 	    echo "MBT: Treating $(basename ${grd_src}) as unpartitioned MOAB-format source mesh and partitioning it"
 	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
-#	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}" # 20210829: zoltan not available in moab=5.3.0=*nompi_tempest*
-	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+	    if [[ ${HOSTNAME} = *compy* ]]; then
+		# 20210829: compy must use zoltan not metis
+		cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+	    else # !HOSTNAME
+		# 20210829: moab=5.3.0=*nompi_tempest* must use metis not zoltan
+		cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+	    fi # !HOSTNAME
 	    echo "MBT: cmd_prs[${fl_idx}]=${cmd_prs[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_prs[${fl_idx}]}
@@ -2562,23 +2567,31 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	if [[ ${grd_dst} == *.h5m ]] && [[ ${grd_dst} != *p.h5m ]]; then
 	    echo "MBT: Treating $(basename ${grd_dst}) as unpartitioned MOAB-format source mesh and partitioning it"
 	    grd_dst_prt_tmp="${grd_dst/.h5m/_${prt_nbr}p.h5m}"
-#	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 --recompute_rcb_box --scale_sphere --project_on_sphere 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}" # 20210829: moab=5.3.0=*nompi_tempest* lacks --recompute_rcb_box and --scale_sphere completely, and must use -p instead of --project_on_sphere
-	    cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
-	    echo "MBT: cmd_prs[${fl_idx}]=${cmd_prs[${fl_idx}]}"
+	    if [[ ${HOSTNAME} = *compy* ]]; then
+		cmd_prd[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --scale_sphere --project_on_sphere 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
+	    else # !HOSTNAME
+		# 20210829: moab=5.3.0=*nompi_tempest* lacks --recompute_rcb_box and --scale_sphere completely, and must use -p instead of --project_on_sphere
+		cmd_prd[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
+	    fi # !HOSTNAME
+	    echo "MBT: cmd_prd[${fl_idx}]=${cmd_prd[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_prs[${fl_idx}]}
+		echo ${cmd_prd[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_prs[${fl_idx}]}
+		eval ${cmd_prd[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_prt_tmp} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_prs[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_prd[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT ${prt_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
 	    grd_dst=${grd_dst_prt_tmp}
 	fi # !grd_dst
-	cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
+	if [[ ${HOSTNAME} = *compy* ]]; then
+	    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
+	else # !HOSTNAME
+	    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
+	fi # !HOSTNAME
     elif [ "${wgt_typ}" = 'tempest' ]; then 
     	cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	if [ "${a2o_flg}" = 'Yes' ]; then 

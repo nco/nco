@@ -510,7 +510,7 @@ map_opt='' # [sng] Map-file options (e.g., '--map=map.nc')
 mdl_nm='eam' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
 mdl_nm_usr='' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
-mem_mb=20000 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode
+mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indicates unlimited RAM)
 mpi_flg='No' # [sng] Parallelize over nodes
 mth_end='12' # [yr] End month
 mth_srt='1' # [yr] Start month
