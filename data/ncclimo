@@ -619,17 +619,17 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_bld}cd output;ls *cam*19??-??*.nc | ${spt_nm} -v FSNT,TREFHT -s 1900 -e 1999 -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Split climo\n"
     printf "${fnt_bld}ncclimo -c ${caseid_xmp} -m cam -S 41 -E 50 -x ${drc_rgr_xmp}/0041-0050 -s 51 -e 60 -i ${drc_rgr_xmp}/0051-0060 -X ${drc_rgr_xmp}/0041-0060 ${fnt_nrm}# Combine two climos\n\n"
     printf "${fnt_rvr}Interactive batch queues:${fnt_nrm}\n"
-    printf "andes : salloc  -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
-    printf "andes : salloc  -A CLI115 --nodes=1 --time=00:30:00 --partition=gpu --job-name=ncclimo # Bigmem\n"
-    printf "blues : salloc  -A condo --nodes=1 --partition=acme-small --time=00:30:00 --job-name=ncclimo\n"
+    printf "andes : srun -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash\n"
+    printf "andes : srun -A CLI115 --nodes=1 --time=00:30:00 --partition=gpu --job-name=ncclimo --pty bash # Bigmem\n"
+    printf "blues : srun -A condo --nodes=1 --partition=acme-small --time=00:30:00 --job-name=ncclimo --pty bash\n"
     printf "cheyen: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
-    printf "chrysa: salloc  -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo\n" # Login node
+    printf "chrysa: srun -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo --pty bash\n" # Login node
     printf "chrysa: srun -N 1 --time=30 --pty bash\n" # Compute node
-    printf "compy : salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
+    printf "compy : srun -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash\n"
     printf "cooley: qsub -I -A ClimateEnergy_4 --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
-    printf "cori  : salloc  -A e3sm -C haswell --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
-    printf "cori  : salloc  -A e3sm -C knl --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
-    printf "cori  : salloc  -A e3sm -C amd --nodes=1 --time=00:30:00 --job-name=ncclimo # Bigmem\n"
+    printf "cori  : srun -A e3sm -C haswell --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo --pty bash\n"
+    printf "cori  : srun -A e3sm -C knl --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo --pty bash\n"
+    printf "cori  : srun -A e3sm -C amd --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash # Bigmem\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
     exit 1
 } # end fnc_usg_prn()
