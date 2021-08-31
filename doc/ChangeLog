@@ -1,3 +1,7 @@
+2021-08-31  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo change interactive computed node access from salloc to srun to avoid Compy issues
+
 2021-08-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-alpha06 release procedure:
