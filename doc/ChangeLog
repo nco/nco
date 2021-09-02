@@ -2,7 +2,7 @@
 
 	* NCO 5.0.2-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha06: Foo Fighters';git push
-	git tag -a 5.0.2-alpha06 -m 'ncclimo/ncremap: mem_mb=0, srun; ';git push --tags
+	git tag -a 5.0.2-alpha06 -m 'ncclimo: tpd nfr fix; ncclimo/ncremap: mem_mb=0, srun not salloc; ncra: udu rcd;';git push --tags
 
 	* ncclimo fix tpd_out inferral to work with single time-step input files
 
