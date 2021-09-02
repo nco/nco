@@ -1,14 +1,20 @@
-2021-08-31  Charlie Zender  <zender@uci.edu>
+2021-09-01  Charlie Zender  <zender@uci.edu>
 
-	* ncclimo change interactive computed node access from salloc to srun to avoid Compy issues
-
-2021-08-30  Charlie Zender  <zender@uci.edu>
+	* Add library/bm rcd support for upcoming netCDF versions 4.8.3, 4.8.4
 
 	* NCO 5.0.2-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha06: Foo Fighters';git push
-	git tag -a 5.0.2-alpha06 -m 'ncclimo/ncremap: mem_mb=0; ';git push --tags
+	git tag -a 5.0.2-alpha06 -m 'ncclimo/ncremap: mem_mb=0, srun; ';git push --tags
 
-	* ncremap/ncclimo change mem_mb default from 20000 to 0 (0 indicates unlimited RAM)
+	* ncclimo/ncremap update E3SMU paths to _latest and acme1 paths to /home/zender1
+
+2021-08-31  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo change interactive compute node access from salloc to srun to avoid Compy issues
+
+2021-08-30  Charlie Zender  <zender@uci.edu>
+
+	* ncremap/ncclimo change mem_mb default from 20000 to 0 (indicates unlimited RAM)
 
 2021-08-29  Charlie Zender  <zender@uci.edu>
 
