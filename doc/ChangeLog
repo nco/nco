@@ -1,8 +1,14 @@
-2021-09-01  Charlie Zender  <zender@uci.edu>
+2021-09-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha06: Foo Fighters';git push
 	git tag -a 5.0.2-alpha06 -m 'ncclimo/ncremap: mem_mb=0, srun; ';git push --tags
+
+	* ncclimo fix tpd_out inferral to work with single time-step input files
+
+	* Add error diagnostics for UDUnits2 ut_read_xml() return codes
+
+2021-09-01  Charlie Zender  <zender@uci.edu>
 
 	* Add library/bm rcd support for upcoming netCDF versions 4.8.3, 4.8.4
 

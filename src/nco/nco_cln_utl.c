@@ -676,12 +676,33 @@ nco_cln_cnv_mk /* [fnc] UDUnits2 create custom converter */
      This location varies depending upon your operating system and UDUnits2 compilation settings.
      If UDUnits2 is correctly linked yet cannot find the XML database in either of these locations,
      then NCO will report that the UDUnits2 library has failed to initialize.
-     To fix this, export the location of the UDUnits2 XML database file udunits2.xml to the shell:
+     To fix this, export the location of the UDUnits2 XML database file udunits2.xml to the shell, with, e.g.:
      export UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'
      One can then invoke (without recompilation) NCO again, and UDUNITS2 should work. */
   if(nco_dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
   ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
+    ut_status ut_stt;
+    ut_stt=ut_get_status();
+    (void)fprintf(stderr,"%s: ut_read_xml() returned UDUnits2 enumerated status code and description\n",nco_prg_nm_get());
+    switch(ut_stt){
+    case UT_SUCCESS: (void)fprintf(stderr,"UT_SUCCESS: Success\n"); break;
+    case UT_BAD_ARG: (void)fprintf(stderr,"UT_BAD_ARG: An argument violates the the function's contract (e.g., it's NULL).\n"); break;
+    case UT_EXISTS: (void)fprintf(stderr,"UT_EXISTS: Unit, prefix, or identifier already exists\n"); break;
+    case UT_NO_UNIT: (void)fprintf(stderr,"UT_NO_UNIT: No such unit exists\n"); break;
+    case UT_OS: (void)fprintf(stderr,"UT_OS: Operating-system error. See errno for the reason.\n"); break;
+    case UT_NOT_SAME_SYSTEM: (void)fprintf(stderr,"UT_NOT_SAME_SYSTEM: The units belong to different unit-systems\n"); break;
+    case UT_MEANINGLESS: (void)fprintf(stderr,"UT_MEANINGLESS: The operation on the unit or units is meaningless\n"); break;
+    case UT_NO_SECOND: (void)fprintf(stderr,"UT_NO_SECOND: The unit-system doesn't have a unit named “second”\n"); break;
+    case UT_VISIT_ERROR: (void)fprintf(stderr,"UT_VISIT_ERROR: An error occurred while visiting a unit\n"); break;
+    case UT_CANT_FORMAT: (void)fprintf(stderr,"UT_CANT_FORMAT: A unit can't be formatted in the desired manner\n"); break;
+    case UT_SYNTAX: (void)fprintf(stderr,"UT_SYNTAX: String unit representation contains syntax error\n"); break;
+    case UT_UNKNOWN: (void)fprintf(stderr,"UT_UNKNOWN: String unit representation contains unknown word\n"); break;
+    case UT_OPEN_ARG: (void)fprintf(stderr,"UT_OPEN_ARG: Can't open argument-specified unit database\n"); break;
+    case UT_OPEN_ENV: (void)fprintf(stderr,"UT_OPEN_ENV: Can't open environment-specified unit database\n"); break;
+    case UT_OPEN_DEFAULT: (void)fprintf(stderr,"UT_OPEN_DEFAULT: Can't open installed, default, unit database\n"); break;
+    case UT_PARSE: (void)fprintf(stderr,"UT_PARSE: Error parsing unit database\n"); break;
+    } /* !ut_stt */
     (void)fprintf(stdout,"%s: WARNING %s failed to initialize UDUnits2 library\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT UDUnits2 (specifically, the function ut_read_xml()) uses the environment variable UDUNITS2_XML_PATH, if any, to find its all-important XML database named by default udunits2.xml. If UDUNITS2_XML_PATH is undefined, UDUnits2 looks in the fall-back default initial location that was hardcoded when the UDUnits2 library was built. This location varies depending upon your operating system and UDUnits2 compilation settings. If UDUnits2 is correctly linked yet cannot find the XML database in either of these locations, then NCO warns that the UDUnits2 library has failed to initialize and prints this message. To fix this, export the full location (path+name) of the UDUnits2 XML database file udunits2.xml to the shell with, e.g.,\n\texport UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'\nOne can then invoke (without recompilation) NCO again, and UDUNITS2 should work.\n",nco_prg_nm_get());
     return (cv_converter *)NULL; /* Failure */

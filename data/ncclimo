@@ -217,8 +217,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # High-frequency climos:
 # drc_in=${DATA}/ne30/raw
 # caseid=famipc5_ne30_v0.3_00007.cam.h4 # 3-hour resolution
-# cd ${drc_in};ls ${caseid}*.nc | ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20181001.nc # Multi-file input
-# ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20181001.nc ~/PRECT_200101_200212.nc # Single file input
+# cd ${drc_in};ls ${caseid}*.nc | ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc # Multi-file input
+# ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ~/PRECT_200101_200212.nc # Single file input
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS,TREFHT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
@@ -1348,8 +1348,12 @@ if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
 	tm_var='time'
 	tm_bnds=`ncks --trd -M -m -v ${tm_var} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
 	# 20201220: Using %g not %f in format results in tpd=10 not tpd=8 for 3-hourly EAM data!
-	# 20210815: Hyperslabbing second time index presumes file has multiple timesteps---fails with monthly data
-	tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_bnds} -d ${tm_var},1 -C ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
+	# 20210815: Prefer to hyperslab second time index since some files contain an "instantaneous" (i.e., zero-duration) first timestep.
+	# However this presumes file has multiple timesteps---fails with monthly data
+	# 20210902: Use first time index if file has only one timestep
+	tm_nbr=`ncks --trd -M ${fl_in[0]} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
+	[ "${tm_nbr}" -gt 1 ] 2>/dev/null && tm_idx='1' || tm_idx='0'
+	tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_bnds} -d ${tm_var},${tm_idx} -C ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
 	# Ensure result is positive integer
 	[ "${tpd_out}" -ge 0 ] 2>/dev/null && tpd_ntg='Yes' || tpd_ntg='No'
 	if [ "${tpd_ntg}" != 'Yes' ]; then
