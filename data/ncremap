@@ -103,7 +103,7 @@ fi # HOSTNAME
 # Default input and output directory is ${DATA}
 if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
-	acme1* ) DATA="/export/${USER}" ; ;; # LLNL acme1 
+	acme1* ) DATA="/home/${USER}" ; ;; # LLNL acme1 
 	andes* | titan* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC blues compute nodes named bNNN, 36|64 cores|GB/node 
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
@@ -138,8 +138,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		E3SMU_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
-	    export PATH='/export/zender1/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/export/zender1/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/home/zender1/bin'\:${PATH}
+            export LD_LIBRARY_PATH='/home/zender1/lib'\:${LD_LIBRARY_PATH} ; ;;
 	andes* )
 	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
