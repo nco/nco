@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.2-alpha05
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 25 August 2021
-@set update-month August 2021
+@set update-date 7 September 2021
+@set update-month September 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -17880,6 +17880,43 @@ Note that the entire attribute is protected from the shell by single
 quotes. 
 These outer single quotes are necessary for interactive use, but may be
 omitted in batch scripts.
+
+@cindex standard input
+@cindex pipes
+@cindex shell
+@cindex @command{xargs}
+Although @command{ncatted} accepts multiple @samp{-a @var{att_dst}}
+options simultaneously, modifying lengthy commands can become
+unwieldy.  
+To preserve simplicity in storing/modifying multiple attribute edits, 
+consider storing the options separately in a text file and
+assembling them at run-time to generate and submit the correct
+command.
+One such method uses the @command{xargs} command to intermediate
+between an on-disk list attributes to change and the @command{ncatted}
+command.
+For example, use an intermediate file named @file{options.txt}
+to store one option per line thusly
+@example
+@verbatim
+zender@nco: cat ~/options.txt
+-a institution,global,m,c,\"Super Cool University\"
+-a source,global,c,c,\"My Awesome Radar\"
+-a contributors,global,c,c,\"Enrico Fermi, Galileo Galilei, Leonardo Da Vinci\"
+...
+@end verbatim
+@end example
+The backslashes preserve the whitespace in the individual attributes
+for correct parsing by the shell.
+Invoke @command{ncatted} with these options, simultaneously,
+using @command{xargs}:
+@example
+@verbatim
+ncatted -O -h $(cat ~/options.txt | xargs -x -d '\n') in.nc out.nc
+@end verbatim
+@end example
+This procedure can by modified to employ complex option pre-processing  
+using other tools such as Awk, Perl, or Python.
 
 @page
 @html

@@ -3243,14 +3243,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     } /* end nco_grd_lat_typ switch */
     
     /* Fuzzy test of latitude weight normalization */
-    double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
     lat_wgt_ttl=0.0;
     for(idx=0L;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
-    lat_wgt_ttl_xpc=fabs(sin(dgr2rdn*lat_bnd_out[2L*(lat_nbr_out-1L)+1L])-sin(dgr2rdn*lat_bnd_out[0L])); /* fabs() ensures positive area in n2s grids */
-    if(nco_grd_lat_typ != nco_grd_lat_unk){
-      assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
+    if(nco_grd_lat_typ == nco_grd_lat_eqa || nco_grd_lat_typ == nco_grd_lat_fv){
+      double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
+      lat_wgt_ttl_xpc=fabs(sin(dgr2rdn*lat_bnd_out[2L*(lat_nbr_out-1L)+1L])-sin(dgr2rdn*lat_bnd_out[0L])); /* fabs() ensures positive area in n2s grids */
+      assert(fabs(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc) < eps_rlt);
       if(lat_wgt_ttl_xpc < 0.0) abort(); /* CEWI Use lat_wgt_ttl_xpc at least once outside of assert() to avoid gcc 4.8.2 set-but-not-used warning */
-    } /* !nco_grd_lat_unk */
+    } /* !nco_grd_lat_eqa, !nco_grd_lat_fv */ 
   } /* !flg_grd_out_rct */
     
   /* When possible, ensure area_out is non-zero
@@ -6928,14 +6928,16 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      Tolerance threshold of 1.0e-14 works for all relevant E3SM Uniform and Cap grids */
   //const double eps_rlt_max=1.0e-14; /* [frc] Round-off error tolerance: Used 1.0e-14 until 20180904 */
   const double eps_rlt_max=1.0e-12; /* [frc] Round-off error tolerance: Used 1.0e-12 since 20180904 */
-  double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
   lat_wgt_ttl=0.0;
   for(idx=0L;idx<lat_nbr;idx++) lat_wgt_ttl+=lat_wgt[idx];
-  lat_wgt_ttl_xpc=fabs(sin(dgr2rdn*lat_bnd[2*(lat_nbr-1)+1L])-sin(dgr2rdn*lat_bnd[0L]));
-  if(grd_typ != nco_grd_2D_unk && 1.0-lat_wgt_ttl/lat_wgt_ttl_xpc > eps_rlt_max){
-    (void)fprintf(stdout,"%s: ERROR %s reports grid normalization does not meet precision tolerance eps_rlt_max = %20.15f\nlat_wgt_ttl = %20.15f, lat_wgt_ttl_xpc = %20.15f, lat_wgt_frc = %20.15f, eps_rlt = %20.15f\n",nco_prg_nm_get(),fnc_nm,eps_rlt_max,lat_wgt_ttl,lat_wgt_ttl_xpc,lat_wgt_ttl/lat_wgt_ttl_xpc,1.0-lat_wgt_ttl/lat_wgt_ttl_xpc);
-    nco_exit(EXIT_FAILURE);
-  } /* !imprecise */
+  if(grd_typ == nco_grd_2D_fv || grd_typ == nco_grd_2D_eqa){
+    double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
+    lat_wgt_ttl_xpc=fabs(sin(dgr2rdn*lat_bnd[2*(lat_nbr-1)+1L])-sin(dgr2rdn*lat_bnd[0L]));
+    if(fabs(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc) > eps_rlt_max){
+      (void)fprintf(stdout,"%s: ERROR %s reports grid normalization does not meet precision tolerance eps_rlt_max = %20.15f\nlat_wgt_ttl = %20.15f, lat_wgt_ttl_xpc = %20.15f, lat_wgt_frc = %20.15f, eps_rlt = %20.15f\n",nco_prg_nm_get(),fnc_nm,eps_rlt_max,lat_wgt_ttl,lat_wgt_ttl_xpc,lat_wgt_ttl/lat_wgt_ttl_xpc,1.0-lat_wgt_ttl/lat_wgt_ttl_xpc);
+      nco_exit(EXIT_FAILURE);
+    } /* !imprecise */
+  } /* !nco_grd_lat_eqa, !nco_grd_lat_fv */ 
 
   /* 20180831 Code above assumes grids run S->N
      User can request N->S grids with --rgr lat_drc=n2s
@@ -9162,14 +9164,17 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Fuzzy test of latitude weight normalization */
     //const double eps_rlt_max=1.0e-14; /* [frc] Round-off error tolerance: Used 1.0e-14 until 20180904 */
     const double eps_rlt_max=1.0e-12; /* [frc] Round-off error tolerance: Used 1.0e-12 since 20180904 */
-    double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
     lat_wgt_ttl=0.0;
     for(idx=0;idx<lat_nbr;idx++) lat_wgt_ttl+=lat_wgt[idx];
-    lat_wgt_ttl_xpc=fabs(sin(dgr2rdn*lat_bnd[2*(lat_nbr-1)+1L])-sin(dgr2rdn*lat_bnd[0L]));
-    if(grd_typ != nco_grd_2D_unk && 1.0-lat_wgt_ttl/lat_wgt_ttl_xpc > eps_rlt_max){
-      (void)fprintf(stdout,"%s: ERROR %s reports grid normalization does not meet precision tolerance eps_rlt_max = %20.15f\nlat_wgt_ttl = %20.15f, lat_wgt_ttl_xpc = %20.15f, lat_wgt_frc = %20.15f, eps_rlt = %20.15f\n",nco_prg_nm_get(),fnc_nm,eps_rlt_max,lat_wgt_ttl,lat_wgt_ttl_xpc,lat_wgt_ttl/lat_wgt_ttl_xpc,1.0-lat_wgt_ttl/lat_wgt_ttl_xpc);
-      nco_exit(EXIT_FAILURE);
-    } /* !imprecise */
+    if(grd_typ == nco_grd_2D_fv || grd_typ == nco_grd_2D_eqa){
+      double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
+      lat_wgt_ttl_xpc=fabs(sin(dgr2rdn*lat_bnd[2*(lat_nbr-1)+1L])-sin(dgr2rdn*lat_bnd[0L]));
+
+      if(grd_typ != nco_grd_2D_unk && fabs(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc) > eps_rlt_max){
+	(void)fprintf(stdout,"%s: ERROR %s reports grid normalization does not meet precision tolerance eps_rlt_max = %20.15f\nlat_wgt_ttl = %20.15f, lat_wgt_ttl_xpc = %20.15f, lat_wgt_frc = %20.15f, eps_rlt = %20.15f\n",nco_prg_nm_get(),fnc_nm,eps_rlt_max,lat_wgt_ttl,lat_wgt_ttl_xpc,lat_wgt_ttl/lat_wgt_ttl_xpc,1.0-lat_wgt_ttl/lat_wgt_ttl_xpc);
+	nco_exit(EXIT_FAILURE);
+      } /* !imprecise */
+    } /* !nco_grd_lat_eqa, !nco_grd_lat_fv */ 
   } /* !flg_grd_2D */
 
   if(flg_grd_2D){

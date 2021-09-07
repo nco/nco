@@ -1,3 +1,9 @@
+2021-09-07  Charlie Zender  <zender@uci.edu>
+
+	* ncremap fix tolerance test that gave false negative for Gaussian grids
+	Test worked for eqa and fv grids, not Gaussian grids
+	Failed test was applied in nco_rgr_wgt(), nco_grd_mk(), and nco_grd_nfr()
+
 2021-09-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-alpha06 release procedure:
