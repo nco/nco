@@ -2662,6 +2662,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(mpf.src_grid_rank == 2 && mpf.dst_grid_rank == 2) nco_rgr_typ=nco_rgr_grd_2D_to_2D;
   assert(nco_rgr_typ != nco_rgr_grd_nil);
   /* Save typing later */
+  nco_bool flg_grd_in_1D_dat_in_2D=False;
   nco_bool flg_grd_in_1D=False;
   nco_bool flg_grd_in_2D=False;
   nco_bool flg_grd_out_1D=False;
@@ -3697,8 +3698,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
       if(dmn_idx == dmn_nbr_in){
 	dmn_id_col=NC_MIN_INT;
-	(void)fprintf(stdout,"%s: ERROR received a map-file constructed to process data on an unstructured (one-dimensional) grid, but %s (aka \"the regridder\") cannot find a dimension in the input data file (or, with ncremap, a possibly already subsetted intermediate file) that matches the size of the unstructured dimension in the supplied map-file = src_grd_dims[0] = n_a = %ld.\nHINT: Ensure at least one member of the variable extraction list has a spatial dimension of size = %ld\n",nco_prg_nm_get(),fnc_nm,col_nbr_in,col_nbr_in);
-	nco_exit(EXIT_FAILURE);
+	(void)fprintf(stdout,"%s: WARNING received a map-file constructed to process data on an unstructured (one-dimensional) grid, but %s (aka \"the regridder\") cannot find a dimension in the input data file (or, with ncremap, a possibly already subsetted intermediate file) that matches the size of the unstructured dimension in the supplied map-file = src_grd_dims[0] = n_a = %ld.\nHINT: Ensure at least one member of the variable extraction list has a spatial dimension of size = %ld\n",nco_prg_nm_get(),fnc_nm,col_nbr_in,col_nbr_in);
+	(void)fprintf(stdout,"%s: INFO %s reports a third (last-ditch, \"Hail Mary\") workaround is in progress, though not ready yet. If and when complete, this workaround will allow logically 1D mapfiles to regrid logically 2D datasets, so long as the product of the horizontal dimension sizes in the 2D input data file equals the map-file 1D dimension size.\n",nco_prg_nm_get(),fnc_nm);
+	/* Hail Mary algorithm: Use following 2D input grid block to identify horizontal coordinates and dimensions */
+	flg_grd_in_1D_dat_in_2D=True;
+	flg_grd_in_2D=True;
+	//nco_exit(EXIT_FAILURE);
       } /* !dmn_idx */
     } /* !col_nm_in */
   } /* !1D */
@@ -3738,7 +3743,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       nco_exit(EXIT_FAILURE);
     } /* !lat */
     rcd=nco_inq_dimlen(in_id,dmn_id_lat,&lat_nbr_in_dat);
-    if(lat_nbr_in != lat_nbr_in_dat){
+    if(lat_nbr_in != lat_nbr_in_dat && !flg_grd_in_1D_dat_in_2D){
       (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports mapfile and data file dimension sizes disagree: mapfile lat_nbr_in = %ld != %ld = lat_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,lat_nbr_in,lat_nbr_in_dat);
       nco_exit(EXIT_FAILURE);
     } /* !err */
@@ -3777,10 +3782,20 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       nco_exit(EXIT_FAILURE);
     } /* !lat */
     rcd=nco_inq_dimlen(in_id,dmn_id_lon,&lon_nbr_in_dat);
-    if(lon_nbr_in != lon_nbr_in_dat){
+    if(lon_nbr_in != lon_nbr_in_dat && !flg_grd_in_1D_dat_in_2D){
       (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports mapfile and data file dimension sizes disagree: mapfile lon_nbr_in = %ld != %ld = lon_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,lon_nbr_in,lon_nbr_in_dat);
       nco_exit(EXIT_FAILURE);
     } /* !err */
+    if(flg_grd_in_1D_dat_in_2D){
+      if(lon_nbr_in_dat*lat_nbr_in_dat == col_nbr_in){
+	(void)fprintf(stdout,"%s: INFO %s Hail Mary algorithm reports tentative success in that product of identifed horizontal dimension sizes in the 2D input data file equals the map-file 1D dimension size = %ld.\n",nco_prg_nm_get(),fnc_nm,col_nbr_in);
+	lat_nbr_in=lat_nbr_in_dat;
+	lon_nbr_in=lon_nbr_in_dat;
+      }else{ /* !col_nbr_in */
+	(void)fprintf(stdout,"%s: ERROR %s Hail Mary algorithm reports final failure since product of identifed horizontal dimension sizes in the 2D input data file does not equal the map-file 1D dimension size = %ld.\n",nco_prg_nm_get(),fnc_nm,col_nbr_in);
+	nco_exit(EXIT_FAILURE);
+      } /* !col_nbr_in */
+    } /* !flg_grd_in_1D_dat_in_2D */
   } /* !2D */
     
   /* Do not extract grid variables (that are also extensive variables) like lon, lat, area, and masks
