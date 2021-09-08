@@ -1,5 +1,7 @@
 2021-09-08  Charlie Zender  <zender@uci.edu>
 
+	* ncremap nco_ntp_vrt() use NC_FILL_FLOAT/DOUBLE if _FillValue is not explicitly defined
+
 	* ncremap nco_rgr_wgt() implement Hail Mary algorithm to allow logically 1D mapfiles to regrid logically 2D datasets
 
 2021-09-07  Charlie Zender  <zender@uci.edu>

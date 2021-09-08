@@ -1675,8 +1675,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   char *att_nm_fll_val=strdup("_FillValue");
   int flg_pck; /* [flg] Variable is packed on disk  */
   nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
-  float mss_val_flt;
   double mss_val_dbl;
+  double mss_val_cmp_dbl; /* Missing value for comparison to double precision values */
+  float mss_val_flt;
+  float mss_val_cmp_flt; /* Missing value for comparison to single precision values */
   if(flg_add_msv_att){
     aed_mtd_fll_val.att_nm=att_nm_fll_val;
     aed_mtd_fll_val.mode=aed_create;
@@ -1914,15 +1916,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 # endif /* 900 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_cmp_dbl,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_cmp_dbl,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 # else /* !old g++ */
 #  if defined(GXX_WITH_OPENMP5_GPU_SUPPORT) && 0
 #   pragma omp target teams distribute parallel for
 #  else
-#   pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
+#   pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_cmp_dbl,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 #  endif /* !GCC > 9.0 */
 # endif /* !GCC < 4.9 */
 #endif /* !__INTEL_COMPILER */
@@ -1983,7 +1985,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
 	  /* Missing value setup */
 	  has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
-	  if(!has_mss_val) mss_val_dbl=NC_FILL_DOUBLE;
+	  if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
 	  
 	  if(has_ilev){
 	    /* Interpolate current variable from input interface pressure grid to output interface pressure grid */
@@ -2141,7 +2143,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  dat_out_mnt[out_idx]=0.0;
 		  break;
 		case nco_xtr_fll_msv:
-		  dat_out_mnt[out_idx]=mss_val_dbl;
+		  dat_out_mnt[out_idx]=mss_val_cmp_dbl;
 		  break;
 		case nco_xtr_fll_ngh:
 		  dat_out_mnt[out_idx]=dat_in_mnt[0];
@@ -2196,7 +2198,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  dat_out_mnt[out_idx]=0.0;
 		  break;
 		case nco_xtr_fll_msv:
-		  dat_out_mnt[out_idx]=mss_val_dbl;
+		  dat_out_mnt[out_idx]=mss_val_cmp_dbl;
 		  break;
 		case nco_xtr_fll_ngh:
 		  dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1];
@@ -2279,14 +2281,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	       Otherwise implicit type conversion will truncate (rather than round) output values
 	       This is critical for masks where rounding errors produce near integer values (e.g., 0.999...)
 	       that could then be truncated to zero by implicit conversion instead of rounded up to 1. */
-	    if(has_mss_val){
-	      for(idx_out=0;idx_out<var_sz_out;idx_out++)
-		if(var_val_dbl_out[idx_out] != mss_val_dbl)
-		  var_val_dbl_out[idx_out]=rint(var_val_dbl_out[idx_out]);
-	    }else{
-	      for(idx_out=0;idx_out<var_sz_out;idx_out++)
+	    for(idx_out=0;idx_out<var_sz_out;idx_out++)
+	      if(var_val_dbl_out[idx_out] != mss_val_cmp_dbl)
 		var_val_dbl_out[idx_out]=rint(var_val_dbl_out[idx_out]);
-	    } /* !has_mss_val */
 	  } /* !nco_typ_ntg() */
 
 #pragma omp critical
