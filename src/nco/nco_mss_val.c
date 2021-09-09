@@ -48,7 +48,7 @@ nco_mss_val_mk /* [fnc] Return default missing value for type type */
   
   return mss_val;
 
-} /* end nco_mss_val_mk() */
+} /* !nco_mss_val_mk() */
   
 val_unn /* O [sct] Default missing value for type type */
 nco_mss_val_dfl_get /* [fnc] Return default missing value for type type */

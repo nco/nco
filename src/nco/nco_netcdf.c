@@ -3101,9 +3101,12 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
     (void)fprintf(stdout,"WARNING: %s received NC_EGLOBAL error writing attribute \"%s\" to metadata for group \"%s\". netCDF 4.5.0-development forbids writing the _FillValue attribute to global or group metadata, though earlier versions allow it. Proceeding normally without writing %s attribute...\n",fnc_nm,att_nm,grp_nm,att_nm);
     rcd=NC_NOERR;
   } /* !rcd */
+  if(rcd == NC_EBADNAME){
+    (void)fprintf(stdout,"ERROR: %s reports attribute name \"%s\" triggers contains illegal characters.\n",fnc_nm,att_nm);
+  } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att()");
   return rcd;
-} /* !nco_put_att */
+} /* !nco_put_att() */
 
 int
 nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * const vp,const nc_type att_typ)

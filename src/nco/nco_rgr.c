@@ -1678,7 +1678,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   double mss_val_dbl;
   double mss_val_cmp_dbl; /* Missing value for comparison to double precision values */
   float mss_val_flt;
-  float mss_val_cmp_flt; /* Missing value for comparison to single precision values */
   if(flg_add_msv_att){
     aed_mtd_fll_val.att_nm=att_nm_fll_val;
     aed_mtd_fll_val.mode=aed_create;
@@ -3696,7 +3695,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       if(dmn_idx == dmn_nbr_in){
 	dmn_id_col=NC_MIN_INT;
 	(void)fprintf(stdout,"%s: WARNING received a map-file constructed to process data on an unstructured (one-dimensional) grid, but %s (aka \"the regridder\") cannot find a dimension in the input data file (or, with ncremap, a possibly already subsetted intermediate file) that matches the size of the unstructured dimension in the supplied map-file = src_grd_dims[0] = n_a = %ld.\nHINT: Ensure at least one member of the variable extraction list has a spatial dimension of size = %ld\n",nco_prg_nm_get(),fnc_nm,col_nbr_in,col_nbr_in);
-	(void)fprintf(stdout,"%s: INFO %s reports a third (last-ditch, \"Hail Mary\") workaround is in progress, though not ready yet. If and when complete, this workaround will allow logically 1D mapfiles to regrid logically 2D datasets, so long as the product of the horizontal dimension sizes in the 2D input data file equals the map-file 1D dimension size.\n",nco_prg_nm_get(),fnc_nm);
+	(void)fprintf(stdout,"%s: INFO %s reports a third, last-ditch (aka \"Hail Mary\") workaround may work. The Hail-Mary allows logically 1D map-files to regrid logically 2D datasets, so long as the product of the horizontal dimension sizes in the 2D input data file equals the map-file 1D dimension size.\n",nco_prg_nm_get(),fnc_nm);
 	/* Hail Mary algorithm: Use following 2D input grid block to identify horizontal coordinates and dimensions */
 	flg_grd_in_1D_dat_in_2D=True;
 	flg_grd_in_2D=True;
@@ -4276,6 +4275,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   int flg_pck; /* [flg] Variable is packed on disk  */
   nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
   double mss_val_dbl;
+  double mss_val_cmp_dbl; /* Missing value for comparison to double precision values */
   /* Define regridded and copied variables in output file */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv_tbl->lst[idx_tbl].flg_mrv=True;
@@ -4786,6 +4786,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     } /* !var_sz_in */
     /* Missing value setup (NB: ELM landfrac has _FillValue and is _FillValue where masked */
     has_mss_val=nco_mss_val_get_dbl(sgs_id,var_id_in,&mss_val_dbl);
+    if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
     sgs_frc_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() sgs_frc_in value buffer");
     rcd=nco_get_vara(sgs_id,var_id_in,dmn_srt,dmn_cnt_in,sgs_frc_in,var_typ_rgr);
 
@@ -4803,14 +4804,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
        20190910: MPAS-Seaice datasets have no mask, and sgs_frc_in (timeMonthly_avg_iceAreaCell) is never (ncatted-appended) _FillValue (-9.99999979021477e+33) and is usually zero because it is time-mean area-fraction of sea ice which only exists in polar regions. MPAS-Seaice sgs_frc_out is zero in all gridcells without sea-ice.
        Regardless of input source, following blocks guarantee that sgs_frc_out is defined everywhere, is never a missing value (sgs_frc_out is zero where sgs_frc_in may have been _FillValue), and is always safe to multiply and normalize by sgs_frc_out in main regridding loop */
     for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++) sgs_frc_out[dst_idx]=0.0;
-    if(!has_mss_val)
-      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
-	sgs_frc_out[row_dst_adr[lnk_idx]]+=sgs_frc_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
-
-    if(has_mss_val)
-      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
-	if((var_val_crr=sgs_frc_in[col_src_adr[lnk_idx]]) != mss_val_dbl)
-	  sgs_frc_out[row_dst_adr[lnk_idx]]+=var_val_crr*wgt_raw[lnk_idx];
+    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+      if((var_val_crr=sgs_frc_in[col_src_adr[lnk_idx]]) != mss_val_cmp_dbl)
+	sgs_frc_out[row_dst_adr[lnk_idx]]+=var_val_crr*wgt_raw[lnk_idx];
 
     /* Sanity check sgs_frc_out */
     if(nco_dbg_lvl_get() >= nco_dbg_fl){
@@ -4859,15 +4855,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 # endif /* 900 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 # else /* !old g++ */
 #  if defined(GXX_WITH_OPENMP5_GPU_SUPPORT) && 0
-#   pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#   pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #  else
-#   pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#   pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #  endif /* !GCC >= 9.0 */
 # endif /* !GCC < 4.9 */
 #endif /* !__INTEL_COMPILER */
@@ -4928,11 +4924,54 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	lvl_nbr=1;
 	/* Simple prescription of lvl_nbr works when horizontal dimension(s) is/are MRV */
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt_out[dmn_idx];
+
+	/* Determining whether an individual field _uses_ missing values is important because
+	   memory requirements of next four malloc's (i.e., exclusive of wgt_raw) can sum to 
+	   ~7*sizeof(uncompressed var) for NC_FLOAT and ~3.5*sizeof(uncompressed var) for NC_DOUBLE.
+	   Traditionally has_mss_val answers "does this variable _have_ and explicit missing value?"
+	   As of 20210909, we expand the meaning of has_mss_val, though only in nco_rgr_wgt() 
+	   Now has_mss_val means does the variable use the explicitly defined missing value, or,
+	   failing that, does it use the implicitly defined missing value?
+	   Only variables that _use_ a missing value need tally and wgt_vld_out arrays */
+	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
+	/* Obtain input variable */
+	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
+
 	/* Missing value setup */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
-
-	/* Memory requirements of next four malloc's (i.e., exclusive of wgt_raw) sum to ~7*sizeof(uncompressed var) for NC_FLOAT and ~3.5*sizeof(uncompressed var) for NC_DOUBLE */
-	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
+	/* This works for explicitly defined _FillValue attributes for all input types */
+	mss_val_cmp_dbl=mss_val_dbl;
+#if 0	
+	/* 20210909: New missing value treatment
+	   If missing value is not explicitly declared, assume default missing value */
+	if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
+	/* Override float/double value with appropriate default missing value for integers */
+	if(!has_mss_val){
+	  switch(var_typ_in){
+	  case NC_BYTE: mss_val_cmp_dbl=NC_FILL_BYTE; break;
+	  case NC_CHAR: mss_val_cmp_dbl=NC_FILL_CHAR; break;
+	  case NC_SHORT: mss_val_cmp_dbl=NC_FILL_SHORT; break;
+	  case NC_INT: mss_val_cmp_dbl=NC_FILL_INT; break;
+	  case NC_FLOAT: mss_val_cmp_dbl=NC_FILL_FLOAT; break;
+	  case NC_DOUBLE: mss_val_cmp_dbl=NC_FILL_DOUBLE; break;
+	  case NC_UBYTE: mss_val_cmp_dbl=NC_FILL_UBYTE; break;
+	  case NC_USHORT: mss_val_cmp_dbl=NC_FILL_USHORT; break;
+	  case NC_UINT: mss_val_cmp_dbl=NC_FILL_UINT; break;
+	  case NC_INT64: mss_val_cmp_dbl=NC_FILL_INT64; break;
+	  case NC_UINT64: mss_val_cmp_dbl=NC_FILL_UINT64; break;
+	  case NC_STRING:
+	  default: nco_dfl_case_nc_type_err(); break;
+	  } /* !var_typ_in */
+	} /* !has_mss_val */
+	/* Re-initialize Boolean to True and override with False if variable _uses_ missing values */
+	has_mss_val=True;
+	for(idx_in=0;idx_in<var_sz_in;idx_in++){
+	  if(var_val_dbl_in[idx_in] == mss_val_cmp_dbl) break;
+	} /* !idx_in */
+	/* If neither implicit nor explicit missing value is present, treat all values as valid */
+	if(idx_in == var_sz_in) has_mss_val=False;
+#endif /* !0 */
+	
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
 	if(has_mss_val) tally=(int *)nco_malloc_dbg(var_sz_out*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() tally buffer");
 	if(has_mss_val && flg_rnr) wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output renormalization weight buffer");
@@ -4942,9 +4981,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	if(has_mss_val) (void)memset(tally,0,var_sz_out*nco_typ_lng(NC_INT));
 	if(wgt_vld_out) (void)memset(wgt_vld_out,0,var_sz_out*nco_typ_lng(var_typ_rgr));
 	      
-	/* Obtain input variable */
-	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
-	
 	/* 20150914: Intensive variables require normalization, extensive do not
 	   Intensive variables (temperature, wind speed, mixing ratio) do not depend on gridcell boundaries
 	   Extensive variables (population, counts, numbers of things) depend on gridcell boundaries
@@ -5205,7 +5241,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	if(flg_add_fll && !has_mss_val){
 	  /* 20210604: Initialize fields without _FillValue in input file to default missing value in unmapped destination cells
 	     Otherwise empty destination cells will be zero (not _FillValue) in output file
-	     Fields with input _FillValue are already _FillValue in output where tally is non-zero */
+	     Fields with input _FillValue are already _FillValue in output where tally is zero */
 	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 	    if(frc_out[dst_idx] == 0.0){
 	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
