@@ -4932,8 +4932,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	   As of 20210909, we expand the meaning of has_mss_val, though only in nco_rgr_wgt() 
 	   Now has_mss_val means does the variable use the explicitly defined missing value, or,
 	   failing that, does it use the implicitly defined missing value?
-	   Only variables that _use_ a missing value need tally and wgt_vld_out arrays */
+	   Only variables that _use_ a missing value need tally and wgt_vld_out arrays
+	   mss_val_dbl is what nco_mss_val_get_dbl() returns---its meaning has not changed
+	   However, it is no longer intended to be used
+	   Instead we create mss_val_cmp_dbl, a more general value for comparison and assignment */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
+	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
 	/* Obtain input variable */
 	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
 
@@ -4941,7 +4945,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 	/* This works for explicitly defined _FillValue attributes for all input types */
 	mss_val_cmp_dbl=mss_val_dbl;
-#if 0	
+
+#if 0
 	/* 20210909: New missing value treatment
 	   If missing value is not explicitly declared, assume default missing value */
 	if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
@@ -4963,6 +4968,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* !var_typ_in */
 	} /* !has_mss_val */
+
 	/* Re-initialize Boolean to True and override with False if variable _uses_ missing values */
 	has_mss_val=True;
 	for(idx_in=0;idx_in<var_sz_in;idx_in++){
@@ -4971,8 +4977,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* If neither implicit nor explicit missing value is present, treat all values as valid */
 	if(idx_in == var_sz_in) has_mss_val=False;
 #endif /* !0 */
-	
-	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
+
+	/* Memory allocation that depends on _FillValue and input variable contents */
 	if(has_mss_val) tally=(int *)nco_malloc_dbg(var_sz_out*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() tally buffer");
 	if(has_mss_val && flg_rnr) wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output renormalization weight buffer");
 
