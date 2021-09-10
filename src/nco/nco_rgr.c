@@ -4949,11 +4949,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	   If missing value is not explicitly declared, use default missing value */
 	if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
 
-#if 0
 	/* 20210909: New missing value treatment
 	/* Override float/double value with appropriate default missing value for integers */
 	if(!has_mss_val){
-	  switch(var_typ_in){
+	  switch(var_typ_out){
 	  case NC_BYTE: mss_val_cmp_dbl=NC_FILL_BYTE; break;
 	  case NC_CHAR: mss_val_cmp_dbl=NC_FILL_CHAR; break;
 	  case NC_SHORT: mss_val_cmp_dbl=NC_FILL_SHORT; break;
@@ -4970,6 +4969,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  } /* !var_typ_in */
 	} /* !has_mss_val */
 
+#if 0
 	/* Re-initialize Boolean to True and override with False if variable _uses_ missing values */
 	has_mss_val=True;
 	for(idx_in=0;idx_in<var_sz_in;idx_in++){
