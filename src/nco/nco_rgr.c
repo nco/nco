@@ -4945,11 +4945,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 	/* This works for explicitly defined _FillValue attributes for all input types */
 	mss_val_cmp_dbl=mss_val_dbl;
+	/* NB: flg_msk_apl block, below, uses mss_val_cmp_dbl even when has_mss_val is False
+	   If missing value is not explicitly declared, use default missing value */
+	if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
 
 #if 0
 	/* 20210909: New missing value treatment
-	   If missing value is not explicitly declared, assume default missing value */
-	if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
 	/* Override float/double value with appropriate default missing value for integers */
 	if(!has_mss_val){
 	  switch(var_typ_in){
@@ -5045,11 +5046,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		idx_in=col_src_adr[lnk_idx];
 		idx_out=row_dst_adr[lnk_idx];
-		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
 		  var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
 		  if(wgt_vld_out) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		  tally[idx_out]++;
-		} /* !mss_val_dbl */
+		} /* !mss_val_cmp_dbl */
 	      } /* !lnk_idx */
 	    }else{ /* lvl_nbr > 1 */
 	      val_in_fst=0L;
@@ -5059,11 +5060,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		  idx_in=col_src_adr[lnk_idx]+val_in_fst;
 		  idx_out=row_dst_adr[lnk_idx]+val_out_fst;
-		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
 		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
 		    if(wgt_vld_out) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		    tally[idx_out]++;
-		  } /* !mss_val_dbl */
+		  } /* !mss_val_cmp_dbl */
 		} /* !lnk_idx */
 		val_in_fst+=grd_sz_in;
 		val_out_fst+=grd_sz_out;
@@ -5132,9 +5133,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	       However, renormalization is equivalent to extrapolating valid data to missing regions
 	       Hence the input and output integrals are unequal and the regridding is not conservative */
 	    
-	    /* In fields with missing value, destination cells with no accumulated weight are missing value */
+	    /* In fields with missing values, destination cells with no accumulated weight are missing value */
 	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-	      if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
+	      if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;
 	    
 	    if(flg_rnr){
 	      //	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG renormalization for %s uses flg_rnr block\n",nco_prg_nm_get(),var_nm);
@@ -5145,7 +5146,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      }else{
 		/* Renormalize cells with threshold by valid accumulated weight if weight exceeds threshold */
 		for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-		  if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
+		  if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}
 	      } /* !wgt_vld_thr */
 	    } /* !flg_rnr */
 	    
@@ -5195,14 +5196,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		  idx_in=col_src_adr[lnk_idx];
 		  idx_out=row_dst_adr[lnk_idx];
-		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
 		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
 		    tally[idx_out]++;
-		  } /* !mss_val_dbl */
+		  } /* !mss_val_cmp_dbl */
 		} /* !lnk_idx */
 		/* NB: Normalization clause is complex to support sgs_frc_out from both ELM and MPAS-Seaice */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		  if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_dbl;}else{if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];}
+		  if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];}
 	      }else{ /* lvl_nbr > 1 */
 		/* SGS-regrid multi-level fields with missing values */
 		val_in_fst=0L;
@@ -5211,15 +5212,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		    idx_in=col_src_adr[lnk_idx]+val_in_fst;
 		    idx_out=row_dst_adr[lnk_idx]+val_out_fst;
-		    if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		    if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
 		      var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[col_src_adr[lnk_idx]];
 		      tally[idx_out]++;
-		    } /* !mss_val_dbl */
+		    } /* !mss_val_cmp_dbl */
 		  } /* !lnk_idx */
 		  /* Normalize current level values */
 		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		    idx_out=dst_idx+val_out_fst;
-		    if(!tally[idx_out]){var_val_dbl_out[idx_out]=mss_val_dbl;}else{if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[idx_out]/=sgs_frc_out[dst_idx];}
+		    if(!tally[idx_out]){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[idx_out]/=sgs_frc_out[dst_idx];}
 		  } /* dst_idx */
 		  val_in_fst+=grd_sz_in;
 		  val_out_fst+=grd_sz_out;
@@ -5236,7 +5237,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	     that could then be truncated to zero by implicit conversion instead of rounded up to 1. */
 	  if(has_mss_val){
 	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-	      if(var_val_dbl_out[dst_idx] != mss_val_dbl)
+	      if(var_val_dbl_out[dst_idx] != mss_val_cmp_dbl)
 		var_val_dbl_out[dst_idx]=rint(var_val_dbl_out[dst_idx]);
 	  }else{
 	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
@@ -5263,7 +5264,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	     NB: This is separate, and presumably independent, from above flg_add_fll loop
 	     Fields with flg_msk_apl will (harmlessly?) go through both loops */
 	  double mss_val_msk; /* [frc] Missing value to apply where mask is false */
-	  if(has_mss_val) mss_val_msk=mss_val_dbl; else mss_val_msk=NC_FILL_DOUBLE;
+	  //if(has_mss_val) mss_val_msk=mss_val_dbl; else mss_val_msk=NC_FILL_DOUBLE;
+	  mss_val_msk=mss_val_cmp_dbl; /* [frc] Missing value to apply where mask is false */
 	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 	    if(msk_out[dst_idx] == 0){
 	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
