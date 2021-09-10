@@ -4941,15 +4941,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Obtain input variable */
 	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
 
-	/* Missing value setup */
+	/* 20210909: New missing value treatment */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
-	/* This works for explicitly defined _FillValue attributes for all input types */
-	mss_val_cmp_dbl=mss_val_dbl;
-	/* NB: flg_msk_apl block, below, uses mss_val_cmp_dbl even when has_mss_val is False
+	/* NB: mss_val_cmp_dbl must be defined since it is now always used by regridder (even when has_mss_val is False)
+	   For instance flg_msk_apl block, below, uses mss_val_cmp_dbl for masked fields
+	   And test for _usage_ of missing values, below, necessarily compares to mss_val_cmp_dbl
 	   If missing value is not explicitly declared, use default missing value */
 	if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
 
-	/* 20210909: New missing value treatment
 	/* Override float/double value with appropriate default missing value for integers */
 	if(!has_mss_val){
 	  switch(var_typ_out){
@@ -4973,7 +4972,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  } /* !var_typ_in */
 	} /* !has_mss_val */
 
-#if 0
+	//#if 0
 	/* Re-initialize Boolean to True and override with False if variable _uses_ missing values */
 	has_mss_val=True;
 	for(idx_in=0;idx_in<var_sz_in;idx_in++){
@@ -4981,7 +4980,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	} /* !idx_in */
 	/* If neither implicit nor explicit missing value is present, treat all values as valid */
 	if(idx_in == var_sz_in) has_mss_val=False;
-#endif /* !0 */
+	//#endif /* !0 */
 
 	/* Memory allocation that depends on _FillValue and input variable contents */
 	if(has_mss_val) tally=(int *)nco_malloc_dbg(var_sz_out*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() tally buffer");
