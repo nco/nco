@@ -1,5 +1,11 @@
 2021-09-09  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.2-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha06: Foo Fighters';git push
+	git tag -a 5.0.2-alpha06 -m 'ncclimo: tpd nfr fix; ncclimo/ncremap: mem_mb=0, srun not salloc; ncremap: rgr/ntp	mss_val_cmp_dbl, has_mss_val if used, ncra: udu rcd;';git push --tags
+
+	* Latest snapshot sort of works on LANL ISMIP datasets
+
 	* New missing value treatment part III: Define has_mss_val only when missing values, whether explicit or implicit, actually appear in input variable data
 
 	* New missing value treatment part II: Compare and assign to mss_val_cmp_dbl for floats & ints
@@ -19,10 +25,6 @@
 	Failed test was applied in nco_rgr_wgt(), nco_grd_mk(), and nco_grd_nfr()
 
 2021-09-02  Charlie Zender  <zender@uci.edu>
-
-	* NCO 5.0.2-alpha06 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha06: Foo Fighters';git push
-	git tag -a 5.0.2-alpha06 -m 'ncclimo: tpd nfr fix; ncclimo/ncremap: mem_mb=0, srun not salloc; ncra: udu rcd;';git push --tags
 
 	* ncclimo fix tpd_out inferral to work with single time-step input files
 
