@@ -4962,6 +4962,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  case NC_UBYTE: mss_val_cmp_dbl=NC_FILL_UBYTE; break;
 	  case NC_USHORT: mss_val_cmp_dbl=NC_FILL_USHORT; break;
 	  case NC_UINT: mss_val_cmp_dbl=NC_FILL_UINT; break;
+	    /* 20210909: Implicit type conversion generates warnings:
+	       'long long' to 'double' changes value from -9223372036854775806 to -9223372036854775808 
+	       'unsigned long long' to 'double' changes value from 18446744073709551614 to 18446744073709551616 
+	       Warnings can be fixed with -Wimplicit-const-int-float-conversion */
 	  case NC_INT64: mss_val_cmp_dbl=NC_FILL_INT64; break;
 	  case NC_UINT64: mss_val_cmp_dbl=NC_FILL_UINT64; break;
 	  case NC_STRING:
