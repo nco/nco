@@ -679,6 +679,9 @@ I18N_SHARE
 ENABLE_MPI_FALSE
 ENABLE_MPI_TRUE
 HAVE_ANTLR
+ANTLR_LIB_FALSE
+ANTLR_LIB_TRUE
+ANTLR_LIB
 ANTLR_ROOT
 NCO_NEED_GETOPT_LONG_FALSE
 NCO_NEED_GETOPT_LONG_TRUE
@@ -19907,6 +19910,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
+echo "20210911: before ANTLR section LDFLAGS=${LDFLAGS}, ANTLR_LIB=${ANTLR_LIB}"
 if test "${enable_ncoxx}" != 'no'; then
     if test "${ANTLR_ROOT}"; then
 	if test -z "${ANTLR_BIN}"; then
@@ -19917,6 +19921,7 @@ if test "${enable_ncoxx}" != 'no'; then
 	fi
 	if test -z "${ANTLR_LIB}"; then
 	    ANTLR_LIB="${ANTLR_ROOT}/lib"
+
 	fi
     fi
     if test -d "${ANTLR_BIN}"; then
@@ -19930,8 +19935,18 @@ if test "${enable_ncoxx}" != 'no'; then
     if test -d "${ANTLR_LIB}"; then
 # Add ${ANTLR_LIB}, if present, to library search path
 	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
+
     fi
 fi
+ if test -d "${ANTLR_LIB}"; then
+  ANTLR_LIB_TRUE=
+  ANTLR_LIB_FALSE='#'
+else
+  ANTLR_LIB_TRUE='#'
+  ANTLR_LIB_FALSE=
+fi
+
+echo "20210911: after ANTLR section LDFLAGS=${LDFLAGS}, ANTLR_LIB=${ANTLR_LIB}"
 
 # AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
 # Check for antlr executable installed as runantlr (runantlr ~= java antlr.Tool)
@@ -21816,6 +21831,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${NCO_NEED_GETOPT_LONG_TRUE}" && test -z "${NCO_NEED_GETOPT_LONG_FALSE}"; then
   as_fn_error $? "conditional \"NCO_NEED_GETOPT_LONG\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ANTLR_LIB_TRUE}" && test -z "${ANTLR_LIB_FALSE}"; then
+  as_fn_error $? "conditional \"ANTLR_LIB\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${ENABLE_MPI_TRUE}" && test -z "${ENABLE_MPI_FALSE}"; then

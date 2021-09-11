@@ -42,7 +42,11 @@ nco_gsl.cc
 
 # 20150108 Be sure that netCDF in /usr/local takes precedence over GSL libraries in /usr
 # AKA be sure GSL in /usr does not cause ncap2 linker to search /usr before /usr/local
+if ANTLR_LIB
+NCO_AND_ANTLR_STUFF = ../nco/libnco.la -L@ANTLR_LIB@ -lantlr
+else
 NCO_AND_ANTLR_STUFF = ../nco/libnco.la -lantlr
+endif
 #ncap2_LDFLAGS = ../nco/libnco.la -lantlr
 
 # fxm: 20080515 Takeshi Enomoto reports that MACOS needs

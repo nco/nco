@@ -197,6 +197,7 @@ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+ANTLR_LIB = @ANTLR_LIB@
 ANTLR_ROOT = @ANTLR_ROOT@
 AR = @AR@
 AUTOCONF = @AUTOCONF@
@@ -372,13 +373,14 @@ ncoParser.cpp \
 ncoTree.cpp \
 nco_gsl.cc
 
+@ANTLR_LIB_FALSE@NCO_AND_ANTLR_STUFF = ../nco/libnco.la -lantlr
 
 # 20190414 ncap2 on MacOS relink when libnco.a changes
 #ncap2_LDFLAGS = ../nco/libnco.la
 
 # 20150108 Be sure that netCDF in /usr/local takes precedence over GSL libraries in /usr
 # AKA be sure GSL in /usr does not cause ncap2 linker to search /usr before /usr/local
-NCO_AND_ANTLR_STUFF = ../nco/libnco.la -lantlr
+@ANTLR_LIB_TRUE@NCO_AND_ANTLR_STUFF = ../nco/libnco.la -L@ANTLR_LIB@ -lantlr
 #ncap2_LDFLAGS = ../nco/libnco.la -lantlr
 
 # fxm: 20080515 Takeshi Enomoto reports that MACOS needs

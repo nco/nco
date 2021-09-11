@@ -1,10 +1,20 @@
+2021-09-10  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.2-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.2-beta01: mem_mb=0, mss_val_cmp_dbl, has_mss_val, udu rcd, .h5m cnv, var_lst rx, ppq refactor, intel omp';git push
+	git tag -a 5.0.2-beta01 -m 'fxm';git push --tags
+
+	* NCO 5.0.2-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha07: Swabby';git push
+	git tag -a 5.0.2-alpha07 -m 'fxm';git push --tags
+
 2021-09-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha06: Foo Fighters';git push
 	git tag -a 5.0.2-alpha06 -m 'ncclimo: tpd nfr fix; ncclimo/ncremap: mem_mb=0, srun not salloc; ncremap: rgr/ntp	mss_val_cmp_dbl, has_mss_val if used, ncra: udu rcd;';git push --tags
 
-	* Latest snapshot sort of works on LANL ISMIP datasets
+	* Latest snapshot works on LANL ISMIP datasets
 
 	* New missing value treatment part III: Define has_mss_val only when missing values, whether explicit or implicit, actually appear in input variable data
 

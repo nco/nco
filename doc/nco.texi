@@ -17899,24 +17899,29 @@ For example, use an intermediate file named @file{options.txt}
 to store one option per line thusly
 @example
 @verbatim
-zender@nco: cat ~/options.txt
+cat > opt.txt << EOF
 -a institution,global,m,c,\"Super Cool University\"
 -a source,global,c,c,\"My Awesome Radar\"
 -a contributors,global,c,c,\"Enrico Fermi, Galileo Galilei, Leonardo Da Vinci\"
 ...
+EOF
 @end verbatim
 @end example
 The backslashes preserve the whitespace in the individual attributes
 for correct parsing by the shell.
-Invoke @command{ncatted} with these options, simultaneously,
-using @command{xargs}:
+Simply substituting the expansion of this file through @command{xargs}
+directly on the command line fails to work (why?).
+However, a simple workaround is to use @command{xargs} to construct
+the command string, and execute that string with @command{eval}:
 @example
 @verbatim
-ncatted -O -h $(cat ~/options.txt | xargs -x -d '\n') in.nc out.nc
+opt=$(cat opt.txt | xargs)
+cmd="ncatted -O ${opt} in.nc out.nc"
+eval $cmd
 @end verbatim
 @end example
-This procedure can by modified to employ complex option pre-processing  
-using other tools such as Awk, Perl, or Python.
+This procedure can by modified to employ more complex option
+pre-processing using other tools such as Awk, Perl, or Python.
 
 @page
 @html
@@ -19028,7 +19033,7 @@ See @ref{CF Conventions} for a detailed description.
 As of @acronym{NCO} version 4.9.1 (released December, 2019), this switch
 (which takes no argument) tells the splitter to output horizontally
 spatially averaged timeseries files instead of raw, native-grid
-timeseries.  
+timeseries.
 This switch only has effect in timeseries splitting mode.
 This is useful, for example, to quickly diagnose the behavior of ongoing
 model simulations prior to a full-blown analysis. 
