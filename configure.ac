@@ -465,18 +465,6 @@ fi
 AC_LANG_PUSH([C++])
 echo "20210911: before ANTLR section LDFLAGS=${LDFLAGS}, ANTLR_LIB=${ANTLR_LIB}"
 if test "${enable_ncoxx}" != 'no'; then
-    if test "${ANTLR_ROOT}"; then
-	if test -z "${ANTLR_BIN}"; then
-	    ANTLR_BIN="${ANTLR_ROOT}/bin"
-	fi
-	if test -z "${ANTLR_INC}"; then
-	    ANTLR_INC="${ANTLR_ROOT}/include"
-	fi
-	if test -z "${ANTLR_LIB}"; then
-	    ANTLR_LIB="${ANTLR_ROOT}/lib"
-	    AC_SUBST(ANTLR_LIB)
-	fi
-    fi
     if test -d "${ANTLR_BIN}"; then
 # Add ${ANTLR_BIN}, if present, to binary search path
 	PATH="${PATH}:${ANTLR_BIN}"
@@ -489,6 +477,18 @@ if test "${enable_ncoxx}" != 'no'; then
 # Add ${ANTLR_LIB}, if present, to library search path
 	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
 	AC_SUBST(ANTLR_LIB)
+    fi
+    if test "${ANTLR_ROOT}"; then
+	if test -z "${ANTLR_BIN}"; then
+	    ANTLR_BIN="${ANTLR_ROOT}/bin"
+	fi
+	if test -z "${ANTLR_INC}"; then
+	    ANTLR_INC="${ANTLR_ROOT}/include"
+	fi
+	if test -z "${ANTLR_LIB}"; then
+	    ANTLR_LIB="${ANTLR_ROOT}/lib"
+	    AC_SUBST(ANTLR_LIB)
+	fi
     fi
 fi
 AM_CONDITIONAL(ANTLR_LIB,[test -d "${ANTLR_LIB}"])
