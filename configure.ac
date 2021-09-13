@@ -668,12 +668,10 @@ echo "########################################"
 echo "#     Testing for CCR support          #"
 echo "########################################"
 # Begin CCR
-# If the env. variable HDF5_PLUGIN_PATH is set, or if
-# --with-hdf5-plugin-dir=<directory>, use it as the plugin
-# directory. This is necessary at the top level to provide the help
-# message and --with option. If used, the option will be passed to the
-# subdirs, and also handled by the configure in each filter
-# subdirectory.
+# If the environment variable HDF5_PLUGIN_PATH is set, or if
+# --with-hdf5-plugin-dir=<directory>, use it as the plugin directory.
+# This is necessary at the top level to provide the help message and --with option.
+# If used, the option will be passed to the subdirectories, and also handled by the configure in each filter subdirectory.
 AC_MSG_CHECKING([where to put HDF5 plugins])
 AC_ARG_WITH([hdf5-plugin-path],
             [AS_HELP_STRING([--with-hdf5-plugin-path=<directory>],
