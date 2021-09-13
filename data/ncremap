@@ -50,9 +50,9 @@
 # Insta-install:
 # scp ~/nco/data/ncremap zender1@acme1.llnl.gov:bin
 # scp ~/nco/data/ncremap andes.olcf.ornl.gov:bin_andes
-# scp ~/nco/data/ncremap blues.lcrc.anl.gov:bin
+# scp ~/nco/data/ncremap blues.lcrc.anl.gov:bin_blues
 # scp ~/nco/data/ncremap cheyenne.ucar.edu:bin
-# scp ~/nco/data/ncremap chrysalis.lcrc.anl.gov:bin
+# scp ~/nco/data/ncremap chrysalis.lcrc.anl.gov:bin_chrysalis
 # scp ~/nco/data/ncremap compy.pnl.gov:bin
 # scp ~/nco/data/ncremap cooley.alcf.anl.gov:bin
 # scp ~/nco/data/ncremap cori.nersc.gov:bin_cori

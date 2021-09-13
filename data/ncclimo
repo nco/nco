@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Purpose: Climatology script tailored to CESM'ish monthly input and E3SM output guidelines
-# Produces (and optionally regrids) climatological monthly means, seasonal means, annual mean
+# Produces (and optionally regrids) climatological monthly means, seasonal means, annual means, CMIP6-style timeseries, global-mean timeseries, diurnal cycles
 
 # Copyright (C) 2015--present Charlie Zender
 # This file is part of NCO, the netCDF Operators. NCO is free software.
@@ -39,16 +39,15 @@
 # Insta-install:
 # scp ~/nco/data/ncclimo zender1@acme1.llnl.gov:bin
 # scp ~/nco/data/ncclimo andes.olcf.ornl.gov:bin_andes
-# scp ~/nco/data/ncclimo blues.lcrc.anl.gov:bin
+# scp ~/nco/data/ncclimo blues.lcrc.anl.gov:bin_blues
 # scp ~/nco/data/ncclimo cheyenne.ucar.edu:bin
-# scp ~/nco/data/ncclimo chrysalis.lcrc.anl.gov:bin
+# scp ~/nco/data/ncclimo chrysalis.lcrc.anl.gov:bin_chrysalis
 # scp ~/nco/data/ncclimo compy.pnl.gov:bin
 # scp ~/nco/data/ncclimo cooley.alcf.anl.gov:bin
 # scp ~/nco/data/ncclimo cori.nersc.gov:bin_cori
 # scp ~/nco/data/ncclimo dust.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo e3sm.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo frazil.ess.uci.edu:bin
-# scp ~/nco/data/ncclimo rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo theta.alcf.anl.gov:bin_theta
 # scp dust.ess.uci.edu:bin/ncclimo ~/bin
