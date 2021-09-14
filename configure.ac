@@ -481,12 +481,15 @@ if test "${enable_ncoxx}" != 'no'; then
     if test "${ANTLR_ROOT}"; then
 	if test -z "${ANTLR_BIN}"; then
 	    ANTLR_BIN="${ANTLR_ROOT}/bin"
+	    PATH="${PATH}:${ANTLR_BIN}"
 	fi
 	if test -z "${ANTLR_INC}"; then
 	    ANTLR_INC="${ANTLR_ROOT}/include"
+	    CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
 	fi
 	if test -z "${ANTLR_LIB}"; then
 	    ANTLR_LIB="${ANTLR_ROOT}/lib"
+	    LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
 	    AC_SUBST(ANTLR_LIB)
 	fi
     fi
