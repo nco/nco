@@ -1222,6 +1222,19 @@ fi # !E3SMU_MPI
 if [ -n "${mpi_pfx_usr}" ]; then 
     mpi_pfx="${mpi_pfx_usr}"
 fi # !mpi_pfx_usr
+# If MPI will be used, adjust partition number to match or be a multiple of mpi_nbr
+if [ -n "${mpi_pfx}" ]; then 
+    if [ ${prt_nbr} -lt ${mpi_nbr} ]; then
+	[[ ${dbg_lvl} -ge 1 ]] && echo "${spt_nm}: INFO Increasing partition number from ${prt_nbr} to ${mpi_nbr}"
+	prt_nbr=${mpi_nbr}
+    fi # !prt_nbr
+    let prt_nbr_rmd=${prt_nbr}%${mpi_nbr}
+    if [ ${prt_nbr_rmd} -ne 0 ]; then
+	echo "${spt_nm}: ERROR Partition number prt_nbr=${prt_nbr} must be a multiple of the number of MPI tasks, mpi_nbr=${mpi_nbr}"
+	echo "${spt_nm}: HINT Set partition number with --prt_nbr=${mpi_nbr} unless otherwise warranted"
+	exit 1
+    fi # !prt_nbr_rmd
+fi # !mpi_pfx
 
 # ERWG requires special handling for version-specific options
 # 20210705: Avoid invoking ERWG to determine version unless actual algorithm requires ERWG

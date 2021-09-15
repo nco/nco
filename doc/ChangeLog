@@ -6,7 +6,9 @@
 
 	* NCO 5.0.2-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha07: Swabby';git push
-	git tag -a 5.0.2-alpha07 -m 'ncremap nsx_alg advfront, mpi_pfx;';git push --tags
+	git tag -a 5.0.2-alpha07 -m 'ncremap nsx_alg advfront, mpi_pfx, mpi_nbr%prt_nbr;';git push --tags
+
+	* ncremap ensure partition number is a multiple of mpi_nbr
 
 	* ncremap utilize mpi_pfx if user explicitly sets mpi_nbr or E3SMU MPI detected
 
