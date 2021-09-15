@@ -1156,18 +1156,18 @@ fi # !job_usr
 if [ -n "${fl_fmt}" ]; then
     if [ "${fl_fmt}" = '3' ] || [ "${fl_fmt}" = 'classic' ] || [ "${fl_fmt}" = 'netcdf3' ]; then
 	nco_fl_fmt='--fl_fmt=classic'
-    fi # !fl_fmt
-    if [ "${fl_fmt}" = '4' ] || [ "${fl_fmt}" = 'netcdf4' ] || [ "${fl_fmt}" = 'hdf5' ]; then
+    elif [ "${fl_fmt}" = '4' ] || [ "${fl_fmt}" = 'netcdf4' ] || [ "${fl_fmt}" = 'hdf5' ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4'
-    fi # !fl_fmt
-    if [ "${fl_fmt}" = '5' ] || [ "${fl_fmt}" = '64bit_data' ] || [ "${fl_fmt}" = 'cdf5' ]; then
+    elif [ "${fl_fmt}" = '5' ] || [ "${fl_fmt}" = '64bit_data' ] || [ "${fl_fmt}" = 'cdf5' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_data'
-    fi # !fl_fmt
-    if [ "${fl_fmt}" = '6' ] || [ "${fl_fmt}" = '64bit_offset' ] || [ "${fl_fmt}" = '64' ]; then
+    elif [ "${fl_fmt}" = '6' ] || [ "${fl_fmt}" = '64bit_offset' ] || [ "${fl_fmt}" = '64' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_offset'
-    fi # !fl_fmt
-    if [ "${fl_fmt}" = '7' ] || [ "${fl_fmt}" = 'netcdf4_classic' ]; then
+    elif [ "${fl_fmt}" = '7' ] || [ "${fl_fmt}" = 'netcdf4_classic' ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4_classic'
+    else
+	echo "${spt_nm}: ERROR User-supplied file-format specifier fl_fmt='${fl_fmt}' is invalid"
+	echo "${spt_nm}: HINT Valid format-specifiers include '3', '4', '5', '6', and '7'"
+	exit 1
     fi # !fl_fmt
     nco_opt="${nco_fl_fmt} ${nco_opt}"
 fi # !fl_fmt

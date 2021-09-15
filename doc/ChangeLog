@@ -1,12 +1,20 @@
-2021-09-14  Charlie Zender  <zender@uci.edu>
+2021-09-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.2-beta01: mem_mb=0, mss_val_cmp_dbl, has_mss_val, udu rcd, .h5m cnv, var_lst rx, ppq refactor, intel omp';git push
+	cd ~/nco;git commit -a -m 'Version 5.0.2-beta01: mem_mb=0, mss_val_cmp_dbl, has_mss_val, udu rcd, .h5m cnv, mbt, nsx_alg, var_lst rx, ppq refactor, intel omp';git push
 	git tag -a 5.0.2-beta01 -m 'fxm';git push --tags
 
 	* NCO 5.0.2-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha07: Swabby';git push
-	git tag -a 5.0.2-alpha07 -m 'fxm';git push --tags
+	git tag -a 5.0.2-alpha07 -m 'ncremap nsx_alg advfront, mpi_pfx;';git push --tags
+
+	* ncremap utilize mpi_pfx if user explicitly sets mpi_nbr or E3SMU MPI detected
+
+	* ncremap increase default mpi_nbr from 1 to 8
+
+2021-09-14  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add intersection algorithm option --nsx_alg for mbtempest
 
 	* configure.ac tinkering/testing with Antlr, prior to major rewrite
 

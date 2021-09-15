@@ -475,7 +475,7 @@ mbt_typ_map=5 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, 
 mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indicates unlimited RAM)
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
-mpi_nbr=1 # [sng] Number of tasks-per-node that MPI-enabled weight generators will request
+mpi_nbr=8 # [sng] Number of tasks-per-node that MPI-enabled weight generators will request (should be factor of prt_nbr)
 msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
 msh_fl='' # [sng] Mesh-file (for Tempest)
 msk_apl='No' # [flg] Apply msk_out to variables after regridding
@@ -487,7 +487,7 @@ mss_val='-9.99999979021476795361e+33' # [frc] Missing value for MPAS (ocean+seai
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-6 -t 1')
 nd_nbr=1 # [nbr] Number of nodes
 no_stg_grd='Yes' # [flg] Omit staggered grid variables
-se_np_nbr=4 # [nbr] Spectral Element polynomial order of discretization (for TempestRemap SE grids)
+nsx_alg='' # [enm] Intersection algorithm (mbtempest only)
 out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ="${par_srl}" # [sng] Parallelism type
@@ -495,13 +495,15 @@ pdq_flg='Yes' # [sng] Permute dimensions before regridding
 pdq_opt='' # [sng] ncpdq dimension permutation option
 ppc_prc='' # [nbr] Precision-preserving compression number of significant digits
 prc_typ='' # [sng] Procedure type
+prt_alg='zoltan' # [sng] MOAB-Tempest H5M partition algorithm
 prt_exe_mbt='mbpart' # [sng] MOAB-Tempest H5M partition executable
-prt_nbr=128 # [nbr] Partition number for mbpart
+prt_nbr=8 # [nbr] Partition number for mbpart (should be multiple of mpi_nbr)
 prs_stt='' # [sng] Preserved statistic ('integral' or 'mean')
 qea_flg='No' # [sng] Quasi-equal area mode for TempestRemap
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
 #rgr_opt='--rgr lat_dnm_nm=x --rgr lon_dmn_nm=y' # [sng] Regridding options for projection grid
 rnr_thr='' # [frc] Renormalization option
+se_np_nbr=4 # [nbr] Spectral Element polynomial order of discretization (for TempestRemap SE grids)
 sgs_frc='' # [sng] Sub-grid fraction variable
 sgs_msk='' # [sng] Sub-grid mask variable
 sgs_nrm='1.0' # [frc] Sub-grid normalization
@@ -603,6 +605,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--no_permute${fnt_nrm}  Do not permute dimensions before regridding [${fnt_tlc}no_prm, no_pdq, no_ncpdq${fnt_nrm}]"
     echo " ${fnt_bld}--no_stg_grd${fnt_nrm}  Omit staggered grid variables ('slat, slon, w_stag') [${fnt_tlc}no_stg_grd, no_stg, no_stagger, no_staggered_grid${fnt_nrm}]"
     echo " ${fnt_bld}--no_stdin${fnt_nrm} Do not check stdin for input file list [${fnt_tlc}no_stdin, no_inp_std, no_redirect, no_standard_input${fnt_nrm}]"
+    echo " ${fnt_bld}--nsx_alg${fnt_nrm}  Intersection algorithm used by mbtempest (default ${fnt_bld}kdtree${fnt_nrm}) [${fnt_tlc}nsx_alg, intersection_algorithm${fnt_nrm}] (advfront|kdtree)"
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}out_fl${fnt_nrm}   Output-file (regridded file) (empty copies Input filename) (default ${fnt_bld}${out_fl}${fnt_nrm}) [${fnt_tlc}out_fl, out_file, output_file${fnt_nrm}]"
     echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, pdq_typ, prm_typ, procedure${fnt_nrm}]"
@@ -771,8 +774,8 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       mem_mb=?* ) mem_mb="${LONG_OPTARG}" ;; # # Megabytes of RAM per srun job in Cori SLURM in MPI mode
 	       mlt_map | multimap | no_multimap | nomultimap ) mlt_map_flg='No' ;; # -M # Multi-map flag
 	       mlt_map=?* | multimap=?* | no_multimap=?* | nomultimap=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -M # Multi-map flag
-	       mpi_nbr=?* | mpi_number=?* | tsk_nbr=?* | task_number=?* ) mpi_nbr="${LONG_OPTARG}" ;; # # Number of tasks-per-node that MPI-enabled weight generators will request
-	       mpi_pfx=?* | mpi_prefix=?* | srun_cmd=?* | srun_command=?* ) mpi_usr="${LONG_OPTARG}" ;; # # Prefix for MPI-enabled weight generators
+	       mpi_nbr=?* | mpi_number=?* | tsk_nbr=?* | task_number=?* ) mpi_nbr_usr="${LONG_OPTARG}" ;; # # Number of tasks-per-node that MPI-enabled weight generators will request
+	       mpi_pfx=?* | mpi_prefix=?* | srun_cmd=?* | srun_command=?* ) mpi_pfx_usr="${LONG_OPTARG}" ;; # # Prefix for MPI-enabled weight generators
 	       msh_fl=?* | msh=?* | mesh=?* | mesh_file=?* ) msh_fl="${LONG_OPTARG}" ;; # # Mesh file
 	       msk_apl | mask_apply | msk_app ) msk_apl='Yes' ;; # # Apply msk_out to variables after regridding
 	       msk_apl=?* | mask_apply=?* | msk_app=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Apply msk_out to variables after regridding
@@ -789,6 +792,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       no_frm_trm=?* | no_frm=?* | no_formula_terms=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit formula_terms variables
 	       no_permute | no_prm | no_pdq | no_ncpdq ) pdq_flg='No' ;; # # Do not permute dimensions before regridding
 	       no_permute=?* | no_prm=?* | no_pdq=?* | no_ncpdq=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Do not permute dimensions before regridding
+	       nsx_alg=?* | intersection_algorithm=?* ) nsx_alg="${LONG_OPTARG}" ;; # # Intersection algorithm used by mbtempest
 	       drc_out=?* | out_drc=?* | dir_out=?* | out_dir=?* | output=?* ) drc_usr="${LONG_OPTARG}" ;; # -O # Output directory
 	       out_fl=?* | output_file=?* | out_file=?* ) out_fl="${LONG_OPTARG}" ;; # -o # Output file
 	       prc_typ=?* | pdq_typ=?* | prm_typ=?* | procedure=?* ) prc_typ="${LONG_OPTARG}" ;; # -P # Procedure type
@@ -1195,8 +1199,12 @@ else
     exit 1
 fi # !alg_typ
 
-# Default prefix for MPI-enabled weight generators in E3SM-Unified environments
-if [ -n "${E3SMU_MPI}" ] && [ "${E3SMU_MPI}" = 'SYSTEM' ] ; then
+if [ -n "${mpi_nbr_usr}" ]; then
+    mpi_nbr=${mpi_nbr_usr}
+fi # !mpi_nbr_usr
+# If user explicitly sets mpi_nbr, or MPI-enabled E3SM-Unified environments detected...
+if [ -n "${mpi_nbr_usr}" ] || [ "${E3SMU_MPI}" = 'SYSTEM' ]; then
+    # ...then set prefix for invoking MPI-enabled weight generators 
     case "${HOSTNAME}" in 
 	acme1* ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
 	andes* | titan* ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
@@ -1211,9 +1219,9 @@ if [ -n "${E3SMU_MPI}" ] && [ "${E3SMU_MPI}" = 'SYSTEM' ] ; then
 	* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; # Other
     esac # !HOSTNAME
 fi # !E3SMU_MPI
-if [ -n "${mpi_usr}" ]; then 
-    mpi_pfx="${mpi_usr}"
-fi # !mpi_usr
+if [ -n "${mpi_pfx_usr}" ]; then 
+    mpi_pfx="${mpi_pfx_usr}"
+fi # !mpi_pfx_usr
 
 # ERWG requires special handling for version-specific options
 # 20210705: Avoid invoking ERWG to determine version unless actual algorithm requires ERWG
@@ -1241,8 +1249,7 @@ if [ -n "${fl_fmt}" ]; then
 	wgt_opt_mbt="${wgt_opt_tps} --out_format Classic"
 	wgt_opt_tps="${wgt_opt_tps} --out_format Classic"
 	msh_opt_tps="${msh_opt_tps} --out_format Classic"
-    fi # !fl_fmt
-    if [ "${fl_fmt}" = '4' ] || [ "${fl_fmt}" = 'netcdf4' ] || [ "${fl_fmt}" = 'hdf5' ]; then
+    elif [ "${fl_fmt}" = '4' ] || [ "${fl_fmt}" = 'netcdf4' ] || [ "${fl_fmt}" = 'hdf5' ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4'
 	if [ -n "${erwg_vrs_mjr}" ]; then
 	    if [ "${erwg_vrs_mjr}" -ge 6 ]; then
@@ -1252,19 +1259,16 @@ if [ -n "${fl_fmt}" ]; then
 	wgt_opt_mbt="${wgt_opt_tps} --out_format Netcdf4"
 	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4"
 	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4"
-    fi # !fl_fmt
-    if [ "${fl_fmt}" = '5' ] || [ "${fl_fmt}" = '64bit_data' ] || [ "${fl_fmt}" = 'cdf5' ]; then
+    elif [ "${fl_fmt}" = '5' ] || [ "${fl_fmt}" = '64bit_data' ] || [ "${fl_fmt}" = 'cdf5' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_data'
 #	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset" # Change when ERWG supports CDF5
-    fi # !fl_fmt
-    if [ "${fl_fmt}" = '6' ] || [ "${fl_fmt}" = '64bit_offset' ] || [ "${fl_fmt}" = '64' ]; then
+    elif [ "${fl_fmt}" = '6' ] || [ "${fl_fmt}" = '64bit_offset' ] || [ "${fl_fmt}" = '64' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_offset'
 	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset"
 	wgt_opt_mbt="${wgt_opt_tps} --out_format Offset64Bits"
 	wgt_opt_tps="${wgt_opt_tps} --out_format Offset64Bits"
 	msh_opt_tps="${msh_opt_tps} --out_format Offset64Bits"
-    fi # !fl_fmt
-    if [ "${fl_fmt}" = '7' ] || [ "${fl_fmt}" = 'netcdf4_classic' ]; then
+    elif [ "${fl_fmt}" = '7' ] || [ "${fl_fmt}" = 'netcdf4_classic' ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4_classic'
 	if [ -n "${erwg_vrs_mjr}" ]; then
 	    if [ "${erwg_vrs_mjr}" -ge 6 ]; then
@@ -1274,9 +1278,25 @@ if [ -n "${fl_fmt}" ]; then
 	wgt_opt_mbt="${wgt_opt_tps} --out_format Netcdf4Classic"
 	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4Classic"
 	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4Classic"
+    else # !fl_fmt
+	echo "${spt_nm}: ERROR User-supplied file-format specifier fl_fmt='${fl_fmt}' is invalid"
+	echo "${spt_nm}: HINT Valid format-specifiers include '3', '4', '5', '6', and '7'"
+	exit 1
     fi # !fl_fmt
     nco_opt="${nco_fl_fmt} ${nco_opt}"
 fi # !fl_fmt
+
+if [ -n "${nsx_alg}" ]; then
+    if [ "${nsx_alg}" = 'adv' ] || [ "${nsx_alg}" = 'advfront' ] || [ "${nsx_alg}" = 'advancing_front' ]; then
+	wgt_opt_mbt="--advfront ${wgt_opt_mbt}"
+    elif [ "${nsx_alg}" = 'kd' ] || [ "${nsx_alg}" = 'kdtree' ]; then
+    	wgt_opt_mbt="${wgt_opt_mbt}" # Kd-tree is default in mbtempest
+    else
+	echo "${spt_nm}: ERROR User-supplied intersection algorithm specifier nsx_alg='${nsx_alg}' is invalid"
+	echo "${spt_nm}: HINT Valid intersection algorithm specifiers include 'advfront' and 'kdtree'"
+	exit 1
+    fi # !nsx_alg
+fi # !nsx_alg
 if [ -n "${xtr_nsp_usr}" ]; then
     xtr_nsp=${xtr_nsp_usr}
 fi # !xtr_nsp_usr
@@ -2543,11 +2563,12 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	if [[ ${grd_src} == *.h5m ]] && [[ ${grd_src} != *p.h5m ]]; then
 	    echo "MBT: Treating $(basename ${grd_src}) as unpartitioned MOAB-format source mesh and partitioning it"
 	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
-	    if [[ ${HOSTNAME} = *compy* ]]; then
-		# 20210829: compy must use zoltan not metis
+	    if [ ${prt_alg} = 'zoltan' ]; then
+		# 20210829: NB: Compy installation only has Zoltan not METIS
 		cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
-	    else # !HOSTNAME
-		# 20210829: moab=5.3.0=*nompi_tempest* must use metis not zoltan
+	    else # !prt_alg
+		# 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan
+		# However, it is pointless to partition without MPI-enabled mbtempest!
 		cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    fi # !HOSTNAME
 	    echo "MBT: cmd_prs[${fl_idx}]=${cmd_prs[${fl_idx}]}"
@@ -2567,9 +2588,9 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	if [[ ${grd_dst} == *.h5m ]] && [[ ${grd_dst} != *p.h5m ]]; then
 	    echo "MBT: Treating $(basename ${grd_dst}) as unpartitioned MOAB-format source mesh and partitioning it"
 	    grd_dst_prt_tmp="${grd_dst/.h5m/_${prt_nbr}p.h5m}"
-	    if [[ ${HOSTNAME} = *compy* ]]; then
+	    if [ ${prt_alg} = 'zoltan' ]; then
 		cmd_prd[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --scale_sphere --project_on_sphere 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
-	    else # !HOSTNAME
+	    else # !prt_alg
 		# 20210829: moab=5.3.0=*nompi_tempest* lacks --recompute_rcb_box and --scale_sphere completely, and must use -p instead of --project_on_sphere
 		cmd_prd[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
 	    fi # !HOSTNAME
@@ -2587,11 +2608,11 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    fi # !dbg
 	    grd_dst=${grd_dst_prt_tmp}
 	fi # !grd_dst
-	if [[ ${HOSTNAME} = *compy* ]]; then
+	if [ ${prt_alg} = 'zoltan' ]; then
 	    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
-	else # !HOSTNAME
+	else # !prt_alg
 	    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
-	fi # !HOSTNAME
+	fi # !prt_alg
     elif [ "${wgt_typ}" = 'tempest' ]; then 
     	cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	if [ "${a2o_flg}" = 'Yes' ]; then 
