@@ -2578,20 +2578,20 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
 		# 20210829: NB: Compy installation only has Zoltan not METIS
-		cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    else # !prt_alg
 		# 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan
 		# However, it is pointless to partition without MPI-enabled mbtempest!
-		cmd_prs[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    fi # !HOSTNAME
-	    echo "MBT: cmd_prs[${fl_idx}]=${cmd_prs[${fl_idx}]}"
+	    echo "MBT: cmd_prt[${fl_idx}]=${cmd_prt[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_prs[${fl_idx}]}
+		echo ${cmd_prt[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_prs[${fl_idx}]}
+		eval ${cmd_prt[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_prt_tmp} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_prs[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_prt[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT ${prt_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
 		    exit 1
 		fi # !err
