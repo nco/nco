@@ -2373,7 +2373,7 @@ if [ "${flg_hrz}" = 'Yes' ]; then
 	    printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
 	fi # !vrb_lvl
 	if [ ${flg_grd_only} != 'Yes' ]; then
-	    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, and/or change your PATH to find it.\n${spt_nm}: HINT The Conda 'nco' package and some NCL packages provide ESMF_RegridWeightGen. Tempest executables can be installed from source (https://github.com/ClimateGlobalChange/tempestremap) or obtained via the Conda 'tempest-remap' package (which the Conda 'nco' package also automatically provides).\n"; exit 1; }
+	    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, and/or change your PATH to find it.\n${spt_nm}: HINT The Conda 'nco' package automatigally installs the 'esmf' package to provide ESMF_RegridWeightGen and the 'tempest-remap' package to install TempestRemap executables such as 'GenerateOfflineMap'. One can obtain the MOAB-Tempest executables like 'mbtempest' via the Conda 'moab' package.\n"; exit 1; }
 	fi # !flg_grd_only
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    if [ ${fl_nbr} -ge 2 ]; then 

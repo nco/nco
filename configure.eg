@@ -481,6 +481,8 @@ ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global
 # Personal recipe last modified: 20200722 (updated to netCDF 4.7.3)
 # Personal recipe last used successfully: 20210321 (currently not linking ncap2 because needs -L${HOME}/lib_cori to find -lantlr. Moreover, ldd cannot find system libraries. also issues with HDF library mismatch)
 module load gcc
+export HDF5_DISABLE_VERSION_CHECK=1
+export HDF5_USE_FILE_LOCKING=FALSE
 #module load udunits
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean

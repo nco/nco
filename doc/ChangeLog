@@ -1,12 +1,20 @@
-2021-09-15  Charlie Zender  <zender@uci.edu>
+2021-09-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.2-beta01: mem_mb=0, mss_val_cmp_dbl, has_mss_val, udu rcd, .h5m cnv, mbt, nsx_alg, var_lst rx, ppq refactor, intel omp';git push
+	cd ~/nco;git commit -a -m 'Version 5.0.2-beta01: mem_mb=0, mss_val_cmp_dbl, has_mss_val, udu rcd, .h5m cnv, mbt, mpi_pfx, nsx_alg, var_lst rx, ppq refactor, intel omp';git push
 	git tag -a 5.0.2-beta01 -m 'fxm';git push --tags
+
+	* NCO 5.0.2-alpha08 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha08: EdCo';git push
+	git tag -a 5.0.2-alpha08 -m 'fxm';git push --tags
+
+	* ncremap update help note on installing other regridders
 
 	* NCO 5.0.2-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha07: Swabby';git push
 	git tag -a 5.0.2-alpha07 -m 'ncremap nsx_alg advfront, mpi_pfx, mpi_nbr%prt_nbr;';git push --tags
+
+2021-09-15  Charlie Zender  <zender@uci.edu>
 
 	* ncremap ensure partition number is a multiple of mpi_nbr
 
