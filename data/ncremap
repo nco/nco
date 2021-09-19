@@ -423,6 +423,7 @@ cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
 clm_flg='No' # [flg] Invoked by ncclimo script
 cnv_exe_mbt='mbconvert' # [sng] MOAB-Tempest SCRIP/Exodus conversion to H5M executable
 cnv_exe_tps='ConvertSCRIPToExodus' # [sng] TempestRemap SCRIP-to-Exodus conversion executable
+cnv_opt_e2m='-o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS' # [sng] Recommended options to mbconvert for (high-resolution) Exodus to MOAB grids https://acme-climate.atlassian.net/wiki/spaces/ED/pages/932380820/Offline+remapping+workflow+with+mbtempest
 d2f_flg='No' # [flg] Convert double-precision fields to single-precision
 d2f_opt='-M dbl_flt' # [sng] Option string to convert double-precision fields to single-precision
 dbg_lvl=0 # [nbr] Debugging level
@@ -469,7 +470,6 @@ map_trn_fl='' # [sng] Map-file transpose (for Tempest)
 map_mk='No' # [flg] Generate map-file (i.e., map does not yet exist)
 map_usr_flg='No' # [flg] User supplied argument to --map option
 map_xmp='map.nc' # [sng] Map-file for examples
-mbt_flg='No' # [flg] mbtempest front-end to TempestRemap
 mbt_typ_grd=0 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, OVERLAP_MEMORY=4, OVERLAP_MOAB=5])
 mbt_typ_map=5 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, OVERLAP_MEMORY=4, OVERLAP_MOAB=5])
 mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indicates unlimited RAM)
@@ -588,7 +588,6 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
     echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one map-file per input file) [${fnt_tlc}mlt_map, no_multimap${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
-    echo " ${fnt_bld}--mbt${fnt_nrm}      Use MOAB-Tempest (mbtempest) front-end to TempestRemap (default ${fnt_bld}${mbt_flg}${fnt_nrm}) [${fnt_tlc}mbt, mbtempest, moabtempest, tfe_mbt${fnt_nrm}]"
     echo " ${fnt_bld}--mpi_nbr${fnt_nrm}  Number of tasks-per-node that MPI-enabled weight generators will request (default ${fnt_bld}${mpi_nbr}${fnt_nrm}) [${fnt_tlc}mpi_nbr, mpi_number, tsk_nbr, task_number${fnt_nrm}]"
     echo " ${fnt_bld}--mpi_pfx${fnt_nrm}  Prefix for MPI-enabled weight generators (empty means weight generator is not MPI-enabled) (default ${fnt_bld}${mpi_pfx}${fnt_nrm}) [${fnt_tlc}mpi_pfx, mpi_prefix, srun_cmd, srun_command${fnt_nrm}]"
     echo " ${fnt_bld}--msh_fl${fnt_nrm}   Mesh-file for grid intersection (empty means generate internally or not at all) (default ${fnt_bld}${msh_fl}${fnt_nrm}) [${fnt_tlc}msh_fl, msh, mesh, mesh_file${fnt_nrm}]"
@@ -769,8 +768,6 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       in_fl=?* | in_file=?* | input_file=?* ) in_fl="${LONG_OPTARG}" ;; # -i # Input file
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       map_fl=?* | map=?* | map_file=?* | rgr_map=?* | regrid_map=?* ) map_fl="${LONG_OPTARG}" ;; # -m # Map-file
-	       mbt | mbtempest | moabtempest | tfe_mbt ) mbt_flg='Yes' ;; # # mbtempest front-end to TempestRemap
-	       mbt=?* | mbtempest=?* | moabtempest=?* | tfe_mbt=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # mbtempest front-end to TempestRemap
 	       mem_mb=?* ) mem_mb="${LONG_OPTARG}" ;; # # Megabytes of RAM per srun job in Cori SLURM in MPI mode
 	       mlt_map | multimap | no_multimap | nomultimap ) mlt_map_flg='No' ;; # -M # Multi-map flag
 	       mlt_map=?* | multimap=?* | no_multimap=?* | nomultimap=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -M # Multi-map flag
@@ -1202,6 +1199,10 @@ fi # !alg_typ
 if [ -n "${mpi_nbr_usr}" ]; then
     mpi_nbr=${mpi_nbr_usr}
 fi # !mpi_nbr_usr
+# Specifying a TR algorithm and explicitly setting mpi_nbr implies MOAB
+if [ ${wgt_typ} = 'tempest' ] && [ -n ${mpi_nbr_usr} ]; then
+    wgt_typ='mbtempest'
+fi # !wgt_typ
 # If user explicitly sets mpi_nbr, or MPI-enabled E3SM-Unified environments detected...
 if [ -n "${mpi_nbr_usr}" ] || [ "${E3SMU_MPI}" = 'SYSTEM' ]; then
     # ...then set prefix for invoking MPI-enabled weight generators 
@@ -1332,9 +1333,7 @@ if [ -n "${esmf_typ}" ]; then
     fi # !esmf_typ
     wgt_opt_esmf="${wgt_opt_esmf} --extrap_method ${esmf_opt} --extrap_num_src_pnts ${xtr_nsp} --extrap_dist_exponent ${xtr_xpn}"
 fi # !esmf_typ
-if [ ${wgt_typ} = 'tempest' ] && [ ${mbt_flg} = 'Yes' ]; then
-    wgt_typ='mbtempest'
-fi # !wgt_typ
+
 if [ ${wgt_typ} = 'cdo' ]; then
     wgt_cmd="${wgt_exe_cdo}"
     wgt_exe="${wgt_exe_cdo}"
@@ -2134,7 +2133,6 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: in_fl    = ${in_fl}\n"
     printf "dbg: map_fl   = ${map_fl}\n"
     printf "dbg: map_mk   = ${map_mk}\n"
-    printf "dbg: mbt_flg  = ${mbt_flg}\n"
     printf "dbg: mlt_map  = ${mlt_map_flg}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
     printf "dbg: mpi_nbr  = ${mpi_nbr}\n"
@@ -2535,21 +2533,54 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
     elif [ "${wgt_typ}" = 'mbtempest' ]; then 
 	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
 	if [[ ${grd_src} =~ ^(.*)(.nc.?)$ ]]; then
-	    echo "MBT: Treating $(basename ${grd_src}) as netCDF SCRIP file and converting to Exodus (.g) format"
+	    echo "MBT: Treating $(basename ${grd_src}) as SCRIP format source grid and converting to Exodus (.g) format"
+	    grd_src_h5m_tmp="${grd_src/.nc/.g}"
+	    cmd_s2e[${fl_idx}]="${cmd_cnv_tps} --in \"${grd_src}\" --out \"${grd_src_h5m_tmp}\"${devnull}"
+	    echo "MBT: cmd_s2e[${fl_idx}]=${cmd_s2e[${fl_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_s2e[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_s2e[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_tmp} ]; then
+		    printf "${spt_nm}: ERROR Failed to generate Exodus version of source grid. Debug this:\n${cmd_s2e[${fl_idx}]}\n"
+		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) environment paths, 2) fxm ...\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	    grd_src=${grd_src_h5m_tmp}
 	fi # !grd_src
+	if [[ ${grd_dst} =~ ^(.*)(.nc.?)$ ]]; then
+	    echo "MBT: Treating $(basename ${grd_dst}) as SCRIP format destination grid and converting to Exodus (.g) format"
+	    grd_dst_h5m_tmp="${grd_dst/.nc/.g}"
+	    cmd_s2e[${fl_idx}]="${cmd_cnv_tps} --in \"${grd_dst}\" --out \"${grd_dst_h5m_tmp}\"${devnull}"
+	    echo "MBT: cmd_s2e[${fl_idx}]=${cmd_s2e[${fl_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_s2e[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_s2e[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_h5m_tmp} ]; then
+		    printf "${spt_nm}: ERROR Failed to generate Exodus version of destination grid. Debug this:\n${cmd_s2e[${fl_idx}]}\n"
+		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) environment paths, 2) fxm ...\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	    grd_dst=${grd_dst_h5m_tmp}
+	fi # !grd_dst
 	if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]]; then
 	    echo "MBT: Treating $(basename ${grd_src}) as Exodus-format source grid and converting to MOAB (.h5m) format"
 	    grd_src_h5m_tmp="${grd_src/.g/.h5m}"
-	    cmd_h5s[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
-	    echo "MBT: cmd_h5s[${fl_idx}]=${cmd_h5s[${fl_idx}]}"
+	    cmd_e2h[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_e2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
+	    echo "MBT: cmd_e2h[${fl_idx}]=${cmd_e2h[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_h5s[${fl_idx}]}
+		echo ${cmd_e2h[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_h5s[${fl_idx}]}
+		eval ${cmd_e2h[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_tmp} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_h5s[${fl_idx}]}\n"
-		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_e2h[${fl_idx}]}\n"
+		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) environment paths, 2) fxm ...\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
@@ -2558,15 +2589,15 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	if [[ ${grd_dst} == *.g ]] || [[ ${grd_dst} == *.exo ]]; then
 	    echo "MBT: Treating $(basename ${grd_dst}) as Exodus-format destination grid and converting to MOAB (.h5m) format"
 	    grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
-	    cmd_h5d[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
-	    echo "MBT: cmd_h5d[${fl_idx}]=${cmd_h5d[${fl_idx}]}"
+	    cmd_e2h[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_e2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
+	    echo "MBT: cmd_e2h[${fl_idx}]=${cmd_e2h[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_h5d[${fl_idx}]}
+		echo ${cmd_e2h[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_h5d[${fl_idx}]}
+		eval ${cmd_e2h[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_h5d[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_e2h[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
 		    exit 1
 		fi # !err
