@@ -613,7 +613,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
 # 20171101: Implement but do not yet advertise PPC in ncremap
 # 20200618: Document and advertise PPC in ncremap
     echo " ${fnt_bld}--ppc_prc${fnt_nrm}  Precision-preserving compression (empty means none) (default ${fnt_bld}${ppc_prc}${fnt_nrm}) [${fnt_tlc}ppc, ppc_prc, precision, quantize${fnt_nrm}]"
-    echo " ${fnt_bld}--preserve${fnt_nrm} Preserved statistic (empty preserves integral, except mean for MPAS) (default ${fnt_bld}${prs_stt}${fnt_nrm}) [${fnt_tlc}preserve, prs_stt, preserved_statistic${fnt_nrm}]"
+    echo " ${fnt_bld}--preserve${fnt_nrm} Preserved statistic (empty preserves integral, except mean for MPAS) (default ${fnt_bld}${prs_stt}${fnt_nrm}) [${fnt_tlc}preserve, prs_stt, preserved_statistic${fnt_nrm}] (integral|mean)"
     echo " ${fnt_bld}--prt_nbr${fnt_nrm}  Partition number for MOAB parallelism (default ${fnt_bld}${prt_nbr}${fnt_nrm}) [${fnt_tlc}prt_nbr, prt, partition_number${fnt_nrm}]"
 #    echo " ${fnt_bld}--qea_flg${fnt_nrm}  Quasi-equal area mode for TempestRemap (default ${fnt_bld}${qea_flg}${fnt_nrm}) [${fnt_tlc}qea, qea_flg, np2, quasi-equal-area${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
@@ -796,7 +796,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
 	       pdq=?* | prm=?* | prm_opt=?* | permute=?* ) pdq_opt="${LONG_OPTARG}" ;; # # ncpdq dimension permutation option
 	       ppc=?* | ppc_prc=?* | precision=?* | quantize=?* ) ppc_prc="${LONG_OPTARG}" ;; # # Precision-preserving compression
-	       prs_stt=?* | preserve=?* | preserved_statistic=?* ) prs_stt="${LONG_OPTARG}" ;; # # Preserved statistic
+	       prs_stt=?* | preserve=?* | preserved_statistic=?* ) prs_stt_usr="${LONG_OPTARG}" ;; # # Preserved statistic
 	       prt=?* | prt_nbr=?* | partition_number=?* ) prt_nbr="${LONG_OPTARG}" ;; # # Partition number for MOAB parallelism
 	       qea | qea_flg | np2 | quasi-equal-area ) qea_flg='Yes' ;; # # Quasi-equal area mode for TempestRemap
 	       qea=?* | qea_flg=?* | np2=?* | quasi-equal-area=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Quasi-equal area mode for TempestRemap
@@ -1428,12 +1428,16 @@ fi # !msk_apl
 if [ "${no_stg_grd}" = 'Yes' ]; then 
     rgr_opt="${rgr_opt} --rgr no_stagger"
 fi # !no_stg_grd
-if [ -n "${prs_stt}" ]; then 
-    if [ "${prs_stt}" != 'mean' ] && [ "${prs_stt}" != 'integral' ]; then 
-	echo "${spt_nm}: ERROR \"${prs_stt}\" is an invalid value for preserved_statistic"
-	echo "${spt_nm}: HINT The only two valid values for preserved_statistic are \"mean\" and \"integral\""
+if [ -n "${prs_stt_usr}" ]; then 
+    if [ "${prs_stt_usr}" != 'mean' ] && [ "${prs_stt_usr}" != 'local' ] && [ "${prs_stt_usr}" != 'local_mean' ]; then
+	prs_stt='mean'
+    elif [ "${prs_stt_usr}" != 'integral' ] && [ "${prs_stt_usr}" != 'global' ] && [ "${prs_stt_usr}" != 'global_integral' ]; then
+	prs_stt='integral'
+    else
+	echo "${spt_nm}: ERROR \"${prs_stt_usr}\" is an invalid value for preserved_statistic"
+	echo "${spt_nm}: HINT The valid values for preserved_statistic are \"mean\" (or synonyms \"local\", \"local_mean\") and \"integral\" (or synonyms \"global\", \"global_integral\")"
 	exit 1
-    fi # !prs_stt
+    fi # !prs_stt_usr
     if [ "${prs_stt}" = 'mean' ] && [ -z "${rnr_thr}" ] ; then 
 	rnr_thr=0.0
     fi # !prs_stt
@@ -1444,7 +1448,7 @@ if [ -n "${prs_stt}" ]; then
 	    exit 1
 	fi # !rnr_thr
     fi # !prs_stt
-fi # !prs_stt
+fi # !prs_stt_usr
 if [ -n "${rnr_thr}" ]; then 
     if [ "${rnr_thr}" != 'off' ] && [ "${rnr_thr}" != 'none' ]; then 
 	rgr_opt="${rgr_opt} --rnr_thr=${rnr_thr}"
