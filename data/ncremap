@@ -2532,72 +2532,41 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'mbtempest' ]; then 
 	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
-	if [[ ${grd_src} =~ ^(.*)(.nc.?)$ ]]; then
-	    echo "MBT: Treating $(basename ${grd_src}) as SCRIP format source grid and converting to Exodus (.g) format"
-	    grd_src_h5m_tmp="${grd_src/.nc/.g}"
-	    cmd_s2e[${fl_idx}]="${cmd_cnv_tps} --in \"${grd_src}\" --out \"${grd_src_h5m_tmp}\"${devnull}"
-	    echo "MBT: cmd_s2e[${fl_idx}]=${cmd_s2e[${fl_idx}]}"
+	if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *.nc ]]; then
+	    echo "MBT: Converting source grid $(basename ${grd_src}) to MOAB (.h5m) format"
+	    #grd_src_h5m_tmp="$(basename "${grd_src}" .g).h5m"
+	    [[ ${grd_src} == *.g ]] && grd_src_h5m_tmp="${grd_src/.g/.h5m}"
+	    [[ ${grd_src} == *.exo ]] && grd_src_h5m_tmp="${grd_src/.exo/.h5m}"
+	    [[ ${grd_src} == *.nc ]] && grd_src_h5m_tmp="${grd_src/.nc/.h5m}"
+	    cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_e2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
+	    echo "MBT: cmd_e2m[${fl_idx}]=${cmd_e2m[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_s2e[${fl_idx}]}
+		echo ${cmd_e2m[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_s2e[${fl_idx}]}
+		eval ${cmd_e2m[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_tmp} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate Exodus version of source grid. Debug this:\n${cmd_s2e[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) environment paths, 2) fxm ...\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
 	    grd_src=${grd_src_h5m_tmp}
 	fi # !grd_src
-	if [[ ${grd_dst} =~ ^(.*)(.nc.?)$ ]]; then
-	    echo "MBT: Treating $(basename ${grd_dst}) as SCRIP format destination grid and converting to Exodus (.g) format"
-	    grd_dst_h5m_tmp="${grd_dst/.nc/.g}"
-	    cmd_s2e[${fl_idx}]="${cmd_cnv_tps} --in \"${grd_dst}\" --out \"${grd_dst_h5m_tmp}\"${devnull}"
-	    echo "MBT: cmd_s2e[${fl_idx}]=${cmd_s2e[${fl_idx}]}"
+	if [[ ${grd_dst} == *.g ]] || [[ ${grd_dst} == *.exo ]] || [[ ${grd_dst} == *.nc ]]; then
+	    echo "MBT: Converting destination grid $(basename ${grd_src}) to MOAB (.h5m) format"
+	    [[ ${grd_dst} == *.g ]] && grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
+	    [[ ${grd_dst} == *.exo ]] && grd_dst_h5m_tmp="${grd_dst/.exo/.h5m}"
+	    [[ ${grd_dst} == *.nc ]] && grd_dst_h5m_tmp="${grd_dst/.nc/.h5m}"
+	    cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_e2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
+	    echo "MBT: cmd_e2m[${fl_idx}]=${cmd_e2m[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_s2e[${fl_idx}]}
+		echo ${cmd_e2m[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_s2e[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_h5m_tmp} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate Exodus version of destination grid. Debug this:\n${cmd_s2e[${fl_idx}]}\n"
-		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) environment paths, 2) fxm ...\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	    grd_dst=${grd_dst_h5m_tmp}
-	fi # !grd_dst
-	if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]]; then
-	    echo "MBT: Treating $(basename ${grd_src}) as Exodus-format source grid and converting to MOAB (.h5m) format"
-	    grd_src_h5m_tmp="${grd_src/.g/.h5m}"
-	    cmd_e2h[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_e2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
-	    echo "MBT: cmd_e2h[${fl_idx}]=${cmd_e2h[${fl_idx}]}"
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_e2h[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_e2h[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_tmp} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_e2h[${fl_idx}]}\n"
-		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) environment paths, 2) fxm ...\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	    grd_src=${grd_src_h5m_tmp}
-	fi # !grd_src
-	if [[ ${grd_dst} == *.g ]] || [[ ${grd_dst} == *.exo ]]; then
-	    echo "MBT: Treating $(basename ${grd_dst}) as Exodus-format destination grid and converting to MOAB (.h5m) format"
-	    grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
-	    cmd_e2h[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_e2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
-	    echo "MBT: cmd_e2h[${fl_idx}]=${cmd_e2h[${fl_idx}]}"
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_e2h[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_e2h[${fl_idx}]}
+		eval ${cmd_e2m[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_e2h[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of destination grid. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
 		    exit 1
 		fi # !err
