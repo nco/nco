@@ -239,9 +239,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
 # ncks -O --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
 # Map-only, threading:
-# ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=5' --alg_typ=nco_con --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
-# ncks -O --dbg=5 --thr_nbr=6 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ~/nco/data/in.nc ~/foo.nc
-# ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=nco_dwe --xtr_nsp=8 --xtr_xpn=2.0 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_dwe.20200901.nc
+# ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=5' --alg_typ=nco_con --grd_src=${DATA}/grids/ne30np4_pentagons.20190501.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
+# ncks -O --dbg=5 --thr_nbr=6 --grd_src=${DATA}/grids/ne30np4_pentagons.20190501.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ~/nco/data/in.nc ~/foo.nc
+# ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=nco_dwe --xtr_nsp=8 --xtr_xpn=2.0 --grd_src=${DATA}/grids/ne30np4_pentagons.20190501.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_dwe.20200901.nc
 # ncremap --dbg=1 --alg_typ=bilin   --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
 # ncremap --dbg=1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
 # ncremap --dbg=1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc
@@ -249,9 +249,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Regrid:
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -j 3 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr # Batch-parallelism
-# ncremap -a conserve -v FSNT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw -O ${DATA}/ne30/rgr
+# ncremap -a conserve -v FSNT -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw -O ${DATA}/ne30/rgr
 # ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/dstmch90/dstmch90_clm.nc -O ${DATA}/ne30/rgr
-# ncremap -a conserve -v FSNT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw -O ${DATA}/ne30/rgr
+# ncremap -a conserve -v FSNT -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw -O ${DATA}/ne30/rgr
 # ncremap -P airs -v TSurfAir -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2014.10.01.202.L2.RetStd.v6.0.11.0.G14275134307.hdf ~/airs_out.nc
 # ncremap -v CloudFrc_A -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf ~/foo.nc
 # ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf ~/foo.nc
@@ -278,11 +278,11 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_mono.20190401.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_highorder.20190401.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_intbilin.20190401.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
-# ncremap -v FSNT,AODVIS -a conserve -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
-# ncremap -v FSNT,AODVIS -a conserve2nd -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
-# ncremap -v FSNT,AODVIS --rnr=0.99 --esmf_mth=idavg -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
-# ncremap -v FSNT,AODVIS -a nco -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
-# ncremap -v FSNT,AODVIS -a tempest -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS -a conserve -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS -a conserve2nd -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS --rnr=0.99 --esmf_mth=idavg -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS -a nco -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS -a tempest -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
 # Positional arguments:
 # ncremap --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/rgr ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-??.nc
 # Omit cell_measures:
@@ -293,14 +293,14 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --sgs_frc=${DATA}/grids/sgs_landfrac_ne30.nc/landfrac -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/ne30/clm/TBOT_200001_200012.nc ~/foo.nc # External sgs_frc
 # ncremap --vrb=3 --sgs_frc=landfrac --var=area,FSDS,landfrac,landmask,TBOT -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/elm_sgs.nc # 20190918 1D->2D works
 # ncremap --vrb=3 --sgs_frc=landfrac --var=area,FSDS,landfrac,landmask,TBOT -m ${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20190918 2D->2D
-# ncremap --vrb=3 -p serial --sgs_frc=landfrac -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
+# ncremap --vrb=3 -p serial --sgs_frc=landfrac -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
 # ncremap --vrb=3 -a conserve --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 normalization required to get mask right
 # ncremap --vrb=3 -a conserve -P cice --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 cice short-cut
 # CICE/CESM on POP grid: full grid inferral (and thus conservative remapping) fails because masked vertices/cells missing, must use bilinear or supply grid-file for conservative
 # ncremap -a bilinear -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170515: grid centers/bounds in non-masked regions suffice for bilinear interpolation
 # ncremap -a conserve -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170521: conservative requires supplied tri-pole grid for centers/bounds in masked regions
 # File-format
-# ncremap -v FSNT,AODVIS -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
 # TempestRemap boutique:
 # GenerateCSMesh --alt --res 30 --file ${DATA}/grids/ne30.g
 # ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
@@ -1260,7 +1260,7 @@ fi # !err
 if [ -n "${fl_fmt}" ]; then
     if [ "${fl_fmt}" = '3' ] || [ "${fl_fmt}" = 'classic' ] || [ "${fl_fmt}" = 'netcdf3' ]; then
 	nco_fl_fmt='--fl_fmt=classic'
-	wgt_opt_mbt="${wgt_opt_tps} --out_format Classic"
+	wgt_opt_mbt="${wgt_opt_mbt}" # NB: Change when MOAB supports CDF5
 	wgt_opt_tps="${wgt_opt_tps} --out_format Classic"
 	msh_opt_tps="${msh_opt_tps} --out_format Classic"
     elif [ "${fl_fmt}" = '4' ] || [ "${fl_fmt}" = 'netcdf4' ] || [ "${fl_fmt}" = 'hdf5' ]; then
@@ -1270,7 +1270,7 @@ if [ -n "${fl_fmt}" ]; then
 		wgt_opt_esmf="${wgt_opt_esmf} --netcdf4"
 	    fi # !erwg_vrs_mjr
 	fi # !erwg_vrs_mjr
-	wgt_opt_mbt="${wgt_opt_tps} --out_format Netcdf4"
+	wgt_opt_mbt="${wgt_opt_mbt}" # NB: MOAB is netCDF4 by default
 	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4"
 	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4"
     elif [ "${fl_fmt}" = '5' ] || [ "${fl_fmt}" = '64bit_data' ] || [ "${fl_fmt}" = 'cdf5' ]; then
@@ -1279,7 +1279,7 @@ if [ -n "${fl_fmt}" ]; then
     elif [ "${fl_fmt}" = '6' ] || [ "${fl_fmt}" = '64bit_offset' ] || [ "${fl_fmt}" = '64' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_offset'
 	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset"
-	wgt_opt_mbt="${wgt_opt_tps} --out_format Offset64Bits"
+	wgt_opt_mbt="${wgt_opt_mbt}" # NB: Change when MOAB supports CDF5
 	wgt_opt_tps="${wgt_opt_tps} --out_format Offset64Bits"
 	msh_opt_tps="${msh_opt_tps} --out_format Offset64Bits"
     elif [ "${fl_fmt}" = '7' ] || [ "${fl_fmt}" = 'netcdf4_classic' ]; then
@@ -1289,7 +1289,7 @@ if [ -n "${fl_fmt}" ]; then
 		wgt_opt_esmf="${wgt_opt_esmf} --netcdf4" # Change when ERWG supports netCDF7
 	    fi # !erwg_vrs_mjr
 	fi # !erwg_vrs_mjr
-	wgt_opt_mbt="${wgt_opt_tps} --out_format Netcdf4Classic"
+	wgt_opt_mbt="${wgt_opt_mbt}" # NB: Change when MOAB supports it
 	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4Classic"
 	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4Classic"
     else # !fl_fmt
