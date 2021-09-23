@@ -11,13 +11,13 @@ ANTLR = runantlr
 # ncolib_SOURCES includes all ../nco C-sources except for operator main() files
 # These are all built before nco++
 
-# Invoke 'runantlr' on ncoGrammer.g to generate required hpp files
-#Invoke.cc : ncoGrammer.g
-#Invoke.o : ncoGrammer.g
-#	${ANTLR} ncoGrammer.g
+# Invoke 'runantlr' on ncoGrammar.g to generate required hpp files
+#Invoke.cc : ncoGrammar.g
+#Invoke.o : ncoGrammar.g
+#	${ANTLR} ncoGrammar.g
 
 # 20160125: fxm postprocess tokens when symbol table changes
-# cd ~/nco/src/nco++;antlr ncoGrammer.g;./nco_antlr_pst_prc.pl < ncoParserTokenTypes.hpp > ncoEnumTokenTypes.hpp
+# cd ~/nco/src/nco++;antlr ncoGrammar.g;./nco_antlr_pst_prc.pl < ncoParserTokenTypes.hpp > ncoEnumTokenTypes.hpp
 
 # fxm: Split off all sources except front-end into nco++ library
 ncap2_SOURCES = Invoke.cc \
