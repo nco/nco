@@ -6487,9 +6487,9 @@ void polygon_cls::get_minmax_polygon(double *dp, int grid_corners, double *xmin,
  In the first parse the vars are defined on disc. In the second parse the vars are populated. 
  This greatly increases peformance. 
 
- The Grammer file ncoGrammer.g file is composed of three sections
+ The Grammar file ncoGrammar.g file is composed of three sections
  ncoLexer  -  returns tokens/ deals with include files
- ncoParser -  The main grammer - creates a syntax tree
+ ncoParser -  The main grammar - creates a syntax tree
  ncoTree   -  Reads a syntax tree
 
  Hopefully the only thing you'll deal with here is the ncoTree methods */
