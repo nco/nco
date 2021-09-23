@@ -2,13 +2,13 @@
 #define INC_ncoParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (20200513): "ncoGrammer.g" -> "ncoParser.hpp"$ */
+/* $ANTLR 2.7.7 (20160429): "ncoGrammar.g" -> "ncoParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
 #include "ncoParserTokenTypes.hpp"
 #include <antlr/LLkParser.hpp>
 
-#line 1 "ncoGrammer.g"
+#line 1 "ncoGrammar.g"
 
 /* $Header$ */
 
@@ -56,7 +56,7 @@
 #line 57 "ncoParser.hpp"
 class CUSTOM_API ncoParser : public ANTLR_USE_NAMESPACE(antlr)LLkParser, public ncoParserTokenTypes
 {
-#line 87 "ncoGrammer.g"
+#line 87 "ncoGrammar.g"
 
 
 public:
