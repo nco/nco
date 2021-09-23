@@ -78,8 +78,8 @@ tokens {
     ATAN2;  //Used indirectly
     WHERE_ASSIGN;
     MISS2ZERO; //used only in VarOp -sets all missing values to zero
-    VSORT;     // ascending sort only used outside of grammer to sort in VarOp  
-    VRSORT;     // reverse sort only used outside of grammer to sort in VarOp 
+    VSORT;     // ascending sort only used outside of grammar to sort in VarOp
+    VRSORT;     // reverse sort only used outside of grammar to sort in VarOp
     VABS;      // imaginary token used in VarOp to return absolute value 
     VSQR2;     // imaginary token used in VarOp to return square of number 
     DEFDIM;
@@ -2874,7 +2874,7 @@ out returns [var_sct *var]
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~short"),(nc_type)NC_SHORT,false); else var=ncap_sclr_var_mk(SCS("~short"),static_cast<nco_short>(std::strtol(val_short->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end SHORT
     |	val_byte:NCAP_BYTE		
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~byte"),(nc_type)NC_BYTE,false); else var=ncap_sclr_var_mk(SCS("~byte"),static_cast<nco_byte>(std::strtol(val_byte->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end BYTE
-// fxm TODO nco851: How to add ENABLE_NETCDF4 #ifdefs to ncoGrammer.g?
+// fxm TODO nco851: How to add ENABLE_NETCDF4 #ifdefs to ncoGrammar.g?
 // Workaround (permanent?) is to add stub netCDF4 forward compatibility prototypes to netCDF3 libnco
 // #ifdef ENABLE_NETCDF4
 	|	val_ubyte:NCAP_UBYTE
