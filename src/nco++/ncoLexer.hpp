@@ -2,13 +2,13 @@
 #define INC_ncoLexer_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (20200513): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
+/* $ANTLR 2.7.7 (20160429): "ncoGrammar.g" -> "ncoLexer.hpp"$ */
 #include <antlr/CommonToken.hpp>
 #include <antlr/InputBuffer.hpp>
 #include <antlr/BitSet.hpp>
 #include "ncoParserTokenTypes.hpp"
 #include <antlr/CharScanner.hpp>
-#line 1 "ncoGrammer.g"
+#line 1 "ncoGrammar.g"
 
 /* $Header$ */
 
@@ -56,7 +56,7 @@
 #line 57 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 348 "ncoGrammer.g"
+#line 348 "ncoGrammar.g"
 
 private:
     prs_cls *prs_arg;
