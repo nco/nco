@@ -8,6 +8,10 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.2-alpha09: Zyrtec';git push
 	git tag -a 5.0.2-alpha09 -m 'fix wgt_opt, ncoGrammar.g, MOAB doc';git push --tags
 
+	* ncremap print info messages when selected output type not available for map-file
+
+	* ncremap remove excess MBT debugging information
+
 	* Update nco.texi and documentation for MOAB
 
 2021-09-23  henry Butowsky  <henryb@hush.com>

@@ -409,6 +409,11 @@ vrb_1=1 # [enm] Verbosity level: Standard, minimal file I/O
 vrb_2=2 # [enm] Verbosity level: All file I/O
 vrb_3=3 # [enm] Verbosity level: English
 vrb_4=4 # [enm] Verbosity level: Pedantic
+fmt_sng_nc3='CLASSIC (netCDF3 classic CDF1)'
+fmt_sng_nc4='NETCDF4 (netCDF4 extended HDF5)'
+fmt_sng_nc5='64BIT_DATA (netCDF3/pnetCDF CDF5)'
+fmt_sng_nc6='64BIT_OFFSET (netCDF3 64bit CDF2)'
+fmt_sng_nc7='NETCDF4_CLASSIC (netCDF4 classic HDF5)'
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
@@ -465,6 +470,7 @@ inp_psn='No' # [sng] Input file list from positional arguments
 inp_std='No' # [sng] Input file list from stdin
 job_nbr=2 # [nbr] Job simultaneity for parallelism
 map_fl='' # [sng] Map-file
+map_nfo_sng='' # [sng] Informational string about map-file
 map_rsl_fl='' # [sng] File containing results of weight-generation command (i.e., map_fl or map_trn_fl for monotr)
 map_trn_fl='' # [sng] Map-file transpose (for Tempest)
 map_mk='No' # [flg] Generate map-file (i.e., map does not yet exist)
@@ -558,11 +564,11 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_rvr}Basic usage:\n${fnt_nrm} ${fnt_bld}${spt_nm} -d dst_fl in_fl out_fl${fnt_nrm}\n"
     printf "${fnt_nrm} ${fnt_bld}${spt_nm} --destination=dst_fl --input_file=in_fl --output_file=out_fl${fnt_nrm}\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
-    echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic CDF1) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
-    echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
-    echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (netCDF3/PnetCDF CDF5) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
-    echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
-    echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
+    echo "${fnt_rvr}-3${fnt_nrm}          Output file format ${fmt_sng_nc3} [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
+    echo "${fnt_rvr}-4${fnt_nrm}          Output file format ${fmt_sng_nc4} [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
+    echo "${fnt_rvr}-5${fnt_nrm}          Output file format ${fmt_sng_nc5} [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
+    echo "${fnt_rvr}-6${fnt_nrm}          Output file format ${fmt_sng_nc6} [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
+    echo "${fnt_rvr}-7${fnt_nrm}          Output file format ${fmt_sng_nc7} [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
     echo "            CDO algorithms: cdo_bilinear|cdo_conservative (same as ESMF)"
     echo "            ESMF algorithms: bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch"
@@ -1260,38 +1266,32 @@ fi # !err
 if [ -n "${fl_fmt}" ]; then
     if [ "${fl_fmt}" = '3' ] || [ "${fl_fmt}" = 'classic' ] || [ "${fl_fmt}" = 'netcdf3' ]; then
 	nco_fl_fmt='--fl_fmt=classic'
-	wgt_opt_mbt="${wgt_opt_mbt}" # NB: Change when MOAB supports CDF5
 	wgt_opt_tps="${wgt_opt_tps} --out_format Classic"
 	msh_opt_tps="${msh_opt_tps} --out_format Classic"
+	[[ ${wgt_typ} = 'mbtempest' ]] && map_nfo_sng="INFO: MOAB/mbtempest does not support writing map-file as requested type ${fmt_sng_nc3}, will write ${fmt_sng_nc4} instead"
     elif [ "${fl_fmt}" = '4' ] || [ "${fl_fmt}" = 'netcdf4' ] || [ "${fl_fmt}" = 'hdf5' ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4'
-	if [ -n "${erwg_vrs_mjr}" ]; then
-	    if [ "${erwg_vrs_mjr}" -ge 6 ]; then
-		wgt_opt_esmf="${wgt_opt_esmf} --netcdf4"
-	    fi # !erwg_vrs_mjr
-	fi # !erwg_vrs_mjr
-	wgt_opt_mbt="${wgt_opt_mbt}" # NB: MOAB is netCDF4 by default
+	wgt_opt_esmf="${wgt_opt_esmf} --netcdf4"
 	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4"
 	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4"
     elif [ "${fl_fmt}" = '5' ] || [ "${fl_fmt}" = '64bit_data' ] || [ "${fl_fmt}" = 'cdf5' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_data'
-#	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset" # Change when ERWG supports CDF5
+	wgt_opt_esmf="${wgt_opt_esmf} --netcdf4" # Change when ERWG supports CDF5
+	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4"
+	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4"
+	[[ ${wgt_typ} != 'nco' ]] && map_nfo_sng="INFO: ${wgt_typ} does not support writing requested map-file as requested type ${fmt_sng_nc5}, will write ${fmt_sng_nc4} instead"
     elif [ "${fl_fmt}" = '6' ] || [ "${fl_fmt}" = '64bit_offset' ] || [ "${fl_fmt}" = '64' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_offset'
 	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset"
-	wgt_opt_mbt="${wgt_opt_mbt}" # NB: Change when MOAB supports CDF5
 	wgt_opt_tps="${wgt_opt_tps} --out_format Offset64Bits"
 	msh_opt_tps="${msh_opt_tps} --out_format Offset64Bits"
+	[[ ${wgt_typ} = 'mbtempest' ]] && map_nfo_sng="INFO: MOAB/mbtempest does not support writing requested map-file as requested type ${fmt_sng_nc6}, will write ${fmt_sng_nc4} instead"
     elif [ "${fl_fmt}" = '7' ] || [ "${fl_fmt}" = 'netcdf4_classic' ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4_classic'
-	if [ -n "${erwg_vrs_mjr}" ]; then
-	    if [ "${erwg_vrs_mjr}" -ge 6 ]; then
-		wgt_opt_esmf="${wgt_opt_esmf} --netcdf4" # Change when ERWG supports netCDF7
-	    fi # !erwg_vrs_mjr
-	fi # !erwg_vrs_mjr
-	wgt_opt_mbt="${wgt_opt_mbt}" # NB: Change when MOAB supports it
+	wgt_opt_esmf="${wgt_opt_esmf} --netcdf4" # Change when ERWG supports netCDF7
 	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4Classic"
 	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4Classic"
+	[[ ${wgt_typ} != 'nco' ]] && map_nfo_sng="INFO: ${wgt_typ} does not support writing requested map-file as requested type ${fmt_sng_nc7}, will write ${fmt_sng_nc4} instead"
     else # !fl_fmt
 	echo "${spt_nm}: ERROR User-supplied file-format specifier fl_fmt='${fl_fmt}' is invalid"
 	echo "${spt_nm}: HINT Valid format-specifiers include '3', '4', '5', '6', and '7'"
@@ -2373,6 +2373,7 @@ if [ "${flg_hrz}" = 'Yes' ]; then
 	    printf "Weight-generation type: ${wgt_typ}\n"
 	    printf "Algorithm selected to generate weights in map-file is: ${alg_opt}\n"
 	    printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
+	    [[ -n "${map_nfo_sng}" ]] && echo "${map_nfo_sng}"
 	fi # !vrb_lvl
 	if [ ${flg_grd_only} != 'Yes' ]; then
 	    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, and/or change your PATH to find it.\n${spt_nm}: HINT The Conda 'nco' package automatigally installs the 'esmf' package to provide ESMF_RegridWeightGen and the 'tempest-remap' package to install TempestRemap executables such as 'GenerateOfflineMap'. One can obtain the MOAB-Tempest executables like 'mbtempest' via the Conda 'moab' package.\n"; exit 1; }
@@ -2537,13 +2538,10 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
     elif [ "${wgt_typ}" = 'mbtempest' ]; then 
 	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
 	if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *.nc ]]; then
-	    echo "MBT: Converting source grid $(basename ${grd_src}) to MOAB (.h5m) format"
-	    #grd_src_h5m_tmp="$(basename "${grd_src}" .g).h5m"
 	    [[ ${grd_src} == *.g ]] && grd_src_h5m_tmp="${grd_src/.g/.h5m}"
 	    [[ ${grd_src} == *.exo ]] && grd_src_h5m_tmp="${grd_src/.exo/.h5m}"
 	    [[ ${grd_src} == *.nc ]] && grd_src_h5m_tmp="${grd_src/.nc/.h5m}"
 	    cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_e2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
-	    echo "MBT: cmd_e2m[${fl_idx}]=${cmd_e2m[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_e2m[${fl_idx}]}
 	    fi # !dbg
@@ -2558,12 +2556,10 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    grd_src=${grd_src_h5m_tmp}
 	fi # !grd_src
 	if [[ ${grd_dst} == *.g ]] || [[ ${grd_dst} == *.exo ]] || [[ ${grd_dst} == *.nc ]]; then
-	    echo "MBT: Converting destination grid $(basename ${grd_src}) to MOAB (.h5m) format"
 	    [[ ${grd_dst} == *.g ]] && grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
 	    [[ ${grd_dst} == *.exo ]] && grd_dst_h5m_tmp="${grd_dst/.exo/.h5m}"
 	    [[ ${grd_dst} == *.nc ]] && grd_dst_h5m_tmp="${grd_dst/.nc/.h5m}"
 	    cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_e2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
-	    echo "MBT: cmd_e2m[${fl_idx}]=${cmd_e2m[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_e2m[${fl_idx}]}
 	    fi # !dbg
@@ -2578,7 +2574,6 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    grd_dst=${grd_dst_h5m_tmp}
 	fi # !grd_dst
 	if [[ ${grd_src} == *.h5m ]] && [[ ${grd_src} != *p.h5m ]]; then
-	    echo "MBT: Treating $(basename ${grd_src}) as unpartitioned MOAB-format source mesh and partitioning it"
 	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
 		# 20210829: NB: Compy installation only has Zoltan not METIS
@@ -2588,7 +2583,6 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 		# However, it is pointless to partition without MPI-enabled mbtempest!
 		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    fi # !HOSTNAME
-	    echo "MBT: cmd_prt[${fl_idx}]=${cmd_prt[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_prt[${fl_idx}]}
 	    fi # !dbg
@@ -2603,7 +2597,6 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    grd_src=${grd_src_prt_tmp}
 	fi # !grd_src
 	if [[ ${grd_dst} == *.h5m ]] && [[ ${grd_dst} != *p.h5m ]]; then
-	    echo "MBT: Treating $(basename ${grd_dst}) as unpartitioned MOAB-format source mesh and partitioning it"
 	    grd_dst_prt_tmp="${grd_dst/.h5m/_${prt_nbr}p.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
 		cmd_prd[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --scale_sphere --project_on_sphere 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
@@ -2611,7 +2604,6 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 		# 20210829: moab=5.3.0=*nompi_tempest* lacks --recompute_rcb_box and --scale_sphere completely, and must use -p instead of --project_on_sphere
 		cmd_prd[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
 	    fi # !HOSTNAME
-	    echo "MBT: cmd_prd[${fl_idx}]=${cmd_prd[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_prd[${fl_idx}]}
 	    fi # !dbg
