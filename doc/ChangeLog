@@ -1,7 +1,7 @@
 2021-09-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.2-beta01: mem_mb=0, mss_val_cmp_dbl, has_mss_val, udu rcd, .h5m cnv, mbt, mpi_pfx, nsx_alg, var_lst rx, ppq refactor, intel omp';git push
+	cd ~/nco;git commit -a -m 'Version 5.0.2-beta01: moab, mem_mb=0, mss_val_cmp_dbl, has_mss_val, udu rcd, .h5m cnv, mbt, mpi_pfx, nsx_alg, var_lst rx, ppq refactor, intel omp';git push
 	git tag -a 5.0.2-beta01 -m 'fxm';git push --tags
 
 	* NCO 5.0.2-alpha09 release procedure:

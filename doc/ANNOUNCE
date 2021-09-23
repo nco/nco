@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 5.0.2 have arrived.
+The netCDF Operators NCO version 5.0.2 can infiltrate your stack.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.2 contains two new features and one fix.
+Version 5.0.2 contains a significant new feature and a fix.
 You might skip this release unless you use ncremap/ncclimo.
 
 Work on NCO 5.0.3 has commenced and and it targeted to offer ncremap
@@ -17,15 +17,7 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Bit-Adjustment-Algorithms (BAAs) for lossy quantization
-   (e.g., BitGrooming) now only quantize the values NC_FILL_FLOAT or
-   NC_FILL_DOUBLE for float and double variables, respectively, when
-   the _FillValue attribute has been set to some other value.
-   Previously all BAAs always quantized NC_FILL_FLOAT or
-   NC_FILL_DOUBLE unless they were explicitly set as _FillValue.
-   Thanks to Ed Hartnett of NOAA for this suggestion.
-
-B. ncclimo now expands variable lists that contain regular
+A. ncclimo now expands variable lists that contain regular
    expressions (RX). Previously the splitter would aggregate
    all variables specified by an RX into a single timeseries file.
    Now the splitter places every variable into its own file.
@@ -40,11 +32,60 @@ B. ncclimo now expands variable lists that contain regular
    datasets with large numbers of tracers/species.
    Thanks to Qi Tang of PNNL for suggesting this feature.
 
-C. ncremap now infers curvilinear grids from data files that include
+A. ncremap now supports the MOAB parallel interface to the
+   TempestRemap (TR) weight-generation libraries. ncremap will invoke
+   mbtempest in parallel mode whenever the user requests a TR
+   weight-generation algorith (e.g., --alg_typ=fv2fv_flx) and,
+   additionally, specifies the number of MPI tasks-per-node with
+   --mpi_nb=<mpi_nbr>:
+   ncremap 		--alg_typ=fv2fv_flx ... --map=map.nc # Use TR
+   ncremap --mpi_nbr=24 --alg_typ=fv2fv_flx ... --map=map.nc # Use MOAB
+   ncremap 		--alg_typ=aave ... --map=map.nc # Use ERWG
+   ncremap --mpi_nbr=24	--alg_typ=aave ... --map=map.nc # Parallel ERWG
+   ncremap automatically uses mbconvert to convert SCRIP and Exodus 
+   gridfiles (detected based on their file suffix) to MOAB .h5m
+   format. It then uses mbpart to partition the MOAB grids, and then
+   calls mbtempest. Two ncremap options specific to mbtempest are
+   available to configure this workflow. The intersection algorithm
+   can be set with --nsx_alg=advfront|kdtree (default is kdtree).
+   The partition number for mbpart can be set with
+   --prt_nbr=<prt_nbr>. The partition number must be a multiple of
+   mpi_nbr. By default, prt_nbr=mpi_nbr.
+   ncremap --mpi_nbr=24 --nsx_alg=advfront --alg_typ=fv2fv_flx ...
+   ncremap --mpi_nbr=24 --prt_nbr=48 --alg_typ=fv2fv_flx ...
+   ncremap --mpi_nbr=24 --prt_nbr=48 --alg_typ=fv2fv_flx ...
+   Thanks to Vijay Mahadevan of ANL for help with MOAB.
+   http://nco.sf.net/nco.html#tr
+   http://nco.sf.net/nco.html#moab
+
+A. Bit-Adjustment-Algorithms (BAAs) for lossy quantization
+   (e.g., BitGrooming) now only quantize the values NC_FILL_FLOAT or
+   NC_FILL_DOUBLE for float and double variables, respectively, when
+   the _FillValue attribute has been set to some other value.
+   Previously all BAAs always quantized NC_FILL_FLOAT or
+   NC_FILL_DOUBLE unless they were explicitly set as _FillValue.
+   Thanks to Ed Hartnett of NOAA for this suggestion.
+
+A. Similarly, the ncremap regridder and vertical interpolation
+   routines now treat the values NC_FILL_FLOAT and NC_FILL_DOUBLE as
+   missing values for float and double variables, respectively,
+   unless their _FillValue has been explicitly set to some other
+   value. Now datasets that never explicitly set a _FillValue 
+   will be regridded/interpolated properly. 
+
+A. Operators like ncks and ncrcat that utilize the UDUnits library
+   will now report more thorough diagnostics when that library cannot
+   be successfully opened, e.g., because the database file could not
+   be found. This has been helpful in diagnosing the issues that
+   underlie unexpected workflow failures that turn out to be due to
+   incorrectly configured UDUnits environments. Thanks to Tom Vo of
+   LLNL for helping uncover related issues.
+
+A. ncremap now infers curvilinear grids from data files that include
    coordinates named west_east and south_north.
    Thanks to a StackOverflow user for suggesting this feature.
 
-D. ncclimo now assumes the model name string in input files is 'eam'
+A. ncclimo now assumes the model name string in input files is 'eam'
    not 'cam'. The old behavior can be recovered by explicitly
    specifying ncclimo --mdl_nm=cam.
 
@@ -61,6 +102,10 @@ B. A minor change to OpenMP behavior now allows Intel compilers
    to build NCO from source (once again). This bug was introduced
    in NCO ~4.9.9 and affects only Intel compilers. The solution is to
    upgrade. Thanks to Matthew Thompson of GSFC for pointing this out.
+
+C. ncclimo and ncremap now passes the option --mem=0 to srun
+   on Cori at NERSC. Previously it passed the option --mem=20000,
+   which could exhaust the available RAM at high-resolution.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
