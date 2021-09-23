@@ -379,7 +379,7 @@ nco/src/nco++/NcapVar.hh
 nco/src/nco++/NcapVarVector.cc
 nco/src/nco++/NcapVarVector.hh
 nco/src/nco++/NcapVector.hh
-nco/src/nco++/ncoGrammer.g	ncap2 ANTLR grammer
+nco/src/nco++/ncoGrammar.g	ncap2 ANTLR grammar
 nco/src/nco++/ncoLexer.cpp(v)
 nco/src/nco++/ncoLexer.hpp(v)
 nco/src/nco++/ncoParser.cpp(v)
