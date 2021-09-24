@@ -550,7 +550,7 @@ netCDF4 user-defined types support;
 <tt>ncremap</tt> small-circle weights;</li>
 <li><b>NCO 5.0.3</b>: (<i>In Progress, features in-progress or complete include</i>)
 <tt>all</tt> re-tune digit rounding;
-<tt>ncremap</tt> support <tt>mbtempest</tt>;</li>
+<tt>ncremap</tt> improve MOAB support;</li>
 <li><b>NCO 5.0.2</b>: (<i>Current Stable Release</i>)
 <tt>all</tt> regridder, bitmasks respect <tt>NC_FILL_FLOAT/DOUBLE</tt>;
 <tt>ncclimo</tt> split regular expression variables to timeseries;

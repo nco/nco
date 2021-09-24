@@ -321,7 +321,7 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 export PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
 export LD_LIBRARY_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
 # NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
-CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
@@ -415,7 +415,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 module load gcc/9.2.0-ugetvbp
 module load openmpi/4.0.4-hpcx-hghvhj5
 # module load netcdf-c/4.7.4-a4uk6zy (only for non-anaconda builds)
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy' UDUNITS2_PATH=${HOME} ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+# ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy' UDUNITS2_PATH=${HOME} ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+# Default as of 20210924 is to build with Anaconda
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo

@@ -54,7 +54,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOS will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[5.0.2],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[5.0.3-alpha01],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -463,7 +463,7 @@ if test "${C_INC}"; then
     CPPFLAGS="-I${C_INC} ${CPPFLAGS}"
 fi
 AC_LANG_PUSH([C++])
-echo "20210911: before ANTLR section LDFLAGS=${LDFLAGS}, ANTLR_LIB=${ANTLR_LIB}"
+#echo "20210911: before ANTLR section LDFLAGS=${LDFLAGS}, ANTLR_LIB=${ANTLR_LIB}"
 if test "${enable_ncoxx}" != 'no'; then
     if test -d "${ANTLR_BIN}"; then
 # Add ${ANTLR_BIN}, if present, to binary search path
@@ -495,7 +495,7 @@ if test "${enable_ncoxx}" != 'no'; then
     fi
 fi
 AM_CONDITIONAL(ANTLR_LIB,[test -d "${ANTLR_LIB}"])
-echo "20210911: after ANTLR section LDFLAGS=${LDFLAGS}, ANTLR_LIB=${ANTLR_LIB}"
+#echo "20210911: after ANTLR section LDFLAGS=${LDFLAGS}, ANTLR_LIB=${ANTLR_LIB}"
 
 # AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
 # Check for antlr executable installed as runantlr (runantlr ~= java antlr.Tool)

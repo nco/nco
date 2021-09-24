@@ -1,20 +1,14 @@
 $Header$ -*-text-*-
 
-Let netCDF Operators NCO version 5.0.2 join your stack.
+netCDF Operators NCO version 5.0.3 want to join your stack...
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.2 contains significant new features and few minor fixes. 
-ncclimo now splits timeseries into variables specified by regular
-expressions. ncremap now supports the MOAB parallel interface to the
-TempestRemap (TR) weight-generation libraries for 1D FV->FV grids.
-The regridder and all quantization algorithms (including BitGroom)
-have been refactored to treat NC_FILL_FLOAT/DOUBLE as the _FillValue
-if no other _FillValue has been explicitly set.
+Version 5.0.3 contains significant new features and few minor fixes. 
 
-Work on NCO 5.0.3 has commenced and will improve ncremap support
+Work on NCO 5.0.4 has commenced and will improve ncremap support
 for MOAB, incorporate new MOAB improvements, and improve quantization
 metadata and algorithms.
 
@@ -38,7 +32,7 @@ A. ncclimo now expands variable lists that contain regular
    datasets with large numbers of tracers/species.
    Thanks to Qi Tang of PNNL for suggesting this feature.
 
-A. ncremap now supports the MOAB parallel interface to the
+B. ncremap now supports the MOAB parallel interface to the
    TempestRemap (TR) weight-generation libraries for 1D FV->FV grids. 
    ncremap will invoke mbtempest in parallel mode whenever the user
    requests a TR algorithm (e.g., --alg_typ=fv2fv_flx) and,
@@ -89,7 +83,7 @@ A. ncremap now supports the MOAB parallel interface to the
    http://nco.sf.net/nco.html#tr
    http://nco.sf.net/nco.html#moab
 
-A. Bit-Adjustment-Algorithms (BAAs) for lossy quantization
+C. Bit-Adjustment-Algorithms (BAAs) for lossy quantization
    (e.g., BitGrooming) now only quantize the values NC_FILL_FLOAT or
    NC_FILL_DOUBLE for float and double variables, respectively, when
    the _FillValue attribute has been set to some other value.
@@ -97,14 +91,14 @@ A. Bit-Adjustment-Algorithms (BAAs) for lossy quantization
    NC_FILL_DOUBLE unless they were explicitly set as _FillValue.
    Thanks to Ed Hartnett of NOAA for this suggestion.
 
-A. Similarly, the ncremap regridder and vertical interpolation
+D. Similarly, the ncremap regridder and vertical interpolation
    routines now treat the values NC_FILL_FLOAT and NC_FILL_DOUBLE as
    missing values for float and double variables, respectively,
    unless their _FillValue has been explicitly set to some other
    value. Now datasets that never explicitly set a _FillValue 
    will be regridded/interpolated properly. 
 
-A. Operators like ncks and ncrcat that utilize the UDUnits library
+E. Operators like ncks and ncrcat that utilize the UDUnits library
    will now report more thorough diagnostics when that library cannot
    be successfully opened, e.g., because the database file could not
    be found. This has been helpful in diagnosing the issues that
@@ -112,11 +106,11 @@ A. Operators like ncks and ncrcat that utilize the UDUnits library
    incorrectly configured UDUnits environments. Thanks to Tom Vo of
    LLNL for helping uncover related issues.
 
-A. ncremap now infers curvilinear grids from data files that include
+F. ncremap now infers curvilinear grids from data files that include
    coordinates named west_east and south_north.
    Thanks to a StackOverflow user for suggesting this feature.
 
-A. ncclimo now assumes the model name string in input files is 'eam'
+G. ncclimo now assumes the model name string in input files is 'eam'
    not 'cam'. The old behavior can be recovered by explicitly
    specifying ncclimo --mdl_nm=cam.
 
