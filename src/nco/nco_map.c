@@ -808,8 +808,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   int rcd=NCO_NOERR;
 
-
-
   size_t idx; /* [idx] Counting index for unrolled grids */
   size_t lnk_nbr=0; /* [nbr] Number of links */
   //size_t lnk_idx; /* [idx] Link index */
@@ -817,8 +815,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   int pl_cnt_vrl=0;
 
   int lst_typ=0;  /* 0 - no list, 1 - poly_sct list, 2 - wgt_lst */
-
-
 
   poly_sct *pl_glb_in=NULL_CEWI;
   poly_sct *pl_glb_out=NULL_CEWI;
@@ -829,12 +825,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   poly_sct **pl_lst_vrl=(poly_sct**)NULL_CEWI;
   wgt_sct **wgt_lst_vrl=(wgt_sct**)NULL_CEWI;
 
-
   poly_typ_enm pl_typ=poly_none  ;
-
-
-
-
 
   grd_crn_nbr_in=mpf->src_grid_corners;
   grd_crn_nbr_out=mpf->dst_grid_corners;

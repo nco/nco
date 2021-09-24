@@ -1426,8 +1426,8 @@ obj_cln :
 	mv $< $(basename $<).cc
 
 # fxm: change to common dependency rule
-ant : ncoGrammer.g
-	- ${ANTLR} ncoGrammer.g ; ./nco_antlr_pst_prc.pl < ncoParserTokenTypes.hpp > ncoEnumTokenTypes.hpp
+ant : ncoGrammar.g
+	- ${ANTLR} ncoGrammar.g ; ./nco_antlr_pst_prc.pl < ncoParserTokenTypes.hpp > ncoEnumTokenTypes.hpp
 
 src_cln :
 	rm -f ${NCAP2_ANTLR_GENERATED_CPP} ${NCAP2_ANTLR_GENERATED_HPP} ${NCAP2_ANTLR_GENERATED_TXT}
