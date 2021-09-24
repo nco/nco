@@ -33,28 +33,40 @@ A. ncclimo now expands variable lists that contain regular
    Thanks to Qi Tang of PNNL for suggesting this feature.
 
 A. ncremap now supports the MOAB parallel interface to the
-   TempestRemap (TR) weight-generation libraries. ncremap will invoke
-   mbtempest in parallel mode whenever the user requests a TR
-   weight-generation algorith (e.g., --alg_typ=fv2fv_flx) and,
+   TempestRemap (TR) weight-generation libraries for FV->FV grids.
+   ncremap will invoke mbtempest in parallel mode whenever the user
+   requests a TR algorithm (e.g., --alg_typ=fv2fv_flx) and,
    additionally, specifies the number of MPI tasks-per-node with
-   --mpi_nb=<mpi_nbr>:
-   ncremap 		--alg_typ=fv2fv_flx ... --map=map.nc # Use TR
-   ncremap --mpi_nbr=24 --alg_typ=fv2fv_flx ... --map=map.nc # Use MOAB
-   ncremap 		--alg_typ=aave ... --map=map.nc # Use ERWG
-   ncremap --mpi_nbr=24	--alg_typ=aave ... --map=map.nc # Parallel ERWG
+   --mpi_nb=<mpi_nbr>: 
+   ncremap 		--alg_typ=fv2fv_flx ... --map=map.nc # TR
+   ncremap --mpi_nbr=24 --alg_typ=fv2fv_flx ... --map=map.nc # MOAB
+   BTW, the same convention applies to MPI-enabled ERWG:
+   ncremap 		--alg_typ=aave ... --map=map.nc # ESMF
+   ncremap --mpi_nbr=24	--alg_typ=aave ... --map=map.nc # Parallel ESMF
+   NB: Currently MOAB is only trustworthy for the fv2fv_flx algorithm.
+   High order and spectral element maps are currently unsupported. 
    ncremap automatically uses mbconvert to convert SCRIP and Exodus 
-   gridfiles (detected based on their file suffix) to MOAB .h5m
-   format. It then uses mbpart to partition the MOAB grids, and then
+   gridfiles (based on their file suffix) to MOAB .h5m format.
+   It then uses mbpart to partition the MOAB grids, and then
    calls mbtempest. Two ncremap options specific to mbtempest are
    available to configure this workflow. The intersection algorithm
    can be set with --nsx_alg=advfront|kdtree (default is kdtree).
-   The partition number for mbpart can be set with
-   --prt_nbr=<prt_nbr>. The partition number must be a multiple of
-   mpi_nbr. By default, prt_nbr=mpi_nbr.
+   Set the partition number for mbpart with --prt_nbr=<prt_nbr>.
+   The partition number must be a multiple of mpi_nbr and by default
+   prt_nbr=mpi_nbr. 
    ncremap --mpi_nbr=24 --nsx_alg=advfront --alg_typ=fv2fv_flx ...
    ncremap --mpi_nbr=24 --prt_nbr=48 --alg_typ=fv2fv_flx ...
    ncremap --mpi_nbr=24 --prt_nbr=48 --alg_typ=fv2fv_flx ...
-   Thanks to Vijay Mahadevan of ANL for help with MOAB.
+   One inconvenience is that mbtempest will currently only generate
+   map-files that regrid to rank 1 (unstructured) grids. If the
+   destination grid-file is rank 2 (e.g., regular latxlon) mbtempest 
+   will "unroll" the destination grid into its rank 1 equivalent.
+   Users seeking to regrid to rank 2 output can perform a second
+   regridding step to convert the rank 1 regridded data to rank 2.
+   MOAB anticipates supporting rank 2 mapfiles in the future.
+   Due to its complexity, only MOAB insalled via Conda is supported.
+   We welcome suggestions for new/improved options/features.
+   Thanks to Vijay Mahadevan of ANL for his help with MOAB.
    http://nco.sf.net/nco.html#tr
    http://nco.sf.net/nco.html#moab
 
