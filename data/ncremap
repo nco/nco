@@ -1209,8 +1209,8 @@ fi # !mpi_nbr_usr
 if [ ${wgt_typ} = 'tempest' ] && [ -n ${mpi_nbr_usr} ]; then
     wgt_typ='mbtempest'
 fi # !wgt_typ
-# If user explicitly sets mpi_nbr, or MPI-enabled E3SM-Unified environments detected...
-if [ -n "${mpi_nbr_usr}" ] || [ "${E3SMU_MPI}" = 'SYSTEM' ]; then
+# If user explicitly sets mpi_nbr then we need a prefix
+if [ -n "${mpi_nbr_usr}" ]; then
     # ...then set prefix for invoking MPI-enabled weight generators 
     case "${HOSTNAME}" in 
 	acme1* ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
@@ -1225,11 +1225,11 @@ if [ -n "${mpi_nbr_usr}" ] || [ "${E3SMU_MPI}" = 'SYSTEM' ]; then
 	theta* ) mpi_pfx="aprun -n ${mpi_nbr}" ; ;; 
 	* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; # Other
     esac # !HOSTNAME
-fi # !E3SMU_MPI
+fi # !mpi_nbr
 if [ -n "${mpi_pfx_usr}" ]; then 
     mpi_pfx="${mpi_pfx_usr}"
 fi # !mpi_pfx_usr
-# If MPI will be used, adjust partition number to match or be a multiple of mpi_nbr
+# If MPI will be used, adjust partition number be a multiple of mpi_nbr
 if [ -n "${mpi_pfx}" ]; then 
     if [ ${prt_nbr} -lt ${mpi_nbr} ]; then
 	[[ ${dbg_lvl} -ge 1 ]] && echo "${spt_nm}: INFO Increasing partition number from ${prt_nbr} to ${mpi_nbr}"
