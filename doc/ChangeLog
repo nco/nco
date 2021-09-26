@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.3-alpha01: General Sherman';git push
 	git tag -a 5.0.3-alpha01 -m 'Functionally identical to 5.0.2, SYSTEM';git push --tags
 
+	* ncremap might add 2&>1 to --devnull to quiet mbconvert output
+
 	* ncremap fix mbconvert options for alg_typ='tempest'
 
 	* ncremap fix false-positive test result due to unquoted mpi_nbr_usr

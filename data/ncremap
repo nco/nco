@@ -1405,6 +1405,8 @@ if [ -n "${dfl_lvl}" ]; then
     nco_opt="${nco_opt} --dfl_lvl=${dfl_lvl}"
 fi # !dfl_lvl
 if [ "${dvn_flg}" = 'Yes' ]; then
+# 20210926 Omit 2>&1 since better for user to see error messages
+# 20210926 Add 2>&1 to quiet unruly non-error output from mbconvert
     devnull=' > /dev/null'
 else
     devnull=''
