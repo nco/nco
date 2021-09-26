@@ -2556,7 +2556,8 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 		eval ${cmd_e2m[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_tmp} ]; then
 		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
-		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) environment paths, 2) fxm ...\n"
+		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) Environment paths must resolve the correct version of libTempestRemap. 2) mbconvert must support the -B option. Some versions of mbconvert do not. 3) mbconvert must support the PARALLEL option. Serial versions of mbconvert do not.\n"
+		    printf "${spt_nm}: HINT a simple way to install a MOAB compatible with ncremap is install them both into their own environment, e.g., \n\tconda create -n moab_nco -c conda-forge moab=5.3.0=*mpich_tempest* nco\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
