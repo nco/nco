@@ -1102,6 +1102,9 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     # 20200221 Add --correct_areas to many TR maps as per Transition to TR page
     # https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids
     # alg_sng in comments is for E3SM naming convention map_src_to_dst_${alg_sng}.${dt_sng}.nc
+    cnv_opt_src="-B"
+    cnv_opt_dst="-B"
+    wgt_opt_mbt='--method fv --order 2 --method fv'
     alg_opt='tempest'
     wgt_typ='tempest'
     if [ -n "${wgt_opt_usr}" ]; then 
@@ -1175,6 +1178,7 @@ elif [ ${alg_typ} = 'fv2fv_flx' ] || [ ${alg_typ} = 'fv2fv_mono' ] || [ ${alg_ty
     cnv_opt_dst="-B"
     # 20191115: Add per recommendation of Paul Ullrich
     # 20200221: Add --out_np 1 per (new?) settings in on Transition to TR page
+    # Classic cell-integrated piecewise constant map similar to aave and nco_con
     wgt_opt_mbt='--method fv --order 1 --method fv --order 1'
     wgt_opt_tps='--in_type fv --in_np 1 --out_type fv --out_np 1 --correct_areas'
     alg_opt='fv2fv_flx'
@@ -1183,6 +1187,7 @@ elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${a
     cnv_opt_src="-B"
     cnv_opt_dst="-B"
     # 20191115: Add per recommendation of Paul Ullrich
+    # --in_np 2 means all nearest neighbor cells will be used for higher order reconstruction of source data, which is then integrated over target cell. Unlike SE case, no mass matrix is used for FV target grids, and thus --out_np is ignored (and will always be 1 internally).
     wgt_opt_mbt='--method fv --order 2 --method fv'
     wgt_opt_tps='--in_type fv --in_np 2 --out_type fv --correct_areas'
     alg_opt='fv2fv_stt'
