@@ -1,10 +1,16 @@
-2021-09-24  Charlie Zender  <zender@uci.edu>
+2021-09-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.3-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.3-alpha01: General Sherman';git push
-	git tag -a 5.0.3-alpha01 -m 'Functionally identical to 5.0.2, fxm';git push --tags
+	git tag -a 5.0.3-alpha01 -m 'Functionally identical to 5.0.2, SYSTEM';git push --tags
+
+	* ncremap fix false-positive test result due to unquoted mpi_nbr_usr
+
+2021-09-25  Charlie Zender  <zender@uci.edu>
 
 	* ncremap only replace TR with mbtempest if mpi_nbr is set, not	when E3SMU=SYSYEM
+
+2021-09-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.2 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.2: moab, mem_mb=0, mss_val_cmp_dbl rgr/ntp, udu rcd, .h5m cnv/prt, mpi_nbr, nsx_alg, var_lst rx, ppq refactor, intel omp';git push

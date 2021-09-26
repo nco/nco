@@ -481,7 +481,7 @@ mbt_typ_map=5 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, 
 mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indicates unlimited RAM)
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
-mpi_nbr=8 # [sng] Number of tasks-per-node that MPI-enabled weight generators will request (should be factor of prt_nbr)
+mpi_nbr=1 # [sng] Number of tasks-per-node that MPI-enabled weight generators will request (should be factor of prt_nbr)
 msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
 msh_fl='' # [sng] Mesh-file (for Tempest)
 msk_apl='No' # [flg] Apply msk_out to variables after regridding
@@ -1206,7 +1206,7 @@ if [ -n "${mpi_nbr_usr}" ]; then
     mpi_nbr=${mpi_nbr_usr}
 fi # !mpi_nbr_usr
 # Specifying a TR algorithm and explicitly setting mpi_nbr implies MOAB
-if [ ${wgt_typ} = 'tempest' ] && [ -n ${mpi_nbr_usr} ]; then
+if [ ${wgt_typ} = 'tempest' ] && [ -n "${mpi_nbr_usr}" ]; then
     wgt_typ='mbtempest'
 fi # !wgt_typ
 # If user explicitly sets mpi_nbr then we need a prefix
