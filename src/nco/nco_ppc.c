@@ -396,7 +396,7 @@ nco_ppc_around /* [fnc] Replace op1 values by their values rounded to decimal pr
   /* Rounding is currently defined as op1:=around(op1,ppc) */  
   
   /* Use constants defined in math.h */
-  const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision */
+  const double bit_per_dgt=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision */
 
   double scale; /* [frc] Number by which to scale data to achieve rounding */
   float scalef; /* [frc] Number by which to scale data to achieve rounding */
@@ -441,7 +441,7 @@ nco_ppc_around /* [fnc] Replace op1 values by their values rounded to decimal pr
     scale=1048576.0;
     break;
   default:
-    bit_nbr=(int)ceil(ppc_abs*bit_per_dcm_dgt_prc);
+    bit_nbr=(int)ceil(ppc_abs*bit_per_dgt);
     scale=pow(2.0,bit_nbr);
     break;
   } /* end switch */   
@@ -604,13 +604,15 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      Decimal digits of precision (prc_dcm) obtained via prc_dcm=prc_bnr*ln(2)/ln(10) = 7.22 and 15.95, respectively
      Binary digits of precision (prc_bnr) obtained via prc_bnr=prc_dcm*ln(10)/ln(2) */
   
+  const char fnc_nm[]="nco_ppc_bitmask()"; /* [sng] Function name  */
+
   /* Use constants defined in math.h */
-  const double bit_per_dcm_dgt_prc=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision */
-  const double dcm_per_bit_dgt_prc=M_LN2/M_LN10; /* 0.301 [frc] Bits per decimal digit of precision */
+  const double bit_per_dgt=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision = log10(2) */
+  const double dgt_per_bit=M_LN2/M_LN10; /* 0.301 [frc] Decimal per bit digit of precision = log2(10) */
   
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
   const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicitly 1. */
-  const int ieee_xpn_fst_flt=127; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
+  //const int ieee_xpn_fst_flt=127; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
   //const int ieee_xpn_fst_dbl=1023; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
   
   double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
@@ -642,7 +644,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   assert(nsd <= 16);
 
   /* How many bits to preserve? */
-  prc_bnr_xct=nsd*bit_per_dcm_dgt_prc;
+  prc_bnr_xct=nsd*bit_per_dgt;
   /* Be conservative, round upwards */
   prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
   /* First bit is implicit not explicit but corner cases prevent our taking advantage of this */
@@ -698,66 +700,96 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	if(op1.fp[idx] != mss_val_cmp_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
 	  u32_ptr[idx]|=msk_f32_u32_one;
     }else if(nco_baa_cnv_get() == nco_baa_dgr){
-      /* Digit Rounding (GCD19), an unfinished work in progress...
+      /* Digit Rounding (DCG19)
 	 Test DGR:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
 	 ncks -O -C -D 1 --baa=3 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -C -D 1 --baa=3 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
-      unsigned char u8_xpn; /* dgr */
-      unsigned int u32_xpn; /* dgr */
-      unsigned int u32_dpl; /* dgr */
-      unsigned int msk_u32_xpn;
-      int i32_xpn; /* dgr */
-      int dgt_nbr_pre_dcm; /* Number of decimal digits before decimal point d_i in DCG19 (7) */
-      int qnt_pwr_xpn; /* Quantization power exponent p_i in DCG19 (6) */
-      float qnt_fct_flt; /* Quantization factor q_i in DCG19 (5) */
-      float val_qnt; /* Quantized value DCG19 (1) */
-      //int sgn_val; /* Sign of  DCG19 (5) */
-      /* Create mask */
-      msk_u32_xpn=0u; /* Zero all bits */
-      msk_u32_xpn=~msk_u32_xpn; /* Turn all bits to ones */
-      msk_u32_xpn>>=24; /* Right-shift zeros into bits to be zerod, leave ones in exponent bits */
-      if(!has_mss_val){
-	for(idx=0L;idx<sz;idx+=2L){
-	  u32_xpn=u32_ptr[idx]; // Copy memory so bitshifting exponent to byte boundary does not corrupt original
-	  u32_xpn>>=bit_xpl_nbr_sgn_flt; // Bit-shift exponent to end of word
-	  u32_xpn&=msk_u32_xpn; // Mask to elimnate sign bit
-	  i32_xpn=(int)u32_xpn-ieee_xpn_fst_flt; // Subtract 127 to compensate for IEEE SP exponent bias
-	  /* Number of decimal digits before decimal point */
-	  //	  dgt_nbr_pre_dcm=(i32_xpn > 0) ? (int)((i32_xpn-1)*dcm_per_bit_dgt_prc)+1 : 0; /* d_i DCG19 (7) */
-	  dgt_nbr_pre_dcm=(int)((i32_xpn-1)*dcm_per_bit_dgt_prc)+1; /* d_i DCG19 (7) */
-	  qnt_pwr_xpn=(dgt_nbr_pre_dcm > nsd) ? (int)((dgt_nbr_pre_dcm-nsd)*bit_per_dcm_dgt_prc) : 0; /* p_i DCG19 (6) */
-	  qnt_fct_flt=pow(2,qnt_pwr_xpn); /* Quantization factor q_i DCG19 (5) (as floating point) */
-	  /* Quantize value */
-	  val_qnt=op1.fp[idx];
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt1 = %g\n",nco_prg_nm_get(),val_qnt);
-	  val_qnt=(int)(fabs(val_qnt)/qnt_fct_flt);
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt2 = %g\n",nco_prg_nm_get(),val_qnt);
-	  val_qnt+=0.5f;
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt3 = %g\n",nco_prg_nm_get(),val_qnt);
-	  val_qnt*=qnt_fct_flt;
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt4 = %g\n",nco_prg_nm_get(),val_qnt);
-	  val_qnt*=(op1.fp[idx] > 0) ? 1 : -1;
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt5 = %g\n",nco_prg_nm_get(),val_qnt);
-	  u32_dpl=u32_ptr[idx];
-	  // u32_dpl= /* Take absolute value by placing 0 in sign bit */
-	  u32_dpl>>=qnt_pwr_xpn; /* Divide by q_i same as right-shifting by p_i */
-	  	  
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u32_xpn = %u, i32_xpn=%d, dgt_nbr_pre_dcm = d_i = %d, qnt_pwr_xpn = p_i = %d, qnt_fct_flt = q_i = %g\n",nco_prg_nm_get(),op1.fp[idx],u32_xpn,i32_xpn,dgt_nbr_pre_dcm,qnt_pwr_xpn,qnt_fct_flt);
-	} /* !idx */
-	for(idx=1L;idx<sz;idx+=2L){
-	  u8_xpn='0'; /* CEWI */
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u8_xpn_nbr = %hhu\n",nco_prg_nm_get(),op1.fp[idx],u8_xpn);
-	  if(u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
-	    u32_ptr[idx]|=msk_f32_u32_one;
-	} /* !idx */
-      }else{
-	const float mss_val_flt=*mss_val.fp;
-	for(idx=0L;idx<sz;idx+=2L)
-	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32_zro;
-	for(idx=1L;idx<sz;idx+=2L)
-	  if(op1.fp[idx] != mss_val_flt && u32_ptr[idx] != 0U) u32_ptr[idx]|=msk_f32_u32_one;
-      } /* end else */
+
+      /* 20210927:
+         NCO uses a modified (for clarity) implementation of Digit Rounding 
+	 from the DCG19 HDF5 codec code which is under an MIT-style license.
+	 Citation:
+	 Delaunay, X., A. Courtois, and F. Gouillon (2019), 
+	 Evaluation of lossless and lossy algorithms for the compression of scientific datasets in netCDF-4 or HDF5 files, 
+	 Geosci. Model Dev., 12(9), 4099-4113, doi:10.5194/gmd-2018-250.
+	 The original code carries the following copyright notice: */
+      /*
+       * Copyright (c) 2019, CNES.
+       *
+       * This source code is licensed under MIT-style license (found in the
+       * COPYING file in the root directory of this source tree).
+       */
+#define SIGN(x)	( (x<0) ? -1 : 1 )
+      /* Table contains approxmate value v for log10(mnt) for 5 ranges of mantissa
+	 These are pre-tabulated rather than computed in-line to save time 
+	 It is guaranteed that v < log10(mnt) for mnt in each range
+	 Approximation is "conservative" (preserves slightly more precision than necessary) */
+      const float mnt_log10_tbl[5][2]={
+	{0.6, -dgt_per_bit},
+	{0.7,-0.221848749},
+	{0.8,-0.154901959},
+	{0.9,-0.096910013},
+	{1.0,-0.045757490},
+      }; /* !mnt_log10_tbl */
+
+      double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
+      double mnt_log10_apx; /* [frc] Table-based approximation to log10(mnt) */
+      double qnt_fct; /* [frc] Greatest power of two bitmask for quantization */
+      double qnt_val; /* [frc] Quantized value */
+      double val; /* [frc] Copy of input value to avoid indirection */
+
+      int dgt_nbr; /* [nbr] Number of digits before decimal point */
+      int qnt_pwr; /* [nbr] Power of two in quantization mask: qnt_msk = 2^qnt_pwr */
+      int tbl_idx; /* [idx] Index into mnt_log10_tbl */
+      int xpn_bs2; /* [nbr] Binary exponent xpn_bs2 in val = sign(val) * 2^xpn_bs2 * mnt, 0.5 < mnt <= 1.0 */
+
+      /* Equivalent symbols between this code and DCG19:
+	 DCG19 Code
+	 e     xpn_bs2
+	 s     val
+	 s~    qnt_val
+	 m     mnt
+	 d     dgt_nbr
+	 p     qnt_pwr
+	 q     qnt_fct
+	 i     tbl_idx
+         v     mnt_log10_apx
+	 nsd   nsd
+         TABLE mnt_log10_tbl
+	 2     FLT_RADIX
+	 LOG10_2 dcm_per_bnr
+	 LOG2_10 bnr_per_dcm
+      */
+      
+#include <float.h> /* FLT_RADIX */
+      for(idx=0L;idx<sz;idx++){
+	if((val=op1.fp[idx]) != mss_val_cmp_flt){
+	  /* Compute number of digits before decimal point of input floating-point value val
+	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 * mnt, 0.5 <= mnt < 1.0 <--Correct 
+	     Note that DCG19 filter code is incorrectly commented with:
+	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 + mnt, 0 <= mnt < 0.5 <--Incorrect
+	     Note that algorithm flow chart in DCG19 has equation numbers one less than actual
+	     Equations indicated below are the actual equations in DCG19 */
+	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
+	  tbl_idx=0;
+	  while(mnt_log10_tbl[tbl_idx][0] < mnt) tbl_idx++;
+	  mnt_log10_apx=mnt_log10_tbl[tbl_idx][1];
+	  /* Convert binary exponent to number of digits dgt_nbr before decimal separator */
+	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_apx)+1; /* DGG19 p. 4102 (9) */
+	  /* Compute power of quantization mask: qnt_msk = 2^qnt_pwr */
+	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
+	  /* Compute quantization factor: qnt_fct = 2^qnt_pwr
+	     double ldexp(double x,int y) returns double z=x*2^y without using FP math */
+	  qnt_fct=ldexp(1,qnt_pwr); /* DGG19 p. 4101 (5) */
+	  /* Quantize number */
+	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
+	  /* Implicit conversion casts back to NC_FLOAT */
+	  op1.fp[idx]=val;
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, qnt_pwr = %d, qnt_val = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,qnt_pwr,qnt_val);
+	} /* !mss_val_cmp_flt */
+      } /* !idx */
+
     }else if(nco_baa_cnv_get() == nco_baa_bg2){
       /* Bit-Groom2: alternately shave and set LSBs with dynamic masks
 	 Test BG2:
@@ -765,7 +797,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 ncks -O -C -D 1 --baa=4 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
       idx=0L;
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g\n",nco_prg_nm_get(),op1.fp[idx]);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports val = %g\n",nco_prg_nm_get(),fnc_nm,op1.fp[idx]);
     }else if(nco_baa_cnv_get() == nco_baa_rnd){
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask */
@@ -875,6 +907,53 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       for(idx=0L;idx<sz;idx++)
 	if(op1.dp[idx] != mss_val_cmp_dbl && u64_ptr[idx] != 0UL) /* Never quantize upwards floating point values of zero */
 	  u64_ptr[idx]|=msk_f64_u64_one;
+    }else if(nco_baa_cnv_get() == nco_baa_dgr){
+      /* Digit Rounding (DCG19), copy of NC_FLOAT version (for now) with dp instead of fp
+	 DO NOT EDIT */
+      const float mnt_log10_tbl[5][2]={
+	{0.6, -dgt_per_bit},
+	{0.7,-0.221848749},
+	{0.8,-0.154901959},
+	{0.9,-0.096910013},
+	{1.0,-0.045757490},
+      }; /* !mnt_log10_tbl */
+
+      double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
+      double mnt_log10_apx; /* [frc] Table-based approximation to log10(mnt) */
+      double qnt_fct; /* [frc] Greatest power of two bitmask for quantization */
+      double qnt_val; /* [frc] Quantized value */
+      double val; /* [frc] Copy of input value to avoid indirection */
+
+      int dgt_nbr; /* [nbr] Number of digits before decimal point */
+      int qnt_pwr; /* [nbr] Power of two in quantization mask: qnt_msk = 2^qnt_pwr */
+      int tbl_idx; /* [idx] Index into mnt_log10_tbl */
+      int xpn_bs2; /* [nbr] Binary exponent xpn_bs2 in val = sign(val) * 2^xpn_bs2 * mnt, 0.5 < mnt <= 1.0 */
+
+      for(idx=0L;idx<sz;idx++){
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl){
+	  /* Compute number of digits before decimal point of input floating-point value val
+	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 * mnt, 0.5 <= mnt < 1.0 <--Correct 
+	     Note that DCG19 filter code is incorrectly commented with:
+	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 + mnt, 0 <= mnt < 0.5 <--Incorrect
+	     Note that algorithm flow chart in DCG19 has equation numbers one less than actual
+	     Equations indicated below are the actual equations in DCG19 */
+	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
+	  tbl_idx=0;
+	  while(mnt_log10_tbl[tbl_idx][0] < mnt) tbl_idx++;
+	  mnt_log10_apx=mnt_log10_tbl[tbl_idx][1];
+	  /* Convert binary exponent to number of digits dgt_nbr before decimal separator */
+	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_apx)+1; /* DGG19 p. 4102 (9) */
+	  /* Compute power of quantization mask: qnt_msk = 2^qnt_pwr */
+	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
+	  /* Compute quantization factor: qnt_fct = 2^qnt_pwr */
+	  qnt_fct=ldexp(1.0,qnt_pwr); /* DGG19 p. 4101 (5) */
+	  /* Quantize number */
+	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
+	  /* Implicit conversion casts back to NC_FLOAT */
+	  op1.dp[idx]=val;
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, qnt_pwr = %d, qnt_val = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,qnt_pwr,qnt_val);
+	} /* !mss_val_cmp_flt */
+      } /* !idx */
     }else if(nco_baa_cnv_get() == nco_baa_bg2){
       /* Bit-Grooming Version 2: alternately shave and set LSBs with dynamic masks, an unfinished work in progress... */
       for(idx=0L;idx<sz;idx+=2L)

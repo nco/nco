@@ -1,8 +1,16 @@
-2021-09-26  Charlie Zender  <zender@uci.edu>
+2021-09-27  Charlie Zender  <zender@uci.edu>
+
+	* PPQ: implement draft Digit Rounding procedure using DCG19 algorithm
+
+	* NCO 5.0.3-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.3-alpha02: Infrastructure';git push
+	git tag -a 5.0.3-alpha02 -m '';git push --tags
 
 	* NCO 5.0.3-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.3-alpha01: General Sherman';git push
 	git tag -a 5.0.3-alpha01 -m 'ncremap mpi_nbr_usr, E3SMU=SYSTEM, alg_typ=tempest fixes, otherwise functionally identical to 5.0.2';git push --tags
+
+2021-09-26  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add conda create environment hint for MOAB
 
