@@ -764,7 +764,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       
 #include <float.h> /* FLT_RADIX */
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.fp[idx]) != mss_val_cmp_flt){
+	if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
 	  /* Compute number of digits before decimal point of input floating-point value val
 	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 * mnt, 0.5 <= mnt < 1.0 <--Correct 
 	     Note that DCG19 filter code is incorrectly commented with:
@@ -785,7 +785,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  /* Quantize number */
 	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
 	  /* Implicit conversion casts back to NC_FLOAT */
-	  op1.fp[idx]=val;
+	  op1.fp[idx]=qnt_val;
 	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, qnt_pwr = %d, qnt_val = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,qnt_pwr,qnt_val);
 	} /* !mss_val_cmp_flt */
       } /* !idx */
@@ -930,7 +930,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       int xpn_bs2; /* [nbr] Binary exponent xpn_bs2 in val = sign(val) * 2^xpn_bs2 * mnt, 0.5 < mnt <= 1.0 */
 
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl){
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0UL){
 	  /* Compute number of digits before decimal point of input floating-point value val
 	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 * mnt, 0.5 <= mnt < 1.0 <--Correct 
 	     Note that DCG19 filter code is incorrectly commented with:
@@ -950,7 +950,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  /* Quantize number */
 	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
 	  /* Implicit conversion casts back to NC_FLOAT */
-	  op1.dp[idx]=val;
+	  op1.dp[idx]=qnt_val;
 	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, qnt_pwr = %d, qnt_val = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,qnt_pwr,qnt_val);
 	} /* !mss_val_cmp_flt */
       } /* !idx */
