@@ -1,10 +1,14 @@
-2021-09-27  Charlie Zender  <zender@uci.edu>
+2021-09-28  Charlie Zender  <zender@uci.edu>
 
-	* PPQ: implement draft Digit Rounding procedure using DCG19 algorithm
+	* PPQ: fix <float.h> and promote mnt_log10_tbl to double for MSVC
 
 	* NCO 5.0.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.3-alpha02: Infrastructure';git push
-	git tag -a 5.0.3-alpha02 -m '';git push --tags
+	git tag -a 5.0.3-alpha02 -m 'ppc dgr';git push --tags
+
+2021-09-27  Charlie Zender  <zender@uci.edu>
+
+	* PPQ: implement draft Digit Rounding procedure using DCG19 algorithm
 
 	* NCO 5.0.3-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.3-alpha01: General Sherman';git push

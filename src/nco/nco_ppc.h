@@ -15,6 +15,7 @@
 
 /* Standard header files */
 #include <ctype.h> /* isalnum(), isdigit(), tolower() */
+#include <float.h> /* FLT_RADIX */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
@@ -32,9 +33,12 @@
 
 /* Minimum number of explicit significand bits to preserve when zeroing/bit-masking floating point values
    Codes will preserve at least two explicit bits, IEEE significand representation contains one implicit bit
-   Thus preserve a least three bits which is approximately one sigificant decimal digit
+   Thus preserve at least three bits which is approximately one sigificant decimal digit
    Used in nco_ppc_bitmask() and nco_ppc_bitmask_scl() */
 #define NCO_PPC_BIT_XPL_NBR_MIN 2
+
+/* Macro to determine sign of floating point values, used in Digit Rounding */
+#define SIGN(x)	( (x<0) ? -1 : 1 )
 
 #ifdef __cplusplus
 extern "C" {
