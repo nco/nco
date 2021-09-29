@@ -24545,8 +24545,7 @@ As of @acronym{NCO} @w{version 5.0.2} from September, 2021,
 toolchain.
 @acronym{MOAB} and @acronym{ERWG} perform best in an @acronym{MPI}
 environment. 
-One can easily obtain this environment such an environment with
-Conda
+One can easily obtain such an environment with Conda
 @footnote{
 Install the Conda @acronym{MPI} versions of the
 @acronym{ERWG} and @acronym{MOAB} packages with
@@ -24920,26 +24919,50 @@ TempestRemap algorithm (otherwise the @acronym{TR} toolchain is
 used).
 
 Generate and use the recommended weights to remap fluxes from
-@acronym{SE} to @acronym{FV} grids, for example, with
+@acronym{FV} to @acronym{FV} grids, for example, with
 @example
 @verbatim
-ncremap -a se2fv_flx --src_grd=se.g --dst_grd=fv.nc -m map.nc
+ncremap -a fv2fv_flx --src_grd=src.g --dst_grd=dst.nc -m map.nc
 ncremap -m map.nc in.nc out.nc
 @end verbatim
 @end example
 This causes @command{ncremap} to automatically invoke TempestRemap with
 the boutique options 
-@samp{--in_type cgll --in_np 4 --out_type fv --mono}
+@samp{--in_type fv --in_np 1 --out_type fv --out_np 1 --correct_areas}
 that are recommended by @acronym{E3SM} for conservative and monotone  
 remapping of fluxes.
 Invoke @acronym{MOAB} to compute these weights by adding the
 @samp{--mpi_nbr=@var{mpi_nbr}} option:
 @example
 @verbatim
-ncremap --mpi_nbr=8 -a se2fv_flx --src_grd=se.g --dst_grd=fv.nc -m map.nc
-ncremap -m map.nc in.nc out.nc
+ncremap --mpi_nbr=8 -a fv2fv_flx --src_grd=src.g --dst_grd=dst.nc -m map.nc
 @end verbatim
 @end example
+This causes @command{ncremap} to automatically invoke multiple
+components of the @acronym{MOAB} toolchain:
+@example
+@verbatim
+mbconvert -B -o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE \
+  -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS \
+  "src.g" "src.h5m"
+mbconvert -B -o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE \
+  -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS \
+  "dst.nc" "dst.h5m"
+mbpart 8 --zoltan RCB "src.h5m" "src_8p.h5m"
+mbpart 8 --zoltan RCB --recompute_rcb_box --scale_sphere \
+  --project_on_sphere 2 "dst.h5m" "dst_8p.h5m"
+mpirun -n 8 mbtempest --type 5 --weights \
+  --load "src_8p.h5m" --load "dst_8p.h5m" \
+  --method fv --order 1 --method fv --order 1 \
+  --file "map.nc"
+ncatted -O --gaa <command lines> map.nc map.nc
+@end verbatim
+@end example
+The @acronym{MOAB} toolchain should produce a map-file identical, to
+rounding precision, to one produced by @acronym{TR}.
+When speed matters (i.e., large grids), and the algorithm is supported
+(i.e., @code{fv2fv_flx}), invoke @acronym{MOAB}, otherwise invoke
+@acronym{TR}. 
 
 @cindex Galerkin methods
 @cindex @code{cgll}
