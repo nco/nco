@@ -608,14 +608,14 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 
   /* Use constants defined in math.h */
   const double bit_per_dgt=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision = log2(10) */
-  const double dgt_per_bit=M_LN2/M_LN10; /* 0.301 [frc] Decimal per bit digit of precision = log10(2) */
+  const double dgt_per_bit=M_LN2/M_LN10; /* 0.301 [frc] Decimal digits per bit of precision = log10(2) */
   
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
   const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicitly 1. */
   //const int ieee_xpn_fst_flt=127; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
   //const int ieee_xpn_fst_dbl=1023; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
   
-  /* From Digit Rounding (DCG19):
+  /* Begin Digit Rounding (DCG19) declarations:
      Table contains approximate value v for log10(mnt) for five "tenths" ranges of mantissa
      These are pre-tabulated rather than computed in-line to save time 
      It is guaranteed that v < log10(mnt) for mnt in each range
@@ -629,7 +629,18 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      {0.9,-0.096910013}, /* Mantissas in [0.8,0.9) approximate log10(mnt) as log10(0.8) = -0.096910013 */
      {1.0,-0.045757490}, /* Mantissas in [0.9,1.0) approximate log10(mnt) as log10(0.9) = -0.045757490 */
     }; /* !mnt_log10_tbl_prx */
+  double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
+  double mnt_log10_prx; /* [frc] Table-based approximation to log10(mnt) */
+  double qnt_fct; /* [frc] Greatest power of two bitmask for quantization */
+  double qnt_val; /* [frc] Quantized value */
+  double val; /* [frc] Copy of input value to avoid indirection */
   
+  int dgt_nbr; /* [nbr] Number of digits before decimal point */
+  int qnt_pwr; /* [nbr] Power of two in quantization mask: qnt_msk = 2^qnt_pwr */
+  int tbl_idx; /* [idx] Index into mnt_log10_tbl_prx */
+  int xpn_bs2; /* [nbr] Binary exponent xpn_bs2 in val = sign(val) * 2^xpn_bs2 * mnt, 0.5 < mnt <= 1.0 */
+  /* End Digit Rounding (DCG19) declarations */
+
   double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
   double mss_val_cmp_dbl; /* Missing value for comparison to double precision values */
 
@@ -735,17 +746,6 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
        * This source code is licensed under MIT-style license (found in the
        * COPYING file in the root directory of this source tree).
        */
-      double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
-      double mnt_log10_prx; /* [frc] Table-based approximation to log10(mnt) */
-      double qnt_fct; /* [frc] Greatest power of two bitmask for quantization */
-      double qnt_val; /* [frc] Quantized value */
-      double val; /* [frc] Copy of input value to avoid indirection */
-
-      int dgt_nbr; /* [nbr] Number of digits before decimal point */
-      int qnt_pwr; /* [nbr] Power of two in quantization mask: qnt_msk = 2^qnt_pwr */
-      int tbl_idx; /* [idx] Index into mnt_log10_tbl_prx */
-      int xpn_bs2; /* [nbr] Binary exponent xpn_bs2 in val = sign(val) * 2^xpn_bs2 * mnt, 0.5 < mnt <= 1.0 */
-
       /* Equivalent symbols between this code and DCG19:
 	 DCG19 Code
 	 e     xpn_bs2
@@ -756,14 +756,12 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 p     qnt_pwr
 	 q     qnt_fct
 	 i     tbl_idx
-         v     mnt_log10_prx
 	 nsd   nsd
-         TABLE mnt_log10_tbl_prx
 	 2     FLT_RADIX
-	 LOG10_2 dcm_per_bnr
-	 LOG2_10 bnr_per_dcm
-      */
-      
+         v     mnt_log10_prx
+         TABLE mnt_log10_tbl_prx
+	 LOG2_10 bit_per_dgt
+	 LOG10_2 dgt_per_bit */
       for(idx=0L;idx<sz;idx++){
 	if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
 	  /* Algorithm flow chart in DCG19 has equation numbers one less than actual
@@ -775,19 +773,23 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 + mnt, 0 <= mnt < 0.5 <--Incorrect
 	     double frexp(double x, int *y) returns double mnt=mantissa, exponent y (no FP math) */
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
+	  /* Initialize bin index */
 	  tbl_idx=0;
+	  /* Search upper bounds to identify appropriate mantissa bin */
 	  while(mnt_log10_tbl_prx[tbl_idx][0] < mnt) tbl_idx++;
+	  /* Approximate log10(actual mantissa) as log10(lower bound of mantissa bin) */
 	  mnt_log10_prx=mnt_log10_tbl_prx[tbl_idx][1];
-	  /* Convert binary exponent to number of digits dgt_nbr before decimal separator */
+	  /* Convert binary exponent to number of digits dgt_nbr before decimal separator
+	     double floor(x) returns largest integer value not greater than x */
 	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
 	  /* Compute power of quantization mask: qnt_msk = 2^qnt_pwr */
 	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
 	  /* Compute quantization factor: qnt_fct = 2^qnt_pwr
 	     double ldexp(double x,int y) returns double z=x*2^y without using FP math */
 	  qnt_fct=ldexp(1,qnt_pwr); /* DGG19 p. 4101 (5) */
-	  /* Quantization:
+	  /* Quantize:
 	     Uniform scalar quantization with reconstruction at bin center
-	     Maximum quantization error |val-qnt_val| <= qnt_fct/2.0 */
+	     Guarantees maximum quantization error = |val-qnt_val| <= qnt_fct/2.0 */
 	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
 	  /* Implicit conversion casts double to float */
 	  op1.fp[idx]=qnt_val;
@@ -795,14 +797,29 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !mss_val_cmp_flt */
       } /* !idx */
 
-    }else if(nco_baa_cnv_get() == nco_baa_bg2){
-      /* Bit-Groom2: alternately shave and set LSBs with dynamic masks
-	 Test BG2:
+    }else if(nco_baa_cnv_get() == nco_baa_gbg){
+      /* Granular Bit Groom
+	 Test GBG:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
 	 ncks -O -C -D 1 --baa=4 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
-      idx=0L;
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports val = %g\n",nco_prg_nm_get(),fnc_nm,op1.fp[idx]);
+      int msk_bit_nbr; /* [nbr] Number of bits to mask */
+      for(idx=0L;idx<sz;idx++){
+	if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
+	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
+	  tbl_idx=0;
+	  while(mnt_log10_tbl_prx[tbl_idx][0] < mnt) tbl_idx++;
+	  mnt_log10_prx=mnt_log10_tbl_prx[tbl_idx][1];
+	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
+	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
+	  msk_bit_nbr=qnt_pwr;
+	  qnt_fct=ldexp(1,qnt_pwr); /* DGG19 p. 4101 (5) */
+	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
+	  op1.fp[idx]=qnt_val;
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, qnt_val = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,qnt_val);
+	} /* !mss_val_cmp_flt */
+      } /* !idx */
+
     }else if(nco_baa_cnv_get() == nco_baa_rnd){
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask */
@@ -822,7 +839,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  u32_ptr[idx]|=msk_f32_u32_hshv; /* Set MSB of LSBs */
 	} /* !mss_val_cmp_flt */
       } /* !idx */
-    }else if(nco_baa_cnv_get() == nco_baa_gbg){ /* JPT 20210102: baa_gbg (Granular Bit Grooming), brute force compression of each individual data point */
+    }else if(nco_baa_cnv_get() == nco_baa_brt){ /* JPT 20210102: baa_brt Brute force masking of each individual data point */
       const unsigned int msk_rst32=msk_f32_u32_zro; /* Set mask to original BG mask */
       nco_bool flg_qnt_nxt_bit; /* [flg] Quantize (set or shave) next bit */
       nco_bool x; /* [flg] */
@@ -877,7 +894,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  if(x) op1.fp[idx]=tmp32;
 	} // !0.0
       } // !idx
-    }else /* !nco_baa_gbg */
+    }else /* !nco_baa_brt */
       abort();
     break; /* !NC_FLOAT */
   case NC_DOUBLE:
@@ -918,17 +935,6 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 2. Reference mss_val_cmp_dbl not mss_val_cmp_flt
 	 3. Compare u64_ptr (not u32_ptr) to zero
 	 DO NOT EDIT the NC_DOUBLE code except for dp-specific changes, use fp code as template */
-      double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
-      double mnt_log10_prx; /* [frc] Table-based approximation to log10(mnt) */
-      double qnt_fct; /* [frc] Greatest power of two bitmask for quantization */
-      double qnt_val; /* [frc] Quantized value */
-      double val; /* [frc] Copy of input value to avoid indirection */
-
-      int dgt_nbr; /* [nbr] Number of digits before decimal point */
-      int qnt_pwr; /* [nbr] Power of two in quantization mask: qnt_msk = 2^qnt_pwr */
-      int tbl_idx; /* [idx] Index into mnt_log10_tbl_prx */
-      int xpn_bs2; /* [nbr] Binary exponent xpn_bs2 in val = sign(val) * 2^xpn_bs2 * mnt, 0.5 < mnt <= 1.0 */
-
       for(idx=0L;idx<sz;idx++){
 	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0UL){
 	  /* Compute number of digits before decimal point of input floating-point value val
@@ -954,13 +960,22 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, qnt_pwr = %d, qnt_val = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,qnt_pwr,qnt_val);
 	} /* !mss_val_cmp_flt */
       } /* !idx */
-    }else if(nco_baa_cnv_get() == nco_baa_bg2){
-      /* Bit-Grooming Version 2: alternately shave and set LSBs with dynamic masks, an unfinished work in progress... */
-      for(idx=0L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_cmp_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
-      for(idx=1L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_cmp_dbl && u64_ptr[idx] != 0UL) /* Never quantize upwards floating point values of zero */
-	  u64_ptr[idx]|=msk_f64_u64_one;
+    }else if(nco_baa_cnv_get() == nco_baa_gbg){
+      for(idx=0L;idx<sz;idx++){
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0UL){
+	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
+	  tbl_idx=0;
+	  while(mnt_log10_tbl_prx[tbl_idx][0] < mnt) tbl_idx++;
+	  mnt_log10_prx=mnt_log10_tbl_prx[tbl_idx][1];
+	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
+	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
+	  qnt_fct=ldexp(1.0,qnt_pwr); /* DGG19 p. 4101 (5) */
+	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
+	  op1.dp[idx]=qnt_val;
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, qnt_pwr = %d, qnt_val = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,qnt_pwr,qnt_val);
+	} /* !mss_val_cmp_flt */
+      } /* !idx */
+      
     }else if(nco_baa_cnv_get() == nco_baa_rnd){
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask
@@ -981,7 +996,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  u64_ptr[idx]|=msk_f64_u64_hshv; /* Set MSB of LSBs */
 	} /* !mss_val_cmp_dbl */
       } /* !idx */
-    }else if(nco_baa_cnv_get() == nco_baa_gbg){ /* JPT 20210102: baa_gbg (granualar bit grooming), brute force compression of each individual data point */ 
+    }else if(nco_baa_cnv_get() == nco_baa_brt){ /* JPT 20210102: baa_brt Brute force masking of each individual data point */ 
       double raw64;
       double temp64;
       const unsigned long int msk_rst64 = msk_f64_u64_zro;
@@ -1041,7 +1056,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	    if(x) op1.dp[idx] = temp64;
 	  } // close if 0
 	} // close set loop
-    }else // closes baa_gbg
+    }else // closes baa_brt
       abort();
     break; /* !NC_DOUBLE */
   case NC_INT: /* Do nothing for non-floating point types ...*/

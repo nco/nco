@@ -733,11 +733,11 @@ extern "C" {
     nco_baa_grm, /* 0 Bit Groom (NCO default since inception) */
     nco_baa_shv, /* 1 Bit Shave (option since 20160117) */
     nco_baa_set, /* 2 Bit Set (option since 20160117) */
-    nco_baa_dgr, /* 3 Digit Rounding (GCD19 option since 20190121) */
-    nco_baa_bg2, /* 4 Bit Groom version 2 dynamic masks (option since 20190203) */
-    nco_baa_rnd, /* 5 Bit rounding */
-    nco_baa_sh2, /* 6 Bit Half-shave  */
-    nco_baa_gbg, /* 7 Brute force granular bit grooming */
+    nco_baa_dgr, /* 3 Digit Rounding (DCG19 option since 202100928) */
+    nco_baa_gbg, /* 4 Granular Bit Groom (in progress...) */
+    nco_baa_rnd, /* 5 Bit rounding (option since 20200717) */
+    nco_baa_sh2, /* 6 Bit Half-shave (option since 20200715) */
+    nco_baa_brt, /* 7 Brute force (option since 20210428) */
   }; /* end nco_baa_cnv */
 
   enum nco_bnr_cnv{ /* [enm] Binary byte-ordering convention to employ (native or byte-swapped) */

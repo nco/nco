@@ -1,5 +1,7 @@
 2021-09-28  Charlie Zender  <zender@uci.edu>
 
+	* PPQ: change Juan's baa_gbg to baa_brt (Brute Force) and baa_bg2 to baa_gbg (Granular Bit Groom)
+
 	* PPQ: fix <float.h> and promote mnt_log10_tbl to double for MSVC
 
 	* NCO 5.0.3-alpha02 release procedure:
