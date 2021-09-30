@@ -780,16 +780,36 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  /* Approximate log10(actual mantissa) as log10(lower bound of mantissa bin) */
 	  mnt_log10_prx=mnt_log10_tbl_prx[tbl_idx][1];
 	  /* Convert binary exponent to number of digits dgt_nbr before decimal separator
-	     double floor(x) returns largest integer value not greater than x */
+	     This is # of digits before decimal when writing number longhand, no base-10 exponent
+	     dgt_nbr is positive/negative if base-10 exponent is positive/negative
+	     Sign of value has no effect on dgt_nbr
+	     Examples:
+	     ncks -O -C -D 1 --baa=4 -v ppc_tst --ppc default=3 ~/nco/data/in.nc ~/foo.nc
+	     0.123457    =  0.987654 * 2^-3,  dgt_nbr = 0,   qnt_pwr = -10, qnt_val = 0.123535
+	     -0.123457   = -0.987654 * 2^-3,  dgt_nbr = -1,  qnt_pwr = -14, qnt_val = -0.123444
+	     64          =  0.5      * 2^7,   dgt_nbr = 2,   qnt_pwr = -4,  qnt_val = 64.0312
+	     -64         = -0.5      * 2^7,   dgt_nbr = 2,   qnt_pwr = -4,  qnt_val = -64.0312
+	     1.23457e+33 =  0.951077 * 2^110, dgt_nbr = 34,  qnt_pwr = 102, qnt_val = 1.23469e+33
+	     1.23457e-17 =  0.8896   * 2^-56, dgt_nbr = -16, qnt_pwr = -64, qnt_val = 1.23328e-17
+	     3.14159     =  0.785398 * 2^2,   dgt_nbr = 1,   qnt_pwr = -7,  qnt_val = 3.14453
+	     -3.14159    = -0.785398 * 2^2,   dgt_nbr = 1,   qnt_pwr = -7,  qnt_val = -3.14453 */
 	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
-	  /* Compute power of quantization mask: qnt_msk = 2^qnt_pwr */
+	  /* Compute power of quantization mask: qnt_msk = 2^qnt_pwr
+	     Spread = dgt_nbr-NSD is how many digits will be quantized by floor() below
+	     Smaller NSD yields larger quantization power, masks more bits, reduces precision */
 	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
 	  /* Compute quantization factor: qnt_fct = 2^qnt_pwr
+	     IEEE754 represents qnt_fct exactly using only exponent (no mantissa) bits
 	     double ldexp(double x,int y) returns double z=x*2^y without using FP math */
 	  qnt_fct=ldexp(1,qnt_pwr); /* DGG19 p. 4101 (5) */
 	  /* Quantize:
 	     Uniform scalar quantization with reconstruction at bin center
-	     Guarantees maximum quantization error = |val-qnt_val| <= qnt_fct/2.0 */
+	     Guarantees maximum quantization error = |val-qnt_val| <= qnt_fct/2.0 
+	     floor() performs actual quantization
+	     double floor(x) returns largest integer value not greater than x
+	     Add 0.5 prior to floor to ensure IEEE-rounded value emerges
+	     NB: Adding 0.5 produces poorer-than necessary accuracy for some numbers
+	     However, it is guaranteed to be bias-free for random distributions */
 	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
 	  /* Implicit conversion casts double to float */
 	  op1.fp[idx]=qnt_val;
@@ -803,7 +823,6 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
 	 ncks -O -C -D 1 --baa=4 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
-      int msk_bit_nbr; /* [nbr] Number of bits to mask */
       for(idx=0L;idx<sz;idx++){
 	if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
@@ -812,11 +831,19 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  mnt_log10_prx=mnt_log10_tbl_prx[tbl_idx][1];
 	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
 	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
-	  msk_bit_nbr=qnt_pwr;
-	  qnt_fct=ldexp(1,qnt_pwr); /* DGG19 p. 4101 (5) */
-	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
-	  op1.fp[idx]=qnt_val;
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, qnt_val = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,qnt_val);
+	  bit_xpl_nbr_zro=xpn_bs2-qnt_pwr;
+	  assert(bit_xpl_nbr_zro >= 0);
+	  msk_f32_u32_zro=0u; /* Zero all bits */
+	  msk_f32_u32_zro=~msk_f32_u32_zro; /* Turn all bits to ones */
+	  /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
+	  msk_f32_u32_zro <<= bit_xpl_nbr_zro;
+	  /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
+	  msk_f32_u32_one=~msk_f32_u32_zro;
+	  msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
+	  u32_ptr[idx]+=msk_f32_u32_hshv; /* Add 1 to the MSB of LSBs, carry 1 to mantissa or even exponent */
+	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
+	  qnt_val=op1.fp[idx];
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, bxnz = %d, qnt_val = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,bit_xpl_nbr_zro,qnt_val);
 	} /* !mss_val_cmp_flt */
       } /* !idx */
 
