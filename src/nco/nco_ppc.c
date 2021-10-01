@@ -623,15 +623,24 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      20210928: Promote table from float->double to quiet MSVC warnings */
   const double mnt_log10_tbl_prx[5][2]=
     {
-     {0.6,-dgt_per_bit}, /* Mantissas in [0.5,0.6) approximate log10(mnt) as log10(0.5) = log10(2^(-1)) = -log10(2) = -dgt_per_bit = -0.30102999566 */
-     {0.7,-0.221848749}, /* Mantissas in [0.6,0.7) approximate log10(mnt) as log10(0.6) = -0.221848749 */
-     {0.8,-0.154901959}, /* Mantissas in [0.7,0.8) approximate log10(mnt) as log10(0.7) = -0.154901959 */
-     {0.9,-0.096910013}, /* Mantissas in [0.8,0.9) approximate log10(mnt) as log10(0.8) = -0.096910013 */
-     {1.0,-0.045757490}, /* Mantissas in [0.9,1.0) approximate log10(mnt) as log10(0.9) = -0.045757490 */
+     {0.6,-dgt_per_bit}, /* Approximate log10(mnt) for mantissas in [0.5,0.6) as log10(0.5) = log10(2^(-1)) = -log10(2) = -dgt_per_bit = -0.30102999566 */
+     {0.7,-0.221848749}, /* Approximate log10(mnt) for mantissas in [0.6,0.7) as log10(0.6) = -0.221848749 */
+     {0.8,-0.154901959}, /* Approximate log10(mnt) for mantissas in [0.7,0.8) as log10(0.7) = -0.154901959 */
+     {0.9,-0.096910013}, /* Approximate log10(mnt) for mantissas in [0.8,0.9) as log10(0.8) = -0.096910013 */
+     {1.0,-0.045757490}, /* Approximate log10(mnt) for mantissas in [0.9,1.0) as log10(0.9) = -0.045757490 */
+    }; /* !mnt_log10_tbl_prx */
+  const double mnt_log2_tbl_prx[5][2]=
+    {
+     {0.6,-dgt_per_bit},
+     {0.7,-0.221848749},
+     {0.8,-0.154901959},
+     {0.9,-0.096910013},
+     {1.0,-0.045757490},
     }; /* !mnt_log10_tbl_prx */
   double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
   double mnt_log10_prx; /* [frc] Table-based approximation to log10(mnt) */
   double qnt_fct; /* [frc] Greatest power of two bitmask for quantization */
+  double qnt_prx; /* [frc] Quantization approximation */
   double qnt_val; /* [frc] Quantized value */
   double val; /* [frc] Copy of input value to avoid indirection */
   
@@ -648,6 +657,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 
   int bit_xpl_nbr_sgn=int_CEWI; /* [nbr] Number of explicit bits in significand */
   int bit_xpl_nbr_zro; /* [nbr] Number of explicit bits to zero */
+  int prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
+  int prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
 
   long idx;
 
@@ -659,8 +670,6 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   unsigned long long int msk_f64_u64_zro;
   unsigned long long int msk_f64_u64_one;
   unsigned long long int msk_f64_u64_hshv;
-  unsigned short prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
-  unsigned short prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
   
   /* Only floating point types can be quantized */
   if(type != NC_FLOAT && type != NC_DOUBLE) return;
@@ -672,7 +681,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* How many bits to preserve? */
   prc_bnr_xct=nsd*bit_per_dgt;
   /* Be conservative, round upwards */
-  prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
+  prc_bnr_ceil=(int)ceil(prc_bnr_xct);
   /* First bit is implicit not explicit but corner cases prevent our taking advantage of this */
   //prc_bnr_xpl_rqr=prc_bnr_ceil-1; /* 20201223 CSZ verified this fails for small integers with NSD=1 */
   //prc_bnr_xpl_rqr=prc_bnr_ceil;
@@ -716,6 +725,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       for(idx=1L;idx<sz;idx+=2L)
 	if(op1.fp[idx] != mss_val_cmp_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
 	  u32_ptr[idx]|=msk_f32_u32_one;
+      /* !BitGroom = BGR */
     }else if(nco_baa_cnv_get() == nco_baa_shv){
       /* Bit-Shave: always shave LSBs */
       for(idx=0L;idx<sz;idx++)
@@ -813,10 +823,14 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
 	  /* Implicit conversion casts double to float */
 	  op1.fp[idx]=qnt_val;
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, qnt_val = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,qnt_val);
+	  if(nco_dbg_lvl_get() >= nco_dbg_std){
+	    qnt_prx=fabs(val-qnt_val);
+	    assert(qnt_prx <= 0.5*pow(10.0,dgt_nbr-nsd));
+	    (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,qnt_val,qnt_prx);
+	  } /* !dbg */
 	} /* !mss_val_cmp_flt */
       } /* !idx */
-
+      /* !DigitRound = DGR */
     }else if(nco_baa_cnv_get() == nco_baa_gbg){
       /* Granular Bit Groom
 	 Test GBG:
@@ -825,14 +839,24 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 ncks -O -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
       for(idx=0L;idx<sz;idx++){
 	if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
+	  int bit_nbr; /* [nbr] Number of bits before decimal point */
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  tbl_idx=0;
 	  while(mnt_log10_tbl_prx[tbl_idx][0] < mnt) tbl_idx++;
 	  mnt_log10_prx=mnt_log10_tbl_prx[tbl_idx][1];
-	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
-	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
-	  bit_xpl_nbr_zro=(int)floor(xpn_bs2+mnt_log10_prx*bit_per_dgt+3)-qnt_pwr;
-	  assert(bit_xpl_nbr_zro >= 0);
+	  //dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
+	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit-log10(fabs(mnt)))+1; /* DGG19 p. 4102 (8.67) */
+	  bit_nbr=(int)floor(xpn_bs2-log2(fabs(mnt)))+1; /* DGG19 p. 4102 (8.67) */
+	  //qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
+	  qnt_pwr=(int)floor(bit_nbr-bit_per_dgt*nsd); /* DGG19 p. 4101 (7) */
+	  prc_bnr_xpl_rqr=abs((int)floor(xpn_bs2-log2(fabs(mnt)))-qnt_pwr); /* Protects against mnt = -0.0 */
+	  //	  prc_bnr_xpl_rqr= fabs(mnt) == 0.0 ? 0 : abs((int)floor(xpn_bs2-log2(fabs(mnt)))-qnt_pwr); /* Protects against mnt = -0.0 */
+	  //prc_bnr_xpl_rqr= fabs(mnt) == 0.0 ? 0 : abs((int)floor(xpn_bs2-log10(fabs(mnt))*bit_per_dgt)-qnt_pwr); /* Protects against mnt = -0.0 */
+	  //prc_bnr_xpl_rqr=abs((int)floor(xpn_bs2-log10(fabs(mnt))*bit_per_dgt)+1-qnt_pwr); /* Fails if mnt = -0.0 */
+	  //prc_bnr_xpl_rqr=abs((int)floor(xpn_bs2+mnt_log10_prx*bit_per_dgt)+1-qnt_pwr);
+	  bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
+	  if(bit_xpl_nbr_zro < 0) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, pbxr = %d, bxnz = %d\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,prc_bnr_xpl_rqr,bit_xpl_nbr_zro);
+	  assert(bit_xpl_nbr_zro >= -1); /* NB: 0.0 might require -1 bits, i.e., "setting" the implicit first bit to zero */
 	  msk_f32_u32_zro=0u; /* Zero all bits */
 	  msk_f32_u32_zro=~msk_f32_u32_zro; /* Turn all bits to ones */
 	  /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
@@ -843,10 +867,12 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  u32_ptr[idx]+=msk_f32_u32_hshv; /* Add 1 to the MSB of LSBs, carry 1 to mantissa or even exponent */
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
 	  qnt_val=op1.fp[idx];
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, bxnz = %d, qnt_val = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,bit_xpl_nbr_zro,qnt_val);
+	  qnt_prx=fabs(val-qnt_val);
+	  assert(qnt_prx <= 0.5*pow(10.0,dgt_nbr-nsd));
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, pbxr = %d, bxnz = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,prc_bnr_xpl_rqr,bit_xpl_nbr_zro,qnt_val,qnt_prx);
 	} /* !mss_val_cmp_flt */
       } /* !idx */
-
+      /* !GranularBitGroom = GBG */
     }else if(nco_baa_cnv_get() == nco_baa_rnd){
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask */
@@ -856,6 +882,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
 	} /* !mss_val_cmp_flt */
       } /* !idx */
+      /* !BitRound = RND */
     }else if(nco_baa_cnv_get() == nco_baa_sh2){
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them

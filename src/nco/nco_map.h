@@ -17,7 +17,7 @@
 #include <limits.h> /* INT_MAX, LONG_MAX */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <stdlib.h> /* abs, getopt, malloc, strtol */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */

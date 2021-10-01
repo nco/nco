@@ -69,7 +69,7 @@
 /* Standard C headers */
 #include <assert.h> /* assert() */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
-#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <stdlib.h> /* abs, getopt, malloc, strtol */
 #include <string.h> /* strcmp() */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */

@@ -18,7 +18,7 @@
 #include <float.h> /* FLT_RADIX */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <stdlib.h> /* abs, getopt, malloc, strtol */
 #include <string.h> /* strcmp() */
 
 /* 3rd party vendors */
@@ -37,8 +37,8 @@
    Used in nco_ppc_bitmask() and nco_ppc_bitmask_scl() */
 #define NCO_PPC_BIT_XPL_NBR_MIN 2
 
-/* Macro to determine sign of floating point values, used in Digit Rounding */
-#define SIGN(x)	( (x<0) ? -1 : 1 )
+/* Macro to return sign of floating point values, used in Digit Round */
+#define SIGN(x)	((x) < 0 ? -1 : 1)
 
 #ifdef __cplusplus
 extern "C" {

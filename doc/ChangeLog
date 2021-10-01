@@ -1,8 +1,12 @@
-2021-09-30  Charlie Zender  <zender@uci.edu>
+2021-10-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.3-alpha02: Infrastructure';git push
-	git tag -a 5.0.3-alpha02 -m 'ppc dgr';git push --tags
+	git tag -a 5.0.3-alpha02 -m 'ppc dgr gbg';git push --tags
+
+	* PPQ: Convert GBG from digit-based to bit-based, demonstrate viability
+
+2021-09-30  Charlie Zender  <zender@uci.edu>
 
 	* PPQ: Draft GBG from DR granularity, BG treatment of mss_val & 0, BR hshv
 

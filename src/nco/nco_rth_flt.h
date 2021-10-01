@@ -22,7 +22,7 @@
 
 /* fxm stdio only needed for TODO ncap57 on UNIX */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
-#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <stdlib.h> /* abs, getopt, malloc, strtol */
 #include <time.h> /* time() seed for random()/rand() */
 
 /* 3rd party vendors */

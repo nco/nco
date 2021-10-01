@@ -56,7 +56,7 @@
 /* Standard C headers */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
-#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <stdlib.h> /* abs, getopt, malloc, strtol */
 #include <string.h> /* strcmp() */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */

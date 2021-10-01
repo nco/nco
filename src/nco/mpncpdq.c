@@ -42,7 +42,7 @@
 /* Standard C headers */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
-#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <stdlib.h> /* abs, getopt, malloc, strtol */
 #include <string.h> /* strcmp() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* POSIX stuff */
