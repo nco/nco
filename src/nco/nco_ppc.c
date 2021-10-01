@@ -831,7 +831,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  mnt_log10_prx=mnt_log10_tbl_prx[tbl_idx][1];
 	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
 	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
-	  bit_xpl_nbr_zro=xpn_bs2-qnt_pwr;
+	  bit_xpl_nbr_zro=(int)floor(xpn_bs2+mnt_log10_prx*bit_per_dgt+3)-qnt_pwr;
 	  assert(bit_xpl_nbr_zro >= 0);
 	  msk_f32_u32_zro=0u; /* Zero all bits */
 	  msk_f32_u32_zro=~msk_f32_u32_zro; /* Turn all bits to ones */
