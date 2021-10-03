@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.3-alpha02: Infrastructure';git push
 	git tag -a 5.0.3-alpha02 -m 'ppc dgr gbg';git push --tags
 
+	* PPQ: Tidy GBG. CR(GBG) ~ 9% better than DR. CR(Granular DR) ~3% better than GBG.
+
 	* PPQ: DR and GBG pass Zen16 quantization checks, GBG significantly more accurate for NSD=1, otherwise comparable
 
 	* PPQ: Harden quantization guarranty checks, GBG CR ~ DR CR
