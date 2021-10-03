@@ -609,7 +609,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Use constants defined in math.h */
   const double bit_per_dgt=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision = log2(10) */
   const double dgt_per_bit=M_LN2/M_LN10; /* 0.301 [frc] Decimal digits per bit of precision = log10(2) */
-  const double dgt_per_bit_dgr=-0.301029996; /* 0.301 [frc] Decimal digits per bit of precision = log10(2) used in DigitRound algorithm and code */
+  const double dgt_per_bit_dgr=0.301029996; /* 0.301 [frc] Decimal digits per bit of precision = log10(2) used in DigitRound algorithm and code */
   
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
   const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicitly 1. */
@@ -623,8 +623,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      Approximation is "conservative" (preserves slightly more precision than necessary)
      20210928: Promote table from float->double to quiet MSVC warnings */
   const double mnt_log10_tbl_dgr[5][2]=
-    { /* NB: Digit Round paper and code uses only 9-digits of precision
-	 To faithfully represent their algorithm, the NCO implementation does the same */
+    { /* NB: Digit Round paper and code uses 9-digits (not 15-digits) of precision
+	 NCO does the same to faithfully implement/represent their algorithm */
       {0.6,-0.301029996}, /* Approximate log10(mnt) for mantissas in [0.5,0.6) as log10(0.5) = log10(2^(-1)) = -log10(2) = -dgt_per_bit = -0.301 */
       {0.7,-0.221848749}, /* Approximate log10(mnt) for mantissas in [0.6,0.7) as log10(0.6) = -0.222 */
       {0.8,-0.154901959}, /* Approximate log10(mnt) for mantissas in [0.7,0.8) as log10(0.7) = -0.155 */
@@ -650,6 +650,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
   double mnt_log10_prx; /* [frc] Table-based approximation to log10(mnt) */
   double qnt_fct; /* [frc] Greatest power of two bitmask for quantization */
+  double qnt_grr; /* [frc] Guaranteed maximum allowed quantization error */ 
   double qnt_prx; /* [frc] Quantization approximation */
   double qnt_val; /* [frc] Quantized value */
   double val; /* [frc] Copy of input value to avoid indirection */
@@ -781,7 +782,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
          v     mnt_log10_prx
          TABLE mnt_log10_tbl_dgr
 	 LOG2_10 bit_per_dgt
-	 LOG10_2 dgt_per_bit */
+	 LOG10_2 dgt_per_bit_dgr */
       for(idx=0L;idx<sz;idx++){
 	if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
 	  /* Algorithm flow chart in DCG19 has equation numbers one less than actual
@@ -814,6 +815,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	     3.14159     =  0.785398 * 2^2,   dgt_nbr = 1,   qnt_pwr = -7,  qnt_val = 3.14453
 	     -3.14159    = -0.785398 * 2^2,   dgt_nbr = 1,   qnt_pwr = -7,  qnt_val = -3.14453 */
 	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit_dgr+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
+	  /* 20211003: Exact logarithm improves CR by ~10%, slows algorithm ~5% */
+	  //dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit-log10(fabs(mnt)))+1; /* DGG19 p. 4102 (8.67) */
 	  /* Compute power of quantization mask: qnt_msk = 2^qnt_pwr
 	     Spread = dgt_nbr-NSD is how many digits will be quantized by floor() below
 	     Smaller NSD yields larger quantization power, masks more bits, reduces precision */
@@ -834,6 +837,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  /* Implicit conversion casts double to float */
 	  op1.fp[idx]=qnt_val;
 	  if(nco_dbg_lvl_get() >= nco_dbg_std){
+	    /* Verify NSD precision guarranty NB: this assert() increases time ~30% */
 	    qnt_prx=fabs(val-qnt_val);
 	    assert(qnt_prx <= 0.5*pow(10.0,dgt_nbr-nsd));
 	    (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,qnt_val,qnt_prx);
@@ -854,14 +858,14 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  tbl_idx=0;
 	  while(mnt_log10_tbl_gbg[tbl_idx][0] < mnt) tbl_idx++;
 	  mnt_log10_prx=mnt_log10_tbl_gbg[tbl_idx][1];
-	  //dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
-	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit-log10(fabs(mnt)))+1; /* DGG19 p. 4102 (8.67) */
-	  bit_nbr=(int)floor(xpn_bs2-log2(fabs(mnt)))+1; /* DGG19 p. 4102 (8.67) */
-	  //qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
-	  qnt_pwr=(int)floor(bit_nbr-bit_per_dgt*nsd); /* DGG19 p. 4101 (7) */
-	  prc_bnr_xpl_rqr=abs((int)floor(xpn_bs2-log2(fabs(mnt)))-qnt_pwr); /* Protects against mnt = -0.0 */
-	  //	  prc_bnr_xpl_rqr= fabs(mnt) == 0.0 ? 0 : abs((int)floor(xpn_bs2-log2(fabs(mnt)))-qnt_pwr); /* Protects against mnt = -0.0 */
-	  //prc_bnr_xpl_rqr= fabs(mnt) == 0.0 ? 0 : abs((int)floor(xpn_bs2-log10(fabs(mnt))*bit_per_dgt)-qnt_pwr); /* Protects against mnt = -0.0 */
+	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
+	  //dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit-log10(fabs(mnt)))+1; /* DGG19 p. 4102 (8.67) */
+	  //bit_nbr=(int)floor(xpn_bs2-log2(fabs(mnt))); /* DGG19 p. 4102 (8.67) */
+	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
+	  //qnt_pwr=(int)floor(bit_nbr-bit_per_dgt*nsd); /* DGG19 p. 4101 (7) */
+	  //prc_bnr_xpl_rqr=abs((int)floor(xpn_bs2-log2(fabs(mnt)))+1-qnt_pwr); /* Protects against mnt = -0.0 */
+	  prc_bnr_xpl_rqr= fabs(mnt) == 0.0 ? 0 : abs((int)floor(xpn_bs2-log2(fabs(mnt)))-qnt_pwr); /* Protect against mnt = -0.0 */
+	  //prc_bnr_xpl_rqr= fabs(mnt) == 0.0 ? 0 : abs((int)floor(xpn_bs2-log10(fabs(mnt))*bit_per_dgt)-qnt_pwr); /* Protect against mnt = -0.0 */
 	  //prc_bnr_xpl_rqr=abs((int)floor(xpn_bs2-log10(fabs(mnt))*bit_per_dgt)+1-qnt_pwr); /* Fails if mnt = -0.0 */
 	  //prc_bnr_xpl_rqr=abs((int)floor(xpn_bs2+mnt_log10_prx*bit_per_dgt)+1-qnt_pwr);
 	  bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
@@ -877,8 +881,11 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  u32_ptr[idx]+=msk_f32_u32_hshv; /* Add 1 to the MSB of LSBs, carry 1 to mantissa or even exponent */
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
 	  qnt_val=op1.fp[idx];
+	  /* Verify NSD precision guarranty NB: this assert() increases time ~30% */
 	  qnt_prx=fabs(val-qnt_val);
-	  assert(qnt_prx <= 0.5*pow(10.0,dgt_nbr-nsd));
+	  qnt_grr=0.5*pow(10.0,dgt_nbr-nsd);
+	  if(qnt_prx > qnt_grr) (void)fprintf(stdout,"%s: ERROR %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, pbxr = %d, bxnz = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,prc_bnr_xpl_rqr,bit_xpl_nbr_zro,qnt_val,qnt_prx);
+	  assert(qnt_prx <= qnt_grr);
 	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, pbxr = %d, bxnz = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,prc_bnr_xpl_rqr,bit_xpl_nbr_zro,qnt_val,qnt_prx);
 	} /* !mss_val_cmp_flt */
       } /* !idx */

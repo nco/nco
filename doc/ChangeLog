@@ -1,12 +1,16 @@
-2021-10-02  Charlie Zender  <zender@uci.edu>
+2021-10-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.3-alpha02: Infrastructure';git push
 	git tag -a 5.0.3-alpha02 -m 'ppc dgr gbg';git push --tags
 
+	* PPQ: Harden quantization guarranty checks, GBG CR ~ DR CR
+
+2021-10-02  Charlie Zender  <zender@uci.edu>
+
 	* PPQ: Use BFB identical constants as DCG19 and code in NCO implementation
 
-	* PPQ: Implement mnt_log10_tbl_prx in full 15-digit double precision
+	* PPQ: Implement mnt_log10_tbl_prx in full 15-digit double precision for GBG
 
 2021-10-01  Charlie Zender  <zender@uci.edu>
 
