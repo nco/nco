@@ -609,6 +609,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Use constants defined in math.h */
   const double bit_per_dgt=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision = log2(10) */
   const double dgt_per_bit=M_LN2/M_LN10; /* 0.301 [frc] Decimal digits per bit of precision = log10(2) */
+  const double dgt_per_bit_dgr=-0.301029996; /* 0.301 [frc] Decimal digits per bit of precision = log10(2) used in DigitRound algorithm and code */
   
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
   const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicitly 1. */
@@ -621,22 +622,31 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      It is guaranteed that v < log10(mnt) for mnt in each range
      Approximation is "conservative" (preserves slightly more precision than necessary)
      20210928: Promote table from float->double to quiet MSVC warnings */
-  const double mnt_log10_tbl_prx[5][2]=
-    {
-     {0.6,-dgt_per_bit}, /* Approximate log10(mnt) for mantissas in [0.5,0.6) as log10(0.5) = log10(2^(-1)) = -log10(2) = -dgt_per_bit = -0.30102999566 */
-     {0.7,-0.221848749}, /* Approximate log10(mnt) for mantissas in [0.6,0.7) as log10(0.6) = -0.221848749 */
-     {0.8,-0.154901959}, /* Approximate log10(mnt) for mantissas in [0.7,0.8) as log10(0.7) = -0.154901959 */
-     {0.9,-0.096910013}, /* Approximate log10(mnt) for mantissas in [0.8,0.9) as log10(0.8) = -0.096910013 */
-     {1.0,-0.045757490}, /* Approximate log10(mnt) for mantissas in [0.9,1.0) as log10(0.9) = -0.045757490 */
-    }; /* !mnt_log10_tbl_prx */
-  const double mnt_log2_tbl_prx[5][2]=
+  const double mnt_log10_tbl_dgr[5][2]=
+    { /* NB: Digit Round paper and code uses only 9-digits of precision
+	 To faithfully represent their algorithm, the NCO implementation does the same */
+      {0.6,-0.301029996}, /* Approximate log10(mnt) for mantissas in [0.5,0.6) as log10(0.5) = log10(2^(-1)) = -log10(2) = -dgt_per_bit = -0.301 */
+      {0.7,-0.221848749}, /* Approximate log10(mnt) for mantissas in [0.6,0.7) as log10(0.6) = -0.222 */
+      {0.8,-0.154901959}, /* Approximate log10(mnt) for mantissas in [0.7,0.8) as log10(0.7) = -0.155 */
+      {0.9,-0.096910013}, /* Approximate log10(mnt) for mantissas in [0.8,0.9) as log10(0.8) = -0.0969 */
+      {1.0,-0.045757490}, /* Approximate log10(mnt) for mantissas in [0.9,1.0) as log10(0.9) = -0.0458 */
+    }; /* !mnt_log10_tbl_dgr */
+  const double mnt_log10_tbl_gbg[5][2]=
+    { /* NB: Granular Bit Groom extends Digit Round tabular precision from 9 to 15 digits */
+     {0.6,-dgt_per_bit}, /* Approximate log10(mnt) for mantissas in [0.5,0.6) as log10(0.5) = log10(2^(-1)) = -log10(2) = -dgt_per_bit = -0.301 */
+     {0.7,-0.221848749616356}, /* Approximate log10(mnt) for mantissas in [0.6,0.7) as log10(0.6) = -0.222 */
+     {0.8,-0.154901959985743}, /* Approximate log10(mnt) for mantissas in [0.7,0.8) as log10(0.7) = -0.155 */
+     {0.9,-0.096910013008056}, /* Approximate log10(mnt) for mantissas in [0.8,0.9) as log10(0.8) = -0.0969 */
+     {1.0,-0.045757490560675}, /* Approximate log10(mnt) for mantissas in [0.9,1.0) as log10(0.9) = -0.0458 */
+    }; /* !mnt_log10_tbl_gbg */
+  const double mnt_log2_tbl_gbg[5][2]=
     {
      {0.6,-dgt_per_bit},
      {0.7,-0.221848749},
      {0.8,-0.154901959},
      {0.9,-0.096910013},
      {1.0,-0.045757490},
-    }; /* !mnt_log10_tbl_prx */
+    }; /* !mnt_log10_tbl_gbg */
   double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
   double mnt_log10_prx; /* [frc] Table-based approximation to log10(mnt) */
   double qnt_fct; /* [frc] Greatest power of two bitmask for quantization */
@@ -646,7 +656,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   
   int dgt_nbr; /* [nbr] Number of digits before decimal point */
   int qnt_pwr; /* [nbr] Power of two in quantization mask: qnt_msk = 2^qnt_pwr */
-  int tbl_idx; /* [idx] Index into mnt_log10_tbl_prx */
+  int tbl_idx; /* [idx] Index into pre-computed lookup table for log10(mnt) or log2(mnt) */
   int xpn_bs2; /* [nbr] Binary exponent xpn_bs2 in val = sign(val) * 2^xpn_bs2 * mnt, 0.5 < mnt <= 1.0 */
   /* End Digit Rounding (DCG19) declarations */
 
@@ -769,7 +779,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 nsd   nsd
 	 2     FLT_RADIX
          v     mnt_log10_prx
-         TABLE mnt_log10_tbl_prx
+         TABLE mnt_log10_tbl_dgr
 	 LOG2_10 bit_per_dgt
 	 LOG10_2 dgt_per_bit */
       for(idx=0L;idx<sz;idx++){
@@ -786,9 +796,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  /* Initialize bin index */
 	  tbl_idx=0;
 	  /* Search upper bounds to identify appropriate mantissa bin */
-	  while(mnt_log10_tbl_prx[tbl_idx][0] < mnt) tbl_idx++;
+	  while(mnt_log10_tbl_dgr[tbl_idx][0] < mnt) tbl_idx++;
 	  /* Approximate log10(actual mantissa) as log10(lower bound of mantissa bin) */
-	  mnt_log10_prx=mnt_log10_tbl_prx[tbl_idx][1];
+	  mnt_log10_prx=mnt_log10_tbl_dgr[tbl_idx][1];
 	  /* Convert binary exponent to number of digits dgt_nbr before decimal separator
 	     This is # of digits before decimal when writing number longhand, no base-10 exponent
 	     dgt_nbr is positive/negative if base-10 exponent is positive/negative
@@ -803,7 +813,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	     1.23457e-17 =  0.8896   * 2^-56, dgt_nbr = -16, qnt_pwr = -64, qnt_val = 1.23328e-17
 	     3.14159     =  0.785398 * 2^2,   dgt_nbr = 1,   qnt_pwr = -7,  qnt_val = 3.14453
 	     -3.14159    = -0.785398 * 2^2,   dgt_nbr = 1,   qnt_pwr = -7,  qnt_val = -3.14453 */
-	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
+	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit_dgr+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
 	  /* Compute power of quantization mask: qnt_msk = 2^qnt_pwr
 	     Spread = dgt_nbr-NSD is how many digits will be quantized by floor() below
 	     Smaller NSD yields larger quantization power, masks more bits, reduces precision */
@@ -842,8 +852,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  int bit_nbr; /* [nbr] Number of bits before decimal point */
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  tbl_idx=0;
-	  while(mnt_log10_tbl_prx[tbl_idx][0] < mnt) tbl_idx++;
-	  mnt_log10_prx=mnt_log10_tbl_prx[tbl_idx][1];
+	  while(mnt_log10_tbl_gbg[tbl_idx][0] < mnt) tbl_idx++;
+	  mnt_log10_prx=mnt_log10_tbl_gbg[tbl_idx][1];
 	  //dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
 	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit-log10(fabs(mnt)))+1; /* DGG19 p. 4102 (8.67) */
 	  bit_nbr=(int)floor(xpn_bs2-log2(fabs(mnt)))+1; /* DGG19 p. 4102 (8.67) */
@@ -999,10 +1009,10 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	     Equations indicated below are the actual equations in DCG19 */
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  tbl_idx=0;
-	  while(mnt_log10_tbl_prx[tbl_idx][0] < mnt) tbl_idx++;
-	  mnt_log10_prx=mnt_log10_tbl_prx[tbl_idx][1];
+	  while(mnt_log10_tbl_dgr[tbl_idx][0] < mnt) tbl_idx++;
+	  mnt_log10_prx=mnt_log10_tbl_dgr[tbl_idx][1];
 	  /* Convert binary exponent to number of digits dgt_nbr before decimal separator */
-	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
+	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit_dgr+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
 	  /* Compute power of quantization mask: qnt_msk = 2^qnt_pwr */
 	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
 	  /* Compute quantization factor: qnt_fct = 2^qnt_pwr */
@@ -1019,8 +1029,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0UL){
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  tbl_idx=0;
-	  while(mnt_log10_tbl_prx[tbl_idx][0] < mnt) tbl_idx++;
-	  mnt_log10_prx=mnt_log10_tbl_prx[tbl_idx][1];
+	  while(mnt_log10_tbl_gbg[tbl_idx][0] < mnt) tbl_idx++;
+	  mnt_log10_prx=mnt_log10_tbl_gbg[tbl_idx][1];
 	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
 	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
 	  qnt_fct=ldexp(1.0,qnt_pwr); /* DGG19 p. 4101 (5) */
