@@ -898,7 +898,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !mss_val_cmp_flt */
       } /* !idx */
       /* !GranularBitGroom = GBG */
-    }else if(nco_baa_cnv_get() == nco_baa_rnd){
+    }else if(nco_baa_cnv_get() == nco_baa_btr){
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask */
       for(idx=0L;idx<sz;idx++){
@@ -1074,7 +1074,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !mss_val_cmp_dbl */
       } /* !idx */
       /* !GranularBitGroom = GBG */
-    }else if(nco_baa_cnv_get() == nco_baa_rnd){
+    }else if(nco_baa_cnv_get() == nco_baa_btr){
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask
 	 See figures at https://github.com/nco/nco/pull/199 */

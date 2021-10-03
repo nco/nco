@@ -6,131 +6,45 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.3 contains significant new features and few minor fixes. 
+Version 5.0.3 contains significant improvements to the quantization
+algorithms and fixes to MOAB/mbtempest regridding. NCO now supports
+the Digit Round and Granular BitGroom quantization algorithms. The
+failed self-test problems that prevented Conda from building NCO
+5.0.3 have been fixed, and a 5.0.3 Conda package should soon be
+available. 
 
 Work on NCO 5.0.4 has commenced and will improve ncremap support
-for MOAB, incorporate new MOAB improvements, and improve quantization
-metadata and algorithms.
+for MOAB, incorporate new MOAB improvements, and further improve
+quantization metadata and algorithms.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo now expands variable lists that contain regular
-   expressions (RX). Previously the splitter would aggregate
-   all variables specified by an RX into a single timeseries file.
-   Now the splitter places every variable into its own file.
-   Thus using an RX produces the same timeseries files as explicitly
-   specifying every variable. There is no change in the behavior
-   of climo mode; it continues to put all variables in one file.
-   ncclimo --var_lst=_2DMS.? in*.nc
-   ncclimo --var_lst=_2DMS.? --var_xtr=area in*.nc
-   Both commands use an RX in a variable list. The second command
-   explicitly adds the 'area' variable to all output timeseries.
-   The improved functionality should be especially useful to analyze 
-   datasets with large numbers of tracers/species.
-   Thanks to Qi Tang of PNNL for suggesting this feature.
-
-B. ncremap now supports the MOAB parallel interface to the
-   TempestRemap (TR) weight-generation libraries for 1D FV->FV grids. 
-   ncremap will invoke mbtempest in parallel mode whenever the user
-   requests a TR algorithm (e.g., --alg_typ=fv2fv_flx) and,
-   additionally, specifies the number of MPI tasks-per-node with
-   --mpi_nb=<mpi_nbr>: 
-   ncremap 		--alg_typ=fv2fv_flx ... --map=map.nc # TR
-   ncremap --mpi_nbr=24 --alg_typ=fv2fv_flx ... --map=map.nc # MOAB
-   BTW, the same convention applies to MPI-enabled ERWG:
-   ncremap 		--alg_typ=aave ... --map=map.nc # ESMF
-   ncremap --mpi_nbr=24	--alg_typ=aave ... --map=map.nc # Parallel ESMF
-   ncremap automatically uses mbconvert to convert SCRIP and Exodus 
-   gridfiles (based on their file suffix) to MOAB .h5m format.
-   It then uses mbpart to partition the MOAB grids, and then
-   calls mbtempest. Two ncremap options specific to mbtempest are
-   available to configure this workflow. The intersection algorithm
-   can be set with --nsx_alg=advfront|kdtree (default is kdtree).
-   Set the partition number for mbpart with --prt_nbr=<prt_nbr>.
-   The partition number must be a multiple of mpi_nbr and by default
-   prt_nbr=mpi_nbr. 
-   ncremap --mpi_nbr=24 --nsx_alg=advfront --alg_typ=fv2fv_flx ...
-   ncremap --mpi_nbr=24 --prt_nbr=48 --alg_typ=fv2fv_flx ...
-   ncremap --mpi_nbr=24 --prt_nbr=48 --alg_typ=fv2fv_flx ...
-   Limitations that MOAB anticipates removing in future releases:
-   Currently MOAB is only trustworthy for the fv2fv_flx algorithm.
-   High order and spectral element maps require more work in MOAB.
-   Currently mbtempest only generates map-files that regrid to rank 1
-   (unstructured) grids.  mbtempest "unrolls" any rank 2 (e.g.,
-   latxlon) destination grid into its rank 1 equivalent.
-   Users seeking to regrid to rank 2 grids can manually alter the
-   MOAB-generated mapfile with something like:
-   ncks -O -x -v dst_grid_dims ~/map.nc ~/map_fix.nc
-   ncap2 -O -s 'defdim("dst_grid_dims",2);dst_grid_dims($dst_grid_dims)={256,129};' ~/map_tmp.nc ~/map_fix.nc
-   Replace 256,129 by the lon,lat (Fortran order!) of your grid.
-   The resulting map-file, map_fix.nc, will almost regrid as intended.
-   The regridded output will have curvilinear coordinates (e.g,
-   lat(lat,lon)) instead of rectangular coordinates (e.g., lat(lat)),
-   and the coordinate "bounds" variables (e.g., lat_bnds) will not be
-   correct and may cause plotting issues at poles and Greenwich.
-   Nevertheless, the weights are correct and of unsurpassed accuracy.
-   MOAB anticipates supporting rank 2 mapfiles and TR high-order and 
-   spectral element algorithms in the future.
-   This initial NCO support gives the opportunity to adopt ncremap
-   to generate FV->FV mapfiles with 1D destination grids, an important
-   class of regridding problems for model coupling purposes. 
-   We welcome suggestions for new/improved options/features.
-   Due to its complexity, only MOAB insalled via Conda is supported.
-   Thanks to Vijay Mahadevan of ANL for his help with MOAB.
-   http://nco.sf.net/nco.html#tr
-   http://nco.sf.net/nco.html#moab
-
-C. Bit-Adjustment-Algorithms (BAAs) for lossy quantization
-   (e.g., BitGrooming) now only quantize the values NC_FILL_FLOAT or
-   NC_FILL_DOUBLE for float and double variables, respectively, when
-   the _FillValue attribute has been set to some other value.
-   Previously all BAAs always quantized NC_FILL_FLOAT or
-   NC_FILL_DOUBLE unless they were explicitly set as _FillValue.
-   Thanks to Ed Hartnett of NOAA for this suggestion.
-
-D. Similarly, the ncremap regridder and vertical interpolation
-   routines now treat the values NC_FILL_FLOAT and NC_FILL_DOUBLE as
-   missing values for float and double variables, respectively,
-   unless their _FillValue has been explicitly set to some other
-   value. Now datasets that never explicitly set a _FillValue 
-   will be regridded/interpolated properly. 
-
-E. Operators like ncks and ncrcat that utilize the UDUnits library
-   will now report more thorough diagnostics when that library cannot
-   be successfully opened, e.g., because the database file could not
-   be found. This has been helpful in diagnosing the issues that
-   underlie unexpected workflow failures that turn out to be due to
-   incorrectly configured UDUnits environments. Thanks to Tom Vo of
-   LLNL for helping uncover related issues.
-
-F. ncremap now infers curvilinear grids from data files that include
-   coordinates named west_east and south_north.
-   Thanks to a StackOverflow user for suggesting this feature.
-
-G. ncclimo now assumes the model name string in input files is 'eam'
-   not 'cam'. The old behavior can be recovered by explicitly
-   specifying ncclimo --mdl_nm=cam.
+A. Lossy quantization algorithms have been refactored. First, the
+   attribute name that store the level of quantization are now
+   algorithm-specific, e.g.,
+   QuantizeBitGroomNumberOfSignificantDigits. Previsously, NCO 
+   stored the NSD attribute number_of_significant_digits. However,
+   this was deemed too ambiguous, given the increasing number of
+   supported quantization methods. The new attribute names better
+   disambiguate which algorithm was used to quantize the variable.
+   Second, the default algorithm has been changed from BitGroom with
+   BitRound masks from R. Kouznetsov (2021), to what we call Granular
+   BitGroom (GBG). GBG combines the best features of BitGroom,
+   BitRound, and DigitRound by Delaunay et al. (2019). GBG improves
+   compression ratios by ~20% relative to BitGroom for NSD=3 on
+   our benchmark 1 GB climate model output dataset.
 
 BUG FIXES:
    
-A. ncclimo automatically turns-on splitter mode when clm_md=hfs
-   and files are provided by globbing the input directory.
-   Previously ncclimo would not enter splitter mode automatically
-   under these circumstances. The workaround is to force splitter
-   mode by specifying the --ypf=ypf option. The solution is to
-   upgrade.
-
-B. A minor change to OpenMP behavior now allows Intel compilers
-   to build NCO from source (once again). This bug was introduced
-   in NCO ~4.9.9 and affects only Intel compilers. The solution is to
-   upgrade. Thanks to Matthew Thompson of GSFC for pointing this out.
-
-C. ncclimo and ncremap now passes the option --mem=0 to srun
-   on Cori at NERSC. Previously it passed the option --mem=20000,
-   which could exhaust the available RAM at high-resolution.
+A. ncremap fixes issues that prevented one of its self-tests from
+   succeeding, and thus Conda from building an NCO 5.0.2 package.
+   The tested algorithm is now 'fv2fv_flx' not 'tempest'. The
+   MPI-enabled E3SM-Unified (SYSTEM) environment no longer changes
+   the behavior of ncremap commands. --mpi_nbr now has complete
+   control over whether mpirun (or srun) commands are issued.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
@@ -138,8 +52,8 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.0.2 built/tested under
-MacOS 11.5 with netCDF 4.8.0 on HDF5 1.12.0 and with
+These problems occur with NCO 5.0.3 built/tested under
+MacOS 11.6 with netCDF 4.8.0 on HDF5 1.12.0 and with
 Linux with netCDF 4.8.0 on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)

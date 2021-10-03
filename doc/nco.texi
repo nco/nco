@@ -9600,11 +9600,11 @@ It is recommended though not required to write netCDF4 files after
 For clarity the @samp{-4/-7} switches are omitted in subsequent
 examples. 
 @html
-<a name="quantize_bitgroom_number_of_significant_digits"></a> <!-- http://nco.sf.net/nco.html#quantize_bitgroom_number_of_significant_digits -->
+<a name="QuantizeBitGroomNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitGroomNumberOfSignificantDigits -->
 <a name="number_of_significant_digits"></a> <!-- http://nco.sf.net/nco.html#number_of_significant_digits -->
 <a name="least_significant_digit"></a> <!-- http://nco.sf.net/nco.html#least_significant_digit -->
 @end html
-@cindex @code{quantize_bitgroom_number_of_significant_digits}
+@cindex @code{QuantizeBitGroomNumberOfSignificantDigits}
 @cindex @code{number_of_significant_digits}
 @cindex @code{least_significant_digit}
 @cindex Jeff Whitaker
@@ -9614,15 +9614,17 @@ examples.
 degree of precision retained for each variable affected by
 @acronym{PPC}. 
 The @acronym{NSD} and @acronym{DSD} algorithms store the attributes
-@code{quantize_bitgroom_number_of_significant_digits}
+@code{QuantizeBitGroomNumberOfSignificantDigits}
 @footnote{
 Prior to @acronym{NCO} version 5.0.3 (October, 2021), @acronym{NCO}
 stored the @acronym{NSD} attribute
 @code{number_of_significant_digits}.
-However, this was deemed too ambiguous, given increasing number of
+However, this was deemed too ambiguous, given the increasing number of
 supported quantization methods.
-The new attribute names attempt to disambiguate which algorithm was
-used to quantize the data.
+The new attribute names better disambiguate which algorithm was used
+to quantize the data.
+They also harmonize better with the metadata produced by the upcoming
+netCDF library quantization features.
 }
 and @code{least_significant_digit}
 @footnote{
