@@ -730,12 +730,12 @@ extern "C" {
   }; /* end nco_rth_cnv */
 
   enum nco_baa_cnv{ /* [enm] Bit-Adjustment Algorithm to use */
-    nco_baa_grm, /* 0 Bit Groom (NCO default since inception) */
+    nco_baa_bgr, /* 0 Bit Groom (option since 201502XX, default 201502XX--20200717) */
     nco_baa_shv, /* 1 Bit Shave (option since 20160117) */
     nco_baa_set, /* 2 Bit Set (option since 20160117) */
-    nco_baa_dgr, /* 3 Digit Rounding (DCG19 option since 202100928) */
-    nco_baa_gbg, /* 4 Granular Bit Groom (in progress...) */
-    nco_baa_rnd, /* 5 Bit rounding (option since 20200717) */
+    nco_baa_dgr, /* 3 Digit Round (DCG19 option since 20210928, default 20210928--20211003) */
+    nco_baa_gbg, /* 4 Granular Bit Groom (option since 20211003, default 20211003--present) */
+    nco_baa_rnd, /* 5 Bit Round (option since 20200717, default 20200717--20210928) */
     nco_baa_sh2, /* 6 Bit Half-shave (option since 20200715) */
     nco_baa_brt, /* 7 Brute force (option since 20210428) */
   }; /* end nco_baa_cnv */

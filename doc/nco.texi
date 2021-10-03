@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.3-alpha01
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 24 September 2021
-@set update-month September 2021
+@set update-date 3 October 2021
+@set update-month October 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -9600,9 +9600,11 @@ It is recommended though not required to write netCDF4 files after
 For clarity the @samp{-4/-7} switches are omitted in subsequent
 examples. 
 @html
+<a name="quantize_bitgroom_number_of_significant_digits"></a> <!-- http://nco.sf.net/nco.html#quantize_bitgroom_number_of_significant_digits -->
 <a name="number_of_significant_digits"></a> <!-- http://nco.sf.net/nco.html#number_of_significant_digits -->
 <a name="least_significant_digit"></a> <!-- http://nco.sf.net/nco.html#least_significant_digit -->
 @end html
+@cindex @code{quantize_bitgroom_number_of_significant_digits}
 @cindex @code{number_of_significant_digits}
 @cindex @code{least_significant_digit}
 @cindex Jeff Whitaker
@@ -9612,7 +9614,17 @@ examples.
 degree of precision retained for each variable affected by
 @acronym{PPC}. 
 The @acronym{NSD} and @acronym{DSD} algorithms store the attributes
-@code{number_of_significant_digits} and @code{least_significant_digit}
+@code{quantize_bitgroom_number_of_significant_digits}
+@footnote{
+Prior to @acronym{NCO} version 5.0.3 (October, 2021), @acronym{NCO}
+stored the @acronym{NSD} attribute
+@code{number_of_significant_digits}.
+However, this was deemed too ambiguous, given increasing number of
+supported quantization methods.
+The new attribute names attempt to disambiguate which algorithm was
+used to quantize the data.
+}
+and @code{least_significant_digit}
 @footnote{
 A suggestion by Rich Signell and the @command{nc3tonc4} tool by Jeff
 Whitaker inspired @acronym{NCO} to implement @acronym{PPC}.

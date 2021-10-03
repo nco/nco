@@ -2030,10 +2030,32 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(var_trv.ppc != NC_MAX_INT){
 	aed_sct aed_ppc;
 	char att_nm_dsd[]="least_significant_digit";
-	char att_nm_nsd[]="number_of_significant_digits";
+	char att_nm_bgr[]="QuantizeBitGroomNumberOfSignificantDigits";
+	char att_nm_shv[]="QuantizeBitShaveNumberOfSignificantDigits";
+	char att_nm_set[]="QuantizeBitSetNumberOfSignificantDigits";
+	char att_nm_dgr[]="QuantizeDigitRoundNumberOfSignificantDigits";
+	char att_nm_gbg[]="QuantizeGranularBitGroomNumberOfSignificantDigits";
+	char att_nm_rnd[]="QuantizeBitRoundNumberOfSignificantDigits";
+	char att_nm_sh2[]="QuantizeHalfShaveNumberOfSignificantDigits";
+	char att_nm_brt[]="QuantizeBruteForceNumberOfSignificantDigits";
 	int ppc_old;
 	int rcd;
-	if(var_trv.flg_nsd) aed_ppc.att_nm=att_nm_nsd; else aed_ppc.att_nm=att_nm_dsd;
+	if(var_trv.flg_nsd){
+	  switch(nco_baa_cnv_get()){
+	  case nco_baa_bgr: aed_ppc.att_nm=att_nm_bgr; break;
+	  case nco_baa_shv: aed_ppc.att_nm=att_nm_shv; break;
+	  case nco_baa_set: aed_ppc.att_nm=att_nm_set; break;
+	  case nco_baa_dgr: aed_ppc.att_nm=att_nm_dgr; break;
+	  case nco_baa_gbg: aed_ppc.att_nm=att_nm_gbg; break;
+	  case nco_baa_rnd: aed_ppc.att_nm=att_nm_rnd; break;
+	  case nco_baa_sh2: aed_ppc.att_nm=att_nm_sh2; break;
+	  case nco_baa_brt: aed_ppc.att_nm=att_nm_brt; break;
+	  default: 
+	    (void)fprintf(stdout,"%s: ERROR %s reports unknown quantization method\n",nco_prg_nm_get(),fnc_nm);
+	    nco_exit(EXIT_FAILURE);
+	    break;
+	  } /* !nco_baa_cnv_get() */
+	}else aed_ppc.att_nm=att_nm_dsd;
 	aed_ppc.var_nm=var_trv.nm;
 	aed_ppc.id=var_out_id;
 	aed_ppc.val.ip=&var_trv.ppc;
