@@ -648,6 +648,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      {1.0,-0.045757490},
     }; /* !mnt_log10_tbl_gbg */
   double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
+  double mnt_log10_fabs; /* [frc] log10(fabs(mantissa))) */
   double mnt_log10_prx; /* [frc] Table-based approximation to log10(mnt) */
   double qnt_fct; /* [frc] Greatest power of two bitmask for quantization */
   double qnt_grr; /* [frc] Guaranteed maximum allowed quantization error */ 
@@ -804,6 +805,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	     This is # of digits before decimal when writing number longhand, no base-10 exponent
 	     dgt_nbr is positive/negative if base-10 exponent is positive/negative
 	     Sign of value has no effect on dgt_nbr
+	     dgt_nbr must be correct otherwise quantization guarantee check will be incorrect
 	     Examples:
 	     ncks -O -C -D 1 --baa=4 -v ppc_tst --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	     0.123457    =  0.987654 * 2^-3,  dgt_nbr = 0,   qnt_pwr = -10, qnt_val = 0.123535
@@ -837,7 +839,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  /* Implicit conversion casts double to float */
 	  op1.fp[idx]=qnt_val;
 	  if(nco_dbg_lvl_get() >= nco_dbg_std){
-	    /* Verify NSD precision guarranty NB: this assert() increases time ~30% */
+	    /* Verify NSD precision guarantee NB: this assert() increases time ~30% */
 	    qnt_prx=fabs(val-qnt_val);
 	    assert(qnt_prx <= 0.5*pow(10.0,dgt_nbr-nsd));
 	    (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,qnt_val,qnt_prx);
@@ -858,13 +860,17 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  tbl_idx=0;
 	  while(mnt_log10_tbl_gbg[tbl_idx][0] < mnt) tbl_idx++;
 	  mnt_log10_prx=mnt_log10_tbl_gbg[tbl_idx][1];
-	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
-	  //dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit-log10(fabs(mnt)))+1; /* DGG19 p. 4102 (8.67) */
+	  mnt_log10_fabs=log10(fabs(mnt));
+	  //dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
+	  /* 20211003 Continuous determination of dgt_nbr improves CR by ~10% */
+	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_fabs)+1; /* DGG19 p. 4102 (8.67) */
 	  //bit_nbr=(int)floor(xpn_bs2-log2(fabs(mnt))); /* DGG19 p. 4102 (8.67) */
 	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
 	  //qnt_pwr=(int)floor(bit_nbr-bit_per_dgt*nsd); /* DGG19 p. 4101 (7) */
 	  //prc_bnr_xpl_rqr=abs((int)floor(xpn_bs2-log2(fabs(mnt)))+1-qnt_pwr); /* Protects against mnt = -0.0 */
-	  prc_bnr_xpl_rqr= fabs(mnt) == 0.0 ? 0 : abs((int)floor(xpn_bs2-log2(fabs(mnt)))-qnt_pwr); /* Protect against mnt = -0.0 */
+	  prc_bnr_xpl_rqr= fabs(mnt) == 0.0 ? 0 : abs((int)floor(xpn_bs2-bit_per_dgt*mnt_log10_fabs)-qnt_pwr); /* Protect against mnt = -0.0 */
+	  prc_bnr_xpl_rqr--; /* 20211003 Reducing formula by 1 bit works with EAM BM dataset */
+	  //	  prc_bnr_xpl_rqr= fabs(mnt) == 0.0 ? 0 : abs((int)floor(xpn_bs2-log2(fabs(mnt)))-qnt_pwr); /* Protect against mnt = -0.0 */
 	  //prc_bnr_xpl_rqr= fabs(mnt) == 0.0 ? 0 : abs((int)floor(xpn_bs2-log10(fabs(mnt))*bit_per_dgt)-qnt_pwr); /* Protect against mnt = -0.0 */
 	  //prc_bnr_xpl_rqr=abs((int)floor(xpn_bs2-log10(fabs(mnt))*bit_per_dgt)+1-qnt_pwr); /* Fails if mnt = -0.0 */
 	  //prc_bnr_xpl_rqr=abs((int)floor(xpn_bs2+mnt_log10_prx*bit_per_dgt)+1-qnt_pwr);
@@ -881,7 +887,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  u32_ptr[idx]+=msk_f32_u32_hshv; /* Add 1 to the MSB of LSBs, carry 1 to mantissa or even exponent */
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
 	  qnt_val=op1.fp[idx];
-	  /* Verify NSD precision guarranty NB: this assert() increases time ~30% */
+	  /* Verify NSD precision guarantee NB: this assert() increases time ~30% */
 	  qnt_prx=fabs(val-qnt_val);
 	  qnt_grr=0.5*pow(10.0,dgt_nbr-nsd);
 	  if(qnt_prx > qnt_grr) (void)fprintf(stdout,"%s: ERROR %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, pbxr = %d, bxnz = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,prc_bnr_xpl_rqr,bit_xpl_nbr_zro,qnt_val,qnt_prx);
