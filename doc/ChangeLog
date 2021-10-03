@@ -2,7 +2,7 @@
 
 	* NCO 5.0.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.3-alpha02: Infrastructure';git push
-	git tag -a 5.0.3-alpha02 -m 'ppc dgr gbg';git push --tags
+	git tag -a 5.0.3-alpha02 -m 'ppc dgr gbg, att_nm';git push --tags
 
 	* PPQ: Change default bit-adjustment-algorithm to GBG
 
