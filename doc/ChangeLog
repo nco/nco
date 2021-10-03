@@ -1,10 +1,16 @@
 2021-10-03  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.3-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.3-beta01: Daikokuya';git push
+	git tag -a 5.0.3-beta01 -m 'all: ppc dgr gbg, dsd att_nm; ncremap mpi_nbr_usr, E3SMU=SYSTEM, alg_typ=tempest fixes';git push --tags
+
 	* NCO 5.0.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.3-alpha02: Infrastructure';git push
-	git tag -a 5.0.3-alpha02 -m 'ppc dgr gbg, att_nm';git push --tags
+	git tag -a 5.0.3-alpha02 -m 'ppc dgr gbg, dsd att_nm';git push --tags
 
 	* PPQ: Change default bit-adjustment-algorithm to GBG
+
+	* PPQ: Change regression tests to use updated NSD attribute names
 
 	* PPQ: Write quantize algorithm-specific attribute names like QuantizeBitGroomNumberOfSignificantDigits
 
