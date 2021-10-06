@@ -125,8 +125,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.0.3-alpha02
-@set doc-edition 5.0.3-alpha02
+@set nco-edition 5.0.3-beta01
+@set doc-edition 5.0.3-beta01
 @set copyright-years 1995--2021
 @set update-year 2021
 @set update-date 3 October 2021
@@ -9601,10 +9601,24 @@ For clarity the @samp{-4/-7} switches are omitted in subsequent
 examples. 
 @html
 <a name="QuantizeBitGroomNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitGroomNumberOfSignificantDigits -->
+<a name="QuantizeGranularBitGroomNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeGranularBitGroomNumberOfSignificantDigits -->
+<a name="QuantizeBitShaveNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitShaveNumberOfSignificantDigits -->
+<a name="QuantizeBitSetNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitSetNumberOfSignificantDigits -->
+<a name="QuantizeDigitRoundNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeDigitRoundNumberOfSignificantDigits -->
+<a name="QuantizeBitRoundNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitRoundNumberOfSignificantDigits -->
+<a name="QuantizeHalfShaveNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeHalfShaveNumberOfSignificantDigits -->
+<a name="QuantizeBruteForceNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBruteForceNumberOfSignificantDigits -->
 <a name="number_of_significant_digits"></a> <!-- http://nco.sf.net/nco.html#number_of_significant_digits -->
 <a name="least_significant_digit"></a> <!-- http://nco.sf.net/nco.html#least_significant_digit -->
 @end html
 @cindex @code{QuantizeBitGroomNumberOfSignificantDigits}
+@cindex @code{QuantizeBitSetNumberOfSignificantDigits}
+@cindex @code{QuantizeBitShaveNumberOfSignificantDigits}
+@cindex @code{QuantizeBitDigitRoundNumberOfSignificantDigits}
+@cindex @code{QuantizeGranularBitGroomNumberOfSignificantDigits}
+@cindex @code{QuantizeDigitRoundNumberOfSignificantDigits}
+@cindex @code{QuantizeHalfShaveNumberOfSignificantDigits}
+@cindex @code{QuantizeBruteForceNumberOfSignificantDigits}
 @cindex @code{number_of_significant_digits}
 @cindex @code{least_significant_digit}
 @cindex Jeff Whitaker
@@ -9649,6 +9663,14 @@ Imagine orthogonally raking an already-groomed Japanese rock garden.
 The criss-crossing tracks increase the pattern's entropy, and this
 entropy produces self-compensating instead of accumulating errors
 during statistical operations.}, respectively.
+
+As of @w{version 5.0.3} (October 2021), @acronym{NCO} supports a more
+complete set of quantization filters is available than has been
+documented here. 
+These @acronym{NSD} algorithms write an algorithm-specific attribute,
+e.g., @code{QuantizeGranularBitGroomNumberOfSignificantDigits} or
+@code{QuantizeDigitRountNumberOfSignificantDigits}.
+Documentation on these algorithms is best found in the literature.
 
 It is safe to attempt @acronym{PPC} on input that has already been
 rounded. 
