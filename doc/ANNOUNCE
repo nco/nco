@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.0.3 want to join your stack...
+netCDF Operators NCO version 5.0.3 are on tap
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
@@ -10,8 +10,8 @@ Version 5.0.3 contains significant improvements to the quantization
 algorithms and fixes to MOAB/mbtempest regridding. NCO now supports
 the Digit Round and Granular BitGroom quantization algorithms. The
 failed self-test problems that prevented Conda from building NCO
-5.0.3 have been fixed, and a 5.0.3 Conda package should soon be
-available. 
+5.0.2 have been fixed, and a 5.0.3 Conda package will soon be
+available.
 
 Work on NCO 5.0.4 has commenced and will improve ncremap support
 for MOAB, incorporate new MOAB improvements, and further improve
@@ -36,11 +36,24 @@ A. Lossy quantization algorithms have been refactored. First, the
    BitRound, and DigitRound by Delaunay et al. (2019). GBG improves
    compression ratios by ~20% relative to BitGroom for NSD=3 on
    our benchmark 1 GB climate model output dataset.
+   ncks -7 -L 1         --ppc default=3 in.nc out.nc # GranularBitGroom
+   ncks -7 -L 1 --baa=0 --ppc default=3 in.nc out.nc # BitGroom
+   ncks -7 -L 1 --baa=1 --ppc default=3 in.nc out.nc # BitShave
+   ncks -7 -L 1 --baa=2 --ppc default=3 in.nc out.nc # BitSet
+   ncks -7 -L 1 --baa=3 --ppc default=3 in.nc out.nc # DigitRound
+   ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # GranularBitGroom
+   ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitRound
+   ncks -7 -L 1 --baa=6 --ppc default=3 in.nc out.nc # HalfShave
+   ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce
+   Documentation on Bit-Adjustment-Algorithms (BAA) 3-7 will be
+   improved in the future. Bit-Groom/Shave/Set are described here:
+   http://nco.sf.net/nco.html#ppq
+   http://nco.sf.net/nco.html#gbg
 
 BUG FIXES:
    
-A. ncremap fixes issues that prevented one of its self-tests from
-   succeeding, and thus Conda from building an NCO 5.0.2 package.
+A. ncremap fixes issues that caused a self-test to fail.
+   This prevented Conda from building an NCO 5.0.2 package.
    The tested algorithm is now 'fv2fv_flx' not 'tempest'. The
    MPI-enabled E3SM-Unified (SYSTEM) environment no longer changes
    the behavior of ncremap commands. --mpi_nbr now has complete

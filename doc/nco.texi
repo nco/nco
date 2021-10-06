@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.3
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 3 October 2021
+@set update-date 6 October 2021
 @set update-month October 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9664,13 +9664,61 @@ The criss-crossing tracks increase the pattern's entropy, and this
 entropy produces self-compensating instead of accumulating errors
 during statistical operations.}, respectively.
 
+@html
+<a name="ppq"></a> <!-- http://nco.sf.net/nco.html#ppq -->
+<a name="PPQ"></a> <!-- http://nco.sf.net/nco.html#PPQ -->
+<a name="gbg"></a> <!-- http://nco.sf.net/nco.html#gbg -->
+<a name="GBG"></a> <!-- http://nco.sf.net/nco.html#GBG -->
+<a name="BitGroom"></a> <!-- http://nco.sf.net/nco.html#BitGroom -->
+<a name="GranularBitGroom"></a> <!-- http://nco.sf.net/nco.html#GranularBitGroom -->
+<a name="BitShave"></a> <!-- http://nco.sf.net/nco.html#BitShave -->
+<a name="BitSet"></a> <!-- http://nco.sf.net/nco.html#BitSet -->
+<a name="DigitRound"></a> <!-- http://nco.sf.net/nco.html#DigitRound -->
+<a name="BitRound"></a> <!-- http://nco.sf.net/nco.html#BitRound -->
+<a name="HalfShave"></a> <!-- http://nco.sf.net/nco.html#HalfShave -->
+<a name="BruteForce"></a> <!-- http://nco.sf.net/nco.html#BruteForce -->
+@end html
+@cindex @acronym{PPQ}
+@cindex @acronym{GBG}
+@cindex BitGroom
+@cindex GranularBitGroom
+@cindex BitShave
+@cindex BitSet
+@cindex DigitRound
+@cindex BitRound
+@cindex HalfShave
+@cindex BruteForce
 As of @w{version 5.0.3} (October 2021), @acronym{NCO} supports a more
-complete set of quantization filters is available than has been
-documented here. 
+complete set of Precision-Preserving Quantization (@acronym{PPQ})
+filters than has been documented here. 
+The default algorithm has been changed from BitGroom with BitRound
+masks from R. Kouznetsov (2021), to what we call Granular BitGroom
+(@acronym{GBG}).
+@acronym{GBG} combines features of BitGroom, BitRound, and DigitRound by
+Delaunay et al. (2019).
+@acronym{GBG} improves compression ratios by ~20% relative to BitGroom
+for @acronym{NSD}=3 on our benchmark @w{1 GB} climate model output
+dataset. 
+@example
+@verbatim
+ncks -7 -L 1         --ppc default=3 in.nc out.nc # GranularBitGroom
+ncks -7 -L 1 --baa=0 --ppc default=3 in.nc out.nc # BitGroom
+ncks -7 -L 1 --baa=1 --ppc default=3 in.nc out.nc # BitShave
+ncks -7 -L 1 --baa=2 --ppc default=3 in.nc out.nc # BitSet
+ncks -7 -L 1 --baa=3 --ppc default=3 in.nc out.nc # DigitRound
+ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # GranularBitGroom
+ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitRound
+ncks -7 -L 1 --baa=6 --ppc default=3 in.nc out.nc # HalfShave
+ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce
+@end verbatim
+@end example
 These @acronym{NSD} algorithms write an algorithm-specific attribute,
 e.g., @code{QuantizeGranularBitGroomNumberOfSignificantDigits} or
 @code{QuantizeDigitRountNumberOfSignificantDigits}.
 Documentation on these algorithms is best found in the literature.
+While Bit-Groom/Shave/Set are described above, documentation on
+Bit-Adjustment-Algorithms (@acronym{BAA}) 3--7 will be improved in the
+future.  
 
 It is safe to attempt @acronym{PPC} on input that has already been
 rounded. 
