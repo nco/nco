@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.3-beta01: Daikokuya';git push
 	git tag -a 5.0.3-beta01 -m 'all: ppc dgr gbg, dsd att_nm; ncremap mpi_nbr_usr, E3SMU=SYSTEM, alg_typ=tempest fixes';git push --tags
 
+	* Update PPQ documentation
+
 2021-10-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.3-alpha02 release procedure:
