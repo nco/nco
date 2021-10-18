@@ -3458,7 +3458,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   if(prn_flg->fll_pth) (void)fprintf(fp_out," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(fp_out,"\n");
   if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA) (void)fprintf(fp_out,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
   if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA && nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(fp_out,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_fl_sz_sng);
-  if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s// %sncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->PRN_GLB_METADATA ? "Generate binary file from this CDL: " : "",nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
+  if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s// %sncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->PRN_GLB_METADATA ? "Generate binary file with this CDL: " : "",nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
   
   /* Print type information for group */
   if(nbr_typ > 0){
