@@ -1280,7 +1280,7 @@ int *pl_cnt_dbg) /* size of output dbg grid */
 
 
 wgt_sct **
-nco_poly_lst_mk_dwe_sph(
+nco_poly_lst_mk_idw_sph(
 rgr_sct *const rgr_nfo,
 poly_sct **pl_lst_out,
 int pl_cnt,
@@ -1295,7 +1295,7 @@ int *wgt_cnt_bln_ret)
 #endif
 
 wgt_sct **
-nco_poly_lst_mk_dwe_sph(
+nco_poly_lst_mk_idw_sph(
 rgr_sct *const rgr_nfo,
 poly_sct **pl_lst_out,
 int pl_cnt,
@@ -1305,7 +1305,7 @@ int nbr_tr,
 int *wgt_cnt_bln_ret) {
 
   /* just duplicate output list to overlap */
-  const char fnc_nm[] = "nco_poly_lst_mk_dwe_sph()";
+  const char fnc_nm[] = "nco_poly_lst_mk_idw_sph()";
 
   int thr_idx = 0;
   /* approx number of input cells each thread will process */
@@ -1313,10 +1313,10 @@ int *wgt_cnt_bln_ret) {
   /* reporting step */
   int thr_quota_step;
   /* max number of nearest neighbours to consider - nr-reference from rgr_nfo */
-  int const max_nbr_dwe=20;
-  int nbr_dwe=0;
+  int const max_nbr_idw=20;
+  int nbr_idw=0;
 
-  double pow_dwe=0.0;
+  double pow_idw=0.0;
 
   double min_dist=1.0e-12;
   double min_wgt=1.0e-20;
@@ -1327,7 +1327,7 @@ int *wgt_cnt_bln_ret) {
   int lcl_thr_nbr;
   omp_mem_sct *mem_lst = NULL_CEWI;
 
-  wgt_sct **wgt_lst_dwe = NULL_CEWI;
+  wgt_sct **wgt_lst_idw = NULL_CEWI;
 
   FILE *const fp_stderr = stderr;
 
@@ -1335,9 +1335,9 @@ int *wgt_cnt_bln_ret) {
 
   lcl_thr_nbr = omp_get_max_threads();
 
-  nbr_dwe= ( rgr_nfo->xtr_nsp > max_nbr_dwe ? max_nbr_dwe : rgr_nfo->xtr_nsp );
+  nbr_idw= ( rgr_nfo->xtr_nsp > max_nbr_idw ? max_nbr_idw : rgr_nfo->xtr_nsp );
 
-  pow_dwe=rgr_nfo->xtr_xpn;
+  pow_idw=rgr_nfo->xtr_xpn;
 
   mem_lst = (omp_mem_sct *) nco_malloc(sizeof(omp_mem_sct) * lcl_thr_nbr);
 
@@ -1382,9 +1382,9 @@ int *wgt_cnt_bln_ret) {
     double dp_x_wrp;   /* used to do a wrapped lon search */
     double wgt_ttl=0.0;
 
-    int nbr_dwe_cnt; /* equal to or less than nbr_nni */
+    int nbr_idw_cnt; /* equal to or less than nbr_nni */
 
-    wgt_sct wgt_pre[max_nbr_dwe];
+    wgt_sct wgt_pre[max_nbr_idw];
 
     wgt_sct * wgt_lcl=NULL_CEWI;
     poly_sct *pl=NULL_CEWI;
@@ -1416,9 +1416,9 @@ int *wgt_cnt_bln_ret) {
     dp_x_wrp=KD_DBL_MAX;
 
     for(kdx=0;kdx<nbr_tr;kdx++)
-      kd_nearest(tree[kdx], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, pl_typ,  nbr_dwe, &mem_lst[thr_idx].kd_list[0] + nbr_dwe *kdx );
+      kd_nearest(tree[kdx], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, pl_typ,  nbr_idw, &mem_lst[thr_idx].kd_list[0] + nbr_idw *kdx );
 
-    nbr_lst_lcl=nbr_dwe*nbr_tr;
+    nbr_lst_lcl=nbr_idw*nbr_tr;
 
     switch(grd_lon_typ)
     {
@@ -1445,9 +1445,9 @@ int *wgt_cnt_bln_ret) {
     if(dp_x_wrp != KD_DBL_MAX)
     {
       for (kdx = 0; kdx < nbr_tr; kdx++)
-        kd_nearest(tree[kdx], dp_x_wrp, pl_lst_out[idx]->dp_y_ctr, pl_typ, nbr_dwe, &mem_lst[thr_idx].kd_list[0] + nbr_lst_lcl+nbr_dwe * kdx);
+        kd_nearest(tree[kdx], dp_x_wrp, pl_lst_out[idx]->dp_y_ctr, pl_typ, nbr_idw, &mem_lst[thr_idx].kd_list[0] + nbr_lst_lcl+nbr_idw * kdx);
 
-      nbr_lst_lcl+=nbr_dwe*nbr_tr;
+      nbr_lst_lcl+=nbr_idw*nbr_tr;
     }
 
     if(nbr_tr >1 )
@@ -1479,14 +1479,14 @@ int *wgt_cnt_bln_ret) {
     }else{
 
       /* check for duplicates in first nbr_nni by sorting again with ->item  !!!*/
-      // kd_priority_list_sort(mem_lst[thr_idx].kd_list,nbr_dwe, nbr_dwe,&nbr_dwe_cnt );
-      nbr_dwe_cnt=kd_list_sort_omp(&mem_lst[thr_idx], nbr_dwe);
+      // kd_priority_list_sort(mem_lst[thr_idx].kd_list,nbr_idw, nbr_idw,&nbr_idw_cnt );
+      nbr_idw_cnt=kd_list_sort_omp(&mem_lst[thr_idx], nbr_idw);
 
-      if (nco_dbg_lvl_get() >= nco_dbg_dev && nbr_dwe_cnt < nbr_dwe )
-         (void)fprintf(fp_stderr,"%s:%s: nbr_nni_cnt=%d x_ctr=%f  y_ctr=%f\n", nco_prg_nm_get(), fnc_nm, nbr_dwe_cnt, pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr );
+      if (nco_dbg_lvl_get() >= nco_dbg_dev && nbr_idw_cnt < nbr_idw )
+         (void)fprintf(fp_stderr,"%s:%s: nbr_nni_cnt=%d x_ctr=%f  y_ctr=%f\n", nco_prg_nm_get(), fnc_nm, nbr_idw_cnt, pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr );
 
       /* output at least one */
-      for (jdx = 0; jdx < nbr_dwe_cnt; jdx++) {
+      for (jdx = 0; jdx < nbr_idw_cnt; jdx++) {
 
         pl = (poly_sct *) mem_lst[thr_idx].kd_list[jdx]->elem->item;
 
@@ -1496,18 +1496,18 @@ int *wgt_cnt_bln_ret) {
         wgt_pre[jdx].area = pl->area;
         wgt_pre[jdx].dist = mem_lst[thr_idx].kd_list[jdx]->dist;
         /* use dist squared */
-        wgt_pre[jdx].wgt = 1.0 /  pow(wgt_pre[jdx].dist, pow_dwe);
+        wgt_pre[jdx].wgt = 1.0 /  pow(wgt_pre[jdx].dist, pow_idw);
       }
 
       /* find weights total */
-      for (jdx = 0; jdx < nbr_dwe_cnt; jdx++)
+      for (jdx = 0; jdx < nbr_idw_cnt; jdx++)
         wgt_ttl += wgt_pre[jdx].wgt;
 
       /* normalize weights */
-      for (jdx = 0; jdx < nbr_dwe_cnt; jdx++)
+      for (jdx = 0; jdx < nbr_idw_cnt; jdx++)
         wgt_pre[jdx].wgt /= wgt_ttl;
 
-      for (jdx = 0; jdx < nbr_dwe_cnt; jdx++) {
+      for (jdx = 0; jdx < nbr_idw_cnt; jdx++) {
 
         if (wgt_pre[jdx].wgt < min_wgt)
           continue;
@@ -1538,14 +1538,14 @@ int *wgt_cnt_bln_ret) {
 
 
 
-  wgt_lst_dwe=mem_lst[0].wgt_lst;
+  wgt_lst_idw=mem_lst[0].wgt_lst;
 
   *wgt_cnt_bln_ret=mem_lst[0].pl_cnt;
 
   mem_lst=(omp_mem_sct*)nco_free(mem_lst);
 
-  return wgt_lst_dwe;
-} /* !nco_poly_lst_mk_dwe_sph() */
+  return wgt_lst_idw;
+} /* !nco_poly_lst_mk_idw_sph() */
 
 
 

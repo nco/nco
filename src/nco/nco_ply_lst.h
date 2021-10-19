@@ -101,7 +101,7 @@ int lst_out_typ,
 int *pl_cnt_vrl_ret);
 
 wgt_sct **
-nco_poly_lst_mk_dwe_sph(
+nco_poly_lst_mk_idw_sph(
 rgr_sct *const rgr_nfo,
 poly_sct **pl_lst_out,
 int pl_cnt,

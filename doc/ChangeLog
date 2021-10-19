@@ -1,8 +1,12 @@
-2021-10-13  Charlie Zender  <zender@uci.edu>
+2021-10-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha01: Courgette';git push
 	git tag -a 5.0.4-alpha01 -m 'Functionally identical to 5.0.3';git push --tags
+
+	* Change default key and documentation from dwe to idw
+
+2021-10-13  Charlie Zender  <zender@uci.edu>
 
 	* Add 'idw' (inverse-distance-weighted) synonym to NCO dwe weight algorithm
 

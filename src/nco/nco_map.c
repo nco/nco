@@ -586,10 +586,10 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   const char usr_cpp[]=TKN2SNG(USER); /* [sng] Hostname from C pre-processor */
   rcd=nco_char_att_put(out_id,NULL,"created_by",usr_cpp);
   if(rgr->wgt_typ == nco_wgt_con) rcd=nco_char_att_put(out_id,NULL,"map_method","Conservative");
-  else if(rgr->wgt_typ == nco_wgt_dwe) rcd=nco_char_att_put(out_id,NULL,"map_method","Bilinear"); /* NB: map_method values are constrained by SCRIP/ESMF precedence. Values besides "Conservative" and "Bilinear" may be unsupported by other regridders. */
+  else if(rgr->wgt_typ == nco_wgt_idw) rcd=nco_char_att_put(out_id,NULL,"map_method","Bilinear"); /* NB: map_method values are constrained by SCRIP/ESMF precedence. Values besides "Conservative" and "Bilinear" may be unsupported by other regridders. */
   /* ERWG stores actual weight generation in "ESMF_regrid_method" */
   if(rgr->wgt_typ == nco_wgt_con) rcd=nco_char_att_put(out_id,NULL,"NCO_regrid_method","Integrated piecewise-constant reconstruction of common intersection mesh. Conservative, monotone, suitable for downscaling, blocky results for upscaling. First order accurate. Similar to ESMF conserve method.");
-  else if(rgr->wgt_typ == nco_wgt_dwe) rcd=nco_char_att_put(out_id,NULL,"NCO_regrid_method","Distance-Weighted Extrapolation");
+  else if(rgr->wgt_typ == nco_wgt_idw) rcd=nco_char_att_put(out_id,NULL,"NCO_regrid_method","Distance-Weighted Extrapolation");
   rcd=nco_char_att_put(out_id,NULL,"weight_generator","NCO");
   char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version from C pre-processor */
   /* 20170417: vrs_cpp is typically something like "4.6.6-alpha10" (quotes included) 
@@ -1010,7 +1010,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     tree=(KDTree **)nco_free(tree);
     lnk_nbr=pl_cnt_vrl;
 
-  }else if(rgr->wgt_typ == nco_wgt_dwe){
+  }else if(rgr->wgt_typ == nco_wgt_idw){
 
     int nbr_tr;
     KDTree **tree;
@@ -1022,7 +1022,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     /* if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl_crt(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
 
     if(pl_typ == poly_sph || pl_typ == poly_rll)
-      wgt_lst_vrl = nco_poly_lst_mk_dwe_sph(map_rgr, pl_lst_out, grd_sz_out, grd_lon_typ_out, tree, nbr_tr, &pl_cnt_vrl);
+      wgt_lst_vrl = nco_poly_lst_mk_idw_sph(map_rgr, pl_lst_out, grd_sz_out, grd_lon_typ_out, tree, nbr_tr, &pl_cnt_vrl);
 
     pl_lst_vrl=(poly_sct**)NULL_CEWI;
 

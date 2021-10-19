@@ -1096,7 +1096,7 @@ extern "C" {
   typedef enum nco_wgt_typ_enm{
     nco_wgt_nil=0,
     nco_wgt_con, /* Conservative algorithm */
-    nco_wgt_dwe, /* Distance-weighted extrapolation */
+    nco_wgt_idw, /* Distance-weighted extrapolation */
     nco_wgt_bln  /* Bilinear interpolation */
   } nco_wgt_typ_enm;
 

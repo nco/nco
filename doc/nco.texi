@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.4-alpha01
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 7 October 2021
+@set update-date 19 October 2021
 @set update-month October 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -24835,6 +24835,7 @@ Features common to many operators are described in
 <a name="rll2rll"></a> <!-- http://nco.sf.net/nco.html#rll2rll -->
 <a name="nco_con"></a> <!-- http://nco.sf.net/nco.html#nco_con -->
 <a name="nco_dwe"></a> <!-- http://nco.sf.net/nco.html#nco_dwe -->
+<a name="nco_idw"></a> <!-- http://nco.sf.net/nco.html#nco_idw -->
 @end html
 @cindex @code{-a @var{alg_typ}}
 @cindex @var{alg_typ}
@@ -24842,6 +24843,7 @@ Features common to many operators are described in
 @cindex @code{--algorithm}
 @cindex @code{--regrid_algorithm}
 @cindex @code{dwe}
+@cindex @code{idw}
 @cindex @code{neareststod}
 @cindex @code{nstod}
 @cindex @code{stod}
@@ -24888,16 +24890,25 @@ for detailed descriptions of @acronym{ERWG} algorithms.
 @cindex @code{nco}
 
 @html
+<a name="idw"></a> <!-- http://nco.sf.net/nco.html#idw -->
 <a name="dwe"></a> <!-- http://nco.sf.net/nco.html#dwe -->
+<a name="nco_idw"></a> <!-- http://nco.sf.net/nco.html#nco_idw -->
 <a name="nco_dwe"></a> <!-- http://nco.sf.net/nco.html#nco_dwe -->
+<a name="inverse_distance"></a> <!-- http://nco.sf.net/nco.html#inverse_distance -->
+<a name="inverse_distance_weighted"></a> <!-- http://nco.sf.net/nco.html#inverse_distance_weighted -->
 <a name="distance_weighted"></a> <!-- http://nco.sf.net/nco.html#distance_weighted -->
 <a name="nearest_neighbor"></a> <!-- http://nco.sf.net/nco.html#nearest_neighbor -->
 @end html
+@cindex @code{nco_idw}
 @cindex @code{nco_dwe}
+@cindex @code{idw}
 @cindex @code{dwe}
+@cindex @code{inverse_distance_weighted}
 @cindex @code{distance_weighted}
 @cindex @code{nco_nearest_neighbor}
 @cindex @acronym{DWE}
+@cindex @acronym{IDW}
+@cindex inverse-distance-weighted interpolation/extrapolation
 @cindex distance-weighted extrapolation
 @cindex nearest-neighbor extrapolation
 @command{ncremap} implements its own internal weight-generation
@@ -24913,24 +24924,25 @@ The algorithm may also be explicitly invoked with @code{nco_con} (or
 
 As of @acronym{NCO} version 4.9.4 (September, 2019) @command{ncremap}
 supports a second internal weight-generation algorithm based on
-distance-weighted extrapolation (@acronym{DWE}). @acronym{DWE} is
-similar to the @acronym{ERWG} @code{nearestidavg} extrapolation
-alorithm, and accepts the same two parameters as input:
+inverse-distance-weighted (@acronym{IDW}) interpolation/extrapolation. 
+@acronym{IDW} is similar to the @acronym{ERWG} @code{nearestidavg}
+extrapolation alorithm, and accepts the same two parameters as input:
 @samp{--xtr_xpn @var{xtr_xpn}} sets the (absolute value of) the
 exponent used in inverse distance weighting (default @w{is 2.0}), and 
 @samp{--xtr_nsp @var{xtr_nsp}} sets the number of source points used
 in the extrapolation (default @w{is 8}).
-Currently, @command{ncremap} applies @command{NCO}'s @acronym{DWE} to
-the entire destination grid, not just to points with missing/masked
-values, whereas @acronym{ERWG} uses @acronym{DWE} solely for
-extrapolation to missing data points.
-We intend @command{NCO}'s @acronym{DWE} to offer both types of
-functionality in a future release.
+@command{ncremap} applies @command{NCO}'s @acronym{IDW} to the entire
+destination grid, not just to points with missing/masked values,
+whereas @acronym{ERWG} uses distance-weighted-extrapolation
+(@acronym{DWE}) solely for extrapolation to missing data points. 
+Thus @command{NCO}'s @acronym{IDW} is more often used as an
+alternative to bilinear interpolation since it interpolates between
+known regions and extrapolates to unknown regions.
 @example
 @verbatim
-ncremap --alg_typ=nco_dwe -s src.nc -d dst.nc -m map.nc
-ncremap -a nco_dwe --xtr_xpn=1.0 -s src.nc -d dst.nc -m map.nc
-ncremap -a nco_dwe --xtr_nsp=1   -s src.nc -d dst.nc -m map.nc
+ncremap --alg_typ=nco_idw -s src.nc -d dst.nc -m map.nc
+ncremap -a nco_idw --xtr_xpn=1.0 -s src.nc -d dst.nc -m map.nc
+ncremap -a nco_idw --xtr_nsp=1   -s src.nc -d dst.nc -m map.nc
 @end verbatim
 @end example
 
