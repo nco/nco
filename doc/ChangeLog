@@ -1,8 +1,16 @@
-2021-10-19  Charlie Zender  <zender@uci.edu>
+2021-10-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha01: Courgette';git push
 	git tag -a 5.0.4-alpha01 -m 'Functionally identical to 5.0.3';git push --tags
+
+	* #include <fcntl.h> for MacOS so ninja build-engine finds creat()
+
+2021-10-20  Charlie Zender  <zender@uci.edu>
+
+	* Use 0ULL in PPC for double precision
+
+2021-10-19  Charlie Zender  <zender@uci.edu>
 
 	* Change default key and documentation from dwe to idw
 

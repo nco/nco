@@ -1799,7 +1799,10 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     fl_out_hnd=mkstemp(fl_out_tmp_sys);
 #else /* !HAVE_MKSTEMP */
     /* 20020812: Cray OS does not support mkstemp() */
+# ifdef HAVE_CREAT
+    /* 20211021: Conceal from ninja build-engine on MacOS otherwise ninja dies because creat() prototype not found */
     fl_out_hnd=creat(mktemp(fl_out_tmp_sys),0600);
+# endif /* !HAVE_CREAT */
 #endif /* !HAVE_MKSTEMP */
     fl_out_hnd=fl_out_hnd+0; /* CEWI Removes compiler warning on SGI */
     if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",nco_prg_nm_get(),fnc_nm,(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);

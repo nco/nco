@@ -16,7 +16,7 @@
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit, mkstemp */
 #include <string.h> /* strcmp() */
 #ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */

@@ -1006,7 +1006,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     }else if(nco_baa_cnv_get() == nco_baa_set){
       /* Bit-Set: always set LSBs */
       for(idx=0L;idx<sz;idx++)
-	if(op1.dp[idx] != mss_val_cmp_dbl && u64_ptr[idx] != 0UL) /* Never quantize upwards floating point values of zero */
+	if(op1.dp[idx] != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
 	  u64_ptr[idx]|=msk_f64_u64_one;
     }else if(nco_baa_cnv_get() == nco_baa_dgr){
       /* Digit Rounding (DCG19), copy of NC_FLOAT version except for double precision changes:
@@ -1015,7 +1015,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 3. Compare u64_ptr (not u32_ptr) to zero
 	 DO NOT EDIT the NC_DOUBLE code except for dp-specific changes, use fp code as template */
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0UL){
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL){
 	  /* Compute number of digits before decimal point of input floating-point value val
 	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 * mnt, 0.5 <= mnt < 1.0 <--Correct 
 	     Note that DCG19 filter code is incorrectly commented with:
@@ -1043,7 +1043,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       /* !DigitRound = DGR */
     }else if(nco_baa_cnv_get() == nco_baa_gbg){
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0UL){
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL){
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  mnt_fabs=fabs(mnt);
 	  mnt_log10_fabs=log10(mnt_fabs);
@@ -1053,7 +1053,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  prc_bnr_xpl_rqr= mnt_fabs == 0.0 ? 0 : abs((int)floor(xpn_bs2-bit_per_dgt*mnt_log10_fabs)-qnt_pwr); /* Protect against mnt = -0.0 */
 	  prc_bnr_xpl_rqr--; /* 20211003 Reduce formula result by 1 bit: Passes all tests, improves CR by ~10% */
 	  bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
-	  msk_f64_u64_zro=0u; /* Zero all bits */
+	  msk_f64_u64_zro=0ull; /* Zero all bits */
 	  msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
 	  /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
 	  msk_f64_u64_zro <<= bit_xpl_nbr_zro;
@@ -1133,7 +1133,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  raw64 = op1.dp[idx];
 	  msk_f64_u64_zro = msk_rst64;
 	  msk_f64_u64_one=~msk_f64_u64_zro;
-          if(op1.dp[idx] != 0U && op1.dp[idx] != mss_val_cmp_dbl){ /* Never quantize upwards floating point values of zero */
+          if(op1.dp[idx] != 0ULL && op1.dp[idx] != mss_val_cmp_dbl){ /* Never quantize upwards floating point values of zero */
             u64_ptr[idx]|=msk_f64_u64_one;
 	    xpn64=log10(fabs(raw64));
 	    flr_xpn64=floor(xpn64);
@@ -1195,7 +1195,7 @@ nco_ppc_bitmask_scl /* [fnc] Round input value significand by specified number o
   CEWI_unused(bit_xpl_nbr_sgn_dbl);
   
   val_rnd=val_xct;
-  msk_f64_u64_zro=0ul; /* Zero all bits */
+  msk_f64_u64_zro=0ull; /* Zero all bits */
   msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
   msk_f64_u64_zro <<= bit_xpl_nbr_zro;
   u64_ptr=(unsigned long int *)&val_rnd;

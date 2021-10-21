@@ -205,7 +205,7 @@ AC_FUNC_STAT
 AC_FUNC_STRTOD
 
 # Check for library functions, if found then #define HAVE_FUNCTION in config.h
-AC_CHECK_FUNCS([canonicalize_file_name floor gethostname getpagesize getrusage memchr memmove memset mkstemp pow readlink realpath regcomp setlocale sqrt strchr strerror strpbrk strrchr strstr strtol])
+AC_CHECK_FUNCS([canonicalize_file_name creat floor gethostname getpagesize getrusage memchr memmove memset mkstemp pow readlink realpath regcomp setlocale sqrt strchr strerror strpbrk strrchr strstr strtol])
 
 # Check for header files
 # Autoupdate added the next two lines to ensure that your configure
@@ -215,7 +215,7 @@ AC_CHECK_FUNCS([canonicalize_file_name floor gethostname getpagesize getrusage m
 #AC_CHECK_INCLUDES_DEFAULT
 AC_PROG_EGREP
 
-AC_CHECK_HEADERS([getopt.h libintl.h limits.h locale.h netinet/in.h stdlib.h string.h strings.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h getopt.h libintl.h limits.h locale.h netinet/in.h stdlib.h string.h strings.h unistd.h])
 AC_LANG_PUSH([C++])
 AC_CHECK_HEADERS(cstdlib)
 AC_LANG_POP([C++])

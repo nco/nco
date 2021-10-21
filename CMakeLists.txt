@@ -174,14 +174,17 @@ if (has_nc_inq_format)
 endif()
 
 #/////////////////////////////////////////////////////////////////////////////////////
-#netcdf_meta.h defines NC_VERSION_MAJOR NC_VERSION_MINOR NC_VERSION_PATCH 
-#NCO defines NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH ) 
+# netcdf_meta.h defines NC_VERSION_MAJOR NC_VERSION_MINOR NC_VERSION_PATCH 
+# NCO defines NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH ) 
 #/////////////////////////////////////////////////////////////////////////////////////
 
 find_path(path_netcdf_meta_h netcdf_meta.h PATHS ${NETCDF_INCLUDE})
 if(path_netcdf_meta_h)
   message("-- Found netcdf_meta.h in " ${path_netcdf_meta_h})
-  add_definitions(-DNC_HAVE_META_H)
+# 20211021: Do not re-#define NC_HAVE_META_H if file is found
+# NC_HAVE_META_H will always be defined in netcdf.h if necessary
+# Re-defining it can trigger "macro-redefined" warnings
+#  add_definitions(-DNC_HAVE_META_H)
 else()
   message("-- netcdf_meta.h was not found; defining NC_LIB_VERSION=360")
   add_definitions(-DNC_LIB_VERSION=360)
@@ -730,6 +733,12 @@ check_function_exists(mkstemp HAVE_mkstemp)
 if (HAVE_mkstemp)
   message("-- Found function mkstemp")
   add_definitions(-DHAVE_MKSTEMP)
+endif()
+
+check_function_exists(creat HAVE_creat)
+if (HAVE_creat)
+  message("-- Found function creat")
+  add_definitions(-DHAVE_CREAT)
 endif()
 
 #//////////////////////////

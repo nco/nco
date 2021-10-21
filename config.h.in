@@ -94,6 +94,9 @@
 /* Define to 1 if compiler finds external `coshf' function */
 #undef HAVE_COSHF
 
+/* Define to 1 if you have the `creat' function. */
+#undef HAVE_CREAT
+
 /* Define to 1 if you have the <cstdlib> header file. */
 #undef HAVE_CSTDLIB
 
@@ -111,6 +114,9 @@
 
 /* Define to 1 if compiler finds external `fabsf' function */
 #undef HAVE_FABSF
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#undef HAVE_FCNTL_H
 
 /* Define to 1 if you have the `floor' function. */
 #undef HAVE_FLOOR

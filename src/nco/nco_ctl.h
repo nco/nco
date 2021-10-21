@@ -19,7 +19,7 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit, mkstemp */
 #include <string.h> /* strcmp() */
 #include <time.h> /* machine time */
 #ifndef _MSC_VER

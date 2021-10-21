@@ -17570,6 +17570,12 @@ then :
   printf "%s\n" "#define HAVE_CANONICALIZE_FILE_NAME 1" >>confdefs.h
 
 fi
+ac_fn_c_check_func "$LINENO" "creat" "ac_cv_func_creat"
+if test "x$ac_cv_func_creat" = xyes
+then :
+  printf "%s\n" "#define HAVE_CREAT 1" >>confdefs.h
+
+fi
 ac_fn_c_check_func "$LINENO" "floor" "ac_cv_func_floor"
 if test "x$ac_cv_func_floor" = xyes
 then :
@@ -17772,6 +17778,12 @@ printf "%s\n" "$ac_cv_path_EGREP" >&6; }
 
 
 
+ac_fn_c_check_header_compile "$LINENO" "fcntl.h" "ac_cv_header_fcntl_h" "$ac_includes_default"
+if test "x$ac_cv_header_fcntl_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_FCNTL_H 1" >>confdefs.h
+
+fi
 ac_fn_c_check_header_compile "$LINENO" "getopt.h" "ac_cv_header_getopt_h" "$ac_includes_default"
 if test "x$ac_cv_header_getopt_h" = xyes
 then :

@@ -19,9 +19,12 @@
 
 /* Standard header files */
 #include <errno.h> /* system/library error diagnostics, errno */
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h> /* creat() */
+#endif /* !HAVE_FCNTL_H */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit, mkstemp */
 #include <string.h> /* strcmp() */
 #ifdef HAVE_STRINGS_H
 # include <strings.h> /* strcasecmp() */

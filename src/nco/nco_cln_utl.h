@@ -20,7 +20,7 @@
 /* Standard header files */
 #include <ctype.h> /* isalnum(), isdigit(), tolower() */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit, mkstemp */
 #include <string.h> /* strcmp() */
 #ifdef HAVE_STRINGS_H
 # include <strings.h> /* strcasecmp() */
