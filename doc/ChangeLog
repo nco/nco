@@ -1,8 +1,12 @@
 2021-10-21  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.4-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha02: Rodrigo Amarante';git push
+	git tag -a 5.0.4-alpha02 -m '';git push --tags
+
 	* NCO 5.0.4-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha01: Courgette';git push
-	git tag -a 5.0.4-alpha01 -m 'Functionally identical to 5.0.3';git push --tags
+	git tag -a 5.0.4-alpha01 -m 'idw not dwe, ninja, Functionally identical to 5.0.3';git push --tags
 
 	* #include <fcntl.h> for MacOS so ninja build-engine finds creat()
 
