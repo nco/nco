@@ -2330,7 +2330,7 @@ if [ "${flg_hrz}" = 'Yes' ]; then
 	    # Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
 	    # Infer destination grid-file from data file
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-		printf "Destination grid will be inferred from data-file\n"
+		printf "Destination grid will be inferred from destination data-file\n"
 	    fi # !vrb_lvl
 	    cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=\"${hnt_dst_fl}\" ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=\"${grd_dst}\" \"${dst_fl}\" \"${tmp_out_fl}\""
 	else # !dst_usr_flg

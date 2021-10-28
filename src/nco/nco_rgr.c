@@ -7965,7 +7965,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !lon_ctr_id */
   
   if(!lat_nm_in || !lon_nm_in){
-    (void)fprintf(stdout,"%s: ERROR %s unable to identify latitude and/or longitude variable.\nHINT: Potential causes and workarounds for this include: 1. Coordinate variables must be in the root directory (not in a group). If this might be the problem, try to \"flatten\" the input file before regridding it (see http://nco.sf.net/nco.html#flatten). 2. Horizontal dimensions with \"unusual\" names are hard to identify unless the user designates them somehow. ncremap will search for horizontal dimensions named in the \"coordinates\" attribute in a template variable specified with the \"-V rgr_var\" option. 3. NCO will also search its own internal database for likely names of horizontal coordinate variables (lat, latitude, LAT, XLAT, etc.). Contact the NCO project to have your idiosyncratic coordinate names added to the internal database.\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s unable to identify latitude and/or longitude variable.\nHINT: Potential causes and workarounds for this include: 1. Coordinate variables must be in the root directory (not in a group). If this might be the problem, try to \"flatten\" the input file before regridding it (see http://nco.sf.net/nco.html#flatten). 2. Horizontal dimensions with \"unusual\" names are hard to identify unless the user designates them as such. ncremap will search for horizontal dimensions named in the \"coordinates\" attribute in a template variable specified with the \"-V rgr_var\" option. 3. NCO will also search its own internal database for likely names of horizontal coordinate variables (lat, latitude, LAT, XLAT, etc.). Contact the NCO project to have your idiosyncratic coordinate names added to the internal database.\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !lat_nm_in */
     
@@ -8087,7 +8087,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Found all MPAS information needed to construct SCRIP-compliant bounds variables.\n",nco_prg_nm_get());
       }else{
 	(void)fprintf(stdout,"%s: INFO Unable to find all MPAS information needed to construct SCRIP-compliant bounds variables. Will not write bounds coordinates. This will degrade usefulness of SCRIP file for regridding schemes (e.g., conservative) that require cell boundaries.\n",nco_prg_nm_get());
-	(void)fprintf(stdout,"%s: HINT Often MPAS restart files contain the required bounds variables (verticesOnCell, lonVertex, latVertex) that normal MPAS data files lack. Try inferring the SCRIP grid from a restart file not a normal time-varying output dataset.\n",nco_prg_nm_get());
+	(void)fprintf(stdout,"%s: HINT Often MPAS restart files contain the required bounds variables (verticesOnCell, lonVertex, latVertex) that normal MPAS data files lack. Try inferring the SCRIP grid from a restart or initial condition file instead of from a time-varying output dataset.\n",nco_prg_nm_get());
 	flg_wrt_crn=False;
       } /* !vrt_cll_nm */
     } /* !bnd_dmn_nm */
@@ -9623,7 +9623,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"long_name","Longitude of Grid Cell Centers");
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"standard_name","longitude");
   if(ngl_unt){
-    rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,unt_sng,ngl_unt);
+    rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,unt_sng,ngl_unt);
   }else{
     /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
     if(rgr->flg_cf_units) rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees_east"); else rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees"); 

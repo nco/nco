@@ -453,7 +453,7 @@ nco_mss_val_get_dbl /* [fnc] Return missing value of variable, if any, as double
       /* Oddly, ARM uses NC_CHAR for type of missing_value, so make allowances for this */
       (void)nco_get_att(nc_id,var_id,att_nm,mss_val_dbl,NC_DOUBLE);
       //(void)fprintf(stderr,"%s: INFO NC_DOUBLE version of \"%s\" attribute for %s is %g\n",nco_prg_nm_get(),att_nm,var_nm,*mss_val_dbl);
-      if(!isfinite(*mss_val_dbl)) (void)fprintf(stderr,"%s: WARNING NC_DOUBLE version of \"%s\" attribute for %s fails isfinite(), value is %s, which can cause unpredictable results.\nHINT: If arithmetic results (e.g., from regridding) fails or values seem weird, retry after first converting %s to normal number with, e.g., \"ncatted -a %s,%s,m,f,1.0e36 in.nc out.nc\"\n",nco_prg_nm_get(),att_nm,var_nm,(isnan(*mss_val_dbl)) ? "NaN" : ((isinf(*mss_val_dbl)) ? "Infinity" : ""),nco_mss_val_sng_get(),nco_mss_val_sng_get(),var_id != NC_GLOBAL ? var_nm : "");
+      if(!isfinite(*mss_val_dbl)) (void)fprintf(stderr,"%s: WARNING NC_DOUBLE version of \"%s\" attribute for %s is %s and this value fails isfinite(). Therefore valid values cannot be arithmetically compared to the %s, and this can lead to unpredictable results.\nHINT: If arithmetic results (e.g., from regridding) fails or values seem weird, retry after first converting %s to a normal number with, e.g., \"ncatted -a %s,%s,m,f,1.0e36 in.nc out.nc\"\n",nco_prg_nm_get(),att_nm,var_nm,(isnan(*mss_val_dbl)) ? "NaN" : ((isinf(*mss_val_dbl)) ? "Infinity" : ""),nco_mss_val_sng_get(),nco_mss_val_sng_get(),nco_mss_val_sng_get(),var_id != NC_GLOBAL ? var_nm : "");
     } /* !mss_val_dbl */
     break;
   } /* end loop over att */

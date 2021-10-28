@@ -1,8 +1,12 @@
-2021-10-21  Charlie Zender  <zender@uci.edu>
+2021-10-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha02: Rodrigo Amarante';git push
 	git tag -a 5.0.4-alpha02 -m '';git push --tags
+
+	* ncremap nco_grd_nfr() fix units attribute for output grid_center_lon variable
+
+2021-10-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha01: Courgette';git push
