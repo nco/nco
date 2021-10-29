@@ -572,7 +572,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
     echo "            CDO algorithms: cdo_bilinear|cdo_conservative (same as ESMF)"
     echo "            ESMF algorithms: bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch"
-    echo "            NCO algorithms: nco, nco_con (1st order conservative algorithm similar to \"conserve\"), nco_dwe, nco_idw (inverse-distance-weighted interpolation/extrapolation)"
+    echo "            NCO algorithms: nco, nco_con (1st order conservative algorithm similar to \"conserve\"), nco_idw, nco_dwe (inverse-distance-weighted interpolation/extrapolation)"
     echo "            Tempest (and MOAB-Tempest) algorithms: fv2fv|fv2fv_flx|fv2fv_stt|fv2se_flx|fv2se_stt|fv2se_alt|se2fv_flx|se2fv_stt|se2fv_alt|se2se|tempest"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
     echo " ${fnt_bld}--add_fll${fnt_nrm}  Add _FillValue to fields with empty destination cells (default ${fnt_bld}${add_fll}${fnt_nrm}) [${fnt_tlc}add_fll, add_fill_value, fll_mpt, fill_empty${fnt_nrm}]"
@@ -1195,14 +1195,14 @@ elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${a
 elif [ ${alg_typ} = 'nco_con' ] || [ ${alg_typ} = 'nco_cns' ] || [ ${alg_typ} = 'nco_conserve' ] || [ ${alg_typ} = 'nco' ]; then 
     alg_opt='nco_con'
     wgt_typ='nco'
-elif [ ${alg_typ} = 'nco_dwe' ] || [ ${alg_typ} = 'nco_idw' ] || [ ${alg_typ} = 'dwe' ] || [ ${alg_typ} = 'idw' ] || [ ${alg_typ} = 'nco_distance_weighted' ] || [ ${alg_typ} = 'nco_nearest_neighbor' ]; then
-    alg_opt='nco_dwe'
+elif [ ${alg_typ} = 'nco_idw' ] || [ ${alg_typ} = 'nco_dwe' ] || [ ${alg_typ} = 'dwe' ] || [ ${alg_typ} = 'idw' ] || [ ${alg_typ} = 'nco_distance_weighted' ] || [ ${alg_typ} = 'nco_nearest_neighbor' ]; then
+    alg_opt='nco_idw'
     wgt_typ='nco'
 else 
     echo "${spt_nm}: ERROR ${alg_typ} is not a valid weight-generation algorithm"
     echo "${spt_nm}: HINT Valid CDO weight-generation algorithms and synonyms are cdo_bil,cdo_bilin,cdo_bilinear | cdo_con,cdo_cns,cdo_conserve"
     echo "${spt_nm}: HINT Valid ESMF weight-generation algorithms and synonyms are bilinear,bilin,bln | conserve,cns,c1,aave | conserve2nd,c2,c2nd | nearestdtos,nds,dtos | neareststod,nsd,stod | patch,pch"
-    echo "${spt_nm}: HINT Valid NCO weight-generation algorithms and synonyms are nco_con,nco_cns,nco_conserve,nco | nco_dwe,nco_idw"
+    echo "${spt_nm}: HINT Valid NCO weight-generation algorithms and synonyms are nco_con,nco_cns,nco_conserve,nco | nco_idw,nco_dwe"
     echo "${spt_nm}: HINT Valid TempestRemap (and MOAB-TempestRemap) weight-generation options and synonyms are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | se2se,cs2cs | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se | fv2fv,rll2rll"
     exit 1
 fi # !alg_typ
