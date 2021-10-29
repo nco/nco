@@ -1750,15 +1750,21 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  if(dmn_nbr_out > 0){
 	    int dfl_lvl_in; /* [enm] Deflate level [0..9] */
 	    rcd=nco_inq_var_deflate(in_id,var_id_in,&shuffle,&deflate,&dfl_lvl_in);
-	    /* Copy original deflation settings */
-	    if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl_in);
-	    /* Overwrite HDF Lempel-Ziv compression level, if requested */
-	    if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
-	    /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
-	    if(dfl_lvl == 0) shuffle=NC_NOSHUFFLE;
-	    /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating */
-	    if(dfl_lvl >= 0) shuffle=NC_SHUFFLE;
-	    if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl);
+	    /* Until ~netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
+	       Properties of final invocation before nc_enddef() would take effect
+	       After ~netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect */
+	    if((deflate || shuffle) && dfl_lvl < 0){
+	      /* Copy original filters if user did not explicity set dfl_lvl for output */ 
+	      (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl_in);
+	    }else if(dfl_lvl >= 0){ 
+	      /* Overwrite HDF Lempel-Ziv compression level, if requested */
+	      if(dfl_lvl <= 0) deflate=(int)False; else deflate=(int)True;
+	      /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
+	      if(dfl_lvl <= 0) shuffle=NC_NOSHUFFLE;
+	      /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
+	      if(dfl_lvl > 0) shuffle=NC_SHUFFLE;
+	      (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl);
+	    } /* !dfl_lvl */
 	  } /* !dmn_nbr_out */
 	} /* !NC_FORMAT_NETCDF4 */
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
@@ -4399,15 +4405,21 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  if(dmn_nbr_out > 0){
 	    int dfl_lvl_in; /* [enm] Deflate level [0..9] */
 	    rcd=nco_inq_var_deflate(in_id,var_id_in,&shuffle,&deflate,&dfl_lvl_in);
-	    /* Copy original deflation settings */
-	    if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl_in);
-	    /* Overwrite HDF Lempel-Ziv compression level, if requested */
-	    if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
-	    /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
-	    if(dfl_lvl == 0) shuffle=NC_NOSHUFFLE;
-	    /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating */
-	    if(dfl_lvl >= 0) shuffle=NC_SHUFFLE;
-	    if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl);
+	    /* Until ~netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
+	       Properties of final invocation before nc_enddef() would take effect
+	       After ~netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect */
+	    if((deflate || shuffle) && dfl_lvl < 0){
+	      /* Copy original filters if user did not explicity set dfl_lvl for output */ 
+	      (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl_in);
+	    }else if(dfl_lvl >= 0){ 
+	      /* Overwrite HDF Lempel-Ziv compression level, if requested */
+	      if(dfl_lvl <= 0) deflate=(int)False; else deflate=(int)True;
+	      /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
+	      if(dfl_lvl <= 0) shuffle=NC_NOSHUFFLE;
+	      /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
+	      if(dfl_lvl > 0) shuffle=NC_SHUFFLE;
+	      (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl);
+	    } /* !dfl_lvl */
 	  } /* !dmn_nbr_out */
 	} /* !NC_FORMAT_NETCDF4 */ 
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);

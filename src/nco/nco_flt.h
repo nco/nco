@@ -41,10 +41,11 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_dfl=1, /* 1 [enm] DEFLATE */
   nco_flt_bzp=2, /* 2 [enm] Bzip2 */
   nco_flt_lz4=3, /* 3 [enm] LZ4 */
-  nco_flt_bgr=4, /* 4 [enm] Bit Grooming */
-  nco_flt_dgr=5, /* 5 [enm] Digit Rounding */
-  nco_flt_btr=6, /* 6 [enm] Bit Rounding */
-  nco_flt_zst=7, /* 7 [enm] Zstandard */
+  nco_flt_zst=4, /* 4 [enm] Zstandard */
+  nco_flt_bgr=5, /* 4 [enm] BitGroom */
+  nco_flt_gbg=6, /* 5 [enm] Granular BitGroom */
+  nco_flt_dgr=7, /* 6 [enm] Digit Round */
+  nco_flt_btr=8, /* 6 [enm] Bit Round */
 } nco_flt_typ_enm; /* end nco_flt_typ_enm */
 
 #ifdef __cplusplus

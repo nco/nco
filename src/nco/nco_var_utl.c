@@ -1236,86 +1236,101 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
           if(rcd == NC_NOERR){
             /* When output name is in input file, inquire input deflation level */
             rcd=nco_inq_var_deflate(in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
-            /* Copy original deflation settings */
-            if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl_in);
-          }else{
-	    /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating */
-	    shuffle=NC_SHUFFLE;
-	  } /* endelse */
-          /* Overwrite HDF Lempel-Ziv compression level, if requested */
-	  if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
-	  /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
-	  if(dfl_lvl == 0) shuffle=NC_NOSHUFFLE; 
-#if ENABLE_CCR
-	  const nco_flt_typ_enm nco_flt_enm=(nco_flt_typ_enm)nco_flt_glb_get();
-	  /* Build list of filters available through the CCR API */
-	  char ccr_flt_lst[200]; /* [sng] List of available CCR filters */
-	  nco_bool ccr_has_flt=True; /* [flg] CCR has requested filter */
-	  ccr_flt_lst[0]='\0';
-	  strcat(ccr_flt_lst,"DEFLATE");
-#if CCR_HAS_BZIP2
-	  strcat(ccr_flt_lst,", Bzip2");
-#endif /* !CCR_HAS_BZIP2 */
-#if CCR_HAS_LZ4
-	  strcat(ccr_flt_lst,", LZ4");
-#endif /* !CCR_HAS_LZ4 */
-#if CCR_HAS_BITGROOM
-	  strcat(ccr_flt_lst,", BitGroom");
-#endif /* !CCR_HAS_BITGROOM */
-#if CCR_HAS_ZSTD
-	  strcat(ccr_flt_lst,", Zstd");
-#endif /* !CCR_HAS_ZSTD */
-	  //(void)fprintf(stdout,"DEBUG quark: nco_flt_enm=%d, dfl_lvl=%d\n",(int)nco_flt_enm,dfl_lvl);
-	  switch(nco_flt_enm){
-	  case nco_flt_nil: /* If user did not select a filter then default to DEFLATE */
-	  case nco_flt_dfl: /* DEFLATE */
-	    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl);
-	    break;
-	  case nco_flt_bzp: /* Bzip2 */
-#if CCR_HAS_BZIP2
-	    if(dfl_lvl > 0) (void)nc_def_var_bzip2(out_id,var[idx]->id,dfl_lvl);
-#else /* !CCR_HAS_BZIP2 */
-	    ccr_has_flt=False;
-#endif /* !CCR_HAS_BZIP2 */
-	    break;
-	  case nco_flt_lz4: /* LZ4 */ 
-#if CCR_HAS_LZ4
-	    if(dfl_lvl > 0) (void)nc_def_var_lz4(out_id,var[idx]->id,dfl_lvl);
-#else /* !CCR_HAS_LZ4 */
-	    ccr_has_flt=False;
-#endif /* !CCR_HAS_LZ4 */
-	    break;
-	  case nco_flt_bgr: /* Bit Grooming */
-#if CCR_HAS_BITGROOM
-	    if(dfl_lvl > 0) (void)nc_def_var_bitgroom(out_id,var[idx]->id,dfl_lvl);
-#else /* !CCR_HAS_BITGROOM */
-	    ccr_has_flt=False;
-#endif /* !CCR_HAS_BITGROOM */
-	    break;
-	  case nco_flt_zst: /* Zstandard */
-#if CCR_HAS_ZSTD
-	    /* Zstandard accepts negative compression levels */
-	    (void)nc_def_var_zstandard(out_id,var[idx]->id,dfl_lvl);
-#else /* !CCR_HAS_ZSTD */
-	    ccr_has_flt=False;
-#endif /* !CCR_HAS_ZSTD */
-	    break;
-	  case nco_flt_dgr: /* Digit Rounding */
-	  case nco_flt_btr: /* Bit Rounding */
-	    ccr_has_flt=False;
-	    if(dfl_lvl <= 0) break;
-	  default: nco_dfl_case_flt_err(); break;
-	  } /* !nco_flt_enm */
 
-	  if(!ccr_has_flt){
-	    (void)fprintf(stdout,"%s: ERROR %s reports CCR library does not define API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and installed in the CCR when this NCO was built/installed. If the filter is newer, you might try updating the installed CCR then updating the installed NCO. Otherwise, re-try this command and specify an already-installed filter from this list: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(nco_flt_enm),ccr_flt_lst);
-	    nco_exit(EXIT_FAILURE);
-	  } /* !ccr_has_flt */
+	    if((deflate || shuffle) && dfl_lvl < 0){
+	      /* Copy original filters if user did not explicity set dfl_lvl for output */ 
+	      (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl_in);
 
-#else /* !ENABLE_CCR */
-	  if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl);
+	    }else if(dfl_lvl >= 0){ 
+	      /* Overwrite HDF Lempel-Ziv compression level, if requested */
+	      if(dfl_lvl <= 0) deflate=(int)False; else deflate=(int)True;
+	      /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
+	      if(dfl_lvl <= 0) shuffle=NC_NOSHUFFLE;
+	      /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
+	      if(dfl_lvl > 0) shuffle=NC_SHUFFLE;
+#ifndef ENABLE_CCR
+	      /* If CCR is not enabled, perform normal deflation */
+	      (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl);
+#else
+	      /* If CCR is enabled, invoke applicable codec */
+	      const nco_flt_typ_enm nco_flt_enm=(nco_flt_typ_enm)nco_flt_glb_get();
+	      /* Build list of filters available through the CCR API */
+	      char ccr_flt_lst[200]; /* [sng] List of available CCR filters */
+	      nco_bool ccr_has_flt=True; /* [flg] CCR has requested filter */
+	      ccr_flt_lst[0]='\0';
+	      strcat(ccr_flt_lst,"DEFLATE");
+# if CCR_HAS_BZIP2
+	      strcat(ccr_flt_lst,", Bzip2");
+# endif /* !CCR_HAS_BZIP2 */
+# if CCR_HAS_LZ4
+	      strcat(ccr_flt_lst,", LZ4");
+# endif /* !CCR_HAS_LZ4 */
+# if CCR_HAS_BITGROOM
+	      strcat(ccr_flt_lst,", BitGroom");
+# endif /* !CCR_HAS_BITGROOM */
+# if CCR_HAS_GRANULARBG
+	      strcat(ccr_flt_lst,", Granular BitGroom");
+# endif /* !CCR_HAS_GRANULARBG */
+# if CCR_HAS_ZSTD
+	      strcat(ccr_flt_lst,", Zstd");
+# endif /* !CCR_HAS_ZSTD */
+	      //(void)fprintf(stdout,"DEBUG quark: nco_flt_enm=%d, dfl_lvl=%d\n",(int)nco_flt_enm,dfl_lvl);
+	      switch(nco_flt_enm){
+	      case nco_flt_nil: /* If user did not select a filter then default to DEFLATE */
+	      case nco_flt_dfl: /* DEFLATE */
+		(void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl);
+		break;
+	      case nco_flt_bzp: /* Bzip2 */
+# if CCR_HAS_BZIP2
+		if(dfl_lvl > 0) (void)nc_def_var_bzip2(out_id,var[idx]->id,dfl_lvl);
+# else /* !CCR_HAS_BZIP2 */
+		ccr_has_flt=False;
+# endif /* !CCR_HAS_BZIP2 */
+		break;
+	      case nco_flt_lz4: /* LZ4 */ 
+# if CCR_HAS_LZ4
+		if(dfl_lvl > 0) (void)nc_def_var_lz4(out_id,var[idx]->id,dfl_lvl);
+# else /* !CCR_HAS_LZ4 */
+		ccr_has_flt=False;
+# endif /* !CCR_HAS_LZ4 */
+		break;
+	      case nco_flt_bgr: /* Bit Groom */
+# if CCR_HAS_BITGROOM
+		if(dfl_lvl > 0) (void)nc_def_var_bitgroom(out_id,var[idx]->id,dfl_lvl);
+# else /* !CCR_HAS_BITGROOM */
+		ccr_has_flt=False;
+# endif /* !CCR_HAS_BITGROOM */
+		break;
+	      case nco_flt_gbg: /* Granular BitGroom */
+# if CCR_HAS_GRANULARBG
+		if(dfl_lvl > 0) (void)nc_def_var_granularbg(out_id,var[idx]->id,dfl_lvl);
+# else /* !CCR_HAS_GRANULARBG */
+		ccr_has_flt=False;
+# endif /* !CCR_HAS_GRANULARBG */
+		break;
+	      case nco_flt_zst: /* Zstandard */
+# if CCR_HAS_ZSTD
+		/* fxm: Zstandard can accept negative compression levels */
+		(void)nc_def_var_zstandard(out_id,var[idx]->id,dfl_lvl);
+# else /* !CCR_HAS_ZSTD */
+		ccr_has_flt=False;
+# endif /* !CCR_HAS_ZSTD */
+		break;
+	      case nco_flt_dgr: /* Digit Round */
+	      case nco_flt_btr: /* Bit Round */
+		ccr_has_flt=False;
+		if(dfl_lvl <= 0) break;
+	      default: nco_dfl_case_flt_err(); break;
+	      } /* !nco_flt_enm */
+
+	      if(!ccr_has_flt){
+		(void)fprintf(stdout,"%s: ERROR %s reports CCR library does not define API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and installed in the CCR when this NCO was built/installed. If the filter is newer, you might try updating the installed CCR then updating the installed NCO. Otherwise, re-try this command and specify an already-installed filter from this list: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(nco_flt_enm),ccr_flt_lst);
+		nco_exit(EXIT_FAILURE);
+	      } /* !ccr_has_flt */
 #endif /* !ENABLE_CCR */
-        } /* !dmn_nbr */
+	    } /* !dfl_lvl */  
+	  } /* !rcd */  
+	} /* !dmn_nbr */
       } /* !netCDF4 */
       
       if(nco_dbg_lvl_get() > 3 && nco_prg_id != ncwa){

@@ -170,9 +170,10 @@ nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
   case nco_flt_dfl: return "DEFLATE"; break;
   case nco_flt_bzp: return "Bzip2"; break;
   case nco_flt_lz4: return "LZ4"; break;
-  case nco_flt_bgr: return "Bit Grooming"; break;
-  case nco_flt_dgr: return "Digit Rounding"; break;
-  case nco_flt_btr: return "Bit Rounding"; break;
+  case nco_flt_bgr: return "BitGroom"; break;
+  case nco_flt_gbg: return "Granular BitGroom"; break;
+  case nco_flt_dgr: return "Digit Round"; break;
+  case nco_flt_btr: return "Bit Round"; break;
   case nco_flt_zst: return "Zstandard"; break;
   default: nco_dfl_case_generic_err(); break;
   } /* !nco_flt_enm */
@@ -213,6 +214,9 @@ nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
   if(!strcasecmp(nco_flt_sng,"bgr")) return nco_flt_bgr;
   if(!strcasecmp(nco_flt_sng,"bitgroom")) return nco_flt_bgr;
   if(!strcasecmp(nco_flt_sng,"Zen16")) return nco_flt_bgr;
+  if(!strcasecmp(nco_flt_sng,"gbg")) return nco_flt_gbg;
+  if(!strcasecmp(nco_flt_sng,"granularbg")) return nco_flt_gbg;
+  if(!strcasecmp(nco_flt_sng,"granular")) return nco_flt_gbg;
   if(!strcasecmp(nco_flt_sng,"dgr")) return nco_flt_dgr;
   if(!strcasecmp(nco_flt_sng,"digitround")) return nco_flt_dgr;
   if(!strcasecmp(nco_flt_sng,"DCG19")) return nco_flt_dgr;

@@ -5222,16 +5222,22 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       int dfl_lvl_in; /* [enm] Deflate level [0..9] */
       int shuffle; /* [flg] Turn-on shuffle filter */
       rcd=nco_inq_var_deflate(grp_in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
-      /* Copy original deflation settings */
-      if(deflate || shuffle) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
-      /* Overwrite HDF Lempel-Ziv compression level, if requested */
-      if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
-      /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
-      if(dfl_lvl == 0) shuffle=NC_NOSHUFFLE;
-      /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating */
-      if(dfl_lvl >= 0) shuffle=NC_SHUFFLE;
-      if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl);
-    } /* endif */
+      /* Until ~netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
+	 Properties of final invocation before nc_enddef() would take effect
+	 After ~netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect */
+      if((deflate || shuffle) && dfl_lvl < 0){
+	/* Copy original filters if user did not explicity set dfl_lvl for output */ 
+	(void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
+      }else if(dfl_lvl >= 0){ 
+	/* Overwrite HDF Lempel-Ziv compression level, if requested */
+	if(dfl_lvl <= 0) deflate=(int)False; else deflate=(int)True;
+	/* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
+	if(dfl_lvl <= 0) shuffle=NC_NOSHUFFLE;
+	/* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
+	if(dfl_lvl > 0) shuffle=NC_SHUFFLE;
+	(void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl);
+      } /* !dfl_lvl */
+    } /* !nbr_dmn_var */
 
     /* 20141013 Previously called chunking only when user selected a chunking switch
        Now always call chunking because default is to preserve input chunking 
