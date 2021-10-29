@@ -19,42 +19,36 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Lossy quantization algorithms have been refactored. First, the
-   attribute name that store the level of quantization are now
-   algorithm-specific, e.g.,
-   QuantizeBitGroomNumberOfSignificantDigits. Previsously, NCO 
-   stored the NSD attribute number_of_significant_digits. However,
-   this was deemed too ambiguous, given the increasing number of
-   supported quantization methods. The new attribute names better
-   disambiguate which algorithm was used to quantize the variable.
-   Second, the default algorithm has been changed from BitGroom with
-   BitRound masks from R. Kouznetsov (2021), to what we call Granular
-   BitGroom (GBG). GBG combines the best features of BitGroom,
-   BitRound, and DigitRound by Delaunay et al. (2019). GBG improves
-   compression ratios by ~20% relative to BitGroom for NSD=3 on
-   our benchmark 1 GB climate model output dataset.
-   ncks -7 -L 1         --ppc default=3 in.nc out.nc # GranularBitGroom
-   ncks -7 -L 1 --baa=0 --ppc default=3 in.nc out.nc # BitGroom
-   ncks -7 -L 1 --baa=1 --ppc default=3 in.nc out.nc # BitShave
-   ncks -7 -L 1 --baa=2 --ppc default=3 in.nc out.nc # BitSet
-   ncks -7 -L 1 --baa=3 --ppc default=3 in.nc out.nc # DigitRound
-   ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # GranularBitGroom
-   ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitRound
-   ncks -7 -L 1 --baa=6 --ppc default=3 in.nc out.nc # HalfShave
-   ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce
-   Documentation on Bit-Adjustment-Algorithms (BAA) 3-7 will be
-   improved in the future. Bit-Groom/Shave/Set are described here:
-   http://nco.sf.net/nco.html#ppq
-   http://nco.sf.net/nco.html#gbg
+A. ncremap removes the previous assumption that input horizontal
+   dimensions are in lat-lon order. The order can now be lat-lon
+   or lon-lat. The old behavior would fail when attempting to
+   regrid variables whose horizontal dimensions were lon-lat to
+   an unstructured grid.
+
+A. ncremap now prefers to call its inverse distance-weighted
+   interpolation/extrapolation algorithm "idw" for "inverse
+   distance-weighted" rather than "dwe" for distance-weighted
+   extrapolation. However, both forms are acceptable and
+   back-compatibility was maintained.
 
 BUG FIXES:
    
-A. ncremap fixes issues that caused a self-test to fail.
-   This prevented Conda from building an NCO 5.0.2 package.
-   The tested algorithm is now 'fv2fv_flx' not 'tempest'. The
-   MPI-enabled E3SM-Unified (SYSTEM) environment no longer changes
-   the behavior of ncremap commands. --mpi_nbr now has complete
-   control over whether mpirun (or srun) commands are issued.
+A. ncwa was making a bad call to set compression parameters.
+   That never caused a problem until netCDF 4.8.0 which enforces
+   stricter adherence to the calling constraints rather than ignoring
+   bad parameters. The symptoms were errors when averaging compressed
+   datasets. The workaround is to convert the dataset to netCDF3,
+   then average, then recompress. The solution is to upgrade.
+   Thanks to Thomas Reichler and Michael Rollings for reporting this.
+
+A. netCDF 4.8.0 changed its internal implementation of deflation.
+   Before netCDF 4.8.0, deflation could be set multiple times.
+   The properties of final the final call would take effect.
+   After netCDF 4.8.0 only the first call takes effect.
+   This caused subtle changes in NCO compression behavior.
+   The most visible change was that uncompressing variables silently
+   stopped working. NCO has been changed to adhere to the new
+   netCDF 4.8.0+ behavior.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
@@ -64,7 +58,7 @@ This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
 These problems occur with NCO 5.0.4 built/tested under
 MacOS 11.6 with netCDF 4.8.0 on HDF5 1.12.0 and with
-Linux with netCDF 4.8.0 on HDF5 1.8.19.
+Linux with netCDF 4.8.1 on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments

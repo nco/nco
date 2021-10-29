@@ -1310,7 +1310,7 @@ if($USER eq 'zender'){
 
 #nces #20 (error checking of ensemble variable dimensions)
 #  ncra -Y ncge -O in_grp_4.nc in_grp_5.nc ~/foo.nc
-    $dsc_sng="(Groups) Invalid input, expect ERROR because dimensions do not conform between ensemble variables";
+    $dsc_sng="(Groups) (expect ERROR, correct behavior is to fail/abort) Die on invalid input since dimensions do not conform between ensemble variables";
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg in_grp_4.nc in_grp_5.nc %tmp_fl_00%";
     $tst_cmd[1]="ncge: ERROR Variables do not conform: variable </cesm/cesm_02/three_dmn_rec_var> has dimension <time> with size 6, expecting size 10";
     $tst_cmd[2]="SS_OK";
@@ -2132,7 +2132,7 @@ if($USER eq 'zender'){
 #This tests that coordinate rlev is not extracted with rz when -C switch is used
 #ncks -O -C -v rz ~/nco/data/in.nc ~/foo.nc
 #ncks --trd -v rz ~/foo.nc | wc | cut -d ' ' -f 6
-    $dsc_sng="Extract associated coordinates test 2 (netCDF3 file) ";
+    $dsc_sng="(expect ERROR with MacOS not GNU 'cut') Extract associated coordinates test 2 (netCDF3 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v rz $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --trd -v rz %tmp_fl_00% | wc | cut -d ' ' -f 6";
     $tst_cmd[2]="11";
@@ -2485,7 +2485,7 @@ if($USER eq 'zender'){
 
 #ncks #73
 # ncks -v lat -d latitude,0,1,1 ~/nco/data/in_grp.nc
-    $dsc_sng="(Groups) Invalid input, expect ERROR because user-specified dimension \"latitude\" DNE";
+    $dsc_sng="(Groups) (expect ERROR, correct behavior is to fail/abort) Die on invalid input since user-specified dimension \"latitude\" DNE";
     $tst_cmd[0]="ncks $nco_D_flg -v lat -d latitude,0,1,1 $in_pth_arg in_grp.nc";
     $tst_cmd[1]="ncks: ERROR dimension latitude is not in input file";
     $tst_cmd[2]="SS_OK";   
@@ -2638,7 +2638,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #Since input variable is contiguous and default mode is (xst, xst), NCO determines that input has no existing chunksizes and so lets netCDF determine chunksizes
 #ncks -O -4 -L 0 --cnk_dmn lat,1 -v /lat ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -C -m --trd --hdn -v /lat ~/foo.nc | grep _ChunkSizes
-    $dsc_sng="(Groups) Imposing no deflation (-L 0) on contiguous variable uses netCDF-default (not user-specified) sizes";
+    $dsc_sng="(Groups) (expect ERROR fixable corner corner case, netCDF behavior changed?) Imposing no deflation (-L 0) on contiguous variable uses netCDF-default (not user-specified) sizes";
     $tst_cmd[0]="ncks -O -4 -L 0 --cnk_dmn lat,1 -v /lat $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m --trd --hdn -v /lat %tmp_fl_00% | grep _ChunkSizes";
     $tst_cmd[2]="lat attribute 2: _ChunkSizes, size = 1 NC_INT, value = 2";
@@ -2646,7 +2646,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
-#ncks #86
+#ncks #87
 #Imposing real deflation (-L 1) on contiguous variable uses user-specified (not netCDF-default) sizes.
 #Input variable is contiguous and default mode is (xst, xst). 
 #NCO determines that variable must be chunked (because compressed) and uses user-specified explicit overrides for chunksizes
@@ -2660,7 +2660,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
-#ncks #87
+#ncks #88
 #ncks -h -O --fix_rec_dmn time52 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -v time52 -m --trd ~/foo.nc
     $dsc_sng="(Groups) Change record dimension to fixed dimension --fix_rec_dmn time52 -v one_dmn_rec_var";
@@ -2671,7 +2671,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
-#ncks #88
+#ncks #89
 #ncks -O -v lat29 in_grp_3.nc ~/foo.nc
     $dsc_sng="(Groups) Test attribute copying withing groups";
     $tst_cmd[0]="ncks -O -v lat29 $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -2681,7 +2681,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 
-#ncks #89
+#ncks #90
 # Test -X writing (apply limits to all standard 'lat' 'lon')
 # ncks -O -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar ~/nco/data/in_grp_3.nc ~/foo.nc
     $dsc_sng="(Groups) Auxiliary coordinates writing -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar";
@@ -2692,7 +2692,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
-#ncks #90
+#ncks #91
 # Test -X (writing associated coordinates) 
 # ncks -O -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar ~/nco/data/in_grp_3.nc ~/foo.nc
 # ncks --trd -g g18g2 -v lat_gds_2 ~/foo.nc 
@@ -2706,7 +2706,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
    } #### Group tests	
    
-#ncks #91
+#ncks #92
 # Test -X writing
 # ncks -O -X 0.,1.,-30.,-29. -v gds_3dvar ~/nco/data/in.nc ~/foo.nc
     $dsc_sng="Auxiliary coordinates writing -X 0.,1.,-30.,-29. -v gds_3dvar";
@@ -2717,7 +2717,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			   
     
-#ncks #92 Extract CF 'ancillary_variables' variables (netCDF3 file)
+#ncks #93 Extract CF 'ancillary_variables' variables (netCDF3 file)
 #ncks -O -d time,5 -v cnv_CF_ncl ~/nco/data/in.nc ~/foo.nc
 #ncks -C -H --trd -v cnv_CF_ncl_var_2 ~/foo.nc
     $dsc_sng="Extract CF 'ancillary_variables' variables (netCDF3 file)";
@@ -2870,7 +2870,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # fxm: -x is not directly tested because it means testing for non-existance in output. how to do this?
 # ncks -O -x -v time ~/nco/data/in.nc ~/foo.nc
 # ncks -H --trd -C -d time,0 -v time ~/foo.nc > ~/foo
-    $dsc_sng="Test that -x exclusion of coordinate variables only works with -C (correct behavior is to fail/abort)";
+    $dsc_sng="(expect ERROR correct behavior is to fail/abort) Die if -x exclusion of coordinate variable called without -C option";
     $tst_cmd[0]="ncks -O $nco_D_flg -x -v time $in_pth_arg in.nc %tmp_fl_00 > foo";
     $tst_cmd[1]="grep nco_xtr_xcl_chk foo | cut -d ' ' -f 3";
     $tst_cmd[2]="nco_xtr_xcl_chk()";
@@ -2903,7 +2903,8 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 #ncks #108
 #ncks -O -D 5 -C -d lat,0 -v var_shf --cnk_plc=uck ~/nco/data/hdn.nc ~/foo.nc
-    $dsc_sng="Unchunking variable with Shuffle flag set";
+#ncks -m --hdn -v var_shf ~/nco/data/hdn.nc
+    $dsc_sng="(expect ERROR fixable corner corner case) Unchunking variable with Shuffle flag set";
     $tst_cmd[0]="ncks -O $nco_D_flg -C -v var_shf --cnk_plc=uck $in_pth_arg hdn.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --trd --hdn -v var_shf %tmp_fl_00% | grep 'Storage'";
     $tst_cmd[2]="var_shf attribute 1: _Storage, size = 10 NC_CHAR, value = contiguous";

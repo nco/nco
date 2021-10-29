@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha02: Rodrigo Amarante';git push
 	git tag -a 5.0.4-alpha02 -m '';git push --tags
 
-	* Call nco_def_var_deflate() when dmn_nbr_out (not dmn_nbr_in) > 0 (fixes ncwa issue)
+	* NCO_rgr.pl regularize ERROR messages from ncks benchmarks
+
+	* nco_cpy_var_dfn_trv() call nco_def_var_deflate() when dmn_nbr_out (not dmn_nbr_in) > 0 (fixes ncwa issue)
 
 	* Add Granular BitGrom = GBG to NCO filter list
 
