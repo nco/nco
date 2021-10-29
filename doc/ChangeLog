@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha02: Rodrigo Amarante';git push
 	git tag -a 5.0.4-alpha02 -m '';git push --tags
 
-	* NCO_rgr.pl regularize ERROR messages from ncks benchmarks
+	* NCO_rgr.pl fix (via a workaround) ncks issue #108 Unchunk variable with Shuffle flag set
+
+	* NCO_rgr.pl regularize ERROR messages from ncks regression tests
 
 	* nco_cpy_var_dfn_trv() call nco_def_var_deflate() when dmn_nbr_out (not dmn_nbr_in) > 0 (fixes ncwa issue)
 

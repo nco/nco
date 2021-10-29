@@ -2902,10 +2902,11 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array
 
 #ncks #108
-#ncks -O -D 5 -C -d lat,0 -v var_shf --cnk_plc=uck ~/nco/data/hdn.nc ~/foo.nc
+#ncks -O -D 5 -C -v var_shf -L 0 --cnk_plc=uck ~/nco/data/hdn.nc ~/foo.nc
 #ncks -m --hdn -v var_shf ~/nco/data/hdn.nc
-    $dsc_sng="(expect ERROR fixable corner corner case) Unchunking variable with Shuffle flag set";
-    $tst_cmd[0]="ncks -O $nco_D_flg -C -v var_shf --cnk_plc=uck $in_pth_arg hdn.nc %tmp_fl_00%";
+#ncks -m --hdn -v var_shf ~/foo.nc
+    $dsc_sng="Unchunk variable with Shuffle flag set";
+    $tst_cmd[0]="ncks -O $nco_D_flg -C -v var_shf -L 0 --cnk_plc=uck $in_pth_arg hdn.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --trd --hdn -v var_shf %tmp_fl_00% | grep 'Storage'";
     $tst_cmd[2]="var_shf attribute 1: _Storage, size = 10 NC_CHAR, value = contiguous";
     $tst_cmd[3]="SS_OK";   
