@@ -4649,7 +4649,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   int idx_udm_grp; /* [idx] Index for unlimited dimensions */
   int nbr_dmn_out_grp;                   /* [id] Number of dimensions in group */
   int nbr_dmn_var;                       /* [nbr] Number of dimensions for variable */
-  int nbr_dmn_var_out;                   /* [nbr] Number of dimensions for variable on output ( can change for ncwa) */
+  int nbr_dmn_var_out;                   /* [nbr] Number of dimensions for variable on output (can change for ncwa) */
   int nbr_udm_out_grp; /* [nbr] Number of unlimited dimensions */
   int nco_prg_id;                        /* [enm] Program ID */
   int rcd=NC_NOERR;                      /* [rcd] Return code */
@@ -5151,13 +5151,13 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* Special case for ncwa */
   if(nco_prg_id == ncwa){
     int dmn_ids_out[NC_MAX_VAR_DIMS];  /* [id] Dimension IDs array for output variable (ncwa can skip some dimensions, rearrange) */
-    int idx_dmn_def=0;
+    int idx_dmn_dfn=0;
     for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
       if(DEFINE_DIM[idx_dmn]){
-        dmn_ids_out[idx_dmn_def]=dmn_out_id[idx_dmn];
-        idx_dmn_def++;
-      } /* DEFINE_DIM[idx_dmn]) */
-    } /* end loop over dmn */
+        dmn_ids_out[idx_dmn_dfn]=dmn_out_id[idx_dmn];
+        idx_dmn_dfn++;
+      } /* !DEFINE_DIM */
+    } /* !idx_dmn */
 
     /* Finally... define variable in output file */
     (void)nco_def_var(grp_out_id,var_nm,var_typ_out,nbr_dmn_var_out,dmn_ids_out,&var_out_id);
@@ -5217,7 +5217,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 
     /* Deflation */
-    if(nbr_dmn_var > 0){
+    if(nbr_dmn_var_out > 0){ /* <---NB: Use nbr_dmn_var_out instead of nbr_dmn_var */
       int deflate; /* [flg] Turn-on deflate filter */
       int dfl_lvl_in; /* [enm] Deflate level [0..9] */
       int shuffle; /* [flg] Turn-on shuffle filter */
@@ -5230,7 +5230,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 	(void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
       }else if(dfl_lvl >= 0){ 
 	/* Overwrite HDF Lempel-Ziv compression level, if requested */
-	if(dfl_lvl <= 0) deflate=(int)False; else deflate=(int)True;
+	deflate=(int)True;
 	/* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
 	if(dfl_lvl <= 0) shuffle=NC_NOSHUFFLE;
 	/* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
@@ -5262,15 +5262,15 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     
     /* Special case for ncwa */
     if(nco_prg_id == ncwa){
-      int idx_dmn_def=0;
-      /* Loop over input dimensions */
+      int idx_dmn_dfn=0;
       for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+	/* Eschew omitted/averaged dimensions */
 	if(DEFINE_DIM[idx_dmn]){
-	  /* Redefine the array */
-	  dmn_cmn[idx_dmn_def]=dmn_cmn[idx_dmn];
-	  idx_dmn_def++;
-	} /* DEFINE_DIM[idx_dmn]) */
-      } /* Loop dimensions */
+	  /* Re-define dimension array */
+	  dmn_cmn[idx_dmn_dfn]=dmn_cmn[idx_dmn];
+	  idx_dmn_dfn++;
+	} /* !DEFINE_DIM */
+      } /* !idx_dmn */
     } /* !ncwa */
     
     /* Special case for ncpdq */

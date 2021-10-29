@@ -836,7 +836,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	      (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl_in);
 	    }else if(dfl_lvl >= 0){ 
 	      /* Overwrite HDF Lempel-Ziv compression level, if requested */
-	      if(dfl_lvl <= 0) deflate=(int)False; else deflate=(int)True;
+	      deflate=(int)True;
 	      /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
 	      if(dfl_lvl <= 0) shuffle=NC_NOSHUFFLE;
 	      /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */

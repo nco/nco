@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha02: Rodrigo Amarante';git push
 	git tag -a 5.0.4-alpha02 -m '';git push --tags
 
+	* Call nco_def_var_deflate() when dmn_nbr_out (not dmn_nbr_in) > 0 (fixes ncwa issue)
+
 	* Add Granular BitGrom = GBG to NCO filter list
 
 	* Call nc_def_var_deflate() at most once per variable due to new netCDF behavior
