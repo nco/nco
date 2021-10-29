@@ -2961,7 +2961,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 #ncks #113 wrapped limit with an additional limit (with --msa) pvn20160211 -- bug found that happens in nco 4.2.0 also
 # ncks -O -C --msa -g g19 -v time -d time,9,0 -d time,1,2 ~/nco/data/in_grp_3.nc ~/foo.nc
-    $dsc_sng="(Groups) Test wrapped limit with additional limit and msa user order (expect failure TODO nco1134)";
+    $dsc_sng="(Groups) (expect ERROR fixable TODO nco1134) Wrapped limit with additional limit and msa user order";
     $tst_cmd[0]="ncks -O $nco_D_flg -C --msa -g g19 -v time -d time,9,0 -d time,1,2 $in_pth_arg in_grp_3.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -H --trd %tmp_fl_00 | grep '=3'";
     $tst_cmd[2]="time[3]=3"; 
