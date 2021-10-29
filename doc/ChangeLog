@@ -1,8 +1,12 @@
-2021-10-28  Charlie Zender  <zender@uci.edu>
+2021-10-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha02: Rodrigo Amarante';git push
 	git tag -a 5.0.4-alpha02 -m '';git push --tags
+
+	* ncremap nco_rgr_wgt() remove assumption that input horizontal dimensions for nco_rgr_grd_2D_to_1D are in lat-lon order (now can be lon-lat)
+
+2021-10-28  Charlie Zender  <zender@uci.edu>
 
 	* ncremap nco_grd_nfr() fix units attribute for output grid_center_lon variable
 

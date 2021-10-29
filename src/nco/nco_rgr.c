@@ -4255,7 +4255,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   
   /* Pre-allocate dimension ID and cnt/srt space */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
-  int dmn_in_fst; /* [idx] Offset of input- relative to output-dimension due to non-MRV dimension insertion */
+  int dmn_in_fst; /* [idx] Offset of input- relative to output-dimension due to non-MRV dimension insertion/deletion */
+  int dmn_idx_col; /* [idx] Dimension position for column in this variable, used as flag */
   int dmn_nbr_rec; /* [nbr] Number of unlimited dimensions */
   int *dmn_ids_rec=NULL; /* [id] Unlimited dimension IDs */
   rcd+=nco_inq_ndims(in_id,&dmn_nbr_max);
@@ -4296,6 +4297,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  /* Regrid */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  dmn_in_fst=0;
+	  dmn_idx_col=NC_MIN_INT;
 	  rcd=nco_inq_var_packing(in_id,var_id_in,&flg_pck);
 	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
@@ -4318,20 +4320,22 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    } /* !flg_grd_in_2D */	      
 	    if(flg_grd_out_1D){
 	      if((nco_rgr_typ == nco_rgr_grd_2D_to_1D) && (!strcmp(dmn_nm,lat_nm_in) || !strcmp(dmn_nm,lon_nm_in))){
-		/* Replace orthogonal horizontal dimensions by unstructured horizontal dimension already defined */
-		if(!strcmp(dmn_nm,lat_nm_in)){
-		  /* Replace lat with col */
+		/* Replace first orthogonal horizontal dimension by unstructured horizontal dimension already defined */
+		if(dmn_idx_col == NC_MIN_INT){
+		  /* Replace first horizontal dimension encountered with column dimension */
 		  dmn_id_out[dmn_idx]=dmn_id_col;
 		  dmn_cnt[dmn_idx]=col_nbr_out;
-		} /* endif lat */
-		if(!strcmp(dmn_nm,lon_nm_in)){
-		  /* Assume non-MRV dimensions are ordered lat/lon. Replace lat with col. Shift MRV dimensions to left after deleting lon. */
+		  dmn_idx_col=dmn_idx;
+		}else{
+		  /* Second horizontal dimension encountered is MRV horizontal dimension
+		     Eliminate MRV horizontal dimension position for 1D horizontal output grid
+		     Shift non-MRV dimensions to left for output after deleting MRV horizontal dimension */
 		  dmn_id_out[dmn_idx]=NC_MIN_INT;
 		  dmn_cnt[dmn_idx]=NC_MIN_INT;
 		  dmn_nbr_out--;
 		  /* Reduce output dimension position of all subsequent input dimensions by one */
 		  if(!trv_tbl->lst[idx_tbl].flg_mrv) dmn_in_fst=-1; 
-		} /* endif lon */
+		} /* !dmn_idx_col */
 	      }else{
 		/* Dimension col_nm_in has already been defined as col_nm_out, replicate all other dimensions */
 		if(!strcmp(dmn_nm,col_nm_in)) rcd=nco_inq_dimid_flg(out_id,col_nm_out,dmn_id_out+dmn_idx);
