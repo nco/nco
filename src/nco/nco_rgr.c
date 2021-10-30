@@ -8512,7 +8512,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(!strcasestr(att_val,"radian")) flg_area_sr=False;
       if(att_val) area_unt=(char *)strdup(att_val);
       if(att_val) att_val=(char *)nco_free(att_val);
-    } /* end rcd && att_typ */
+      if(area_unt && !flg_area_sr) (void)fprintf(stderr,"%s: WARNING %s reports input grid area units are \"%s\", i.e., are apparently NOT steradians. This can cause downstream problems when comparing areas to steradian-based units. For example, it currently leads to strange looking results for this grid in the map-checker.\n",nco_prg_nm_get(),fnc_nm,area_unt);
+    } /* !rcd && att_typ */
   } /* !area_id */
   
   /* Additional information that may be required for any input grid */
@@ -9389,7 +9390,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   }else{ /* !flg_grd_2D */
     if((float)lon_spn >= 340.0f && (float)lat_spn >= 170.0f) nco_grd_xtn=nco_grd_xtn_glb; else nco_grd_xtn=nco_grd_xtn_rgn;
   } /* flg_wrt_crn */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports grid resolution %li x %li, spans %g x %g degrees: [%g <= lat <= %g], [%g <= lon <= %g]\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_spn,lon_spn,lat_min,lat_max,lon_min,lon_max);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports grid resolution %li x %li, spans %g x %g %s: [%g <= lat <= %g], [%g <= lon <= %g]\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_spn,lon_spn,ngl_unt ? ngl_unt : "degrees (probably)",lat_min,lat_max,lon_min,lon_max);
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
 
   /* Write ERWG hints if filenames provided and grid is regional */

@@ -1,5 +1,11 @@
 2021-10-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.4-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha03: Dizz's As Is';git push
+	git tag -a 5.0.4-alpha03 -m 'fxm';git push --tags
+
+	* nco_grd_nfr() print WARNING when area units are not sterradians
+
 	* NCO 5.0.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha02: Rodrigo Amarante';git push
 	git tag -a 5.0.4-alpha02 -m 'all regularize rgr msgs;ncks -L 0 fix; ncremap lon-lat, idw;ncwa avg cmp fix';git push --tags
