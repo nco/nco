@@ -2,7 +2,11 @@
 
 	* NCO 5.0.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha03: Dizz's As Is';git push
-	git tag -a 5.0.4-alpha03 -m 'ncremap: mpas nfr to_scrip(), area_dgn';git push --tags
+	git tag -a 5.0.4-alpha03 -m 'ncremap: mpas nfr to_scrip(), area_dgn, nfr x,y;';git push --tags
+
+	* ncremap: add (temporary) informative error exit when mbtempest invoked with inferred source grid
+
+	* nco_grd_nfr() try x,y for lon,lat coordinate names to work with Rignot (2013) ice melt dataset
 
 	* nco_grd_nfr() change area units to sr when flg_dgn_area is true
 

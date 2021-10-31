@@ -2550,10 +2550,10 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'mbtempest' ]; then 
 	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
-	if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *.nc ]]; then
+	if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *".nc"* ]]; then
 	    [[ ${grd_src} == *.g ]] && grd_src_h5m_tmp="${grd_src/.g/.h5m}"
 	    [[ ${grd_src} == *.exo ]] && grd_src_h5m_tmp="${grd_src/.exo/.h5m}"
-	    [[ ${grd_src} == *.nc ]] && grd_src_h5m_tmp="${grd_src/.nc/.h5m}"
+	    [[ ${grd_src} == *".nc"* ]] && grd_src_h5m_tmp="${grd_src/.nc/.h5m}"
 	    cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_e2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_e2m[${fl_idx}]}
@@ -2569,10 +2569,10 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    fi # !dbg
 	    grd_src=${grd_src_h5m_tmp}
 	fi # !grd_src
-	if [[ ${grd_dst} == *.g ]] || [[ ${grd_dst} == *.exo ]] || [[ ${grd_dst} == *.nc ]]; then
+	if [[ ${grd_dst} == *.g ]] || [[ ${grd_dst} == *.exo ]] || [[ ${grd_dst} == *".nc"* ]]; then
 	    [[ ${grd_dst} == *.g ]] && grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
 	    [[ ${grd_dst} == *.exo ]] && grd_dst_h5m_tmp="${grd_dst/.exo/.h5m}"
-	    [[ ${grd_dst} == *.nc ]] && grd_dst_h5m_tmp="${grd_dst/.nc/.h5m}"
+	    [[ ${grd_dst} == *".nc"* ]] && grd_dst_h5m_tmp="${grd_dst/.nc/.h5m}"
 	    cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_e2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_e2m[${fl_idx}]}
@@ -2845,6 +2845,11 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		    fi # !msh_opt
 		fi # !vrb_lvl
 		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
+	    elif [ "${wgt_typ}" = 'mbtempest' ]; then 
+		echo "WARNING: mbtempest not implemented in in-loop map-file generation" 
+		echo "cmd_map[${fl_idx}]=${cmd_map[${fl_idx}]}"
+		echo "INFO: ask CSZ to fix this (requires invoking MOAB commands)"
+		exit 1
 	    elif [ "${wgt_typ}" = 'tempest' ]; then 
 		if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 		    printf "Mesh-File: ${msh_fl}\n"
