@@ -414,7 +414,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_crv=True;
       continue;
     } /* !curvilinear */
-    if(!strcmp(rgr_lst[rgr_var_idx].key,"diagnose_area") || !strcmp(rgr_lst[rgr_var_idx].key,"dgn_area")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"diagnose_area") || !strcmp(rgr_lst[rgr_var_idx].key,"dgn_area") || !strcmp(rgr_lst[rgr_var_idx].key,"area_diagnose") || !strcmp(rgr_lst[rgr_var_idx].key,"area_dgn")){
       rgr->flg_dgn_area=True;
       continue;
     } /* !diagnose_area */
@@ -7595,6 +7595,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double mss_val_msk_dbl;
   
   int *msk=NULL; /* [flg] Mask of grid */
+  int *edg_nbr_cll=NULL; /* [enm] MPAS variable nEdgesOnCell */
   int *vrt_cll=NULL; /* [enm] MPAS variable verticesOnCell */
   int *dmn_sz_int; /* [nbr] Array of dimension sizes of grid */
 
@@ -7630,6 +7631,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   int val_two=2; /* [nbr] Value that can be non-erroneously pointed to */
   int val_zero=0; /* [nbr] Value that can be non-erroneously pointed to */
   int var_id; /* [id] Current variable ID */
+  int edg_nbr_cll_id=NC_MIN_INT; /* [id] MPAS variable nEdgesOnCell ID */
   int vrt_cll_id=NC_MIN_INT; /* [id] MPAS variable verticesOnCell ID */
   int vrt_lat_id=NC_MIN_INT; /* [id] MPAS latitude boundary variable latVertex ID */
   int vrt_lon_id=NC_MIN_INT; /* [id] MPAS longitude boundary variable lonVertex ID */
@@ -7651,8 +7653,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long idx; /* [idx] Counting index for unrolled grids */
   long idx_crn;
   long idx_ctr;
-  long idx_fst; /* [idx] Index offset */
-  long idx_tmp; /* [idx] Temporary index */
   long lat_idx2; /* [idx] Counting index for unrolled latitude */
   long lat_idx;
   long lat_nbr; /* [nbr] Number of latitudes in grid */
@@ -7727,6 +7727,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char *lon_nm_in=NULL_CEWI; /* [sng] Name of variable to recognize as longitude */
   char *lat_bnd_nm=NULL_CEWI; /* [sng] Name of latitude  boundary variable */
   char *lon_bnd_nm=NULL_CEWI; /* [sng] Name of longitude boundary variable */
+  char *edg_nbr_cll_nm=NULL_CEWI; /* [sng] Name of MPAS variable nEdgesOnCell */
   char *vrt_dmn_nm=NULL_CEWI; /* [sng] Name of MPAS vertices dimension nVertices */
   char *vrt_cll_nm=NULL_CEWI; /* [sng] Name of MPAS variable verticesOnCell */
   char *vrt_lat_nm=NULL_CEWI; /* [sng] Name of MPAS latitude boundary variable latVertex */
@@ -8092,18 +8093,19 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       flg_1D_psd_rct_bnd=True;
     } /* !bnd_nbr */
     if(!strcmp(bnd_dmn_nm,"maxEdges")){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Unstructured grid has dimension \"%s\" which indicates an MPAS grid. Will attempt to locate other MPAS information (dimension nVertices and variables verticesOnCell, lonVertex, and latVertex) to construct SCRIP-compliant bounds variables...\n",nco_prg_nm_get(),bnd_dmn_nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Unstructured grid has dimension \"%s\" which indicates an MPAS grid. Will attempt to locate other MPAS information (dimension nVertices and variables nEdgesOnCell, verticesOnCell, lonVertex, and latVertex) to construct SCRIP-compliant bounds variables...\n",nco_prg_nm_get(),bnd_dmn_nm);
+      if((rcd=nco_inq_varid_flg(in_id,"nEdgesOnCell",&edg_nbr_cll_id)) == NC_NOERR) edg_nbr_cll_nm=strdup("nEdgesOnCell");
       if((rcd=nco_inq_varid_flg(in_id,"verticesOnCell",&vrt_cll_id)) == NC_NOERR) vrt_cll_nm=strdup("verticesOnCell");
       if((rcd=nco_inq_varid_flg(in_id,"lonVertex",&vrt_lon_id)) == NC_NOERR) vrt_lon_nm=strdup("lonVertex");
       if((rcd=nco_inq_varid_flg(in_id,"latVertex",&vrt_lat_id)) == NC_NOERR) vrt_lat_nm=strdup("latVertex");
 
       if(dmn_id_vrt != NC_MIN_INT) rcd+=nco_inq_dimlen(in_id,dmn_id_vrt,&vrt_nbr);
-      if(vrt_dmn_nm && vrt_cll_nm && vrt_lon_nm && vrt_lat_nm){
+      if(vrt_dmn_nm && edg_nbr_cll_nm && vrt_cll_nm && vrt_lon_nm && vrt_lat_nm){
 	flg_1D_mpas_bnd=True;
 	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Found all MPAS information needed to construct SCRIP-compliant bounds variables.\n",nco_prg_nm_get());
       }else{
 	(void)fprintf(stdout,"%s: INFO Unable to find all MPAS information needed to construct SCRIP-compliant bounds variables. Will not write bounds coordinates. This will degrade usefulness of SCRIP file for regridding schemes (e.g., conservative) that require cell boundaries.\n",nco_prg_nm_get());
-	(void)fprintf(stdout,"%s: HINT Often MPAS restart files contain the required bounds variables (verticesOnCell, lonVertex, latVertex) that normal MPAS data files lack. Try inferring the SCRIP grid from a restart or initial condition file instead of from a time-varying output dataset.\n",nco_prg_nm_get());
+	(void)fprintf(stdout,"%s: HINT Often MPAS restart files contain the required bounds variables (nEdgesOnCell, verticesOnCell, lonVertex, latVertex) that normal MPAS data files lack. Try inferring the SCRIP grid from a restart or initial condition file instead of from a time-varying output dataset.\n",nco_prg_nm_get());
 	flg_wrt_crn=False;
       } /* !vrt_cll_nm */
     } /* !bnd_dmn_nm */
@@ -8277,13 +8279,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_bnd,crd_typ);
       if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
     }else if(flg_1D_mpas_bnd){
-      const long grd_crn_nbrm1=grd_crn_nbr-1L; /* [nbr] Number of corners in gridcell minus one */
+      long cll_vrt_lst_vld; /* [idx] C (0-based) index of greatest valid vertex */
+      edg_nbr_cll=(int *)nco_malloc(grd_sz_nbr*nco_typ_lng((nc_type)NC_INT));
       vrt_cll=(int *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng((nc_type)NC_INT));
       vrt_lat=(double *)nco_malloc(vrt_nbr*nco_typ_lng(crd_typ));
       vrt_lon=(double *)nco_malloc(vrt_nbr*nco_typ_lng(crd_typ));
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports dimension sizes bnd_nbr=%ld, col_nbr=%ld, grd_crn_nbr=%ld, vrt_nbr=%ld\n",nco_prg_nm_get(),fnc_nm,bnd_nbr,col_nbr,grd_crn_nbr,vrt_nbr);
+      dmn_cnt[0]=col_nbr;
+      if(edg_nbr_cll_id != NC_MIN_INT) rcd=nco_get_vara(in_id,edg_nbr_cll_id,dmn_srt,dmn_cnt,edg_nbr_cll,(nc_type)NC_INT);
       dmn_cnt[0]=col_nbr;
       dmn_cnt[1]=grd_crn_nbr;
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports dimension sizes bnd_nbr=%ld, col_nbr=%ld, grd_crn_nbr=%ld, vrt_nbr=%ld\n",nco_prg_nm_get(),fnc_nm,bnd_nbr,col_nbr,grd_crn_nbr,vrt_nbr);
       if(vrt_cll_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_cll_id,dmn_srt,dmn_cnt,vrt_cll,(nc_type)NC_INT);
       dmn_cnt[0]=vrt_nbr;
       if(vrt_lat_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_lat_id,dmn_srt,dmn_cnt,vrt_lat,crd_typ);
@@ -8298,33 +8303,24 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	if(strstr(att_val,"radian")) flg_crd_rdn=True;
 	if(att_val) ngl_unt=(char *)strdup(att_val);
 	if(att_val) att_val=(char *)nco_free(att_val);
-      } /* end rcd && att_typ */
-      for(col_idx=0;col_idx<col_nbr;col_idx++){
-	idx=col_idx*grd_crn_nbr;
-	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
+      } /* !rcd && att_typ */
+      /* 20211031: Replace inelegant homebrew algorithm with MPAS algorithm
+	 https://github.com/MPAS-Dev/pyremap/blob/master/pyremap/descriptor.py#L189-L256 */
+      for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
+	for(col_idx=0;col_idx<col_nbr;col_idx++){
+	  idx=col_idx*grd_crn_nbr;
 	  ttl_idx=idx+crn_idx;
-	  vrt_idx=vrt_cll[ttl_idx];
-	  assert(vrt_idx >= 0);
+	  /* 20211031: Cause empty vertices to repeat last valid vertex */
+	  cll_vrt_lst_vld=NCO_MIN(edg_nbr_cll[col_idx]-1L,crn_idx);
+	  /* 20201220: MPAS vertex indices use Fortran-based convention---subtract one for C */
+	  vrt_idx=vrt_cll[idx+cll_vrt_lst_vld]-1L;
+	  assert(vrt_idx >= 0 && vrt_idx < vrt_nbr);
 	  //if(vrt_idx >= vrt_nbr) (void)fprintf(stdout,"%s: WARNING %s input gridcell %ld corner %ld has extreme MPAS input verticesOnCell value %ld (maximum valid vertex = vrt_nbr-1 = %ld-1 = %ld)\n",nco_prg_nm_get(),fnc_nm,col_idx,crn_idx,vrt_idx,vrt_nbr,vrt_nbr-1);
-	  if(vrt_idx == 0){
-	    /* 20201220: Convert values of zero to neighboring valid vertex index */
-	    for(idx_fst=1;idx_fst<grd_crn_nbr;idx_fst++){
-	      idx_tmp=crn_idx+idx_fst;
-	      /* Wrap to initial corner of this cell when candidate corner would be in next cell */
-	      if(idx_tmp > grd_crn_nbrm1) idx_tmp-=grd_crn_nbr;
-	      ttl_idx=idx+idx_tmp;
-	      vrt_idx=vrt_cll[ttl_idx];
-	      if(vrt_idx != 0) break;
-	    } /* !idx_fst */
-	    assert(idx_fst < grd_crn_nbr);
-	  } /* !vrt_idx */
-	  /* 20201220: Stored vertex indices use Fortran-based convention---subtract one for C */
-	  vrt_idx--;
 	  lat_crn[ttl_idx]=vrt_lat[vrt_idx];
 	  lon_crn[ttl_idx]=vrt_lon[vrt_idx];
 	  //(void)fprintf(stdout,"%s: DEBUG %s reports col_idx = %ld, crn_idx = %ld, ttl_idx = %ld, vrt_idx = %ld, vrt_lat = %g, vrt_lon = %g\n",nco_prg_nm_get(),fnc_nm,col_idx,crn_idx,ttl_idx,vrt_idx,vrt_lat[vrt_idx],vrt_lon[vrt_idx]);
-	} /* !crn_idx */
-      } /* !col_idx */
+	} /* !col_idx */
+      } /* !crn_idx */
     }else{ /* !flg_1D_mpas_bnd */
       dmn_cnt[0]=col_nbr;
       dmn_cnt[1]=grd_crn_nbr;
@@ -8502,6 +8498,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !flg_grd_2D */
 
   /* Obtain units, if any, of input area */
+  const nco_bool flg_dgn_area=rgr->flg_dgn_area; /* [flg] Diagnose rather than copy inferred area */
   if(area_id != NC_MIN_INT){
     rcd=nco_inq_att_flg(in_id,area_id,unt_sng,&att_typ,&att_sz);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){
@@ -8512,7 +8509,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(!strcasestr(att_val,"radian")) flg_area_sr=False;
       if(att_val) area_unt=(char *)strdup(att_val);
       if(att_val) att_val=(char *)nco_free(att_val);
-      if(area_unt && !flg_area_sr) (void)fprintf(stderr,"%s: WARNING %s reports input grid area units are \"%s\", i.e., are apparently NOT steradians. This can cause downstream problems when comparing areas to steradian-based units. For example, it currently leads to strange looking results for this grid in the map-checker.\n",nco_prg_nm_get(),fnc_nm,area_unt);
+      if(area_unt && !flg_area_sr && !flg_dgn_area) (void)fprintf(stderr,"%s: WARNING %s reports input grid area units are \"%s\", i.e., are apparently NOT steradians. This can cause downstream problems when comparing areas to steradian-based units. For example, using this grid with ESMF will lead to strange-looking results in the map-checker because ESMF-generated map-files retain the original area values by default (whereas NCO overwrites the originals with internally computed steradian values by default). To avoid these potential issues, consider explicitly specifying the --area_dgn (or synonyms --dgn_area, --diagnose_area, --area_diagnose) flag. This would cause NCO to write the diagnosed (not copied) grid_area variable in steradians to the grid-file.\n",nco_prg_nm_get(),fnc_nm,area_unt);
     } /* !rcd && att_typ */
   } /* !area_id */
   
@@ -9437,7 +9434,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
      Otherwise an inferred grid with area [km2] from ALM/CLM might be combined with area [sr] from NCO
      This would bias ERWG --user_areas produced values by ~10^10
      Setting flg_dgn_area ensures inferred area uses [sr] */
-  const nco_bool flg_dgn_area=rgr->flg_dgn_area; /* [flg] Diagnose rather than copy inferred area */
   if(flg_wrt_crn && /* If bounds are available to compute area and ... */
      (area_id == NC_MIN_INT || /* Area is not in input file ... */
       use_mss_val_area || /* Area is untrustworthy */
@@ -9452,6 +9448,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
 	  area[lat_idx*lon_nbr+lon_idx]=fabs(dgr2rdn*(lon_bnd[2*lon_idx+1L]-lon_bnd[2*lon_idx])*(sin(dgr2rdn*lat_bnd[2*lat_idx+1L])-sin(dgr2rdn*lat_bnd[2*lat_idx]))); /* fabs() ensures positive area in n2s grids */
     } /* !flg_grd_2D */
+    flg_area_sr=True;
   } /* !area_id */
 
   /* ERWG will fail unless grid file has mask variable
@@ -9619,11 +9616,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   rcd=nco_char_att_put(out_id,dmn_sz_nm,"long_name","Size(s) of horizontal dimensions (in Fortran storage order for historical reasons)");
 
   if(flg_area_sr){
-    rcd=nco_char_att_put(out_id,area_nm,"long_name","Solid Angle Subtended on Source Grid");
+    rcd=nco_char_att_put(out_id,area_nm,"long_name","Solid Angle Subtended on Grid");
     rcd=nco_char_att_put(out_id,area_nm,"standard_name","solid_angle");
     rcd=nco_char_att_put(out_id,area_nm,"units","steradian");
   }else{ /* !flg_area_sr */
-    rcd=nco_char_att_put(out_id,area_nm,"long_name","Area on Source Grid");
+    rcd=nco_char_att_put(out_id,area_nm,"long_name","Area on Grid");
     //    rcd=nco_char_att_put(out_id,area_nm,"standard_name","solid_angle");
     rcd=nco_char_att_put(out_id,area_nm,"units",area_unt);
   } /* !flg_area_sr */
@@ -10144,6 +10141,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(lon_crn) lon_crn=(double *)nco_free(lon_crn);
   if(lon_ctr) lon_ctr=(double *)nco_free(lon_ctr);
   if(lon_ntf) lon_ntf=(double *)nco_free(lon_ntf);
+  if(edg_nbr_cll) edg_nbr_cll=(int *)nco_free(edg_nbr_cll);
   if(vrt_cll) vrt_cll=(int *)nco_free(vrt_cll);
   if(vrt_lat) vrt_lat=(double *)nco_free(vrt_lat);
   if(vrt_lon) vrt_lon=(double *)nco_free(vrt_lon);
@@ -10161,6 +10159,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(lon_nm_in) lon_nm_in=(char *)nco_free(lon_nm_in);
   if(msk_nm_in) msk_nm_in=(char *)nco_free(msk_nm_in);
   if(ngl_unt) ngl_unt=(char *)nco_free(ngl_unt);
+  if(edg_nbr_cll_nm) edg_nbr_cll_nm=(char *)nco_free(edg_nbr_cll_nm);
   if(vrt_cll_nm) vrt_cll_nm=(char *)nco_free(vrt_cll_nm);
   if(vrt_lat_nm) vrt_lat_nm=(char *)nco_free(vrt_lat_nm);
   if(vrt_lon_nm) vrt_lon_nm=(char *)nco_free(vrt_lon_nm);

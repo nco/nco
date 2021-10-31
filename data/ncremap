@@ -576,6 +576,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "            Tempest (and MOAB-Tempest) algorithms: fv2fv|fv2fv_flx|fv2fv_stt|fv2se_flx|fv2se_stt|fv2se_alt|se2fv_flx|se2fv_stt|se2fv_alt|se2se|tempest"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
     echo " ${fnt_bld}--add_fll${fnt_nrm}  Add _FillValue to fields with empty destination cells (default ${fnt_bld}${add_fll}${fnt_nrm}) [${fnt_tlc}add_fll, add_fill_value, fll_mpt, fill_empty${fnt_nrm}]"
+    echo " ${fnt_bld}--area_dgn${fnt_nrm} Diagnose (rather than copy) grid_area to inferred grid-file (default ${fnt_bld}No${fnt_nrm}) [${fnt_tlc}area_diagnose, dgn_area, diagnose_area${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng, or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, tpl, tpl_fl, template, template_file${fnt_nrm}]"
     echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
@@ -753,6 +754,8 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       add_fll | add_fill_value | fll_mpt | fill_empty ) add_fll='Yes' ;; # # Add _FillValue to fields with empty destination cells
 	       add_fll=?* | add_fill_value=?* | fll_mpt=?* | fill_empty=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Add _FillValue to fields with empty destination cells
 	       alg_typ=?* | algorithm=?* | regrid_algorithm=?* ) alg_typ="${LONG_OPTARG}" ;; # -a # Algorithm
+	       area_dgn | dgn_area | area_diagnose | diagnose_area ) area_dgn='Yes' ;; # # Diagnose (rather than copy) grid_area to inferred grid-file
+	       area_dgn=?* | dgn_area=?* | area_diagnose=?* | diagnose_area=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Diagnose (rather than copy) grid_area in inferred grids
 	       clm_flg | climatology_flag ) clm_flg='Yes' ;; # -C # Climo flag (undocumented)
 	       clm_flg=?* | climatology_flag=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # clm_flg
 	       d2f | d2s | dbl_flt | dbl_sgl | double_float ) d2f_flg='Yes' ;; # # Convert double-precision fields to single-precision
@@ -1468,6 +1471,9 @@ if [ -n "${var_lst}" ]; then
 	nco_var_lst="-v ${var_lst}"
     fi # !xcl_flg
 fi # !var_lst
+if [ -n "${area_dgn}" ]; then 
+    nco_dgn_area="--rgr diagnose_area"
+fi # !area_dgn
 if [ -n "${msk_dst}" ]; then 
     nco_msk_dst="--rgr msk_var=${msk_dst}"
 fi # !msk_dst
@@ -2499,7 +2505,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "RRG: Infer source grid from subsetted, annotated, regional coordinate file...\n"
     fi # !vrb_lvl
-    cmd_nfr[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_msk_src} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${rgn_fl}\" \"${tmp_out_fl}\""
+    cmd_nfr[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_dgn_area} ${nco_msk_src} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${rgn_fl}\" \"${tmp_out_fl}\""
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_nfr[${fl_idx}]}
     fi # !dbg
@@ -2795,7 +2801,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 
 	    if [ "${wgt_typ}" != 'cdo' ]; then 
 		# Infer source grid-file from input data file
-		cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${in_fl}\" \"${tmp_out_fl}\""
+		cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_dgn_area} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${in_fl}\" \"${tmp_out_fl}\""
 	
 		# Block 2 Loop 2: Execute and/or echo commands
 		if [ ${dbg_lvl} -ge 1 ]; then

@@ -1,10 +1,18 @@
-2021-10-29  Charlie Zender  <zender@uci.edu>
+2021-10-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha03: Dizz's As Is';git push
-	git tag -a 5.0.4-alpha03 -m 'fxm';git push --tags
+	git tag -a 5.0.4-alpha03 -m 'ncremap: mpas nfr to_scrip(), area_dgn';git push --tags
 
-	* nco_grd_nfr() print WARNING when area units are not sterradians
+	* nco_grd_nfr() change area units to sr when flg_dgn_area is true
+
+	* ncremap add --area_dgn flag to diagnose (rather than copy) grid_area in inferred grids
+
+	* nco_grd_nfr() replace inelegant homebrew MPAS-inferral algorithm with MPAS to_scrip() algorithm
+
+2021-10-29  Charlie Zender  <zender@uci.edu>
+
+	* nco_grd_nfr() print WARNING when area units are not steradians
 
 	* NCO 5.0.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha02: Rodrigo Amarante';git push

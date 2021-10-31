@@ -108,6 +108,15 @@ extern "C" {
 # define M_PI_2      1.57079632679489661923132169163975144   /* pi/2           */
 #endif /* M_PI_2 */
 
+/* Declare NCO versions (for namespace safety) of MIN/MAX macros in sys/param.h */
+#ifndef NCO_MIN
+# define NCO_MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif /* !NCO_MIN */
+
+#ifndef NCO_MAX
+# define NCO_MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif /* !NCO_MAX */
+
   /* Variables marked CEWI "Compiler Error Warning Initialization" are initialized
      to prevent spurious "warning: `float foo' might be used uninitialized in 
      this function" warnings when, e.g., GCC -Wuninitialized is turned on.
