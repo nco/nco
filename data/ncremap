@@ -2544,6 +2544,7 @@ if [ "${map_mk}" = 'Yes' ]; then
 	if [[ ${grd_dst} == *.h5m ]] && [[ ${grd_dst} != *p.h5m ]]; then
 	    grd_dst_prt_tmp="${grd_dst/.h5m/_${prt_nbr}p.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
+		# 20210829: NB: Compy installation only has Zoltan not METIS
 		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 --recompute_rcb_box --scale_sphere --project_on_sphere 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
 	    else # !prt_alg
 		# 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan, lacks --scale_sphere completely, and must use -p instead of --project_on_sphere
@@ -2566,7 +2567,7 @@ if [ "${map_mk}" = 'Yes' ]; then
 fi # !map_mk
     
 # If user provides source gridfile, or it was inferred in RRG or SGS modes, assume it applies to every input file
-# Do not infer source gridfiles from input files within file loop
+# In that case, no need to infer source gridfiles within file loop
 # Generate map-file once outside of file loop, and re-use it for every input file
 if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
@@ -2620,11 +2621,10 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
 		# 20210829: NB: Compy installation only has Zoltan not METIS
-		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 --project_on_sphere 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    else # !prt_alg
-		# 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan
-		# However, it is pointless to partition without MPI-enabled mbtempest!
-		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+		# 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan, lacks --scale_sphere completely, and must use -p instead of --project_on_sphere
+		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    fi # !HOSTNAME
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_prt[${fl_idx}]}
@@ -2824,7 +2824,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		fi # !dbg
 
 		# If source grid was just inferred in preceding block, convert and partition it
-		# Copy mbtempest blocks below from above
+		# Duplicate code of mbtempest source grid blocks above
 		if [ "${wgt_typ}" = 'mbtempest' ]; then 
 		    # 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
 		    if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *".nc"* ]]; then
@@ -2850,11 +2850,10 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 			if [ ${prt_alg} = 'zoltan' ]; then
 			    # 20210829: NB: Compy installation only has Zoltan not METIS
-			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 --project_on_sphere 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 			else # !prt_alg
-			    # 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan
-			    # However, it is pointless to partition without MPI-enabled mbtempest!
-			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+			    # 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan, lacks --scale_sphere completely, and must use -p instead of --project_on_sphere
+			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 			fi # !HOSTNAME
 			if [ ${dbg_lvl} -ge 1 ]; then
 			    echo ${cmd_prt[${fl_idx}]}
