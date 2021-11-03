@@ -8500,7 +8500,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !flg_grd_2D */
 
   /* Obtain units, if any, of input area */
-  const nco_bool flg_dgn_area=rgr->flg_dgn_area; /* [flg] Diagnose rather than copy inferred area */
+  nco_bool flg_dgn_area=rgr->flg_dgn_area; /* [flg] Diagnose rather than copy inferred area */
+  /* 20211102 Always diagnose area from MPAS files so ERWG does not populate map-files with square kilometers */
+  if(flg_1D_mpas_bnd && area_id != NC_MIN_INT) flg_dgn_area=True;
   if(area_id != NC_MIN_INT){
     rcd=nco_inq_att_flg(in_id,area_id,unt_sng,&att_typ,&att_sz);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){
@@ -9433,7 +9435,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !has_mss_val_area */
   /* 20170511: There remain a handful of cases when input area should be diagnosed not copied
      These include using ncremap in SGS mode when inferred grids must use sensible area units
-     Otherwise an inferred grid with area [km2] from ALM/CLM might be combined with area [sr] from NCO
+     Otherwise an inferred grid with area [km2] from EAM/CLM might be combined with area [sr] from NCO
      This would bias ERWG --user_areas produced values by ~10^10
      Setting flg_dgn_area ensures inferred area uses [sr] */
   if(flg_wrt_crn && /* If bounds are available to compute area and ... */
