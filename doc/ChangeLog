@@ -1,8 +1,12 @@
-2021-11-02  Charlie Zender  <zender@uci.edu>
+2021-11-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha03: Dizz's As Is';git push
 	git tag -a 5.0.4-alpha03 -m 'ncremap: mpas nfr to_scrip(), area_dgn, nfr x,y, mbtempest loop;';git push --tags
+
+	* ncremap: add imbalance option -i 1.002 to Zoltan recursive bi-section RCB partitions
+
+2021-11-02  Charlie Zender  <zender@uci.edu>
 
 	* nco_grd_nfr() always diagnose area from MPAS files
 

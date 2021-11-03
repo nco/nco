@@ -337,8 +337,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/rgr ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-0[123].nc 
 # ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-0[12].nc ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.000101_000103.nc
 # ncremap --dbg=3 -v FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.000101_000102.nc ~/foo.nc
-# MBT
-# ncremap --dbg=1 --vrb=3 --devnull=No --mbt --alg_typ=se2fv_flx --grd_src=${DATA}/grids/ne30.g --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_mbt.20211001.nc
+# MOAB
+# ncremap --mpi_nbr=8 -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=fv2fv_flx --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
 # CDO
 # cdo verifygrid grid_CMN-5x5.nc
 # ncremap --dbg=1 --vrb=3 --devnull=No --alg_typ=cdo_bil --in_fl=${DATA}/grids/t42_skl.nc --dst_fl=${DATA}/ne30/rgr/hfc_ANN_200001_200012_climo.nc --map=${DATA}/maps/map_t42_to_cmip6_180x360_cdo.20210701.nc
@@ -2518,9 +2518,8 @@ if [ "${prc_typ}" = 'rrg' ]; then
     fi # !dbg
 fi # !rrg
 
-# 20211102 If weight-generation will occur, then user provided or ncremap already inferred or created destination grid
-# Pre-process destination grids here for mbtempest
-# NB: Unlike source grids, destination grid never changes in file-loop
+# 20211102 Pre-process destination grid prior to weight-generation by mbtempest
+# NB: Unlike source grid, destination grid never changes in file-loop, so pre-process here
 if [ "${map_mk}" = 'Yes' ]; then 
     if [ "${wgt_typ}" = 'mbtempest' ]; then
 	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
@@ -2535,7 +2534,7 @@ if [ "${map_mk}" = 'Yes' ]; then
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_e2m[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of destination grid. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to convert destination grid to MOAB H5M format. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
 		    exit 1
 		fi # !err
@@ -2545,9 +2544,9 @@ if [ "${map_mk}" = 'Yes' ]; then
 	if [[ ${grd_dst} == *.h5m ]] && [[ ${grd_dst} != *p.h5m ]]; then
 	    grd_dst_prt_tmp="${grd_dst/.h5m/_${prt_nbr}p.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
-		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --scale_sphere --project_on_sphere 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
+		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 --recompute_rcb_box --scale_sphere --project_on_sphere 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
 	    else # !prt_alg
-		# 20210829: moab=5.3.0=*nompi_tempest* lacks --recompute_rcb_box and --scale_sphere completely, and must use -p instead of --project_on_sphere
+		# 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan, lacks --scale_sphere completely, and must use -p instead of --project_on_sphere
 		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
 	    fi # !HOSTNAME
 	    if [ ${dbg_lvl} -ge 1 ]; then
@@ -2609,7 +2608,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_e2m[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_tmp} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to convert source grid to MOAB H5M format. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) Environment paths must resolve the correct version of libTempestRemap. 2) mbconvert must support the -B option. Some versions of mbconvert do not. 3) mbconvert must support the PARALLEL option. Serial versions of mbconvert do not.\n"
 		    printf "${spt_nm}: HINT a simple way to install a MOAB compatible with ncremap is install them both into their own environment, e.g., \n\tconda create -n moab_nco -c conda-forge moab=5.3.0=*mpich_tempest* nco\n"
 		    exit 1
@@ -2621,7 +2620,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
 		# 20210829: NB: Compy installation only has Zoltan not METIS
-		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    else # !prt_alg
 		# 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan
 		# However, it is pointless to partition without MPI-enabled mbtempest!
@@ -2839,7 +2838,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			if [ ${dbg_lvl} -ne 2 ]; then
 			    eval ${cmd_e2m[${fl_idx}]}
 			    if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_tmp} ]; then
-				printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
+				printf "${spt_nm}: ERROR Failed to convert source grid to MOAB H5M format. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
 				printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) Environment paths must resolve the correct version of libTempestRemap. 2) mbconvert must support the -B option. Some versions of mbconvert do not. 3) mbconvert must support the PARALLEL option. Serial versions of mbconvert do not.\n"
 				printf "${spt_nm}: HINT a simple way to install a MOAB compatible with ncremap is install them both into their own environment, e.g., \n\tconda create -n moab_nco -c conda-forge moab=5.3.0=*mpich_tempest* nco\n"
 				exit 1
@@ -2851,7 +2850,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 			if [ ${prt_alg} = 'zoltan' ]; then
 			    # 20210829: NB: Compy installation only has Zoltan not METIS
-			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 			else # !prt_alg
 			    # 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan
 			    # However, it is pointless to partition without MPI-enabled mbtempest!
