@@ -2621,7 +2621,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
 		# 20210829: NB: Compy installation only has Zoltan not METIS
-		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 --project_on_sphere 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 --recompute_rcb_box --project_on_sphere 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    else # !prt_alg
 		# 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan, lacks --scale_sphere completely, and must use -p instead of --project_on_sphere
 		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
@@ -2850,7 +2850,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 			if [ ${prt_alg} = 'zoltan' ]; then
 			    # 20210829: NB: Compy installation only has Zoltan not METIS
-			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 --project_on_sphere 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 --recompute_rcb_box --project_on_sphere 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 			else # !prt_alg
 			    # 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan, lacks --scale_sphere completely, and must use -p instead of --project_on_sphere
 			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
