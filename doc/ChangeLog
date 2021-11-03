@@ -1,8 +1,14 @@
-2021-10-31  Charlie Zender  <zender@uci.edu>
+2021-11-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha03: Dizz's As Is';git push
 	git tag -a 5.0.4-alpha03 -m 'ncremap: mpas nfr to_scrip(), area_dgn, nfr x,y;';git push --tags
+
+	* ncremap: duplicate mbtempest source-grid preprocessing in file loop
+
+	* ncremap: isolate mbtempest destination-grid preprocessing from source grid
+
+2021-10-31  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: add (temporary) informative error exit when mbtempest invoked with inferred source grid
 

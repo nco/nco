@@ -2518,6 +2518,54 @@ if [ "${prc_typ}" = 'rrg' ]; then
     fi # !dbg
 fi # !rrg
 
+# 20211102 If weight-generation will occur, then user provided or ncremap already inferred or created destination grid
+# Pre-process destination grids here for mbtempest
+# NB: Unlike source grids, destination grid never changes in file-loop
+if [ "${map_mk}" = 'Yes' ]; then 
+    if [ "${wgt_typ}" = 'mbtempest' ]; then
+	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
+	if [[ ${grd_dst} == *.g ]] || [[ ${grd_dst} == *.exo ]] || [[ ${grd_dst} == *".nc"* ]]; then
+	    [[ ${grd_dst} == *.g ]] && grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
+	    [[ ${grd_dst} == *.exo ]] && grd_dst_h5m_tmp="${grd_dst/.exo/.h5m}"
+	    [[ ${grd_dst} == *".nc"* ]] && grd_dst_h5m_tmp="${grd_dst/.nc/.h5m}"
+	    cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_e2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_e2m[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_e2m[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m} ]; then
+		    printf "${spt_nm}: ERROR Failed to generate MOAB version of destination grid. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
+		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	    grd_dst=${grd_dst_h5m_tmp}
+	fi # !grd_dst
+	if [[ ${grd_dst} == *.h5m ]] && [[ ${grd_dst} != *p.h5m ]]; then
+	    grd_dst_prt_tmp="${grd_dst/.h5m/_${prt_nbr}p.h5m}"
+	    if [ ${prt_alg} = 'zoltan' ]; then
+		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --scale_sphere --project_on_sphere 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
+	    else # !prt_alg
+		# 20210829: moab=5.3.0=*nompi_tempest* lacks --recompute_rcb_box and --scale_sphere completely, and must use -p instead of --project_on_sphere
+		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
+	    fi # !HOSTNAME
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_prt[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_prt[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_prt_tmp} ]; then
+		    printf "${spt_nm}: ERROR Failed to partition MOAB destination grid. Debug this:\n${cmd_prt[${fl_idx}]}\n"
+		    printf "${spt_nm}: HINT ${prt_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	    grd_dst=${grd_dst_prt_tmp}
+	fi # !grd_dst
+    fi # !mbtempest
+fi # !map_mk
+    
 # If user provides source gridfile, or it was inferred in RRG or SGS modes, assume it applies to every input file
 # Do not infer source gridfiles from input files within file loop
 # Generate map-file once outside of file loop, and re-use it for every input file
@@ -2569,24 +2617,6 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    fi # !dbg
 	    grd_src=${grd_src_h5m_tmp}
 	fi # !grd_src
-	if [[ ${grd_dst} == *.g ]] || [[ ${grd_dst} == *.exo ]] || [[ ${grd_dst} == *".nc"* ]]; then
-	    [[ ${grd_dst} == *.g ]] && grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
-	    [[ ${grd_dst} == *.exo ]] && grd_dst_h5m_tmp="${grd_dst/.exo/.h5m}"
-	    [[ ${grd_dst} == *".nc"* ]] && grd_dst_h5m_tmp="${grd_dst/.nc/.h5m}"
-	    cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_e2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_e2m[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_e2m[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of destination grid. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
-		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	    grd_dst=${grd_dst_h5m_tmp}
-	fi # !grd_dst
 	if [[ ${grd_src} == *.h5m ]] && [[ ${grd_src} != *p.h5m ]]; then
 	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
@@ -2603,34 +2633,13 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_prt[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_prt_tmp} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_prt[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to partition MOAB version of source grid. Debug this:\n${cmd_prt[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT ${prt_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
 	    grd_src=${grd_src_prt_tmp}
 	fi # !grd_src
-	if [[ ${grd_dst} == *.h5m ]] && [[ ${grd_dst} != *p.h5m ]]; then
-	    grd_dst_prt_tmp="${grd_dst/.h5m/_${prt_nbr}p.h5m}"
-	    if [ ${prt_alg} = 'zoltan' ]; then
-		cmd_prd[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --scale_sphere --project_on_sphere 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
-	    else # !prt_alg
-		# 20210829: moab=5.3.0=*nompi_tempest* lacks --recompute_rcb_box and --scale_sphere completely, and must use -p instead of --project_on_sphere
-		cmd_prd[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
-	    fi # !HOSTNAME
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_prd[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_prd[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_prt_tmp} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_prd[${fl_idx}]}\n"
-		    printf "${spt_nm}: HINT ${prt_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	    grd_dst=${grd_dst_prt_tmp}
-	fi # !grd_dst
 	if [ ${prt_alg} = 'zoltan' ]; then
 	    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
 	else # !prt_alg
@@ -2814,6 +2823,54 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			exit 1
 		    fi # !err
 		fi # !dbg
+
+		# If source grid was just inferred in preceding block, convert and partition it
+		# Copy mbtempest blocks below from above
+		if [ "${wgt_typ}" = 'mbtempest' ]; then 
+		    # 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
+		    if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *".nc"* ]]; then
+			[[ ${grd_src} == *.g ]] && grd_src_h5m_tmp="${grd_src/.g/.h5m}"
+			[[ ${grd_src} == *.exo ]] && grd_src_h5m_tmp="${grd_src/.exo/.h5m}"
+			[[ ${grd_src} == *".nc"* ]] && grd_src_h5m_tmp="${grd_src/.nc/.h5m}"
+			cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_e2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
+			if [ ${dbg_lvl} -ge 1 ]; then
+			    echo ${cmd_e2m[${fl_idx}]}
+			fi # !dbg
+			if [ ${dbg_lvl} -ne 2 ]; then
+			    eval ${cmd_e2m[${fl_idx}]}
+			    if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_tmp} ]; then
+				printf "${spt_nm}: ERROR Failed to generate MOAB version of source grid. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
+				printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) Environment paths must resolve the correct version of libTempestRemap. 2) mbconvert must support the -B option. Some versions of mbconvert do not. 3) mbconvert must support the PARALLEL option. Serial versions of mbconvert do not.\n"
+				printf "${spt_nm}: HINT a simple way to install a MOAB compatible with ncremap is install them both into their own environment, e.g., \n\tconda create -n moab_nco -c conda-forge moab=5.3.0=*mpich_tempest* nco\n"
+				exit 1
+			    fi # !err
+			fi # !dbg
+			grd_src=${grd_src_h5m_tmp}
+		    fi # !grd_src
+		    if [[ ${grd_src} == *.h5m ]] && [[ ${grd_src} != *p.h5m ]]; then
+			grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
+			if [ ${prt_alg} = 'zoltan' ]; then
+			    # 20210829: NB: Compy installation only has Zoltan not METIS
+			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+			else # !prt_alg
+			    # 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan
+			    # However, it is pointless to partition without MPI-enabled mbtempest!
+			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+			fi # !HOSTNAME
+			if [ ${dbg_lvl} -ge 1 ]; then
+			    echo ${cmd_prt[${fl_idx}]}
+			fi # !dbg
+			if [ ${dbg_lvl} -ne 2 ]; then
+			    eval ${cmd_prt[${fl_idx}]}
+			    if [ "$?" -ne 0 ] || [ ! -f ${grd_src_prt_tmp} ]; then
+				printf "${spt_nm}: ERROR Failed to partition MOAB version of source grid. Debug this:\n${cmd_prt[${fl_idx}]}\n"
+				printf "${spt_nm}: HINT ${prt_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
+				exit 1
+			    fi # !err
+			fi # !dbg
+			grd_src=${grd_src_prt_tmp}
+		    fi # !grd_src
+		fi # !mbtempest
 	    fi # !cdo
 	    
 	    # Block 3: Source->destination maps
@@ -2846,10 +2903,11 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		fi # !vrb_lvl
 		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
 	    elif [ "${wgt_typ}" = 'mbtempest' ]; then 
-		echo "WARNING: mbtempest not implemented in in-loop map-file generation" 
-		echo "cmd_map[${fl_idx}]=${cmd_map[${fl_idx}]}"
-		echo "INFO: ask CSZ to fix this (requires invoking MOAB commands)"
-		exit 1
+		if [ ${prt_alg} = 'zoltan' ]; then
+		    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
+		else # !prt_alg
+		    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
+		fi # !prt_alg
 	    elif [ "${wgt_typ}" = 'tempest' ]; then 
 		if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 		    printf "Mesh-File: ${msh_fl}\n"
