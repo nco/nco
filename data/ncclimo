@@ -220,8 +220,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ~/PRECT_200101_200212.nc # Single file input
 
 # Debugging and Benchmarking:
-# ncclimo -v FSNT,AODVIS,TREFHT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
-# ncclimo --var_lst=FSNT,AODVIS,TREFHT --caseid=20180129.DECKv1b_piControl.ne30_oEC.edison --yr_srt=1 --yr_end=2 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncclimo -P eam -m cam -v FSNT,AODVIS,TREFHT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncclimo -P eam -m cam --var_lst=FSNT,AODVIS,TREFHT --caseid=20180129.DECKv1b_piControl.ne30_oEC.edison --yr_srt=1 --yr_end=2 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo -v TOTEXTTAU -c merra2_198001.nc4 -s 1980 -e 2015 -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm
 # ncclimo > ~/ncclimo.out 2>&1 &
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
@@ -955,7 +955,10 @@ fi # !drc_in
 if [ "${clm_md}" = 'hfs' ] || [ "${clm_md}" = 'mth' ] ; then
     # Subset (split) mode whenever stdin pipe has data or positional arguments are used
     if [ ${inp_std} = 'Yes' ] || [ ${inp_psn} = 'Yes' ] || [ "${clm_md}" = 'hfs' ]; then
-	sbs_flg='Yes'
+	# 20211105 Split monthly files provided via stdin/position/glob unless clm_md=mth is explicitly specified
+	if [ -z "${clm_md_usr}" ]; then 
+	    sbs_flg='Yes'
+	fi # !clm_md_usr
     fi # !sbs_flg
     # fxm: If normal resolution (monthly, not HFS) input files are specified by -i drc_in must also specify --ypf to turn-on splitter mode
     # Otherwise it is ambiguous whether to generate climatology or to split

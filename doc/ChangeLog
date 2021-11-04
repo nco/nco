@@ -1,8 +1,12 @@
-2021-11-03  Charlie Zender  <zender@uci.edu>
+2021-11-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha03: Dizz's As Is';git push
-	git tag -a 5.0.4-alpha03 -m 'ncremap: mpas nfr to_scrip(), area_dgn, nfr x,y, mbtempest loop;';git push --tags
+	git tag -a 5.0.4-alpha03 -m 'ncclimo: mth stdin clm; ncremap: mpas nfr to_scrip(), area_dgn, nfr x,y, mbtempest loop;';git push --tags
+
+	* ncclimo: compute climos from (instead of split) monthly files provided via stdin/position/glob if clm_md=mth is explicitly specified
+
+2021-11-03  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: use mbpart --recompute_rcb_box for Zoltan RCB algorithm per suggestion of Vijay/Iulian on Slack
 
