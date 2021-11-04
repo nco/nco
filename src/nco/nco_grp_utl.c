@@ -6937,7 +6937,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Assign variables' dimensions to either coordinates or dimension structs */
   (void)nco_bld_var_dmn(trv_tbl);       
 
-  /* ncbo co-sequential match algorithm requires alphabetical sorted full names. Do it here, to avoid rebuilding hash table */
+  /* ncbo co-sequential match algorithm requires alphabetically sorted full names. Do it here, to avoid rebuilding hash table */
   if(nco_prg_id_get() == ncbo) (void)trv_tbl_srt((int)0,trv_tbl);
 
   /* Hash traversal table for faster access */

@@ -2119,8 +2119,6 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 
 	fi # !clm_md
 
-	# 20210819 former location of var_lst_rx_xtr block
-
 	# Common to both high-frequency and monthly-input climos
 	if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
 	    yyyy_clm_srt=${yyyy_clm_srt_dec}
