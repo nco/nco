@@ -1491,7 +1491,8 @@ else # !sbs_flg
 
     if [ -z "${out_nm}" ]; then
 	echo "${spt_nm}: ERROR Missing information needed to generate output filenames"
-	echo "${spt_nm}: HINT Climo generation requires that users specify a case ID with -c \$caseid or specify with -m \$mdl_nm a recognized model name (like \"mpaso\")"
+	echo "${spt_nm}: HINT Generating input filenames for climos requires that users specify a case ID with -c \$caseid or specify with -m \$mdl_nm a recognized MPAS model name (like \"mpaso\"). Output filenames for climos are based on these inputs as well, or on the family name if specified with --fml_nm=\$fml_nm. When input filenames are not internally generated, but instead provided via stdin, positional arguments, or globbing, then the output filenames will be based on the family name or caseid, or model name, in that order of precedence."
+	echo "${spt_nm}: HINT ${spt_nm} needs this information to generate output filenames"
 	echo "${spt_nm}: HINT ${spt_nm} needs this information to generate output filenames"
 	echo "${spt_nm}: HINT See invocation examples at http://nco.sf.net/nco.html#ncclimo"
 	exit 1

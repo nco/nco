@@ -1,5 +1,9 @@
 2021-11-05  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.4-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha04: Ted Lasso';git push
+	git tag -a 5.0.4-alpha04 -m '';git push --tags
+
 	* NCO 5.0.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha03: Dizz\'s As Is';git push
 	git tag -a 5.0.4-alpha03 -m 'ncclimo: mth stdin clm; ncremap: mpas nfr to_scrip(), area_dgn, nfr x,y, mbtempest loop;';git push --tags
