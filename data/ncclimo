@@ -555,7 +555,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (netCDF3/PnetCDF CDF5) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
     echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
-    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}wnt_md${fnt_nrm}   Winter mode (default ${fnt_bld}${wnt_md}${fnt_nrm}) [${fnt_tlc}wnt_md, dcm_md, december_mode, winter_mode${fnt_nrm}] [${fnt_tlc}scd,djf | sdd,jfd${fnt_nrm}]"
+    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}wnt_md${fnt_nrm}   Winter mode (default ${fnt_bld}${wnt_md}${fnt_nrm}) [${fnt_tlc}wnt_md, dcm_md, dec_md, december_mode, winter_mode${fnt_nrm}] [${fnt_tlc}scd,djf | sdd,jfd${fnt_nrm}]"
     echo " ${fnt_bld}--amwg_lnk${fnt_nrm} Link E3SM-climo to AMWG-climo filenames [${fnt_tlc}amwg_links, AMWG_link${fnt_nrm}]"
     echo " ${fnt_bld}--area_nm${fnt_nrm}  Area-variable name (default ${fnt_bld}${area_nm}${fnt_nrm}) [${fnt_tlc}area_nm, area_name, area${fnt_nrm}]"
     echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}] [${fnt_tlc}ann | dly | hfc | hfs | mth${fnt_nrm}]"
