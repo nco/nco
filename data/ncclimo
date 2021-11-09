@@ -232,8 +232,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #  ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${fl}
 # done
 # New MPAS filename conventions (as of ~201612):
-# ncclimo --dec_md=sdd --vars=timeMonthly_avg_iceAreaCell --yr_srt=2 --yr_end=3 --mdl=mpasseaice --d2f --drc_in=/p/user_pub/work/E3SM/1_0/piControl/1deg_atm_60-30km_ocean/sea-ice/native/model-output/mon/ens1/v1 --map=${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc --drc_out=${DATA}/ne30/clm --drc_rgr=${DATA}/ne30/rgr > ~/ncclimo.out 2>&1 &
-# ncclimo --dec_md=sdd --vars=timeMonthly_avg_activeTracers_temperature --yr_srt=2 --yr_end=3 --mdl=mpaso --d2f --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc --drc_in=/p/user_pub/work/E3SM/1_0/piControl/1deg_atm_60-30km_ocean/ocean/native/model-output/mon/ens1/v1 --map=${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc --drc_out=${DATA}/ne30/clm --drc_rgr=${DATA}/ne30/rgr > ~/ncclimo.out 2>&1 &
+# ncclimo --wnt_md=jfd --vars=timeMonthly_avg_iceAreaCell --yr_srt=2 --yr_end=3 --mdl=mpasseaice --d2f --drc_in=/p/user_pub/work/E3SM/1_0/piControl/1deg_atm_60-30km_ocean/sea-ice/native/model-output/mon/ens1/v1 --map=${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc --drc_out=${DATA}/ne30/clm --drc_rgr=${DATA}/ne30/rgr > ~/ncclimo.out 2>&1 &
+# ncclimo --wnt_md=jfd --vars=timeMonthly_avg_activeTracers_temperature --yr_srt=2 --yr_end=3 --mdl=mpaso --d2f --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc --drc_in=/p/user_pub/work/E3SM/1_0/piControl/1deg_atm_60-30km_ocean/ocean/native/model-output/mon/ens1/v1 --map=${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc --drc_out=${DATA}/ne30/clm --drc_rgr=${DATA}/ne30/rgr > ~/ncclimo.out 2>&1 &
 # Old MPAS filename conventions (until ~201609)::
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
@@ -319,9 +319,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # 5. After merger of Cori Phase 1 Haswell and Phase 2 KNL cabinets in ~2017, SLURM on Cori requires Quality-of-Service (QOS) argument, either -C haswell or -C knl or -C gpu
 # Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s; difference 5 requires -C argument on Cori only
 #   Andes a): echo '#!/bin/bash' > ~/ncclimo.slurm
-#                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1 -e 2 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
-#   Blues a):  echo "ncclimo -a scd -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
-#   Cheyenne a) echo "ncclimo -a scd -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
+#                   echo "ncclimo -a djf -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1 -e 2 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
+#   Blues a):  echo "ncclimo -a djf -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
+#   Cheyenne a) echo "ncclimo -a djf -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Compy a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #                   echo "ncclimo -d 1 -p mpi -c 20180215.DECKv1b_H1.ne30_oEC.edison -s 2010 -e 2010 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Cooley a): /bin/rm -f ~/ncclimo.err ~/ncclimo.out
@@ -342,10 +342,10 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # caseid:  Simulation name (filenames must start with ${caseid})
 # drc_in:  Input directory for raw data
 #          Years outside yr_srt and yr_end are ignored
-#          yr_srt should, and for SDD mode must, contain complete year of output
-#          SCD mode ignores Jan-Nov of yr_srt
-#          Dec of yr_end is excluded from the seasonal and monthly analysis in SCD mode
-#          yr_end should, and for SDD mode must, contain complete year of output
+#          yr_srt should, and for JFD mode must, contain complete year of output
+#          DJF mode ignores Jan-Nov of yr_srt
+#          Dec of yr_end is excluded from the seasonal and monthly analysis in DJF mode
+#          yr_end should, and for JFD mode must, contain complete year of output
 # drc_out: Output directory for processed native grid climatology ("climo files")
 #          User needs write permission for ${drc_out}
 # rgr_map: Horizontal regridding map, if non-NULL, invoke regridder with specified map on output datasets
@@ -354,16 +354,16 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # yr_end:  Year of last  January to analyze
 
 # Other options (often their default settings work well):
-# dec_md:  December mode, i.e., how to treat December. One of two options:
-#          Seasonally-contiguous-december (SCD) mode (dec_md=scd|djf) (default through 4.9.4)
-#          Seasonally-discontiguous-december (SDD) mode (dec_md=sdd|jfd) (default starting 4.9.5)
+# wnt_md:  Winter mode aka December mode, i.e., how to treat December in (NH) Winter seasons. One of two options:
+#          Seasonally-contiguous-december (SCD or DJF) mode (wnt_md=scd|djf) (default through 4.9.4)
+#          Seasonally-discontiguous-december (SDD or JFD) mode (wnt_md=sdd|jfd) (default starting 4.9.5)
 #          Both modes use an integral multiple of 12 months, and _never alter any input files_
-#          SCD climatologies begin in Dec of yr_srt-1, and end in Nov of yr_end
-#          SDD climatologies begin in Jan of yr_srt,   and end in Dec of yr_end
-#          SCD excludes Jan-Nov of yr_srt-1 and Dec of yr_end (i.e., SCD excludes 12 months of available data)
-#          SDD uses all months of yr_srt through yr_end (i.e., SDD can use all available data)
-#          SCD seasonal averages are inconsistent with (calendar-year-based) annual averages, but better capture seasonal the "natural" (not calendar-year-based) climate year
-#          SDD seasonal averages are fully consistent with (calendar-year-based) annual averages
+#          DJF climatologies begin in Dec of yr_srt-1, and end in Nov of yr_end
+#          JFD climatologies begin in Jan of yr_srt,   and end in Dec of yr_end
+#          DJF excludes Jan-Nov of yr_srt-1 and Dec of yr_end (i.e., DJF excludes 12 months of available data)
+#          JFD uses all months of yr_srt through yr_end (i.e., JFD can use all available data)
+#          DJF seasonal averages are inconsistent with (calendar-year-based) annual averages, but better capture seasonal the "natural" (not calendar-year-based) climate year
+#          JFD seasonal averages are fully consistent with (calendar-year-based) annual averages
 # drc_rgr: Regridding directory---store regridded files, if any, in drc_rgr rather than drc_out
 # lnk_flg: Link E3SM-climo to AMWG-climo filenames
 #          AMWG omits the YYYYMM components of climo filenames, resulting in shorter names
@@ -475,7 +475,6 @@ d2f_opt='--d2f' # [sng] Option string to convert double-precision fields to sing
 dpt_fl='' # [sng] Depth file with refBottomDepth for MPAS ocean
 dpt_opt='' # [sng] Option string to add depth coordinate to regridded MPAS files
 dbg_lvl=0 # [nbr] Debugging level
-dec_md='sdd' # [sng] December mode (contiguous: 'scd' | 'djf', discontiguous 'sdd' | 'jfd' as per above)
 dfl_lvl='' # [enm] Deflate level
 drc_in='' # [sng] Input file directory
 drc_in_xmp="${DATA}/ne30/raw" # [sng] Input file directory for examples
@@ -538,6 +537,7 @@ vrs_prn='No' # [sng] Print version information
 vrt_fl='' # [sng] Vertical coordinate file
 vrt_opt='' # [sng] Vertical interpolation options (e.g., '--vrt_fl=vrt_grd.nc')
 vrt_xtr='' # [sng] Vertical extrapolation type (mss_val|nrs_ngh)
+wnt_md='jfd' # [sng] Winter mode (contiguous: 'scd' | 'djf', discontiguous 'sdd' | 'jfd' as per above)
 xcl_flg='No' # [sng] Exclude rather than extract variable list
 xtn_flg='No' # [sng] Produce extended climatology
 ypf_max=50 # [yr] Years-per-output-file
@@ -555,7 +555,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (netCDF3/PnetCDF CDF5) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
     echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
-    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}dec_md${fnt_nrm}   December mode (default ${fnt_bld}${dec_md}${fnt_nrm}) [${fnt_tlc}dec_md, dcm_md, december_mode, dec_mode${fnt_nrm}] [${fnt_tlc}scd,djf | sdd,jfd${fnt_nrm}]"
+    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}wnt_md${fnt_nrm}   Winter mode (default ${fnt_bld}${wnt_md}${fnt_nrm}) [${fnt_tlc}wnt_md, dcm_md, december_mode, winter_mode${fnt_nrm}] [${fnt_tlc}scd,djf | sdd,jfd${fnt_nrm}]"
     echo " ${fnt_bld}--amwg_lnk${fnt_nrm} Link E3SM-climo to AMWG-climo filenames [${fnt_tlc}amwg_links, AMWG_link${fnt_nrm}]"
     echo " ${fnt_bld}--area_nm${fnt_nrm}  Area-variable name (default ${fnt_bld}${area_nm}${fnt_nrm}) [${fnt_tlc}area_nm, area_name, area${fnt_nrm}]"
     echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}] [${fnt_tlc}ann | dly | hfc | hfs | mth${fnt_nrm}]"
@@ -685,7 +685,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	5) fl_fmt='5' ;; # File format
 	6) fl_fmt='6' ;; # File format
 	7) fl_fmt='7' ;; # File format
-	a) dec_md_usr="${OPTARG}" ;; # December mode
+	a) wnt_md_usr="${OPTARG}" ;; # Winter mode
 	C) clm_md_usr="${OPTARG}" ;; # Climatology mode
 	c) caseid="${OPTARG}" ;; # CASEID
 	d) dbg_lvl="${OPTARG}" ;; # Debugging level
@@ -725,7 +725,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       caseid=?* | case_id=?* | case=?* ) caseid="${LONG_OPTARG}" ;; # -c # CASEID
 	       d2f | d2s | dbl_flt | dbl_sgl | double_float ) d2f_flg='Yes'; d2f_opt='--d2f' ;; # # Convert double-precision fields to single-precision
 	       d2f=?* | d2s=?* | dbl_flt=?* | dbl_sgl=?* | double_float=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # D2F
-	       dec_md=?* | dcm_md=? | december_mode=?* | dec_mode=?* ) dec_md="${LONG_OPTARG}" ;; # -a # December mode
+	       wnt_md=?* | dcm_md=? | december_mode=?* | winter_mode=?* | dec_md=?* ) wnt_md="${LONG_OPTARG}" ;; # -a # Winter mode
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
 	       dfl_lvl=?* | deflate=?* | dfl=?* ) dfl_lvl="${LONG_OPTARG}" ;; # -L # Deflate level
 	       dpf=?* | days_per_file=?* ) dpf="${LONG_OPTARG}" ;; # # Days-per-file
@@ -905,13 +905,13 @@ fi # !prc_typ
 if [ -n "${mdl_nm_usr}" ]; then 
     mdl_nm="${mdl_nm_usr}"
 fi # !mdl_nm_usr
-if [ -n "${dec_md_usr}" ]; then 
-    if [ "${dec_md_usr}" = 'djf' ] || [ "${dec_md_usr}" = 'DJF' ] || [ "${dec_md_usr}" = 'scd' ] || [ "${dec_md_usr}" = 'seasonally_contiguous_december' ] ; then
-	dec_md='scd'
-    elif [ "${dec_md_usr}" = 'jfd' ] || [ "${dec_md_usr}" = 'JFD' ] || [ "${dec_md_usr}" = 'sdd' ] || [ "${dec_md_usr}" = 'seasonally_discontiguous_december' ] ; then
-	dec_md='sdd'
-    fi # !dec_md_usr
-fi # !dec_md_usr
+if [ -n "${wnt_md_usr}" ]; then 
+    if [ "${wnt_md_usr}" = 'djf' ] || [ "${wnt_md_usr}" = 'DJF' ] || [ "${wnt_md_usr}" = 'scd' ] || [ "${wnt_md_usr}" = 'seasonally_contiguous_december' ] ; then
+	wnt_md='djf'
+    elif [ "${wnt_md_usr}" = 'jfd' ] || [ "${wnt_md_usr}" = 'JFD' ] || [ "${wnt_md_usr}" = 'sdd' ] || [ "${wnt_md_usr}" = 'seasonally_discontiguous_december' ] ; then
+	wnt_md='jfd'
+    fi # !wnt_md_usr
+fi # !wnt_md_usr
 if [ -n "${clm_md_usr}" ]; then 
     # Climo mode must be explicitly selected with --clm_md when climo input files are piped or positional
     if [ "${clm_md_usr}" = 'ann' ] || [ "${clm_md_usr}" = 'annual' ] || [ "${clm_md_usr}" = 'yearly' ] || [ "${clm_md_usr}" = 'year' ] ; then
@@ -968,7 +968,7 @@ if [ "${clm_md}" = 'hfs' ] || [ "${clm_md}" = 'mth' ] ; then
     fi # !ypf_max_usr
     if [ "${sbs_flg}" = 'Yes' ]; then 
 	clm_flg='No'
-	dec_md='sdd'
+	wnt_md='jfd'
 	if [ -z "${mdl_nm_usr}" ]; then 
 	    mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
 	fi # !mdl_nm_usr
@@ -1128,10 +1128,10 @@ if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'hfc
 fi # !clm_md
 if [ "${clm_md}" = 'ann' ]; then 
     clm_nbr=1
-    dec_md='sdd'
+    wnt_md='jfd'
 elif [ "${clm_md}" = 'dly' ]; then 
     clm_nbr=${dpy}
-    dec_md='sdd'
+    wnt_md='jfd'
 elif [ "${clm_hfc_or_mth}" = 'Yes' ]; then 
     clm_nbr=12
     csn_flg='Yes'
@@ -1291,7 +1291,7 @@ mm_ann_end='12' # [idx] Last  month used in annual climatology
 mm_djf_srt='01' # [idx] First month used in DJF climatology
 mm_djf_end='12' # [idx] Last  month used in DJF climatology
 yr_cln=${yr_nbr} # [nbr] Calendar years in climatology
-if [ ${dec_md} = 'scd' ]; then 
+if [ ${wnt_md} = 'djf' ]; then 
     yyyy_clm_srt_dec=`printf "%04d" ${yr_srtm1}`
     yyyy_clm_end_dec=`printf "%04d" ${yr_endm1}`
     mm_ann_srt='12'
@@ -1299,7 +1299,7 @@ if [ ${dec_md} = 'scd' ]; then
     mm_djf_srt='12'
     mm_djf_end='02'
     let yr_cln=${yr_cln}+1
-fi # !scd
+fi # !djf
 
 # clm_flg and sbs_flg are now fixed so finalize input file options then gather input filenames
 if [ ${sbs_flg} = 'Yes' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
@@ -1816,7 +1816,6 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: csn_nbr  = ${csn_nbr}\n"
     printf "dbg: d2f_flg  = ${d2f_flg}\n"
     printf "dbg: d2f_opt  = ${d2f_opt}\n"
-    printf "dbg: dec_md   = ${dec_md}\n"
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
     printf "dbg: dfl_lvl  = ${dfl_lvl}\n"
     printf "dbg: dpt_opt  = ${dpt_opt}\n"
@@ -1870,6 +1869,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: uio_flg  = ${uio_flg}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: vrt_fl   = ${vrt_fl}\n"
+    printf "dbg: wnt_md   = ${wnt_md}\n"
     printf "dbg: xtn_flg  = ${xtn_flg}\n"
     printf "dbg: ypf_max  = ${ypf_max}\n"
     printf "dbg: yr_sbs   = ${yr_sbs}\n"
@@ -2033,11 +2033,11 @@ if [ "${clm_flg}" = 'Yes' ]; then
     if [ "${clm_hfc_or_mth}" = 'Yes' ]; then 
 	if [ ${csn_flg} = 'No' ]; then 
 	    printf "Seasons and therefore annual means derived from seasonal means have been turned-off and will not be computed\n"
-	elif [ ${dec_md} = 'scd' ]; then 
-	    printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF-means formed from consecutive DJF months that cross calendar-year boundaries\n"
+	elif [ ${wnt_md} = 'djf' ]; then 
+	    printf "Winter statistics based on seasonally contiguous December (djf-mode): DJF-means formed from consecutive DJF months that cross calendar-year boundaries\n"
 	else
-	    printf "Winter statistics based on seasonally discontiguous December (sdd-mode): Means labeled as \"DJF\" are formed from JFD months from the same calendar year\n"
-	fi # !scd
+	    printf "Winter statistics based on seasonally discontiguous December (jfd-mode): Means labeled as \"DJF\" are formed from JFD months from the same calendar year\n"
+	fi # !djf
     fi # !mth
     if [ ${cf_flg} = 'Yes' ]; then 
 	printf "Annotation for CF climatology attribute and climatology_bounds variable will be performed\n"
@@ -2085,7 +2085,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 		fi # !cesm
 	    done # !yr
-	    if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
+	    if [ ${wnt_md} = 'djf' ] && [ ${MM} = '12' ]; then 
 		fl_all=''
 		for yr in `seq ${yr_srtm1} ${yr_endm1}`; do
 		    YYYY=`printf "%04d" ${yr}`
@@ -2103,7 +2103,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 			fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 		    fi # !cesm
 		done # !yr
-	    fi # !scd
+	    fi # !djf
 	    # Check for existence of raw input only when file will be used
 	    if [ "${bnr_flg}" = 'No' ]; then
 		for fl_crr in ${fl_all} ; do
@@ -2121,10 +2121,10 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	fi # !clm_md
 
 	# Common to both high-frequency and monthly-input climos
-	if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
+	if [ ${wnt_md} = 'djf' ] && [ ${MM} = '12' ]; then 
 	    yyyy_clm_srt=${yyyy_clm_srt_dec}
 	    yyyy_clm_end=${yyyy_clm_end_dec}
-	fi # !scd
+	fi # !djf
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
 	
 	if [ ${clm_md} = 'hfc' ]; then 
@@ -2165,9 +2165,9 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    if [ ${clm_idx} -eq 12 ]; then
 		tm_srt="${yyyy_clm_srt_dec}-${MM}-01T00:00:01"
 		yyyy_clm_endp1=`printf "%04d" ${yr_endp1}`
-		if [ ${dec_md} = 'scd' ]; then 
+		if [ ${wnt_md} = 'djf' ]; then 
 		    yyyy_clm_endp1=`printf "%04d" ${yr_end}`
-		fi # !scd
+		fi # !djf
 		tm_end="${yyyy_clm_endp1}-01-01T00:00:00"
 	    fi # !December
 	    let srd=${dpy}*${tpd_out}
@@ -3443,14 +3443,14 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	    fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end_prv}${MM}_climo.nc"
 	    fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end}${MM}_climo.nc"
 	done # !mth
-	if [ ${dec_md} = 'scd' ]; then 
+	if [ ${wnt_md} = 'djf' ]; then 
 	    yyyy_clm_srt_dec_prv=`printf "%04d" ${yr_srtm1_prv}`
 	    yyyy_clm_end_dec_prv=`printf "%04d" ${yr_endm1_prv}`
 	    clm_idx=12
 	    MM=`printf "%02d" ${clm_idx}`
 	    fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_clm_srt_dec_prv}${MM}_${yyyy_clm_end_dec_prv}${MM}_climo.nc"
 	    fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_clm_srt_dec_prv}${MM}_${yyyy_clm_end_dec}${MM}_climo.nc"
-	fi # !scd
+	fi # !djf
 	
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	    # Produce names like "${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end_prv}05_climo.nc"
@@ -3493,7 +3493,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	    fl_amwg_xtn[${clm_idx}]=`expr match "${fl_xtn[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
 	    fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
 	    fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_xtn}\//}" # Delete prepended path to ease symlinking
-	    if [ ${dec_md} = 'scd' ] ; then
+	    if [ ${wnt_md} = 'djf' ] ; then
 		# Handle Dec, DJF, and ANN
 		let csn_idx=${clm_idx}-12-1
 		let ann_idx=${clm_csn_end_idx}+1
@@ -3514,7 +3514,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 		    fl_rgr_xtn[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_xtn}}"
 		    fl_rgr_xtn[${clm_idx}]="${fl_rgr_xtn[${clm_idx}]/_${yyyy_clm_srt_dec}/_${yyyy_clm_srt_dec_prv}}"
 		fi # !Dec, DJF, ANN
-	    fi # !dec_md
+	    fi # !wnt_md
 	done # !clm_idx
 	
 	printf "Weight input climos to produce extended climo...\n"
