@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.4-alpha03
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 9 November 2021
+@set update-date 14 November 2021
 @set update-month November 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18697,7 +18697,8 @@ Users have encountered this issue when attempting to run
 @command{ncclimo} in Python parallel environments, via inclusion in 
 @command{crontab}, and in @command{nohup}-mode (whatever that is!).
 In such cases, explicitly specify @samp{--clm_md=mth} (or @code{ann} or
-@code{day}) to persuade @command{ncclimo} to run a normal climatology.
+@code{day}) to persuade @command{ncclimo} to compute a normal
+climatology. 
 
 @html
 <a name="caseid"></a> <!-- http://nco.sf.net/nco.html#caseid -->
@@ -27302,13 +27303,13 @@ priorities for future development of vertical regridding are:
       the @samp{ntp_mth=lin} options (as of @acronym{NCO} 4.9.0).
 @item Vertical interpolation and horizontal regridding may be invoked
       simultaneously (as of @acronym{NCO} 4.9.0) by the user simply by
-      supplying both a map-file and a vertical grid-file to
-      @command{ncremap}. 
+      supplying both a (horizontal) map-file and a vertical grid-file
+      to @command{ncremap}. 
       When this occurs, @command{ncremap} internally performs the
       vertical interpolation prior to the horizontal regridding.
 @item The default extrapolation method uses nearest neighbor except
-      for temperature and geopotential (those extrapolation methods are
-      described below).
+      for temperature and geopotential (those extrapolation methods
+      are described below).
       These defaults are well-suited to extrapolate valid initial
       conditions from data on older vertical grids.
       Note that the default approximation used for geopotential is
@@ -27355,9 +27356,14 @@ priorities for future development of vertical regridding are:
       presented with a compelling use-case.
 @end enumerate
 
+@html
+<a name="vrt_prs_mk"></a> <!-- http://nco.sf.net/nco.html#vrt_prs_mk -->
+<a name="vrt_prs"></a> <!-- http://nco.sf.net/nco.html#vrt_prs -->
+<a name="vrt_ncep"></a> <!-- http://nco.sf.net/nco.html#vrt_ncep -->
+@end html
 The simplest vertical grid-type, a pure-pressure grid, contains
 the horizontally uniform vertical pressure levels in a one-dimensional 
-coordinate array named @code{plev}. 
+coordinate array named (by default) @code{plev}. 
 The @code{plev} dimension may have any number of levels and the values 
 must monotonically increase or decrease.
 A 17-level NCEP pressure grid, for example, is easy to create:
@@ -27369,7 +27375,15 @@ ncap2 -O -v -s 'defdim("plev",17);plev[$plev]={100000,92500,85000, \
   3000,2000,1000};' vrt_prs_ncep_L17.nc
 @end verbatim
 @end example
+@command{ncremap} will search the supplied vertical grid file for
+the coordinate named @code{plev}, or, for any coordinate name
+specified by with the @code{plev_nm_in} option to the regridder,
+e.g., @samp{--plev_nm_in=z}.
 
+@html
+<a name="vrt_hyb_mk"></a> <!-- http://nco.sf.net/nco.html#vrt_hyb_mk -->
+<a name="vrt_hyb"></a> <!-- http://nco.sf.net/nco.html#vrt_hyb -->
+@end html
 Hybrid-coordinate grids are a hybrid between a sigma-coordinate
 grid (where each pressure level is a fixed fraction of a
 spatiotemporally varying surface pressure) and a pure-pressure grid
@@ -27443,7 +27457,7 @@ from @w{100 mb} to @w{1000 mb}:
 @verbatim
 ncap2 -O -v -s 'defdim("ilev",11);defdim("lev",10);P0=100000.0; \
   hyai=array(0.05,0.1,$ilev);hyam=array(0.1,0.1,$lev); \
-  hybi=0.0*hyai;hybm=0.0*hyam;' vrt_hyb_prs_L10.nc
+  hybi=0.0*hyai;hybm=0.0*hyam;' vrt_hyb_L10.nc
 @end verbatim
 @end example
 @acronym{NCO} currently has no other means of representing pure sigma
@@ -27466,7 +27480,7 @@ prs_ntf[time,lev_2,lat,lon]=hyai+hybi*exp(lnsp) # Interface
 @end verbatim
 @end example
 Note that @acronym{ECMWF} also alters the names of the vertical
-half-layer coordinate and employs distinct dimensions (@code{nhym} and
+half-layer coordinate and employs distinct dimensions (@code{nhym} and 
 @code{nhyi}) for the hybrid variables @code{hyai(nhyi)},
 @code{hybi(nhyi)}, @code{hyam(nhym)}, and @code{hybm(nhym)}.
 @acronym{ECMWF} uses the vertical coordinates @code{lev} and

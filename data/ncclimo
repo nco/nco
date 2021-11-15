@@ -466,7 +466,7 @@ caseid='' # [sng] Case ID
 caseid_xmp='20180129.DECKv1b_piControl.ne30_oEC.edison' # [sng] Case ID for examples
 cf_flg='Yes' # [sng] Produce CF climatology attribute?
 clm_flg='Yes' # [sng] Generate climatology
-clm_hfc_or_mth='No' # [sng] Generate monthly output climatology
+clm_hfc_or_mth='No' # [sng] Generate monthly output climatology from monthly or HFC input
 clm_md='mth' # [sng] Climatology mode ('ann', 'dly', 'hfc', 'hfs', or 'mth')
 csn_flg='No' # [flg] Trigger season-processing code
 csn_lst='mam,jja,son,djf' # [sng] Seasons to output (subset of mam,jja,son,djf,jfm,amj,jas,ond,fm,on)
@@ -913,7 +913,7 @@ if [ -n "${wnt_md_usr}" ]; then
     fi # !wnt_md_usr
 fi # !wnt_md_usr
 if [ -n "${clm_md_usr}" ]; then 
-    # Climo mode must be explicitly selected with --clm_md when climo input files are piped or positional
+    # Climo mode must be explicitly selected with --clm_md when climo input files are from stdin or positional
     if [ "${clm_md_usr}" = 'ann' ] || [ "${clm_md_usr}" = 'annual' ] || [ "${clm_md_usr}" = 'yearly' ] || [ "${clm_md_usr}" = 'year' ] ; then
 	clm_md_usr='ann'
     fi # !clm_md_usr
@@ -952,19 +952,34 @@ else # !drc_in
     drc_in_usr_flg='Yes'
 fi # !drc_in
 
+# Determine whether to compute climos or to split
+# Original behavior:
+# Until 20211109, stdin and positional always indicated splitter even when ypf was not set
+# New ability to do monthly climos with filenames provided by stdin, positional, or globbing necessitated modifications to original algorithm to determine climo vs. splitter
+# Current behavior:
+# clm_md=hfs and/or ypf is set is unambiguous request to split
+# clm_md=mth is default, so could be either split or climo
+# (NB: long-term goal is to make 'mth' only for climos, something else for splitter?)
+# When clm_md=mth, decide between climo and splitter this way:
+# A. clm_md_usr is explicitly set: climo
+# A. No input on stdin, positional: climo
+# B. All other cases: splitter
+# NB: clm_md='mth' indicates only the averaging period of a single input file
+# clm_md='mth' is true for both monthly splitter and monthly climo :(
+# Rest of code relies on flg_clm to compute climo and flg_sbs to invoke splitter
 if [ "${clm_md}" = 'hfs' ] || [ "${clm_md}" = 'mth' ] ; then
-    # Subset (split) mode whenever stdin pipe has data or positional arguments are used
-    if [ ${inp_std} = 'Yes' ] || [ ${inp_psn} = 'Yes' ] || [ "${clm_md}" = 'hfs' ]; then
-	# 20211105 Split monthly files provided via stdin/position/glob unless clm_md=mth is explicitly specified
-	if [ -z "${clm_md_usr}" ]; then 
+    # Subset (split) mode whenever clm_md='hfs' or ypf is explicitly specified
+    if [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" ]; then
+	sbs_flg='Yes'
+    else # !clm_md
+	if [ "${inp_aut}" = 'Yes' ] || [ -n "${clm_md_usr}" ]; then
+	    clm_flg='Yes'
+	else # !inp_aut
 	    sbs_flg='Yes'
-	fi # !clm_md_usr
-    fi # !sbs_flg
-    # fxm: If normal resolution (monthly, not HFS) input files are specified by -i drc_in must also specify --ypf to turn-on splitter mode
-    # Otherwise it is ambiguous whether to generate climatology or to split
+	fi # !inp_aut
+    fi # !clm_md
     if [ -n "${ypf_max_usr}" ]; then 
 	ypf_max=${ypf_max_usr}
-	sbs_flg='Yes'
     fi # !ypf_max_usr
     if [ "${sbs_flg}" = 'Yes' ]; then 
 	clm_flg='No'
@@ -1315,6 +1330,7 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
     inp_aut='Yes'
     inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
 fi # !clm_flg
+# fxm 20211109 next clause is borken
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     inp_aut='Yes'
     inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
@@ -1424,6 +1440,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	fi # !dpf
 	let fpy=${dpy}/${dpf}
 	flg_dct='No'
+	# !clm_md=hfs
     elif [ "${clm_md}" = 'mth' ]; then
 	fpy=12
     fi # !clm_md
@@ -2396,7 +2413,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 fi # !clm_md
 
 # Block 1 Loop N: Split
-if [ "${sbs_flg}" = 'Yes' ]; then
+<if [ "${sbs_flg}" = 'Yes' ]; then
 	
     if [ "${glb_avg}" = 'Yes' ]; then 
 	# 20191217 Global average timeseries require area variable
