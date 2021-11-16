@@ -1,0 +1,1 @@
+ncap2 -O -s 'n1=1.33;n2=1.0;sintheta2=1;sintheta1=n2*sintheta2/n1;theta1=asin(sintheta1);theta1_dgr=theta1*180/3.14159' ~/foo.nc
