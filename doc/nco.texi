@@ -7422,10 +7422,10 @@ Also, renormalization can be explicitly prevented or turned-off by
 setting @var{rnr_thr} to either of the values @samp{off} or @samp{none}: 
 @example
 @verbatim
-ncks           --map=map.nc in.nc out.nc # Conservative (integral-preserving)
-ncks --rnr=off --map=map.nc in.nc out.nc # Conservative (integral-preserving)
-ncks --rnr=0.1 --map=map.nc in.nc out.nc # Renormalized (mean-preserving with threshold)
-ncks --rnr=0.0 --map=map.nc in.nc out.nc # Renormalized (mean-preserving)
+ncks           --map=map.nc in.nc out.nc # Conservative (global integral-preserving)
+ncks --rnr=off --map=map.nc in.nc out.nc # Conservative (global integral-preserving)
+ncks --rnr=0.1 --map=map.nc in.nc out.nc # Renormalized (local mean-preserving with threshold)
+ncks --rnr=0.0 --map=map.nc in.nc out.nc # Renormalized (local mean-preserving)
 @end verbatim
 @end example
 The first and second examples use the default conservative algorithm.

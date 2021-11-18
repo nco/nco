@@ -1,8 +1,14 @@
-2021-11-09  Charlie Zender  <zender@uci.edu>
+2021-11-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha04: Ted Lasso';git push
-	git tag -a 5.0.4-alpha04 -m '';git push --tags
+	git tag -a 5.0.4-alpha04 -m 'ncclimo wnt_md';git push --tags
+
+	* nco_att_put() re-try with safe name after NC_EBADNAME errors
+
+	* nco_att_cpy() fix debug message order of file/attribute type string
+
+2021-11-09  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo: change preferred name from december_mode to winter_mode or --wnt_md
 

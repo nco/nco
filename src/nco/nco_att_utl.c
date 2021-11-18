@@ -753,7 +753,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 	 (fl_fmt == NC_FORMAT_64BIT_DATA && !nco_typ_nc5(att_typ_in))){
 	flg_autoconvert=True;
 	if(fl_fmt == NC_FORMAT_64BIT_DATA) att_typ_out=nco_typ_nc4_nc5(att_typ_in); else att_typ_out=nco_typ_nc4_nc3(att_typ_in);
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting %s%s attribute \"%s\" from type %s to %s-supported type %s\n",nco_prg_nm_get(),(var_out_id == NC_GLOBAL) ? "global or group" : "variable ",(var_out_id == NC_GLOBAL) ? "" : var_nm,att_nm,nco_fmt_sng(fl_fmt),nco_typ_sng(att_typ_in),nco_typ_sng(att_typ_out));
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting %s%s attribute \"%s\" from type %s to %s-supported type %s\n",nco_prg_nm_get(),(var_out_id == NC_GLOBAL) ? "global or group" : "variable ",(var_out_id == NC_GLOBAL) ? "" : var_nm,att_nm,nco_typ_sng(att_typ_in),nco_fmt_sng(fl_fmt),nco_typ_sng(att_typ_out));
       } /* !flg_autoconvert */
     } /* !ncks */
 

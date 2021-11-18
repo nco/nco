@@ -51,7 +51,7 @@ nm2sng_nc /* [fnc] Turn group/variable/dimension/attribute name into legal netCD
   } /* endif parentheses*/
 
   return nm_nc;
-} /* end nm2sng_nc() */
+} /* !nm2sng_nc() */
 
 void
 nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
@@ -3102,7 +3102,39 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
     rcd=NC_NOERR;
   } /* !rcd */
   if(rcd == NC_EBADNAME){
-    (void)fprintf(stdout,"ERROR: %s reports attribute name \"%s\" triggers contains illegal characters.\n",fnc_nm,att_nm);
+    char *nm_nc=NULL; /* [sng] netCDF-compatible name */
+    (void)fprintf(stdout,"ERROR: %s reports attribute name \"%s\" contains illegal characters.\n",fnc_nm,att_nm);
+    nm_nc=nm2sng_nc(att_nm);
+    switch(att_typ){
+    case NC_FLOAT: rcd=nc_put_att_float(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const float *)vp); break;
+    case NC_DOUBLE: rcd=nc_put_att_double(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const double *)vp); break;
+    case NC_INT: rcd=NCO_PUT_ATT_INT(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const nco_int *)vp); break;
+    case NC_SHORT: rcd=nc_put_att_short(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const short *)vp); break;
+    case NC_CHAR: rcd=NCO_PUT_ATT_CHAR(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const nco_char *)vp); break;
+    case NC_BYTE: rcd=NCO_PUT_ATT_BYTE(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const nco_byte *)vp); break;
+#ifdef ENABLE_NETCDF4
+      /* 20051119: netCDF4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
+    case NC_UBYTE: rcd=NCO_PUT_ATT_UBYTE(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const nco_ubyte *)vp); break;
+    case NC_USHORT: rcd=NCO_PUT_ATT_USHORT(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const nco_ushort *)vp); break;
+    case NC_UINT: rcd=NCO_PUT_ATT_UINT(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const nco_uint *)vp); break;
+    case NC_INT64: rcd=NCO_PUT_ATT_INT64(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const nco_int64 *)vp); break;
+    case NC_UINT64: rcd=NCO_PUT_ATT_UINT64(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const nco_uint64 *)vp); break;
+      /* NC_STRING prototype next causes same compiler warnings described in nco_put_var1() above */
+    case NC_STRING: rcd=NCO_PUT_ATT_STRING(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const char **)vp); break;
+#endif /* !ENABLE_NETCDF4 */
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end switch */
+    /* Did sanitized name pass syntax checker? */
+    if(rcd == NC_NOERR){
+      char hdf_nm[]="hdf_name"; /* [sng] Attribute to preserve original name */
+      (void)fprintf(stdout,"Defined attribute in output file with netCDF-safe name \"%s\" instead.\n",nm_nc);
+      rcd=NCO_PUT_ATT_CHAR(nc_id,var_id,hdf_nm,NC_CHAR,(size_t)strlen(att_nm),(const nco_char *)att_nm);
+    }else if(rcd == NC_EBADNAME){
+      (void)fprintf(stdout,"Presumptively netCDF-safe name (created by nm2sng_nc()) \"%s\" also contains illegal characters. Exiting.",nm_nc);
+      nco_err_exit(rcd,fnc_nm);
+    } /* !rcd */
+    if(nm_nc) free(nm_nc);
+    assert(rcd == NC_NOERR || rcd == NC_EBADNAME || rcd == NC_ENAMEINUSE);
   } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att()");
   return rcd;
