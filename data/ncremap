@@ -803,7 +803,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       out_fl=?* | output_file=?* | out_file=?* ) out_fl="${LONG_OPTARG}" ;; # -o # Output file
 	       prc_typ=?* | pdq_typ=?* | prm_typ=?* | procedure=?* ) prc_typ="${LONG_OPTARG}" ;; # -P # Procedure type
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
-	       pdq=?* | prm=?* | prm_opt=?* | permute=?* ) pdq_opt="${LONG_OPTARG}" ;; # # ncpdq dimension permutation option
+	       pdq=?* | prm=?* | prm_opt=?* | permute=?* ) pdq_opt="-a ${LONG_OPTARG}" ;; # # ncpdq dimension permutation option
 	       ppc=?* | ppc_prc=?* | precision=?* | quantize=?* ) ppc_prc="${LONG_OPTARG}" ;; # # Precision-preserving compression
 	       prs_stt=?* | preserve=?* | preserved_statistic=?* ) prs_stt_usr="${LONG_OPTARG}" ;; # # Preserved statistic
 	       prt=?* | prt_nbr=?* | partition_number=?* ) prt_nbr="${LONG_OPTARG}" ;; # # Partition number for MOAB parallelism
