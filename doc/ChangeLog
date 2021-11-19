@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha04: Ted Lasso';git push
 	git tag -a 5.0.4-alpha04 -m 'all: put_att nc-safe nm;ncclimo wnt_md';git push --tags
 
+	* ncclimo implement stdin, positional, and globbing input methods for monthly climos
+
 	* nco_put_att() re-try with safe name after NC_EBADNAME errors
 
 	* nco_att_cpy() fix debug message order of file/attribute type string

@@ -1330,10 +1330,12 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
     inp_aut='Yes'
     inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
 fi # !clm_flg
-# fxm 20211109 next clause is borken
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
-    inp_aut='Yes'
-    inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
+    # 20211118 Specifying caseid implies inp_aut, otherwise check stdin etc
+    if [ -n "${caseid}" ]; then 
+	inp_aut='Yes'
+	inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
+    fi # !caseid
 fi # !clm_flg
 if [ ${inp_glb} = 'Yes' ]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
@@ -1515,10 +1517,11 @@ else # !sbs_flg
 	exit 1
     fi # out_nm
 
-    if [ ${inp_std} = 'Yes' ] && [ ${clm_md} != 'dly' ] && [ ${clm_md} != 'hfc' ] ; then
-	echo "${spt_nm}: ERROR Detected input on pipe to stdin rather than console in climatology generation mode"
-	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files or in daily or in high-frequency climatology mode"
-	echo "${spt_nm}: HINT In other climo generation modes (monthly and annual), one specifies the year/month boundaries and ${spt_nm} automatically generates the correct input file names"
+    # 20211118 fxm: re-do these messages
+    if [ ${inp_std} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
+	echo "${spt_nm}: ERROR Detected input on pipe to stdin in annual climatology generation mode"
+	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files or in daily, monthly, or high-frequency climatology mode"
+	echo "${spt_nm}: HINT In annual climo generation mode, one must specify the year/month boundaries and ${caseid}, and from these ${spt_nm} will automatically generate the correct input file names"
 	echo "${spt_nm}: HINT See invocation examples at http://nco.sf.net/nco.html#ncclimo"
 	exit 1
     fi # !stdin
@@ -2077,7 +2080,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     for mth in {01..12}; do
 	let clm_idx=${clm_idx}+1
 	MM=`printf "%02d" ${clm_idx}`
-	if [ ${clm_md} = 'mth' ]; then 
+	if [ ${clm_md} = 'mth' ] && [ ${inp_aut} = 'Yes' ]; then 
 	    fl_all=''
 	    for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
 		YYYY=`printf "%04d" ${yr}`
@@ -2120,7 +2123,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 			fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 		    fi # !cesm
 		done # !yr
-	    fi # !djf
+	    fi # !wnt_md
 	    # Check for existence of raw input only when file will be used
 	    if [ "${bnr_flg}" = 'No' ]; then
 		for fl_crr in ${fl_all} ; do
@@ -2135,7 +2138,24 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		drc_out="${drc_in}"
 	    fi # !bnr_flg
 
-	fi # !clm_md
+	fi # !clm_md && !inp_aut
+
+	# Monthly filenames are every twelfth file from input list
+	if [ ${clm_md} = 'mth' ] && [ ${inp_aut} = 'No' ]; then 
+	    fl_all=''
+	    for ((yr_idx=0;yr_idx<yr_nbr;yr_idx++)); do
+		if [ ${wnt_md} = 'jfd' ]; then
+		    let fl_idx=$((yr_idx * 12 + clm_idx - 1))
+		else
+		    if [ ${MM} != '12' ]; then
+			let fl_idx=$((yr_idx * 12 + clm_idx))
+		    else # !dec
+			let fl_idx=$(((yr_idx - 1) * 12 + clm_idx))
+		    fi # !dec
+		fi # !wnt_md
+		fl_all="${fl_all} ${fl_in[${fl_idx}]}"
+	    done # !yr_idx
+	fi # !clm_md && !inp_aut
 
 	# Common to both high-frequency and monthly-input climos
 	if [ ${wnt_md} = 'djf' ] && [ ${MM} = '12' ]; then 
@@ -2413,7 +2433,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 fi # !clm_md
 
 # Block 1 Loop N: Split
-<if [ "${sbs_flg}" = 'Yes' ]; then
+if [ "${sbs_flg}" = 'Yes' ]; then
 	
     if [ "${glb_avg}" = 'Yes' ]; then 
 	# 20191217 Global average timeseries require area variable

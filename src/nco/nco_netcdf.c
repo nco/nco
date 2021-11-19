@@ -3127,16 +3127,20 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
     /* Did sanitized name pass syntax checker? */
     if(rcd == NC_NOERR){
       char hdf_nm[]="hdf_name"; /* [sng] Attribute to preserve original name */
-      (void)fprintf(stdout,"Defined attribute in output file with netCDF-safe name \"%s\" instead.\n",nm_nc);
+      (void)fprintf(stdout,"WORKAROUND: Defined (illegally named) attribute \"%s\" in output file with netCDF-safe name \"%s\" instead. Original name will be stored in new attribute \"%s\"\n",att_nm,nm_nc,hdf_nm);
       rcd=NCO_PUT_ATT_CHAR(nc_id,var_id,hdf_nm,NC_CHAR,(size_t)strlen(att_nm),(const nco_char *)att_nm);
     }else if(rcd == NC_EBADNAME){
-      (void)fprintf(stdout,"Presumptively netCDF-safe name (created by nm2sng_nc()) \"%s\" also contains illegal characters. Exiting.",nm_nc);
+      (void)fprintf(stdout,"BUMMER: Presumptively netCDF-safe name (created by nm2sng_nc()) \"%s\" also contains illegal characters. Exiting.",nm_nc);
       nco_err_exit(rcd,fnc_nm);
+    }else if(rcd == NC_ENAMEINUSE){
+      (void)fprintf(stdout,"HMMMMM: netCDF-safe name (created by nm2sng_nc()) \"%s\" is already in use, will continue without writing this attribute because doing so seems better than failing all because a measly attribute cannot be written.",nm_nc);
     } /* !rcd */
     if(nm_nc) free(nm_nc);
     assert(rcd == NC_NOERR || rcd == NC_EBADNAME || rcd == NC_ENAMEINUSE);
   } /* !rcd */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att()");
+  /* Allow NC_ENAMEINUSE because...it seems better than failing outright */
+  if(rcd != NC_NOERR && rcd != NC_ENAMEINUSE) nco_err_exit(rcd,"nco_put_att()");
+  rcd=NC_NOERR;
   return rcd;
 } /* !nco_put_att() */
 
