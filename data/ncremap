@@ -584,7 +584,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--dpt${fnt_nrm}      Add depth coordinate to MPAS files (default ${fnt_bld}${dpt_flg}${fnt_nrm}) [${fnt_tlc}dpt | depth | add_dpt | add_depth${fnt_nrm}]"
     echo " ${fnt_bld}--dpt_fl${fnt_nrm}   Depth file with refBottomDepth for MPAS ocean (empty means none) (default ${fnt_bld}${dpt_fl}${fnt_nrm}) [${fnt_tlc}dpt_fl, mpas_fl, mpas_depth, depth_file${fnt_nrm}]"
     echo " ${fnt_bld}--dt_sng${fnt_nrm}   Date string (for MWF map names) (default ${fnt_bld}${dt_sng}${fnt_nrm}) [${fnt_tlc}dt_sng, date_string${fnt_nrm}]"
-    echo " ${fnt_bld}--esmf_typ${fnt_nrm} ESMF Extrapolation type (empty means none) (default ${fnt_bld}${esmf_typ}${fnt_nrm}) [${fnt_tlc}esmf_typ, esmf_mth, esmf_extrapolation_type, esmf_extrapolation_method${fnt_nrm}] (nearestidavg|neareststod|none)"
+    echo " ${fnt_bld}--esmf_typ${fnt_nrm} ESMF Extrapolation type (empty means none) (default ${fnt_bld}${esmf_typ}${fnt_nrm}) [${fnt_tlc}esmf_typ, esmf_mth, esmf_extrap_type, esmf_extrap_method${fnt_nrm}] (nearestidavg|neareststod|none)"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation arguments (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means none, i.e., infer from dst_fl or use map_fl) (default ${fnt_bld}${grd_dst}${fnt_nrm}) [${fnt_tlc}grd_dst, grid_dest, dst_grd, dest_grid, destination_grid${fnt_nrm}]"
@@ -1084,6 +1084,10 @@ elif [ ${alg_typ} = 'cdo_bil' ] || [ ${alg_typ} = 'cdo_bilin' ] || [ ${alg_typ} 
 elif [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bilin' ] || [ ${alg_typ} = 'blin' ] || [ ${alg_typ} = 'bln' ]; then 
     alg_opt='bilinear'
     wgt_typ='esmf'
+# 20211118 Default to nearestidavg extrapolation with bilinear algorithm (as E3SM does), unless user explicitly specifies an extrapolation type
+    if [ -z "${esmf_typ}" ]; then
+	esmf_typ='nearestidavg'
+    fi # !esmf_typ
 elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ] || [ ${alg_typ} = 'c1' ] || [ ${alg_typ} = 'aave' ]; then 
     alg_opt='conserve'
     wgt_typ='esmf'

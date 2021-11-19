@@ -2,7 +2,10 @@
 
 	* NCO 5.0.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha04: Ted Lasso';git push
-	git tag -a 5.0.4-alpha04 -m 'all: put_att nc-safe nm;ncclimo wnt_md';git push --tags
+	git tag -a 5.0.4-alpha04 -m 'all: put_att nc-safe nm;ncclimo wnt_md, stdin; ncremap bilin esmf_typ idavg';git push --tags
+
+	* ncremap use nearestidavg extrapolation with bilinear algorithm by default
+	Significantly improves frac_b avg, min, max, mbs, rms, sdn compared to esmf_typ=none
 
 	* ncclimo implement stdin, positional, and globbing input methods for monthly climos
 
