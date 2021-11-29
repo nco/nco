@@ -1,8 +1,12 @@
-2021-11-19  Charlie Zender  <zender@uci.edu>
+2021-11-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha05: Sinner';git push
-	git tag -a 5.0.4-alpha05 -m '';git push --tags
+	git tag -a 5.0.4-alpha05 -m 'ncclimo add --split; ncremap chg --pdq_opt API';git push --tags
+
+	* ncclimo: add, implement, and successfully test --split flag
+
+2021-11-19  Charlie Zender  <zender@uci.edu>
 
 	* ncremap change API from --permute='-a time,lat,lon' to --permute=time,lat,lon
 

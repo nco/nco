@@ -41,6 +41,7 @@ nco_def_var // [fnc] Create variable in netCDF file
 {
   // Purpose: Wrapper for nc_def_var()
   int rcd=nc_def_var(nc_id,var_nm.c_str(),var_xtype,dmn_nbr,dmn_id,&var_id);
+  if(rcd == NC_ENAMEINUSE) nco_err_exit(rcd,"nco_def_var","Cannot define variable name \""+var_nm+"\" which is already in use, exiting...");
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var");
   return rcd;
 } // end nco_def_var<int *>()
@@ -58,6 +59,7 @@ nco_def_var // [fnc] Create variable in netCDF file
      figure out how to do this and pass a const int * to nc_def_var */
   //  int rcd=nco_def_var(nc_id,var_nm,var_xtype,dmn_id.size(),&dmn_id[0],var_id);
   int rcd=nco_def_var(nc_id,var_nm,var_xtype,static_cast<int>(dmn_id.size()),&(const_cast<std::valarray<int> &>(dmn_id)[0]),var_id);
+  if(rcd == NC_ENAMEINUSE) nco_err_exit(rcd,"nco_def_var","Cannot define variable name \""+var_nm+"\" which is already in use, exiting...");
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var");
   return rcd;
 } // end nco_def_var<std::valarray<int>>()

@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.4-alpha04
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 14 November 2021
+@set update-date 29 November 2021
 @set update-month November 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18479,7 +18479,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-n @var{nco_opt}] [--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd] [--no_stdin] 
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-P @var{prc_typ}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
-[-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}]
+[-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}] [--split]
 [-t @var{thr_nbr}] [--tpd=@var{tpd}] [--uio] [-v @var{var_lst}] [--var_xtr=@var{var_xtr}] [--version] 
 [--vrt_fl=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}]
 [-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]

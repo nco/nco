@@ -238,27 +238,27 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # Split pipe:
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split redirection:
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc > ~/foo;ncclimo --dbg=1 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm < ~/foo
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc > ~/foo;ncclimo --split --dbg=1 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm < ~/foo
 # Split stdin switch:
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 --stdin -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 --stdin -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split positional arguments:
-# ncclimo --dbg=1 -s 1 -e 1 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-??.nc
+# ncclimo --split --dbg=1 -s 1 -e 1 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-??.nc
 # Split directory:
 # ncclimo --dbg=1 --ypf=50 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split global mean
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 --glb_avg -s 1 -e 2 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 --glb_avg -s 1 -e 2 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
 # Split all:
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 -s 1 -e 2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split ELM:
-# ncclimo --dbg=1 -s 2000 -e 2000 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc
+# ncclimo --split --dbg=1 -s 2000 -e 2000 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc
 # Split vertical:
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 -s 1 -e 2 --var=T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --drc_out=${DATA}/ne30/clm
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 -s 1 -e 2 --var=T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --vrt_xtr=mss_val --drc_out=${DATA}/ne30/clm # Missing value interpolation
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --vrt_xtr=mss_val --drc_out=${DATA}/ne30/clm # Missing value interpolation
 # Split production:
-# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
-# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --split --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --split --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Daily pipe:
 # cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Diurnal pipe:
@@ -596,6 +596,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm}) [${fnt_tlc}yr_srt, start_yr, year_start, start_year, start${fnt_nrm}]"
     echo " ${fnt_bld}--seasons${fnt_nrm}  Seasons to output ('none' means none) (default ${fnt_bld}${csn_lst}${fnt_nrm}, also available: jfm,amj,jas,ond,on,fm) [${fnt_tlc}csn_lst, csn, seasons${fnt_nrm}]"
     echo " ${fnt_bld}--sgs_frc${fnt_nrm}  Sub-grid fraction variable (empty means none) (default ${fnt_bld}${sgs_frc}${fnt_nrm}) [${fnt_tlc}sgs_frc, ice_frc, lnd_frc, ocn_frc, subgrid_fraction${fnt_nrm}]"
+    echo " ${fnt_bld}--split${fnt_nrm}    Split input files into single-variable timeseries (default ${fnt_bld}${sbs_flg}${fnt_nrm} [${fnt_tlc}sbs_flg, subset, splitter${fnt_nrm}]"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thr, thread_number, thread, threads${fnt_nrm}]"
     echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
     echo " ${fnt_bld}--uio${fnt_nrm}      Unbuffered I/O (NC_SHARE) for netCDF3 files [${fnt_tlc}uio, unbuffered, share${fnt_nrm}]"
@@ -769,6 +770,8 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
 	       seasons=?* | csn_lst=?* | csn=?* | season=?* ) csn_lst="${LONG_OPTARG}" ;; # # Seasons to output
 	       sgs_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | subgrid_fraction=?* ) sgs_frc="${LONG_OPTARG}" ;; # # Sub-grid fraction variable
+	       split | splitter | sbs_flg | subset ) sbs_flg='Yes' ;; # # Split input files into single-variable timeseries
+	       split=?* | splitter=?* | sbs_flg=?* | subset=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Split input files into single-variable timeseries
 	       no_stdin | no_inp_std | no_redirect | no_standard_input ) std_chk='No' ;; # # Check stdin for input file list
 	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Check stdin for input file list
 	       thr_nbr=?* | thr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
@@ -934,9 +937,6 @@ fi # !clm_md_usr
 if [ "${clm_md}" = 'hfc' ] || [ "${clm_md}" = 'mth' ]; then
     clm_hfc_or_mth='Yes'
 fi # !clm_md
-if [ "${clm_md}" = 'ann' ] || [ "${clm_md}" = 'dly' ]; then
-    clm_flg='Yes'
-fi # !clm_md
 if [ "${clm_md}" = 'dly' ] || [ "${clm_md}" = 'hfc' ]; then
     unset dpm # Days per month
     declare -a dpm
@@ -956,43 +956,27 @@ fi # !drc_in
 # Original behavior:
 # Until 20211109, stdin and positional always indicated splitter even when ypf was not set
 # New ability to do monthly climos with filenames provided by stdin, positional, or globbing necessitated modifications to original algorithm to determine climo vs. splitter
-# Current behavior:
-# clm_md=hfs and/or ypf is set is unambiguous request to split
-# clm_md=mth is default, so could be either split or climo
-# (NB: long-term goal is to make 'mth' only for climos, something else for splitter?)
-# When clm_md=mth, decide between climo and splitter this way:
-# A. clm_md_usr is explicitly set: climo
-# A. No input on stdin, positional: climo
-# B. All other cases: splitter
+# As of 20211129, default behavior is to compute climo
+# One of three methods may be used to invoke the splitter:
+# 1) Use --split flag. 2) Select clm_md=hfs. 3) Set ypf_max.
 # NB: clm_md='mth' indicates only the averaging period of a single input file
 # clm_md='mth' is true for both monthly splitter and monthly climo :(
-# Rest of code relies on flg_clm to compute climo and flg_sbs to invoke splitter
-if [ "${clm_md}" = 'hfs' ] || [ "${clm_md}" = 'mth' ] ; then
-    # Subset (split) mode whenever clm_md='hfs' or ypf is explicitly specified
-    if [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" ]; then
-	sbs_flg='Yes'
-    else # !clm_md
-	if [ "${inp_aut}" = 'Yes' ] || [ -n "${clm_md_usr}" ]; then
-	    clm_flg='Yes'
-	else # !inp_aut
-	    sbs_flg='Yes'
-	fi # !inp_aut
-    fi # !clm_md
+# Rest of code relies on mutually exclusive clm_flg to compute climo and sbs_flg to invoke splitter
+if [ "${sbs_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" ]; then
+    sbs_flg='Yes'
+    clm_flg='No'
     if [ -n "${ypf_max_usr}" ]; then 
 	ypf_max=${ypf_max_usr}
     fi # !ypf_max_usr
-    if [ "${sbs_flg}" = 'Yes' ]; then 
-	clm_flg='No'
-	wnt_md='jfd'
-	if [ -z "${mdl_nm_usr}" ]; then 
-	    mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
-	fi # !mdl_nm_usr
-	# Glob files in splitter mode if other input avenues were not used
-	if [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
-	    inp_glb='Yes'
-	fi # !inp_*
-    fi # !sbs_flg
-fi # !clm_md
+    wnt_md='jfd'
+    if [ -z "${mdl_nm_usr}" ]; then 
+	mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
+    fi # !mdl_nm_usr
+    # Glob files in splitter mode if other input avenues were not used
+    if [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
+	inp_glb='Yes'
+    fi # !inp_*
+fi # !sbs_flg
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
     inp_glb='Yes'
 fi # !clm_flg, !dly
@@ -1009,6 +993,11 @@ if [ -n "${drc_out_usr}" ]; then
     drc_out="${drc_out_usr%/}"
 fi # !drc_out_usr
 if [ -n "${drc_rgr_usr}" ]; then 
+    if [ -z "${rgr_map}" ]; then
+	printf "${spt_nm}: ERROR specified directory for regridded files without supplying map-file name for regridding\n"
+	printf "${spt_nm}: HINT Provide a map-file name with -m map.nc or --map=map.nc or remove the option (-O or --drc_rgr) that sets the directory for regridded files\n"
+	exit 1
+    fi # !err
     drc_rgr="${drc_rgr_usr%/}"
 else 
     drc_rgr="${drc_out%/}"

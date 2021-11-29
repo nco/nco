@@ -522,7 +522,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   } /* !need_pft */
 
   /* Define unpacked versions of needed dimensions before all else */
-  (void)fprintf(stdout,"%s: DEBUG quark1\n",nco_prg_nm_get());
+  //(void)fprintf(stdout,"%s: DEBUG quark1\n",nco_prg_nm_get());
   if(need_clm && clm_nbr_out > 0L) rcd=nco_def_dim(out_id,clm_nm_out,clm_nbr_out,&dmn_id_clm_out);
   if(need_lnd && lnd_nbr_out > 0L) rcd=nco_def_dim(out_id,lnd_nm_out,lnd_nbr_out,&dmn_id_lnd_out);
   if(need_pft && pft_nbr_out > 0L) rcd=nco_def_dim(out_id,pft_nm_out,pft_nbr_out,&dmn_id_pft_out);
@@ -621,7 +621,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if((rcd=nco_inq_varid_flg(hrz_id,sgs_frc_nm,&sgs_frc_in_id)) == NC_NOERR) flg_sgs_frc_out=True;
   if((rcd=nco_inq_varid_flg(hrz_id,sgs_msk_nm,&sgs_msk_in_id)) == NC_NOERR) flg_sgs_msk_out=True;
 
-  (void)fprintf(stdout,"%s: DEBUG quark2\n",nco_prg_nm_get());
   if(flg_grd_1D){
     rcd+=nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col_out,&lat_out_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_out_id,shuffle,deflate,dfl_lvl);
@@ -721,7 +720,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   nco_s1d_typ_enm nco_s1d_typ; /* [enm] Sparse-1D type of input variable */
   aed_sct aed_mtd_fll_val;
 
-  (void)fprintf(stdout,"%s: DEBUG quark3\n",nco_prg_nm_get());
   /* Define unpacked S1D and copied variables in output file */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -737,7 +735,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       if(rcd != NC_NOERR){
 	if(trv.flg_rgr){
 	  /* Unpack */
-	  (void)fprintf(stdout,"%s: DEBUG quark4\n",nco_prg_nm_get());
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_ids_in);
 	  dmn_in_fst=0;
 	  flg_add_spc_crd=False;
@@ -777,7 +774,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    } /* !clm */
 	    if(rcd != NC_NOERR){
 	      /* Current input dimension is not yet in output file */
-	      (void)fprintf(stdout,"%s: DEBUG var_nm = %s, dmn_nm = %s\n",nco_prg_nm_get(),var_nm,dmn_nm);
 	      rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_out+dmn_idx);
 	      /* Check-for and, if found, retain record dimension property */
 	      for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
@@ -803,7 +799,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  } /* !dmn_idx */
 	}else{ /* !flg_rgr */
 	  /* Replicate non-S1D variables */
-	  (void)fprintf(stdout,"%s: DEBUG quark5\n",nco_prg_nm_get());
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_ids_in);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_ids_in[dmn_idx],dmn_nm);
@@ -818,9 +813,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    } /* !rcd */
 	  } /* !dmn_idx */
 	} /* !flg_rgr */
-	(void)fprintf(stdout,"%s: DEBUG quark6 defining %s...\n",nco_prg_nm_get(),var_nm);
 	rcd=nco_def_var(out_id,var_nm,var_typ,dmn_nbr_out,dmn_ids_out,&var_id_out);
-	(void)fprintf(stdout,"%s: DEBUG quark7 defined %s\n",nco_prg_nm_get(),var_nm);
 	/* Duplicate netCDF4 settings when possible */
 	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 	  /* Deflation */
@@ -846,7 +839,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	} /* !NC_FORMAT_NETCDF4 */
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
 	/* Variables with subterranean levels and missing-value extrapolation must have _FillValue attribute */
-	(void)fprintf(stdout,"%s: DEBUG quark8\n",nco_prg_nm_get());
 	nco_bool flg_add_msv_att; /* [flg] Extrapolation requires _FillValue */
 	flg_add_msv_att=False;
 	if(flg_add_msv_att && trv.flg_rgr){
@@ -864,8 +856,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	} /* !flg_add_msv_att */
       } /* !rcd */
     } /* !var */
-  } /* end idx_tbl */
-  (void)fprintf(stdout,"%s: DEBUG quark9\n",nco_prg_nm_get());
+  } /* !idx_tbl */
 
   /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

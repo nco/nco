@@ -2388,7 +2388,7 @@ nco_rename_var(const int nc_id,const int var_id,const char * const var_nm)
   rcd=nc_rename_var(nc_id,var_id,var_nm);
   if(rcd == NC_ENAMEINUSE){
     (void)fprintf(stdout,"ERROR: %s cannot define variable name \"%s\" which is already in use\n",fnc_nm,var_nm);
-  } /* endif */
+  } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_var()");
   return rcd;
 } /* !nco_rename_var */
