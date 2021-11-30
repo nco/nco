@@ -503,6 +503,7 @@ inp_glb='No' # [sng] Input file list from globbing directory
 inp_psn='No' # [sng] Input file list from positional arguments
 inp_std='No' # [sng] Input file list from stdin
 job_nbr=12 # [nbr] Job simultaneity for parallelism
+job_nbr_wrn=150 # [nbr] Maximum number of simultaneous jobs before WARNING is printed
 lnk_flg='No' # [sng] Link E3SM-climo to AMWG-climo filenames
 map_opt='' # [sng] Map-file options (e.g., '--map=map.nc')
 mdl_nm='eam' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
@@ -1936,6 +1937,12 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    printf "Background parallelism processing variables in var_nbr/job_nbr = ${var_nbr}/${job_nbr} = $((var_nbr / job_nbr)) sequential batches each concurrently processing job_nbr = ${job_nbr} jobs (1 per variable), then remaining $((var_nbr % job_nbr)) jobs/variables simultaneously\n"
 	elif [ "${par_typ}" = ${par_mpi} ]; then
 	    printf "MPI parallelism dividing processing of ${var_nbr} variables onto nd_nbr = ${nd_nbr} nodes simultaneously\n"
+	fi # !par_typ
+	if [ "${par_typ}" = ${par_bck} ] || [ "${par_typ}" = ${par_mpi} ]; then
+	    if [ "${job_nbr}" -gt ${job_nbr_wrn} ] && [ ${var_nbr} -gt ${job_nbr_wrn} ]; then
+		printf "WARNING: Requested number of simultaneous jobs = job_nbr = ${job_nbr} exceeds threshold number = job_nbr_wrn = ${job_nbr_wrn}. This command will start an unusually (and possibly inadvertently) large number of splitter tasks for most computers. Consequences may include insufficient RAM that leads to swapping, slow performance due to I/O contention when reading/writing data.\n"
+		printf "HINT: If undesirable performance occurs, use the --job_nbr option to reduce the number of simultaneous jobs, e.g., ${spt_nm} --job_nbr=100 ...\n"
+	    fi # !job_nbr
 	fi # !par_typ
     else # !var_nbr
 	printf "Timeseries will be created for only one variable\n"
