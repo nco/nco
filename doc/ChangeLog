@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha05: Sinner';git push
 	git tag -a 5.0.4-alpha05 -m 'ncclimo add --split; ncremap chg --pdq_opt API';git push --tags
 
+	* ncremap: Document --area_dgn feature
+
 	* ncremap: Document --permute API change
 
 	* ncclimo: warn and hint when job_nbr > job_nbr_wrn = 150

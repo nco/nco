@@ -31,10 +31,24 @@ A. ncremap now prefers to call its inverse distance-weighted
    extrapolation. However, both forms are acceptable and
    back-compatibility was maintained.
 
-A. ncremap changes the API for the --permute option.
-   Previsously the option argument needed to include the entire 
-   option string to be passed to ncpdq including the -a component,
-   e.g., --permute='-a time,new_dim,lat,lon'.
+A. ncremap adds the --area_dgn flag to diagnose (rather than copy) the
+   area of each gridcell in an inferred grid-file. By default, ncremap
+   simply copies the area variable, if found, into the grid_area
+   variable of the inferred SCRIP grid-file. When --area_dgn is
+   invoked, ncremap instead computes the values of grid_area based on
+   the gridcell boundaries in the input template file.
+   ncremap --area_dgn -d dst.nc -g grid.nc
+   http://nco.sf.net/nco.html#area_dgn
+   Note that --area_dgn has no effect on any mapping weights
+   subsequently generated from the grid-file because most
+   weight-generators base their weights on internally computed cell 
+   areas (ERWG does have an option, --user_areas, to override this
+   behavior). 
+   
+A. ncremap introduces changes the API for the --permute option:
+   Previously the argument needed to include the entire option
+   string to be passed to ncpdq including the -a component, e.g.,
+   --permute='-a time,new_dim,lat,lon'.
    Now ncremap supplies the implicit -a internally so the user does
    not need to know the ncpdq syntax. 
    ncremap --permute=Time,new_dim,nCells  --map=map.nc in.nc out.nc
