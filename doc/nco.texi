@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.4-alpha04
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 29 November 2021
+@set update-date 30 November 2021
 @set update-month November 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -26257,10 +26257,9 @@ and its corresponding @var{output-file}.
 @cindex @code{-P @var{prc_typ}}
 @cindex @var{prc_typ}
 @cindex @code{--prc_typ}
-@cindex @code{--pdq_typ}
 @cindex @code{--prm_typ}
 @cindex @code{--procedure}
-@item -P @var{prc_typ} (@code{--prc_typ}, @code{--pdq_typ}, @code{--prm_typ}, @code{--procedure})
+@item -P @var{prc_typ} (@code{--prc_typ}, @code{--prm_typ}, @code{--procedure})
 Specifies the permutation mode desired.
 As of @acronym{NCO} version 4.5.5 (February, 2016), one can tell
 @command{ncremap} to invoke special processing procedures for different
@@ -26762,7 +26761,7 @@ Most data files store variables with dimensions arranged in this
 order, and @command{ncremap} internally sets the permutation option
 for datasets known (via the @code{--prc_typ} option) to require
 permutation.
-Use @samp{--pdq=@var{pdq_opt}} to override the internally preset
+Use @samp{--permute=@var{pdq_opt}} to override the internally preset
 defaults.
 This is useful when regridding files that contain new dimensions that 
 @command{ncremap} has not encountered before.
@@ -26775,9 +26774,16 @@ The workaround is to instruct @command{ncremap} what the permutation
 option to @command{ncpdq} should be in order to place the horizontal
 spatial dimension(s) at the end of all variables:
 @example
-ncremap --pdq='-a Time,new_dim,nCells'  --map=map.nc in.nc out.nc
-ncremap --pdq='-a time,new_dim,lat,lon' --map=map.nc in.nc out.nc
+ncremap --permute=Time,new_dim,nCells  --map=map.nc in.nc out.nc
+ncremap --permute=time,new_dim,lat,lon --map=map.nc in.nc out.nc
 @end example
+The @acronym{API} for this option changed in @acronym{NCO} version
+5.0.4 (released December, 2021).
+Prior to this, the option argument needed to include the entire
+option string to be passed to @command{ncpdq} @emph{including the
+@samp{-a}}, e.g., @samp{--permute='-a time,new_dim,lat,lon'}.
+Now @command{ncremap} supplies the implicit @samp{-a} internally
+so the user does not need to know the @command{ncpdq} syntax.
 
 @html
 <a name="no_permute"></a> <!-- http://nco.sf.net/nco.html#no_permute -->

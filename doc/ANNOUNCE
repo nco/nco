@@ -31,6 +31,17 @@ A. ncremap now prefers to call its inverse distance-weighted
    extrapolation. However, both forms are acceptable and
    back-compatibility was maintained.
 
+A. ncremap changes the API for the --permute option.
+   Previsously the option argument needed to include the entire 
+   option string to be passed to ncpdq including the -a component,
+   e.g., --permute='-a time,new_dim,lat,lon'.
+   Now ncremap supplies the implicit -a internally so the user does
+   not need to know the ncpdq syntax. 
+   ncremap --permute=Time,new_dim,nCells  --map=map.nc in.nc out.nc
+   ncremap --permute=time,new_dim,lat,lon --map=map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#permute
+   http://nco.sf.net/nco.html#pdq
+   
 BUG FIXES:
    
 A. ncwa was making a bad call to set compression parameters.
