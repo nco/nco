@@ -1090,7 +1090,9 @@ if [ "${mm_srt}" != '01' ] || [ "${mm_end}" != '12' ]; then
 fi # !mm_srt
     
 # Derived variables
-out_nm=${caseid}
+if [ -n "${caseid}" ]; then
+    out_nm=${caseid}
+fi # !caseid
 if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mali' ] || [ "${mdl_nm}" = 'mpas' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpas-ocean' ] || [ "${mdl_nm}" = 'mpascice' ] || [ "${mdl_nm}" = 'mpasseaice' ] || [ "${mdl_nm}" = 'mpas-seaice' ] || [ "${mdl_nm}" = 'mpassi' ] || [ "${prc_typ}" = 'mali' ] || [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpaso' ] || [ "${prc_typ}" = 'mpas-ocean' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpas-seaice' ] || [ "${prc_typ}" = 'mpassi' ]; then
     mdl_typ='mpas'
     nm_typ='mpas'
@@ -1126,6 +1128,10 @@ if [ -n "${fml_nm_usr}" ]; then
     fml_nm="${fml_nm_usr}"
     out_nm="${fml_nm}"
 fi # !fml_nm
+if [ -z "${out_nm}" ] && [ -z "${fml_nm}" ]; then 
+    printf "${spt_nm}: ERROR ${spt_nm} Neither \$caseid nor \$fml_nm options were invoked so ${spt_nm} does not know what to name the output files\n"
+    printf "${spt_nm}: HINT Use \"--caseid=name\" or \"--fml_nm=name\" to provide a name for the output files. The name string need not be present in any of the input filenames if the input files are provided via stdin, positional arguments, or globbing\n"
+fi # !out_nm
 if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'hfc' ] && [ "${clm_md}" != 'hfs' ] && [ "${clm_md}" != 'mth' ]; then 
     echo "${spt_nm}: ERROR User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', hfc', 'hfs', and 'mth' (default)"
     exit 1
@@ -1319,6 +1325,7 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
     inp_aut='Yes'
     inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
 fi # !clm_flg
+# 20211129 Allow splitter to use inp_aut?
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     # 20211118 Specifying caseid implies inp_aut, otherwise check stdin etc
     if [ -n "${caseid}" ]; then 
@@ -1500,7 +1507,6 @@ else # !sbs_flg
     if [ -z "${out_nm}" ]; then
 	echo "${spt_nm}: ERROR Missing information needed to generate output filenames"
 	echo "${spt_nm}: HINT Generating input filenames for climos requires that users specify a case ID with -c \$caseid or specify with -m \$mdl_nm a recognized MPAS model name (like \"mpaso\"). Output filenames for climos are based on these inputs as well, or on the family name if specified with --fml_nm=\$fml_nm. When input filenames are not internally generated, but instead provided via stdin, positional arguments, or globbing, then the output filenames will be based on the family name or caseid, or model name, in that order of precedence."
-	echo "${spt_nm}: HINT ${spt_nm} needs this information to generate output filenames"
 	echo "${spt_nm}: HINT ${spt_nm} needs this information to generate output filenames"
 	echo "${spt_nm}: HINT See invocation examples at http://nco.sf.net/nco.html#ncclimo"
 	exit 1
