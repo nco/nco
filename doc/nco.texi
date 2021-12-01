@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.4-alpha04
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 30 November 2021
-@set update-month November 2021
+@set update-date 1 December 2021
+@set update-month December 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -19370,6 +19370,50 @@ ncclimo --seasons=fm,on ...           # Monthly + FM,ON
 @end example
 
 @html
+<a name="split"></a> <!-- http://nco.sf.net/nco.html#split -->
+<a name="splitter"></a> <!-- http://nco.sf.net/nco.html#splitter -->
+<a name="tms_flg"></a> <!-- http://nco.sf.net/nco.html#tms_flg -->
+<a name="timeseries"></a> <!-- http://nco.sf.net/nco.html#timeseries -->
+@end html
+@cindex @code{--split}
+@cindex @code{--splitter}
+@cindex @code{--tms_flg}
+@cindex @code{--timeseries}
+@item --split (@code{--split}, @code{--splitter}, @code{--tms_flg}, @code{--timeseries})
+This switch (which takes no argument) explicitly instructs
+@command{ncclimo} to split the input multi-variable raw datasets into 
+per-variable timeseries spanning the entire period.
+The @code{--split} switch, and its synonyms @code{--splitter},
+@code{--tms_flg}, and @code{--timeseries}, wer introduced in
+@acronym{NCO} version 5.0.4 (released December, 2021).
+Previously, the splitter was automatically invoked whenever the input
+files were provided via @code{stdin}, globbing, or positional
+command-line arguments, with some exceptions.
+That older method became ambiguous and untenable once it was decided
+to also allow climos to be generated from files provided via
+@code{stdin}, globbing, or positional command-line arguments.
+Now there are three methods to invoke the splitter:
+@w{1) Use} the @samp{--split} flag:
+this is the most explicit way to invoke the splitter.
+@w{2) Select} @samp{clm_md=hfs}:
+the high-frequency splitter mode by definition invokes the splitter,
+so a more explicit option than this is not necessary.
+@w{3) Set} the years-per-file option, e.g., @samp{--ypf=25}:
+the @code{ypf_max} option is only useful to the splitter, and has
+thus been used in many scripts.
+Since this option still causes the splitter to be invoked, those
+will perform as before the @acronym{API} change.
+
+These three splitter invocations methods are non-exclusive, i.e., more
+than one can be used, and there is no harm in doing so.
+While the @acronym{API} change in version 5.0.4 does proscribe the
+former practice of passively invoking the splitter by simply piping
+files to @code{stdin} or similar, it enables much more flexibility
+for future features, including the possibility of automatically
+generating timeseries filenames for the splitter, and of piping
+files to @code{stdin} or similar for climo generation.
+
+@html
 <a name="stdin"></a> <!-- http://nco.sf.net/nco.html#stdin -->
 @end html
 @cindex @acronym{SLURM}
@@ -27075,7 +27119,6 @@ implementation.
 srun -N 1 -n 1 ncremap --no_stdin -m map.nc in.nc out.nc
 @end verbatim
 @end example
-
 
 @html
 <a name="tmp_drc"></a> <!-- http://nco.sf.net/nco.html#tmp_drc -->

@@ -526,10 +526,10 @@ rgr_map='' # [sng] Regridding (horizontal) map
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
 spl_rgr_opt='--no_stagger' # [sng] Splitter regridding options
-sbs_flg='No' # [sng] Split (subset) climatologies
 sgs_frc='' # [sng] Sub-grid fraction variable
 std_chk='Yes' # [sng] Check stdin for input file list
 thr_nbr=2 # [nbr] Thread number for regridder
+tms_flg='No' # [sng] Split (subset into timeseries) climatologies
 tpd_out=1 # [nbr] Timesteps-per-day in output
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
@@ -597,7 +597,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm}) [${fnt_tlc}yr_srt, start_yr, year_start, start_year, start${fnt_nrm}]"
     echo " ${fnt_bld}--seasons${fnt_nrm}  Seasons to output ('none' means none) (default ${fnt_bld}${csn_lst}${fnt_nrm}, also available: jfm,amj,jas,ond,on,fm) [${fnt_tlc}csn_lst, csn, seasons${fnt_nrm}]"
     echo " ${fnt_bld}--sgs_frc${fnt_nrm}  Sub-grid fraction variable (empty means none) (default ${fnt_bld}${sgs_frc}${fnt_nrm}) [${fnt_tlc}sgs_frc, ice_frc, lnd_frc, ocn_frc, subgrid_fraction${fnt_nrm}]"
-    echo " ${fnt_bld}--split${fnt_nrm}    Split input files into single-variable timeseries (default ${fnt_bld}${sbs_flg}${fnt_nrm} [${fnt_tlc}sbs_flg, subset, splitter${fnt_nrm}]"
+    echo " ${fnt_bld}--split${fnt_nrm}    Split input files into single-variable timeseries (default ${fnt_bld}${tms_flg}${fnt_nrm} [${fnt_tlc}splitter, tms_flg, timeseries${fnt_nrm}]"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thr, thread_number, thread, threads${fnt_nrm}]"
     echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
     echo " ${fnt_bld}--uio${fnt_nrm}      Unbuffered I/O (NC_SHARE) for netCDF3 files [${fnt_tlc}uio, unbuffered, share${fnt_nrm}]"
@@ -771,8 +771,8 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
 	       seasons=?* | csn_lst=?* | csn=?* | season=?* ) csn_lst="${LONG_OPTARG}" ;; # # Seasons to output
 	       sgs_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | subgrid_fraction=?* ) sgs_frc="${LONG_OPTARG}" ;; # # Sub-grid fraction variable
-	       split | splitter | sbs_flg | subset ) sbs_flg='Yes' ;; # # Split input files into single-variable timeseries
-	       split=?* | splitter=?* | sbs_flg=?* | subset=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Split input files into single-variable timeseries
+	       split | splitter | tms_flg | timeseries ) tms_flg='Yes' ;; # # Split input files into single-variable timeseries
+	       split=?* | splitter=?* | tms_flg=?* | timeseries=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Split input files into single-variable timeseries
 	       no_stdin | no_inp_std | no_redirect | no_standard_input ) std_chk='No' ;; # # Check stdin for input file list
 	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Check stdin for input file list
 	       thr_nbr=?* | thr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
@@ -962,9 +962,9 @@ fi # !drc_in
 # 1) Use --split flag. 2) Select clm_md=hfs. 3) Set ypf_max.
 # NB: clm_md='mth' indicates only the averaging period of a single input file
 # clm_md='mth' is true for both monthly splitter and monthly climo :(
-# Rest of code relies on mutually exclusive clm_flg to compute climo and sbs_flg to invoke splitter
-if [ "${sbs_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" ]; then
-    sbs_flg='Yes'
+# Rest of code relies on mutually exclusive clm_flg to compute climo and tms_flg to invoke splitter
+if [ "${tms_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" ]; then
+    tms_flg='Yes'
     clm_flg='No'
     if [ -n "${ypf_max_usr}" ]; then 
 	ypf_max=${ypf_max_usr}
@@ -977,7 +977,7 @@ if [ "${sbs_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" 
     if [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
 	inp_glb='Yes'
     fi # !inp_*
-fi # !sbs_flg
+fi # !tms_flg
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
     inp_glb='Yes'
 fi # !clm_flg, !dly
@@ -1158,9 +1158,9 @@ if [ -n "${gaa_sng_std}" ]; then
 	yrs_avg_sng="${yr_srt}"
     fi # !yr_nbr
     # NB: E3SM diagnostics (e3sm_diagnostics) relies on this attribute
-    if [ "${sbs_flg}" != 'Yes' ]; then
+    if [ "${tms_flg}" != 'Yes' ]; then
 	gaa_sng="${gaa_sng_std} --gaa yrs_averaged=${yrs_avg_sng}"
-    fi # !sbs_flg
+    fi # !tms_flg
 else
     echo "${spt_nm}: INFO User-defined global attributes string is empty. Diagnostics routines (such as E3SM Diagnostics) that depend on these attributes may not work."
 fi # !gaa_sng
@@ -1188,7 +1188,7 @@ fi # !fl_fmt
 if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="--dbg_lvl=${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
-if [ -n "${var_lst}" ] && [ "${sbs_flg}" != 'Yes' ]; then
+if [ -n "${var_lst}" ] && [ "${tms_flg}" != 'Yes' ]; then
     if [ "${xcl_flg}" = 'Yes' ]; then
 	nco_opt="${nco_opt} -x"
     fi # !xcl_flg
@@ -1253,13 +1253,13 @@ else # !rgr_map
 	exit 1
     fi # !dpt_opt
 fi # !rgr_map
-if [ "${sbs_flg}" = 'Yes' ]; then
+if [ "${tms_flg}" = 'Yes' ]; then
     # 20190419: Splitter typically writes 1--3 multi-dimensional fields into each output file
     # OpenMP incurs significant RAM overhead that may not be worthwhile
     # New default is 1 regridding thread for splitter 
     # Users can override this splitter-only default by explicitly requesting multiple threads
     thr_nbr=1 # [nbr] Thread number for regridder
-fi # !sbs_flg
+fi # !tms_flg
 if [ -n "${sgs_frc}" ]; then
     sgs_opt="--rgr sgs_frc_nm=${sgs_frc}"
     rgr_opt="${rgr_opt} ${sgs_opt}"
@@ -1312,8 +1312,8 @@ if [ ${wnt_md} = 'djf' ]; then
     let yr_cln=${yr_cln}+1
 fi # !djf
 
-# clm_flg and sbs_flg are now fixed so finalize input file options then gather input filenames
-if [ ${sbs_flg} = 'Yes' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
+# clm_flg and tms_flg are now fixed so finalize input file options then gather input filenames
+if [ ${tms_flg} = 'Yes' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
     echo "${spt_nm}: ERROR Specify input file(s) with -i \$drc_in or with positional argument(s) or with stdin"
     if [ ${bch_pbs} = 'Yes' ]; then
 	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
@@ -1321,7 +1321,7 @@ if [ ${sbs_flg} = 'Yes' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [
 	echo "${spt_nm}: HINT Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
     fi # !bch_pbs
     exit 1
-fi # !sbs_flg
+fi # !tms_flg
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
     inp_aut='Yes'
     inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
@@ -1381,7 +1381,7 @@ if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
 fi # !hfc && !hfs
 
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
-if [ "${sbs_flg}" = 'Yes' ]; then
+if [ "${tms_flg}" = 'Yes' ]; then
 
     # 20210823: Pre-process extraction list if it contains a regular expression character
     # Match var_lst against first file contents to create real extraction list
@@ -1396,7 +1396,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	var_lst=`ncks --lst_rnk_ge2 ${fl_in[0]}`
     fi # !var_lst
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
-    var_nbr=0 # [sng] Split (subset) files
+    var_nbr=0 # [sng] Split (subset into timeseries) files
     for var in ${var_lst//,/ }; do
 	# NB:
 	var_sbs[${var_nbr}]=${var}
@@ -1496,7 +1496,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     fi  # !mth_flg
     let sgm_nbrm1=${sgm_nbr}-1
 
-else # !sbs_flg
+else # !tms_flg
 
     if [ "${glb_avg}" = 'Yes' ]; then 
 	echo "${spt_nm}: ERROR Global average functionality is intended for time-series (splitting) mode only. If you would like ${spt_nm} to provide global mean output for other types of climatologies, please talk to Charlie."
@@ -1522,7 +1522,7 @@ else # !sbs_flg
 	exit 1
     fi # !stdin
 
-fi # !sbs_flg
+fi # !tms_flg
 
 # 20170807 Custom seasons
 if [ "${csn_flg}" = 'Yes' ]; then
@@ -1700,11 +1700,11 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	echo "${spt_nm}: HINT: Requesting MPI-parallelism (i.e., invoking ${spt_nm} with \"-p mpi\") in a non-MPI environment will trigger this error. Use \"-p mpi\" only when one of the preceding schedulers has allocated (for interactive use) or will allocate (for non-interactive use) the compute nodes. Otherwise use the default background parallelism (use \"-p bck\" or omit the option completely) or use serial mode (use \"-p serial\"). See http://nco.sf.net/nco.html#par_typ for more information on parallelism."
 	exit 1
     fi # !PBS
-    if [ "${sbs_flg}" = 'Yes' ]; then 
+    if [ "${tms_flg}" = 'Yes' ]; then 
 	mpi_nbr=${var_nbr}
     else
 	mpi_nbr=${clm_nbr}
-    fi # !sbs_flg
+    fi # !tms_flg
     # 20210310 MPI run command may need/use thr_nbr so set it first
     if [ -z "${thr_usr}" ]; then 
 	if [ -n "${PBS_NUM_PPN}" ]; then
@@ -1741,7 +1741,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then 
 		# Offset MPI index from 0- to 1-based for traditional monthly-based climo generation
 		let mpi_idx=${mpi_idx_zro}+1
-	    fi # !sbs_flg
+	    fi # !tms_flg
 	    case "${HOSTNAME}" in 
 		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* )
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori*
@@ -1877,11 +1877,11 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_opt  = ${rgr_opt}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
-    printf "dbg: sbs_flg  = ${sbs_flg}\n"
     printf "dbg: sgm_nbr  = ${sgm_nbr}\n"
     printf "dbg: sgm_rmd  = ${sgm_rmd}\n"
     printf "dbg: sgs_frc  = ${sgs_frc}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
+    printf "dbg: tms_flg  = ${tms_flg}\n"
     printf "dbg: uio_flg  = ${uio_flg}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: vrt_fl   = ${vrt_fl}\n"
@@ -1922,15 +1922,15 @@ if [ ${dbg_lvl} -ge 0 ]; then
     printf "Climatology operations invoked with command:\n"
     echo "${cmd_ln}"
 fi # !dbg
-if [ "${sbs_flg}" = 'Yes' ]; then
+if [ "${tms_flg}" = 'Yes' ]; then
     printf "Started climatology splitting at `date`\n"
 else
     printf "Started climatology generation at `date`\n"
-fi # !sbs_flg
+fi # !tms_flg
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
 printf "Parallelism mode = ${par_typ}\n"
-if [ "${sbs_flg}" = 'Yes' ]; then
+if [ "${tms_flg}" = 'Yes' ]; then
     if [ ${var_nbr} -gt 1 ]; then
 	printf "Timeseries will be created for each of ${var_nbr} variables\n"
 	if [ "${par_typ}" = ${par_bck} ]; then
@@ -2004,7 +2004,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     else
 	printf "Split files will not be regridded\n"
     fi # !rgr
-fi # !sbs_flg
+fi # !tms_flg
 if [ "${clm_flg}" = 'Yes' ]; then
     if [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}" = 'No' ]; then
 	if [ "${par_typ}" = ${par_bck} ]; then
@@ -2435,7 +2435,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 fi # !clm_md
 
 # Block 1 Loop N: Split
-if [ "${sbs_flg}" = 'Yes' ]; then
+if [ "${tms_flg}" = 'Yes' ]; then
 	
     if [ "${glb_avg}" = 'Yes' ]; then 
 	# 20191217 Global average timeseries require area variable
@@ -2818,7 +2818,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	
     done # !sgm_idx
     
-fi # !sbs_flg
+fi # !tms_flg
 
 # Block 1 Loop 2: Climatologies based on annual means
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
@@ -3677,7 +3677,7 @@ if [ "${clm_flg}" = 'Yes' ]; then
 	fi # !rgr_opt    
     fi # !yr_srt_prv
 fi # !clm_flg
-if [ "${sbs_flg}" = 'Yes' ]; then
+if [ "${tms_flg}" = 'Yes' ]; then
     echo "Quick plots of last timeseries segment of last variable split:"
     let idx_lst=${var_nbr}-1
     if [ -n "${rgr_opt}" ] && [ ${no_ntv_tms} = 'No' ] ; then 
@@ -3687,7 +3687,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	echo "ncview ${fl_out[${idx_lst}]} &"
 	echo "panoply ${fl_out[${idx_lst}]} &"
     fi # !rgr_opt    
-fi # !sbs_flg
+fi # !tms_flg
 date_end=$(date +"%s")
 if [ -n "${caseid}" ]; then
     printf "Completed ${yr_nbr_xtn}-year climatology operations for dataset with caseid = ${caseid} at `date`\n"
