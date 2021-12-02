@@ -31,6 +31,27 @@ A. ncremap now prefers to call its inverse distance-weighted
    extrapolation. However, both forms are acceptable and
    back-compatibility was maintained.
 
+A. ncremap adds the --split flag to select splitter mode.
+   Previously, the splitter was automatically invoked whenever the
+   input files were provided via stdin, globbing, or positional
+   command-line arguments, with some exceptions.
+   That older method became ambiguous and untenable once it was
+   decided to also allow climos to be generated from files provided
+   via stdin, globbing, or positional command-line arguments.
+   Now there are three methods to invoke the splitter:
+   1) Use the --split flag: this is the most explicit way to invoke
+   the splitter. 2) Select clm_md=hfs: the high-frequency splitter
+   mode by definition invokes the splitter, so a more explicit option
+   than this is not necessary. 3) Set the years-per-file option, e.g.,
+   --ypf=25: the ypf_max option is only useful to the splitter, and
+   has thus been used in many scripts. Since this option still causes
+   the splitter to be invoked, those script will perform as before.
+   ncclimo --split -c ${caseid} -s 1 -e 2 -i raw -o clm
+   ls ${caseid1}*h0.000[12]* | ncclimo -f ${fml_nm} -s 1 -e 2 -o out
+   http://nco.sf.net/nco.html#split
+   Thanks to Anthony Bartoletti and Jill Zhang (LLNL) for discussions
+   about this new option.
+
 A. ncremap adds the --area_dgn flag to diagnose (rather than copy) the
    area of each gridcell in an inferred grid-file. By default, ncremap
    simply copies the area variable, if found, into the grid_area
@@ -55,21 +76,24 @@ A. ncremap introduces changes the API for the --permute option:
    ncremap --permute=time,new_dim,lat,lon --map=map.nc in.nc out.nc
    http://nco.sf.net/nco.html#permute
    http://nco.sf.net/nco.html#pdq
-   
+   Thanks to Walter Hannah (LLNL) for prompting this change.
+
 BUG FIXES:
    
-A. ncwa was making a bad call to set compression parameters.
-   That never caused a problem until netCDF 4.8.0 which enforces
-   stricter adherence to the calling constraints rather than ignoring
-   bad parameters. The symptoms were errors when averaging compressed
-   datasets. The workaround is to convert the dataset to netCDF3,
-   then average, then recompress. The solution is to upgrade.
+A. ncwa was failing to set compression parameters.
+   This problem began with netCDF 4.8.0 which enforces stricter
+   adherence to the calling constraints rather.
+   The symptoms were errors when averaging compressed datasets.
+   The workaround is to convert the dataset to netCDF3, then average,
+   then recompress. The solution is to upgrade.
+   A patch has been submitted to netCDF 4.8.2/4.9.0 that will revert
+   the netCDF library to the previous trouble-free behavior.
    Thanks to Thomas Reichler and Michael Rollings for reporting this.
 
 A. netCDF 4.8.0 changed its internal implementation of deflation.
    Before netCDF 4.8.0, deflation could be set multiple times.
    The properties of final the final call would take effect.
-   After netCDF 4.8.0 only the first call takes effect.
+   Since netCDF 4.8.0 only the first call takes effect.
    This caused subtle changes in NCO compression behavior.
    The most visible change was that uncompressing variables silently
    stopped working. NCO has been changed to adhere to the new
