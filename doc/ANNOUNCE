@@ -6,9 +6,14 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.4 contains significant improvements to the quantization
-algorithms and fixes to MOAB/mbtempest regridding. NCO now supports
-the Digit Round and Granular BitGroom quantization algorithms.
+Version 5.0.4 contains significant changes to the ncclimo splitter
+API, minor changes to ncremap's --permute API and
+inverse-distance weight generation invocation. Along with these
+features come generally improved WARNINGs, HINTs, reduced
+noisiness of diagnostics for frequently used commands, and
+mitigation of compression issues triggered by netCDF 4.8.0+ library
+changes. Furthermore, numerous minor improvements to mbtempest and 
+to ERWG support are included.
 
 Work on NCO 5.0.5 has commenced and will improve ncremap support
 for MOAB, incorporate new MOAB improvements, and further improve
@@ -25,13 +30,13 @@ A. ncremap removes the previous assumption that input horizontal
    regrid variables whose horizontal dimensions were lon-lat to
    an unstructured grid.
 
-A. ncremap now prefers to call its inverse distance-weighted
+B. ncremap now prefers to call its inverse distance-weighted
    interpolation/extrapolation algorithm "idw" for "inverse
    distance-weighted" rather than "dwe" for distance-weighted
    extrapolation. However, both forms are acceptable and
    back-compatibility was maintained.
 
-A. ncremap adds the --split flag to select splitter mode.
+C. ncremap adds the --split flag to select splitter mode.
    Previously, the splitter was automatically invoked whenever the
    input files were provided via stdin, globbing, or positional
    command-line arguments, with some exceptions.
@@ -52,7 +57,19 @@ A. ncremap adds the --split flag to select splitter mode.
    Thanks to Anthony Bartoletti and Jill Zhang (LLNL) for discussions
    about this new option.
 
-A. ncremap adds the --area_dgn flag to diagnose (rather than copy) the
+D. ncremap introduces changes the API for the --permute option:
+   Previously the argument needed to include the entire option
+   string to be passed to ncpdq including the -a component, e.g.,
+   --permute='-a time,new_dim,lat,lon'.
+   Now ncremap supplies the implicit -a internally so the user does
+   not need to know the ncpdq syntax. 
+   ncremap --permute=Time,new_dim,nCells  --map=map.nc in.nc out.nc
+   ncremap --permute=time,new_dim,lat,lon --map=map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#permute
+   http://nco.sf.net/nco.html#pdq
+   Thanks to Walter Hannah (LLNL) for prompting this change.
+
+E. ncremap adds the --area_dgn flag to diagnose (rather than copy) the
    area of each gridcell in an inferred grid-file. By default, ncremap
    simply copies the area variable, if found, into the grid_area
    variable of the inferred SCRIP grid-file. When --area_dgn is
@@ -66,18 +83,6 @@ A. ncremap adds the --area_dgn flag to diagnose (rather than copy) the
    areas (ERWG does have an option, --user_areas, to override this
    behavior). 
    
-A. ncremap introduces changes the API for the --permute option:
-   Previously the argument needed to include the entire option
-   string to be passed to ncpdq including the -a component, e.g.,
-   --permute='-a time,new_dim,lat,lon'.
-   Now ncremap supplies the implicit -a internally so the user does
-   not need to know the ncpdq syntax. 
-   ncremap --permute=Time,new_dim,nCells  --map=map.nc in.nc out.nc
-   ncremap --permute=time,new_dim,lat,lon --map=map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#permute
-   http://nco.sf.net/nco.html#pdq
-   Thanks to Walter Hannah (LLNL) for prompting this change.
-
 BUG FIXES:
    
 A. ncwa was failing to set compression parameters.
@@ -90,7 +95,7 @@ A. ncwa was failing to set compression parameters.
    the netCDF library to the previous trouble-free behavior.
    Thanks to Thomas Reichler and Michael Rollings for reporting this.
 
-A. netCDF 4.8.0 changed its internal implementation of deflation.
+B. netCDF 4.8.0 changed its internal implementation of deflation.
    Before netCDF 4.8.0, deflation could be set multiple times.
    The properties of final the final call would take effect.
    Since netCDF 4.8.0 only the first call takes effect.
@@ -106,7 +111,7 @@ KNOWN PROBLEMS DUE TO NCO:
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
 These problems occur with NCO 5.0.4 built/tested under
-MacOS 11.6 with netCDF 4.8.0 on HDF5 1.12.0 and with
+MacOS 11.6 with netCDF 4.8.1 on HDF5 1.12.0 and with
 Linux with netCDF 4.8.1 on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)

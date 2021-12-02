@@ -1,8 +1,8 @@
 2021-12-01  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.0.4-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.4-alpha05: Sinner';git push
-	git tag -a 5.0.4-alpha05 -m 'ncclimo add --split; ncremap chg --pdq_opt API';git push --tags
+	* NCO 5.0.4-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.4-beta01: Sinner';git push
+	git tag -a 5.0.4-beta01 -m 'ncks -L 0 fix; ncclimo mth stdin clm, --split API, wnd_md; ncremap idw, mpas nfr, area_dgn, --pdq API, ERWG bilin/idavg; ncwa avg cmp fix';git push --tags
 
 	* ncremap: Document --split option
 
