@@ -2,7 +2,7 @@ nco (5.0.4-1) unstable; urgency=low
 
   * new upstream version Potato Eaters: ncks -L 0 fix; ncclimo mth stdin clm, --split API, wnd_md; ncremap idw, mpas nfr, area_dgn, --pdq API, ERWG bilin/idavg; ncwa avg cmp fix
 
- -- Charlie Zender <zender@uci.edu>  Thu, 02 Dec 2021 12:25:52 -0700
+ -- Charlie Zender <zender@uci.edu>  Sat, 04 Dec 2021 12:25:52 -0700
 
 nco (5.0.3-1) unstable; urgency=low
 

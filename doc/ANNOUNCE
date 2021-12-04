@@ -1,18 +1,18 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.0.4 are on tap
+netCDF Operators NCO version 5.0.4 are brachiating towards you
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 Version 5.0.4 contains significant changes to the ncclimo splitter
-API, minor changes to ncremap's --permute API and
-inverse-distance weight generation invocation. Along with these
+API, minor changes to ncremap's --permute API and to invoking the
+internal inverse-distance weight generation. Along with these
 features come generally improved WARNINGs, HINTs, reduced
 noisiness of diagnostics for frequently used commands, and
 mitigation of compression issues triggered by netCDF 4.8.0+ library
-changes. Furthermore, numerous minor improvements to mbtempest and 
+changes. Furthermore, numerous minor improvements to mbtempest and
 to ERWG support are included.
 
 Work on NCO 5.0.5 has commenced and will improve ncremap support
