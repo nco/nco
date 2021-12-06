@@ -309,6 +309,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Compy:  salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo
 #   Cooley: qsub -I -A ClimateEnergy_4 --nodecount=1 --time=00:30:00 --jobname=ncclimo
 #   Cori:   salloc  -A e3sm -C knl --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
+#   Cori:   salloc  -A e3sm -C amd --nodes=1 -q interactive --time=00:30:00 --job-name=ncclimo # NB: No time limit
 #   Oldrhea:qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
 # Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[cobalt|pbs|slurm] b) qsub ncclimo.[cobalt|pbs|slurm]
 # Non-interactive batch queue differences (besides argument syntax):

@@ -1,8 +1,14 @@
-2021-12-04  Charlie Zender  <zender@uci.edu>
+2021-12-06  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.5-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha02: Lund';git push
+	git tag -a 5.0.5-alpha02 -m '';git push --tags
 
 	* NCO 5.0.5-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha01: Treasure Island';git push
 	git tag -a 5.0.5-alpha01 -m 'Functionally identical to 5.0.4';git push --tags
+
+2021-12-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.4: Potato Eaters';git push
