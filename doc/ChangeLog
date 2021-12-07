@@ -4,9 +4,11 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha02: Lund';git push
 	git tag -a 5.0.5-alpha02 -m 'ncclimo mpas inp_aut fix;';git push --tags
 
-	* ncclimo clarify input filename construction/read method
+	* ncclimo ensure inp_std works for MPAS climos
 
 	* ncclimo use inp_aut when nm_typ == mpas and clm_md == mth (as MPAS Analysis expects)
+
+	* ncclimo clarify input filename construction/read method
 
 2021-12-06  Charlie Zender  <zender@uci.edu>
 
