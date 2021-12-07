@@ -1330,7 +1330,8 @@ fi # !clm_flg
 # 20211129 Allow splitter to use inp_aut?
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     # 20211118 Specifying caseid implies inp_aut, otherwise check stdin etc
-    if [ -n "${caseid}" ]; then 
+    # 20211207 Specifying mpas name type (like MPAS-Analysis does) also implies inp_aut
+    if [ -n "${caseid}" ] || [ ${nm_typ} = 'mpas' ]; then 
 	inp_aut='Yes'
 	inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
     fi # !caseid
@@ -2079,11 +2080,13 @@ fi # !clm_flg
 
 # Block 1 Loop 1: Produce monthly-mean climatology output
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
+    echo "quark1 clm_flg"
     clm_idx=0
     for mth in {01..12}; do
 	let clm_idx=${clm_idx}+1
 	MM=`printf "%02d" ${clm_idx}`
 	if [ ${clm_md} = 'mth' ] && [ ${inp_aut} = 'Yes' ]; then 
+	    echo "quark2 clm_flg"
 	    fl_all=''
 	    for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
 		YYYY=`printf "%04d" ${yr}`
