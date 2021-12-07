@@ -1330,8 +1330,12 @@ fi # !clm_flg
 # 20211129 Allow splitter to use inp_aut?
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     # 20211118 Specifying caseid implies inp_aut, otherwise check stdin etc
+    if [ -n "${caseid}" ] && [ ${inp_std} = 'No' ]; then 
+	inp_aut='Yes'
+	inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
+    fi # !caseid
     # 20211207 Specifying mpas name type (like MPAS-Analysis does) also implies inp_aut
-    if [ -n "${caseid}" ] || [ ${nm_typ} = 'mpas' ]; then 
+    if [ ${nm_typ} = 'mpas' ] && [ ${inp_std} = 'No' ]; then 
 	inp_aut='Yes'
 	inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
     fi # !caseid
@@ -2030,21 +2034,23 @@ if [ "${clm_flg}" = 'Yes' ]; then
     if [ "${bnr_flg}" = 'No' ]; then
 	printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
     fi # !bnr_flg
-    if [ "${nm_typ}" = 'yyyymm' ]; then
-	printf "Input ilenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
-    elif [ "${nm_typ}" = 'yyyy-mm' ]; then
-	printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM.${bs_sfx}\n"
-    elif [ "${nm_typ}" = 'yyyy-mm-01' ]; then
-	printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01.${bs_sfx}\n"
-    elif [ "${nm_typ}" = 'yyyy-mm-01-00000' ]; then
-	printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01-00000.${bs_sfx}\n"
-    elif [ "${nm_typ}" = 'mpas' ]; then
-	printf "Input filenames will be constructed with MPAS conventions\n"
-    elif [ ${inp_aut} = 'Yes' ]; then 
-	printf "Input filenames will be constructed with CESM'ish or E3SM'ish conventions\n"
-    else # !nm_typ
-	printf "Input filenames will be read from globbing, positional arguments, or stdin\n"
-    fi # !nm_typ
+    if [ "${inp_aut}" = 'Yes' ]; then
+	if [ "${nm_typ}" = 'yyyymm' ]; then
+	    printf "Input ilenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
+	elif [ "${nm_typ}" = 'yyyy-mm' ]; then
+	    printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM.${bs_sfx}\n"
+	elif [ "${nm_typ}" = 'yyyy-mm-01' ]; then
+	    printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01.${bs_sfx}\n"
+	elif [ "${nm_typ}" = 'yyyy-mm-01-00000' ]; then
+	    printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01-00000.${bs_sfx}\n"
+	elif [ "${nm_typ}" = 'mpas' ]; then
+	    printf "Input filenames will be constructed with MPAS conventions\n"
+	else
+	    printf "Input filenames will be constructed with CESM'ish or E3SM'ish conventions\n"
+	fi # !nm_typ
+    else
+	printf "Input filenames will be read (not constructed) from globbing, positional arguments, or stdin\n"
+    fi # !inp_aut
     if [ ${clm_md} = 'ann' ]; then 
 	printf "Each input file assumed to contain statistic for one year\n"
     elif [ ${clm_md} = 'dly' ]; then 
