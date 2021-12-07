@@ -2080,13 +2080,11 @@ fi # !clm_flg
 
 # Block 1 Loop 1: Produce monthly-mean climatology output
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
-    echo "quark1 clm_flg"
     clm_idx=0
     for mth in {01..12}; do
 	let clm_idx=${clm_idx}+1
 	MM=`printf "%02d" ${clm_idx}`
 	if [ ${clm_md} = 'mth' ] && [ ${inp_aut} = 'Yes' ]; then 
-	    echo "quark2 clm_flg"
 	    fl_all=''
 	    for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
 		YYYY=`printf "%04d" ${yr}`
