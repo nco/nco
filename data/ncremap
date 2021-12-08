@@ -2264,9 +2264,9 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     printf "Parallelism mode = ${par_typ}\n"
     if [ ${fl_nbr} -gt 1 ]; then
 	if [ "${par_typ}" = ${par_bck} ]; then
-	    printf "Background parallelism regridding files in fl_nbr/job_nbr = ${fl_nbr}/${job_nbr} = $((fl_nbr / job_nbr)) sequential batches each concurrently processing job_nbr = ${job_nbr} files using round-robin scheduling\n"
+	    printf "Background parallelism regridding files in fl_nbr/job_nbr = ${fl_nbr}/${job_nbr} = $((fl_nbr / job_nbr)) sequential batches each concurrently processing job_nbr = ${job_nbr} files\n"
 	elif [ "${par_typ}" = ${par_mpi} ]; then
-	    printf "MPI parallelism dividing processing of ${fl_nbr} files onto nd_nbr = ${nd_nbr} nodes simultaneously using round-robin scheduling\n"
+	    printf "MPI parallelism regridding files in fl_nbr/job_nbr = ${fl_nbr}/${job_nbr} = $((fl_nbr / job_nbr)) sequential batches. Each batch is distributed to ${nd_nbr} nodes via round-robin scheduling and handles job_nbr = ${job_nbr} months concurrently.\n"
 	else
 	    printf "No parallelism--files will be regridded serially (one at a time) on a single node. HINT: to regrid multiple files in parallel, try \'--par_typ=background\' or \'--par_typ=mpi\'\n"
 	fi # !par_typ
