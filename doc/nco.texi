@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.5-alpha01
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 4 December 2021
+@set update-date 7 December 2021
 @set update-month December 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18912,10 +18912,10 @@ These modes parallelize over different types of tasks, so we describe
 the effects of @var{job_nbr} separately, first for climatologies, then
 for splitting. 
 However, for both modes, @var{job_nbr} specifies the total number of
-simultaneous processes to run during in parallel either on the local
-node for Background parallelism, or across all the nodes for
-@acronym{MPI} parallelism (i.e., @var{job_nbr} is the total across all 
-nodes, it is not the number per node). 
+simultaneous processes to run in parallel either on the local node for
+Background parallelism, or across all the nodes for @acronym{MPI}
+parallelism (i.e., @var{job_nbr} is the simultaneous total across all
+nodes, it is not the simultaneous number per node).
 
 For climatology generation, @var{job_nbr} specifies the number of
 averaging tasks to perform simultaneously on the local node for
@@ -18940,9 +18940,12 @@ for the entire time.
 For the biggest jobs, when a single-month nearly exhausts the
 @acronym{RAM} on a node, set @math{@var{job_nbr} = @var{nd_nbr}}
 so that each node gets only one job at a time.
-If a node can handle average three distinct months simultaneously,
+In @acronym{MPI}-mode, @command{ncclimo} defaults to 
+@math{@var{job_nbr} = @var{nd_nbr}} unless the user explicitly sets
+@var{job_nbr} to a different value. 
+If a node can handle averaging three distinct months simultaneously,
 then try @math{@var{job_nbr} = 3*@var{nd_nbr}}.
-Never set @math{@var{job_nbr} > 12} in climatology modes, since there
+Never set @math{@var{job_nbr} > 12} in climatology mode, since there
 are at most only twelve jobs that can be performed in parallel.
 
 For splitting, @var{job_nbr} specifies the number of simultaneous
@@ -18974,18 +18977,17 @@ record (timestep) of a variable in memory @ref{Memory Requirements}.
 However, if splitting consumes so much @acronym{RAM} (e.g., because 
 variables are large and/or the number of jobs is large) that a
 single node can perform only one or a few subsetting jobs at a time,
-then it is reasonable value to employ @acronym{MPI} to split the
-datasets. 
-For @acronym{MPI}-parallelism, @var{job_nbr} defaults to the number of
+then it is reasonable to use @acronym{MPI}-mode to split the datasets. 
+For @acronym{MPI}-parallelism, @var{job_nbr} defaults to the number of 
 nodes requested. 
 This helps prevent users from overloading nodes with too many jobs.
 Usually, however, nodes can usually subset (and then regrid, if
 requested) multiple variables simultaneously.
-In summary, by default @math{@var{job_nbr} = @var{var_nbr}} in
-Background mode, and @math{@var{job_nbr} = @var{node_nbr}} in
-@acronym{MPI} mode. 
+In summary, the splitter defaults to
+@math{@var{job_nbr} = @var{var_nbr}} in Background mode, and to
+@math{@var{job_nbr} = @var{node_nbr}} in @acronym{MPI} mode. 
 Subject to the availability of adequate @acronym{RAM}, expand the
-number of jobs per node by increasing @var{job_nbr} until overall
+number of jobs-per-node by increasing @var{job_nbr} until overall
 throughput peaks.
 
 The main throughput bottleneck in timeseries reshaping mode is I/O. 
@@ -20051,7 +20053,7 @@ strategies that may (@file{rhea} standard queue) or may not
 depending on the fatness of the analysis nodes, as explained below. 
 
 @unnumberedsubsec Memory Considerations
-It is important to employ the optimal @command{ncclimo}  parallelization
+It is important to employ the optimal @command{ncclimo} parallelization
 strategy for your computer hardware resources. 
 Select from the three available choices with the 
 @option{-p @var{par_typ}} switch.
@@ -20070,11 +20072,11 @@ If the available @acronym{RAM} (plus swap) is
 @math{< 12*4*}@code{sizeof(}monthly input file@code{)}, then try serial
 mode first (12 is the optimal number of parallel processes for monthly
 climos, the computational overhead is a factor of four). 
-@acronym{CAM-SE} ne30L30 output is about @w{1 GB/month} so each month
+@acronym{EAM-SE} ne30L30 output is about @w{1 GB/month} so each month
 requires about @w{4 GB} of @acronym{RAM}. 
-@acronym{CAM-SE} ne30L72 output (with @acronym{LINOZ}) is about 
+@acronym{EAM-SE} ne30L72 output (with @acronym{LINOZ}) is about 
 @w{10 GB/month} so each month requires about @w{40 GB} @acronym{RAM}. 
-@acronym{CAM-SE} ne120 output is about @w{12 GB/month} so each month
+@acronym{EAM-SE} ne120 output is about @w{12 GB/month} so each month
 requires about @w{48 GB} @acronym{RAM}. 
 The computer does not actually use all this memory at one time, and many
 kernels compress @acronym{RAM} usage to below what top reports, so the
@@ -20131,7 +20133,7 @@ window) that works well for small cases can be unpleasantly slow on
 login nodes of @acronym{LCF}s and for longer or higher resolution (e.g.,
 ne120) climatologies. 
 As a baseline, generating a climatology of @w{5 years} of ne30 (~1x1
-degree) @acronym{CAM-SE} output with @command{ncclimo} takes 1--2
+degree) @acronym{EAM-SE} output with @command{ncclimo} takes 1--2
 minutes on @file{rhea} (at a time with little contention), and 6--8
 minutes on a 2014 MacBook Pro. 
 To make things a bit faster at @acronym{LCF}s, request a dedicated node
@@ -20296,7 +20298,7 @@ double-precision (@acronym{SP} and @acronym{DP}, respectively),
 treatment of missing values, and generation/application of regridding
 weights. 
 For concreteness and clarity we describe the algorithmic choices made in
-processing a @acronym{CAM-SE} monthly output into a climatological
+processing a @acronym{EAM-SE} monthly output into a climatological
 annual mean (@acronym{ANN}) and then regridding that. 
 Other climatologies (e.g., daily to monthly, or
 annual-to-climatological) involve similar choices. 
@@ -20313,7 +20315,7 @@ The general principal is to perform math (addition, weighting,
 normalization) in @acronym{DP} and output results to disk in the same
 precision in which they were input from disk (usually @acronym{SP}). 
 In @w{Stage 1}, @acronym{NCO} ingests @w{Stage 0} monthly means (raw
-@acronym{CAM-SE} output), converts @acronym{SP} input to @acronym{DP},
+@acronym{EAM-SE} output), converts @acronym{SP} input to @acronym{DP},
 performs the average across all years, then converts the answer from
 @acronym{DP} to @acronym{SP} for storage on-disk as the climatological
 monthly mean. 
@@ -20332,7 +20334,7 @@ annual mean.
 @w{Stage 2} weights each input month by its number of days (e.g., 31 for 
 January), and @w{Stage 3} weights each input season by its number of days 
 (e.g., 92 for @acronym{MAM}). 
-@acronym{E3SM/ACME} runs @acronym{CAM-SE} with a 365-day calendar, so these
+@acronym{E3SM/ACME} runs @acronym{EAM-SE} with a 365-day calendar, so these
 weights are independent of year and never change. 
 The treatment of missing values in @w{Stages 1--3} is limited by the
 lack of missing value tallies provided by @w{Stage 0} (model) output. 
@@ -20351,9 +20353,9 @@ Due to the ambiguous nature of missing values, it is debatable whether
 they merit efforts to treat them more exactly. 
 
 The vast majority of fields undergo three promotion/demotion cycles 
-between @acronym{CAM-SE} and @acronym{ANN}. 
+between @acronym{EAM-SE} and @acronym{ANN}. 
 No promotion/demotion cycles occur for history fields that
-@acronym{CAM-SE} outputs in @acronym{DP} rather than @acronym{SP}, nor
+@acronym{EAM-SE} outputs in @acronym{DP} rather than @acronym{SP}, nor
 for fields without a time dimension. 
 Typically these fields are grid coordinates (e.g., longitude, latitude) 
 or model constants (e.g., 
