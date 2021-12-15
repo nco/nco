@@ -9710,6 +9710,7 @@ ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # GranularBitGroom
 ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitRound
 ncks -7 -L 1 --baa=6 --ppc default=3 in.nc out.nc # HalfShave
 ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce
+ncks -7 -L 1 --baa=8 --ppc default=3 in.nc out.nc # NSBRound (in progress)
 @end verbatim
 @end example
 These @acronym{NSD} algorithms write an algorithm-specific attribute,
@@ -18922,7 +18923,7 @@ averaging tasks to perform simultaneously on the local node for
 Background parallelism, or spread across all nodes for
 @acronym{MPI}-parallelism.
 By default @command{ncclimo} sets @math{@var{job_nbr} = 12} for
-both parallelism modes.
+background parallelism mode.
 This number ensures that monthly averages for all individual
 months complete more-or-less simultaneously, so that all seasonal
 averages can then be computed.
@@ -18934,15 +18935,16 @@ For Background parallelism, setting @math{@var{job_nbr} = 4} causes
 four-months to be averaged at one time.
 After three batches of four-months complete, the climatology generator
 then moves on to seasonal averaging and regridding.
-For @acronym{MPI}-parallelism, set
-@math{@var{job_nbr} >= @var{nd_nbr}} otherwise some nodes will be idle
-for the entire time.
-For the biggest jobs, when a single-month nearly exhausts the
-@acronym{RAM} on a node, set @math{@var{job_nbr} = @var{nd_nbr}}
-so that each node gets only one job at a time.
 In @acronym{MPI}-mode, @command{ncclimo} defaults to 
 @math{@var{job_nbr} = @var{nd_nbr}} unless the user explicitly sets
 @var{job_nbr} to a different value. 
+For the biggest jobs, when a single-month nearly exhausts the
+@acronym{RAM} on a node, this default value
+@math{@var{job_nbr} = @var{nd_nbr}} ensures that each node gets only
+one job at a time. 
+To override this default for @acronym{MPI}-parallelism, set
+@math{@var{job_nbr} >= @var{nd_nbr}} otherwise some nodes will be idle 
+for the entire time.
 If a node can handle averaging three distinct months simultaneously,
 then try @math{@var{job_nbr} = 3*@var{nd_nbr}}.
 Never set @math{@var{job_nbr} > 12} in climatology mode, since there

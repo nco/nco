@@ -536,11 +536,11 @@ nco_ppc_around /* [fnc] Replace op1 values by their values rounded to decimal pr
     break;
   case NC_UINT64:
     if(!has_mss_val){
-      for(idx=0L;idx<sz;idx++) op1.ui64p[idx]=(unsigned long)lrint(scale*op1.ui64p[idx])/scale;
+      for(idx=0L;idx<sz;idx++) op1.ui64p[idx]=(unsigned long long)lrint(scale*op1.ui64p[idx])/scale;
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
       for(idx=0;idx<sz;idx++)
-	if(op1.ui64p[idx] != mss_val_uint64) op1.ui64p[idx]=(unsigned long)lrint(scale*op1.ui64p[idx])/scale;
+	if(op1.ui64p[idx] != mss_val_uint64) op1.ui64p[idx]=(unsigned long long)lrint(scale*op1.ui64p[idx])/scale;
     } /* !has_mss_val */
     break;
   case NC_CHAR: /* Do nothing for non-numeric types ...*/
@@ -555,7 +555,7 @@ nco_ppc_around /* [fnc] Replace op1 values by their values rounded to decimal pr
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end nco_ppc_around() */
+} /* !nco_ppc_around() */
 
 void
 nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
@@ -602,7 +602,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   
   /* IEEE single- and double-precision significands have 24 and 53 bits of precision (prc_bnr)
      Decimal digits of precision (prc_dcm) obtained via prc_dcm=prc_bnr*ln(2)/ln(10) = 7.22 and 15.95, respectively
-     Binary digits of precision (prc_bnr) obtained via prc_bnr=prc_dcm*ln(10)/ln(2) */
+     Binary "digits" (i.e., bits) of precision (prc_bnr) obtained via prc_bnr=prc_dcm*ln(10)/ln(2) */
   
   //  const char fnc_nm[]="nco_ppc_bitmask()"; /* [sng] Function name  */
 
@@ -657,6 +657,25 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   int xpn_bs2; /* [nbr] Binary exponent xpn_bs2 in val = sign(val) * 2^xpn_bs2 * mnt, 0.5 < mnt <= 1.0 */
   /* End Digit Rounding (DCG19) declarations */
 
+  /* Begin Brute Force declarations */
+  unsigned int msk_rst32; /* Set mask to original BG mask */
+  nco_bool flg_qnt_nxt_bit; /* [flg] Quantize (set or shave) next bit */
+  nco_bool x; /* [flg] */
+  float err_max32;  /* Maximum quantization error allowed by user-specified NSD */
+  float raw32; /* Unquantized value of current element */
+  float tmp32; /* Provisional quantized value of current element */
+  float xpn32; /* Base 10 exponent of current element: log10(abs(raw32))) */
+  float flr_xpn32; /* Floor of base 10 exponent of current element: floor(xpn32) */
+
+  double raw64;
+  double temp64;
+  unsigned long long int msk_rst64; // fxm: 20211215 should be ull not ul?
+  double xpn64;
+  int flr_xpn64;
+  double err_max64;
+  nco_bool c;
+  /* End Brute Force declarations */
+
   double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
   double mss_val_cmp_dbl; /* Missing value for comparison to double precision values */
 
@@ -666,6 +685,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   int bit_xpl_nbr_zro; /* [nbr] Number of explicit bits to zero */
   int prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
   int prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
+  int nsb; /* I [nbr] Number of significant bits, i.e., "keep bits" */
 
   long idx;
 
@@ -681,33 +701,54 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Only floating point types can be quantized */
   if(type != NC_FLOAT && type != NC_DOUBLE) return;
 
-  /* Disallow unreasonable quantization */
-  assert(nsd > 0);
-  assert(nsd <= 16);
+  switch(nco_baa_cnv_get()){
+  case nco_baa_bgr:
+  case nco_baa_shv:
+  case nco_baa_set:
+  case nco_baa_bgr_btr:
+  case nco_baa_brt:
+    /* Most NCO lossy routines expect user to provide NSD */
+    /* Disallow unreasonable quantization */
+    assert(nsd > 0);
+    assert(nsd <= 16);
+    /* How many bits to preserve? */
+    prc_bnr_xct=nsd*bit_per_dgt;
+    /* Be conservative, round upwards */
+    prc_bnr_ceil=(int)ceil(prc_bnr_xct);
+    /* First bit is implicit not explicit but corner cases prevent our taking advantage of this */
+    //prc_bnr_xpl_rqr=prc_bnr_ceil-1; /* 20201223 CSZ verified this fails for small integers with NSD=1 */
+    //prc_bnr_xpl_rqr=prc_bnr_ceil;
+    prc_bnr_xpl_rqr=prc_bnr_ceil+1;
 
-  /* How many bits to preserve? */
-  prc_bnr_xct=nsd*bit_per_dgt;
-  /* Be conservative, round upwards */
-  prc_bnr_ceil=(int)ceil(prc_bnr_xct);
-  /* First bit is implicit not explicit but corner cases prevent our taking advantage of this */
-  //prc_bnr_xpl_rqr=prc_bnr_ceil-1; /* 20201223 CSZ verified this fails for small integers with NSD=1 */
-  //prc_bnr_xpl_rqr=prc_bnr_ceil;
-  prc_bnr_xpl_rqr=prc_bnr_ceil+1;
-  if(type == NC_DOUBLE) prc_bnr_xpl_rqr++; /* Seems necessary for double-precision ppc=array(1.234567,1.0e-6,$dmn) */
-  /* 20150128: Hand-tuning shows we can sacrifice one or two more bits for almost all cases
-     20150205: However, small integers are an exception. In fact they require two more bits, at least for NSD=1.
-     Thus minimum threshold to preserve half of least significant digit (LSD) is prc_bnr_xpl_rqr=prc_bnr_ceil
-     Decrementing prc_bnr_xpl_rqr by one or two more bits produces maximum errors that exceed half the LSD
-     ncra -4 -O -C --ppc default=1 --ppc one=1 -p ~/nco/data in.nc in.nc ~/foo.nc 
-     ncks -H -v Q.. --cdl ~/foo.nc | m */
+    if(type == NC_DOUBLE) prc_bnr_xpl_rqr++; /* Seems necessary for double-precision ppc=array(1.234567,1.0e-6,$dmn) */
+    /* 20150128: Hand-tuning shows we can sacrifice one or two more bits for almost all cases
+       20150205: However, small integers are an exception. In fact they require two more bits, at least for NSD=1.
+       Thus minimum threshold to preserve half of least significant digit (LSD) is prc_bnr_xpl_rqr=prc_bnr_ceil
+       Decrementing prc_bnr_xpl_rqr by one or two more bits produces maximum errors that exceed half the LSD
+       ncra -4 -O -C --ppc default=1 --ppc one=1 -p ~/nco/data in.nc in.nc ~/foo.nc 
+       ncks -H -v Q.. --cdl ~/foo.nc | m */
+
+    if(type == NC_FLOAT  && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_flt) return;
+    if(type == NC_DOUBLE && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_dbl) return;
+    break;
+    /* For those NCO lossy routines that expect user to provide NSB, the NSD variable actually contains NSB */
+  case nco_baa_sh2:
+  case nco_baa_btr:
+    nsb=nsd;
+    /* Disallow unreasonable quantization */
+    assert(nsb > 1);
+    assert(nsb <= bit_xpl_nbr_sgn_flt);
+    prc_bnr_xpl_rqr=nsb;
+    break;
+  default: 
+    nco_dfl_case_nc_type_err();
+    break;
+  } /* !nco_baa_cnv_get() */
 
   /* 20150126: fxm casting pointers is tricky with this routine. Avoid for now. */
   /* Typecast pointer to values before access */
   //(void)cast_void_nctype(type,&op1);
   //if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
-  if(type == NC_FLOAT  && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_flt) return;
-  if(type == NC_DOUBLE && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_dbl) return;
 
   switch(type){
   case NC_FLOAT:
@@ -725,24 +766,28 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
     msk_f32_u32_one=~msk_f32_u32_zro;
     msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
-    if(nco_baa_cnv_get() == nco_baa_bgr){
+    switch(nco_baa_cnv_get()){
+    case nco_baa_bgr:
       /* Bit-Groom: alternately shave and set LSBs */
       for(idx=0L;idx<sz;idx+=2L)
 	if(op1.fp[idx] != mss_val_cmp_flt) u32_ptr[idx]&=msk_f32_u32_zro;
       for(idx=1L;idx<sz;idx+=2L)
 	if(op1.fp[idx] != mss_val_cmp_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
 	  u32_ptr[idx]|=msk_f32_u32_one;
+      break;
       /* !BitGroom = BGR */
-    }else if(nco_baa_cnv_get() == nco_baa_shv){
+    case nco_baa_shv:
       /* Bit-Shave: always shave LSBs */
       for(idx=0L;idx<sz;idx++)
 	if(op1.fp[idx] != mss_val_cmp_flt) u32_ptr[idx]&=msk_f32_u32_zro;
-    }else if(nco_baa_cnv_get() == nco_baa_set){
+      break;
+    case nco_baa_set:
       /* Bit-Set: always set LSBs */
       for(idx=0L;idx<sz;idx++)
 	if(op1.fp[idx] != mss_val_cmp_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
 	  u32_ptr[idx]|=msk_f32_u32_one;
-    }else if(nco_baa_cnv_get() == nco_baa_dgr){
+      break;
+    case nco_baa_dgr:
       /* Digit Rounding (DCG19)
 	 Test DGR:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
@@ -842,13 +887,14 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  } /* !dbg */
 	} /* !mss_val_cmp_flt */
       } /* !idx */
+      break;
       /* !DigitRound = DGR */
-    }else if(nco_baa_cnv_get() == nco_baa_gbg){
+    case nco_baa_gbg:
       /* Granular Bit Groom
 	 Test GBG:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
-	 ncks -O -C -D 1 --baa=4 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
-	 ncks -O -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
+	 ncks -O -7 -C -D 1 --baa=4 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
+	 ncks -O -7 -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
       for(idx=0L;idx<sz;idx++){
 	if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
@@ -897,18 +943,24 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  } /* !dbg */
 	} /* !mss_val_cmp_flt */
       } /* !idx */
+      break;
       /* !GranularBitGroom = GBG */
-    }else if(nco_baa_cnv_get() == nco_baa_btr){
-      /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
-	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask */
+    case nco_baa_bgr_btr:
+    case nco_baa_btr:
+      /* BitRound and
+	 BitGroom with BitRound (instead of shave/set):
+	 Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
+	 Round mantissa using IEEE floating-point arithmetic, shave LSB using bit-mask */
       for(idx=0L;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_cmp_flt){
 	  u32_ptr[idx]+=msk_f32_u32_hshv; /* Add 1 to the MSB of LSBs, carry 1 to mantissa or even exponent */
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
 	} /* !mss_val_cmp_flt */
       } /* !idx */
-      /* !BitRound = RND */
-    }else if(nco_baa_cnv_get() == nco_baa_sh2){
+      break;
+      /* !BitRound = BTR */
+      /* !BitGroomBitRound = RND */
+    case nco_baa_sh2:
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them
 	 See figures at https://github.com/nco/nco/pull/200 */
@@ -918,15 +970,10 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  u32_ptr[idx]|=msk_f32_u32_hshv; /* Set MSB of LSBs */
 	} /* !mss_val_cmp_flt */
       } /* !idx */
-    }else if(nco_baa_cnv_get() == nco_baa_brt){ /* JPT 20210102: baa_brt Brute force masking of each individual data point */
-      const unsigned int msk_rst32=msk_f32_u32_zro; /* Set mask to original BG mask */
-      nco_bool flg_qnt_nxt_bit; /* [flg] Quantize (set or shave) next bit */
-      nco_bool x; /* [flg] */
-      float err_max32;  /* Maximum quantization error allowed by user-specified NSD */
-      float raw32; /* Unquantized value of current element */
-      float tmp32; /* Provisional quantized value of current element */
-      float xpn32; /* Base 10 exponent of current element: log10(abs(raw32))) */
-      float flr_xpn32; /* Floor of base 10 exponent of current element: floor(xpn32) */
+      break;
+      /* !Halfshave */
+    case nco_baa_brt: /* JPT 20210102: baa_brt Brute force masking of each individual data point */
+      msk_rst32=msk_f32_u32_zro; /* Set mask to original BG mask */
       for(idx=0L;idx<sz;idx+=2L){ // Shave loop
 	if(op1.fp[idx] != 0.0f && op1.fp[idx] != 1.0f && op1.fp[idx] != mss_val_cmp_flt){
 	  raw32=op1.fp[idx];
@@ -973,9 +1020,13 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  if(x) op1.fp[idx]=tmp32;
 	} // !0.0
       } // !idx
-    }else /* !nco_baa_brt */
+      break;
+      /* !BruteForce = BRT */
+    default:
       abort();
-    break; /* !NC_FLOAT */
+      break;
+    } /* !nco_baa_typ_get() */
+    /* !NC_FLOAT */
   case NC_DOUBLE:
     /* Missing value for comparison is _FillValue (if any) otherwise default NC_FILL_FLOAT/DOUBLE */
     if(has_mss_val) mss_val_cmp_dbl=*mss_val.dp; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
@@ -991,7 +1042,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
     msk_f64_u64_one=~msk_f64_u64_zro;
     msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
-    if(nco_baa_cnv_get() == nco_baa_bgr){
+    switch(nco_baa_cnv_get()){
+    case nco_baa_bgr:
       /* Bit-Groom: alternately shave and set LSBs */
       for(idx=0L;idx<sz;idx+=2L)
 	if(op1.dp[idx] != mss_val_cmp_dbl)
@@ -999,16 +1051,19 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       for(idx=1L;idx<sz;idx+=2L)
 	if(op1.dp[idx] != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
 	  u64_ptr[idx]|=msk_f64_u64_one;
-    }else if(nco_baa_cnv_get() == nco_baa_shv){
+      break;
+    case nco_baa_shv:
       /* Bit-Shave: always shave LSBs */
       for(idx=0L;idx<sz;idx++)
 	if(op1.dp[idx] != mss_val_cmp_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
-    }else if(nco_baa_cnv_get() == nco_baa_set){
+      break;
+    case nco_baa_set:
       /* Bit-Set: always set LSBs */
       for(idx=0L;idx<sz;idx++)
 	if(op1.dp[idx] != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
 	  u64_ptr[idx]|=msk_f64_u64_one;
-    }else if(nco_baa_cnv_get() == nco_baa_dgr){
+      break;
+    case nco_baa_dgr:
       /* Digit Rounding (DCG19), copy of NC_FLOAT version except for double precision changes:
 	 1. Change fp to dp
 	 2. Reference mss_val_cmp_dbl not mss_val_cmp_flt
@@ -1040,8 +1095,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  } /* !dbg */
 	} /* !mss_val_cmp_dbl */
       } /* !idx */
+      break;
       /* !DigitRound = DGR */
-    }else if(nco_baa_cnv_get() == nco_baa_gbg){
+    case nco_baa_gbg:
       for(idx=0L;idx<sz;idx++){
 	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL){
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
@@ -1073,8 +1129,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  } /* !dbg */
 	} /* !mss_val_cmp_dbl */
       } /* !idx */
+      break;
       /* !GranularBitGroom = GBG */
-    }else if(nco_baa_cnv_get() == nco_baa_btr){
+    case nco_baa_bgr_btr:
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask
 	 See figures at https://github.com/nco/nco/pull/199 */
@@ -1084,7 +1141,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  u64_ptr[idx]&=msk_f64_u64_zro; /* Shave it */
 	} /* !mss_val_cmp_dbl */
       } /* !idx */
-    }else if(nco_baa_cnv_get() == nco_baa_sh2){
+      break;
+    case nco_baa_sh2:
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them
 	 See figures at https://github.com/nco/nco/pull/200 */
@@ -1094,68 +1152,64 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  u64_ptr[idx]|=msk_f64_u64_hshv; /* Set MSB of LSBs */
 	} /* !mss_val_cmp_dbl */
       } /* !idx */
-    }else if(nco_baa_cnv_get() == nco_baa_brt){ /* JPT 20210102: baa_brt Brute force masking of each individual data point */ 
-      double raw64;
-      double temp64;
-      const unsigned long int msk_rst64 = msk_f64_u64_zro;
-      double xpn64;
-      int flr_xpn64;
-      double err_max64;
-      nco_bool x;
-      nco_bool c;
-      
-	for(idx=0L;idx<sz;idx+=2L){ // shave loop
-	  if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0 && op1.dp[idx] != mss_val_cmp_dbl){
-	    raw64 = op1.dp[idx];
-	    msk_f64_u64_zro = msk_rst64;
-	    u64_ptr[idx]&=msk_f64_u64_zro;
-	    xpn64=log10(fabs(raw64));
-	    flr_xpn64=floor(xpn64);
-	    err_max64=0.5*pow(10.0,flr_xpn64-nsd+1);
-	    c = True;
-	    if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0){
-	      while(c){
-		temp64  = op1.dp[idx];
-		msk_f64_u64_zro<<=1;
-		u64_ptr[idx]&=msk_f64_u64_zro;
-		if((fabs(raw64) - fabs(op1.dp[idx])) >= err_max64) c = False;
-		if(op1.dp[idx] == 1.0) c = False;
-                if(op1.dp[idx] == 0.0) c = False;
-                if(op1.dp[idx] != op1.dp[idx]) c = False;
-		fflush(stdout);
-	      } // close while loop
-	      op1.dp[idx] = temp64;
-	    } // close if before while
-	  } // close if != 0
-	} // close shave loop
-	
-	for(idx=1L;idx<sz;idx+=2L){ // Set loop
+      break;
+    case nco_baa_brt: /* JPT 20210102: baa_brt Brute force masking of each individual data point */ 
+      msk_rst64=msk_f64_u64_zro; // fxm: 20211215 should be ull not ul?
+      for(idx=0L;idx<sz;idx+=2L){ // shave loop
+	if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0 && op1.dp[idx] != mss_val_cmp_dbl){
 	  raw64 = op1.dp[idx];
 	  msk_f64_u64_zro = msk_rst64;
-	  msk_f64_u64_one=~msk_f64_u64_zro;
-          if(op1.dp[idx] != 0ULL && op1.dp[idx] != mss_val_cmp_dbl){ /* Never quantize upwards floating point values of zero */
-            u64_ptr[idx]|=msk_f64_u64_one;
-	    xpn64=log10(fabs(raw64));
-	    flr_xpn64=floor(xpn64);
-	    err_max64=0.5*pow(10.0,flr_xpn64-nsd+1);
-	    x = False;
-	    c = True;
+	  u64_ptr[idx]&=msk_f64_u64_zro;
+	  xpn64=log10(fabs(raw64));
+	  flr_xpn64=floor(xpn64);
+	  err_max64=0.5*pow(10.0,flr_xpn64-nsd+1);
+	  c = True;
+	  if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0){
 	    while(c){
-	      x = True;
-	      temp64 = op1.dp[idx];
-	      msk_f64_u64_zro <<= 1;
-	      msk_f64_u64_one =~ msk_f64_u64_zro;
-	      u64_ptr[idx]|= msk_f64_u64_one;
-	      if(fabs((fabs(raw64) - fabs(op1.dp[idx]))) >= err_max64) c = False;
-              if(op1.dp[idx] == 1) c = False;
-              if(op1.dp[idx] != op1.dp[idx]) c = False;
+	      temp64  = op1.dp[idx];
+	      msk_f64_u64_zro<<=1;
+	      u64_ptr[idx]&=msk_f64_u64_zro;
+	      if((fabs(raw64) - fabs(op1.dp[idx])) >= err_max64) c = False;
+	      if(op1.dp[idx] == 1.0) c = False;
+	      if(op1.dp[idx] == 0.0) c = False;
+	      if(op1.dp[idx] != op1.dp[idx]) c = False;
 	      fflush(stdout);
-	    } // close while
-	    if(x) op1.dp[idx] = temp64;
-	  } // close if 0
-	} // close set loop
-    }else // closes baa_brt
+	    } // close while loop
+	    op1.dp[idx] = temp64;
+	  } // close if before while
+	} // close if != 0
+      } // close shave loop
+      
+      for(idx=1L;idx<sz;idx+=2L){ // Set loop
+	raw64 = op1.dp[idx];
+	msk_f64_u64_zro = msk_rst64;
+	msk_f64_u64_one=~msk_f64_u64_zro;
+	if(op1.dp[idx] != 0ULL && op1.dp[idx] != mss_val_cmp_dbl){ /* Never quantize upwards floating point values of zero */
+	  u64_ptr[idx]|=msk_f64_u64_one;
+	  xpn64=log10(fabs(raw64));
+	  flr_xpn64=floor(xpn64);
+	  err_max64=0.5*pow(10.0,flr_xpn64-nsd+1);
+	  x = False;
+	  c = True;
+	  while(c){
+	    x = True;
+	    temp64 = op1.dp[idx];
+	    msk_f64_u64_zro <<= 1;
+	    msk_f64_u64_one =~ msk_f64_u64_zro;
+	    u64_ptr[idx]|= msk_f64_u64_one;
+	    if(fabs((fabs(raw64) - fabs(op1.dp[idx]))) >= err_max64) c = False;
+	    if(op1.dp[idx] == 1) c = False;
+	    if(op1.dp[idx] != op1.dp[idx]) c = False;
+	    fflush(stdout);
+	  } // close while
+	  if(x) op1.dp[idx] = temp64;
+	} // close if 0
+      } // close set loop
+      break; // closes baa_brt
+    default:
       abort();
+      break;
+    } /* !nco_baa_typ_get() */
     break; /* !NC_DOUBLE */
   case NC_INT: /* Do nothing for non-floating point types ...*/
   case NC_SHORT:
@@ -1170,7 +1224,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   default: 
     nco_dfl_case_nc_type_err();
     break;
-  } /* end switch */
+  } /* !type */
   
   /* 20150126: fxm casting pointers is tricky with this routine. Avoid for now. */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
