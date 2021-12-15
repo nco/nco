@@ -1,14 +1,16 @@
 2021-12-15  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.5-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha02: Lund';git push
+	git tag -a 5.0.5-alpha02 -m 'all: separate btr from bgr_btr; ncclimo mpas inp_aut fix;';git push --tags
+
+	* Refactor baa_btr to be BitRound based on NSB and baa_bgr_btr to be BitRound with keepbits determined by BitGroom algorithm
+
 	* nco_ppc.c nco_ppc_bitmask() fix msk_rst64 unsigned long long (was just long)
 
 	* nco_ppc.c nco_ppc_around() fix int64/uint64 cast to be long long (was just long)
 
 2021-12-08  Charlie Zender  <zender@uci.edu>
-
-	* NCO 5.0.5-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha02: Lund';git push
-	git tag -a 5.0.5-alpha02 -m 'ncclimo mpas inp_aut fix;';git push --tags
 
 	* ncclimo/ncremap fix INFO message on MPI scheduling strategy
 

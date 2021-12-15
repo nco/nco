@@ -1132,6 +1132,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       break;
       /* !GranularBitGroom = GBG */
     case nco_baa_bgr_btr:
+    case nco_baa_btr:
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask
 	 See figures at https://github.com/nco/nco/pull/199 */
@@ -1142,6 +1143,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !mss_val_cmp_dbl */
       } /* !idx */
       break;
+      /* !BitRound = BTR */
+      /* !BitGroomBitRound = RND */
     case nco_baa_sh2:
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them
@@ -1153,6 +1156,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !mss_val_cmp_dbl */
       } /* !idx */
       break;
+      /* !Halfshave */
     case nco_baa_brt: /* JPT 20210102: baa_brt Brute force masking of each individual data point */ 
       msk_rst64=msk_f64_u64_zro; // fxm: 20211215 should be ull not ul?
       for(idx=0L;idx<sz;idx+=2L){ // shave loop
