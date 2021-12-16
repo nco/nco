@@ -89,32 +89,6 @@ nco_ppc_ini /* Set PPC based on user specifications */
   /* jm fxm use more descriptive name than i---what does i count? */
   for(int index=0;(ppc_lst+index)->key;index++, ppc_var_nbr++); /* end loop over i */
 
-  // ppc_lst=(kvm_sct *)nco_malloc(NC_MAX_VARS*sizeof(kvm_sct));
-
-  // /* Parse PPCs */
-  // for(ppc_arg_idx=0;ppc_arg_idx<ppc_arg_nbr;ppc_arg_idx++){
-  //   if(!strstr(ppc_arg[ppc_arg_idx],"=")){
-  //     (void)fprintf(stdout,"%s: Invalid --ppc specification: %s. Must contain \"=\" sign.\n",nco_prg_nm_get(),ppc_arg[ppc_arg_idx]);
-  //     if(ppc_lst) ppc_lst=(kvm_sct *)nco_free(ppc_lst);
-  //     nco_exit(EXIT_FAILURE);
-  //   } /* endif */
-  //   kvm=nco_sng2kvm(ppc_arg[ppc_arg_idx]);
-  //   /* nco_sng2kvm() converts argument "--ppc one,two=3" into kvm.key="one,two" and kvm.val=3
-  //      Then nco_lst_prs_2D() converts kvm.key into two items, "one" and "two", with the same value, 3 */
-  //   if(kvm.key){
-  //     int var_idx; /* [idx] Index over variables in current PPC argument */
-  //     int var_nbr; /* [nbr] Number of variables in current PPC argument */
-  //     char **var_lst;
-  //     var_lst=nco_lst_prs_2D(kvm.key,",",&var_nbr);
-  //     for(var_idx=0;var_idx<var_nbr;var_idx++){ /* Expand multi-variable specification */
-  //       ppc_lst[ppc_var_nbr].key=strdup(var_lst[var_idx]);
-  //       ppc_lst[ppc_var_nbr].val=strdup(kvm.val);
-  //       ppc_var_nbr++;
-  //     } /* end for */
-  //     var_lst=nco_sng_lst_free(var_lst,var_nbr);
-  //   } /* end if */
-  // } /* end for */
-
   /* PPC "default" specified, set all non-coordinate variables to default first */
   for(ppc_var_idx=0;ppc_var_idx<ppc_var_nbr;ppc_var_idx++){
     if(!strcasecmp(ppc_lst[ppc_var_idx].key,"default")){
@@ -167,12 +141,12 @@ nco_ppc_ini /* Set PPC based on user specifications */
 	/* Floating point types */
       case NC_FLOAT: 
       case NC_DOUBLE: 
-	if(nco_baa_cnv_get() != nco_baa_btr && nco_baa_cnv_get() != nco_baa_sh2){
+	//if(nco_baa_cnv_get() != nco_baa_btr && nco_baa_cnv_get() != nco_baa_sh2){
 	  if(trv_tbl->lst[idx_tbl].ppc > nco_max_ppc){
 	    if(trv_tbl->lst[idx_tbl].flg_nsd) (void)fprintf(stdout,"%s: INFO Number of Significant Digits (NSD) requested = %d too high for variable %s which is of type %s. No quantization or rounding will be performed for this variable. HINT: Maximum precisions for NC_FLOAT and NC_DOUBLE are %d and %d, respectively.\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].ppc,trv_tbl->lst[idx_tbl].nm,nco_typ_sng(trv_tbl->lst[idx_tbl].var_typ),nco_max_ppc_flt,nco_max_ppc_dbl);
 	    trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
 	  } /* !nco_max_ppc */
-	} /* !nco_baa_btr, nco_baa_sh2 */
+	  //} /* !nco_baa_btr, nco_baa_sh2 */
 	break;
 	/* Integer types */
       case NC_SHORT:
