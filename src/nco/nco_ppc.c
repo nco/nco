@@ -167,10 +167,12 @@ nco_ppc_ini /* Set PPC based on user specifications */
 	/* Floating point types */
       case NC_FLOAT: 
       case NC_DOUBLE: 
-	if(trv_tbl->lst[idx_tbl].ppc > nco_max_ppc){
-	  if(trv_tbl->lst[idx_tbl].flg_nsd) (void)fprintf(stdout,"%s: INFO Number of Significant Digits (NSD) requested = %d too high for variable %s which is of type %s. No quantization or rounding will be performed for this variable. HINT: Maximum precisions for NC_FLOAT and NC_DOUBLE are %d and %d, respectively.\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].ppc,trv_tbl->lst[idx_tbl].nm,nco_typ_sng(trv_tbl->lst[idx_tbl].var_typ),nco_max_ppc_flt,nco_max_ppc_dbl);
-	  trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
-	} /* endif */
+	if(nco_baa_cnv_get() != nco_baa_btr && nco_baa_cnv_get() != nco_baa_sh2){
+	  if(trv_tbl->lst[idx_tbl].ppc > nco_max_ppc){
+	    if(trv_tbl->lst[idx_tbl].flg_nsd) (void)fprintf(stdout,"%s: INFO Number of Significant Digits (NSD) requested = %d too high for variable %s which is of type %s. No quantization or rounding will be performed for this variable. HINT: Maximum precisions for NC_FLOAT and NC_DOUBLE are %d and %d, respectively.\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].ppc,trv_tbl->lst[idx_tbl].nm,nco_typ_sng(trv_tbl->lst[idx_tbl].var_typ),nco_max_ppc_flt,nco_max_ppc_dbl);
+	    trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
+	  } /* !nco_max_ppc */
+	} /* !nco_baa_btr, nco_baa_sh2 */
 	break;
 	/* Integer types */
       case NC_SHORT:
@@ -689,19 +691,35 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 
   long idx;
 
+  int nco_baa_cnv_typ; /* [enm] Bit adjustment algorithm type */
+  
   unsigned int *u32_ptr;
-  unsigned int msk_f32_u32_zro;
-  unsigned int msk_f32_u32_one;
-  unsigned int msk_f32_u32_hshv;
+  unsigned int msk_f32_u32_zro=NC_MAX_UINT; /* CEWI */
+  unsigned int msk_f32_u32_one=NC_MAX_UINT; /* CEWI */
+  unsigned int msk_f32_u32_hshv=NC_MAX_UINT; /* CEWI */
   unsigned long long int *u64_ptr;
-  unsigned long long int msk_f64_u64_zro;
-  unsigned long long int msk_f64_u64_one;
-  unsigned long long int msk_f64_u64_hshv;
+  unsigned long long int msk_f64_u64_zro=NC_MAX_UINT64; /* CEWI */
+  unsigned long long int msk_f64_u64_one=NC_MAX_UINT64; /* CEWI */
+  unsigned long long int msk_f64_u64_hshv=NC_MAX_UINT64; /* CEWI */
   
   /* Only floating point types can be quantized */
   if(type != NC_FLOAT && type != NC_DOUBLE) return;
 
-  switch(nco_baa_cnv_get()){
+  nco_baa_cnv_typ=nco_baa_cnv_get(); /* [enm] Bit-adjustment algorithm type */
+
+  /* Step 1: Determine # keep bits for algorithms that use a uniform number 
+     For NSD algorithms this involves using log2() math and some fine-tuning
+     For NSB algorithms this simply means sanity checking user input */
+  switch(nco_baa_cnv_typ){
+    /* Methods that do granular pre-processing of NSD or masks */
+  case nco_baa_dgr:
+  case nco_baa_gbg:
+    /* Provide a dummy value of keep bits to satisfy sanity checks
+       Granular algorithms determine keepbits/masks on a per-value basis
+       They do not actually use this dummy value */
+    prc_bnr_xpl_rqr=5;
+    break;
+    /* Methods that pre-process NSD to obtain keepbits, masks */
   case nco_baa_bgr:
   case nco_baa_shv:
   case nco_baa_set:
@@ -727,46 +745,85 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
        Decrementing prc_bnr_xpl_rqr by one or two more bits produces maximum errors that exceed half the LSD
        ncra -4 -O -C --ppc default=1 --ppc one=1 -p ~/nco/data in.nc in.nc ~/foo.nc 
        ncks -H -v Q.. --cdl ~/foo.nc | m */
-
-    if(type == NC_FLOAT  && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_flt) return;
-    if(type == NC_DOUBLE && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_dbl) return;
     break;
-    /* For those NCO lossy routines that expect user to provide NSB, the NSD variable actually contains NSB */
+    /* Methods that expect user to provide NSB not NSD */
   case nco_baa_sh2:
   case nco_baa_btr:
     nsb=nsd;
     /* Disallow unreasonable quantization */
     assert(nsb > 1);
-    assert(nsb <= bit_xpl_nbr_sgn_flt);
     prc_bnr_xpl_rqr=nsb;
     break;
   default: 
-    nco_dfl_case_nc_type_err();
+    nco_dfl_case_generic_err();
     break;
-  } /* !nco_baa_cnv_get() */
+  } /* !nco_baa_cnv_typ */
+
+  if(type == NC_FLOAT  && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_flt) return;
+  if(type == NC_DOUBLE && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_dbl) return;
+
+  /* Step 2: Set type-dependent _FillValue, # significand bits, initial unsigned pointer for all algorithms
+     Missing value for comparison is _FillValue (if any) otherwise default NC_FILL_FLOAT/DOUBLE */
+  if(type == NC_FLOAT){
+    if(has_mss_val) mss_val_cmp_flt=*mss_val.fp; else mss_val_cmp_flt=NC_FILL_FLOAT;
+    bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_flt;
+    u32_ptr=op1.uip;
+  }else if(type == NC_DOUBLE){
+    if(has_mss_val) mss_val_cmp_dbl=*mss_val.dp; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
+    bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
+    u64_ptr=op1.ui64p;
+  } /* !NC_FLOAT */
 
   /* 20150126: fxm casting pointers is tricky with this routine. Avoid for now. */
   /* Typecast pointer to values before access */
   //(void)cast_void_nctype(type,&op1);
   //if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
 
-  switch(type){
-  case NC_FLOAT:
-    /* Missing value for comparison is _FillValue (if any) otherwise default NC_FILL_FLOAT/DOUBLE */
-    if(has_mss_val) mss_val_cmp_flt=*mss_val.fp; else mss_val_cmp_flt=NC_FILL_FLOAT;
-    bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_flt;
+  /* Step 3: Initialize masks for algorithms that make use of uniform masks */
+  switch(nco_baa_cnv_typ){
+    /* Methods that determine granular (per-value) NSD or masks */
+  case nco_baa_dgr:
+  case nco_baa_gbg:
+    /* These methods create masks within the loop over values */
+    break;
+    /* Methods that use uniform NSD or NSB and masks */
+  case nco_baa_bgr:
+  case nco_baa_shv:
+  case nco_baa_set:
+  case nco_baa_bgr_btr:
+  case nco_baa_brt:
+  case nco_baa_sh2:
+  case nco_baa_btr:
+    break;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
     assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
-    u32_ptr=op1.uip;
-    /* Create mask */
-    msk_f32_u32_zro=0u; /* Zero all bits */
-    msk_f32_u32_zro=~msk_f32_u32_zro; /* Turn all bits to ones */
-    /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
-    msk_f32_u32_zro <<= bit_xpl_nbr_zro;
-    /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
-    msk_f32_u32_one=~msk_f32_u32_zro;
-    msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
-    switch(nco_baa_cnv_get()){
+    /* Create masks */
+    if(type == NC_FLOAT){
+      msk_f32_u32_zro=0u; /* Zero all bits */
+      msk_f32_u32_zro=~msk_f32_u32_zro; /* Turn all bits to ones */
+      /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
+      msk_f32_u32_zro <<= bit_xpl_nbr_zro;
+      /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
+      msk_f32_u32_one=~msk_f32_u32_zro;
+      msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
+    }else if(type == NC_DOUBLE){
+      msk_f64_u64_zro=0ull; /* Zero all bits */
+      msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
+      /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
+      msk_f64_u64_zro <<= bit_xpl_nbr_zro;
+      /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
+      msk_f64_u64_one=~msk_f64_u64_zro;
+      msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
+    } /* !NC_FLOAT */
+    break;
+  default: 
+    nco_dfl_case_generic_err();
+    break;
+  } /* !nco_baa_cnv_typ */
+
+  switch(type){
+  case NC_FLOAT:
+    switch(nco_baa_cnv_typ){
     case nco_baa_bgr:
       /* Bit-Groom: alternately shave and set LSBs */
       for(idx=0L;idx<sz;idx+=2L)
@@ -1028,21 +1085,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     } /* !nco_baa_typ_get() */
     /* !NC_FLOAT */
   case NC_DOUBLE:
-    /* Missing value for comparison is _FillValue (if any) otherwise default NC_FILL_FLOAT/DOUBLE */
-    if(has_mss_val) mss_val_cmp_dbl=*mss_val.dp; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
-    bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
-    bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
-    assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
-    u64_ptr=(unsigned long long int *)op1.ui64p;
-    /* Create mask */
-    msk_f64_u64_zro=0ull; /* Zero all bits */
-    msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
-    /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
-    msk_f64_u64_zro <<= bit_xpl_nbr_zro;
-    /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
-    msk_f64_u64_one=~msk_f64_u64_zro;
-    msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
-    switch(nco_baa_cnv_get()){
+    switch(nco_baa_cnv_typ){
     case nco_baa_bgr:
       /* Bit-Groom: alternately shave and set LSBs */
       for(idx=0L;idx<sz;idx+=2L)

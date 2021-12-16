@@ -1,8 +1,12 @@
-2021-12-15  Charlie Zender  <zender@uci.edu>
+2021-12-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha02: Lund';git push
 	git tag -a 5.0.5-alpha02 -m 'all: separate btr from bgr_btr; ncclimo mpas inp_aut fix;';git push --tags
+
+	* Refactor nco_ppc_bitmask() to reduce redundant code, facilitate specifying NSD or NSB independently of BGR
+
+2021-12-15  Charlie Zender  <zender@uci.edu>
 
 	* Refactor baa_btr to be BitRound based on NSB and baa_bgr_btr to be BitRound with keepbits determined by BitGroom algorithm
 
