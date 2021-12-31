@@ -9,6 +9,8 @@
 	git tag -a 5.0.5-alpha01 -m 'all: separate btr from bgr_btr;
 	ncclimo mpas inp_aut fix, ppn_opt for inp_std,inp_psn; otherwise functionally identical to 5.0.4';git push --tags
 
+	* nco_ppc_bitmask() fix mask initialization, insert missing break to fix quantization
+
 	* ncclimo always use ppn_opt for input files provided via inp_std, inp_psn
 
 	* ncremap add prc_typ=mpaso|mpasocean as valid synonyms for back-compatibility

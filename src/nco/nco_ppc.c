@@ -768,7 +768,6 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   case nco_baa_brt:
   case nco_baa_sh2:
   case nco_baa_btr:
-    break;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
     assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
     /* Create masks */
@@ -1057,7 +1056,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       abort();
       break;
     } /* !nco_baa_typ_get() */
-    /* !NC_FLOAT */
+    break; /* !NC_FLOAT */
   case NC_DOUBLE:
     switch(nco_baa_cnv_typ){
     case nco_baa_bgr:
