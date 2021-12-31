@@ -1,8 +1,19 @@
-2021-12-16  Charlie Zender  <zender@uci.edu>
+2021-12-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.5-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha02: Lund';git push
-	git tag -a 5.0.5-alpha02 -m 'all: separate btr from bgr_btr; ncclimo mpas inp_aut fix;';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha02: 2022';git push
+	git tag -a 5.0.5-alpha02 -m '';git push --tags
+
+	* NCO 5.0.5-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha01: NYE';git push
+	git tag -a 5.0.5-alpha01 -m 'all: separate btr from bgr_btr;
+	ncclimo mpas inp_aut fix, ppn_opt for inp_std,inp_psn; otherwise functionally identical to 5.0.4';git push --tags
+
+	* ncclimo always use ppn_opt for input files provided via inp_std, inp_psn
+
+	* ncremap add prc_typ=mpaso|mpasocean as valid synonyms for back-compatibility
+
+2021-12-16  Charlie Zender  <zender@uci.edu>
 
 	* Refactor nco_ppc_bitmask() to reduce redundant code, facilitate specifying NSD or NSB independently of BGR
 
@@ -25,12 +36,6 @@
 	* ncclimo use inp_aut when nm_typ == mpas and clm_md == mth (as MPAS Analysis expects)
 
 	* ncclimo clarify input filename construction/read method
-
-2021-12-06  Charlie Zender  <zender@uci.edu>
-
-	* NCO 5.0.5-alpha01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha01: Treasure Island';git push
-	git tag -a 5.0.5-alpha01 -m 'Functionally identical to 5.0.4';git push --tags
 
 2021-12-04  Charlie Zender  <zender@uci.edu>
 

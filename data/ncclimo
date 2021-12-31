@@ -522,7 +522,7 @@ no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
 par_typ="${par_bck}" # [sng] Parallelism type
 ppc_prc='' # [nbr] Precision-preserving compression precision
-prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso')
+prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mpas', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi')
 rgr_map='' # [sng] Regridding (horizontal) map
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
@@ -1364,6 +1364,18 @@ if [ ${inp_std} = 'Yes' ]; then
     done < /dev/stdin
 fi # !inp_std
 
+# Common to inp_std and inp_psn
+if [ ${inp_std} = 'Yes' ] || [ ${inp_psn} = 'Yes' ]; then
+    # 20171208 Detect whether stdin names are full-path (i.e., contain directory prefix)
+    # 20211231 Extend this to positional names and use for all climatology modes
+    # If full-path, then use fl_in as-is later on
+    # Otherwise prepend drc_in to fl_in in MFOs (ncra, ncrcat)
+    ppn_opt="-p ${drc_in}"
+    if [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ]; then
+	ppn_opt=''
+    fi # !basename
+fi # !inp_std || inp_psn
+	
 if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
     if [ -z "${tpd_usr}" ]; then 
 	# User requested high-frequency mode and did not specify tpd so (try to) infer it
@@ -1879,6 +1891,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: out_nm   = ${out_nm}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: ppc_prc  = ${ppc_prc}\n"
+    printf "dbg: ppn_opt  = ${ppn_opt}\n"
     printf "dbg: prc_typ  = ${prc_typ}\n"
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_opt  = ${rgr_opt}\n"
@@ -1888,6 +1901,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: sgs_frc  = ${sgs_frc}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: tms_flg  = ${tms_flg}\n"
+    printf "dbg: tpd_out  = ${tpd_out}\n"
     printf "dbg: uio_flg  = ${uio_flg}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: vrt_fl   = ${vrt_fl}\n"
@@ -2243,7 +2257,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    else # !fl_nbr
 		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
 
-		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc} -p ${drc_in} ${fl_in[*]} ${fl_mth[${clm_idx}]}"
+		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc} ${ppn_opt} ${fl_in[*]} ${fl_mth[${clm_idx}]}"
 
 		# Take mean value of each diurnal timestep across all instances of this month
 		fl_tpd_tpl[${clm_idx}]="${drc_out}/${out_nm}_${MM}_tpdTPDTT_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
@@ -2256,7 +2270,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    cmd_mth2csn='nces'
 	    cmd_csn2ann='nces'
 	elif [ ${clm_md} = 'mth' ]; then 
-	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},0 -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},0 -O ${nco_opt} ${gaa_sng} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    # Combine monthly into seasonal and annual means with ncra
 	    cmd_mth2csn='ncra'
 	    cmd_csn2ann='ncra'
@@ -2893,16 +2907,6 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
     for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	fl_all="${fl_all} ${fl_in[${fl_idx}]}"
     done # !fl
-
-    ppn_opt="-p ${drc_in}"
-    if [ ${inp_std} = 'Yes' ]; then
-	# 20171208 Detect whether stdin names are full-path (i.e., contain directory prefix)
-	# If full-path, then use as-is later on, otherwise prepend drc_in
-	# Currently this is only done for 'dly', yet could be adapted to sbs as well
-	if [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ]; then
-	    ppn_opt=''
-	fi # !basename
-    fi # !inp_std
 
     let srd=${dpy}*${tpd_out}
     drn=${tpd_out}

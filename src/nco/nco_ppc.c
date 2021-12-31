@@ -661,7 +661,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   int bit_xpl_nbr_zro; /* [nbr] Number of explicit bits to zero */
   int prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
   int prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
-  int nsb; /* I [nbr] Number of significant bits, i.e., "keep bits" */
+  int nsb; /* I [nbr] Number of significant bits, i.e., "keepbits" */
 
   long idx;
 
@@ -681,14 +681,14 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 
   nco_baa_cnv_typ=nco_baa_cnv_get(); /* [enm] Bit-adjustment algorithm type */
 
-  /* Step 1: Determine # keep bits for algorithms that use a uniform number 
+  /* Step 1: Determine # keepbits for algorithms that use a uniform number 
      For NSD algorithms this involves using log2() math and some fine-tuning
      For NSB algorithms this simply means sanity checking user input */
   switch(nco_baa_cnv_typ){
     /* Methods that do granular pre-processing of NSD or masks */
   case nco_baa_dgr:
   case nco_baa_gbg:
-    /* Provide a dummy value of keep bits to satisfy sanity checks
+    /* Provide a dummy value of keepbits to satisfy sanity checks
        Granular algorithms determine keepbits/masks on a per-value basis
        They do not actually use this dummy value */
     prc_bnr_xpl_rqr=5;
@@ -1175,25 +1175,25 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       break;
       /* !Halfshave */
     case nco_baa_brt: /* JPT 20210102: baa_brt Brute force masking of each individual data point */ 
-      msk_rst64=msk_f64_u64_zro; // fxm: 20211215 should be ull not ul?
+      msk_rst64=msk_f64_u64_zro;
       for(idx=0L;idx<sz;idx+=2L){ // shave loop
 	if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0 && op1.dp[idx] != mss_val_cmp_dbl){
 	  raw64 = op1.dp[idx];
-	  msk_f64_u64_zro = msk_rst64;
+	  msk_f64_u64_zro=msk_rst64;
 	  u64_ptr[idx]&=msk_f64_u64_zro;
 	  xpn64=log10(fabs(raw64));
 	  flr_xpn64=floor(xpn64);
 	  err_max64=0.5*pow(10.0,flr_xpn64-nsd+1);
-	  c = True;
+	  c=True;
 	  if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0){
 	    while(c){
-	      temp64  = op1.dp[idx];
+	      temp64=op1.dp[idx];
 	      msk_f64_u64_zro<<=1;
 	      u64_ptr[idx]&=msk_f64_u64_zro;
-	      if((fabs(raw64) - fabs(op1.dp[idx])) >= err_max64) c = False;
-	      if(op1.dp[idx] == 1.0) c = False;
-	      if(op1.dp[idx] == 0.0) c = False;
-	      if(op1.dp[idx] != op1.dp[idx]) c = False;
+	      if((fabs(raw64)-fabs(op1.dp[idx])) >= err_max64) c=False;
+	      if(op1.dp[idx] == 1.0) c=False;
+	      if(op1.dp[idx] == 0.0) c=False;
+	      if(op1.dp[idx] != op1.dp[idx]) c=False;
 	      fflush(stdout);
 	    } // close while loop
 	    op1.dp[idx] = temp64;
@@ -1203,27 +1203,27 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       
       for(idx=1L;idx<sz;idx+=2L){ // Set loop
 	raw64 = op1.dp[idx];
-	msk_f64_u64_zro = msk_rst64;
+	msk_f64_u64_zro=msk_rst64;
 	msk_f64_u64_one=~msk_f64_u64_zro;
 	if(op1.dp[idx] != 0ULL && op1.dp[idx] != mss_val_cmp_dbl){ /* Never quantize upwards floating point values of zero */
 	  u64_ptr[idx]|=msk_f64_u64_one;
 	  xpn64=log10(fabs(raw64));
 	  flr_xpn64=floor(xpn64);
 	  err_max64=0.5*pow(10.0,flr_xpn64-nsd+1);
-	  x = False;
-	  c = True;
+	  x=False;
+	  c=True;
 	  while(c){
-	    x = True;
+	    x=True;
 	    temp64 = op1.dp[idx];
 	    msk_f64_u64_zro <<= 1;
 	    msk_f64_u64_one =~ msk_f64_u64_zro;
 	    u64_ptr[idx]|= msk_f64_u64_one;
-	    if(fabs((fabs(raw64) - fabs(op1.dp[idx]))) >= err_max64) c = False;
-	    if(op1.dp[idx] == 1) c = False;
-	    if(op1.dp[idx] != op1.dp[idx]) c = False;
+	    if(fabs((fabs(raw64)-fabs(op1.dp[idx]))) >= err_max64) c=False;
+	    if(op1.dp[idx] == 1) c=False;
+	    if(op1.dp[idx] != op1.dp[idx]) c=False;
 	    fflush(stdout);
 	  } // close while
-	  if(x) op1.dp[idx] = temp64;
+	  if(x) op1.dp[idx]=temp64;
 	} // close if 0
       } // close set loop
       break; // closes baa_brt
