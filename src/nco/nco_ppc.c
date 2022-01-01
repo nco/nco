@@ -141,12 +141,12 @@ nco_ppc_ini /* Set PPC based on user specifications */
 	/* Floating point types */
       case NC_FLOAT: 
       case NC_DOUBLE: 
-	//if(nco_baa_cnv_get() != nco_baa_btr && nco_baa_cnv_get() != nco_baa_sh2){
+	if(nco_baa_cnv_get() != nco_baa_btr && nco_baa_cnv_get() != nco_baa_sh2){
 	  if(trv_tbl->lst[idx_tbl].ppc > nco_max_ppc){
 	    if(trv_tbl->lst[idx_tbl].flg_nsd) (void)fprintf(stdout,"%s: INFO Number of Significant Digits (NSD) requested = %d too high for variable %s which is of type %s. No quantization or rounding will be performed for this variable. HINT: Maximum precisions for NC_FLOAT and NC_DOUBLE are %d and %d, respectively.\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].ppc,trv_tbl->lst[idx_tbl].nm,nco_typ_sng(trv_tbl->lst[idx_tbl].var_typ),nco_max_ppc_flt,nco_max_ppc_dbl);
 	    trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
 	  } /* !nco_max_ppc */
-	  //} /* !nco_baa_btr, nco_baa_sh2 */
+	} /* !nco_baa_btr, nco_baa_sh2 */
 	break;
 	/* Integer types */
       case NC_SHORT:
@@ -580,7 +580,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      Decimal digits of precision (prc_dcm) obtained via prc_dcm=prc_bnr*ln(2)/ln(10) = 7.22 and 15.95, respectively
      Binary "digits" (i.e., bits) of precision (prc_bnr) obtained via prc_bnr=prc_dcm*ln(10)/ln(2) */
   
-  //  const char fnc_nm[]="nco_ppc_bitmask()"; /* [sng] Function name  */
+  const char fnc_nm[]="nco_ppc_bitmask()"; /* [sng] Function name  */
 
   /* Use constants defined in math.h */
   const double bit_per_dgt=M_LN10/M_LN2; /* 3.32 [frc] Bits per decimal digit of precision = log2(10) */
@@ -660,7 +660,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   int bit_xpl_nbr_sgn=int_CEWI; /* [nbr] Number of explicit bits in significand */
   int bit_xpl_nbr_zro; /* [nbr] Number of explicit bits to zero */
   int prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
-  int prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
+  int prc_bnr_xpl_rqr=int_CEWI; /* [nbr] Explicitly represented binary digits (i.e., keepbits) required to retain */
   int nsb; /* I [nbr] Number of significant bits, i.e., "keepbits" */
 
   long idx;
@@ -725,7 +725,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   case nco_baa_btr:
     nsb=nsd;
     /* Disallow unreasonable quantization */
-    assert(nsb > 1);
+    assert(nsb > 0);
     prc_bnr_xpl_rqr=nsb;
     break;
   default: 
@@ -747,6 +747,10 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
     u64_ptr=op1.ui64p;
   } /* !NC_FLOAT */
+
+  /* Diagnostics for bits preserved by all algorithms */
+  bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: %s reports pbxr = %d, bxnz = %d\n",nco_prg_nm_get(),fnc_nm,prc_bnr_xpl_rqr,bit_xpl_nbr_zro);
 
   /* 20150126: fxm casting pointers is tricky with this routine. Avoid for now. */
   /* Typecast pointer to values before access */

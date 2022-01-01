@@ -33,9 +33,10 @@
 
 /* Minimum number of explicit significand bits to preserve when zeroing/bit-masking floating point values
    Codes will preserve at least two explicit bits, IEEE significand representation contains one implicit bit
-   Thus preserve at least three bits which is approximately one sigificant decimal digit
+   Thus preserving at least three bits would preserve approximately one sigificant decimal digit
+   20211231: Allow only one explicit bit to be preserved (useful for NSB algorithms like BitRound)
    Used in nco_ppc_bitmask() and nco_ppc_bitmask_scl() */
-#define NCO_PPC_BIT_XPL_NBR_MIN 2
+#define NCO_PPC_BIT_XPL_NBR_MIN 1
 
 /* Macro to return sign of floating point values, used in Digit Round */
 #define SIGN(x)	((x) < 0 ? -1 : 1)
