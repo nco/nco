@@ -1,108 +1,53 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.0.4 are brachiating towards you
+netCDF Operators NCO version 5.0.5 are cartwheeling towards you.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.4 contains significant changes to the ncclimo splitter
-API, minor changes to ncremap's --permute API and to invoking the
-internal inverse-distance weight generation. Along with these
-features come generally improved WARNINGs, HINTs, reduced
-noisiness of diagnostics for frequently used commands, and
-mitigation of compression issues triggered by netCDF 4.8.0+ library
-changes. Furthermore, numerous minor improvements to mbtempest and
-to ERWG support are included.
+Version 5.0.5 brings a new lossy quantization codec, BitRound,
+and improves the consistency of the ncclimo API between climo
+and timeseries extraction. If these issues are not pertinent
+to you, 5.0.5 can easily be skipped.
 
-Work on NCO 5.0.5 has commenced and will improve ncremap support
-for MOAB, incorporate new MOAB improvements, and further improve
-quantization metadata and algorithms.
+Work on NCO 5.0.6 has commenced and will improve ncremap support
+for mbtempest, incorporate new mbtempest improvements, and further
+improve quantization algorithms.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap removes the previous assumption that input horizontal
-   dimensions are in lat-lon order. The order can now be lat-lon
-   or lon-lat. The old behavior would fail when attempting to
-   regrid variables whose horizontal dimensions were lon-lat to
-   an unstructured grid.
+A. All arithmetic operators now support a the lossy quantization
+algorithm known as BitRound. The BitRound algorithm is described
+in "A note on precision-preserving compression of scientific data"
+by R. Kouznetsov, doi:10.5194/gmd-14-377-2021. This algorithm
+has been used to quantize more accurately in NCO's BitGroom and
+GranularBG algorithms for over a year. However, though algorithms
+select the number of bits to quantize internally. Now BitRound is an 
+independently configurable algorithm in its own right. It takes
+a user-specified number of significant bits (NSB, or "keepbits) to
+retain. The NSB argument contrasts with the number of significant
+digits (NSD) parameter expected by BitGroom, DigitRound, and
+GranularBG. BitRound is Bit-Adjustment-Algorithm #8. 
+ncks --baa=8 --ppc default=9 in.nc out.nc # BitRound NSB=9
+ncks --baa=4 --ppc default=3 in.nc out.nc # GranularBG NSD=3
 
-B. ncremap now prefers to call its inverse distance-weighted
-   interpolation/extrapolation algorithm "idw" for "inverse
-   distance-weighted" rather than "dwe" for distance-weighted
-   extrapolation. However, both forms are acceptable and
-   back-compatibility was maintained.
-
-C. ncremap adds the --split flag to select splitter mode.
-   Previously, the splitter was automatically invoked whenever the
-   input files were provided via stdin, globbing, or positional
-   command-line arguments, with some exceptions.
-   That older method became ambiguous and untenable once it was
-   decided to also allow climos to be generated from files provided
-   via stdin, globbing, or positional command-line arguments.
-   Now there are three methods to invoke the splitter:
-   1) Use the --split flag: this is the most explicit way to invoke
-   the splitter. 2) Select clm_md=hfs: the high-frequency splitter
-   mode by definition invokes the splitter, so a more explicit option
-   than this is not necessary. 3) Set the years-per-file option, e.g.,
-   --ypf=25: the ypf_max option is only useful to the splitter, and
-   has thus been used in many scripts. Since this option still causes
-   the splitter to be invoked, those script will perform as before.
-   ncclimo --split -c ${caseid} -s 1 -e 2 -i raw -o clm
-   ls ${caseid1}*h0.000[12]* | ncclimo -f ${fml_nm} -s 1 -e 2 -o out
-   http://nco.sf.net/nco.html#split
-   Thanks to Anthony Bartoletti and Jill Zhang (LLNL) for discussions
-   about this new option.
-
-D. ncremap introduces changes the API for the --permute option:
-   Previously the argument needed to include the entire option
-   string to be passed to ncpdq including the -a component, e.g.,
-   --permute='-a time,new_dim,lat,lon'.
-   Now ncremap supplies the implicit -a internally so the user does
-   not need to know the ncpdq syntax. 
-   ncremap --permute=Time,new_dim,nCells  --map=map.nc in.nc out.nc
-   ncremap --permute=time,new_dim,lat,lon --map=map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#permute
-   http://nco.sf.net/nco.html#pdq
-   Thanks to Walter Hannah (LLNL) for prompting this change.
-
-E. ncremap adds the --area_dgn flag to diagnose (rather than copy) the
-   area of each gridcell in an inferred grid-file. By default, ncremap
-   simply copies the area variable, if found, into the grid_area
-   variable of the inferred SCRIP grid-file. When --area_dgn is
-   invoked, ncremap instead computes the values of grid_area based on
-   the gridcell boundaries in the input template file.
-   ncremap --area_dgn -d dst.nc -g grid.nc
-   http://nco.sf.net/nco.html#area_dgn
-   Note that --area_dgn has no effect on any mapping weights
-   subsequently generated from the grid-file because most
-   weight-generators base their weights on internally computed cell 
-   areas (ERWG does have an option, --user_areas, to override this
-   behavior). 
-   
 BUG FIXES:
    
-A. ncwa was failing to set compression parameters.
-   This problem began with netCDF 4.8.0 which enforces stricter
-   adherence to the calling constraints rather.
-   The symptoms were errors when averaging compressed datasets.
-   The workaround is to convert the dataset to netCDF3, then average,
-   then recompress. The solution is to upgrade.
-   A patch has been submitted to netCDF 4.8.2/4.9.0 that will revert
-   the netCDF library to the previous trouble-free behavior.
-   Thanks to Thomas Reichler and Michael Rollings for reporting this.
+A. ncclimo 5.0.4 inadvertently broke automatic filename generation for
+MPAS. The workaround is to pipe the input filenames through stdin or
+supply them on the command-line. The solution is to upgrade. Thanks to
+Xylar Asay-Davis for reporting this issue.
 
-B. netCDF 4.8.0 changed its internal implementation of deflation.
-   Before netCDF 4.8.0, deflation could be set multiple times.
-   The properties of final the final call would take effect.
-   Since netCDF 4.8.0 only the first call takes effect.
-   This caused subtle changes in NCO compression behavior.
-   The most visible change was that uncompressing variables silently
-   stopped working. NCO has been changed to adhere to the new
-   netCDF 4.8.0+ behavior.
+B. ncclimo 5.0.4 always prepending the CWD of the operator to the
+input file location in climo mode. This prevented ncclimo from working
+correctly with stdin filenames that included an absolute path.
+The workaround is to run ncclimo from the input file directory.
+The solution is to upgrade. Thanks again to Xylar Asay-Davis for
+reporting this issue. 
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
@@ -110,8 +55,8 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.0.4 built/tested under
-MacOS 11.6 with netCDF 4.8.1 on HDF5 1.12.0 and with
+These problems occur with NCO 5.0.5 built/tested under
+MacOS 12.1 with netCDF 4.8.1 on HDF5 1.12.0 and with
 Linux with netCDF 4.8.1 on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)

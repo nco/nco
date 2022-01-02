@@ -9605,21 +9605,24 @@ examples.
 <a name="QuantizeBitShaveNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitShaveNumberOfSignificantDigits -->
 <a name="QuantizeBitSetNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitSetNumberOfSignificantDigits -->
 <a name="QuantizeDigitRoundNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeDigitRoundNumberOfSignificantDigits -->
-<a name="QuantizeBitRoundNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitRoundNumberOfSignificantDigits -->
-<a name="QuantizeHalfShaveNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeHalfShaveNumberOfSignificantDigits -->
+<a name="QuantizeBitGroomBitRoundNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitGroomBitRoundNumberOfSignificantDigits -->
+<a name="QuantizeHalfShaveNumberOfSignificantBits"></a> <!-- http://nco.sf.net/nco.html#QuantizeHalfShaveNumberOfSignificantBits -->
 <a name="QuantizeBruteForceNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBruteForceNumberOfSignificantDigits -->
+<a name="QuantizeBitRoundNumberOfSignificantBits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitRoundNumberOfSignificantBits -->
 <a name="number_of_significant_digits"></a> <!-- http://nco.sf.net/nco.html#number_of_significant_digits -->
 <a name="least_significant_digit"></a> <!-- http://nco.sf.net/nco.html#least_significant_digit -->
 @end html
 @cindex @code{QuantizeBitGroomNumberOfSignificantDigits}
 @cindex @code{QuantizeBitSetNumberOfSignificantDigits}
 @cindex @code{QuantizeBitShaveNumberOfSignificantDigits}
-@cindex @code{QuantizeBitDigitRoundNumberOfSignificantDigits}
-@cindex @code{QuantizeGranularBitGroomNumberOfSignificantDigits}
 @cindex @code{QuantizeDigitRoundNumberOfSignificantDigits}
-@cindex @code{QuantizeHalfShaveNumberOfSignificantDigits}
+@cindex @code{QuantizeGranularBitGroomNumberOfSignificantDigits}
+@cindex @code{QuantizeBitGroomBitRoundNumberOfSignificantDigits}
+@cindex @code{QuantizeHalfShaveNumberOfSignificantBits}
 @cindex @code{QuantizeBruteForceNumberOfSignificantDigits}
+@cindex @code{QuantizeBitRoundNumberOfSignificantBits}
 @cindex @code{number_of_significant_digits}
+@cindex @code{number_of_significant_bits}
 @cindex @code{least_significant_digit}
 @cindex Jeff Whitaker
 @cindex Rich Signell
@@ -9674,9 +9677,10 @@ during statistical operations.}, respectively.
 <a name="BitShave"></a> <!-- http://nco.sf.net/nco.html#BitShave -->
 <a name="BitSet"></a> <!-- http://nco.sf.net/nco.html#BitSet -->
 <a name="DigitRound"></a> <!-- http://nco.sf.net/nco.html#DigitRound -->
-<a name="BitRound"></a> <!-- http://nco.sf.net/nco.html#BitRound -->
+<a name="BitGroomBitRound"></a> <!-- http://nco.sf.net/nco.html#BitGroomBitRound -->
 <a name="HalfShave"></a> <!-- http://nco.sf.net/nco.html#HalfShave -->
 <a name="BruteForce"></a> <!-- http://nco.sf.net/nco.html#BruteForce -->
+<a name="BitRound"></a> <!-- http://nco.sf.net/nco.html#BitRound -->
 @end html
 @cindex @acronym{PPQ}
 @cindex @acronym{GBG}
@@ -9685,9 +9689,10 @@ during statistical operations.}, respectively.
 @cindex BitShave
 @cindex BitSet
 @cindex DigitRound
-@cindex BitRound
+@cindex BitGroomBitRound
 @cindex HalfShave
 @cindex BruteForce
+@cindex BitRound
 As of @w{version 5.0.3} (October 2021), @acronym{NCO} supports a more
 complete set of Precision-Preserving Quantization (@acronym{PPQ})
 filters than has been documented here. 
@@ -9707,10 +9712,10 @@ ncks -7 -L 1 --baa=1 --ppc default=3 in.nc out.nc # BitShave
 ncks -7 -L 1 --baa=2 --ppc default=3 in.nc out.nc # BitSet
 ncks -7 -L 1 --baa=3 --ppc default=3 in.nc out.nc # DigitRound
 ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # GranularBitGroom
-ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitRound
-ncks -7 -L 1 --baa=6 --ppc default=3 in.nc out.nc # HalfShave
+ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitGroomBitRound
+ncks -7 -L 1 --baa=6 --ppc default=9 in.nc out.nc # HalfShave
 ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce
-ncks -7 -L 1 --baa=8 --ppc default=3 in.nc out.nc # NSBRound (in progress)
+ncks -7 -L 1 --baa=8 --ppc default=9 in.nc out.nc # BitRound
 @end verbatim
 @end example
 These @acronym{NSD} algorithms write an algorithm-specific attribute,
@@ -9718,8 +9723,15 @@ e.g., @code{QuantizeGranularBitGroomNumberOfSignificantDigits} or
 @code{QuantizeDigitRountNumberOfSignificantDigits}.
 Documentation on these algorithms is best found in the literature.
 While Bit-Groom/Shave/Set are described above, documentation on
-Bit-Adjustment-Algorithms (@acronym{BAA}) 3--7 will be improved in the
+Bit-Adjustment-Algorithms (@acronym{BAA}) 3--8 will be improved in the 
 future.  
+
+As of @w{version 5.0.5} (January 2022), @acronym{NCO} supports
+two quantization codecs that expect a user-specified number of
+significant bits (@acronym{NSB}, or "keepbits) to retain.
+The @acronym{NSB} argument contrasts with the number of significant 
+digits (@acronym{NSD}) parameter expected by BitGroom, DigitRound, and
+GranularBG.
 
 It is safe to attempt @acronym{PPC} on input that has already been
 rounded. 
