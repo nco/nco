@@ -270,19 +270,21 @@ netcdf buggy {
   variables:
     // 20130429: ncgen or ncdump from netCDF 4.1.1- broken for enum types
     // This causes regression tests to fail with Ubuntu 12.04-
-    // enum_t cloud_flg(lon);
+    // 20220101: Recent ncgen and ncdump from netCDF 4.8.1 work with enum types
+    enum_t cloud_flg(lon);
   data:
-    // cloud_flg=Stratus,Stratus,Cumulonimbus;
+    cloud_flg=Stratus,Stratus,Cumulonimbus;
   } // end g14
 
  group: g15 { // Level 1
     // Purpose: Test netCDF4 compound type
-  types:
-    compound cmpd_t {vlen_t f1;enum_t f2;};
-  variables:
-    cmpd_t compound_var;
-  data:
-    compound_var={{3,4,5},Stratus};
+   types:
+     ubyte enum enum2_t {Clear=0,Cumulonimbus=1,Stratus=2};
+     //compound cmpd_t {vlen_t f1;enum2_t f2;};
+   variables:
+     //cmpd_t compound_var;
+     //data:
+     //compound_var={{3,4,5},Stratus};
   } // end g15
 
   //g17 

@@ -1,8 +1,12 @@
-2021-12-31  Charlie Zender  <zender@uci.edu>
+2022-01-01  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.0.5-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha02: 2022';git push
-	git tag -a 5.0.5-alpha02 -m '';git push --tags
+	* NCO 5.0.5-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.5-beta01: 2022';git push
+	git tag -a 5.0.5-beta01 -m 'btr, bgr_btr, ncclimo mpas inp_aut/std/psn, ppn_opt';git push --tags
+
+	* nco.texi clarify NaNf documentation
+
+2021-12-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.5-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha01: NYE';git push

@@ -125,12 +125,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.0.5-alpha01
-@set doc-edition 5.0.5-alpha01
-@set copyright-years 1995--2021
-@set update-year 2021
-@set update-date 7 December 2021
-@set update-month December 2021
+@set nco-edition 5.0.5-beta01
+@set doc-edition 5.0.5-beta01
+@set copyright-years 1995--2022
+@set update-year 2022
+@set update-date 1 January 2022
+@set update-month January 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -17811,11 +17811,13 @@ This is often more useful, and can be used to provide distinct missing
 value attributes to each numeric type, as in the third example.
 
 @html
+<a name="NaNf"></a> <!-- http://nco.sf.net/nco.html#NaNf -->
 <a name="NaN"></a> <!-- http://nco.sf.net/nco.html#NaN -->
 <a name="nan"></a> <!-- http://nco.sf.net/nco.html#nan -->
 @end html
 @cindex NaN
-@cindex @acronym{IEEE} NaN
+@cindex NaNf
+@cindex @acronym{IEEE} NaN, NaNf
 @cindex Not-a-Number
 @acronym{NCO} arithmetic operators may not work as expected on
 @acronym{IEEE} NaN (short for Not-a-Number) and NaN-like numbers such
@@ -17827,11 +17829,12 @@ This behavior is difficult to intuit, yet @w{@acronym{IEEE} 754}
 mandates it.  
 To correctly handle NaNs during arithmetic, code must use special 
 math library macros (e.g., @command{isnormal()}) to determine whether 
-any operand is special. 
-If so, additional special logic must handle the arithmetic.
+any operand requires special treatment. 
+If so, additional logic must be added to correctly perform the
+arithmetic. 
 This is in addition to the normal handling incurred to correctly
 handle missing values. 
-Handling field and missing values (either or both of which may be NaN)
+Handling field and missing values (either or both of which may be NaN) 
 in binary operators thus incurs four-to-eight extra code paths.
 Each code path slows down arithmetic relative to normal numbers.
 This makes supporting NaN arithmetic costly and inefficient.
@@ -17843,7 +17846,7 @@ We recommend avoiding NaN entirely.}.
 One way to work-around this problem is to change @acronym{IEEE} NaNs
 to normal missing values. 
 As of @acronym{NCO} 4.1.0 (March, 2012), @command{ncatted} works with 
-NaNs (though none of the arithmetic operators do).
+NaNs (though none of @acronym{NCO}'s arithmetic operators do).
 This limited support enables users to change NaN to a normal number
 before performing arithmetic or propagating a NaN-tainted dataset.
 First set the missing value (i.e., the value of the @code{_FillValue}
