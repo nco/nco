@@ -440,15 +440,27 @@ module load mvapich2/2.3.1 # Required for ncclimo/ncremap in MPI-mode
 module load netcdf/4.6.3
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/gcc/8.1.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/gcc/8.1.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=
-
-${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/gcc/8.1.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/gcc/8.1.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+
+# 20210104 Compy with Intel compilers
+module purge
+module load intel/20.0.0
+module load intelmpi/2020 # Required for ncclimo/ncremap in MPI-mode
+module load netcdf/4.6.3
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
+/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
+make clean;make > nco.make.${GNU_TRP}.foo 2>&1
+make check >> nco.make.${GNU_TRP}.foo 2>&1
+make install >> nco.make.${GNU_TRP}.foo 2>&1
 
 # 20150901: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cooley:
 # Sysadmin upgrade request: support@alcf.anl.gov # ALCF Maintainer = 

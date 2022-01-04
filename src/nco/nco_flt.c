@@ -160,7 +160,7 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
 
 } /* !nco_flt_prs() */
 
-const char * /* O [sng] String describing compression filter */
+char * /* O [sng] String describing compression filter */
 nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
 (const nco_flt_typ_enm nco_flt_enm) /* I [enm] Compression filter type */
 {
@@ -182,7 +182,7 @@ nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
   
 } /* !nco_flt_enm2sng() */
 
-const int /* O [enm] Filter enum */
+int /* O [enm] Filter enum */
 nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
 (const char *nco_flt_sng) /* [sng] User-specified filter string */
 {

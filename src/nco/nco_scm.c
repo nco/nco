@@ -148,7 +148,7 @@ void
 nco_cpy_prn(void) /* [fnc] Print copyright notice */
 {
   /* Purpose: Print copyright notice */
-  (void)fprintf(stderr,"Copyright (C) 1995--2021 Charlie Zender\n");
+  (void)fprintf(stderr,"Copyright (C) 1995--2022 Charlie Zender\n");
   (void)fprintf(stdout,"This program is part of NCO, the netCDF Operators.\nNCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\nYou may redistribute and/or modify NCO under the terms of the\n3-Clause BSD License with exceptions described in the LICENSE file\nBSD: https://opensource.org/licenses/BSD-3-Clause\nLICENSE: https://github.com/nco/nco/tree/master/LICENSE\n");
 } /* end copyright_prn() */
 

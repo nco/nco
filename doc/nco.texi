@@ -17604,7 +17604,7 @@ Append value @var{att_val} to @var{var_nm} attribute @var{att_nm} value
 @var{att_val} if @var{att_nm} already exists.
 If @var{var_nm} does not have an attribute @var{att_nm}, there is no
 effect. 
-In other words, if @var{att_nm} already exist, Nappend behaves like
+In other words, if @var{att_nm} already exists, Nappend behaves like
 Append otherwise it does nothing.
 The mnenomic is ``non-create append''.
 Nappend mode was added to @command{ncatted} in version 4.6.0 (May,

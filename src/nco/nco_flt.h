@@ -58,11 +58,11 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
  // const unsigned int *flt_id, /* O [enm] Compression filter ID */
  // const nco_flt_typ_enm *nco_flt_typ); /* O [enm] Compression filter type */
   
-const char * /* O [sng] Filter string */
+char * /* O [sng] Filter string */
 nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
 (const nco_flt_typ_enm nco_flt_typ); /* I [enm] Compression filter type */
 
-const int /* O [enm] Filter enum */
+int /* O [enm] Filter enum */
 nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
 (const char *nco_flt_sng); /* [sng] User-specified filter string */
 

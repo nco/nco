@@ -13,27 +13,54 @@ to you, 5.0.5 can easily be skipped.
 
 Work on NCO 5.0.6 has commenced and will improve ncremap support
 for mbtempest, incorporate new mbtempest improvements, and further
-improve quantization algorithms.
+improve support for quantization/compression algorithms.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. All arithmetic operators now support a the lossy quantization
-algorithm known as BitRound. The BitRound algorithm is described
-in "A note on precision-preserving compression of scientific data"
-by R. Kouznetsov, doi:10.5194/gmd-14-377-2021. This algorithm
-has been used to quantize more accurately in NCO's BitGroom and
-GranularBG algorithms for over a year. However, though algorithms
-select the number of bits to quantize internally. Now BitRound is an 
-independently configurable algorithm in its own right. It takes
-a user-specified number of significant bits (NSB, or "keepbits) to
-retain. The NSB argument contrasts with the number of significant
-digits (NSD) parameter expected by BitGroom, DigitRound, and
-GranularBG. BitRound is Bit-Adjustment-Algorithm #8. 
+A. Arithmetic operators now support the lossy quantization algorithm
+known as BitRound. The BitRound algorithm is described in "A note on
+precision-preserving compression of scientific data" by R. Kouznetsov,
+doi:10.5194/gmd-14-377-2021. BitRound has been used to quantize more
+accurately in NCO's BitGroom and GranularBG algorithms for over a
+year. However, though algorithms select the number of bits to quantize
+internally. Now BitRound is an independently configurable algorithm in
+its own right. It takes a user-specified number of significant bits
+(NSB, or "keepbits) to retain. The NSB argument contrasts with the
+number of significant digits (NSD) parameter expected by BitGroom,
+DigitRound, and GranularBG. BitRound is Bit-Adjustment-Algorithm #8.  
 ncks --baa=8 --ppc default=9 in.nc out.nc # BitRound NSB=9
 ncks --baa=4 --ppc default=3 in.nc out.nc # GranularBG NSD=3
+Thanks to Milan Klower and R. Kouznetsov for prototyping BitRound in
+the first place.
+
+B. ncclimo now accepts filenames from stdin or positional arguments
+in monthly climo mode. Previously, ncclimo self-generated input
+filenames for monthly climos, given the caseid, and start/end years.
+Now ncclimo can be fed a list of filenames to climatologize.
+The API is identical to providing filenames to the splitter:
+pipe filenames through stdin or place them on the command-line.
+This makes the climo generator even more flexible than the splitter
+which cannot (yet) generate filenames internally. However, the
+flexibility of providing filenames via stdin or positional arguments
+is more error-prone than using internally generated filenames that
+are, by construction, guaranteed to be in the correct sequence.
+User-provided filenames are vetted en masse to ensure that the
+expected number of files for the specified climatology are present.
+They are not vetted to ensure that they are in the correct order,
+i.e., January then February then March of the correct year etc.
+The $caseid argument is optional when the user provides the files.
+However, ncclimo needs to know what to name the output files.
+The $caseid argument or the $fml_nm argument, when present, provides 
+the output filename stub. When neither of these options are present
+ncclimo will name the output files after the model name, if known.
+ls mpaso*.nc | ncclimo -P mpaso -s 50 -e 100 -o out # Stdin
+ls eam*h0*.nc | ncclimo --fml=name -s 50 -e 100 -o out # Stdin
+ncclimo -P mpaso -s 50 -e 100 -o out mpaso*.nc # Positional
+ncclimo --fml=name -s 50 -e 100 -o out eam*h0*.nc # Positional
+http://nco.sf.net/nco.html#ncclimo
 
 BUG FIXES:
    
