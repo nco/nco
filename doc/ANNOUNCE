@@ -24,15 +24,15 @@ A. Arithmetic operators now support the lossy quantization algorithm
 known as BitRound. The BitRound algorithm is described in "A note on
 precision-preserving compression of scientific data" by R. Kouznetsov,
 doi:10.5194/gmd-14-377-2021. BitRound has been used to quantize more
-accurately in NCO's BitGroom and GranularBG algorithms for over a
+accurately in NCO's BitGroom and GranularBR algorithms for over a
 year. However, though algorithms select the number of bits to quantize
 internally. Now BitRound is an independently configurable algorithm in
 its own right. It takes a user-specified number of significant bits
 (NSB, or "keepbits) to retain. The NSB argument contrasts with the
 number of significant digits (NSD) parameter expected by BitGroom,
-DigitRound, and GranularBG. BitRound is Bit-Adjustment-Algorithm #8.  
+DigitRound, and GranularBR. BitRound is Bit-Adjustment-Algorithm #8.  
 ncks --baa=8 --ppc default=9 in.nc out.nc # BitRound NSB=9
-ncks --baa=4 --ppc default=3 in.nc out.nc # GranularBG NSD=3
+ncks --baa=4 --ppc default=3 in.nc out.nc # GranularBR NSD=3
 Thanks to Milan Klower and R. Kouznetsov for prototyping BitRound in
 the first place.
 

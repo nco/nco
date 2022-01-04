@@ -547,15 +547,15 @@ You may retrieve the source of tagged versions directly with, e.g.,
 <li><b>NCO 5.0.8</b>: (<i>Distant Future</i>)
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
-<tt>ncclimo -v</tt> splitter support for regular expressions?;</li>
 <li><b>NCO 5.0.7</b>: (<i>Future</i>)
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
 <li><b>NCO 5.0.6</b>: (<i>In Progress, features in-progress or complete include</i>)
-<tt>all</tt> link to netCDF quantization;</li>
+<tt>all</tt> link to netCDF quantization;
+<tt>ncatted</tt> new prepend mode;</li>
 <li><b>NCO 5.0.5</b>: (<i>Current Stable Release</i>)
-<tt>all</tt> quantize add BitRound;</li>
-<tt>ncclimo</tt> climos filename from stdin/positional arguments
+<tt>all</tt> quantize add BitRound;
+<tt>ncclimo</tt> climos filenames from stdin/positional arguments;</li>
 <li><b>NCO 5.0.4</b>: 
 <tt>ncclimo</tt> <tt>--stdin</tt> API, <tt>--permute</tt> API, <tt>--wnt_md</tt>;
 <tt>ncremap</tt> improve ERWG, MOAB invocation and support;
@@ -566,7 +566,7 @@ netCDF4 user-defined types support;
 <tt>ncremap</tt> fix MOAB support;</li>
 <li><b>NCO 5.0.2</b>: 
 <tt>all</tt> regridder, bitmasks respect <tt>NC_FILL_FLOAT/DOUBLE</tt>;
-<tt>ncclimo</tt> split regular expression variables to timeseries;
+<tt>ncclimo</tt> splitter support for regular expressions;
 <tt>ncremap</tt> support MOAB/<tt>mbtempest</tt>;</li>
 <li><b>NCO 5.0.1</b>: 
 <tt>ncremap</tt> support MPI-enabled weight generators;</li>

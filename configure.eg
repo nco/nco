@@ -321,7 +321,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 export PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
 export LD_LIBRARY_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
 # NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
-ANTLR_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+# 20220104 NB: ANTLR_ROOT in ${HOME} is only used at compile-time, not run-time
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
@@ -448,7 +449,7 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
-# 20210104 Compy with Intel compilers
+# 20210104 Compy with Intel compilers: works except scripts do not find/load Intel libiomp5.so.0
 module purge
 module load intel/20.0.0
 module load intelmpi/2020 # Required for ncclimo/ncremap in MPI-mode

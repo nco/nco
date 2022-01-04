@@ -1301,7 +1301,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 		ccr_has_flt=False;
 # endif /* !CCR_HAS_BITGROOM */
 		break;
-	      case nco_flt_gbg: /* Granular BitGroom */
+	      case nco_flt_gbr: /* Granular BitRound */
 # if CCR_HAS_GRANULARBG
 		if(dfl_lvl > 0) (void)nc_def_var_granularbg(out_id,var[idx]->id,dfl_lvl);
 # else /* !CCR_HAS_GRANULARBG */

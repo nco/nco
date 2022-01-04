@@ -608,14 +608,14 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       {1.0,-0.045757490}, /* Approximate log10(mnt) for mantissas in [0.9,1.0) as log10(0.9) = -0.0458 */
     }; /* !mnt_log10_tbl_dgr */
 #if 0 /* Not currently used */
-  const double mnt_log10_tbl_gbg[5][2]=
+  const double mnt_log10_tbl_gbr[5][2]=
     { /* NB: Granular Bit Groom extends Digit Round tabular precision from 9 to 15 digits */
      {0.6,-dgt_per_bit}, /* Approximate log10(mnt) for mantissas in [0.5,0.6) as log10(0.5) = log10(2^(-1)) = -log10(2) = -dgt_per_bit = -0.301 */
      {0.7,-0.221848749616356}, /* Approximate log10(mnt) for mantissas in [0.6,0.7) as log10(0.6) = -0.222 */
      {0.8,-0.154901959985743}, /* Approximate log10(mnt) for mantissas in [0.7,0.8) as log10(0.7) = -0.155 */
      {0.9,-0.096910013008056}, /* Approximate log10(mnt) for mantissas in [0.8,0.9) as log10(0.8) = -0.0969 */
      {1.0,-0.045757490560675}, /* Approximate log10(mnt) for mantissas in [0.9,1.0) as log10(0.9) = -0.0458 */
-    }; /* !mnt_log10_tbl_gbg */
+    }; /* !mnt_log10_tbl_gbr */
 #endif /* !0 */
   double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
   double mnt_fabs; /* [frc] fabs(mantissa) */
@@ -687,7 +687,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   switch(nco_baa_cnv_typ){
     /* Methods that do granular pre-processing of NSD or masks */
   case nco_baa_dgr:
-  case nco_baa_gbg:
+  case nco_baa_gbr:
     /* Provide a dummy value of keepbits to satisfy sanity checks
        Granular algorithms determine keepbits/masks on a per-value basis
        They do not actually use this dummy value */
@@ -761,7 +761,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   switch(nco_baa_cnv_typ){
     /* Methods that determine granular (per-value) NSD or masks */
   case nco_baa_dgr:
-  case nco_baa_gbg:
+  case nco_baa_gbr:
     /* These methods create masks within the loop over values */
     break;
     /* Methods that use uniform NSD or NSB and masks */
@@ -923,7 +923,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !DigitRound = DGR */
-    case nco_baa_gbg:
+    case nco_baa_gbr:
       /* Granular Bit Groom
 	 Test GBG:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
@@ -933,8 +933,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  //tbl_idx=0;
-	  //while(mnt_log10_tbl_gbg[tbl_idx][0] < mnt) tbl_idx++;
-	  //mnt_log10_prx=mnt_log10_tbl_gbg[tbl_idx][1];
+	  //while(mnt_log10_tbl_gbr[tbl_idx][0] < mnt) tbl_idx++;
+	  //mnt_log10_prx=mnt_log10_tbl_gbr[tbl_idx][1];
 	  //dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
 #if 1
 	  /* Default GBG path */
@@ -978,7 +978,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !mss_val_cmp_flt */
       } /* !idx */
       break;
-      /* !GranularBitGroom = GBG */
+      /* !GranularBitRound = GBG */
     case nco_baa_bgr_btr:
     case nco_baa_btr:
       /* BitRound and
@@ -993,7 +993,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !BitRound = BTR */
-      /* !BitGroomBitRound = RND */
+      /* !BitGroomRound = RND */
     case nco_baa_sh2:
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them
@@ -1117,7 +1117,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !DigitRound = DGR */
-    case nco_baa_gbg:
+    case nco_baa_gbr:
       for(idx=0L;idx<sz;idx++){
 	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL){
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
@@ -1150,7 +1150,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !mss_val_cmp_dbl */
       } /* !idx */
       break;
-      /* !GranularBitGroom = GBG */
+      /* !GranularBitRound = GBG */
     case nco_baa_bgr_btr:
     case nco_baa_btr:
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
@@ -1164,7 +1164,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !BitRound = BTR */
-      /* !BitGroomBitRound = RND */
+      /* !BitGroomRound = RND */
     case nco_baa_sh2:
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them
