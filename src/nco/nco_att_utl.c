@@ -196,7 +196,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   }else{
     /* Get name and number of attributes for variable */
     (void)nco_inq_var(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
-  } /* end else */
+  } /* !var_id */
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s examining variable \"%s\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 
@@ -429,6 +429,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     } /* end else */
     break;
   case aed_create:	
+    /* Create attribute only if it does not already exist */
     if(rcd_inq_att != NC_NOERR){
       rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
       flg_chg=True; /* [flg] Attribute was altered */
@@ -453,12 +454,14 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     } /* end else */
     break;
   case aed_modify:	
+    /* Only modify attribute if it already exists (dot not create an attribute) */
     if(rcd_inq_att == NC_NOERR){
       rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
       flg_chg=True; /* [flg] Attribute was altered */
     } /* endif */
     break;
   case aed_overwrite:	
+    /* Overwrite regardless of whether already exists */
     rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
     flg_chg=True; /* [flg] Attribute was altered */
     break;
@@ -468,16 +471,18 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
   if(flg_netCDF4_rename_trick){
-    rcd+=nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
+    /* All modifications with rename_trick were done to temporary attribute name 
+       If attribute was not deleted then restore original attribute name */
+    if(aed.mode != aed_delete && flg_chg) rcd+=nco_rename_att(nc_id,var_id,att_nm_tmp,nco_mss_val_sng_get());
     /* Restore original name (space already allocated) */
     strcpy(aed.att_nm,nco_mss_val_sng_get()); 
-  } /* !flg_netCDF4_rename_trick */
+  } /* !flg_netCDF4_rename_trick && */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
 
   if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: DEBUG WARNING %s reports unexpected cumulative rcd = %i on exit. Please report this to NCO project.\n",nco_prg_nm_get(),fnc_nm,rcd);
 
   return flg_chg; /* [flg] Attribute was altered */
-} /* end nco_aed_prc() */
+} /* !nco_aed_prc() */
 
 nco_bool /* [flg] Attribute was changed */
 nco_aed_prc_glb /* [fnc] Process attributes in root group */

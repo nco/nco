@@ -1,3 +1,7 @@
+2022-01-07  Charlie Zender  <zender@uci.edu>
+
+	* ncatted: Prevent modify mode netCDF4 _FillValue from renaming	non-existing attribute
+
 2022-01-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.5-beta01 release procedure:

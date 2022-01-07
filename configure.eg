@@ -330,23 +330,6 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
-# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on aims4:
-# Sysadmin upgrade request: 
-# Latest sysadmin-compiled module usage: 
-# Personal recipe last modified: 2016??
-# Personal recipe last used successfully: 20190216 (aims4 access stopped working ~201904)
-# NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
-export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-# NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
-
 # gcc/g++ 20201208 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on andes:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket to build NCO: 381695 on 20180413
