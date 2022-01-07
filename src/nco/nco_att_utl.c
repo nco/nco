@@ -399,31 +399,44 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
 
   switch(aed.mode){
-  case aed_append:	
-  case aed_nappend:	
+  case aed_append:
+  case aed_nappend:
+  case aed_prepend:
     if(rcd_inq_att == NC_NOERR){
       /* Append to existing attribute value */
       if(aed.type != att_typ){
 	(void)fprintf(stdout,"%s: ERROR %s attribute \"%s\" is of type %s not %s, unable to append\n",nco_prg_nm_get(),var_nm,aed.att_nm,nco_typ_sng(att_typ),nco_typ_sng(aed.type));
 	nco_exit(EXIT_FAILURE);
-      } /* end if */
+      } /* !aed.type */
       att_val_new=(void *)nco_malloc((att_sz+aed.sz)*nco_typ_lng(aed.type));
       (void)nco_get_att(nc_id,var_id,aed.att_nm,(void *)att_val_new,aed.type);
       /* 20120903: Handle trailing NULs for strings
-	 Prevent interstitial NULs accumulation by overwriting NUL-terminator with first character of append string
+	 Prevent interstitial NUL accumulation by overwriting NUL-terminator with first character of append string
 	 When Behavior 1 is requested, this line removes NULs appended by strdup() in nco_prs_aed_lst() */
       if(aed.type == NC_CHAR)
 	if(((char *)att_val_new)[att_sz-1L] == '\0') att_sz--;
 
       /* NB: Following assumes sizeof(char) = 1 byte */
-      (void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
+      if(aed.type == aed_append || aed.type == aed_nappend){
+	(void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
 		   (void *)aed.val.vp,
 		   aed.sz*nco_typ_lng(aed.type));
+      }else if(aed.type == aed_prepend){
+	/* Shift original attribute to end of expanded value buffer */
+	(void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
+		     (void *)att_val_new,
+		     att_sz*nco_typ_lng(aed.type));
+	/* Prepend user specified attribute values to beginning of expanded value buffer */
+	(void)memcpy((void *)((char *)att_val_new),
+		     (void *)aed.val.vp,
+		     aed.sz*nco_typ_lng(aed.type));
+      } /* !aed.type */
+	  
       rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,att_sz+aed.sz,att_val_new);
       flg_chg=True; /* [flg] Attribute was altered */
       att_val_new=nco_free(att_val_new);
-    }else if(aed.mode == aed_append){
-      /* Create new attribute */
+    }else if(aed.mode == aed_append || aed.mode == aed_prepend){
+      /* Create attribute if one by that name does not already exist */
       rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
       flg_chg=True; /* [flg] Attribute was altered */
     } /* end else */
@@ -1256,7 +1269,8 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	  }else if(!strcmp("delete",arg_lst[2])){aed_lst[idx].mode=aed_delete;
 	  }else if(!strcmp("modify",arg_lst[2])){aed_lst[idx].mode=aed_modify;
 	  }else if(!strcmp("nappend",arg_lst[2])){aed_lst[idx].mode=aed_nappend;
-	  }else if(!strcmp("overwrite",arg_lst[2])){aed_lst[idx].mode=aed_overwrite;} */
+	  }else if(!strcmp("overwrite",arg_lst[2])){aed_lst[idx].mode=aed_overwrite;
+	  }else if(!strcmp("prepend",arg_lst[2])){aed_lst[idx].mode=aed_prepend;} */
     switch(*(arg_lst[2])){
     case 'a': aed_lst[idx].mode=aed_append; break;
     case 'c': aed_lst[idx].mode=aed_create; break;
@@ -1264,9 +1278,10 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     case 'm': aed_lst[idx].mode=aed_modify; break;
     case 'n': aed_lst[idx].mode=aed_nappend; break;
     case 'o': aed_lst[idx].mode=aed_overwrite; break;
+    case 'p': aed_lst[idx].mode=aed_prepend; break;
     default: 
       (void)fprintf(stderr,"%s: ERROR `%s' is not a supported mode\n",nco_prg_nm_get(),arg_lst[2]);
-      (void)fprintf(stderr,"%s: HINT: Valid modes are `a' = append, `c' = create,`d' = delete, `m' = modify, `n' = nappend, and `o' = overwrite",nco_prg_nm_get());
+      (void)fprintf(stderr,"%s: HINT: Valid modes are `a' = append, `c' = create,`d' = delete, `m' = modify, `n' = nappend, `o' = overwrite, `p' = prepend",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */

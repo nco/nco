@@ -1016,7 +1016,7 @@ nco_usg_prn(void)
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-A]")) (void)fprintf(stdout,"-A, --apn, append\tAppend to existing output file, if any\n");
   if(strstr(opt_sng,"[-a")){
-    if(prg_lcl == ncatted) (void)fprintf(stdout,"-a, --attribute att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\t\tmode = a,c,d,m,n,o (append, create, delete, modify, nappend, overwrite)\n\t\t\tatt_typ = f,d,l/i,s,c,b (float, double, long/int, short, char, byte)\n");
+    if(prg_lcl == ncatted) (void)fprintf(stdout,"-a, --attribute att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\t\tmode = a,c,d,m,n,o,p (append, create, delete, modify, nappend, overwrite, prepend)\n\t\t\tatt_typ = f,d,l/i,s,c,b (float, double, long/int, short, char, byte)\n");
 #ifdef ENABLE_NETCDF4
     if(prg_lcl == ncatted) (void)fprintf(stdout,"\t\t\tnetCDF4 types = ub,us,u,ll,ull,sng (unsigned byte, u. short, u. int, long long int, u. long long int, string)\n");
 #endif /* !ENABLE_NETCDF4 */

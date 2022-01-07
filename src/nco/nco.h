@@ -768,7 +768,8 @@ extern "C" {
     aed_delete,
     aed_modify,
     aed_nappend,
-    aed_overwrite
+    aed_overwrite,
+    aed_prepend
   } aed_enm; /* end aed enum */
   
   typedef enum gpe{ /* [enm] Group Path Editing mode */

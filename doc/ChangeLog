@@ -1,5 +1,9 @@
 2022-01-07  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.5-beta02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.5-beta02: Paddle to Beachcombers';git push
+	git tag -a 5.0.5-beta02 -m 'all: btr,bgr_btr,gbg=gbr; ncatted: fix modify mode when fll_val dne; ncclimo mpas inp_aut/std/psn, ppn_opt';git push --tags
+
 	* ncatted: Prevent modify mode netCDF4 _FillValue from renaming	non-existing attribute
 
 2022-01-04  Charlie Zender  <zender@uci.edu>
