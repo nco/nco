@@ -413,33 +413,37 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       /* 20120903: Handle trailing NULs for strings
 	 Prevent interstitial NUL accumulation by overwriting NUL-terminator with first character of append string
 	 When Behavior 1 is requested, this line removes NULs appended by strdup() in nco_prs_aed_lst() */
-      if(aed.type == NC_CHAR)
-	if(((char *)att_val_new)[att_sz-1L] == '\0') att_sz--;
-
+      if(aed.type == NC_CHAR){
+	if(aed.mode == aed_append || aed.mode == aed_nappend)
+	  if(((char *)att_val_new)[att_sz-1L] == '\0') att_sz--;
+      } /* !aed.type */
+	
       /* NB: Following assumes sizeof(char) = 1 byte */
-      if(aed.type == aed_append || aed.type == aed_nappend){
+      if(aed.mode == aed_append || aed.mode == aed_nappend){
 	(void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
 		   (void *)aed.val.vp,
 		   aed.sz*nco_typ_lng(aed.type));
-      }else if(aed.type == aed_prepend){
+      }else if(aed.mode == aed_prepend){
 	/* Shift original attribute to end of expanded value buffer */
-	(void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
+	(void)memcpy((void *)((char *)att_val_new+aed.sz*nco_typ_lng(aed.type)),
 		     (void *)att_val_new,
 		     att_sz*nco_typ_lng(aed.type));
 	/* Prepend user specified attribute values to beginning of expanded value buffer */
 	(void)memcpy((void *)((char *)att_val_new),
 		     (void *)aed.val.vp,
 		     aed.sz*nco_typ_lng(aed.type));
-      } /* !aed.type */
+      } /* !aed.mode */
 	  
       rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,att_sz+aed.sz,att_val_new);
       flg_chg=True; /* [flg] Attribute was altered */
       att_val_new=nco_free(att_val_new);
-    }else if(aed.mode == aed_append || aed.mode == aed_prepend){
-      /* Create attribute if one by that name does not already exist */
-      rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
-      flg_chg=True; /* [flg] Attribute was altered */
-    } /* end else */
+    }else{ /* !rcd_inq_att */
+      if(aed.mode == aed_append || aed.mode == aed_prepend){
+	/* Create attribute if one by that name does not already exist */
+	rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
+	flg_chg=True; /* [flg] Attribute was altered */
+      } /* !aed.mode */
+    } /* !rcd_inq_att */
     break;
   case aed_create:	
     /* Create attribute only if it does not already exist */
@@ -1189,6 +1193,8 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
      Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any
      This is default mode */
   
+  const char fnc_nm[]="nco_prs_aed_lst()"; /* [sng] Function name */
+
   aed_sct *aed_lst;
   
   char **arg_lst;
@@ -1458,6 +1464,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
   } /* end loop over aed */
 
   if(nco_dbg_lvl_get() >= nco_dbg_io){
+    (void)fprintf(stderr,"%s: %s reports aed_lst is...\n",nco_prg_nm_get(),fnc_nm);
     for(idx=0;idx<nbr_aed;idx++){
       (void)fprintf(stderr,"aed_lst[%d].att_nm = %s\n",idx,aed_lst[idx].att_nm);
       (void)fprintf(stderr,"aed_lst[%d].var_nm = %s\n",idx,aed_lst[idx].var_nm == NULL ? "NULL" : aed_lst[idx].var_nm);
@@ -1471,7 +1478,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 
   return aed_lst;
 
-} /* end nco_prs_aed_lst() */
+} /* !nco_prs_aed_lst() */
 
 int /* [flg] Error code */
 nco_prs_att /* [fnc] Parse conjoined object and attribute names */

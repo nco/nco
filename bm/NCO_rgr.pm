@@ -579,7 +579,7 @@ if($USER eq 'zender'){
 # ncatted -O --hdr_pad=1000 -a missing_value,val_one_mss,m,f,0.0 ~/nco/data/in.nc ~/foo.nc
 # ncks -M --trd ~/foo.nc | grep hdr_pad | wc > ~/foo
 # cut -c 14-15 ~/foo
-	$dsc_sng="Pad header with 1000B extra for future metadata (failure OK/expected since test depends on command-line length)";
+	$dsc_sng="Pad header with 1000B extra bytes (expect ERROR on MacOS due to different command-line length)";
 	$tst_cmd[0]="ncatted -O --hdr_pad=1000 $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -M --trd %tmp_fl_00% | grep hdr_pad | wc > %tmp_fl_01%";
 	$tst_cmd[2]="cut -c 14-15 %tmp_fl_01%"; ## Daniel:fxm cut/ncks, but how to do grep and wc???
@@ -694,7 +694,7 @@ if($USER eq 'zender'){
 # ncks -C -m --trd -v att_var ~/foo.nc | wc | cut -d ' ' -f 7
 # Count lines of output to verify no attributes remain
 # 20210713 fails on MacOS with Homebrew due to cut -f X being 1-based not 0-based?
-	$dsc_sng="Delete all attributes";
+	$dsc_sng="Delete all attributes (expect ERROR on MacOS due to \"cut\" behavior)";
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a ,att_var,d,, $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -m --trd -v att_var %tmp_fl_00% | wc | cut -d ' ' -f 7";
 	$tst_cmd[2]="4";

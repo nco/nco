@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.5-beta01
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 4 January 2022
+@set update-date 8 January 2022
 @set update-month January 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17559,17 +17559,26 @@ variables that are the same type as the specified attribute.
 @html
 <a name="mode"></a> <!-- http://nco.sf.net/nco.html#mode -->
 <a name="att_mode"></a> <!-- http://nco.sf.net/nco.html#att_mode -->
+<a name="att_edit"></a> <!-- http://nco.sf.net/nco.html#att_edit -->
+<a name="att_append"></a> <!-- http://nco.sf.net/nco.html#att_append -->
+<a name="att_create"></a> <!-- http://nco.sf.net/nco.html#att_create -->
+<a name="att_delete"></a> <!-- http://nco.sf.net/nco.html#att_delete -->
+<a name="att_modify"></a> <!-- http://nco.sf.net/nco.html#att_modify -->
+<a name="att_nappend"></a> <!-- http://nco.sf.net/nco.html#att_nappend -->
+<a name="att_overwrite"></a> <!-- http://nco.sf.net/nco.html#att_overwrite -->
+<a name="att_prepend"></a> <!-- http://nco.sf.net/nco.html#att_prepend -->
 @end html
 The value of @var{mode} is a single character abbreviation (@code{a},
-@code{c}, @code{d}, @code{m}, @code{n}, or @code{o}) standing for one of 
-five editing modes:@*
-@cindex attributes, appending
-@cindex attributes, creating
-@cindex attributes, deleting
-@cindex attributes, modifying
-@cindex attributes, editing
-@cindex attributes, nappending
-@cindex attributes, overwriting
+@code{c}, @code{d}, @code{m}, @code{n}, @code{o}, or @code{p})
+standing for one of seven editing modes:@*
+@cindex attribute, edit
+@cindex attribute, append
+@cindex attribute, create
+@cindex attribute, delete
+@cindex attribute, modify
+@cindex attribute, nappend
+@cindex attribute, overwrite
+@cindex attribute, prepend
 @table @code
 @item a 
 @dfn{Append}.
@@ -17614,6 +17623,14 @@ Nappend mode was added to @command{ncatted} in version 4.6.0 (May,
 Write attribute @var{att_nm} with value @var{att_val} to variable
 @var{var_nm}, overwriting existing attribute @var{att_nm}, if any. 
 This is the default mode.
+@item p 
+@dfn{Prepend}.
+Prepend value @var{att_val} to @var{var_nm} attribute @var{att_nm} value 
+@var{att_val} if @var{att_nm} already exists.
+If @var{var_nm} does not have an attribute @var{att_nm}, there is no
+effect. 
+Prepend mode was added to @command{ncatted} in version 5.0.5 (January, 
+2022). 
 @end table
 
 @html

@@ -31,8 +31,10 @@ its own right. It takes a user-specified number of significant bits
 (NSB, or "keepbits) to retain. The NSB argument contrasts with the
 number of significant digits (NSD) parameter expected by BitGroom,
 DigitRound, and GranularBR. BitRound is Bit-Adjustment-Algorithm #8.  
+
 ncks --baa=8 --ppc default=9 in.nc out.nc # BitRound NSB=9
 ncks --baa=4 --ppc default=3 in.nc out.nc # GranularBR NSD=3
+
 Thanks to Milan Klower and R. Kouznetsov for prototyping BitRound in
 the first place.
 
@@ -56,11 +58,21 @@ However, ncclimo needs to know what to name the output files.
 The $caseid argument or the $fml_nm argument, when present, provides 
 the output filename stub. When neither of these options are present
 ncclimo will name the output files after the model name, if known.
+
 ls mpaso*.nc | ncclimo -P mpaso -s 50 -e 100 -o out # Stdin
 ls eam*h0*.nc | ncclimo --fml=name -s 50 -e 100 -o out # Stdin
 ncclimo -P mpaso -s 50 -e 100 -o out mpaso*.nc # Positional
 ncclimo --fml=name -s 50 -e 100 -o out eam*h0*.nc # Positional
+
 http://nco.sf.net/nco.html#ncclimo
+
+C. ncatted has a new edit mode: Prepend. Analogous to append mode,
+prepend mode will prepend the user-specified value to the attribute
+and if the attribute does not exist it will be created:
+
+ncatted -a char_att,att_var,p,c,"this is prepended.\n" in.nc out.nc
+
+http://nco.sf.net/nco.html#att_prepend
 
 BUG FIXES:
    
@@ -75,6 +87,11 @@ correctly with stdin filenames that included an absolute path.
 The workaround is to run ncclimo from the input file directory.
 The solution is to upgrade. Thanks again to Xylar Asay-Davis for
 reporting this issue. 
+
+C. ncatted had a longstanding bug triggered when using modify mode to
+try to change the value of the _FillValue attribute in a netCDF4 file
+when the attribute did not already exist. Talk about a corner case!
+The solution is to upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

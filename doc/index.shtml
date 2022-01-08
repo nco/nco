@@ -555,6 +555,7 @@ netCDF4 user-defined types support;
 <tt>ncatted</tt> new prepend mode;</li>
 <li><b>NCO 5.0.5</b>: (<i>Current Stable Release</i>)
 <tt>all</tt> quantize add BitRound;
+<tt>ncatted</tt> Prepend mode;
 <tt>ncclimo</tt> climos filenames from stdin/positional arguments;</li>
 <li><b>NCO 5.0.4</b>: 
 <tt>ncclimo</tt> <tt>--stdin</tt> API, <tt>--permute</tt> API, <tt>--wnt_md</tt>;
