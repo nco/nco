@@ -6,10 +6,11 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.5 brings a new lossy quantization codec, BitRound,
-and improves the consistency of the ncclimo API between climo
-and timeseries extraction. If these issues are not pertinent
-to you, 5.0.5 can easily be skipped.
+Version 5.0.5 brings a new lossy quantization codec, BitRound.
+ncclimo has improved API consistency between climo generation and
+timeseries extraction. ncatted introduces a new editing mode:
+prepending. If these issues do not interest you, you might skip
+5.0.5. 
 
 Work on NCO 5.0.6 has commenced and will improve ncremap support
 for mbtempest, incorporate new mbtempest improvements, and further

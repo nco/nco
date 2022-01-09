@@ -199,8 +199,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Test cases ($DATA/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
 # Production usage:
-# ncclimo -c B1850C5_ne30_v0.4 -s 1 -e 59 -i /gpfs/alpine/cli115/proj-shared/mbranst/B1850C5_ne30_v0.4/atm/hist -o ${DATA}/ne30/clm
-# ncclimo -c b1850c5_m2a -s 1 -e 127 -i /gpfs/alpine/cli115/proj-shared/b1850_acmev0_highres/atm/hist/fullfiles -o ${DATA}/ne120/clm
+# ncclimo -P cam -c famipc5_ne30_v0.3_00003 -s 1979 -e 1983 -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr # LR
+# ncclimo -P cam -c fxm -s 1 -e 127 -i  -o ${DATA}/ne120/clm # HR
 
 # Incremental climo testing:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1981 -i ${DATA}/ne30/raw -o ${DATA}/ne30/prv -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
