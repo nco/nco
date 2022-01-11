@@ -1364,17 +1364,12 @@ if [ ${inp_std} = 'Yes' ]; then
     done < /dev/stdin
 fi # !inp_std
 
-# Common to inp_std and inp_psn
-if [ ${inp_std} = 'Yes' ] || [ ${inp_psn} = 'Yes' ]; then
-    # 20171208 Detect whether stdin names are full-path (i.e., contain directory prefix)
-    # 20211231 Extend this to positional names and use for all climatology modes
-    # If full-path, then use fl_in as-is later on
-    # Otherwise prepend drc_in to fl_in in MFOs (ncra, ncrcat)
-    ppn_opt="-p ${drc_in}"
-    if [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ]; then
-	ppn_opt=''
-    fi # !basename
-fi # !inp_std || inp_psn
+# Prepend drc_in to fl_in in MFOs (ncra, ncrcat)
+ppn_opt="-p ${drc_in}"
+# 20220111 If input files include absolute path, then use fl_in as-is later on
+if [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ]; then
+    ppn_opt=''
+fi # !basename
 	
 if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
     if [ -z "${tpd_usr}" ]; then 

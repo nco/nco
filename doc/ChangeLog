@@ -1,3 +1,11 @@
+2022-01-11  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.5-beta03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.5-beta03: Bulleit';git push
+	git tag -a 5.0.5-beta03 -m 'all: btr,bgr_btr,gbg=gbr; ncatted: fix modify mode when fll_val dne, prepend mode; ncclimo mpas inp_aut/std/psn, ppn_opt';git push --tags
+
+	* ncclimo simplify and invoke ppn_opt block for all file input modes
+
 2022-01-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.5-beta02 release procedure:
