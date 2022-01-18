@@ -1,3 +1,11 @@
+2022-01-12  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.5 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.5: Peacock';git push
+	git tag -a 5.0.5 -m 'all: btr,bgr_btr,gbg=gbr; ncatted: fix modify mode when fll_val dne, prepend mode; ncclimo mpas inp_aut/std/psn, ppn_opt';git push --tags
+
+	* ncremap change E3SMU_ROOT from 1.5.0 to 1.6.0
+
 2022-01-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.5-beta03 release procedure:
@@ -28,7 +36,7 @@
 
 	* Change external name of Granular BitGroom (GBG) to Granular BitRound (GBR).
 
-	* nco_flt.h remove type qualifiers on return types, fixes Intel warning
+	* nco_flt.h remove type qualifiers on return types to fix Intel	compiler warnings
 
 2022-01-01  Charlie Zender  <zender@uci.edu>
 

@@ -437,9 +437,14 @@ module purge
 module load intel/20.0.0
 module load intelmpi/2020 # Required for ncclimo/ncremap in MPI-mode
 module load netcdf/4.6.3
+#module load mkl/2020 # Does not hurt but not necessary?
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1 # works
+ANTLR_ROOT=${HOME} CC='icc -static-intel -qopenmp-link=static' CXX='icpc -static-intel -qopenmp-link=static' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1 # borken
+ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1 # borken
+ANTLR_ROOT=${HOME} CC='icc -static-intel -qopenmp-link=static' CXX='icpc -static-intel -qopenmp-link=static' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1 # borken 
+ANTLR_ROOT=${HOME} CC='icx -static-intel -qopenmp-link=static' CXX='icx -static-intel -qopenmp-link=static' LDFLAGS='-L/usr/lib64 -L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1 # fails with ld: cannot find -lm
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1

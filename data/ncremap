@@ -150,13 +150,13 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes'\:${LD_LIBRARY_PATH} ; ;;
 	blues* | blogin* | b[0123456789][0123456789][0123456789] )
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_1.5.0_anvil'
+		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_1.6.0_anvil'
 	    fi # !ncremap
 	    export PATH='/home/zender/bin_blues'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_blues'\:${LD_LIBRARY_PATH} ; ;;
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_1.5.0_chrysalis'
+		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_1.6.0_chrysalis'
 	    fi # !ncremap
 	    export PATH='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy/bin:/home/zender/bin_chrysalis'\:${PATH}
 	    export LD_LIBRARY_PATH='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy/lib:/home/zender/lib_chrysalis'\:${LD_LIBRARY_PATH} ; ;;
@@ -175,7 +175,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		# 20210519: This script takes significant time (5-10 seconds) to load
 		source /compyfs/software/mbtempest.envs.sh
-		E3SMU_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_1.5.0_compy'
+		E3SMU_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_1.6.0_compy'
 	    fi # !ncremap
 	    export PATH='/qfs/people/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
