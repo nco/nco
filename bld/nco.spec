@@ -108,7 +108,7 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
-* Fri Jan 07 2022 Charlie Zender <zender@uci.edu> - 5.0.5-1
+* Mon Jan 24 2022 Charlie Zender <zender@uci.edu> - 5.0.5-1
 - new upstream 5.0.5
 
 * Sat Dec 04 2021 Charlie Zender <zender@uci.edu> - 5.0.4-1

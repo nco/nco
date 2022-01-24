@@ -1550,6 +1550,8 @@ fi # !mpas, !mpascice, !mpasseaice, !mpassi
 if [ "${prc_mpas}" = 'Yes' ]; then 
 
     # Add/alter missing metadata to MPAS files unless script was invoked by ncclimo
+    # NB: MPAS Analysis sets clm_flg to prevent ncremap from doing unnecessary _FillValue work
+    # MPAS Analysis correctly deals unset MPAS _FillValues, NaNs, masks, etc
     if [ "${clm_flg}" = 'No' ]; then
 	att_flg='Yes'
     fi # !clm_flg
