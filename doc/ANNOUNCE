@@ -7,6 +7,7 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 Version 5.0.5 brings a new lossy quantization codec, BitRound.
+Granular BitGroom has been renamed Granular BitRound.
 ncclimo has improved API consistency between climo generation and
 timeseries extraction. ncatted introduces a new editing mode:
 prepending. If these issues do not interest you, you might skip
