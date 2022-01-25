@@ -1,3 +1,13 @@
+2022-01-25  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.6-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.6-alpha01: Blue Rondo a la Turk';git push
+	git tag -a 5.0.6-alpha01 -m 'cxl -lm rqr. Functionally identical to 5.0.5';git push --tags
+
+	* configure.ac remove -lm requirement so Intel will use -lsvml, not search for -lm
+
+	* configure.ac remove g95 check
+
 2022-01-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.5 release procedure:
@@ -52,8 +62,7 @@
 
 	* NCO 5.0.5-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.5-alpha01: NYE';git push
-	git tag -a 5.0.5-alpha01 -m 'all: separate btr from bgr_btr;
-	ncclimo mpas inp_aut fix, ppn_opt for inp_std,inp_psn; otherwise functionally identical to 5.0.4';git push --tags
+	git tag -a 5.0.5-alpha01 -m 'all: separate btr from bgr_btr; ncclimo mpas inp_aut fix, ppn_opt for inp_std,inp_psn; otherwise functionally identical to 5.0.4';git push --tags
 
 	* nco_ppc_bitmask() add pbxr/bxnz diagnostic
 

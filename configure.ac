@@ -54,7 +54,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOS will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[5.0.5],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[5.0.6-alpha01],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -401,8 +401,7 @@ fi
 
 #AC_CHECK_LIB([C],[cosf])
 AC_CHECK_FUNC(getopt_long,,[nco_need_getopt_long='yes'])
-AC_CHECK_LIB([f95],[_g95_ac_array],,,[-lm])
-AC_CHECK_LIB([m],[sin])
+#AC_CHECK_LIB([m],[sin]) # 20220125 fxm Requires -lm even though Intel compilers use -lsvml
 AC_CHECK_LIB([sunmath],[sinf])
 AC_CHECK_LIB([intl],[gettext])
 AC_CHECK_LIB([resolv],[res_init])
