@@ -7,6 +7,7 @@
    Procedure:
    1. Unpack GOES16 L1b data into netCDF3 format (otherwise ncap2 produces errors in following step)
    2. Compute brightness temperature, remove valid_range attribute that refers to packed data (otherwise Panoply is unable to plot results)
+   ncrename -O -a Rad@valid_range,Rad@valid_range_packed ~/goes16_11um.nc
    ncpdq -O -U -3 ${DATA}/ess_rmt_lab/ABI-L1b-RadC_2018_106_16_OR_ABI-L1b-RadC-M3C14_G16_s20181061602231_e20181061605004_c20181061605056.nc ${DATA}/ess_rmt_lab/goes16_11um.nc # GOES16 Band 14
    ncpdq -O -U -3 ${DATA}/ess_rmt_lab/ABI-L1b-RadC_2018_106_16_OR_ABI-L1b-RadC-M3C15_G16_s20181061602231_e20181061605010_c20181061605054.nc ${DATA}/ess_rmt_lab/goes16_12um.nc # GOES16 Band 15
    ncap2 -O -S ~/nco/data/tpt_brt.nco ${DATA}/ess_rmt_lab/goes16_11um.nc ${DATA}/ess_rmt_lab/goes16_11um.nc

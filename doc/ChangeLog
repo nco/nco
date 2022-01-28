@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.6-alpha01: Blue Rondo a la Turk';git push
 	git tag -a 5.0.6-alpha01 -m 'cxl -lm rqr. Functionally identical to 5.0.5';git push --tags
 
-	* configure.ac remove -lm requirement so Intel will use -lsvml, not search for -lm
+	* configure.ac remove -lm check for sin() to (try to) prevent search for -lm
 
 	* configure.ac remove g95 check
 
