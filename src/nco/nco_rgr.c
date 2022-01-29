@@ -4771,7 +4771,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       char *sls_ptr; /* [sng] Pointer to last slash character (' ') */
       sls_ptr=strrchr(var_nm,sls_chr);
       if(!sls_ptr){
-	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unable to find sgs_frc_nm = %s in current input file, and unable to identify filename (ending with slash '/' or backslash '\\', as appropriate) portion of that string to serve as local external file for sgs_frc input, exiting\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm);
+	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unable to find sgs_frc_nm = %s in current input file, and unable to identify filename (ending with slash '/' or backslash '\\', depending on the operating system) portion of that string to serve as local external file for sgs_frc input, exiting\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm);
 	nco_exit(EXIT_FAILURE);
       } /* !sls_ptr */
       sgs_frc_nm=(char *)strdup(sls_ptr+1L); /* Copy variable-name portion of string */

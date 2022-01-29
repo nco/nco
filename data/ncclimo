@@ -264,8 +264,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Diurnal pipe:
 # cd ${DATA}/ne30/raw;ls *h4*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly --tpd=8 -s 2001 -e 2002 --var=PRECT,TS,FSDS --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # SGS:
-# ncclimo -d 1 -v TBOT,FSDS -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc --sgs_frc=${DATA}/grids/clm2_landfrac_t42.nc/landfrac 
-# ncclimo -d 1 -v TBOT,FSDS -m clm2 -c F_acmev03_enso_camse_clm45bgc_ne30_co2cycle -s 2000 -e 2000 -i ${DATA}/ne30/raw -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30.nc/landfrac 
+# ncclimo -P elm -m clm2 -d 1 -v TBOT,FSDS -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc --sgs_frc=${DATA}/grids/clm2_landfrac_t42.nc/landfrac 
+# ncclimo -P elm -m clm2 -d 1 -v TBOT,FSDS -c F_acmev03_enso_camse_clm45bgc_ne30_co2cycle -s 2000 -e 2000 -i ${DATA}/ne30/raw -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30np4.nc/landfrac
+# ncclimo -P elm -d 1 --split -v TBOT,FSDS -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30pg2.nc/landfrac
 # Seasons:
 # ncclimo -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo -d 1 --csn_lst=jfm,jas,ann -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc

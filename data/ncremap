@@ -289,9 +289,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --no_cll_msr --var=FSNT,AODVIS -i ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -o ~/foo.nc
 # SGS (201909):
 # ncremap -P elm -v FSDS,TBOT,GPP -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_sgs.nc
-# ncremap -P mpasseaice --sgs_frc=timeMonthly_avg_iceAreaCell -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ~/msi_raw.nc ~/msi_sgs.nc
-# ncremap --sgs_frc=${DATA}/grids/sgs_landfrac_ne30.nc/landfrac -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/ne30/clm/TBOT_200001_200012.nc ~/foo.nc # External sgs_frc
-# ncremap --vrb=3 --sgs_frc=landfrac --var=area,FSDS,landfrac,landmask,TBOT -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/elm_sgs.nc # 20190918 1D->2D works
+# ncremap -P mpasseaice --sgs_frc=timeMonthly_avg_iceAreaCell -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/msiv1_oEC60to30v3.nc ~/msi_sgs.nc
+# ncremap --sgs_frc=${DATA}/grids/sgs_landfrac_ne30np4.nc/landfrac -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/elmv1_ne30np4l15.nc ~/foo.nc # External sgs_frc
+# ncremap --vrb=3 --sgs_frc=landfrac --var=area,FSDS,landfrac,landmask,TBOT -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${DATA}/bm/elmv1_ne30np4l15.nc ~/elm_sgs.nc # 20190918 1D->2D works
 # ncremap --vrb=3 --sgs_frc=landfrac --var=area,FSDS,landfrac,landmask,TBOT -m ${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20190918 2D->2D
 # ncremap --vrb=3 -p serial --sgs_frc=landfrac -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
 # ncremap --vrb=3 -a conserve --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 normalization required to get mask right
@@ -511,6 +511,7 @@ rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
 rnr_thr='' # [frc] Renormalization option
 se_np_nbr=4 # [nbr] Spectral Element polynomial order of discretization (for TempestRemap SE grids)
 sgs_frc='' # [sng] Sub-grid fraction variable
+sgs_frc_usr='' # [sng] Sub-grid fraction variable
 sgs_msk='' # [sng] Sub-grid mask variable
 sgs_nrm='1.0' # [frc] Sub-grid normalization
 skl_fl='' # [sng] Skeleton file
@@ -821,7 +822,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       rrg_grd_rgn=?* | grd_rgn=?* | grid_regional=?* | regional_grid=?* ) grd_rgn="${LONG_OPTARG}" ; prc_typ='rrg' ; ;; # # Regional regridding regional grid file
 	       rrg_rnm_sng=?* | rnm_sng=?* | rename_string=?* ) rnm_sng="${LONG_OPTARG}" ; prc_typ='rrg' ; ;; # # Regional regridding rename string
 	       grd_src=?* | grid_source=?* | source_grid=?* | src_grd=?* ) grd_src="${LONG_OPTARG}" ;; # -s # Source grid-file
-	       sgs_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | subgrid_fraction=?* ) sgs_frc="${LONG_OPTARG}" ;; # # Sub-grid fraction variable
+	       sgs_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | subgrid_fraction=?* ) sgs_frc_usr="${LONG_OPTARG}" ;; # # Sub-grid fraction variable
 	       sgs_msk=?* | ice_msk=?* | lnd_msk=?* | ocn_msk=?* | subgrid_mask=?* ) sgs_msk="${LONG_OPTARG}" ;; # # Sub-grid mask variable
 	       sgs_nrm=?* | subgrid_normalization=?* ) sgs_nrm="${LONG_OPTARG}" ;; # # Sub-grid fraction normalization
 	       skl_fl=?* | skl=?* | skeleton=?* | skeleton_file=?* ) skl_fl="${LONG_OPTARG}" ;; # # Skeleton file
@@ -1751,8 +1752,10 @@ if [ "${prc_typ}" = 'rrg' ]; then
 fi # !rrg
 if [ "${prc_typ}" = 'clm' ] || [ "${prc_typ}" = 'ctsm' ] || [ "${prc_typ}" = 'elm' ]; then 
     # Set CLM/ELM-specific options first, then change prc_typ to sgs
+    # 20220129 sgs_frc is special since ncclimo may supply it (terminating a filename, even)
+    # Hence must keep user-specified sgs_frc value, if any, intact
     rds_rth='6.37122e6' # [m] Radius of Earth in CLM/CTSM/ELM (SHR_CONST_REARTH)
-    sgs_frc='landfrac'
+    if [ -n ${sgs_frc_usr} ]; then sgs_frc=${sgs_frc_usr}; else sgs_frc='landfrac'; fi
     sgs_msk='landmask'
     sgs_nrm='1.0'
     prc_elm='Yes'
@@ -1760,7 +1763,7 @@ fi # !clm, !ctsm, !elm
 if [ "${prc_typ}" = 'cice' ]; then 
     # Set CICE-specific options first, then change prc_typ to sgs
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
-    sgs_frc='aice'
+    if [ -n ${sgs_frc_usr} ]; then sgs_frc=${sgs_frc_usr}; else sgs_frc='aice'; fi
     sgs_msk='tmask'
     sgs_nrm='100.0'
     prc_cice='Yes'
@@ -1770,7 +1773,7 @@ if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_
     # Set MPAS-SeaIce-specific options first, then change prc_typ to sgs
     # MPAS-SeaIce requires two modes, MPAS and SGS, so set prc_mpas to 'Yes'
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
-    sgs_frc='timeMonthly_avg_iceAreaCell'
+    if [ -n ${sgs_frc_usr} ]; then sgs_frc=${sgs_frc_usr}; else sgs_frc='timeMonthly_avg_iceAreaCell'; fi
     # 20190326 timeMonthly_avg_icePresent contains fraction of time in averaging interval when any ice was present
     # Thus timeMonthly_avg_icePresent is a floating point fraction, not a traditional integer mask
     # 20190910 timeMonthly_avg_icePresent should be SGS regridded like any 2D field
@@ -1784,9 +1787,8 @@ if [ -n "${sgs_frc}" ]; then
     prc_typ='sgs'
 fi # !sgs
 if [ "${prc_typ}" = 'sgs' ]; then
-    if [ -z "${sgs_frc}" ]; then 
-	sgs_frc='landfrac' # 20190924: Back-compatibility with NCO 4.8.1-
-    fi # !sgs_frc
+    # 20190924: Back-compatibility with NCO 4.8.1-
+    if [ -n ${sgs_frc_usr} ]; then sgs_frc=${sgs_frc_usr}; else sgs_frc='landfrac'; fi
     if [ -z "${sgs_msk}" ]; then 
 	sgs_msk='landmask' # 20190924: Back-compatibility with NCO 4.8.1-
     fi # !sgs_msk
