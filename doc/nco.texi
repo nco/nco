@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.6-alpha01
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 24 January 2022
+@set update-date 29 January 2022
 @set update-month January 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -8329,7 +8329,10 @@ that the UDUnits2 library has failed to initialize.
 To fix this, export the full location (path+name) of the UDUnits2
 @acronym{XML} database file @file{udunits2.xml} to the shell:
 @example
+# MacPorts location
 export UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'
+# Example Anaconda location
+export UDUNITS2_XML_PATH='/home/zender/anaconda/share/udunits/udunits2.xml'
 @end example
 One can then invoke (without recompilation) @acronym{NCO} again, and
 UDUnit2 should work. 

@@ -266,7 +266,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # SGS:
 # ncclimo -P elm -m clm2 -d 1 -v TBOT,FSDS -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc --sgs_frc=${DATA}/grids/clm2_landfrac_t42.nc/landfrac 
 # ncclimo -P elm -m clm2 -d 1 -v TBOT,FSDS -c F_acmev03_enso_camse_clm45bgc_ne30_co2cycle -s 2000 -e 2000 -i ${DATA}/ne30/raw -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30np4.nc/landfrac
-# ncclimo -P elm -d 1 --split -v TBOT,FSDS -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30pg2.nc/landfrac
+# ncclimo -P elm -d 1 --split -v TBOT,FSDS -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30pg2.nc/landfrac
 # Seasons:
 # ncclimo -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo -d 1 --csn_lst=jfm,jas,ann -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
@@ -977,7 +977,16 @@ if [ "${tms_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" 
     fi # !mdl_nm_usr
     # Glob files in splitter mode if other input avenues were not used
     if [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
-	inp_glb='Yes'
+	# 20220129 Determine whether to construct (use inp_aut) or glob files
+	# Daily (or finer) resolution filenames are never constructible
+	# Monthly input filenames are constructable with caseid 
+	# Assume user wishes to glob unless both is provided caseid for monthly files
+	if [ ${clm_md} = 'mth' ] && [ -n ${caseid} ]; then
+	    inp_glb='Yes' # 20220129 fxm remove after moving monthly filename creation block
+	    # inp_aut='Yes' # 20220129 fxm uncomment after moving monthly filename creation block
+	else # !caseid
+	    inp_glb='Yes'
+	fi # !caseid
     fi # !inp_*
 fi # !tms_flg
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
@@ -1315,12 +1324,12 @@ if [ ${wnt_md} = 'djf' ]; then
 fi # !djf
 
 # clm_flg and tms_flg are now fixed so finalize input file options then gather input filenames
-if [ ${tms_flg} = 'Yes' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
-    echo "${spt_nm}: ERROR Specify input file(s) with -i \$drc_in or with positional argument(s) or with stdin"
+if [ ${tms_flg} = 'Yes' ] && [ ${inp_aut} = 'No' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
+    echo "${spt_nm}: ERROR Specify input file(s) by providing -i \$drc_in with (for automatic construction) or without (for globbin) -c \$caseid, or provide names via positional argument(s) or stdin"
     if [ ${bch_pbs} = 'Yes' ]; then
 	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
     else # !bch_pbs
-	echo "${spt_nm}: HINT Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+	echo "${spt_nm}: HINT An easy way to create timeseries is to pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
     fi # !bch_pbs
     exit 1
 fi # !tms_flg
@@ -1368,7 +1377,8 @@ fi # !inp_std
 # Prepend drc_in to fl_in in MFOs (ncra, ncrcat)
 ppn_opt="-p ${drc_in}"
 # 20220111 If input files include absolute path, then use fl_in as-is later on
-if [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ]; then
+# 20220130 fl_in is defined here only for inp_[std,cmd,glb], do not test iff inp_aut
+if [ "${fl_in[0]}" ] && [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ]; then
     ppn_opt=''
 fi # !basename
 	
@@ -2177,6 +2187,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    done # !yr_idx
 	fi # !clm_md && !inp_aut
 
+	# 20220129 fxm after moving climo mode filename creation block upwards and setting fl_in=fl_all so tms_flg can use it, start a new climo mode loop over years months and continue the climo code right here, indentation should not change
 	# Common to both high-frequency and monthly-input climos
 	if [ ${wnt_md} = 'djf' ] && [ ${MM} = '12' ]; then 
 	    yyyy_clm_srt=${yyyy_clm_srt_dec}

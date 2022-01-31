@@ -1,8 +1,12 @@
-2022-01-29  Charlie Zender  <zender@uci.edu>
+2022-01-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.6-alpha02: Chiang Rai';git push
-	git tag -a 5.0.6-alpha02 -m 'ncremap sgs_frc_usr fix;';git push --tags
+	git tag -a 5.0.6-alpha02 -m 'ncclimo basename fl_in[0] fix; ncremap sgs_frc_usr fix;';git push --tags
+
+	* ncclimo prevent basename() from operating on undefined fl_in[0]
+
+2022-01-29  Charlie Zender  <zender@uci.edu>
 
 	* ncremap keep user-specified and/or ncclimo-specified sgs_frc value, if any, intact
 

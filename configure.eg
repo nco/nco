@@ -97,46 +97,46 @@ For ABI=64:
 # 
 export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='64' # AIX-specific hack
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_INC='/usr/local/include' C_INC='/usr/include' CC='xlc_r' CFLAGS='-qsmp=omp' CXX='xlC_r' LDFLAGS='-brtl -qsmp=omp' NETCDF_INC='/usr/local/include' NETCDF_LIB=${NETCDF_LIB} ./configure --disable-gsl --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_INC='/usr/local/include' C_INC='/usr/include' CC='xlc_r' CFLAGS='-qsmp=omp' CXX='xlC_r' LDFLAGS='-brtl -qsmp=omp' NETCDF_INC='/usr/local/include' NETCDF_LIB=${NETCDF_LIB} ./configure --disable-gsl --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # bluefire 20120718 not tested yet
 export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='64' # AIX-specific hack
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_INC='/contrib/antlr-2.7.7/include' C_INC='/usr/include' CC='xlc_r' CXX='xlC_r' LDFLAGS='-brtl' GSL_ROOT='/contrib/gsl-1.12' NETCDF_INC='/contrib/netcdf/4.1.3_seq/include' NETCDF_LIB='/contrib/netcdf/4.1.3_seq/include' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo zender@dust.ess.uci.edu:/var/ftp/pub/zender/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_INC='/contrib/antlr-2.7.7/include' C_INC='/usr/include' CC='xlc_r' CXX='xlC_r' LDFLAGS='-brtl' GSL_ROOT='/contrib/gsl-1.12' NETCDF_INC='/contrib/netcdf/4.1.3_seq/include' NETCDF_LIB='/contrib/netcdf/4.1.3_seq/include' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo zender@dust.ess.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 # bluefire
 export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='64' # AIX-specific hack
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_INC='/usr/local/include' C_INC='/usr/include' CC='xlc_r' CXX='xlC_r' LDFLAGS='-brtl' GSL_ROOT='/contrib/gsl-1.12' NETCDF_INC='/usr/local/include' NETCDF_LIB=${NETCDF_LIB} ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo zender@dust.ess.uci.edu:/var/ftp/pub/zender/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_INC='/usr/local/include' C_INC='/usr/include' CC='xlc_r' CXX='xlC_r' LDFLAGS='-brtl' GSL_ROOT='/contrib/gsl-1.12' NETCDF_INC='/usr/local/include' NETCDF_LIB=${NETCDF_LIB} ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo zender@dust.ess.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 For ABI=32:
 export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='32' # AIX-specific hack
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_INC='/usr/local/include' C_INC='/usr/include' CC='xlc_r' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_INC='/usr/local/include' C_INC='/usr/include' CC='xlc_r' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 ************************************************************************
 End AIX
@@ -162,13 +162,13 @@ alpha-dec-osf5.1
 
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 ************************************************************************
 End ALPHA
 ************************************************************************
@@ -183,14 +183,14 @@ FreeBSD usf-cf-x86-freebsd-1 4.6-STABLE FreeBSD 4.6-STABLE #9: Tue Aug 20 12:33:
 
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f config.status config.status.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo config.status.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f config.status config.status.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo config.status.foo dust.ess.uci.edu:Sites/nco/rgr
 ************************************************************************
 End FREEBSD
 ************************************************************************
@@ -213,13 +213,13 @@ hppa2.0w-hp-hpux11.11
 
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 ************************************************************************
 End HPPA
 ************************************************************************
@@ -249,32 +249,32 @@ i686-pc-linux-gnu
 
 # gcc/g++ Install/update NCO in personal directories using all configure defaults:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CXX='g++' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='gcc' CXX='g++' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CXX='g++' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='gcc' CXX='g++' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories with CMake:
 # Generic when netCDF is in /usr (Ubuntu glace)
 # Personal recipe last modified: 20170814
 # Personal recipe last used successfully: 20171218
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 cd ~/nco;cmake/clean
 cd ~/nco/cmake;cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}
 make install
@@ -282,7 +282,7 @@ make install
 # clang Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories with CMake:
 # Generic when netCDF is in ~/anaconda (MacOS katabatic)
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 unset NETCDF_ROOT
 export NETCDF_INC='/usr/local/opt/netcdf/include'
 export NETCDF_LIB='/usr/local/opt/netcdf/lib'
@@ -317,18 +317,18 @@ make install
 # Personal recipe last used successfully: 20210817
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 export PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
 export LD_LIBRARY_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
 # NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
 # 20220104 NB: ANTLR_ROOT in ${HOME} is only used at compile-time, not run-time
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ 20201208 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on andes:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
@@ -356,14 +356,14 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-
 # Fails to link to system-installed udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/spack-0.10.0/opt/spack/linux-centos6-x86_64/gcc-5.3.0/netcdf-4.4.1.1-2dtwbu4ojkwj5tqd4uqvomnu6ecmh6tx' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/spack-0.10.0/opt/spack/linux-centos6-x86_64/gcc-5.3.0/netcdf-4.4.1.1-2dtwbu4ojkwj5tqd4uqvomnu6ecmh6tx' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ 20171013 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cheyenne:
 # Sysadmin upgrade request: cislhelp@ucar.edu # NCAR Maintainer = Pat Nichols
@@ -382,7 +382,7 @@ export LINUX_CXX='g++ -std=c++11'
 export PATH=${PATH}:/opt/pbs/bin # needed for qsub
 export PATH=${PATH}:/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0/lib:/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib:/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib # needed to run NCO
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0' GSL_INC='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/include' SL_LIB='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib' NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib' OPTS=D allinone;cd -
 
@@ -395,19 +395,19 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Personal recipe last modified: 20201221 (use gcc netCDF 4.7.4)
 # Personal recipe last used successfully: 20210321
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 module load gcc/9.2.0-ugetvbp
 module load openmpi/4.0.4-hpcx-hghvhj5
 # module load netcdf-c/4.7.4-a4uk6zy (only for non-anaconda builds)
-# ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy' UDUNITS2_PATH=${HOME} ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+# ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy' UDUNITS2_PATH=${HOME} ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Default as of 20210924 is to build with Anaconda
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on compy
 # https://acme-climate.atlassian.net/wiki/spaces/ED/pages/928973795/CompyMcNodeFace+-+E3SM+RGMA+ESMD+dedicated+system+at+PNNL
@@ -423,14 +423,14 @@ module load gcc/8.1.0
 module load mvapich2/2.3.1 # Required for ncclimo/ncremap in MPI-mode
 module load netcdf/4.6.3
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/gcc/8.1.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/gcc/8.1.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/gcc/8.1.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/gcc/8.1.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # 20210104 Compy with Intel compilers: works except scripts do not find/load Intel libiomp5.so.0
 source /share/apps/intel/2020/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64 # Compy
@@ -440,14 +440,14 @@ module load intelmpi/2020 # Required for ncclimo/ncremap in MPI-mode
 module load netcdf/4.6.3
 #module load mkl/2020 # Does not hurt but not necessary?
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1 # works
-ANTLR_ROOT=${HOME} CC='icx -static-intel -qopenmp-link=static' CXX='icx -static-intel -qopenmp-link=static' LDFLAGS='-L/usr/lib64 -L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1 # fails with ld: cannot find -lm but -lm is not necessary and removing it fixes the issue
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # works
+ANTLR_ROOT=${HOME} CC='icx -static-intel -qopenmp-link=static' CXX='icx -static-intel -qopenmp-link=static' LDFLAGS='-L/usr/lib64 -L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # fails with ld: cannot find -lm but -lm is not necessary and removing it fixes the issue
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
 
 # 20150901: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cooley:
 # Sysadmin upgrade request: support@alcf.anl.gov # ALCF Maintainer = 
@@ -456,15 +456,15 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 # Personal recipe last modified: 20170825
 # Personal recipe last used successfully: 20190420
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 cd ~/nco;git reset --hard origin/master
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/unsupported/netcdf-4.4.1.1' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/unsupported/netcdf-4.4.1.1' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # 20200105 Try NERSC-recommended procedures:
 # https://www.nersc.gov/assets/Uploads/04-PE-Compilations-NewUserTraining-20190621.pdf
@@ -487,14 +487,14 @@ export HDF5_DISABLE_VERSION_CHECK=1
 export HDF5_USE_FILE_LOCKING=FALSE
 #module load udunits
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='gcc' CXX='g++' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_DIR='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2' NETCDF_INC='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.7.3.3' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='gcc' CXX='g++' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_DIR='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2' NETCDF_INC='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.7.3.3' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 # 20200131 Optimize build for Cori KNL (use NERSC compiler wrappers)
 # This "works" yet shows no weight-generation speed advantages compared to Haswell
 # 20200203: KNL-optimized binaries on login nodes (Haswell) cause "Illegal Instruction" errors
@@ -504,14 +504,14 @@ module swap craype-haswell craype-mic-knl
 module swap PrgEnv-intel PrgEnv-gnu
 module load gcc # Activate GCC8
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_INC='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.7.3.3' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_INC='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.7.3.3' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori with Intel:
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
@@ -522,14 +522,14 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 #module add PrgEnv-intel # Link-stage
 module load intel # Link-stage cannot find -lsvml etc
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='icc' CXX='icpc' GSL_ROOT='/usr/common/software/gsl/2.1/intel' NETCDF_INC='/opt/cray/pe/netcdf/4.6.1.3/intel/16.0/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.6.1.3/intel/16.0/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.6.1.3' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/intel' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='icc' CXX='icpc' GSL_ROOT='/usr/common/software/gsl/2.1/intel' NETCDF_INC='/opt/cray/pe/netcdf/4.6.1.3/intel/16.0/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.6.1.3/intel/16.0/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.6.1.3' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/intel' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori with NVidia:
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
@@ -538,7 +538,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Personal recipe last modified: 20201210 (attempting nvidia)
 # Personal recipe last used successfully: fxm 
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 #export rch_sfx='cori' 
 bsrc
 export rch_sfx='cgpu' 
@@ -549,26 +549,26 @@ export PATH=${MY_BIN_DIR}:${PATH}
 export LD_LIBRARY_PATH=${MY_LIB_DIR}:${LD_LIBRARY_PATH}
 module purge && module load cgpu
 module load hpcsdk/20.11
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='nvc' CXX='nvc++' GSL_ROOT='/usr/common/software/gsl/2.1/intel' NETCDF_INC='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.7.3.3' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/intel' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='nvc' CXX='nvc++' GSL_ROOT='/usr/common/software/gsl/2.1/intel' NETCDF_INC='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.7.3.3' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/intel' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on greenplanet
 # Personal recipe last modified: 20190526
 # Personal recipe last used successfully: 20190526 (no antlr or ncap2)
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CXX='g++' LDFLAGS='-L/lib64' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='gcc' CXX='g++' LDFLAGS='-L/lib64' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ 20210215 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on hpc3:
 # Sysadmin upgrade request: 
@@ -578,7 +578,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Personal recipe last used successfully: 20210215
 cd ~/nco;git reset --hard origin/master
 module load gcc/8.4.0
-CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 
 # 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on mira:
 # Sysadmin upgrade request: 20170825
@@ -586,14 +586,14 @@ CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_I
 # Personal recipe last modified: 2016??
 # Personal recipe last used successfully: 2016??
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/netcdf/current' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/netcdf/current' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on roger:
 # Sysadmin upgrade request: Yan Liu <yanliu@illinois.edu>
@@ -603,14 +603,14 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 module load netcdf/4.4.0
 module load udunits
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib CC='gcc' CXX='g++' UDUNITS2_PATH='/sw/udunits-2.1.24' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib CC='gcc' CXX='g++' UDUNITS2_PATH='/sw/udunits-2.1.24' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # 20180124: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on theta:
 # Sysadmin upgrade request: support@alcf.anl.gov
@@ -623,18 +623,18 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # module use /projects/ClimateEnergy_2/software/modulefiles/all
 # module load e3sm-unified/1.1.2
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 module load cray-netcdf
 #module add PrgEnv-intel
 #module swap PrgEnv-intel PrgEnv-gnu
 #module swap PrgEnv-gnu PrgEnv-intel
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_theta CC='icc' CXX='icpc' GSL_ROOT='csz_not_available_yet' NETCDF_INC='/opt/cray/pe/netcdf/4.4.1.1.6/intel/16.0/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.4.1.1.6/intel/16.0/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.4.1.1.6' UDUNITS2_PATH='csz_not_available_yet' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_theta CC='icc' CXX='icpc' GSL_ROOT='csz_not_available_yet' NETCDF_INC='/opt/cray/pe/netcdf/4.4.1.1.6/intel/16.0/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.4.1.1.6/intel/16.0/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.4.1.1.6' UDUNITS2_PATH='csz_not_available_yet' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 # 20180823 Attempt with bld/Makefile:
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
@@ -664,134 +664,134 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL=N NETCDF_ROOT='/opt/cray/netcdf/4.4.1.1
 
 # gcc/g++ Sysadmins: use this to install/update NCO in /opt/nco
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure --disable-shared --enable-optimize-custom --prefix=/opt/nco > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-sudo make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+./configure --disable-shared --enable-optimize-custom --prefix=/opt/nco > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+sudo make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Sysadmins: use this to install/update NCO in /usr/local
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure --disable-shared --enable-optimize-custom --prefix=/usr/local > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-sudo make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+./configure --disable-shared --enable-optimize-custom --prefix=/usr/local > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+sudo make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # g++/g++ Zender uses this to compile NCO with g++ (not recommended!) instead of gcc
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='g++' CXX='g++' ./configure --disable-shared --disable-udunits --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='g++' CXX='g++' ./configure --disable-shared --disable-udunits --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to compile NCO with GCC and netCDF4
 # --enable-optimize-custom fails with netCDF4 which shadows "access" variable
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CXX='g++' NETCDF4_ROOT='/usr/local/netcdf4' ./configure --enable-netcdf4 --enable-dap-netcdf --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='gcc' CXX='g++' NETCDF4_ROOT='/usr/local/netcdf4' ./configure --enable-netcdf4 --enable-dap-netcdf --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 gcc/g++ Developers use --enable-maintainer-mode to verify auto-tools work correctly, and to mandate rebuilding of "special files" (ncap_yacc.c, ncap_lex.c) correctly:
 (requires complete, up-to-date, GNU development toolchain):
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 aclocal # Create aclocal.m4 from acinclude.m4
 autoheader # Create config.h.in from configure.ac
 automake --foreign # Create Makefile.in from Makefile.am
 autoconf # Create ./configure from ./configure.ac
 # Debugging
-./configure --disable-shared --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+./configure --disable-shared --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Production
-./configure --disable-shared --enable-maintainer-mode --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+./configure --disable-shared --enable-maintainer-mode --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 como:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='como --c99' CXX='como' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='como --c99' CXX='como' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 icc:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='icc' CPPFLAGS="-I${IA32ROOT}/include -I${IA32ROOT}/include/c++" CXX='icpc' LDFLAGS="-L${IA32ROOT}/lib" ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='icc' CPPFLAGS="-I${IA32ROOT}/include -I${IA32ROOT}/include/c++" CXX='icpc' LDFLAGS="-L${IA32ROOT}/lib" ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 pathcc:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='pathcc' CXX='pathCC' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='pathcc' CXX='pathCC' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 pgcc:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='pgcc' CXX='pgCC' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='pgcc' CXX='pgCC' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 pgcc on mpc64.nacs.uci.edu (C-shell environment):
 setenv GNU_TRP `${HOME}/nco/autobld/config.guess`
-cd ${HOME}/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ${HOME}/nco;/bin/rm -f *.foo;make distclean
 # Bash
-ANTLR_ROOT='/software/antlr' CC='pgcc' CXX='pgCC' UDUNITS_PATH='/software/udunits' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.${GNU_TRP}.foo 
+ANTLR_ROOT='/software/antlr' CC='pgcc' CXX='pgCC' UDUNITS2_PATH='/software/udunits' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.foo 
 # Csh
-setenv ANTLR_ROOT '/software/antlr';setenv CC 'pgcc';setenv CXX 'pgCC';setenv UDUNITS_PATH '/software/udunits';./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.${GNU_TRP}.foo 
+setenv ANTLR_ROOT '/software/antlr';setenv CC 'pgcc';setenv CXX 'pgCC';setenv UDUNITS2_PATH '/software/udunits';./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.foo 
 # env
-env ANTLR_ROOT='/software/antlr' CC='pgcc' CXX='pgCC' PATH=${PATH}\:'/software/netcdf/bin'\:'/software/antlr/bin' UDUNITS_PATH='/software/udunits' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.${GNU_TRP}.foo 
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+env ANTLR_ROOT='/software/antlr' CC='pgcc' CXX='pgCC' PATH=${PATH}\:'/software/netcdf/bin'\:'/software/antlr/bin' UDUNITS2_PATH='/software/udunits' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.foo 
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # Old machines:
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on pileus:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/opt/ACME/uvcdat-2.2-build/install/Externals' UDUNITS2_PATH='/opt/ACME/uvcdat-2.2-build/install/Externals' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/opt/ACME/uvcdat-2.2-build/install/Externals' UDUNITS2_PATH='/opt/ACME/uvcdat-2.2-build/install/Externals' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # icc/icpc 20160217 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on yellowstone:
 # Sysadmin upgrade request: cislhelp@ucar.edu
@@ -853,45 +853,45 @@ x86_64-unknown-linux-gnu
 # gcc/g++ Regular (non-root) users build NCO with system-supplied netCDF and install in your own directories
 # Zender uses this on MACOS sastrugi/firn as well
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 # Pre-20180729 (antlr from macports seems to have stopped linking, so build it from scratch)
-CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Firn 20180729 (works)
-ANTLR_ROOT=${HOME} CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT=${HOME} CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Sastrugi 20180729 (works with gcc, clang, and icc)
-ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Sastrugi 20201215 with CCR, 20210608 update: works with Hombrew, not with MacPorts
-ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Rigb 20190912 (fxm)
-ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='' CXX=${LINUX_CXX} CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='' CXX=${LINUX_CXX} CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Sysadmins use/modify this to install/update NCO in /usr/local, based on netCDF4 also in /usr/local (works on givre 20100727):
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CPPFLAGS='-DHAVE_NETCDF4_H -I/usr/local/include' LDFLAGS='-L/usr/local/lib' ./configure --prefix='/usr/local' --enable-ncap2 --enable-netcdf4 > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-sudo make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CPPFLAGS='-DHAVE_NETCDF4_H -I/usr/local/include' LDFLAGS='-L/usr/local/lib' ./configure --prefix='/usr/local' --enable-ncap2 --enable-netcdf4 > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+sudo make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to debug NCO with pre-built (i.e., yum/dnf install'd or aptitude install'd) netCDF in /usr (glace)
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to debug NCO with custom-install netCDF (and ESMF) binaries in /usr/local (grele)
 # Personal recipe last modified: 20200601
@@ -900,59 +900,59 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 
 # gcc/g++ Zender uses this to debug NCO with pre-built netCDF binaries in /usr (skyglow, e3sm.ess.uci.edu)
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 # Pre-20170810 GCC7 dies on nco_yyget_leng() prototype with --enable-debug-custom option
-#CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+#CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # 20170810 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
-#CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+#CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # 20191217 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
-CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-# 20210511 Use updated netCDF from Anaconda
-CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_ROOT="${HOME}/anaconda" UDUNITS_PATH="${HOME}/anaconda/include" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+# 20210511 Use updated netCDF from Anaconda (failed to find UDUNITS then broke when upgrading anaconda from gcc 9.3 to 11.2, because system still stuck at 9.3?)
+CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda/include" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # 20210511 with CCR: borken due to missing ccr.h
-CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_ROOT="${HOME}/anaconda" UDUNITS_PATH="${HOME}/anaconda/include" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda/include" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # 20210520 with CCR: borken due to unresolved -lhdf5 -lhdf5_hl -lnetcdff which must be manually linked
-CC=${LINUX_CC} CFLAGS="-Wall -DNCO_ABORT_ON_ERROR -I${HOME}/include" CXX=${LINUX_CXX} CXXFLAGS="-Wall -I${HOME}/include" LDFLAGS="-lhdf5 -lhdf5_hl -lnetcdff" NETCDF_ROOT="${HOME}/anaconda" UDUNITS_PATH="${HOME}/anaconda/include" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+CC=${LINUX_CC} CFLAGS="-Wall -DNCO_ABORT_ON_ERROR -I${HOME}/include" CXX=${LINUX_CXX} CXXFLAGS="-Wall -I${HOME}/include" LDFLAGS="-lhdf5 -lhdf5_hl -lnetcdff" NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda/include" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to debug NCO with custom-built netCDF binaries in /usr/local with clang (frazil)
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco;/bin/rm -f *.foo;make distclean
 # 20170810 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
-CC='clang' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='clang -std=c++11' CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+CC='clang' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='clang -std=c++11' CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # g++/g++ Zender uses this to compile NCO with _g++_ (not recommended for normal use)
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='g++' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='g++' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 pgcc/pgCC:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='pgcc' CFLAGS='-fast -fPIC' CXX='pgCC' CXXFLAGS='-fast -fPIC' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='pgcc' CFLAGS='-fast -fPIC' CXX='pgCC' CXXFLAGS='-fast -fPIC' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 ************************************************************************
 End LINUXAMD64
 ************************************************************************
@@ -966,26 +966,26 @@ LINUXALPHA
 Linux ess1.ess.uci.edu 2.2.15 #1 Thu May 18 17:22:29 EDT 2000 alpha unknown
 
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 zender@usf-cf-alpha-linux-1:~/nco/bld$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUXALPHA
 Linux usf-cf-alpha-linux-1 2.4.17 #1 SMP Fri Jan 4 13:37:30 PST 2002 alpha unknown
 
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 ************************************************************************
 End LINUXALPHA
 ************************************************************************
@@ -1000,13 +1000,13 @@ Linux usf-cf-ppc-linux-1 2.2.17-pre1 #2 SMP Fri Jun 16 12:39:25 MDT 2000 ppc unk
 
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 ************************************************************************
 End LINUXPPC
 ************************************************************************
@@ -1021,13 +1021,13 @@ Linux usf-cf-sparc-linux-1 2.4.18 #2 Thu Apr 11 14:37:17 EDT 2002 sparc64 unknow
 
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 ************************************************************************
 End LINUXSPARC64
 ************************************************************************
@@ -1048,13 +1048,13 @@ powerpc-apple-darwin8.2.0
 gcc/g++:
 export PVM_ARCH=`~/nco/bld/pvmgetarch`
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib ./configure --disable-regex --disable-shared --prefix=${HOME} --bindir=${HOME}/bin --datadir=${HOME}/nco/data --libdir=${HOME}/lib --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib ./configure --disable-regex --disable-shared --prefix=${HOME} --bindir=${HOME}/bin --datadir=${HOME}/nco/data --libdir=${HOME}/lib --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 ************************************************************************
 End MACOS
 ************************************************************************
@@ -1070,33 +1070,33 @@ mips-sgi-irix6.5
 
 cc/CC ABI64:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='cc -c99' CFLAGS='-64 -mips4' CXX='CC -64 -LANG:std' CXXFLAGS='-64 -mips4 -LANG:std' LDFLAGS='-64 -LANG:std' NETCDF_INC='/usr/local/include' UDUNITS_PATH='/contrib/udunits-1.12.4' ./configure --disable-ncoxx --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='cc -c99' CFLAGS='-64 -mips4' CXX='CC -64 -LANG:std' CXXFLAGS='-64 -mips4 -LANG:std' LDFLAGS='-64 -LANG:std' NETCDF_INC='/usr/local/include' UDUNITS2_PATH='/contrib/udunits-1.12.4' ./configure --disable-ncoxx --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 cc/CC ABI32:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='cc -c99' CXX='CC' CXXFLAGS='-LANG:std' LDFLAGS='-LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' UDUNITS_PATH='/contrib' ./configure --disable-ncoxx --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='cc -c99' CXX='CC' CXXFLAGS='-LANG:std' LDFLAGS='-LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' UDUNITS2_PATH='/contrib' ./configure --disable-ncoxx --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 gcc/g++ ABI32:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CXX='g++' NETCDF_INC='/usr/local/include' ./configure --disable-ncoxx --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='gcc' CXX='g++' NETCDF_INC='/usr/local/include' ./configure --disable-ncoxx --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 ************************************************************************
 End SGIMP64
 ************************************************************************
@@ -1114,34 +1114,34 @@ sparc-sun-solaris2.9
 For ABI=64:
 cc/CC:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='/opt/SUNWspro/bin/cc' CPPFLAGS='-DNC_64BIT_OFFSET=0' CXX='/opt/SUNWspro/bin/CC' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='/opt/SUNWspro/bin/cc' CPPFLAGS='-DNC_64BIT_OFFSET=0' CXX='/opt/SUNWspro/bin/CC' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 For ABI=32:
 cc/CC:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='/opt/SUNWspro/bin/cc' CPPFLAGS='-DNC_64BIT_OFFSET=0' CXX='/opt/SUNWspro/bin/CC' LD='/usr/ccs/bin/ld -z muldefs' LDFLAGS='-z muldefs -L/opt/SUNWspro/lib' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='/opt/SUNWspro/bin/cc' CPPFLAGS='-DNC_64BIT_OFFSET=0' CXX='/opt/SUNWspro/bin/CC' LD='/usr/ccs/bin/ld -z muldefs' LDFLAGS='-z muldefs -L/opt/SUNWspro/lib' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CPPFLAGS='-DNC_64BIT_OFFSET=0' CXX='g++' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+cd ~/nco;/bin/rm -f *.foo;make distclean
+CC='gcc' CPPFLAGS='-DNC_64BIT_OFFSET=0' CXX='g++' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 ************************************************************************
 End SUNMP
 ************************************************************************
