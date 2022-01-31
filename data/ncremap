@@ -352,6 +352,10 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #          2 = As in dbg_lvl=1, but DO NOT EXECUTE COMMANDS (i.e., pretend to run but do not regrid anything)
 #          3 = As in dbg_lvl=1, and pass debug level through to NCO/ncks
 
+# 20220130 Re-source E3SMU scripts from within NCO scripts to find NCO binaries on login nodes
+if [ "${E3SMU_MPI}" = 'NOMPI' ] && [ -n "${E3SMU_SCRIPT}" ] ; then
+   source ${E3SMU_SCRIPT}
+fi # !E3SMU_MPI
 # Set NCO version and directory
 nco_exe=`which ncks`
 if [ -z "${nco_exe}" ]; then

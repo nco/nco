@@ -2,9 +2,11 @@
 
 	* NCO 5.0.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.6-alpha02: Chiang Rai';git push
-	git tag -a 5.0.6-alpha02 -m 'ncclimo basename fl_in[0] fix; ncremap sgs_frc_usr fix;';git push --tags
+	git tag -a 5.0.6-alpha02 -m 'ncclimo/ncremap re-source E3SMU on login nodes; ncclimo basename fl_in[0] fix; ncremap sgs_frc_usr fix;';git push --tags
 
-	* ncclimo prevent basename() from operating on undefined fl_in[0]
+	* Re-source E3SMU scripts from within NCO scripts to find NCO binaries on login nodes
+
+	* ncclimo prevent basename() from operating on undefined fl_in[0] in inp_aut mode
 
 2022-01-29  Charlie Zender  <zender@uci.edu>
 
