@@ -402,9 +402,11 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #          ncclimo -m clm2 ... -R col_nm=lndgrid -r map.nc ...
 # thr_nbr: Thread number to use in NCO regridder, '-t 1' for one thread, '-t 2' for two threads...
 
-# 20220130 Re-source E3SMU scripts from within NCO scripts to find NCO binaries on login nodes
-if [ "${E3SMU_MPI}" = 'NOMPI' ] && [ -n "${E3SMU_SCRIPT}" ] ; then
-   source ${E3SMU_SCRIPT}
+# 20220131 ncclimo/ncremap commands within scripts that open E3SMU environment
+# (e.g., zppy-generated scripts) must be told where to find NCO binaries.
+# Only necessary on login nodes since Spack handles this fine on compute nodes
+if [ "${E3SMU_MPI}" = 'NOMPI' ] && [ -n "${E3SMU_SCRIPT}" ] && [ -n "${CONDA_PREFIX}" ]; then
+   export PATH="${CONDA_PREFIX}/bin"\:${PATH}
 fi # !E3SMU_MPI
 # Set NCO version and directory
 nco_exe=`which ncks`
