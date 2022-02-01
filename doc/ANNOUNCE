@@ -1,19 +1,15 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.0.5 are cartwheeling towards you.
+netCDF Operators NCO version 5.0.6 have reached orbit near L2
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.5 brings a new lossy quantization codec, BitRound.
-Granular BitGroom has been renamed Granular BitRound.
-ncclimo has improved API consistency between climo generation and
-timeseries extraction. ncatted introduces a new editing mode:
-prepending. If these issues do not interest you, you might skip
-5.0.5. 
+Version 5.0.6 brings a few bug-fixes that only affect ncremap and
+ncclimo users. Others can skip 5.0.6. 
 
-Work on NCO 5.0.6 has commenced and will improve ncremap support
+Work on NCO 5.0.7 has commenced and will improve ncremap support
 for mbtempest, incorporate new mbtempest improvements, and further
 improve support for quantization/compression algorithms.
 
@@ -22,78 +18,23 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Arithmetic operators now support the lossy quantization algorithm
-known as BitRound. The BitRound algorithm is described in "A note on
-precision-preserving compression of scientific data" by R. Kouznetsov,
-doi:10.5194/gmd-14-377-2021. BitRound has been used to quantize more
-accurately in NCO's BitGroom and GranularBR algorithms for over a
-year. However, though algorithms select the number of bits to quantize
-internally. Now BitRound is an independently configurable algorithm in
-its own right. It takes a user-specified number of significant bits
-(NSB, or "keepbits) to retain. The NSB argument contrasts with the
-number of significant digits (NSD) parameter expected by BitGroom,
-DigitRound, and GranularBR. BitRound is Bit-Adjustment-Algorithm #8.  
-
-ncks --baa=8 --ppc default=9 in.nc out.nc # BitRound NSB=9
-ncks --baa=4 --ppc default=3 in.nc out.nc # GranularBR NSD=3
-
-Thanks to Milan Klower and R. Kouznetsov for prototyping BitRound in
-the first place.
-
-B. ncclimo now accepts filenames from stdin or positional arguments
-in monthly climo mode. Previously, ncclimo self-generated input
-filenames for monthly climos, given the caseid, and start/end years.
-Now ncclimo can be fed a list of filenames to climatologize.
-The API is identical to providing filenames to the splitter:
-pipe filenames through stdin or place them on the command-line.
-This makes the climo generator even more flexible than the splitter
-which cannot (yet) generate filenames internally. However, the
-flexibility of providing filenames via stdin or positional arguments
-is more error-prone than using internally generated filenames that
-are, by construction, guaranteed to be in the correct sequence.
-User-provided filenames are vetted en masse to ensure that the
-expected number of files for the specified climatology are present.
-They are not vetted to ensure that they are in the correct order,
-i.e., January then February then March of the correct year etc.
-The $caseid argument is optional when the user provides the files.
-However, ncclimo needs to know what to name the output files.
-The $caseid argument or the $fml_nm argument, when present, provides 
-the output filename stub. When neither of these options are present
-ncclimo will name the output files after the model name, if known.
-
-ls mpaso*.nc | ncclimo -P mpaso -s 50 -e 100 -o out # Stdin
-ls eam*h0*.nc | ncclimo --fml=name -s 50 -e 100 -o out # Stdin
-ncclimo -P mpaso -s 50 -e 100 -o out mpaso*.nc # Positional
-ncclimo --fml=name -s 50 -e 100 -o out eam*h0*.nc # Positional
-
-http://nco.sf.net/nco.html#ncclimo
-
-C. ncatted has a new edit mode: Prepend. Analogous to append mode,
-prepend mode will prepend the user-specified value to the attribute
-and if the attribute does not exist it will be created:
-
-ncatted -a char_att,att_var,p,c,"this is prepended.\n" in.nc out.nc
-
-http://nco.sf.net/nco.html#att_prepend
+A. None
 
 BUG FIXES:
    
-A. ncclimo 5.0.4 inadvertently broke automatic filename generation for
-MPAS. The workaround is to pipe the input filenames through stdin or
-supply them on the command-line. The solution is to upgrade. Thanks to
-Xylar Asay-Davis for reporting this issue.
+A. ncclimo and ncremap provided by the E3SM-Unified on login nodes  
+(i.e., Conda, by Spack as on compute nodes) were unable to find
+any Conda binaries when invoked within scripts (i.e., not
+interactively from the command line). There is no workaround.
+The solution is to upgrade. Thanks to Wuyin Lin for reporting this.
 
-B. ncclimo 5.0.4 always prepending the CWD of the operator to the
-input file location in climo mode. This prevented ncclimo from working
-correctly with stdin filenames that included an absolute path.
-The workaround is to run ncclimo from the input file directory.
-The solution is to upgrade. Thanks again to Xylar Asay-Davis for
-reporting this issue. 
+B. ncremap 5.0.5 sometimes overwrote user-specified values of sgs_frc
+that were passed from ncclimo. This prevented ncremap from working
+with sgs_frc variables in external files. The workaround is to run
+ncremap separately from ncclimo. The solution is to upgrade.
 
-C. ncatted had a longstanding bug triggered when using modify mode to
-try to change the value of the _FillValue attribute in a netCDF4 file
-when the attribute did not already exist. Talk about a corner case!
-The solution is to upgrade.
+C. ncclimo sometimes invoked the Bash basename() intrinsic on
+non-existent arrays. Fixed. 
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
@@ -101,7 +42,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.0.5 built/tested under
+These problems occur with NCO 5.0.6 built/tested under
 MacOS 12.1 with netCDF 4.8.1 on HDF5 1.12.0 and with
 Linux with netCDF 4.8.1 on HDF5 1.8.19.
 
