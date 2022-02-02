@@ -412,6 +412,7 @@ fi # !E3SMU_MPI
 nco_exe=`which ncks`
 if [ -z "${nco_exe}" ]; then
     echo "${spt_nm}: ERROR Unable to find NCO, \${nco_exe} = ${nco_exe}"
+    echo "${spt_nm}: HINT Carefully examine your environment setup (e.g., .bashrc) to avoid inadvertently overriding (with, e.g., conda-initialization) paths intended to be provided by an analysis-package environment (e.g., E3SM-Unified)"
     exit 1
 fi # !nco_exe
 # StackOverflow method finds NCO directory
@@ -1146,9 +1147,9 @@ if [ -n "${fml_nm_usr}" ]; then
     fml_nm="${fml_nm_usr}"
     out_nm="${fml_nm}"
 fi # !fml_nm
-if [ -z "${out_nm}" ] && [ -z "${fml_nm}" ]; then 
-    printf "${spt_nm}: ERROR ${spt_nm} Neither \$caseid nor \$fml_nm options were invoked so ${spt_nm} does not know what to name the output files\n"
-    printf "${spt_nm}: HINT Use \"--caseid=name\" or \"--fml_nm=name\" to provide a name for the output files. The name string need not be present in any of the input filenames if the input files are provided via stdin, positional arguments, or globbing\n"
+if [ "${clm_flg}" = 'Yes' ] && [ -z "${out_nm}" ] && [ -z "${fml_nm}" ]; then 
+    printf "${spt_nm}: ERROR ${spt_nm} User requested climatology generation yet invoked neither \$caseid nor \$fml_nm options nor specified a supported automatic name-generation option (e.g., --mdl=mpaso for MPAS) so ${spt_nm} does not know what to name the output files\n"
+    printf "${spt_nm}: HINT Use \"--caseid=name\" or \"--fml_nm=name\" to provide a name for the output files. If the input files are provided via stdin, positional arguments, or globbing then the name string will only be used for output names and need not be present in any of the input filenames\n"
 fi # !out_nm
 if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'hfc' ] && [ "${clm_md}" != 'hfs' ] && [ "${clm_md}" != 'mth' ]; then 
     echo "${spt_nm}: ERROR User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', hfc', 'hfs', and 'mth' (default)"

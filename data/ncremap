@@ -362,6 +362,7 @@ fi # !E3SMU_MPI
 nco_exe=`which ncks`
 if [ -z "${nco_exe}" ]; then
     echo "ERROR: Unable to find NCO, nco_exe = ${nco_exe}"
+    echo "${spt_nm}: HINT Carefully examine your environment setup (e.g., .bashrc) to avoid inadvertently overriding (with, e.g., conda-initialization) paths intended to be provided by an analysis-package environment (e.g., E3SM-Unified)"
     exit 1
 fi # !nco_exe
 # StackOverflow method finds NCO directory

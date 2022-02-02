@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.6: Alanis';git push
 	git tag -a 5.0.6 -m 'ncclimo/ncremap E3SMU Conda PATH; ncclimo bs_nm fl_in[0] fix; ncremap sgs_frc_usr fix;';git push --tags
 
+	* ncremap/ncclimo add HINT for when NCO binaries not found
+
+	* ncclimo eliminate warnings when caseid and fml_nm not provided in timeseries mode
+
 2022-01-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.6-alpha02 release procedure:
