@@ -26088,9 +26088,9 @@ Introduced in @acronym{NCO} version 5.0.0 (released June, 2021),
 this switch (which takes no argument) causes the regridder to
 apply @var{msk_out} (i.e., @code{mask_b}) to variables after
 regridding.
-Some weight generators (e.g., Tempest) ignore masks and thus produce
-non-zero weights for masked destination cells, and/or from masked
-source cells.
+Some weight generators (e.g., TempestRemap) ignore masks and thus
+produce non-zero weights for masked destination cells, and/or from
+masked source cells.
 This flag causes regridded files produced with such map-files to
 adhere to the destination mask rules (though source mask rules may
 still be violated).

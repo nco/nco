@@ -4944,7 +4944,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Determining whether an individual field _uses_ missing values is important because
 	   memory requirements of next four malloc's (i.e., exclusive of wgt_raw) can sum to 
 	   ~7*sizeof(uncompressed var) for NC_FLOAT and ~3.5*sizeof(uncompressed var) for NC_DOUBLE.
-	   Traditionally has_mss_val answers "does this variable _have_ and explicit missing value?"
+	   Traditionally has_mss_val answers "does this variable _have_ an explicit missing value?"
 	   As of 20210909, we expand the meaning of has_mss_val, though only in nco_rgr_wgt() 
 	   Now has_mss_val means does the variable use the explicitly defined missing value, or,
 	   failing that, does it use the implicitly defined missing value?
@@ -5270,7 +5270,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 	    if(frc_out[dst_idx] == 0.0){
 	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-		var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]=NC_FILL_DOUBLE;
+		/* 20220207: Inititalize to mss_val_cmp_dbl instead of NC_FILL_DOUBLE
+		   Fixes fields that had _FillValue attribute and no _FillValue values */
+		var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]=mss_val_cmp_dbl;
 	      } /* !lvl_idx */
 	    } /* !frc_out */
 	  } /* !dst_idx */

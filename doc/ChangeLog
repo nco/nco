@@ -1,3 +1,11 @@
+2022-02-07  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.7-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha01: fxm';git push
+	git tag -a 5.0.7-alpha01 -m '';git push --tags
+
+	* ncremap/nco_rgr.c: Use mss_val_cmp_dbl not NC_FILL_DOUBLE with --add_fll
+
 2022-02-03  Charlie Zender  <zender@uci.edu>
 
 	* tpt_brt.nco: Remove coordinates attribute in tpt_brt.nco so Panoply plots
