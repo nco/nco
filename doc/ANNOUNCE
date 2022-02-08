@@ -1,15 +1,15 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.0.6 have reached orbit near L2
+netCDF Operators NCO version 5.0.7 have reached orbit near L2
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.6 brings a few bug-fixes that only affect ncremap and
-ncclimo users. Others can skip 5.0.6. 
+Version 5.0.7 brings a few bug-fixes that only affect ncremap and
+ncclimo users...
 
-Work on NCO 5.0.7 has commenced and will improve ncremap support
+Work on NCO 5.0.8 has commenced and will improve ncremap support
 for mbtempest, incorporate new mbtempest improvements, and further
 improve support for quantization/compression algorithms.
 
@@ -22,19 +22,10 @@ A. None
 
 BUG FIXES:
    
-A. ncclimo and ncremap provided by the E3SM-Unified on login nodes  
-(i.e., Conda, by Spack as on compute nodes) were unable to find
-any Conda binaries when invoked within scripts (i.e., not
-interactively from the command line). There is no workaround.
-The solution is to upgrade. Thanks to Wuyin Lin for reporting this.
-
-B. ncremap 5.0.5 sometimes overwrote user-specified values of sgs_frc
-that were passed from ncclimo. This prevented ncremap from working
-with sgs_frc variables in external files. The workaround is to run
-ncremap separately from ncclimo. The solution is to upgrade.
-
-C. ncclimo sometimes invoked the Bash basename() intrinsic on
-non-existent arrays. Fixed. 
+A. ncremap corner case when variable has _FillValue attribute but no
+missing data values could be incorrectly filled in destination
+gridcells with no source contribution. Thanks to Chris Golaz and
+Xylar Asay-Davis for reporting.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
@@ -42,7 +33,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.0.6 built/tested under
+These problems occur with NCO 5.0.7 built/tested under
 MacOS 12.1 with netCDF 4.8.1 on HDF5 1.12.0 and with
 Linux with netCDF 4.8.1 on HDF5 1.8.19.
 
