@@ -13901,20 +13901,20 @@ A floating-point number without a postfix defaults to @code{NC_DOUBLE},
 while an integer without a postfix defaults to type @code{NC_INT}:
 @example
 @verbatim
-var[$rlev]=0.1;     // Variable will be type @code{NC_DOUBLE}
-var[$lon_grd]=2.0;  // Variable will be type @code{NC_DOUBLE}
-var[$gds_crd]=2e3;  // Variable will be type @code{NC_DOUBLE}
-var[$gds_crd]=2.0f; // Variable will be type @code{NC_FLOAT} (note "f")
-var[$gds_crd]=2e3f; // Variable will be type @code{NC_FLOAT} (note "f")
-var[$gds_crd]=2;    // Variable will be type @code{NC_INT}
-var[$gds_crd]=-3;   // Variable will be type @code{NC_INT}
-var[$gds_crd]=2s;   // Variable will be type @code{NC_SHORT}
-var[$gds_crd]=-3s;  // Variable will be type @code{NC_SHORT}
-var@att=41.;        // Attribute will be type @code{NC_DOUBLE}
-var@att=41.f;       // Attribute will be type @code{NC_FLOAT}
-var@att=41;         // Attribute will be type @code{NC_INT}
-var@att=-21s;       // Attribute will be type @code{NC_SHORT}  
-var@units="kelvin"; // Attribute will be type @code{NC_CHAR}
+var[$rlev]=0.1;     // Variable will be type NC_DOUBLE
+var[$lon_grd]=2.0;  // Variable will be type NC_DOUBLE
+var[$gds_crd]=2e3;  // Variable will be type NC_DOUBLE
+var[$gds_crd]=2.0f; // Variable will be type NC_FLOAT (note "f")
+var[$gds_crd]=2e3f; // Variable will be type NC_FLOAT (note "f")
+var[$gds_crd]=2;    // Variable will be type NC_INT
+var[$gds_crd]=-3;   // Variable will be type NC_INT
+var[$gds_crd]=2s;   // Variable will be type NC_SHORT
+var[$gds_crd]=-3s;  // Variable will be type NC_SHORT
+var@att=41.;        // Attribute will be type NC_DOUBLE
+var@att=41.f;       // Attribute will be type NC_FLOAT
+var@att=41;         // Attribute will be type NC_INT
+var@att=-21s;       // Attribute will be type NC_SHORT  
+var@units="kelvin"; // Attribute will be type NC_CHAR
 @end verbatim
 @end example 
 There is no postfix for characters, use a quoted string instead for 
