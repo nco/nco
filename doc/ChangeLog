@@ -1,3 +1,9 @@
+2022-02-18  Charlie Zender  <zender@uci.edu>
+
+	* in.cdl add all tests in CCR tst_bitgroom.c and netcdf-c/tst_quantize.c
+
+	* Set bit_xpl_nbr_sgn_dbl=52 not 53 since limits.h/climit DBL_MANT_DIG=53 (which includes implicit bit)
+
 2022-02-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.7-alpha01 release procedure:

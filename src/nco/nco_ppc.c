@@ -548,7 +548,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   
   /* Rounding is currently defined as op1:=bitmask(op1,ppc) */  
   
-  /* This routine implements the Bit Grooming Number of Significant Digits (NSD) algorithm
+  /* This routine implements the BitGrooming Number of Significant Digits (NSD) algorithm
      NSD based on absolute precision, i.e., number of digits in significand and in decimal scientific notation
      DSD based on precision relative to decimal point, i.e., number of digits before/after decimal point
      DSD is more often used colloquially, e.g., "thermometers measure temperature accurate to 1 degree C" 
@@ -576,7 +576,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      ncks -C -v ppc_big,ppc_bgr ~/foo.nc
      ncks -s '%16.12e\n' -C -H -v ppc_big,ppc_bgr ~/foo_n34.nc */
   
-  /* IEEE single- and double-precision significands have 24 and 53 bits of precision (prc_bnr)
+  /* IEEE single- and double-precision significands have 24 and 53 bits of total precision (prc_bnr)
      Decimal digits of precision (prc_dcm) obtained via prc_dcm=prc_bnr*ln(2)/ln(10) = 7.22 and 15.95, respectively
      Binary "digits" (i.e., bits) of precision (prc_bnr) obtained via prc_bnr=prc_dcm*ln(10)/ln(2) */
   
@@ -588,7 +588,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   const double dgt_per_bit_dgr=0.301029996; /* 0.301 [frc] Decimal digits per bit of precision = log10(2) used in DigitRound algorithm and code */
   
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
-  const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicitly 1. */
+  const int bit_xpl_nbr_sgn_dbl=52; /* [nbr] Bits 0-51 of DP significands are explicit. Bit 52 is implicitly 1. */
   //const int ieee_xpn_fst_flt=127; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
   //const int ieee_xpn_fst_dbl=1023; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
   
@@ -609,7 +609,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     }; /* !mnt_log10_tbl_dgr */
 #if 0 /* Not currently used */
   const double mnt_log10_tbl_gbr[5][2]=
-    { /* NB: Granular Bit Groom extends Digit Round tabular precision from 9 to 15 digits */
+    { /* NB: Granular BitGroom extends Digit Round tabular precision from 9 to 15 digits */
      {0.6,-dgt_per_bit}, /* Approximate log10(mnt) for mantissas in [0.5,0.6) as log10(0.5) = log10(2^(-1)) = -log10(2) = -dgt_per_bit = -0.301 */
      {0.7,-0.221848749616356}, /* Approximate log10(mnt) for mantissas in [0.6,0.7) as log10(0.6) = -0.222 */
      {0.8,-0.154901959985743}, /* Approximate log10(mnt) for mantissas in [0.7,0.8) as log10(0.7) = -0.155 */
@@ -924,7 +924,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       break;
       /* !DigitRound = DGR */
     case nco_baa_gbr:
-      /* Granular Bit Groom
+      /* Granular BitGroom
 	 Test GBG:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
 	 ncks -O -7 -C -D 1 --baa=4 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
@@ -1265,7 +1265,7 @@ nco_ppc_bitmask_scl /* [fnc] Round input value significand by specified number o
      Code originally from nco_ppc_bitmask() (bitmasking is my signature move)
      Code used in nco_rgr_wgt() when diagnosing whether quadrature weights properly normalized */
 
-  const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicit. */
+  const int bit_xpl_nbr_sgn_dbl=52; /* [nbr] Bits 0-51 of DP significands are explicit. Bit 52 is implicit. */
   double val_rnd; /* [frc] Rounded version of exact value */
   unsigned long int *u64_ptr;
   unsigned long int msk_f64_u64_zro;
