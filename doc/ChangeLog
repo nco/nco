@@ -1,3 +1,8 @@
+2022-02-19  Charlie Zender  <zender@uci.edu>
+
+	* No longer add additional bit to prc_bnr_xpl_rqr for BitGroom NC_DOUBLE
+	Restores BG behavior to original Zen16, netcdf-c, CCR implementations
+
 2022-02-18  Charlie Zender  <zender@uci.edu>
 
 	* in.cdl add all tests in CCR tst_bitgroom.c and netcdf-c/tst_quantize.c

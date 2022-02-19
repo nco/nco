@@ -712,7 +712,12 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     //prc_bnr_xpl_rqr=prc_bnr_ceil;
     prc_bnr_xpl_rqr=prc_bnr_ceil+1;
 
-    if(type == NC_DOUBLE) prc_bnr_xpl_rqr++; /* Seems necessary for double-precision ppc=array(1.234567,1.0e-6,$dmn) */
+    /* 20220219: Bugfix
+       Set bit_xpl_nbr_sgn_dbl=52 not 53 since limits.h/climit DBL_MANT_DIG=53 (which includes implicit bit)
+       No longer need to add an additional bit for NC_DOUBLE quantization:
+       if(type == NC_DOUBLE) prc_bnr_xpl_rqr++; // Seems necessary for double-precision ppc=array(1.234567,1.0e-6,$dmn) 
+    */
+    
     /* 20150128: Hand-tuning shows we can sacrifice one or two more bits for almost all cases
        20150205: However, small integers are an exception. In fact they require two more bits, at least for NSD=1.
        Thus minimum threshold to preserve half of least significant digit (LSD) is prc_bnr_xpl_rqr=prc_bnr_ceil

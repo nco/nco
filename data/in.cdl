@@ -470,6 +470,14 @@ variables:
         qnt_dbl_tst1:long_name = "Quantization test, double precision";
         qnt_dbl_tst1:original_values="1.111111111111";
 
+	float qnt_flt_tst2(lon_grd);
+        qnt_flt_tst2:long_name = "Quantization test, single precision";
+        qnt_flt_tst2:original_values="1.11111111, 1.0, 9.99999999, 12345.67, .1234567";
+
+	double qnt_dbl_tst2(lon_grd);
+        qnt_dbl_tst2:long_name = "Quantization test, double precision";
+        qnt_dbl_tst2:original_values="1.1111111, 1.0, 9.999999999, 1234567890.12345, 123456789012345.0";
+
 	char md5_a;
 	md5_a:long_name = "the letter a";
 	md5_a:purpose = "String with known MD5 digest"; 
@@ -1601,6 +1609,8 @@ data:
 	ppc_zro_int=0,0,0,0,0,0,0,0,0,0;
 	qnt_flt_tst1=1.1111111;
 	qnt_dbl_tst1=1.111111111111;
+	qnt_flt_tst2=1.11111111, 1.0, 9.99999999, 12345.67, .1234567;
+	qnt_dbl_tst2=1.1111111, 1.0, 9.999999999, 1234567890.12345, 123456789012345.0;
 	var_msk=0.,1.,0.,0.,1.,1.,0.,2.;
 	var_mss_nil=0.,1.,2.,3.;
 	var_mss_0=_,1.,2.,3.;
