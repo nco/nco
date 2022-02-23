@@ -225,8 +225,9 @@ nco_var_lst_fix_rec_dvd /* [fnc] Divide extraction list into fixed and record da
   } /* end loop over variables */
   *fix_lst=(nm_id_sct **)nco_realloc((void *)*fix_lst,*fix_nbr*sizeof(nm_id_sct *));
   *rec_lst=(nm_id_sct **)nco_realloc((void *)*rec_lst,*rec_nbr*sizeof(nm_id_sct *));
-
-} /* end nco_var_lst_fix_rec_dvd() */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_var_lst_fix_rec_dvd");
+  
+} /* !nco_var_lst_fix_rec_dvd() */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */

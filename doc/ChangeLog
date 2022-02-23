@@ -1,3 +1,11 @@
+2022-02-23  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.7-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha02: all: bit_xpl_dbl=52 fix';git push
+	git tag -a 5.0.7-alpha02 -m 'Jack Ryan';git push --tags
+
+	* Fix compiler warnings for clang 13.0
+
 2022-02-19  Charlie Zender  <zender@uci.edu>
 
 	* No longer add additional bit to prc_bnr_xpl_rqr for BitGroom NC_DOUBLE

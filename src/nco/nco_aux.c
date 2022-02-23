@@ -422,7 +422,6 @@ nco_aux_evl_trv
   int dmn_id=int_CEWI;
   int lat_id;
   int lon_id;
-  int rcd=NC_NOERR;
   int grp_id_lat;               /* [id] Group ID */
   int grp_id_lon;               /* [id] Group ID */
 
@@ -457,8 +456,8 @@ nco_aux_evl_trv
   lon.sz=dmn_sz;
   lon.srt=0L;
   vp_lon=(void *)nco_malloc(dmn_sz*nco_typ_lng(lon.type));
-  rcd+=nco_get_vara(grp_id_lat,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
-  rcd+=nco_get_vara(grp_id_lon,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
+  (void)nco_get_vara(grp_id_lat,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
+  (void)nco_get_vara(grp_id_lon,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
 
   lmt_sct lmt_tpl;
   (void)nco_lmt_init(&lmt_tpl);

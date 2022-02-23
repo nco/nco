@@ -835,7 +835,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"sysconf")){
 	long maxrss; /* [B] Maximum resident set size */
 	maxrss=nco_mmr_usg_prn((int)0);
-	maxrss+=0; /* CEWI */
+	if(maxrss == 0) maxrss=0; /* CEWI */
         nco_exit(EXIT_SUCCESS);
       } /* endif "sysconf" */
       if(!strcmp(opt_crr,"trr") || !strcmp(opt_crr,"terraref")){

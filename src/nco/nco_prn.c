@@ -675,8 +675,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	    }else{
               (void)nco_prn_nonfinite_flt(val_sng,prn_flg,val_flt);
-            }
-	    
+            } /* !val_flt */
 	    (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
 	  } /* !vln_idx */
 	  break;
@@ -753,6 +752,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     } /* !JSN */
 
     rcd_prn+=0; /* CEWI */
+    if(rcd_prn == 0) rcd_prn=0;
   } /* !idx */
 
   /* Omit comma and carriage-return for final attribute */
@@ -801,7 +801,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   /* Free rest of space allocated for attribute information */
   if(att_nbr_ttl > 0) att=(att_sct *)nco_free(att);
 
-} /* end nco_prn_att() */
+} /* !nco_prn_att() */
 
 const char * /* O [sng] sprintf() format string for CDL type typ */
 nco_typ_fmt_sng_var_cdl /* [fnc] Provide sprintf() format string for specified type in CDL */
@@ -1735,6 +1735,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
   if(cls_typ == NC_VLEN) ram_sz_crr=var_sz*vln_lng_avg*nco_typ_lng_udt(nc_id,bs_typ); else ram_sz_crr=var_sz*nco_typ_lng_udt(nc_id,var_typ);
   ram_sz_ttl+=ram_sz_crr;
+  if(ram_sz_ttl == 0) ram_sz_ttl=0; /* CEWI */
   
   /* Print header for variable */
   if(prn_flg->new_fmt && !prn_flg->xml && !prn_flg->jsn) prn_ndn=prn_flg->sxn_fst+prn_flg->var_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
@@ -2527,7 +2528,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(cls_typ == NC_VLEN) nco_free_vlens(var->sz,var->val.vlnp);
 
     rcd_prn+=0; /* CEWI */
-
+    if(rcd_prn == 0) rcd_prn=0;
+    
     if(CDL){
       char tmp_sng[100]={0};
       if(nco_dbg_lvl_get() >= nco_dbg_std && flg_malloc_unit_var) (void)sprintf(tmp_sng,"units=\"%s\"",unit_sng_var);

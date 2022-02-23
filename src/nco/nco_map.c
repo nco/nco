@@ -55,7 +55,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   int in_id_dst; /* I [id] Input netCDF file ID */
   int in_id_src; /* I [id] Input netCDF file ID */
   int md_open; /* [enm] Mode flag for nc_open() call */
-  int rcd=NC_NOERR;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   int dst_grid_corners_id; /* [id] Destination grid corners dimension ID */
   int dst_grid_rank_id; /* [id] Destination grid rank dimension ID */
@@ -1221,7 +1221,7 @@ nco_msh_wrt
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 2-D grid variables */
 
-  int rcd;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int shuffle; /* [flg] Turn-on shuffle filter */
   int deflate; /* [flg] Turn-on deflate filter */
   //int thr_nbr=int_CEWI; /* [nbr] Thread number */
@@ -1273,8 +1273,8 @@ nco_msh_wrt
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
-  rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_id_grd_crn);
-  rcd=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr,&dmn_id_grd_sz);
+  rcd+=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_id_grd_crn);
+  rcd+=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr,&dmn_id_grd_sz);
 
   dmn_ids[0]=dmn_id_grd_sz;
   dmn_ids[1]=dmn_id_grd_crn;
@@ -1309,14 +1309,16 @@ nco_msh_wrt
   dmn_cnt[0]=grd_sz_nbr;
   dmn_cnt[1]=grd_crn_nbr;
 
-  rcd=nco_put_vara(out_id,grd_crn_lat_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
-  rcd=nco_put_vara(out_id,grd_crn_lon_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
-  rcd=nco_put_vara(out_id,grd_area_id,dmn_srt,dmn_cnt,area,crd_typ);
+  rcd+=nco_put_vara(out_id,grd_crn_lat_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
+  rcd+=nco_put_vara(out_id,grd_crn_lon_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
+  rcd+=nco_put_vara(out_id,grd_area_id,dmn_srt,dmn_cnt,area,crd_typ);
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
-  area=(double*)nco_free(area);
+  area=(double *)nco_free(area);
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_msh_wrt"); /* CEWI */
 
   return True;
 } /* !nco_msh_wrt() */
@@ -1494,7 +1496,7 @@ int fl_out_fmt)
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 2-D grid variables */
 
-  int rcd;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int shuffle; /* [flg] Turn-on shuffle filter */
   int deflate; /* [flg] Turn-on deflate filter */
 
@@ -1590,53 +1592,55 @@ int fl_out_fmt)
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
-  rcd=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr,&dmn_ids[0]);
-  rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_ids[1]);
+  rcd+=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr,&dmn_ids[0]);
+  rcd+=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_ids[1]);
   grd_rnk_nbr=1;
-  rcd=nco_def_dim(out_id,grd_rnk_nm,grd_rnk_nbr,&dmn_ids[2]);
+  rcd+=nco_def_dim(out_id,grd_rnk_nm,grd_rnk_nbr,&dmn_ids[2]);
 
   deflate=(int)True;
   shuffle=NC_SHUFFLE;
 
   /* Define variables */
-  (void)nco_def_var(out_id,grd_crn_lat_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lat_id);
+  rcd+=nco_def_var(out_id,grd_crn_lat_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lat_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_crn_lat_id,shuffle,deflate,dfl_lvl);
   nco_msh_att_char(out_id,grd_crn_lat_id,grd_crn_lat_nm,"units","degrees");
 
-  (void)nco_def_var(out_id,grd_crn_lon_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lon_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_crn_lon_id,shuffle,deflate,dfl_lvl);
+  rcd+=nco_def_var(out_id,grd_crn_lon_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lon_id);
+  if(dfl_lvl > 0) rcd+=nco_def_var_deflate(out_id,grd_crn_lon_id,shuffle,deflate,dfl_lvl);
   nco_msh_att_char(out_id,grd_crn_lon_id,grd_crn_lon_nm,"units","degrees");
 
-  (void)nco_def_var(out_id,grd_area_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_area_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_area_id,shuffle,deflate,dfl_lvl);
+  rcd+=nco_def_var(out_id,grd_area_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_area_id);
+  if(dfl_lvl > 0) rcd+=nco_def_var_deflate(out_id,grd_area_id,shuffle,deflate,dfl_lvl);
   nco_msh_att_char(out_id,grd_area_id,grd_area_nm,"units","steradians");
 
-  (void)nco_def_var(out_id,grd_ctr_lon_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_ctr_lon_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_ctr_lon_id,shuffle,deflate,dfl_lvl);
+  rcd+=nco_def_var(out_id,grd_ctr_lon_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_ctr_lon_id);
+  if(dfl_lvl > 0) rcd+=nco_def_var_deflate(out_id,grd_ctr_lon_id,shuffle,deflate,dfl_lvl);
   nco_msh_att_char(out_id,grd_ctr_lon_id,grd_ctr_lon_nm,"units","degrees");
 
-  (void)nco_def_var(out_id,grd_ctr_lat_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_ctr_lat_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_ctr_lat_id,shuffle,deflate,dfl_lvl);
+  rcd+=nco_def_var(out_id,grd_ctr_lat_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_ctr_lat_id);
+  if(dfl_lvl > 0) rcd+=nco_def_var_deflate(out_id,grd_ctr_lat_id,shuffle,deflate,dfl_lvl);
   nco_msh_att_char(out_id,grd_ctr_lat_id,grd_ctr_lat_nm,"units","degrees");
 
-  (void)nco_def_var(out_id,msk_nm,NC_INT,dmn_nbr_1D,dmn_ids,&grd_msk_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_msk_id,shuffle,deflate,dfl_lvl);
+  rcd+=nco_def_var(out_id,msk_nm,NC_INT,dmn_nbr_1D,dmn_ids,&grd_msk_id);
+  if(dfl_lvl > 0) rcd+=nco_def_var_deflate(out_id,grd_msk_id,shuffle,deflate,dfl_lvl);
 
-  (void)nco_def_var(out_id,dmn_sz_nm,NC_INT,dmn_nbr_1D,&dmn_ids[2],&grd_rnk_id);
+  rcd+=nco_def_var(out_id,dmn_sz_nm,NC_INT,dmn_nbr_1D,&dmn_ids[2],&grd_rnk_id);
 
   /* Begin data mode */
-  (void)nco_enddef(out_id);
+  rcd+=nco_enddef(out_id);
 
-  rcd=nco_put_var(out_id,grd_crn_lat_id,lat_crn,crd_typ);
-  rcd=nco_put_var(out_id,grd_crn_lon_id,lon_crn,crd_typ);
+  rcd+=nco_put_var(out_id,grd_crn_lat_id,lat_crn,crd_typ);
+  rcd+=nco_put_var(out_id,grd_crn_lon_id,lon_crn,crd_typ);
 
-  rcd=nco_put_var(out_id,grd_area_id,area,crd_typ);
-  rcd=nco_put_var(out_id,grd_ctr_lon_id,lon_ctr,crd_typ);
-  rcd=nco_put_var(out_id,grd_ctr_lat_id,lat_ctr,crd_typ);
+  rcd+=nco_put_var(out_id,grd_area_id,area,crd_typ);
+  rcd+=nco_put_var(out_id,grd_ctr_lon_id,lon_ctr,crd_typ);
+  rcd+=nco_put_var(out_id,grd_ctr_lat_id,lat_ctr,crd_typ);
 
-  rcd=nco_put_var(out_id,grd_msk_id,msk,NC_INT);
+  rcd+=nco_put_var(out_id,grd_msk_id,msk,NC_INT);
 
-  rcd=nco_put_var(out_id,grd_rnk_id,&grd_sz_nbr,NC_INT);
+  rcd+=nco_put_var(out_id,grd_rnk_id,&grd_sz_nbr,NC_INT);
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_msh_poly_lst_wrt"); /* CEWI */
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
@@ -2076,7 +2080,7 @@ nco_map_chk /* Map-file evaluation */
   int idx_sng_lng_max;
   int in_id;
   int hst_sz_nnz;
-  int rcd;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   nco_bool area_wgt_a;
   nco_bool area_wgt_b;
@@ -2503,9 +2507,9 @@ nco_map_chk /* Map-file evaluation */
 	/* Compute frac_b as row-sums with re-normalized weights */
 	nco_map_frac_b_clc(var_S,var_row,var_frac_b);
 	(void)fprintf(stdout,"%s: INFO Re-writing S, frac_a, and frac_b arrays to fix %d (presumed) self-overlaps detected via frac_b >> 1.0 search\nNB: The \"fixed\" file should no longer report any frac_b WARNINGs because the weights have been normalized to prevent this. However, the fixed file is expected to produce frac_a WARNINGs because weights of the self-overlapping grid_a cells were reduced to compensate for the self-overlap. So long as all affected grid_a cells contain valid data the net result should be correct. The best solution is to remove/re-bin the self-overlapping grid_a cells before remapping.\n",nco_prg_nm_get(),wrn_nbr);
-	rcd=nco_put_var(in_id,var_frac_a->id,var_frac_a->val.vp,(nc_type)NC_DOUBLE);
-	rcd=nco_put_var(in_id,var_frac_b->id,var_frac_b->val.vp,(nc_type)NC_DOUBLE);
-	rcd=nco_put_var(in_id,var_S->id,var_S->val.vp,(nc_type)NC_DOUBLE);
+	rcd+=nco_put_var(in_id,var_frac_a->id,var_frac_a->val.vp,(nc_type)NC_DOUBLE);
+	rcd+=nco_put_var(in_id,var_frac_b->id,var_frac_b->val.vp,(nc_type)NC_DOUBLE);
+	rcd+=nco_put_var(in_id,var_S->id,var_S->val.vp,(nc_type)NC_DOUBLE);
       }else{ /* !wrn_nbr */
 	(void)fprintf(stdout,"%s: INFO User requested map re-weight with --frac_b_nrm to adjust for self-overlapped Grid A gridcells but %s finds no frac_b >> 1.0 gridcells that would indicate potential self-overlaps in Grid A\n",nco_prg_nm_get(),fnc_nm);
       } /* !wrn_nbr */
@@ -2548,7 +2552,9 @@ nco_map_chk /* Map-file evaluation */
     if(hst_wgt) hst_wgt=(int*)nco_free(hst_wgt);
   } /* !report */
   
-  nco_close(in_id);
+  rcd+=nco_close(in_id);
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_map_chk"); /* CEWI */
 
   /* Free memory */
   if(dmn_in) dmn_in=nco_dmn_lst_free(dmn_in,dmn_in_nbr );

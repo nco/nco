@@ -152,7 +152,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
         rcd+=nco_inq_unlimdim(out_id,&rec_dmn_id); 
         /* ... and if output file has record dimension ... */
         if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
-          (void)nco_inq_dimlen(out_id,rec_dmn_id,&rec_dmn_sz);
+          rcd+=nco_inq_dimlen(out_id,rec_dmn_id,&rec_dmn_sz);
           /* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
           if(rec_dmn_sz > 0L){
             /* ... then check input vs. output record dimension sizes ... */
@@ -163,6 +163,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
         } /* endif output file has record dimension */
       } /* endif this variable uses input file record dimension */
     } /* endif input file has record dimension */
+    if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_cpy_var_val"); /* CEWI */
   } /* endif this variable is not a scalar */
 
   /* Free space that held dimension IDs */
@@ -174,7 +175,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   /* Free space that held variable */
   void_ptr=nco_free(void_ptr);
 
-} /* end nco_cpy_var_val() */
+} /* !nco_cpy_var_val() */
 
 nco_bool /* O [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
 nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable netCDF3 files? */
@@ -313,6 +314,8 @@ nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable n
     } /* endif file contains record dimnsion */
   } /* endif file is netCDF3 */
 
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_cpy_var_val"); /* CEWI */
+
   return USE_MM3_WORKAROUND;
 } /* end nco_use_mm3_workaround() */
 
@@ -368,7 +371,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
   rcd+=nco_inq_dimlen(in_id,rec_dmn_id,&rec_sz);
 
   /* File format needed to enable netCDF4 features */
-  if(var_nbr > 0) (void)nco_inq_format(var_lst[0]->grp_id_out,&fl_fmt);
+  if(var_nbr > 0) rcd+=nco_inq_format(var_lst[0]->grp_id_out,&fl_fmt);
 
   for(rec_idx=0;rec_idx<rec_sz;rec_idx++){
     for(var_idx=0;var_idx<var_nbr;var_idx++){
@@ -380,10 +383,10 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,".");
 
       /* Get ID of requested variable from both files */
-      (void)nco_inq_varid(var_lst[var_idx]->grp_id_in,var_lst[var_idx]->nm,&var_in_id);
-      (void)nco_inq_varid(var_lst[var_idx]->grp_id_out,var_lst[var_idx]->nm,&var_out_id);
-      (void)nco_inq_var(var_lst[var_idx]->grp_id_out,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
-      (void)nco_inq_var(var_lst[var_idx]->grp_id_in,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+      rcd+=nco_inq_varid(var_lst[var_idx]->grp_id_in,var_lst[var_idx]->nm,&var_in_id);
+      rcd+=nco_inq_varid(var_lst[var_idx]->grp_id_out,var_lst[var_idx]->nm,&var_out_id);
+      rcd+=nco_inq_var(var_lst[var_idx]->grp_id_out,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
+      rcd+=nco_inq_var(var_lst[var_idx]->grp_id_in,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
       if(nbr_dmn_out != nbr_dmn_in){
         (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs\n",nco_prg_nm_get(),nbr_dmn_in,var_lst[var_idx]->nm,nbr_dmn_out,var_lst[var_idx]->nm,var_lst[var_idx]->nm,var_lst[var_idx]->nm);
         nco_exit(EXIT_FAILURE);
@@ -397,11 +400,11 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
 
       /* Get dimension IDs from input file */
-      (void)nco_inq_vardimid(var_lst[var_idx]->grp_id_in,var_in_id,dmn_id);
+      rcd+=nco_inq_vardimid(var_lst[var_idx]->grp_id_in,var_in_id,dmn_id);
 
       /* Get non-record dimension sizes from input file */
       for(dmn_idx=1;dmn_idx<dmn_nbr;dmn_idx++){
-        (void)nco_inq_dimlen(var_lst[var_idx]->grp_id_in,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
+        rcd+=nco_inq_dimlen(var_lst[var_idx]->grp_id_in,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
         /* Initialize indicial offset and stride arrays */
         dmn_srt[dmn_idx]=0L;
         var_sz*=dmn_cnt[dmn_idx];
@@ -447,12 +450,12 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       
       /* Get and put one record of variable */
       if(var_sz > 0){ /* Allow for zero-size record variables */
-        nco_get_vara(var_lst[var_idx]->grp_id_in,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+        rcd+=nco_get_vara(var_lst[var_idx]->grp_id_in,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
 	if(flg_ppc){
 	  if(flg_nsd) (void)nco_ppc_bitmask(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_ppc_around(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
 	} /* !PPC */
 	if(nco_is_xcp(var_lst[var_idx]->nm)) nco_xcp_prc(var_lst[var_idx]->nm,var_typ,var_sz,(char *)void_ptr);
-        nco_put_vara(var_lst[var_idx]->grp_id_out,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+        rcd+=nco_put_vara(var_lst[var_idx]->grp_id_out,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       } /* end if var_sz */
 
       /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record)
@@ -464,10 +467,10 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
 	 Since following code is purely diagnostic, assume that these failures are due to using --fix_rec_dmn 
 	 And therefore, well, ignore them :) */
       if(rec_idx == rec_sz-1L){ 
-        rcd=nco_inq_unlimdim(var_lst[var_idx]->grp_id_out,&rec_dmn_out_id); 
+        rcd+=nco_inq_unlimdim(var_lst[var_idx]->grp_id_out,&rec_dmn_out_id); 
         if(rec_dmn_out_id != NCO_REC_DMN_UNDEFINED){
           /* ... and if output file has record dimension ... */
-          (void)nco_inq_dimlen(var_lst[var_idx]->grp_id_out,rec_dmn_out_id,&rec_out_sz);
+          rcd+=nco_inq_dimlen(var_lst[var_idx]->grp_id_out,rec_dmn_out_id,&rec_out_sz);
           /* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
           if(rec_out_sz > 0L){
             /* ... then check input vs. output record dimension sizes ... */
@@ -496,18 +499,18 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Re-initialize accumulated variables */
       var_sz=1L;
       /* Get ID of requested variable from both files */
-      (void)nco_inq_varid(var_lst[var_idx]->grp_id_in,var_lst[var_idx]->nm,&var_in_id);
-      (void)nco_inq_var(var_lst[var_idx]->grp_id_in,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
+      rcd+=nco_inq_varid(var_lst[var_idx]->grp_id_in,var_lst[var_idx]->nm,&var_in_id);
+      rcd+=nco_inq_var(var_lst[var_idx]->grp_id_in,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
       /* Allocate space to hold dimension IDs */
       dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
       dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
       dmn_sz=(long *)nco_malloc(dmn_nbr*sizeof(long));
       dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
       /* Get dimension IDs from input file */
-      (void)nco_inq_vardimid(var_lst[var_idx]->grp_id_in,var_in_id,dmn_id);
+      rcd+=nco_inq_vardimid(var_lst[var_idx]->grp_id_in,var_in_id,dmn_id);
       /* Get dimension sizes from input file */
       for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-        (void)nco_inq_dimlen(var_lst[var_idx]->grp_id_in,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
+        rcd+=nco_inq_dimlen(var_lst[var_idx]->grp_id_in,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
         /* Initialize indicial offset and stride arrays */
         dmn_srt[dmn_idx]=0L;
         var_sz*=dmn_cnt[dmn_idx];
@@ -515,7 +518,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Allocate enough space to hold this entire variable */
       void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when doing MD5 or binary write on variable",fnc_nm);
       /* Get variable */
-      if(var_sz > 0) nco_get_vara(var_lst[var_idx]->grp_id_in,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+      if(var_sz > 0) rcd+=nco_get_vara(var_lst[var_idx]->grp_id_in,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       /* Perform MD5 digest of input and output data if requested */
       if(md5) (void)nco_md5_chk(md5,var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_typ),var_lst[var_idx]->grp_id_out,dmn_srt,dmn_cnt,void_ptr);
       /* Write unformatted binary data */
@@ -530,7 +533,9 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
     } /* end loop over variables */
   } /* end if */
     
-} /* end nco_cpy_rec_var_val() */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_cpy_rec_var_val"); /* CEWI */
+
+} /* !nco_cpy_rec_var_val() */
 
 void
 nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simple hyperslabs */
@@ -1522,13 +1527,13 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
         /* Yes, get list of specified attributes */
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
-          rcd=nco_inq_varname(nc_id,var_id,var_nm);
+          rcd+=nco_inq_varname(nc_id,var_id,var_nm);
           if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute. NB: To avoid excessive noise, NCO prints this WARNING at most once per dataset.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
 	  FIRST_WARNING=False;
           return IS_SPC_IN_CF_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-        if(att_sz > 0) rcd=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+        if(att_sz > 0) rcd+=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
         /* NUL-terminate attribute */
         att_val[att_sz]='\0';
         /* Split list into separate variable names
@@ -1554,9 +1559,10 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
 
   end_lbl: ;
 
-  return IS_SPC_IN_CF_ATT; /* [flg] Variable is listed in this CF attribute */
-} /* end nco_is_spc_in_cf_att() */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_is_spc_in_cf_att"); /* CEWI */
 
+  return IS_SPC_IN_CF_ATT; /* [flg] Variable is listed in this CF attribute */
+} /* !nco_is_spc_in_cf_att() */
 
 char *** /* O [ptr] List of lists - each ragged array terminated with empty string */
 nco_lst_cf_att /* [fnc] look in all vars for att cf_nm */
@@ -1597,7 +1603,7 @@ nco_lst_cf_att /* [fnc] look in all vars for att cf_nm */
   /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
   for(var_id=0;var_id<nbr_var;var_id++){
 
-    nco_inq_varname(nc_id,var_id,var_nm);
+    rcd+=nco_inq_varname(nc_id,var_id,var_nm);
 
     /* Find number of attributes */
     rcd+=nco_inq_varnatts(nc_id,var_id,&nbr_att);
@@ -1610,7 +1616,7 @@ nco_lst_cf_att /* [fnc] look in all vars for att cf_nm */
         if(att_typ != NC_CHAR) continue;
 
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-        if(att_sz > 0) rcd=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);
+        if(att_sz > 0) rcd+=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);
         /* NUL-terminate attribute */
         att_val[att_sz]='\0';
         /* Split list into separate variable names
@@ -1640,8 +1646,10 @@ nco_lst_cf_att /* [fnc] look in all vars for att cf_nm */
     } /* end loop over attributes */
   } /* end loop over var_id */
 
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_lst_cf_att"); /* CEWI */
+
   return ra_lst;
-} /* end nco_lst_cf_att() */
+} /* !nco_lst_cf_att() */
 
 nco_bool /* [flg] Variable is listed in a "coordinates" attribute */
 nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute */
@@ -1689,12 +1697,12 @@ nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute *
         /* Yes, get list of specified attributes */
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
-          rcd=nco_inq_varname(nc_id,var_id,var_nm);
+          rcd+=nco_inq_varname(nc_id,var_id,var_nm);
           (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
           return IS_SPC_IN_CRD_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-        if(att_sz > 0) rcd=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+        if(att_sz > 0) rcd+=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
         /* NUL-terminate attribute */
         att_val[att_sz]='\0';
         /* Split list into separate coordinate names
@@ -1712,6 +1720,8 @@ nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute *
       } /* !coordinates */
     } /* end loop over attributes */
   } /* end loop over idx_var */
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_is_spc_in_crd_att"); /* CEWI */
 
   return IS_SPC_IN_CRD_ATT; /* [flg] Variable is listed in a "coordinates" attribute  */
 } /* end nco_is_spc_in_crd_att() */
@@ -1763,12 +1773,12 @@ nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
         /* Yes, get list of specified attributes */
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
-          rcd=nco_inq_varname(nc_id,var_id,var_nm);
+          rcd+=nco_inq_varname(nc_id,var_id,var_nm);
           (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
           return IS_SPC_IN_BND_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-        if(att_sz > 0) rcd=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+        if(att_sz > 0) rcd+=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
         /* NUL-terminate attribute */
         att_val[att_sz]='\0';
         /* Split list into separate coordinate names
@@ -1786,6 +1796,8 @@ nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
       } /* !coordinates */
     } /* end loop over attributes */
   } /* end loop over idx_var */
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_is_spc_in_bnd_att"); /* CEWI */
 
   return IS_SPC_IN_BND_ATT; /* [flg] Variable is listed in a "bounds" attribute  */
 } /* end nco_is_spc_in_bnd_att() */
@@ -1837,12 +1849,12 @@ nco_is_spc_in_clm_att /* [fnc] Variable is listed in a "climatology" attribute *
         /* Yes, get list of specified attributes */
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
-          rcd=nco_inq_varname(nc_id,var_id,var_nm);
+          rcd+=nco_inq_varname(nc_id,var_id,var_nm);
           (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
           return IS_SPC_IN_CLM_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-        if(att_sz > 0) rcd=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+        if(att_sz > 0) rcd+=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
         /* NUL-terminate attribute */
         att_val[att_sz]='\0';
         /* Split list into separate coordinate names
@@ -1861,8 +1873,10 @@ nco_is_spc_in_clm_att /* [fnc] Variable is listed in a "climatology" attribute *
     } /* end loop over attributes */
   } /* end loop over idx_var */
 
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_is_spc_in_clm_att"); /* CEWI */
+
   return IS_SPC_IN_CLM_ATT; /* [flg] Variable is listed in a "climatology" attribute  */
-} /* end nco_is_spc_in_clm_att() */
+} /* !nco_is_spc_in_clm_att() */
 
 nco_bool /* [flg] Variable is listed in a "grid_mapping" attribute */
 nco_is_spc_in_grd_att /* [fnc] Variable is listed in a "grid_mapping" attribute */
@@ -1911,12 +1925,12 @@ nco_is_spc_in_grd_att /* [fnc] Variable is listed in a "grid_mapping" attribute 
         /* Yes, get list of specified attributes */
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
-          rcd=nco_inq_varname(nc_id,var_id,var_nm);
+          rcd+=nco_inq_varname(nc_id,var_id,var_nm);
           (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
           return IS_SPC_IN_GRD_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-        if(att_sz > 0) rcd=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+        if(att_sz > 0) rcd+=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
         /* NUL-terminate attribute */
         att_val[att_sz]='\0';
         /* Split list into separate coordinate names
@@ -1935,8 +1949,10 @@ nco_is_spc_in_grd_att /* [fnc] Variable is listed in a "grid_mapping" attribute 
     } /* end loop over attributes */
   } /* end loop over idx_var */
 
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_is_spc_in_grd_att"); /* CEWI */
+
   return IS_SPC_IN_GRD_ATT; /* [flg] Variable is listed in a "grid_mapping" attribute  */
-} /* end nco_is_spc_in_grd_att() */
+} /* !nco_is_spc_in_grd_att() */
 
 void
 nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) */
@@ -2005,6 +2021,8 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
     if(var->has_mss_val) (void)fprintf(stdout,"%s: WARNING Variable \"%s\" is packed and has valid \"NCO_MSS_VAL_SNG\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...\n",nco_prg_nm_get(),var_nm);
   } /* endif variable is packed */
 #endif /* endif False */
+
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_var_mtd_refresh"); /* CEWI */
 
 } /* end nco_var_mtd_refresh() */
 

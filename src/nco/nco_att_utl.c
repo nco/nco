@@ -705,7 +705,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
   int fl_fmt; /* [enm] Output file format */
   int idx;
   int nbr_att;
-  int rcd; /* [enm] Return code */
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   long att_sz;
 
@@ -933,7 +933,7 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   
   /* Free string holding file list attribute */
   fl_in_lst_sng=(char *)nco_free(fl_in_lst_sng);
-} /* end nco_fl_lst_att_cat() */
+} /* !nco_fl_lst_att_cat() */
  
 void 
 nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to provenance attribute */
@@ -980,10 +980,10 @@ nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to p
   (void)strncpy(time_stamp_sng,ctime_sng,TIME_STAMP_SNG_LNG-1UL);
 
   /* Get number of global attributes in input file */
-  (void)nco_inq(in_id,(int *)NULL,(int *)NULL,&glb_att_nbr,(int *)NULL);
+  rcd+=nco_inq(in_id,(int *)NULL,(int *)NULL,&glb_att_nbr,(int *)NULL);
 
   for(idx=0;idx<glb_att_nbr;idx++){
-    (void)nco_inq_attname(in_id,NC_GLOBAL,idx,att_nm);
+    rcd+=nco_inq_attname(in_id,NC_GLOBAL,idx,att_nm);
     if(!strcasecmp(att_nm,att_nm_hst)) break;
   } /* end loop over att */
 
@@ -999,7 +999,7 @@ nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to p
     /* Input file contains Global attribute "[hH]istory" */
     char hst_sng_fmt[]="Appended file %s had following \"%s\" attribute:\n%s\n";
 
-    (void)nco_inq_att(in_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
+    rcd+=nco_inq_att(in_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
     if(att_typ != NC_CHAR){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore contents will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),att_nm);
       return;
@@ -1018,10 +1018,10 @@ nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to p
   } /* endif history global attribute exists in input file */
 
   /* Get number of global attributes in output file */
-  (void)nco_inq(out_id,(int *)NULL,(int *)NULL,&glb_att_nbr,(int *)NULL);
+  rcd+=nco_inq(out_id,(int *)NULL,(int *)NULL,&glb_att_nbr,(int *)NULL);
 
   for(idx=0;idx<glb_att_nbr;idx++){
-    (void)nco_inq_attname(out_id,NC_GLOBAL,idx,att_nm);
+    rcd+=nco_inq_attname(out_id,NC_GLOBAL,idx,att_nm);
     if(!strcasecmp(att_nm,att_nm_prv)) break;
   } /* end loop over att */
 
@@ -1041,7 +1041,7 @@ nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to p
     /* Global provenance attribute currently exists */
   
     /* NB: ncattinq(), unlike strlen(), counts terminating NUL for stored NC_CHAR arrays */
-    (void)nco_inq_att(out_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
+    rcd+=nco_inq_att(out_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
     if(att_typ != NC_CHAR){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore contents will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),att_nm);
       return;
@@ -1060,13 +1060,15 @@ nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to p
 
   rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long int)(strlen(prv_new)),(void *)prv_new);
 
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_prv_att_cat"); /* CEWI */
+
   if(hst_sng) hst_sng=(char *)nco_free(hst_sng);
   if(hst_crr) hst_crr=(char *)nco_free(hst_crr);
   if(prv_crr) prv_crr=(char *)nco_free(prv_crr);
   if(prv_new) prv_new=(char *)nco_free(prv_new);
 
   return; /* 20050109: fxm added return to void function to squelch unwelcome gcc-3.4.2 warning */ 
-} /* end nco_prv_att_cat() */
+} /* !nco_prv_att_cat() */
 
 void 
 nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
@@ -1106,10 +1108,10 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   (void)strncpy(time_stamp_sng,ctime_sng,TIME_STAMP_SNG_LNG-1UL);
 
   /* Get number of global attributes in file */
-  (void)nco_inq(out_id,(int *)NULL,(int *)NULL,&glb_att_nbr,(int *)NULL);
+  rcd+=nco_inq(out_id,(int *)NULL,(int *)NULL,&glb_att_nbr,(int *)NULL);
 
   for(idx=0;idx<glb_att_nbr;idx++){
-    (void)nco_inq_attname(out_id,NC_GLOBAL,idx,att_nm);
+    rcd+=nco_inq_attname(out_id,NC_GLOBAL,idx,att_nm);
     if(!strcasecmp(att_nm,att_nm_hst)) break;
   } /* end loop over att */
 
@@ -1127,7 +1129,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     /* Global attribute "[hH]istory" currently exists */
   
     /* NB: ncattinq(), unlike strlen(), counts terminating NUL for stored NC_CHAR arrays */
-    (void)nco_inq_att(out_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
+    rcd+=nco_inq_att(out_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
     if(att_typ != NC_CHAR){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore current command line will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),att_nm);
       return;
@@ -1137,7 +1139,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
        If history attribute is of size zero then ensure strlen(hst_crr) = 0 */
     hst_crr=(char *)nco_malloc((att_sz+1L)*sizeof(char));
     hst_crr[att_sz]='\0';
-    if(att_sz > 0) (void)nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)hst_crr,NC_CHAR);
+    if(att_sz > 0) rcd+=nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)hst_crr,NC_CHAR);
 
     /* Add 4 for formatting characters */
     hst_new=(char *)nco_malloc((strlen(hst_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4UL)*sizeof(char));
@@ -1149,8 +1151,10 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   hst_crr=(char *)nco_free(hst_crr);
   hst_new=(char *)nco_free(hst_new);
 
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_hst_att_cat"); /* CEWI */
+
   return; /* 20050109: fxm added return to void function to squelch unwelcome gcc-3.4.2 warning */ 
-} /* end nco_hst_att_cat() */
+} /* !nco_hst_att_cat() */
 
 aed_sct * /* O [sct] List of attribute edit structures */
 nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
@@ -2190,7 +2194,7 @@ nco_char_att_get /* [fnc] Get a character string attribute from an open file */
 
   char *att_val=NULL; /* O [sng] Attribute value */
   
-  int rcd;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   long att_sz;
 
@@ -2223,7 +2227,7 @@ nco_char_att_put /* [fnc] Get a character string attribute from an open file */
   char *att_nm; /* [sng] Attribute name */
   char *att_val; /* [sng] Attribute value */
 
-  int rcd=NC_NOERR;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   aed_sct aed_mtd;
 

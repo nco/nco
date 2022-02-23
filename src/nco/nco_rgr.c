@@ -6193,7 +6193,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	if(0){
 	  /* 20160918: Approximate area of latitude triangle wedge. Use truncated power expansion of exact formula. */
 	  double xpn_x_sqr; /* [frc] Expansion parameter squared */
-	  double xpn_sum; /* [frc] Expansion sum */
+	  double xpn_sum=0.0; /* [frc] Expansion sum */
 	  double xpn_nmr; /* [frc] Expansion term numerator */
 	  double xpn_trm; /* [frc] Expansion term */
 	  double xpn_dnm; /* [frc] Expansion term denominator */
@@ -6211,6 +6211,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	    xpn_trm=xpn_nmr/xpn_dnm;
 	    xpn_sum+=xpn_trm;
 	  } /* !idx_xpn */
+	  if(xpn_sum == 0.0) xpn_sum=0.0; /* CEWI */
 	  (void)fprintf(stdout,"%s: Small-circle area using series approximation...not implemented yet\n",nco_prg_nm_get());
 	} /* !0 */
 	if(nco_dbg_lvl_get() >= nco_dbg_scl){
@@ -8305,6 +8306,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	att_val[att_sz]='\0';
 	/* Match "radian" and "radians" */
 	if(strstr(att_val,"radian")) flg_crd_rdn=True;
+	if(flg_crd_rdn) flg_crd_rdn=True; /* CEWI */
 	if(att_val) ngl_unt=(char *)strdup(att_val);
 	if(att_val) att_val=(char *)nco_free(att_val);
       } /* !rcd && att_typ */
