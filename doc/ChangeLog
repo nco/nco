@@ -1,14 +1,16 @@
 2022-02-24  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.7-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha02: all: bit_xpl_dbl=52 fix, config.sub/guess update';git push
+	git tag -a 5.0.7-alpha02 -m 'Jack Ryan';git push --tags
+
+	* First successful build/check on Apple silicon!
+
 	* Update config.guess from timestamp='2019-07-24' to '2022-01-09' for arm64-apple M1 Max recognition
 
 	* Update config.sub from timestamp='2019-07-24' to '2022-01-03' for arm64-apple M1 Max recognition
 
 2022-02-23  Charlie Zender  <zender@uci.edu>
-
-	* NCO 5.0.7-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha02: all: bit_xpl_dbl=52 fix';git push
-	git tag -a 5.0.7-alpha02 -m 'Jack Ryan';git push --tags
 
 	* Fix compiler warnings for clang 13.0
 
