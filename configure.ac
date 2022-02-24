@@ -31,7 +31,8 @@
 # This happens periodically as newer machines are introduced
 # Notify the NCO project if configuration fails in either file
 # and we will update the config files from the upstream source,
-# ftp://ftp.gnu.org/pub/gnu/config/config.[guess,sub]
+# https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess
+# https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub
 
 # Autotools glossary:
 # AC_ARG_ENABLE(foo,...) Create configure option --enable-foo
