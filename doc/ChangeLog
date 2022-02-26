@@ -1,3 +1,7 @@
+2022-02-25  Charlie Zender  <zender@uci.edu>
+
+	* Add mss_val_dfl capability to nco_prn_var_val_cmt()
+
 2022-02-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.7-alpha02 release procedure:

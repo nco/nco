@@ -1116,7 +1116,7 @@ nco_prn_var_val_cmt /* Print variable values as CDL comment (delimited by comma)
 
   (void)sng_ascii_trn(dlm_sng);
 
-  if(var->has_mss_val) val_sz_byt=nco_typ_lng(var->type);
+  val_sz_byt=nco_typ_lng(var->type);
 
   /* Assume -s argument (dlm_sng) formats entire string
      Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var->type),
@@ -1132,6 +1132,12 @@ nco_prn_var_val_cmt /* Print variable values as CDL comment (delimited by comma)
 
   /* Print type in English in prefix text */
   if(var->type == NC_STRING) (void)fprintf(fp_out,"calendar format: "); else (void)fprintf(fp_out,"%s value%s: ",cdl_typ_nm(var->type),(var->sz > 1 ? "s":""));
+
+  ptr_unn mss_val_dfl; /* [unn] Default missing value */
+  if(!var->has_mss_val){
+    mss_val_dfl=nco_mss_val_mk(var->type);
+    var->mss_val=mss_val_dfl;
+  } /* !has_mss_val */
 
   for(lmn=0;lmn<sz;lmn++){
 
@@ -1173,7 +1179,10 @@ nco_prn_var_val_cmt /* Print variable values as CDL comment (delimited by comma)
 
   if(fmt_sng_mss_val) fmt_sng_mss_val=(char *)nco_free(fmt_sng_mss_val);
 
-}/* end nco_prn_var_val_cmt() */
+  /* Free memory associated with default missing value */
+  if(!var->has_mss_val) var->mss_val.vp=(void *)nco_free(var->mss_val.vp);
+
+}/* !nco_prn_var_val_cmt() */
 
 void
 nco_prn_var_val_lmt /* [fnc] Print variable data */
@@ -2080,7 +2089,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         if(var_aux->has_mss_val){
 	  var_aux->mss_val.vp=nco_free(var_aux->mss_val.vp);
 	  var_aux->has_mss_val=False;
-	}
+	} /* !var_aux */
 
         nco_var_cnf_typ(NC_STRING,var_aux);
 

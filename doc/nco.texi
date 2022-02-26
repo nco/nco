@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.7-alpha02
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 10 February 2022
+@set update-date 24 February 2022
 @set update-month February 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -598,6 +598,22 @@ has been both exhilirating and terrifying.
 Charlie Zender@*
 May, 2019@*
 Laguna Beach, California@*
+
+@ignore
+The @acronym{DOE} @acronym{E3SM} project has provided reliable support 
+for @acronym{NCO} development and maintenance since 2015.
+That is an eternity in the world of research funding!
+Thanks to this support, we have added cutting-edge features such as
+quantization, vertical interpolation, @acronym{S1D} dataset decoding,
+and regridding weight quality analysis.
+Most recently we have incorporated support for @command{mbtempest}.
+
+@sp 1
+@noindent
+Charlie Zender@*
+March, 2022@*
+Laguna Beach, California@*
+@end ignore
 
 @html
 <a name="smr"></a> <!-- http://nco.sf.net/nco.html#smr -->
@@ -29306,7 +29322,7 @@ Single bug reports and fixes
 @acronym{CMIP5} and @acronym{MODIS} processing documentation, reference card
 @cindex Todd Mitchell
 @item Todd Mitchell
-Financial support
+Sustained acknowledgement via financial donations
 @end table
 Please let me know if your name was omitted!
 
