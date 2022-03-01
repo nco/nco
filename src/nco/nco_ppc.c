@@ -1159,7 +1159,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     case nco_baa_bgr_btr:
     case nco_baa_btr:
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
-	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask
+	 Round mantissa using software emulation of IEEE arithmetic, shave LSB using bit-mask
 	 See figures at https://github.com/nco/nco/pull/199 */
       for(idx=0L;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_cmp_dbl){
