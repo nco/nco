@@ -15,19 +15,16 @@
 
 # Machine build parameters
 #                         Source     Method   Packages Compiler
-# aerosol.ess.uci.edu: NCO          Configure All else GCC
-# andes.olcf.ornl.gov: NCO          Makefile  All else GCC
 # AppVeyor CI        : NCO          CMake     All else MSVC
+# andes.olcf.ornl.gov: NCO          Makefile  All else GCC
 # cheyenne.ucar.edu  : NCO          Makefile  All else Intel
-# cooley.alcf.anl.g  : NCO          Configure All else GCC
-# edison.nersc.gov   : NCO          Configure All else Intel
-# firn.ess.uci.edu   : NCO          Configure All else GCC
+# firn.ess.uci.edu   : NCO          Configure All else Intel
 # frazil.ess.uci.edu : NCO          Configure All else clang
 # glace.ess.uci.edu  : NCO          CMake     All else GCC
 # grele.ess.uci.edu  : NCO + netCDF Makefile  All else GCC
 # katabatic.ess.uci.e: NCO          CMake     All else clang
-# rhea.ccs.ornl.gov  : NCO          Makefile  All else GCC
-# skyglow.ess.uci.edu: NCO + netCDF Configure All else GCC
+# sastrugi.ess.uci.ed: NCO + netCDF Configure All else clang
+# spectral.ess.uci.ed: NCO + netCDF Configure All else clang
 # Travis CI          : NCO          Configure All else gcc,clang,g++
 
 # Usage (testing):

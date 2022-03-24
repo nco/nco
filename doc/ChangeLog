@@ -1,3 +1,7 @@
+2022-03-20  Charlie Zender  <zender@uci.edu>
+
+	* Build on updated Cori OS with netCDF 4.8.1.1
+
 2022-02-25  Charlie Zender  <zender@uci.edu>
 
 	* Add mss_val_dfl capability to nco_prn_var_val_cmt()

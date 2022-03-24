@@ -480,7 +480,7 @@ ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: module load nco/4.7.4 # 20180430 (without ncap2)
-# Personal recipe last modified: 20200722 (updated to netCDF 4.7.3)
+# Personal recipe last modified: 20220320 (updated to netCDF 4.8.1)
 # Personal recipe last used successfully: 20220202 (currently not linking ncap2 because needs -L${HOME}/lib_cori to find -lantlr. Moreover, ldd cannot find system libraries. also issues with HDF library mismatch)
 module load gcc
 export HDF5_DISABLE_VERSION_CHECK=1
@@ -488,7 +488,7 @@ export HDF5_USE_FILE_LOCKING=FALSE
 #module load udunits
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='gcc' CXX='g++' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_DIR='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2' NETCDF_INC='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.7.3.3' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='gcc' CXX='g++' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_DIR='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2' NETCDF_INC='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
@@ -505,7 +505,7 @@ module swap PrgEnv-intel PrgEnv-gnu
 module load gcc # Activate GCC8
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_INC='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.7.3.3' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_INC='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
@@ -549,7 +549,7 @@ export PATH=${MY_BIN_DIR}:${PATH}
 export LD_LIBRARY_PATH=${MY_LIB_DIR}:${LD_LIBRARY_PATH}
 module purge && module load cgpu
 module load hpcsdk/20.11
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='nvc' CXX='nvc++' GSL_ROOT='/usr/common/software/gsl/2.1/intel' NETCDF_INC='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.7.3.3' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/intel' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='nvc' CXX='nvc++' GSL_ROOT='/usr/common/software/gsl/2.1/intel' NETCDF_INC='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/intel' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1

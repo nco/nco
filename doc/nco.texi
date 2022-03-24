@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.7-alpha02
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 24 February 2022
-@set update-month February 2022
+@set update-date 19 March 2022
+@set update-month March 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -29512,8 +29512,8 @@ The option @option{--mro} switches @command{ncra} to produce a
 Multi-Record Output instead of a single-record output. 
 For example, assume @var{snd} is a 3D array with dimensions
 @code{time} * @code{latitude} * @code{longitude} and @code{time}
-includes every month from Jan. 1990 to Dec. 2005, 192 months as total, 
-which are 16 years. 
+includes every month from Jan. 1990 to Dec. 2005, 192 months in total, 
+or 16 years. 
 Consider the following two command lines:
 @example
 ncra --mro -v snd -d time,"1990-12-01",,12,3 in.nc out_mro.nc
@@ -29523,8 +29523,7 @@ In the first output file, @file{out_mro.nc}, @var{snd} is still a 3D
 array with dimensions @code{time} * @code{latitude} * @code{longitude}, 
 but the length of @code{time} now is 16, meaning 16 winters.
 In the second output file, @file{out_sro.nc}, the length of
-@code{time} is @w{only 1}. 
-It is now the average of all the 16 winters.
+@code{time} is @w{only 1}, which contains the average of all 16 winters.
 
 When using @samp{-d @var{dim},min[,max]} to specify the hyperslabs, 
 you can leave it blank if you want to include the minimum or the
