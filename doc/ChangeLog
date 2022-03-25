@@ -1,8 +1,8 @@
 2022-03-25  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.0.7-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha02: all: bit_xpl_dbl=52 fix, config.sub/guess update; ncremap -P bugfix, SGS spot-check wrn';git push
-	git tag -a 5.0.7-alpha02 -m 'Afterlife';git push --tags
+	* NCO 5.0.7-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha03: ncremap -P bugfix, SGS spot-check wrn';git push
+	git tag -a 5.0.7-alpha03 -m 'Afterlife';git push --tags
 
 	* Change ncremap test to use NCO weights so test succeeds when ERWG not available
 
@@ -28,6 +28,10 @@
 	* Add mss_val_dfl capability to nco_prn_var_val_cmt()
 
 2022-02-24  Charlie Zender  <zender@uci.edu>
+
+        * NCO 5.0.7-alpha02 release procedure:
+        cd ~/nco;git commit -a -m 'Version 5.0.7-alpha02: all: bit_xpl_dbl=52 fix, config.sub/guess update';git push
+        git tag -a 5.0.7-alpha02 -m 'Jack Ryan';git push --tags
 
 	* First successful build/check on Apple silicon!
 
