@@ -4858,7 +4858,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       sgs_nm_gnr=sgs_nm_cice;
     } /* !rcd */
     rcd=NC_NOERR;
-    (void)fprintf(stdout,"%s: WARNING %s reports sub-gridscale (SGS) regridding not requested despite presence in input dataset of SGS fractional area or area-time variable \"%s\". This will likely produce erroneous (and non-conservative) answers. HINT: In most cases and the SGS regridder algorithm should be invoked with, e.g., \"ncremap --sgs_frc=%s ...\". SGS functionality and options are documented at http://nco.sf.net/nco.html#sgs\n",nco_prg_nm_get(),fnc_nm,sgs_nm_gnr,sgs_nm_gnr);
+    (void)fprintf(stdout,"%s: WARNING %s reports sub-gridscale (SGS) regridding not requested despite presence in input dataset of SGS fractional area or area-time variable \"%s\". This will likely produce erroneous (and non-conservative) answers. HINT: In most cases the SGS regridder algorithm should be invoked with \"ncremap -P elm ...\", \"ncremap -P mpasseaice ...\", or more explicitly with \"ncremap --sgs_frc=%s ...\". SGS functionality and options are documented at http://nco.sf.net/nco.html#sgs\n",nco_prg_nm_get(),fnc_nm,sgs_nm_gnr,sgs_nm_gnr);
   } /* !var_rgr_nbr, !sgs_frc_nm */
 
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: # means regridded, ~ means copied\n");
