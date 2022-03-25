@@ -4843,7 +4843,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
   } /* !sgs_frc_nm */
 
-  if(var_rgr_nbr && !sgs_frc_nm){
+  if(var_rgr_nbr > 0 && sgs_frc_nm){
     /* 20220324 Verify SGS regridding invoked when SGS-indicator fields are present */
     char sgs_nm_elm[]="landfrac"; /* [sng] SGS indicator variable name for ELM/CLM */
     char sgs_nm_msi[]="timeMonthly_avg_iceAreaCell"; /* [sng] SGS indicator variable name for MPAS-Seaice */
@@ -4857,6 +4857,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     }else if((rcd=nco_inq_varid_flg(in_id,sgs_nm_cice,&sgs_var_gnr_id)) == NC_NOERR){
       sgs_nm_gnr=sgs_nm_cice;
     } /* !rcd */
+    (void)fprintf(stdout,"%s: DEBUG quark1 var_rgr_nbr = %d, sgs_frc_nm = %s, sgs_nm_gnr = %s\n",nco_prg_nm_get(),var_rgr_nbr,sgs_frc_nm,sgs_nm_gnr);
     rcd=NC_NOERR;
     (void)fprintf(stdout,"%s: WARNING %s reports sub-gridscale (SGS) regridding not requested despite presence in input dataset of SGS fractional area or area-time variable \"%s\". This will likely produce erroneous (and non-conservative) answers. HINT: In most cases the SGS regridder algorithm should be invoked with \"ncremap -P elm ...\", \"ncremap -P mpasseaice ...\", or more explicitly with \"ncremap --sgs_frc=%s ...\". SGS functionality and options are documented at http://nco.sf.net/nco.html#sgs\n",nco_prg_nm_get(),fnc_nm,sgs_nm_gnr,sgs_nm_gnr);
   } /* !var_rgr_nbr, !sgs_frc_nm */

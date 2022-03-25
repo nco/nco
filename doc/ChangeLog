@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha02: all: bit_xpl_dbl=52 fix, config.sub/guess update; ncremap -P bugfix, SGS spot-check wrn';git push
 	git tag -a 5.0.7-alpha02 -m 'Afterlife';git push --tags
 
+	* Change ncremap test to use NCO weights so test succeeds when ERWG not available
+
 	* Add synonyms preserve=gridcell, gridcell_mean, natural_values
 
 2022-03-24  Charlie Zender  <zender@uci.edu>
