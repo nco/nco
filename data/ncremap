@@ -1762,7 +1762,7 @@ if [ "${prc_typ}" = 'clm' ] || [ "${prc_typ}" = 'ctsm' ] || [ "${prc_typ}" = 'el
     # 20220129 sgs_frc is special since ncclimo may supply it (terminating a filename, even)
     # Hence must keep user-specified sgs_frc value, if any, intact
     rds_rth='6.37122e6' # [m] Radius of Earth in CLM/CTSM/ELM (SHR_CONST_REARTH)
-    if [ -n ${sgs_frc_usr} ]; then sgs_frc=${sgs_frc_usr}; else sgs_frc='landfrac'; fi
+    if [ -n "${sgs_frc_usr}" ]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='landfrac'; fi
     sgs_msk='landmask'
     sgs_nrm='1.0'
     prc_elm='Yes'
@@ -1770,7 +1770,7 @@ fi # !clm, !ctsm, !elm
 if [ "${prc_typ}" = 'cice' ]; then 
     # Set CICE-specific options first, then change prc_typ to sgs
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
-    if [ -n ${sgs_frc_usr} ]; then sgs_frc=${sgs_frc_usr}; else sgs_frc='aice'; fi
+    if [ -n "${sgs_frc_usr}" ]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='aice'; fi
     sgs_msk='tmask'
     sgs_nrm='100.0'
     prc_cice='Yes'
@@ -1780,7 +1780,7 @@ if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_
     # Set MPAS-SeaIce-specific options first, then change prc_typ to sgs
     # MPAS-SeaIce requires two modes, MPAS and SGS, so set prc_mpas to 'Yes'
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
-    if [ -n ${sgs_frc_usr} ]; then sgs_frc=${sgs_frc_usr}; else sgs_frc='timeMonthly_avg_iceAreaCell'; fi
+    if [ -n "${sgs_frc_usr}" ]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='timeMonthly_avg_iceAreaCell'; fi
     # 20190326 timeMonthly_avg_icePresent contains fraction of time in averaging interval when any ice was present
     # Thus timeMonthly_avg_icePresent is a floating point fraction, not a traditional integer mask
     # 20190910 timeMonthly_avg_icePresent should be SGS regridded like any 2D field
@@ -1795,7 +1795,7 @@ if [ -n "${sgs_frc}" ]; then
 fi # !sgs
 if [ "${prc_typ}" = 'sgs' ]; then
     # 20190924: Back-compatibility with NCO 4.8.1-
-    if [ -n ${sgs_frc_usr} ]; then sgs_frc=${sgs_frc_usr}; else sgs_frc='landfrac'; fi
+    if [ -n "${sgs_frc_usr}" ]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='landfrac'; fi
     if [ -z "${sgs_msk}" ]; then 
 	sgs_msk='landmask' # 20190924: Back-compatibility with NCO 4.8.1-
     fi # !sgs_msk

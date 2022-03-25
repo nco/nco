@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.7-alpha02
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 19 March 2022
+@set update-date 24 March 2022
 @set update-month March 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -26660,7 +26660,6 @@ ncremap --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128,134,-16,-9' \
 @acronym{RRG}-mode supports most normal @command{ncremap} options,
 including input and output methods and regridding algorithms. 
 @*
-@*
 @html
 <a name="alm"></a> <!-- http://nco.sf.net/nco.html#alm -->
 <a name="cice"></a> <!-- http://nco.sf.net/nco.html#cice -->
@@ -26768,7 +26767,7 @@ When invoked with @samp{-P cice}, the final step converts the output
 @example
 # ELM/CLM: output "area" in [sr]
 ncremap --sgs_frc=landfrac --sgs_msk=landmask in.nc out.nc
-ncremap -P sgs in.nc out.nc # Deprecated in 4.9.0
+ncremap -P sgs in.nc out.nc
 # ELM/CLM pedantic format: output "area" in [km2]
 ncremap -P elm in.nc out.nc # Same as -P clm, alm, ctsm
 

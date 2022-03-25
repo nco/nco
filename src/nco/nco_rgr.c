@@ -3917,7 +3917,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  trv_tbl->lst[idx_tbl].flg_rgr=True;
 	  var_rgr_nbr++;
 	  break;
-	} /* endif */
+	} /* !dmn_nm */
       } /* end loop over dimensions */
       if(dmn_idx == dmn_nbr_in){
 	/* Not regridded, so must be omitted or copied... */
@@ -3930,10 +3930,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	}else{ /* !omitted */
 	  /* Copy all variables that are not regridded or omitted */
 	  var_cpy_nbr++;
-	} /* !omitted */
-      } /* endif not regridded */
-    } /* end nco_obj_typ_var */
-  } /* end idx_tbl */
+	} /* !flg_grd_in_2D */
+      } /* !dmn_idx */
+    } /* !nco_obj_typ_var */
+  } /* !idx_tbl */
   if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit regridding criteria. The regridder expects something to regrid, and variables not regridded are copied straight to output. HINT: If the name(s) of the input horizontal spatial dimensions to be regridded (e.g., latitude and longitude or column) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"latitude\", \"longitude\", and \"ncol\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr col=lndgrid --rgr lat=north\" or \"ncremap -R '--rgr col=lndgrid --rgr lat=north'\".\n",nco_prg_nm_get(),fnc_nm);
   
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -4842,6 +4842,24 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
     if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
   } /* !sgs_frc_nm */
+
+  if(var_rgr_nbr && !sgs_frc_nm){
+    /* 20220324 Verify SGS regridding invoked when SGS-indicator fields are present */
+    char sgs_nm_elm[]="landfrac"; /* [sng] SGS indicator variable name for ELM/CLM */
+    char sgs_nm_msi[]="timeMonthly_avg_iceAreaCell"; /* [sng] SGS indicator variable name for MPAS-Seaice */
+    char sgs_nm_cice[]="aice"; /* [sng] SGS indicator variable name for CICE */
+    char *sgs_nm_gnr=NULL; /* CEWI [sng] Generic SGS indicator variable name */
+    int sgs_var_gnr_id=NC_MIN_INT; /* [id] SGS indicator variable ID */
+    if((rcd=nco_inq_varid_flg(in_id,sgs_nm_elm,&sgs_var_gnr_id)) == NC_NOERR){
+      sgs_nm_gnr=sgs_nm_elm;
+    }else if((rcd=nco_inq_varid_flg(in_id,sgs_nm_msi,&sgs_var_gnr_id)) == NC_NOERR){
+      sgs_nm_gnr=sgs_nm_msi;
+    }else if((rcd=nco_inq_varid_flg(in_id,sgs_nm_cice,&sgs_var_gnr_id)) == NC_NOERR){
+      sgs_nm_gnr=sgs_nm_cice;
+    } /* !rcd */
+    rcd=NC_NOERR;
+    (void)fprintf(stdout,"%s: WARNING %s reports sub-gridscale (SGS) regridding not requested despite presence in input dataset of SGS fractional area or area-time variable \"%s\". This will likely produce erroneous (and non-conservative) answers. HINT: In most cases and the SGS regridder algorithm should be invoked with, e.g., \"ncremap --sgs_frc=%s ...\". SGS functionality and options are documented at http://nco.sf.net/nco.html#sgs\n",nco_prg_nm_get(),fnc_nm,sgs_nm_gnr,sgs_nm_gnr);
+  } /* !var_rgr_nbr, !sgs_frc_nm */
 
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: # means regridded, ~ means copied\n");
 

@@ -988,7 +988,7 @@ if [ "${tms_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" 
 	# Daily (or finer) resolution filenames are never constructible
 	# Monthly input filenames are constructable with caseid 
 	# Assume user wishes to glob unless both is provided caseid for monthly files
-	if [ ${clm_md} = 'mth' ] && [ -n ${caseid} ]; then
+	if [ ${clm_md} = 'mth' ] && [ -n "${caseid}" ]; then
 	    inp_glb='Yes' # 20220129 fxm remove after moving monthly filename creation block
 	    # inp_aut='Yes' # 20220129 fxm uncomment after moving monthly filename creation block
 	else # !caseid

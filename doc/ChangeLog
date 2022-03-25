@@ -1,3 +1,11 @@
+2022-03-24  Charlie Zender  <zender@uci.edu>
+
+	* Add warning when SGS not invoked despite presence of indicator variables
+
+	* ncremap/ncclimo always enclose -n/-z shell variables in double quotes
+
+	* Discover 5.0.6 (or earlier?) bug that prevented passing -P prc_typ options
+
 2022-03-20  Charlie Zender  <zender@uci.edu>
 
 	* Build on updated Cori OS with netCDF 4.8.1.1
