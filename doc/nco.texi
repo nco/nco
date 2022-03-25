@@ -26964,7 +26964,8 @@ values.
 Hence the valid values for this option are @samp{integral}
 (or, as of @acronym{NCO} @w{version 5.0.2}, released in September,
 2021, its synonyms @samp{global} and @samp{global_integral}) and
-@samp{mean} (or its synonyms @samp{local} and @samp{local_mean}).
+@samp{mean} (or its synonyms @samp{local}, @samp{local_mean},
+@samp{gridcell}, @samp{gridcell_mean}, @samp{natural_values}).
 Specifying @code{--preserve=@var{integral}} sets the destination
 gridcell equal to the sum of the valid source values times their
 source weights.

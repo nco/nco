@@ -1451,7 +1451,7 @@ if [ "${no_stg_grd}" = 'Yes' ]; then
     rgr_opt="${rgr_opt} --rgr no_stagger"
 fi # !no_stg_grd
 if [ -n "${prs_stt_usr}" ]; then 
-    if [ "${prs_stt_usr}" != 'mean' ] && [ "${prs_stt_usr}" != 'local' ] && [ "${prs_stt_usr}" != 'local_mean' ]; then
+    if [ "${prs_stt_usr}" != 'mean' ] && [ "${prs_stt_usr}" != 'local' ] && [ "${prs_stt_usr}" != 'local_mean' ] && [ "${prs_stt_usr}" != 'gridcell' ] && [ "${prs_stt_usr}" != 'gridcell_mean' ] && [ "${prs_stt_usr}" != 'natural_values' ]; then
 	prs_stt='mean'
     elif [ "${prs_stt_usr}" != 'integral' ] && [ "${prs_stt_usr}" != 'global' ] && [ "${prs_stt_usr}" != 'global_integral' ]; then
 	prs_stt='integral'
@@ -2332,7 +2332,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	fi # !dpt_flg
     fi # !mpas
     if [ "${prc_typ}" = 'sgs' ]; then 
-	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area and/or time-interval duration (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value). If re-normalization is also requested (with --rnr_thr option), then these values will be renormalizaed by ${sgs_frc} and will not be conservative.\n"
+	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area and/or time-interval duration (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value). If re-normalization is also requested (e.g., with --rnr_thr option, or with --preserve=mean), then these values will be renormalized by ${sgs_frc} and will not be conservative.\n"
 	if [ ${fl_nbr} -eq 0 ]; then
 	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires at least one data file (for the surface fractions of each gridcell)\n"
 	    echo "${spt_nm}: HINT Supply a data file with \"-i fl_in\""
