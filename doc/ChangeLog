@@ -1,3 +1,9 @@
+2022-03-28  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.7-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha04: ';git push
+	git tag -a 5.0.7-alpha04 -m 'Poke Kai';git push --tags
+
 2022-03-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.7-alpha03 release procedure:

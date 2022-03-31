@@ -7,7 +7,7 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 Version 5.0.7 brings a few bug-fixes that only affect ncremap and
-ncclimo users...
+ncclimo users. The fix to the -P prc_typ option is most notable.
 
 Work on NCO 5.0.8 has commenced and will improve ncremap support
 for mbtempest, incorporate new mbtempest improvements, and further
@@ -18,14 +18,29 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. None
+A. ncremap now emits a WARNING when a dataset has a sub-gridscale
+(SGS) indicator variable, such as landfrac (for ELM/CLM), or
+timeMonthly_avg_iceAreaCell (for MPASSI), or aice (for CICE),
+and yet SGS regridding was not invoked.
 
 BUG FIXES:
    
-A. ncremap corner case when variable has _FillValue attribute but no
-missing data values could be incorrectly filled in destination
-gridcells with no source contribution. Thanks to Chris Golaz and
-Xylar Asay-Davis for reporting.
+A. NCO 5.0.6 produces incorrect results when sub-gridscale (SGS)
+regridding is invoked by calling ncclimo (or ncremap) with the -P
+prc_typ option alone because an ncremap bug prevented that option from
+being fully parsed. As a result, the -P prc_typ did not correctly
+trigger SGS regridding. The workaround to obtain proper SGS
+normalization with NCO 5.0.6 is to explicitly invoke ncclimo (or
+ncremap) with the --sgs_frc=landfrac (for ELM/CLM) or
+--sgs_frc=timeMonthly_avg_iceAreaCell (for MPASSI) options in addition  
+to any -P prc_typ options already employed. To be clear, this
+workaround only need be applied to processing of ELM/CLM (not EAM/CAM)
+and MPASSI (not MPASO) output. BTW, it is harmless to leave -P in any
+commands that use it, and it remains essential in processing MPAS
+data. The solution is to upgrade, and let -P fulfill its intended
+role of triggering SGS regridding and other dataset-specific tasks
+without the user having to explicitly turn on all the switches
+herself. 
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

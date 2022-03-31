@@ -552,7 +552,8 @@ netCDF4 user-defined types support;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
 <li><b>NCO 5.0.7</b>: (<i>In Progress, features in-progress or complete include</i>)
-<tt>all</tt> link to netCDF quantization;</li>
+<tt>all</tt> link to netCDF quantization;
+<tt>ncclimo/ncremap</tt> fix -P bug, warn if SGS not invoked;</li>
 <li><b>NCO 5.0.6</b>: (<i>Current Stable Release</i>)
 <tt>ncclimo/ncremap</tt> small bug-fixes;</li>
 <li><b>NCO 5.0.5</b>: 
