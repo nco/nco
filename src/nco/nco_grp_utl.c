@@ -6725,7 +6725,9 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
             /* Add one more element to array  */
             (*lmt_rec)=(lmt_sct **)nco_realloc((*lmt_rec),(rec_nbr+1)*sizeof(lmt_sct *));
             (*lmt_rec)[rec_nbr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-
+	    /* 20220403 Initialize limit */
+	    (void)nco_lmt_init((*lmt_rec)[rec_nbr]);
+	      
             /* Obtain group ID */
             (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
