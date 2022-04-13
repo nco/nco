@@ -290,7 +290,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # SGS (201909):
 # ncremap -P elm -v FSDS,TBOT,GPP -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_sgs.nc
 # ncremap -P mpasseaice --sgs_frc=timeMonthly_avg_iceAreaCell -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/msiv1_oEC60to30v3.nc ~/msi_sgs.nc
-# ncremap --sgs_frc=${DATA}/grids/sgs_landfrac_ne30np4.nc/landfrac -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/elmv1_ne30np4l15.nc ~/foo.nc # External sgs_frc
+# ncremap --sgs_frc=${DATA}/grids/elm_landfrac_ne30np4.nc/landfrac -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/elmv1_ne30np4l15.nc ~/foo.nc # External sgs_frc
 # ncremap --vrb=3 --sgs_frc=landfrac --var=area,FSDS,landfrac,landmask,TBOT -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${DATA}/bm/elmv1_ne30np4l15.nc ~/elm_sgs.nc # 20190918 1D->2D works
 # ncremap --vrb=3 --sgs_frc=landfrac --var=area,FSDS,landfrac,landmask,TBOT -m ${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20190918 2D->2D
 # ncremap --vrb=3 -p serial --sgs_frc=landfrac -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
@@ -507,6 +507,7 @@ par_typ="${par_srl}" # [sng] Parallelism type
 pdq_flg='Yes' # [sng] Permute dimensions before regridding
 pdq_opt='' # [sng] ncpdq dimension permutation option
 ppc_prc='' # [nbr] Precision-preserving compression number of significant digits
+prc_sgs='No' # [sng] SGS requested
 prc_typ='' # [sng] Procedure type
 prt_alg='zoltan' # [sng] MOAB-Tempest H5M partition algorithm
 prt_exe_mbt='mbpart' # [sng] MOAB-Tempest H5M partition executable
@@ -1790,10 +1791,10 @@ if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_
     prc_mpas='Yes'
     prc_mpascice='Yes'
 fi # !mpascice
-if [ -n "${sgs_frc}" ]; then 
-    prc_typ='sgs'
+if [ -n "${sgs_frc}" ] || [ -n "${sgs_frc_usr}" ] || [ "${prc_typ}" = 'sgs' ]; then 
+    prc_sgs='Yes'
 fi # !sgs
-if [ "${prc_typ}" = 'sgs' ]; then
+if [ "${prc_sgs}" = 'Yes' ]; then
     # 20190924: Back-compatibility with NCO 4.8.1-
     if [ -n "${sgs_frc_usr}" ]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='landfrac'; fi
     if [ -z "${sgs_msk}" ]; then 
@@ -1805,7 +1806,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	    rgr_opt="${rgr_opt}#sgs_msk_nm=${sgs_msk}"
 	fi # !sgs_msk
     fi # !sgs_frc
-fi # !sgs
+fi # !prc_sgs
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"
 fi # !thr_usr
@@ -2181,6 +2182,8 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: pdq_flg  = ${pdq_flg}\n"
     printf "dbg: pdq_opt  = ${pdq_opt}\n"
     printf "dbg: ppc_prc  = ${ppc_prc}\n"
+    printf "dbg: prc_sgs  = ${prc_sgs}\n"
+    printf "dbg: prc_typ  = ${prc_typ}\n"
     printf "dbg: prs_stt  = ${prs_stt}\n"
     printf "dbg: prt_nbr  = ${prt_nbr}\n"
 #    printf "dbg: qea_flg  = ${qea_flg}\n"
@@ -2331,14 +2334,14 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
  	    printf "MPAS input specified: will add depth coordinate to all 3D variables prior to regridding\n"
 	fi # !dpt_flg
     fi # !mpas
-    if [ "${prc_typ}" = 'sgs' ]; then 
+    if [ "${prc_sgs}" = 'Yes' ]; then 
 	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area and/or time-interval duration (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value). If re-normalization is also requested (e.g., with --rnr_thr option, or with --preserve=mean), then these values will be renormalized by ${sgs_frc} and will not be conservative.\n"
 	if [ ${fl_nbr} -eq 0 ]; then
 	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires at least one data file (for the surface fractions of each gridcell)\n"
 	    echo "${spt_nm}: HINT Supply a data file with \"-i fl_in\""
 	    exit 1
 	fi # !fl_nbr
-    fi # !sgs
+    fi # !prc_sgs
 fi # !vrb_lvl
 if [ "${flg_hrz}" = 'Yes' ]; then
     if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ]; then 

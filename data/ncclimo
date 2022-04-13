@@ -1332,7 +1332,7 @@ fi # !djf
 
 # clm_flg and tms_flg are now fixed so finalize input file options then gather input filenames
 if [ ${tms_flg} = 'Yes' ] && [ ${inp_aut} = 'No' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
-    echo "${spt_nm}: ERROR Specify input file(s) by providing -i \$drc_in with (for automatic construction) or without (for globbin) -c \$caseid, or provide names via positional argument(s) or stdin"
+    echo "${spt_nm}: ERROR Specify input file(s) by providing -i \$drc_in with (for automatic construction) or without (for globbing) -c \$caseid, or provide names via positional argument(s) or stdin"
     if [ ${bch_pbs} = 'Yes' ]; then
 	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
     else # !bch_pbs
