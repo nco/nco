@@ -48,7 +48,6 @@ rnd_nbrf /* [fnc] Generate random fraction in [0,1] */
 /* Remaining definitions are system-dependent */
 
 #ifdef NEED_RINT
-# define NEED_RINTF
 double /* O [frc] Rounded value of x */
 rint /* [fnc] Round x to nearest even integer, raise exceptions */
 (double x); /* I [frc] Value to round */

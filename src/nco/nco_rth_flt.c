@@ -131,8 +131,6 @@ float rnd_nbrf(float x){return (float)(rnd_nbr((double)x));}
    Helpful summary of POSIX, ISO, and MSVC math intrinsics at
    http://www.johndcook.com/math_h.html */
 #ifdef NEED_RINT
-/* Lack of double-precision version implies lack of single-precision version */
-# define NEED_RINTF
 double /* O [frc] Rounded value of x */
 rint /* [fnc] Round x to nearest even integer, raise exceptions */
 (double x) /* I [frc] Value to round */
