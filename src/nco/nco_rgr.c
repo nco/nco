@@ -4816,9 +4816,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     sgs_frc_out=(double *)nco_malloc_dbg(grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() sgs_frc_out value buffer");
     
     /* Initialize and regrid sgs_frc_out
-       20190907: sgs_frc_in (landfrac) is _FillValue (1.0e36) for ELM datasets in all masked gridcells, and is always positive definite (never zero) in all unmasked gridcells because it it a true area. ELM sgs_frc_out is always positive definite gridcell area everywhere, with no missing values and no zero values.
+       20190907: sgs_frc_in (landfrac) is _FillValue (1.0e36) for ELM datasets in all masked gridcells, and is always positive definite (never zero) in all unmasked gridcells because it it a true area. ELM sgs_frc_out is always positive definite gridcell area in unmasked gridcells, is zero (not a missing value) elsewhere 
        20190910: MPAS-Seaice datasets have no mask, and sgs_frc_in (timeMonthly_avg_iceAreaCell) is never (ncatted-appended) _FillValue (-9.99999979021477e+33) and is usually zero because it is time-mean area-fraction of sea ice which only exists in polar regions. MPAS-Seaice sgs_frc_out is zero in all gridcells without sea-ice.
-       Regardless of input source, following blocks guarantee that sgs_frc_out is defined everywhere, is never a missing value (sgs_frc_out is zero where sgs_frc_in may have been _FillValue), and is always safe to multiply and normalize by sgs_frc_out in main regridding loop */
+       Regardless of input source, following blocks guarantee that sgs_frc_out is defined everywhere, is never a missing value (sgs_frc_out is zero where sgs_frc_in may have been _FillValue), and that it is always safe to multiply and normalize by sgs_frc_out in main regridding loop */
     for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++) sgs_frc_out[dst_idx]=0.0;
     for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
       if((var_val_crr=sgs_frc_in[col_src_adr[lnk_idx]]) != mss_val_cmp_dbl)
@@ -4843,8 +4843,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
   } /* !sgs_frc_nm */
 
+  /* 20220324 Verify SGS regridding invoked when SGS-indicator fields are present */
   if(var_rgr_nbr > 0 && !sgs_frc_nm){
-    /* 20220324 Verify SGS regridding invoked when SGS-indicator fields are present */
+    /* SGS regridding was not explicitly invoked---should it have been?
+       Warn when SGS not invoked on datasets that contain SGS indicator variables:
+       landfrac (CLM, ELM), timeMonthly_avg_iceAreaCell (MPAS-Seaice), aice (CICE)
+       This procedure fails to warn when indicator variables are in separate files
+       Such is the case with, e.g., single-variable timeseries
+       One laborious workaround would be to compare variable name again "known" SGS list
+       This would be slow since nearly every ELM variable is SGS */
     char sgs_nm_elm[]="landfrac"; /* [sng] SGS indicator variable name for ELM/CLM */
     char sgs_nm_msi[]="timeMonthly_avg_iceAreaCell"; /* [sng] SGS indicator variable name for MPAS-Seaice */
     char sgs_nm_cice[]="aice"; /* [sng] SGS indicator variable name for CICE */
@@ -4859,7 +4866,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     } /* !rcd */
     rcd=NC_NOERR;
     //(void)fprintf(stdout,"%s: DEBUG quark1 var_rgr_nbr = %d, sgs_frc_nm = %s, sgs_nm_gnr = %s\n",nco_prg_nm_get(),var_rgr_nbr,sgs_frc_nm,sgs_nm_gnr);
-    if(sgs_nm_gnr) (void)fprintf(stdout,"%s: WARNING %s reports sub-gridscale (SGS) regridding not requested despite presence in input dataset of SGS fractional area or area-time variable \"%s\". This will likely produce erroneous (and non-conservative) answers. HINT: In most cases the SGS regridder algorithm should be invoked with \"ncremap -P elm ...\", \"ncremap -P mpasseaice ...\", or more explicitly with \"ncremap --sgs_frc=%s ...\". SGS functionality and options are documented at http://nco.sf.net/nco.html#sgs\n",nco_prg_nm_get(),fnc_nm,sgs_nm_gnr,sgs_nm_gnr);
+    if(sgs_nm_gnr) (void)fprintf(stdout,"%s: WARNING %s reports sub-gridscale (SGS) regridding not requested despite presence in input dataset of SGS fractional area or area-time variable \"%s\". For most ESM land model fields this will produce erroneous (and non-conservative) answers for gridcells with partial land coverage. HINT: In most cases the SGS regridder algorithm should be invoked with \"ncremap -P elm ...\", \"ncremap -P mpasseaice ...\", or more explicitly with \"ncremap --sgs_frc=%s ...\". SGS functionality and options are documented at http://nco.sf.net/nco.html#sgs\n",nco_prg_nm_get(),fnc_nm,sgs_nm_gnr,sgs_nm_gnr); else if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports SGS-indicator variables (landfrac, timeMonthly_avg_iceAreaCell, aice) not present in input file\n",nco_prg_nm_get(),fnc_nm);
   } /* !var_rgr_nbr, !sgs_frc_nm */
 
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: # means regridded, ~ means copied\n");
@@ -5228,6 +5235,27 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		} /* !lvl_idx */
 	      } /* lvl_nbr > 1 */
 	    }else{ /* !has_mss_val */
+	      /* 20220417 SGS regridding with missing values present additional complexity 
+		 Original SGS implementation assumes field and sgs_frc valid at same points
+		 However, ELM landunit-specific fields are missing in gridcells that lack those landunits
+		 For example, TSOI is missing in land gridcells that are entirely glacier 
+		 Recently noticed that ELM archives (by default) a dozen or so such fields
+		 Such fields are means over the fractional landunit of the fractional land
+		 Erroneous regridding if landunit_fraction (in PCT_LANDUNIT) < landfrac
+		 Correct way to regrid would be to set sgs_frc to PCT_LANDUNIT for that field
+		 This violates assumption that sgs_frc valid for all fields
+		 Reasonable workaround removes area from sgs_frc_out if landunit_frac is missing
+		 Answer, though still not 100% correct/conservative, prevents temperature ~ 0 
+		 
+		 Workaround algorithm:
+		 Copy sgs_frc_out into volatile sgs_frc_out_dpl iff sgs_frc and has_mss_val
+		 Sum contributions of missing landunit area to sgs_frc_out_dpl
+		 Reduce sgs_frc_out by sgs_frc_out_dpl before normalization
+		 Delete sgs_frc_out_dpl */
+	      double *sgs_frc_out_dpl=NULL;
+	      sgs_frc_out_dpl=(double *)nco_malloc_dbg(grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() sgs_frc_out_dpl value buffer");
+	      memcpy(sgs_frc_out_dpl,sgs_frc_out,grd_sz_out*nco_typ_lng(var_typ_rgr));
+	      
 	      if(lvl_nbr == 1){
 		/* SGS-regrid single-level fields with missing values */
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
@@ -5236,11 +5264,18 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
 		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
 		    tally[idx_out]++;
+		  }else{ /* !mss_val_cmp_dbl */
+		    /* If input gridcell is not missing, and it has positive-definite area,
+		       then input field has sub-sub-gridscale missing value in gridcell.
+		       Reduce effective area used for normalization appropriately */
+		    if((var_val_crr=sgs_frc_in[idx_in]) != mss_val_cmp_dbl)
+		      if(var_val_crr > 0.0)
+			sgs_frc_out_dpl[idx_out]-=var_val_crr*wgt_raw[lnk_idx];
 		  } /* !mss_val_cmp_dbl */
 		} /* !lnk_idx */
 		/* NB: Normalization clause is complex to support sgs_frc_out from both ELM and MPAS-Seaice */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		  if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];}
+		  if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sgs_frc_out_dpl[dst_idx] > 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out_dpl[dst_idx];}
 	      }else{ /* lvl_nbr > 1 */
 		/* SGS-regrid multi-level fields with missing values */
 		val_in_fst=0L;
@@ -5252,17 +5287,28 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		    if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
 		      var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[col_src_adr[lnk_idx]];
 		      tally[idx_out]++;
+		    }else{ /* !mss_val_cmp_dbl */
+		      /* Same sub-sub-gridcell procedure as for single-level fields except...
+			 Assume SGS normalization is vertically uniform
+			 The compute sub-SGS adjustment for first level only 
+			 Use sub-SGS-adjusted normalization factor for all levels
+			 Otherwise would need to re-copy/compute sgs_frc_out for every level */
+		      if(lvl_idx == 0)
+			if((var_val_crr=sgs_frc_in[idx_in]) != mss_val_cmp_dbl)
+			  if(var_val_crr > 0.0)
+			    sgs_frc_out_dpl[idx_out]-=var_val_crr*wgt_raw[lnk_idx];
 		    } /* !mss_val_cmp_dbl */
 		  } /* !lnk_idx */
 		  /* Normalize current level values */
 		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		    idx_out=dst_idx+val_out_fst;
-		    if(!tally[idx_out]){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[idx_out]/=sgs_frc_out[dst_idx];}
+		    if(!tally[idx_out]){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[idx_out]/=sgs_frc_out_dpl[dst_idx];}
 		  } /* dst_idx */
 		  val_in_fst+=grd_sz_in;
 		  val_out_fst+=grd_sz_out;
 		} /* !lvl_idx */
 	      } /* lvl_nbr > 1 */
+	      if(sgs_frc_out_dpl) sgs_frc_out_dpl=(double *)nco_free(sgs_frc_out_dpl);
 	    } /* !has_mss_val */
 	  } /* !sgs_msk_nm */
 	} /* !sgs_frc_out */

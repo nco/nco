@@ -1,3 +1,15 @@
+2022-04-17  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.7-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha04: ncremap sgs lollapalooza; sub-sgs normalization for landunit-specific fields';git push
+	git tag -a 5.0.7-alpha04 -m 'Poke Kai';git push --tags
+
+	* nco_rgr_wgt() allows for missing values in fields with valid SGS area
+	Previously, assumed SGS fields to be valid wherever sgs_frc > 0.0
+	That low-biased fields like TSOI which are sub-SGS normalized to specific landunits
+	Now sub-SGS values are extrapolated, incorrect though not crazy-bad like before
+	No more temperatures near 0.0 for landunit-specific fields in ELM/CLM
+
 2022-04-13  Charlie Zender  <zender@uci.edu>
 
 	* ncremap fix --sgs_frc and prc_typ logic, introduce prc_sgs, fix sgs_nm_gnr logic
@@ -5,12 +17,6 @@
 2022-04-03  Charlie Zender  <zender@uci.edu>
 
 	* nco_bld_rec_dmn() call nco_lmt_init() on new limits
-
-2022-03-28  Charlie Zender  <zender@uci.edu>
-
-	* NCO 5.0.7-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha04: ';git push
-	git tag -a 5.0.7-alpha04 -m 'Poke Kai';git push --tags
 
 2022-03-25  Charlie Zender  <zender@uci.edu>
 
