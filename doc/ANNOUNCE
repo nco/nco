@@ -29,35 +29,37 @@ ncremap -P elm --map=map.nc in.nc out.nc
 http://nco.sf.net/nco.html#sgs
 
 B. ncremap now allows for missing values in fields with valid SGS area.
-Previously assumed fields to be valid wherever sgs_frc > 0.0.
-This assumption is valid for 95+% of ELM/CLM fields.
+ncremap previously assumed to be valid wherever sgs_frc > 0.0.
+This assumption is valid for ~95% of ELM/CLM fields.
 However, it low-biased landunit-specific fields (like TSOI, H2OSOI) in
-transition areas (e.g., ablation zone) where SGS valid, landunit not.
+transition areas (e.g., ablation zone) with valid SGS, invalid landunit.
 Now sub-SGS values are extrapolated, incorrect though not crazy-bad.
 No more temperatures near 0.0 for landunit-specific fields in ELM/CLM.
 Deriving and using landunit area as SGS field is only correct method. 
-Current workaround is best that can be done with landfrac normalization.
+The current method is the best possible with that uses a single SGS
+fraction for normalization.
 ncremap -P elm --map=map.nc in.nc out.nc
 http://nco.sf.net/nco.html#sgs
 
 BUG FIXES:
    
-A. NCO 5.0.6 produces incorrect results when sub-gridscale (SGS)
+A. NCO 5.0.6 produced incorrect results when sub-gridscale (SGS)
 regridding is invoked by calling ncclimo (or ncremap) with the -P
 prc_typ option alone because an ncremap bug prevented that option from
 being fully parsed. As a result, the -P prc_typ did not correctly
 trigger SGS regridding. The workaround to obtain proper SGS
 normalization with NCO 5.0.6 is to explicitly invoke ncclimo (or
-ncremap) with the --sgs_frc=landfrac (for ELM/CLM) or
---sgs_frc=timeMonthly_avg_iceAreaCell (for MPASSI) options in addition  
-to any -P prc_typ options already employed. To be clear, this
-workaround only need be applied to processing of ELM/CLM (not EAM/CAM)
-and MPASSI (not MPASO) output. BTW, it is harmless to leave -P in any
-commands that use it, and it remains essential in processing MPAS
-data. The solution is to upgrade, and let -P fulfill its intended
+ncremap) with the -P prc_typ option AND the --sgs_frc=landfrac
+(for ELM/CLM) or --sgs_frc=timeMonthly_avg_iceAreaCell (for MPASSI)
+options. To be clear, this workaround only need be applied to
+processing of ELM/CLM (not EAM/CAM) and MPASSI (not MPASO) output.
+It is recommended to use -P where appropriate, and -P remains
+essential in processing MPAS data. As of version 5.0.7, -P is all
+that is required, and --sgs_frc is only needed in special cases.
+The solution is to upgrade, and let -P fulfill its intended
 role of triggering SGS regridding and other dataset-specific tasks
-without the user having to explicitly turn on all the switches
-herself. 
+without the user herself having to explicitly turn on all the
+switches.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
