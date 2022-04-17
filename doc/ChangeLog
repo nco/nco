@@ -1,8 +1,10 @@
 2022-04-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.7-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha05: ';git push
+	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha05: Fix GCC NEED_XXXF token-redefined warnings';git push
 	git tag -a 5.0.7-alpha05 -m 'Easter';git push --tags
+
+	* Fix duplicate definition warnings for RINTF, NEARBYINTF, ROUNDF, TRUNCF
 
 	* Check that omitting #define NEED_XXXF in nco_rth_flt.[ch] builds everywhere
 

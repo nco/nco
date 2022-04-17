@@ -54,21 +54,18 @@ rint /* [fnc] Round x to nearest even integer, raise exceptions */
 #endif /* !NEED_RINT */ 
 
 #ifdef NEED_NEARBYINT
-# define NEED_NEARBYINTF
 double /* O [frc] Rounded value of x */
 nearbyint /* [fnc] Round x to nearest even integer, do not raise exceptions */
 (double x); /* I [frc] Value to round */
 #endif /* !NEED_NEARBYINT */ 
 
 #ifdef NEED_ROUND
-# define NEED_ROUNDF
 double /* O [frc] Rounded value of x */
 round /* [fnc] Round x to nearest integer, half-way cases round away from zero */
 (double x); /* I [frc] Value to round */
 #endif /* !NEED_ROUND */ 
 
 #ifdef NEED_TRUNC
-# define NEED_TRUNCF
 double /* O [frc] Truncated value of x */
 trunc /* [fnc] Truncate x to nearest integer not larger in absolute value */
 (double x); /* I [frc] Value to truncate */
