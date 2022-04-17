@@ -1,7 +1,13 @@
+2022-04-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.7-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha05: ';git push
+	git tag -a 5.0.7-alpha05 -m 'Easter';git push --tags
+
 2022-04-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.7-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha04: ncremap sgs lollapalooza; sub-sgs normalization for landunit-specific fields';git push
+	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha04: sub-sgs normalization for landunit-specific fields';git push
 	git tag -a 5.0.7-alpha04 -m 'Poke Kai';git push --tags
 
 	* nco_rgr_wgt() allows for missing values in fields with valid SGS area
