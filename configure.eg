@@ -248,7 +248,6 @@ Linux dust.ess.uci.edu 2.4.19-pre8 #1 SMP Wed May 8 10:16:29 PDT 2002 i686 unkno
 i686-pc-linux-gnu
 
 # gcc/g++ Install/update NCO in personal directories using all configure defaults:
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='gcc' CXX='g++' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -259,7 +258,6 @@ make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories:
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='gcc' CXX='g++' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -273,7 +271,6 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Generic when netCDF is in /usr (Ubuntu glace)
 # Personal recipe last modified: 20170814
 # Personal recipe last used successfully: 20171218
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 cd ~/nco;cmake/clean
 cd ~/nco/cmake;cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}
@@ -281,7 +278,6 @@ make install
 
 # clang Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories with CMake:
 # Generic when netCDF is in ~/anaconda (MacOS katabatic)
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 unset NETCDF_ROOT
 export NETCDF_INC='/usr/local/opt/netcdf/include'
@@ -316,7 +312,6 @@ make install
 # Personal recipe last modified: 20210817 (search e3sm-u_latest)
 # Personal recipe last used successfully: 20210817
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 export PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
 export LD_LIBRARY_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
@@ -355,7 +350,6 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-
 # Personal recipe last used successfully: 20200905
 # Fails to link to system-installed udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/spack-0.10.0/opt/spack/linux-centos6-x86_64/gcc-5.3.0/netcdf-4.4.1.1-2dtwbu4ojkwj5tqd4uqvomnu6ecmh6tx' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -394,7 +388,6 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20201221 (use gcc netCDF 4.7.4)
 # Personal recipe last used successfully: 20210321
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 module load gcc/9.2.0-ugetvbp
 module load openmpi/4.0.4-hpcx-hghvhj5
@@ -422,7 +415,6 @@ module purge
 module load gcc/8.1.0
 module load mvapich2/2.3.1 # Required for ncclimo/ncremap in MPI-mode
 module load netcdf/4.6.3
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/gcc/8.1.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/gcc/8.1.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -439,7 +431,6 @@ module load intel/20.0.0
 module load intelmpi/2020 # Required for ncclimo/ncremap in MPI-mode
 module load netcdf/4.6.3
 #module load mkl/2020 # Does not hurt but not necessary?
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # works
 ANTLR_ROOT=${HOME} CC='icx -static-intel -qopenmp-link=static' CXX='icx -static-intel -qopenmp-link=static' LDFLAGS='-L/usr/lib64 -L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # fails with ld: cannot find -lm but -lm is not necessary and removing it fixes the issue
@@ -455,7 +446,6 @@ make install >> nco.make.foo 2>&1
 # Latest sysadmin-compiled module usage: soft add +nco-4.6.8, soft add +netcdf-4.4.1.1
 # Personal recipe last modified: 20170825
 # Personal recipe last used successfully: 20190420
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 cd ~/nco;git reset --hard origin/master
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/unsupported/netcdf-4.4.1.1' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
@@ -486,7 +476,6 @@ module load gcc
 export HDF5_DISABLE_VERSION_CHECK=1
 export HDF5_USE_FILE_LOCKING=FALSE
 #module load udunits
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='gcc' CXX='g++' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_DIR='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2' NETCDF_INC='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -503,7 +492,6 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 module swap craype-haswell craype-mic-knl
 module swap PrgEnv-intel PrgEnv-gnu
 module load gcc # Activate GCC8
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_INC='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -521,7 +509,6 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Personal recipe last used successfully: 20190415 (currently not linking ncap2 because needs -L${HOME}/lib_cori to find -lantlr. Moreover, ldd cannot find system libraries.)
 #module add PrgEnv-intel # Link-stage
 module load intel # Link-stage cannot find -lsvml etc
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='icc' CXX='icpc' GSL_ROOT='/usr/common/software/gsl/2.1/intel' NETCDF_INC='/opt/cray/pe/netcdf/4.6.1.3/intel/16.0/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.6.1.3/intel/16.0/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.6.1.3' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/intel' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -537,7 +524,6 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest sysadmin-compiled module usage: module load nco/4.7.4 # 20180430 (without ncap2)
 # Personal recipe last modified: 20201210 (attempting nvidia)
 # Personal recipe last used successfully: fxm 
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 #export rch_sfx='cori' 
 bsrc
@@ -560,7 +546,6 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on greenplanet
 # Personal recipe last modified: 20190526
 # Personal recipe last used successfully: 20190526 (no antlr or ncap2)
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='gcc' CXX='g++' LDFLAGS='-L/lib64' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -585,7 +570,6 @@ CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_I
 # Latest sysadmin-compiled module usage:  # fxm
 # Personal recipe last modified: 2016??
 # Personal recipe last used successfully: 2016??
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/netcdf/current' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -602,7 +586,6 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Personal recipe last used successfully: 20170424
 module load netcdf/4.4.0
 module load udunits
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib CC='gcc' CXX='g++' UDUNITS2_PATH='/sw/udunits-2.1.24' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -622,7 +605,6 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # module unload python
 # module use /projects/ClimateEnergy_2/software/modulefiles/all
 # module load e3sm-unified/1.1.2
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 module load cray-netcdf
 #module add PrgEnv-intel
@@ -663,7 +645,6 @@ export PATH=${PATH}:'/opt/cray/netcdf/4.4.1.1/bin'
 cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL=N NETCDF_ROOT='/opt/cray/netcdf/4.4.1.1' NETCDF_INC='/opt/cray/netcdf/4.4.1.1/GNU/49/include' NETCDF_LIB='/opt/cray/netcdf/4.4.1.1/GNU/49/lib' OPTS=D OMP=Y UDUNITS_INC='/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/include' UDUNITS_LIB='/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib -lexpat' allinone;cd -
 
 # gcc/g++ Sysadmins: use this to install/update NCO in /opt/nco
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ./configure --disable-shared --enable-optimize-custom --prefix=/opt/nco > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -674,7 +655,6 @@ sudo make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Sysadmins: use this to install/update NCO in /usr/local
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ./configure --disable-shared --enable-optimize-custom --prefix=/usr/local > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -685,7 +665,6 @@ sudo make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # g++/g++ Zender uses this to compile NCO with g++ (not recommended!) instead of gcc
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='g++' CXX='g++' ./configure --disable-shared --disable-udunits --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -697,7 +676,6 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 
 # gcc/g++ Zender uses this to compile NCO with GCC and netCDF4
 # --enable-optimize-custom fails with netCDF4 which shadows "access" variable
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='gcc' CXX='g++' NETCDF4_ROOT='/usr/local/netcdf4' ./configure --enable-netcdf4 --enable-dap-netcdf --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -709,7 +687,6 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 
 gcc/g++ Developers use --enable-maintainer-mode to verify auto-tools work correctly, and to mandate rebuilding of "special files" (ncap_yacc.c, ncap_lex.c) correctly:
 (requires complete, up-to-date, GNU development toolchain):
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 aclocal # Create aclocal.m4 from acinclude.m4
 autoheader # Create config.h.in from configure.ac
@@ -727,7 +704,6 @@ make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 como:
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='como --c99' CXX='como' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -737,7 +713,6 @@ make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 icc:
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='icc' CPPFLAGS="-I${IA32ROOT}/include -I${IA32ROOT}/include/c++" CXX='icpc' LDFLAGS="-L${IA32ROOT}/lib" ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -747,7 +722,6 @@ make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 pathcc:
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='pathcc' CXX='pathCC' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -757,7 +731,6 @@ make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 pgcc:
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='pgcc' CXX='pgCC' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -767,7 +740,6 @@ make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 pgcc on mpc64.nacs.uci.edu (C-shell environment):
-setenv GNU_TRP `${HOME}/nco/autobld/config.guess`
 cd ${HOME}/nco;/bin/rm -f *.foo;make distclean
 # Bash
 ANTLR_ROOT='/software/antlr' CC='pgcc' CXX='pgCC' UDUNITS2_PATH='/software/udunits' ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man >&! nco.configure.foo 
@@ -783,7 +755,6 @@ scp nco.configure.foo nco.config.log.foo nco.make.foo dust.ess.uci.edu:Sites/nco
 
 # Old machines:
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on pileus:
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/opt/ACME/uvcdat-2.2-build/install/Externals' UDUNITS2_PATH='/opt/ACME/uvcdat-2.2-build/install/Externals' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -852,7 +823,6 @@ x86_64-unknown-linux-gnu
 
 # gcc/g++ Regular (non-root) users build NCO with system-supplied netCDF and install in your own directories
 # Zender uses this on MACOS sastrugi/firn as well
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # Pre-20180729 (antlr from macports seems to have stopped linking, so build it from scratch)
 CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
@@ -872,7 +842,6 @@ make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Sysadmins use/modify this to install/update NCO in /usr/local, based on netCDF4 also in /usr/local (works on givre 20100727):
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CPPFLAGS='-DHAVE_NETCDF4_H -I/usr/local/include' LDFLAGS='-L/usr/local/lib' ./configure --prefix='/usr/local' --enable-ncap2 --enable-netcdf4 > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -883,7 +852,6 @@ sudo make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to debug NCO with pre-built (i.e., yum/dnf install'd or aptitude install'd) netCDF in /usr (glace)
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -899,7 +867,6 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # cd ~/nco/bld;make GSL=Y OMP=Y OPTS=D UDUNITS=Y allinone
 
 # gcc/g++ Zender uses this to debug NCO with pre-built netCDF binaries in /usr (skyglow, e3sm.ess.uci.edu)
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # Pre-20170810 GCC7 dies on nco_yyget_leng() prototype with --enable-debug-custom option
 #CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
@@ -921,7 +888,6 @@ make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to debug NCO with custom-built netCDF binaries in /usr/local with clang (frazil)
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # 20170810 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
 CC='clang' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='clang -std=c++11' CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
@@ -933,7 +899,6 @@ make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # g++/g++ Zender uses this to compile NCO with _g++_ (not recommended for normal use)
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='g++' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -944,7 +909,6 @@ make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 pgcc/pgCC:
-export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='pgcc' CFLAGS='-fast -fPIC' CXX='pgCC' CXXFLAGS='-fast -fPIC' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
