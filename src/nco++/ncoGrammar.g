@@ -1251,14 +1251,18 @@ static std::vector<std::string> lpp_vtr;
     | #(WHERE var=out stmt3:.) { 
       // convert mask to short 
       RefAST tr; 
-      var=nco_var_cnf_typ(NC_SHORT,var);
+
 
       //change missing values to zero
       if(var->has_mss_val){
        var=ncap_var_var_stc(var,NULL_CEWI,MISS2ZERO);
        var->has_mss_val=False;
        var->mss_val.vp=(void*)nco_free(var->mss_val.vp);
-      }         
+      }
+
+      // var is now a 0/1 array
+      var=nco_var_cnf_typ(NC_SHORT,var);
+      
 
       //deal with block
       if(stmt3->getType()==BLOCK){
