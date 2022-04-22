@@ -1,8 +1,14 @@
-2022-04-18  Charlie Zender  <zender@uci.edu>
+2022-04-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.7-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha05: Fix GCC NEED_XXXF token-redefined warnings';git push
 	git tag -a 5.0.7-alpha05 -m 'Easter';git push --tags
+
+	* Fix ncclimo regression test #1 to use -P cam so correct files found
+
+	* Henry fixed ncap2 where() to allow mss_val=NC_FILL_INT
+
+2022-04-18  Charlie Zender  <zender@uci.edu>
 
 	* Fix duplicate definition warnings for RINTF, NEARBYINTF, ROUNDF, TRUNCF
 
