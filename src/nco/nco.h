@@ -275,7 +275,7 @@ extern "C" {
     return nco_mta_dlm;} /* [sng] Multi-argument delimiter */
   void nco_mta_dlm_set(char *nco_mta_dlm_arg){nco_mta_dlm=nco_mta_dlm_arg;} /* [sng] Multi-argument delimiter */
   
-  unsigned short nco_baa_cnv=4; /* [enm] Bit-Adjustment Algorithm defaults to Granular Bit Grooming (after 20211003) */
+  unsigned short nco_baa_cnv=4; /* [enm] Bit-Adjustment Algorithm defaults to Granular BitRound (after 20211003) */
   unsigned short nco_baa_cnv_get(void){return nco_baa_cnv;} /* [enm] Bit-Adjustment Algorithm */
 
   unsigned short nco_bnr_cnv=0; /* [enm] Binary byte-ordering convention to produce (native or byte-swapped) */

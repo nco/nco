@@ -1259,11 +1259,12 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 #else
 	      /* If CCR is enabled, invoke applicable codec */
 	      const nco_flt_typ_enm nco_flt_enm=(nco_flt_typ_enm)nco_flt_glb_get();
-	      /* Build list of filters available through the CCR API */
+	      /* Build list of filters available through CCR API */
 	      char ccr_flt_lst[200]; /* [sng] List of available CCR filters */
 	      nco_bool ccr_has_flt=True; /* [flg] CCR has requested filter */
 	      ccr_flt_lst[0]='\0';
 	      strcat(ccr_flt_lst,"DEFLATE");
+	      /* Tokens like CCR_HAS_BITGROOM are defined by CCR in ccr_meta.h */
 # if CCR_HAS_BZIP2
 	      strcat(ccr_flt_lst,", Bzip2");
 # endif /* !CCR_HAS_BZIP2 */
@@ -1273,9 +1274,12 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 # if CCR_HAS_BITGROOM
 	      strcat(ccr_flt_lst,", BitGroom");
 # endif /* !CCR_HAS_BITGROOM */
-# if CCR_HAS_GRANULARBG
-	      strcat(ccr_flt_lst,", Granular BitGroom");
-# endif /* !CCR_HAS_GRANULARBG */
+# if CCR_HAS_BITROUND
+	      strcat(ccr_flt_lst,", BitRound");
+# endif /* !CCR_HAS_BITROUND */
+# if CCR_HAS_GRANULARBR
+	      strcat(ccr_flt_lst,", Granular BitRound");
+# endif /* !CCR_HAS_GRANULARBR */
 # if CCR_HAS_ZSTD
 	      strcat(ccr_flt_lst,", Zstd");
 # endif /* !CCR_HAS_ZSTD */
@@ -1299,19 +1303,26 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 		ccr_has_flt=False;
 # endif /* !CCR_HAS_LZ4 */
 		break;
-	      case nco_flt_bgr: /* Bit Groom */
+	      case nco_flt_bgr: /* BitGroom */
 # if CCR_HAS_BITGROOM
 		if(dfl_lvl > 0) (void)nc_def_var_bitgroom(out_id,var[idx]->id,dfl_lvl);
 # else /* !CCR_HAS_BITGROOM */
 		ccr_has_flt=False;
 # endif /* !CCR_HAS_BITGROOM */
 		break;
-	      case nco_flt_gbr: /* Granular BitRound */
-# if CCR_HAS_GRANULARBG
-		if(dfl_lvl > 0) (void)nc_def_var_granularbg(out_id,var[idx]->id,dfl_lvl);
-# else /* !CCR_HAS_GRANULARBG */
+	      case nco_flt_btr: /* BitRound */
+# if CCR_HAS_BITROUND
+		if(dfl_lvl > 0) (void)nc_def_var_bitround(out_id,var[idx]->id,dfl_lvl);
+# else /* !CCR_HAS_BITROUND */
 		ccr_has_flt=False;
-# endif /* !CCR_HAS_GRANULARBG */
+# endif /* !CCR_HAS_BITROUND */
+		break;
+	      case nco_flt_gbr: /* Granular BitRound */
+# if CCR_HAS_GRANULARBR
+		if(dfl_lvl > 0) (void)nc_def_var_granularbr(out_id,var[idx]->id,dfl_lvl);
+# else /* !CCR_HAS_GRANULARBR */
+		ccr_has_flt=False;
+# endif /* !CCR_HAS_GRANULARBR */
 		break;
 	      case nco_flt_zst: /* Zstandard */
 # if CCR_HAS_ZSTD
@@ -1321,8 +1332,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 		ccr_has_flt=False;
 # endif /* !CCR_HAS_ZSTD */
 		break;
-	      case nco_flt_dgr: /* Digit Round */
-	      case nco_flt_btr: /* Bit Round */
+	      case nco_flt_dgr: /* DigitRound */
 		ccr_has_flt=False;
 		if(dfl_lvl <= 0) break;
 	      default: nco_dfl_case_flt_err(); break;

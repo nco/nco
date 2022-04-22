@@ -1426,7 +1426,7 @@ if($USER eq 'zender'){
 # ncecat -C -h -O -G ensemble -d lat,1,1 -v area ~/foo.nc ~/foo.nc ~/foo2.nc
 # ncks -C -O -h -m --trd -v area ~/foo2.nc | grep "ensemble../area" | wc | cut -c 7
 #ncecat #3    
-    $dsc_sng="Group aggregate variable with hyperslabbing (requires netCDF4)";
+    $dsc_sng="(expect ERROR with MacOS not GNU 'cut') Group aggregate variable with hyperslabbing (requires netCDF4)";
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -G ensemble -d lat,1,1 -v area %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -O -h -m --trd -v area %tmp_fl_01% | grep \"ensemble../area\" | wc | cut -c 7";

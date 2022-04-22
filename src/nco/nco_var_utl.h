@@ -43,7 +43,7 @@
 
 #if ENABLE_CCR
 # include <ccr.h> /* Community Codec Repository prototypes */
-# include <ccr_meta.h> /* Community Codec Repository configuration */
+# include <ccr_meta.h> /* CCR_VERSION, CCR_HAS_BITGROOM, ... */
 # include "nco_flt.h" /* Compression filters */
 #endif /* !ENABLE_CCR */
 

@@ -432,6 +432,7 @@ main(int argc,char **argv)
     /* Long options with argument, no short option counterpart */
     {"baa",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
     {"bit_alg",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
+    {"qnt_alg",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
     {"bsa",required_argument,0,0}, /* [enm] Binary byte-swap algorithm */
@@ -639,8 +640,15 @@ main(int argc,char **argv)
     if(opt == 0){
       if(!strcmp(opt_crr,"baa") || !strcmp(opt_crr,"bit_alg")){
 	nco_baa_cnv=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd){
+	  /* Interpretation as an integer failed, so try to interpret as algorithm string instead */
+	  char *qnt_sng; /* [sng] Quantization string */
+	  qnt_sng=(char *)strdup(optarg);
+	  if(qnt_sng) qnt_sng=(char *)nco_free(qnt_sng);
+	  *sng_cnv_rcd=NULL;
+	} /* !sng_cnv_rcd */
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif baa */
+      } /* !baa */
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
