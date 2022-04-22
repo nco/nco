@@ -114,7 +114,8 @@ nbr_err_ttl=0;
   nbr_err++;
   }
 
-  if(b11.total() !=1s){
+  // b11 should be full of missing vales
+  if(!b11.total().missing()){
   print("ERROR: b11:method test\n");
   nbr_err++;
   }
@@ -248,8 +249,9 @@ nbr_err_ttl=0;
    // Var on RHS 
    e1[$time]=time;
    
-   // Value list on RHS   
-   e2[$lon]={1,2s,3L,4f};
+   // Value list on RHS
+   // nb type on RHS is the type of first member
+   e2[$lon]={1f,2s,3L,4};
 	
    // Attribute on RHS
    e3@tst={5,25,50,100};
@@ -281,7 +283,7 @@ nbr_err_ttl=0;
     nbr_err++;
    }
 
-   if(fabs(e5.min()-9929.21f) > 0.001f || fabs(e5.avg()-53743.6f) > 0.01f){
+   if(fabs(e5.min()-360f) > 0.001f || fabs(e5.avg()-51254.11f) > 0.01f){
     print("ERROR: e5: LHS cast test\n");
     nbr_err++;
    }
@@ -506,11 +508,25 @@ nbr_err_ttl=0;
     nbr_err++;
   }
   
-  if(fabs(j4_ttl-338d)>0.01){
+  if(fabs(j4_ttl-327d)>0.01){
     print("ERROR: j4: where test with blocks\n");
     nbr_err++;
   }
 
+
+  // try missing value equal to NC_FILL_INT
+  j5=time.int();
+  j5.set_miss(-2147483647L);
+  where(j5>3L)
+    j5=-2147483647L;
+
+  if(fabs(j5.total().float() - 6f) >0.01  ) {
+    print("ERROR: j5: where test with NC_FILL_INT\n");
+    nbr_err++;
+  }
+
+    
+  
   print("RESULTS block j: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
