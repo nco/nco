@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha05: Fix GCC NEED_XXXF token-redefined warnings';git push
 	git tag -a 5.0.7-alpha05 -m 'Easter';git push --tags
 
-	* Stubs for requesting quantization method by string not enum
+	* Stubs to request quantization method by string not enum
 
 	* Fix ncclimo regression test #1 to use -P cam so correct files found
 

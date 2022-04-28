@@ -9704,7 +9704,7 @@ during statistical operations.}, respectively.
 @cindex @acronym{PPQ}
 @cindex @acronym{GBR}
 @cindex BitGroom
-@cindex GranularBitRound
+@cindex Granular BitRound
 @cindex BitShave
 @cindex BitSet
 @cindex DigitRound
@@ -9716,7 +9716,7 @@ As of @w{version 5.0.3} (October 2021), @acronym{NCO} supports a more
 complete set of Precision-Preserving Quantization (@acronym{PPQ})
 filters than has been documented here. 
 The default algorithm has been changed from BitGroom with BitRound
-masks from R. Kouznetsov (2021), to what we call GranularBitRound
+masks from R. Kouznetsov (2021), to what we call Granular BitRound
 (@acronym{GBR}).
 @acronym{GBR} combines features of BitGroom, BitRound, and DigitRound by
 Delaunay et al. (2019).
@@ -9725,12 +9725,12 @@ for @acronym{NSD}=3 on our benchmark @w{1 GB} climate model output
 dataset. 
 @example
 @verbatim
-ncks -7 -L 1         --ppc default=3 in.nc out.nc # GranularBitRound
+ncks -7 -L 1         --ppc default=3 in.nc out.nc # Granular BitRound
 ncks -7 -L 1 --baa=0 --ppc default=3 in.nc out.nc # BitGroom
 ncks -7 -L 1 --baa=1 --ppc default=3 in.nc out.nc # BitShave
 ncks -7 -L 1 --baa=2 --ppc default=3 in.nc out.nc # BitSet
 ncks -7 -L 1 --baa=3 --ppc default=3 in.nc out.nc # DigitRound
-ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # GranularBitRound
+ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # Granular BitRound
 ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitGroomRound
 ncks -7 -L 1 --baa=6 --ppc default=10 in.nc out.nc # HalfShave
 ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce
