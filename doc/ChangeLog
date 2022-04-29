@@ -1,8 +1,12 @@
-2022-04-22  Charlie Zender  <zender@uci.edu>
+2022-04-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.7-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha05: Fix GCC NEED_XXXF token-redefined warnings';git push
+	cd ~/nco;git commit -a -m 'Version 5.0.7-alpha05: all: fix tkn rdf wrn, ncap2: where() mss_val; ncclimo: rgr#1; pynco prs';git push
 	git tag -a 5.0.7-alpha05 -m 'Easter';git push --tags
+
+	* Merge multiple PyNCO PRs from Luke Davis of CSU
+
+2022-04-22  Charlie Zender  <zender@uci.edu>
 
 	* Stubs to request quantization method by string not enum
 
