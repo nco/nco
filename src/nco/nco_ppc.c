@@ -81,13 +81,13 @@ nco_ppc_ini /* Set PPC based on user specifications */
   char *sng_fnl=NULL;
 
   /* Join arguments together */
-  sng_fnl=nco_join_sng(ppc_arg, ppc_arg_nbr);
+  sng_fnl=nco_join_sng(ppc_arg,ppc_arg_nbr);
   ppc_lst=nco_arg_mlt_prs(sng_fnl);
 
   if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);
 
-  /* jm fxm use more descriptive name than i---what does i count? */
-  for(int index=0;(ppc_lst+index)->key;index++, ppc_var_nbr++); /* end loop over i */
+  /* Compute ppc_var_nbr */
+  for(int idx=0;(ppc_lst+idx)->key;idx++,ppc_var_nbr++);
 
   /* PPC "default" specified, set all non-coordinate variables to default first */
   for(ppc_var_idx=0;ppc_var_idx<ppc_var_nbr;ppc_var_idx++){
@@ -224,7 +224,7 @@ nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc def
       } /* endif */
     } /* endif */
   } /* endfor */
-} /* end nco_ppc_set_dflt() */
+} /* !nco_ppc_set_dflt() */
 
 void
 nco_ppc_set_var
@@ -333,7 +333,7 @@ nco_ppc_set_var
   } /* endif */
     
   return;
-} /* end nco_ppc_set_var() */
+} /* !nco_ppc_set_var() */
 
 void
 nco_ppc_around /* [fnc] Replace op1 values by their values rounded to decimal precision prc */
@@ -1285,4 +1285,4 @@ nco_ppc_bitmask_scl /* [fnc] Round input value significand by specified number o
   *u64_ptr&=msk_f64_u64_zro;
 
   return val_rnd;
-} /* end nco_ppc_bitmask_scl() */
+} /* !nco_ppc_bitmask_scl() */

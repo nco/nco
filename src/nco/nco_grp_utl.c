@@ -5240,7 +5240,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 	if(dfl_lvl > 0) shuffle=NC_SHUFFLE;
 	(void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl);
       } /* !dfl_lvl */
-    } /* !nbr_dmn_var */
+    } /* !nbr_dmn_var_out */
 
     /* 20141013 Previously called chunking only when user selected a chunking switch
        Now always call chunking because default is to preserve input chunking 

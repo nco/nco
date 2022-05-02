@@ -287,6 +287,11 @@ extern "C" {
   int nco_flt_glb=0; /* [enm] Filter enum */
   int nco_flt_glb_get(void){return nco_flt_glb;} /* [enm] Filter enum */
 
+  int nco_flt_glb_lss_alg=0; /* [enm] Lossy compression algorithm */
+  int nco_flt_glb_lss_lvl=int_CEWI; /* [nbr] Lossy compression level */
+  int nco_flt_glb_lsl_alg=0; /* [enm] Lossless compression algorithm */
+  int nco_flt_glb_lsl_lvl=int_CEWI; /* [nbr] Lossless compression level */
+
   unsigned short nco_fmt_xtn=0; /* [enm] Extended file format */
   unsigned short nco_fmt_xtn_get(void){return nco_fmt_xtn;} /* [enm] Extended file format */
   void nco_fmt_xtn_set(unsigned short nco_fmt_xtn_arg){nco_fmt_xtn=nco_fmt_xtn_arg;} /* [enm] Extended file format */
@@ -367,14 +372,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 7
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE "-alpha05" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
+# define NCO_VERSION_NOTE "-alpha06" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "5.0.7-alpha05"
+# define NCO_VERSION "5.0.7-alpha06"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */

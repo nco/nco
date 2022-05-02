@@ -1,17 +1,20 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.0.7 have reached orbit near L2
+netCDF Operators NCO version 5.0.7 are unfurled
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.7 brings a few bug-fixes that only affect ncremap and
-ncclimo users. The fix to the -P prc_typ option is most notable.
+Version 5.0.7 has new fixes and features for ncremap and ncclimo
+that ensure correct treatment of sub-gridscale fields and missing
+values. ncremap now allows and adjusts for missing values in SGS
+fields. Previously such missing values could botch SGS normalization.
+Users of SGS regridding are encouraged to upgrade. Others can skip
+this release.
 
-Work on NCO 5.0.8 has commenced and will improve ncremap support
-for mbtempest, incorporate new mbtempest improvements, and further
-improve support for quantization/compression algorithms.
+Work on NCO 5.0.8 has commenced and will improve support for modern
+quantization/compression algorithms expected to be in netCDF 4.9.0.
 
 Enjoy,
 Charlie
@@ -60,6 +63,10 @@ The solution is to upgrade, and let -P fulfill its intended
 role of triggering SGS regridding and other dataset-specific tasks
 without the user herself having to explicitly turn on all the
 switches.
+
+B. ncremap's --add_fll option previously always wrote NC_FILL_DOUBLE
+into unmapped gridcells. Now it will prefer to write the defined
+_FillValue if one exists.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

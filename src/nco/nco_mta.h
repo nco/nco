@@ -51,28 +51,28 @@ extern "C" {
 
   char * /* O/I [sng] string that has backslash(es) */
   nco_remove_backslash
-  (char *args); /* O/I [sng] string that had already been got rid of backslash(es) */
+  (char *arg); /* O/I [sng] string that had already been got rid of backslash(es) */
 
   char * /* O [sng] the flag that has no hyphens */
   nco_remove_hyphens /* [fnc] Remove the hyphens come before the flag */
-  (char* args); /* I [sng] the flag that has hyphens in it*/
+  (char *arg); /* I [sng] the flag that has hyphens in it*/
 
   char ** /* O [sng] Group of split strings */
   nco_sng_split /* [fnc] Split string by delimiter */
-  (const char *source, /* I [sng] Source string */
-   const char *delimiter); /* I [char] Delimiter */
+  (const char *src, /* I [sng] Source string */
+   const char *dlm); /* I [char] Delimiter */
 
   int /* O [flg] Option is flag */
   nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
-  (const char* flag); /* I [sng] Input string */
+  (const char *flg); /* I [sng] Input string */
 
   int /* O [int] the boolean for the checking result */
   nco_input_check /* [fnc] check whether the input is legal and give feedback accordingly. */
-  (const char *args); /* O [sng] input arguments */
+  (const char *arg); /* O [sng] input arguments */
 
   kvm_sct * /* O [kvm_sct] Pointer to first kvm structure */
   nco_arg_mlt_prs /* [fnc] Main parser, split string and assign to kvm structure */
-  (const char *args); /* I [sng] Input string */
+  (const char *arg); /* I [sng] Input string */
 
   char * /* O [sng] Joined strings */
   nco_join_sng /* [fnc] Join strings with delimiter */
@@ -81,8 +81,8 @@ extern "C" {
 
   int // O [int] Number of string blocks that will be split with delimiter
   nco_count_blocks // [fnc] Check number of string blocks that will be split with delimiter
-  (const char *args, // I [sng] String to be split
-   const char *delimiter); // I [sng] Delimiter
+  (const char *arg, // I [sng] String to be split
+   const char *dlm); // I [sng] Delimiter
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -231,3 +231,48 @@ nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
   nco_exit(EXIT_FAILURE);
   return nco_flt_nil; /* Statement should not be reached */
 } /* !nco_flt_sng2enm() */
+
+int /* O [enm] Return code */
+nco_flt_def /* [fnc] Call filters immediately after variable definition */
+(const int nc_in_id, /* I [id] netCDF input file/group ID */
+ const int nc_out_id, /* I [id] netCDF output file/group ID */
+ const int var_in_id, /* I [id] Variable ID */
+ const int var_out_id, /* I [id] Variable ID */
+ const int dfl_lvl) /* I [enm] Deflate level [0..9] */
+{
+  /* Purpose: 
+     Until 20220501 the NCO code to define per-variable filters was scattered in ~four places 
+     Introduction of new filters in netCDF 4.9.0 makes this untenable 
+     Here were functionalize the invocation of original netCDF4 filters DEFLATE and Shuffle
+     Once this refactoring is complete and backward-compatible, we will add newer filters */
+
+  const char fnc_nm[]="nco_flt_def()"; /* [sng] Function name */
+
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  /* Deflation */
+  int deflate; /* [flg] Turn-on deflate filter */
+  int dfl_lvl_in; /* [enm] Deflate level [0..9] */
+  int shuffle; /* [flg] Turn-on shuffle filter */
+
+  rcd=nco_inq_var_deflate(nc_in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
+  /* Before netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
+     Properties of final invocation before nc_enddef() would take effect
+     After netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect */
+  if((deflate || shuffle) && dfl_lvl < 0){
+    /* Copy original filters if user did not explicity set dfl_lvl for output */ 
+    rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
+  }else if(dfl_lvl >= 0){ 
+    /* Overwrite HDF Lempel-Ziv compression level, if requested */
+    deflate=(int)True;
+    /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
+    if(dfl_lvl <= 0) shuffle=NC_NOSHUFFLE;
+    /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
+    if(dfl_lvl > 0) shuffle=NC_SHUFFLE;
+    rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl);
+  } /* !dfl_lvl */
+
+  return rcd;
+
+} /* !nco_flt_def() */
+  

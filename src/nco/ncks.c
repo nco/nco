@@ -641,9 +641,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"baa") || !strcmp(opt_crr,"bit_alg")){
 	nco_baa_cnv=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd){
-	  /* Interpretation as an integer failed, so try to interpret as algorithm string instead */
+	  /* Interpretation as integer failed, try to interpret as algorithm string instead */
 	  char *qnt_sng; /* [sng] Quantization string */
 	  qnt_sng=(char *)strdup(optarg);
+	  nco_flt_glb=nco_flt_sng2enm(optarg);
 	  if(qnt_sng) qnt_sng=(char *)nco_free(qnt_sng);
 	  *sng_cnv_rcd=NULL;
 	} /* !sng_cnv_rcd */
@@ -1286,7 +1287,7 @@ main(int argc,char **argv)
 
       /* Free regridding structure */
       rgr_nfo=nco_rgr_free(rgr_nfo);
-    } /* endif !flg_rgr */
+    } /* !flg_rgr */
 
     if(!flg_rgr){
       
