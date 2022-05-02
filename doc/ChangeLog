@@ -1,8 +1,10 @@
 2022-05-02  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.0.7-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.7-beta01: all: bit_xpl_dbl=52, tkn rdf wrn; ncap2: where() mss_val; ncclimo: -P fix; ncremap: add_fll fix, sub-SGS nrm, sgs_nm_gnr wrn';git push
-	git tag -a 5.0.7-beta01 -m 'Mariupol';git push --tags
+	* NCO 5.0.7 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.7: all: bit_xpl_dbl=52, tkn rdf wrn; ncap2: where() mss_val; ncclimo: -P fix; ncremap: add_fll fix, sub-SGS nrm, sgs_nm_gnr wrn';git push
+	git tag -a 5.0.7 -m 'Mariupol';git push --tags
+
+	* Update allowed netCDF versions to include 4.9.0, 4.9.1
 
 	* Add nco_flt_def() stub
 

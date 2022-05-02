@@ -10,7 +10,7 @@ Version 5.0.7 has new fixes and features for ncremap and ncclimo
 that ensure correct treatment of sub-gridscale fields and missing
 values. ncremap now allows and adjusts for missing values in SGS
 fields. Previously such missing values could botch SGS normalization.
-Users of SGS regridding are encouraged to upgrade. Others can skip
+Users of SGS regridding are encouraged to upgrade. Others might skip
 this release.
 
 Work on NCO 5.0.8 has commenced and will improve support for modern
@@ -34,7 +34,7 @@ http://nco.sf.net/nco.html#sgs
 B. ncremap now allows for missing values in fields with valid SGS area.
 ncremap previously assumed to be valid wherever sgs_frc > 0.0.
 This assumption is valid for ~95% of ELM/CLM fields.
-However, it low-biased landunit-specific fields (like TSOI, H2OSOI) in
+However, it low-biases landunit-specific fields (like TSOI, H2OSOI) in
 transition areas (e.g., ablation zone) with valid SGS, invalid landunit.
 Now sub-SGS values are extrapolated, incorrect though not crazy-bad.
 No more temperatures near 0.0 for landunit-specific fields in ELM/CLM.
@@ -75,7 +75,7 @@ KNOWN PROBLEMS DUE TO NCO:
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
 These problems occur with NCO 5.0.7 built/tested under
-MacOS 12.1 with netCDF 4.8.1 on HDF5 1.12.0 and with
+MacOS 12.3.1 with netCDF 4.8.1 on HDF5 1.12.0 and with
 Linux with netCDF 4.8.1 on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
