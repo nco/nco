@@ -1,6 +1,6 @@
 2022-05-03  Charlie Zender  <zender@uci.edu>
 
-	* Adopt nco_flt_def_*() in nco_map.c, nco_cnv_arm.c, ncap_utl.c, nco_rgr.c
+	* Adopt nco_flt_def_*() in nco_map.c, nco_cnv_arm.c, ncap_utl.c, nco_rgr.c, nco_s1d.c
 
 2022-05-02  Charlie Zender  <zender@uci.edu>
 
