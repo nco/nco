@@ -34,6 +34,7 @@
 #include "nco_cnf_dmn.h" /* Conform dimensions */
 #include "nco_cnk.h" /* Chunking */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_flt.h" /* Compression filters */
 #include "nco_grp_trv.h" /* Group traversal */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_msa.h" /* Multi-slabbing algorithm */

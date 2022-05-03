@@ -1236,7 +1236,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
           int deflate; /* [flg] Turn-on deflate filter */
           int dfl_lvl_in; /* [enm] Deflate level [0..9] */
           int var_in_id;
-          /* Uncertain that output name always exists in input file */
+          /* Output name may not exist in input file (e.g., when ncap2 defines new variable) */
           rcd=nco_inq_varid_flg(in_id,var[idx]->nm,&var_in_id);
           if(rcd == NC_NOERR){
             /* When output name is in input file, inquire input deflation level */
@@ -1245,7 +1245,6 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	    if((deflate || shuffle) && dfl_lvl < 0){
 	      /* Copy original filters if user did not explicity set dfl_lvl for output */ 
 	      (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl_in);
-
 	    }else if(dfl_lvl >= 0){ 
 	      /* Overwrite HDF Lempel-Ziv compression level, if requested */
 	      deflate=(int)True;

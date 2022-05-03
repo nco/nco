@@ -120,7 +120,7 @@ nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: WARNING ARM file does not have dimension \"time\"\n",nco_prg_nm_get());
     return;
-  } /* endif */
+  } /* !rcd */
   /* Get dimension size */
   (void)nco_inq_dimlen(nc_id,time_dmn_id,&cnt);
 
@@ -139,7 +139,13 @@ nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   (void)nco_def_var(nc_id,time_sng,NC_DOUBLE,1,&time_dmn_id,&time_id);
 
   /* Set HDF Lempel-Ziv compression level, if requested */
-  if(dfl_lvl >= 0) (void)nco_def_var_deflate(nc_id,time_id,(int)NC_SHUFFLE,(int)True,dfl_lvl);
+  //if(dfl_lvl >= 0) (void)nco_def_var_deflate(nc_id,time_id,(int)NC_SHUFFLE,(int)True,dfl_lvl);
+  if(dfl_lvl >= 0) rcd=nco_flt_def_out(nc_id,time_id,dfl_lvl);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stderr,"%s: WARNING ARM file could not compress \"time\" variable\n",nco_prg_nm_get());
+    rcd=NC_NOERR;
+    return;
+  } /* !rcd */
 
   /* Add attributes for time variable */
   (void)nco_put_att(nc_id,time_id,units_sng,NC_CHAR,(long int)(strlen(att_units)+1UL),(const void *)att_units);

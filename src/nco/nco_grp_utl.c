@@ -5219,28 +5219,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* Duplicate netCDF4 settings when possible */
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 
-    /* Deflation */
-    if(nbr_dmn_var_out > 0){ /* <---NB: Use nbr_dmn_var_out instead of nbr_dmn_var */
-      int deflate; /* [flg] Turn-on deflate filter */
-      int dfl_lvl_in; /* [enm] Deflate level [0..9] */
-      int shuffle; /* [flg] Turn-on shuffle filter */
-      rcd=nco_inq_var_deflate(grp_in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
-      /* Before netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
-	 Properties of final invocation before nc_enddef() would take effect
-	 After netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect */
-      if((deflate || shuffle) && dfl_lvl < 0){
-	/* Copy original filters if user did not explicity set dfl_lvl for output */ 
-	(void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
-      }else if(dfl_lvl >= 0){ 
-	/* Overwrite HDF Lempel-Ziv compression level, if requested */
-	deflate=(int)True;
-	/* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
-	if(dfl_lvl <= 0) shuffle=NC_NOSHUFFLE;
-	/* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
-	if(dfl_lvl > 0) shuffle=NC_SHUFFLE;
-	(void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl);
-      } /* !dfl_lvl */
-    } /* !nbr_dmn_var_out */
+    /* NB: Compression is conditional on nbr_dmn_var_out not nbr_dmn_var! */
+    if(nbr_dmn_var_out > 0) rcd=nco_flt_def_wrp(grp_in_id,var_in_id,(char *)NULL,grp_out_id,var_out_id,dfl_lvl);
 
     /* 20141013 Previously called chunking only when user selected a chunking switch
        Now always call chunking because default is to preserve input chunking 

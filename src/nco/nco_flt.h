@@ -67,10 +67,17 @@ nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
 (const char *nco_flt_sng); /* [sng] User-specified filter string */
 
 int /* O [enm] Return code */
-nco_flt_def /* [fnc] Call filters immediately after variable definition */
+nco_flt_def_wrp /* [fnc] Define output filters based on input filters */
 (const int nc_in_id, /* I [id] netCDF input file/group ID */
- const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_in_id, /* I [id] Variable ID */
+ const char * const var_nm_in, /* I [nm] Variable name [optional] */
+ const int nc_out_id, /* I [id] netCDF output file/group ID */
+ const int var_out_id, /* I [id] Variable ID */
+ const int dfl_lvl); /* I [enm] Deflate level [0..9] */
+
+int /* O [enm] Return code */
+nco_flt_def_out /* [fnc] Define filters based on requested  */
+(const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_out_id, /* I [id] Variable ID */
  const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 

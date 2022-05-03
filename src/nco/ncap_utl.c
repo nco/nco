@@ -15,8 +15,6 @@ extern size_t ncap_ncl_dpt_crr; /* [nbr] Depth of current #include file (declare
 extern size_t *ncap_ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
 extern char **ncap_fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
 
-
-
 var_sct *
 /* fxm: which prototype to use? */
 /* ncap_var_init(const char * const var_nm,prs_sct *prs_arg) */
@@ -232,7 +230,8 @@ ncap_var_write
     /* Define variable */   
     (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
     /* Set HDF Lempel-Ziv compression level, if requested */
-    if(prs_arg->dfl_lvl >= 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_out_id,(int)NC_SHUFFLE,(int)True,prs_arg->dfl_lvl);    
+    //    if(prs_arg->dfl_lvl >= 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_out_id,(int)NC_SHUFFLE,(int)True,prs_arg->dfl_lvl);    
+    if(prs_arg->dfl_lvl >= 0 && var->nbr_dim > 0) (void)nco_flt_def_out(prs_arg->out_id,var_out_id,prs_arg->dfl_lvl);    
     /* Set chunk sizes, if requested */
     if(prs_arg->cnk_sz && var->nbr_dim > 0) (void)nco_def_var_chunking(prs_arg->out_id,var_out_id,(int)NC_CHUNKED,prs_arg->cnk_sz);
     

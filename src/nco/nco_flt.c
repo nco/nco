@@ -233,36 +233,101 @@ nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
 } /* !nco_flt_sng2enm() */
 
 int /* O [enm] Return code */
-nco_flt_def /* [fnc] Call filters immediately after variable definition */
+nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
 (const int nc_in_id, /* I [id] netCDF input file/group ID */
- const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_in_id, /* I [id] Variable ID */
+ const char * const var_nm_in, /* I [nm] Variable name [optional] */
+ const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_out_id, /* I [id] Variable ID */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
-  /* Purpose: 
+  /* Purpose: Copy compression settings (if any) from same variable in input to output file
+
+     Usage: 
      Until 20220501 the NCO code to define per-variable filters was scattered in ~four places 
      Introduction of new filters in netCDF 4.9.0 makes this untenable 
      Here were functionalize the invocation of original netCDF4 filters DEFLATE and Shuffle
-     Once this refactoring is complete and backward-compatible, we will add newer filters */
 
-  const char fnc_nm[]="nco_flt_def()"; /* [sng] Function name */
+     Algorithm:
+     If var_nm_in is supplied (i.e., is not NULL) then determine var_in_id from nco_inq_varid_flg()
+     If supplied (or determined from var_nm_in) var_in_id is valid then check input compression settings
+     If supplied dfl_lvl is < 0 (i.e., unset) then copy input compression settings (if available)
+     If supplied dfl_lvl is >= 0 (i.e., set) then set compression to dfl_lvl */
 
+  const char fnc_nm[]="nco_flt_def_wrp()"; /* [sng] Function name */
+
+  nco_bool VARIABLE_EXISTS_IN_INPUT=False; /* [flg] Variable exists in input file */
+  nco_bool COPY_COMPRESSION_FROM_INPUT=False; /* [flg] Copy compression setting from input to output */
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   /* Deflation */
   int deflate; /* [flg] Turn-on deflate filter */
   int dfl_lvl_in; /* [enm] Deflate level [0..9] */
   int shuffle; /* [flg] Turn-on shuffle filter */
+  int var_in_id_cpy=-1; /* [id] Writable copy of input variable ID */
 
-  rcd=nco_inq_var_deflate(nc_in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
-  /* Before netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
-     Properties of final invocation before nc_enddef() would take effect
-     After netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect */
-  if((deflate || shuffle) && dfl_lvl < 0){
+  var_in_id_cpy=var_in_id;
+
+  /* Write (or overwrite) var_in_id when var_nm_in is supplied */
+  if(var_nm_in && nc_in_id >= 0){
+    /* Output variable may not exist in input file (e.g., when ncap2 defines new variable) */
+    rcd=nco_inq_varid_flg(nc_in_id,var_nm_in,&var_in_id_cpy);
+    if(rcd == NC_NOERR) VARIABLE_EXISTS_IN_INPUT=True;
+  } /* !var_nm_in */
+
+  if(nc_in_id >= 0 && var_in_id_cpy >= 0) VARIABLE_EXISTS_IN_INPUT=True;
+
+  /* If variable exists in input file, copy its compression then return
+     Otherwise call compression based solely on settings requested for output file */
+  if(VARIABLE_EXISTS_IN_INPUT){
+
+    /* fxm: Generalize to inquire about all compression options */
+    rcd=nco_inq_var_deflate(nc_in_id,var_in_id_cpy,&shuffle,&deflate,&dfl_lvl_in);
+
     /* Copy original filters if user did not explicity set dfl_lvl for output */ 
-    rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
-  }else if(dfl_lvl >= 0){ 
+    if((deflate || shuffle) && dfl_lvl < 0){
+      /* Before netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
+	 Properties of final invocation before nc_enddef() would take effect
+	 After netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect
+	 It is therefore crucial not to call nco_def_var_deflate() more than once */
+      rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
+      if(rcd == NC_NOERR) COPY_COMPRESSION_FROM_INPUT=True; else (void)fprintf(stdout,"DEBUG %s reports  rcd=%d\n",fnc_nm,rcd);
+    } /* !dfl_lvl */
+
+  } /* !VARIABLE_EXISTS_IN_INPUT */
+
+  /* Protect against calling nco_def_var_deflate() more than once */
+  if(dfl_lvl >= 0 && !COPY_COMPRESSION_FROM_INPUT)
+    rcd=nco_flt_def_out(nc_out_id,var_out_id,dfl_lvl);
+
+  return rcd;
+} /* !nco_flt_def_wrp() */
+  
+int /* O [enm] Return code */
+nco_flt_def_out /* [fnc]  */
+(const int nc_out_id, /* I [id] netCDF output file/group ID */
+ const int var_out_id, /* I [id] Variable ID */
+ const int dfl_lvl) /* I [enm] Deflate level [0..9] */
+{
+  /* Purpose: Set compression filters in newly defined variable in output file
+
+     Usage: 
+     Until 20220501 the NCO code to define per-variable filters was scattered in ~four places 
+     Introduction of new filters in netCDF 4.9.0 makes this untenable 
+     Here were functionalize the invocation of original netCDF4 filters DEFLATE and Shuffle
+
+     Algorithm:
+     If supplied dfl_lvl is >= 0 (i.e., set) then set compression to dfl_lvl */
+
+  const char fnc_nm[]="nco_flt_def_out()"; /* [sng] Function name */
+
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  /* Deflation */
+  int deflate; /* [flg] Turn-on deflate filter */
+  int shuffle; /* [flg] Turn-on shuffle filter */
+
+  if(dfl_lvl >= 0){
     /* Overwrite HDF Lempel-Ziv compression level, if requested */
     deflate=(int)True;
     /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
@@ -274,5 +339,5 @@ nco_flt_def /* [fnc] Call filters immediately after variable definition */
 
   return rcd;
 
-} /* !nco_flt_def() */
+} /* !nco_flt_def_out() */
   

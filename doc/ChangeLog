@@ -1,4 +1,10 @@
+2022-05-03  Charlie Zender  <zender@uci.edu>
+
+	* Adopt nco_flt_def_wrp() in nco_map.c, nco_cnv_arm.c, ncap_utl.c
+
 2022-05-02  Charlie Zender  <zender@uci.edu>
+
+	* Adopt nco_flt_def_wrp() in nco_grp_utl.c:nco_cpy_var_dfn_trv(),
 
 	* NCO 5.0.8-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha01: Functionally identical to 5.0.7';git push
