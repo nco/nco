@@ -28,6 +28,7 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_cnf_typ.h" /* Conform variable types nco_typ_ntg() */
 #include "nco_fl_utl.h" /* File manipulation */
+#include "nco_flt.h" /* Compression filters */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_mss_val.h" /* Missing value utilities */
 #include "nco_omp.h" /* OpenMP utilities */
