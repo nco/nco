@@ -408,14 +408,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   dmn_cnt[dmn_idx_ydm]=ydm_nbr;
 
   (void)nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_3D,dmn_ids,&var_id);
-
-  if(dfl_lvl > 0){
-    int shuffle; /* [flg] Turn-on shuffle filter */
-    int deflate; /* [flg] Turn-on deflate filter */
-    deflate=(int)True;
-    shuffle=NC_SHUFFLE;
-    (void)nco_def_var_deflate(out_id,var_id,shuffle,deflate,dfl_lvl);
-  } /* !dfl_lvl */
+  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,var_id,dfl_lvl);
   
   /* Define "units" attributes */
   rcd=nco_char_att_put(out_id,NULL,"title",trr->ttl);

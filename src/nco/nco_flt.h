@@ -34,6 +34,11 @@
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 
+#if ENABLE_CCR
+# include <ccr.h> /* Community Codec Repository prototypes */
+# include <ccr_meta.h> /* CCR_VERSION, CCR_HAS_BITGROOM, ... */
+#endif /* !ENABLE_CCR */
+
 /* Filters types that NCO knows internally: 
    Convert string to filter enum in nco_flt_typ_set() */
 typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
@@ -77,6 +82,21 @@ nco_flt_def_wrp /* [fnc] Define output filters based on input filters */
 
 int /* O [enm] Return code */
 nco_flt_def_out /* [fnc] Define filters based on requested  */
+(const int nc_out_id, /* I [id] netCDF output file/group ID */
+ const int var_out_id, /* I [id] Variable ID */
+ const int dfl_lvl); /* I [enm] Deflate level [0..9] */
+
+int /* O [enm] Return code */
+nco_tst_def_wrp /* [fnc] Define output filters based on input filters */
+(const int nc_in_id, /* I [id] netCDF input file/group ID */
+ const int var_in_id, /* I [id] Variable ID */
+ const char * const var_nm_in, /* I [nm] Variable name [optional] */
+ const int nc_out_id, /* I [id] netCDF output file/group ID */
+ const int var_out_id, /* I [id] Variable ID */
+ const int dfl_lvl); /* I [enm] Deflate level [0..9] */
+
+int /* O [enm] Return code */
+nco_tst_def_out /* [fnc] Define filters based on requested  */
 (const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_out_id, /* I [id] Variable ID */
  const int dfl_lvl); /* I [enm] Deflate level [0..9] */
