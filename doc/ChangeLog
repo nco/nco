@@ -1,6 +1,8 @@
-2022-05-03  Charlie Zender  <zender@uci.edu>
+2022-05-04  Charlie Zender  <zender@uci.edu>
 
-	* Adopt nco_flt_def_*() in nco_var_utl.c. Use nco_tst_def_*() for testing.
+	* Complete refactoring to test more codecs with nco_tst_def_*() functions
+
+	* Adopt nco_flt_def_*() in nco_var_utl.c
 
 2022-05-03  Charlie Zender  <zender@uci.edu>
 
