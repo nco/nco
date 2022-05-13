@@ -1,5 +1,9 @@
 2022-05-04  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.8-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha01: Functionally identical to 5.0.7';git push
+	git tag -a 5.0.8-alpha01 -m 'QuickBlade';git push --tags
+
 	* Complete refactoring to test more codecs with nco_tst_def_*() functions
 
 	* Adopt nco_flt_def_*() in nco_var_utl.c
@@ -11,10 +15,6 @@
 2022-05-02  Charlie Zender  <zender@uci.edu>
 
 	* Adopt nco_flt_def_wrp() in nco_grp_utl.c:nco_cpy_var_dfn_trv(),
-
-	* NCO 5.0.8-alpha01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha01: Functionally identical to 5.0.7';git push
-	git tag -a 5.0.8-alpha01 -m 'QuickBlade';git push --tags
 
 	* NCO 5.0.7 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.7: all: bit_xpl_dbl=52, tkn rdf wrn; ncap2: where() mss_val; ncclimo: -P fix; ncremap: add_fll fix, sub-SGS nrm, sgs_nm_gnr wrn';git push
