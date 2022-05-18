@@ -59,6 +59,7 @@
 # scp ~/nco/data/ncremap dust.ess.uci.edu:bin
 # scp ~/nco/data/ncremap e3sm.ess.uci.edu:bin
 # scp ~/nco/data/ncremap frazil.ess.uci.edu:bin
+# scp ~/nco/data/ncclimo perlmutter-p1.nersc.gov:bin_perlmutter
 # scp ~/nco/data/ncremap skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncremap theta.alcf.anl.gov:bin_theta
 # scp dust.ess.uci.edu:bin/ncremap ~/bin
@@ -112,6 +113,7 @@ if [ -z "${DATA}" ]; then
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* ) DATA="${SCRATCH}" ; ;; # NERSC cori compute nodes named nidNNNNN (Haswell/KNL) or cmemNN (AMD) with (32/68/64)|(96/128/1024) cores|GB/node (knl/haswell/amd) (login nodes 512 GB)
+	perlmutter* | login[0123456789][0123456789] ) DATA="${SCRATCH}" ; ;; # NERSC perlmutter compute nodes named nidNNNNNN (CPU) with (64)|(512) cores|GB/node (cpu) (login nodes 512 GB)
 	theta* ) DATA="/projects/ClimateEnergy_3/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
@@ -1243,6 +1245,7 @@ if [ -n "${mpi_nbr_usr}" ]; then
 	constance* | node* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;;
 	cori* ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
+	perlmutter* | login[0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
 	theta* ) mpi_pfx="aprun -n ${mpi_nbr}" ; ;; 
 	* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; # Other
     esac # !HOSTNAME
@@ -2062,8 +2065,9 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
 	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	    case "${HOSTNAME}" in 
-		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* )
-		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori*
+		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | login[0123456789][0123456789] | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | perlmutter* )
+		    # 20160502: Non-interactive batch jobs at NERSC/Cori return HOSTNAME as nid*, not cori* 
+		    # 20220518: Non-interactive batch jobs at NERSC/Perlmutter return HOSTNAME as login??, and nodes as nid??????
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
 		    # 20210310: srun option<->long option equivalences are -N = --nodes, -n = --ntasks, -c = --cpus-per-task
@@ -2092,7 +2096,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 #		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
 	    case "${HOSTNAME}" in 
-		cori* | nid* )
+		cori* | nid* | perlmutter* | login[0123456789][0123456789] )
 		    # 20210319: Multiple srun commands cannot run concurrently on single Cori node without special options
 		    # --gres=craynetwork:0 --mem=20000 tested by me, Noel Keen documented here:
 		    # https://docs.nersc.gov/jobs/examples/#multiple-parallel-jobs-while-sharing-nodes

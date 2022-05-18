@@ -48,6 +48,7 @@
 # scp ~/nco/data/ncclimo dust.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo e3sm.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo frazil.ess.uci.edu:bin
+# scp ~/nco/data/ncclimo perlmutter-p1.nersc.gov:bin_perlmutter
 # scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo theta.alcf.anl.gov:bin_theta
 # scp dust.ess.uci.edu:bin/ncclimo ~/bin
@@ -97,6 +98,7 @@ if [ -z "${DATA}" ]; then
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* ) DATA="${SCRATCH}" ; ;; # NERSC cori compute nodes named nidNNNNN (Haswell/KNL) or cmemNN (AMD) with (32/68/64)|(96/128/1024) cores|GB/node (knl/haswell/amd) (login nodes 512 GB)
+	perlmutter* | login[0123456789][0123456789] ) DATA="${SCRATCH}" ; ;; # NERSC perlmutter compute nodes named nidNNNNNN (CPU) with (64)|(512) cores|GB/node (cpu) (login nodes 512 GB)
 	theta* ) DATA="/projects/ClimateEnergy_3/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
@@ -311,6 +313,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Cooley: qsub -I -A ClimateEnergy_4 --nodecount=1 --time=00:30:00 --jobname=ncclimo
 #   Cori:   salloc  -A e3sm -C knl --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
 #   Cori:   salloc  -A e3sm -C amd --nodes=1 -q interactive --time=00:30:00 --job-name=ncclimo # NB: No time limit
+#   Perl:   salloc  -A e3sm -C cpu --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
 #   Oldrhea:qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
 # Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[cobalt|pbs|slurm] b) qsub ncclimo.[cobalt|pbs|slurm]
 # Non-interactive batch queue differences (besides argument syntax):
@@ -338,6 +341,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Cooley b): qsub -A ClimateEnergy_4 --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
 #   Cori b): sbatch -A e3sm -C haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Oldrhea b):qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
+#   Perl b): sbatch -A e3sm -C cpu --nodes=12 --time=00:30:00 --qos=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 # NB: stdout/stderr files returned from batch jobs are read-protected, need 'chmod 644 ~/ncclimo.out' afterwards
 
 # Normal use: Set five "mandatory" inputs (caseid, yr_srt, yr_end, drc_in, drc_out), and possibly rgr_map, on command line
@@ -641,6 +645,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "cori  : srun -A e3sm -C haswell --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo --pty bash\n"
     printf "cori  : srun -A e3sm -C knl --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo --pty bash\n"
     printf "cori  : srun -A e3sm -C amd --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash # Bigmem\n"
+    printf "perlmu: srun -A e3sm -C cpu --nodes=1 --time=00:30:00 --qos=debug --job-name=ncclimo --pty bash\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
     exit 1
 } # end fnc_usg_prn()
@@ -1774,8 +1779,9 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		let mpi_idx=${mpi_idx_zro}+1
 	    fi # !tms_flg
 	    case "${HOSTNAME}" in 
-		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* )
-		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori*
+		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | login[0123456789][0123456789] | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | perlmutter* )
+		    # 20160502: Non-interactive batch jobs at NERSC/Cori return HOSTNAME as nid*, not cori* 
+		    # 20220518: Non-interactive batch jobs at NERSC/Perlmutter return HOSTNAME as login??, and nodes as nid??????
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
 		    # 20210310: srun option<->long option equivalences are -N = --nodes, -n = --ntasks, -c = --cpus-per-task
@@ -1804,7 +1810,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 #		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
 	    case "${HOSTNAME}" in 
-		cori* | nid* )
+		cori* | nid* | perlmutter* | login[0123456789][0123456789] )
 		    # 20210319: Multiple srun commands cannot run concurrently on single Cori node without special options
 		    # --gres=craynetwork:0 --mem=20000 tested by me, Noel Keen documented here:
 		    # https://docs.nersc.gov/jobs/examples/#multiple-parallel-jobs-while-sharing-nodes

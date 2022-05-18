@@ -1,8 +1,12 @@
-2022-05-04  Charlie Zender  <zender@uci.edu>
+2022-05-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha01: Functionally identical to 5.0.7';git push
 	git tag -a 5.0.8-alpha01 -m 'QuickBlade';git push --tags
+
+	* ncclimo/ncremap add draft NERSC Perlmutter settings
+
+2022-05-04  Charlie Zender  <zender@uci.edu>
 
 	* Complete refactoring to test more codecs with nco_tst_def_*() functions
 
