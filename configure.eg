@@ -548,7 +548,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20220518 (first try)
-# Personal recipe last used successfully: fxm
+# Personal recipe last used successfully: never "librca.so*': No such file or directory"
 module load PrgEnv-gnu
 module load gcc/11.2.0
 module load cray-hdf5/1.12.1.1
