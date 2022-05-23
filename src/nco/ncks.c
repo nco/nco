@@ -128,6 +128,7 @@ main(int argc,char **argv)
   char **xtn_lst_in=NULL; /* [sng] Extensive variables */
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
+  char *cmp_sng=NULL; /* [sng] Compression string */
   char *cnk_arg[NC_MAX_DIMS];
   char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
   char *cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
@@ -646,9 +647,9 @@ main(int argc,char **argv)
 	  qnt_sng=(char *)strdup(optarg);
 	  nco_flt_glb=nco_flt_sng2enm(optarg);
 	  if(qnt_sng) qnt_sng=(char *)nco_free(qnt_sng);
-	  *sng_cnv_rcd=NULL;
+	  sng_cnv_rcd=NULL;
 	} /* !sng_cnv_rcd */
-	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+	//if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* !baa */
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
@@ -729,11 +730,13 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"flt") || !strcmp(opt_crr,"filter")){
 	flt_sng=(char *)strdup(optarg);
 	/* [fnc] Parse filter string and exit */
-	if(flt_sng) nco_flt_prs(flt_sng);
+	if(flt_sng) nco_flt_hdf5_prs(flt_sng);
       } /* !flt */
       if(!strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec")){
-	nco_flt_glb=nco_flt_sng2enm(optarg);
-	(void)fprintf(stdout,"%s: INFO %s reports user-specified filter string translates to CCR string \"%s\"<.\n",nco_prg_nm,nco_prg_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_glb_get()));
+	//	nco_flt_glb=nco_flt_sng2enm(optarg);
+	cmp_sng=(char *)strdup(optarg);
+	(void)nco_cmp_prs(cmp_sng);
+	(void)fprintf(stdout,"%s: INFO %s reports user-specified filter string translates to CCR string \"%s\".\n",nco_prg_nm,nco_prg_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_glb_get()));
 	nco_exit(EXIT_SUCCESS);
       } /* !ccr */
       if(!strcmp(opt_crr,"fmt_val") || !strcmp(opt_crr,"val_fmt") || !strcmp(opt_crr,"value_format")) fmt_val=(char *)strdup(optarg);
@@ -1536,6 +1539,7 @@ close_and_free:
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(fl_in_dpl) fl_in_dpl=(char *)nco_free(fl_in_dpl);
     if(fl_prn) fl_prn=(char *)nco_free(fl_prn);
+    if(cmp_sng) cmp_sng=(char *)nco_free(cmp_sng);
     if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
     /* NCO-generic clean-up */

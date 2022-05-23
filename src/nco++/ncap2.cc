@@ -412,7 +412,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"flt") || !strcmp(opt_crr,"filter")){
 	flt_sng=(char *)strdup(optarg);
 	/* [fnc] Parse filter string and exit */
-	if(flt_sng) nco_flt_prs(flt_sng);
+	if(flt_sng) nco_flt_hdf5_prs(flt_sng);
       } /* !flt */
       if(!strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec")){
 	nco_flt_glb=nco_flt_sng2enm(optarg);

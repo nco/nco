@@ -47,18 +47,22 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_bzp=2, /* 2 [enm] Bzip2 */
   nco_flt_lz4=3, /* 3 [enm] LZ4 */
   nco_flt_zst=4, /* 4 [enm] Zstandard */
-  nco_flt_bgr=5, /* 4 [enm] BitGroom */
-  nco_flt_gbr=6, /* 5 [enm] Granular BitRound */
-  nco_flt_dgr=7, /* 6 [enm] DigitRound */
-  nco_flt_btr=8, /* 6 [enm] BitRound */
+  nco_flt_bgr=5, /* 5 [enm] BitGroom */
+  nco_flt_gbr=6, /* 6 [enm] Granular BitRound */
+  nco_flt_dgr=7, /* 7 [enm] DigitRound */
+  nco_flt_btr=8, /* 8 [enm] BitRound */
 } nco_flt_typ_enm; /* end nco_flt_typ_enm */
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
+int /* O [enm] Return code */
+nco_cmp_prs /* [fnc] Parse user-provided compression specification */
+(char * const cmp_sng); /* I [sng] Compression specification */
+
 void
-nco_flt_prs /* [fnc] Parse user-provided filter string */
+nco_flt_hdf5_prs /* [fnc] Parse user-provided filter string */
 (char * const flt_sng); /* I [sng] User-provided filter string */
  // const unsigned int *flt_id, /* O [enm] Compression filter ID */
  // const nco_flt_typ_enm *nco_flt_typ); /* O [enm] Compression filter type */

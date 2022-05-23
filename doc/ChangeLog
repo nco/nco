@@ -1,10 +1,18 @@
+2022-05-23  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.8-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
+	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
+
+	* Add nco_flt_glb_lss/lsl_alg/lvl_get/set() helper functions
+
+2022-05-22  Charlie Zender  <zender@uci.edu>
+
+	* Update to MacOS 12.4
+
 2022-05-18  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.0.8-alpha01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha01: Functionally identical to 5.0.7';git push
-	git tag -a 5.0.8-alpha01 -m 'QuickBlade';git push --tags
-
-	* Build and successfully test NCO (except ncap2) on perlmutter
+	* Compile/link (except ncap2) on perlmutter, runtime fails due to missing librca.so*
 
 	* ncclimo/ncremap add draft NERSC Perlmutter settings
 
@@ -15,6 +23,10 @@
 	* Adopt nco_flt_def_*() in nco_var_utl.c
 
 2022-05-03  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.8-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha01: Functionally identical to 5.0.7';git push
+	git tag -a 5.0.8-alpha01 -m 'QuickBlade';git push --tags
 
 	* Adopt nco_flt_def_*() in nco_map.c, nco_cnv_arm.c, ncap_utl.c, nco_rgr.c, nco_s1d.c
 

@@ -18,12 +18,68 @@
 
 #include "nco_flt.h" /* Compression filters */
 
+int /* O [enm] Return code */
+nco_cmp_prs /* [fnc] Parse user-provided compression specification */
+(char * const cmp_sng) /* I [sng] Compression specification */
+{
+  /* Purpose: Parse and set global lossy/lossless compression settings
+
+     Algorithm: 
+     NCO accepts compression strings as comma-separated lists of up to four values
+     First value is string identifying lossless compression algorithm, e.g., "Zstd","Deflate"
+     Second value, if present, is integer compression level for lossless algorithm 
+     Third value, if present, is string identifying lossy algorithm, e.g., "GranularBR"
+     Fourth value, if present, is integer compression level for lossy algorithm
+
+     Test:
+     ncks --dbg=2 --cdc=zstd,1,gbr,3 in.nc out.nc */
+
+  const char fnc_nm[]="nco_cmp_prs()";
+
+  char **prm_lst; /* [sng] List of user-supplied filter parameters as strings */
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+
+  int nco_flt_lsl_alg=0; /* [enm] Lossless compression algorithm */
+  int nco_flt_lsl_lvl=int_CEWI; /* [nbr] Lossless compression level */
+  int nco_flt_lss_alg=0; /* [enm] Lossy compression algorithm */
+  int nco_flt_lss_lvl=int_CEWI; /* [nbr] Lossy compression level */
+  int rcd=NCO_NOERR; /* [rcd] Return code */
+
+  size_t prm_idx; /* [idx] Parameter index in user-supplied list */
+  size_t prm_nbr=0L; /* [nbr] Number of parameters in user-supplied list */
+
+  if(!cmp_sng){
+    (void)fprintf(stderr,"%s: ERROR %s reports supplied filter string is empty\n",nco_prg_nm_get(),cmp_sng);
+    nco_exit(EXIT_FAILURE);
+  } /* !cmp_sng */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Requested filter string = %s\n",nco_prg_nm_get(),cmp_sng);
+
+  prm_lst=nco_lst_prs_1D(cmp_sng,",",(int *)&prm_nbr);
+
+  nco_flt_lss_alg=nco_flt_sng2enm(prm_lst[0]);
+  nco_flt_glb_lsl_alg_set(nco_flt_lsl_alg);
+  (void)fprintf(stdout,"%s: INFO %s reports compression string translates to CCR string \"%s\".\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_lss_alg));
+
+  nco_exit(EXIT_SUCCESS);
+
+  return rcd;
+  
+} /* !nco_cmp_prs() */
+
 void
-nco_flt_prs /* [fnc] Parse user-provided filter string */
+nco_flt_hdf5_prs /* [fnc] Parse user-provided filter string */
 (char * const flt_sng) /* I [sng] Filter string */
 {
-  /* Purpose: Parse user-provided filter string */
-  const char fnc_nm[]="nco_flt_prs()";
+  /* Purpose: 
+     HDF5 filters require specifications in uint32 values
+     Function prints/returns input list parsed into HDF5-required list of u32 arguments
+     Example filter strings: "32022,3", "32004,1U,1,-1,1.0f,-1.0d,1UL,-1L,1US,-1S" 
+
+     Test:
+     ncks --dbg=2 --filter="32022,3" */
+
+  const char fnc_nm[]="nco_flt_hdf5_prs()";
 
   char **prm_lst; /* [sng] List of user-supplied filter parameters as strings */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
@@ -158,7 +214,7 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
 
   nco_exit(EXIT_SUCCESS);
 
-} /* !nco_flt_prs() */
+} /* !nco_flt_hdf5_prs() */
 
 char * /* O [sng] String describing compression filter */
 nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
@@ -171,7 +227,7 @@ nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
   case nco_flt_bzp: return "Bzip2"; break;
   case nco_flt_lz4: return "LZ4"; break;
   case nco_flt_bgr: return "BitGroom"; break;
-  case nco_flt_gbr: return "Granular BitRound"; break;
+  case nco_flt_gbr: return "GranularBR"; break;
   case nco_flt_dgr: return "DigitRound"; break;
   case nco_flt_btr: return "BitRound"; break;
   case nco_flt_zst: return "Zstandard"; break;

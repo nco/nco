@@ -14216,8 +14216,7 @@ att_lst=get_vars_in(att_regexp?)
 att_lst=get_vars_out(att_regexp?) 
 @end example
 
-These functions are used to create a list of vars in Input or Output. The optional arg 'att_regexp'. Can be an NC_CHAR att or a NC_STRING att. If NC_CHAR then only a single reg-exp can be specified. If NC_STRING then multiple reg-exp can be specified.  The output is allways an NC_STRING att. The matching works in an identical fashion to the -v switch in ncks. if there is no arg then all vars are returned. 
-
+These functions are used to create a list of vars in Input or Output. The optional arg 'att_regexp'. Can be an NC_CHAR att or a NC_STRING att. If NC_CHAR then only a single reg-exp can be specified. If NC_STRING then multiple reg-exp can be specified.  The output is allways an NC_STRING att. The matching works in an identical fashion to the -v switch in ncks. if there is no arg then all vars are returned.
 @example
 @verbatim
 @slist=get_vars_in("^time");  // "time", "time_bnds", "time_lon", "time_udunits"
