@@ -18,6 +18,22 @@
 
 #include "nco_flt.h" /* Compression filters */
 
+/* Filter variables are file scope for now, could shift to global scope later if necessary */
+static nco_flt_typ_enm nco_flt_glb_lsl_alg=nco_flt_dfl; /* [enm] Lossless compression algorithm */
+static int nco_flt_glb_lsl_lvl=int_CEWI; /* [nbr] Lossless compression level */
+static nco_flt_typ_enm nco_flt_glb_lsy_alg=nco_flt_dfl; /* [enm] Lossy compression algorithm */
+static int nco_flt_glb_lsy_lvl=int_CEWI; /* [nbr] Lossy compression level */
+
+/* Manipulate private compression algorithms through public interfaces */
+nco_flt_typ_enm nco_flt_glb_lsl_alg_get(void){return nco_flt_glb_lsl_alg;} /* [enm] Lossless enum */
+nco_flt_typ_enm nco_flt_glb_lsl_lvl_get(void){return nco_flt_glb_lsl_lvl;} /* [enm] Lossless level */
+nco_flt_typ_enm nco_flt_glb_lsy_alg_get(void){return nco_flt_glb_lsy_alg;} /* [enm] Lossy enum */
+nco_flt_typ_enm nco_flt_glb_lsy_lvl_get(void){return nco_flt_glb_lsy_lvl;} /* [enm] Lossy level */
+void nco_flt_glb_lsl_alg_set(nco_flt_typ_enm nco_flt_lsl_alg){nco_flt_glb_lsl_alg=nco_flt_lsl_alg;} 
+void nco_flt_glb_lsl_lvl_set(nco_flt_typ_enm nco_flt_lsl_lvl){nco_flt_glb_lsl_lvl=nco_flt_lsl_lvl;} 
+void nco_flt_glb_lsy_alg_set(nco_flt_typ_enm nco_flt_lsy_alg){nco_flt_glb_lsy_alg=nco_flt_lsy_alg;} 
+void nco_flt_glb_lsy_lvl_set(nco_flt_typ_enm nco_flt_lsy_lvl){nco_flt_glb_lsy_lvl=nco_flt_lsy_lvl;} 
+
 int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 (char * const cmp_sng) /* I [sng] Compression specification */
@@ -39,9 +55,9 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   char **prm_lst; /* [sng] List of user-supplied filter parameters as strings */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  int nco_flt_lsl_alg=0; /* [enm] Lossless compression algorithm */
+  nco_flt_typ_enm nco_flt_lsl_alg=nco_flt_nil; /* [enm] Lossless compression algorithm */
+  nco_flt_typ_enm nco_flt_lsy_alg=nco_flt_nil; /* [enm] Lossy compression algorithm */
   int nco_flt_lsl_lvl=int_CEWI; /* [nbr] Lossless compression level */
-  int nco_flt_lsy_alg=0; /* [enm] Lossy compression algorithm */
   int nco_flt_lsy_lvl=int_CEWI; /* [nbr] Lossy compression level */
   int rcd=NCO_NOERR; /* [rcd] Return code */
 
@@ -361,7 +377,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
 	 After netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect
 	 It is therefore crucial not to call nco_def_var_deflate() more than once */
       rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
-      if(rcd == NC_NOERR) COPY_COMPRESSION_FROM_INPUT=True; else (void)fprintf(stdout,"DEBUG %s reports  rcd=%d\n",fnc_nm,rcd);
+      if(rcd == NC_NOERR) COPY_COMPRESSION_FROM_INPUT=True; else (void)fprintf(stdout,"DEBUG %s reports rcd=%d\n",fnc_nm,rcd);
     } /* !dfl_lvl */
 
   } /* !VARIABLE_EXISTS_IN_INPUT */
@@ -471,10 +487,16 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
 	 After netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect
 	 It is therefore crucial not to call nco_def_var_deflate() more than once */
       rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
-      if(rcd == NC_NOERR) COPY_COMPRESSION_FROM_INPUT=True; else (void)fprintf(stdout,"DEBUG %s reports  rcd=%d\n",fnc_nm,rcd);
+      if(rcd == NC_NOERR) COPY_COMPRESSION_FROM_INPUT=True; else (void)fprintf(stdout,"DEBUG %s reports rcd=%d\n",fnc_nm,rcd);
     } /* !dfl_lvl */
 
   } /* !VARIABLE_EXISTS_IN_INPUT */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    char var_nm[NC_MAX_NAME+1L];
+    rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
+    (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
+  } /* !dbg */
 
   /* Protect against calling nco_def_var_deflate() more than once */
   if(dfl_lvl >= 0 && !COPY_COMPRESSION_FROM_INPUT)
@@ -507,6 +529,12 @@ nco_tst_def_out /* [fnc]  */
   /* Deflation */
   int deflate; /* [flg] Turn-on deflate filter */
   int shuffle; /* [flg] Turn-on shuffle filter */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    char var_nm[NC_MAX_NAME+1L];
+    rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
+    (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
+  } /* !dbg */
 
   if(dfl_lvl >= 0){
     /* Overwrite HDF Lempel-Ziv compression level, if requested */
@@ -548,10 +576,10 @@ nco_tst_def_out /* [fnc]  */
 # endif /* !CCR_HAS_ZSTD */
   //(void)fprintf(stdout,"DEBUG quark: nco_flt_alg=%d, dfl_lvl=%d\n",(int)nco_flt_alg,dfl_lvl);
 
-  int nco_flt_lsl_alg; /* [enm] Lossless compression algorithm */
   int nco_flt_lsl_lvl; /* [nbr] Lossless compression level */
-  int nco_flt_lsy_alg; /* [enm] Lossy compression algorithm */
   int nco_flt_lsy_lvl; /* [nbr] Lossy compression level */
+  nco_flt_typ_enm nco_flt_lsl_alg; /* [enm] Lossless compression algorithm */
+  nco_flt_typ_enm nco_flt_lsy_alg; /* [enm] Lossy compression algorithm */
   nco_bool nco_flt_lsl_flg=False; /* [flg] Lossless filter is defined */
   nco_bool nco_flt_lsy_flg=False; /* [flg] Lossy filter is defined */
 
@@ -589,14 +617,16 @@ nco_tst_def_out /* [fnc]  */
   const int idx_lsy=0; /* [idx] index of lossless compressor in array */
   
   nco_flt_alg[idx_lsl]=nco_flt_lsl_alg;
-  nco_flt_alg[idx_lsy]=nco_flt_lsy_alg;
   nco_flt_lvl[idx_lsl]=nco_flt_lsl_lvl;
+  nco_flt_alg[idx_lsy]=nco_flt_lsy_alg;
   nco_flt_lvl[idx_lsy]=nco_flt_lsy_lvl;
   
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){ 
+    (void)fprintf(stdout,"DEBUG quark: nbr=%d, idx=%d, flt_alg=%s, flt_lvl=%d\n",flt_nbr,flt_idx,nco_flt_enm2sng(nco_flt_alg[flt_idx]),nco_flt_lvl[flt_idx]);
     switch(nco_flt_alg[flt_idx]){
     case nco_flt_nil: /* If user did not select a filter then exit */
-      continue; /* Continue to next iteration if filter is unused */
+      //      continue; /* Continue to next iteration if filter is unused */
+      break;
     case nco_flt_dfl: /* DEFLATE */
       (void)nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,nco_flt_lvl[flt_idx]);
       break;

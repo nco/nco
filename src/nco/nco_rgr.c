@@ -1743,7 +1743,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	/* Duplicate netCDF4 compression settings when possible */
 	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)
 	  if(dmn_nbr_out > 0)
-	    rcd=nco_flt_def_wrp(in_id,var_id_in,(char *)NULL,out_id,var_id_out,dfl_lvl);
+	    rcd=nco_tst_def_wrp(in_id,var_id_in,(char *)NULL,out_id,var_id_out,dfl_lvl);
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
 	/* Variables with subterranean levels and missing-value extrapolation must have _FillValue attribute */
 	if(flg_add_msv_att && trv.flg_rgr){
@@ -4375,7 +4375,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Duplicate netCDF4 compression settings when possible */
 	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)
 	  if(dmn_nbr_out > 0)
-	    rcd=nco_flt_def_wrp(in_id,var_id_in,(char *)NULL,out_id,var_id_out,dfl_lvl);
+	    rcd=nco_tst_def_wrp(in_id,var_id_in,(char *)NULL,out_id,var_id_out,dfl_lvl);
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
 	if(trv.flg_rgr){
 	  aed_mtd_crd.var_nm=var_nm;

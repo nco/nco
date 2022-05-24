@@ -90,7 +90,7 @@ nco_fl_sz_est /* [fnc] Estimate RAM size == uncompressed file size */
 (char *smr_fl_sz_sng, /* I/O [sng] String describing estimated file size */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
-  void
+void
 nco_fl_cmp_err_chk(void); /* [fnc] Perform error checking on file */
 
 void

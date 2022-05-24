@@ -1217,12 +1217,12 @@ if [ -n "${var_lst}" ] && [ "${tms_flg}" != 'Yes' ]; then
     fi # !xcl_flg
     nco_opt="${nco_opt} -v ${var_lst}"
 fi # !var_lst
-if [ -n "${ppc_prc}" ]; then
-    nco_opt="${nco_opt} --ppc default=${ppc_prc}"
-fi # !ppc_prc
 if [ -n "${dfl_lvl}" ]; then
     nco_opt="${nco_opt} --dfl_lvl=${dfl_lvl}"
 fi # !dfl_lvl
+if [ -n "${ppc_prc}" ]; then
+    nco_opt="${nco_opt} --ppc default=${ppc_prc}"
+fi # !ppc_prc
 if [ -n "${hdr_pad}" ]; then
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
 fi # !hdr_pad
