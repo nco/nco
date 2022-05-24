@@ -734,10 +734,10 @@ main(int argc,char **argv)
       } /* !flt */
       if(!strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec")){
 	//	nco_flt_glb=nco_flt_sng2enm(optarg);
+	//(void)fprintf(stdout,"%s: INFO %s reports user-specified filter string translates to CCR string \"%s\".\n",nco_prg_nm,nco_prg_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_glb_get()));
+	//nco_exit(EXIT_SUCCESS);
 	cmp_sng=(char *)strdup(optarg);
 	(void)nco_cmp_prs(cmp_sng);
-	(void)fprintf(stdout,"%s: INFO %s reports user-specified filter string translates to CCR string \"%s\".\n",nco_prg_nm,nco_prg_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_glb_get()));
-	nco_exit(EXIT_SUCCESS);
       } /* !ccr */
       if(!strcmp(opt_crr,"fmt_val") || !strcmp(opt_crr,"val_fmt") || !strcmp(opt_crr,"value_format")) fmt_val=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
@@ -1539,12 +1539,12 @@ close_and_free:
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(fl_in_dpl) fl_in_dpl=(char *)nco_free(fl_in_dpl);
     if(fl_prn) fl_prn=(char *)nco_free(fl_prn);
-    if(cmp_sng) cmp_sng=(char *)nco_free(cmp_sng);
     if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(cmp_sng) cmp_sng=(char *)nco_free(cmp_sng);
     if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
     if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);
     if(fl_in) fl_in=(char *)nco_free(fl_in);

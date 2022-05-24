@@ -109,6 +109,7 @@ main(int argc,char **argv)
   char **gaa_arg=NULL; /* [sng] Global attribute arguments */
   char **var_lst_in=NULL_CEWI;
   char *cmd_ln;
+  char *cmp_sng=NULL; /* [sng] Compression string */
   char *cnk_arg[NC_MAX_DIMS];
   char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
   char *cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
@@ -415,8 +416,8 @@ main(int argc,char **argv)
 	if(flt_sng) nco_flt_hdf5_prs(flt_sng);
       } /* !flt */
       if(!strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec")){
-	nco_flt_glb=nco_flt_sng2enm(optarg);
-	(void)fprintf(stdout,"%s: INFO %s reports user-specified filter string translates to CCR string \"%s\".\n",nco_prg_nm,nco_prg_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_glb_get()));
+	cmp_sng=(char *)strdup(optarg);
+	(void)nco_cmp_prs(cmp_sng);
       } /* !ccr */
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
@@ -1156,6 +1157,7 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(cmp_sng) cmp_sng=(char *)nco_free(cmp_sng);
     if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
     if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);
     if(fl_in) fl_in=(char*)nco_free(fl_in);

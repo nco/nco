@@ -252,12 +252,12 @@ extern "C" {
   int nco_flt_glb_get(void);
   int nco_flt_glb_lsl_alg_get(void); /* [enm] Lossless enum */
   int nco_flt_glb_lsl_lvl_get(void); /* [enm] Lossless level */
-  int nco_flt_glb_lss_alg_get(void); /* [enm] Lossy enum */
-  int nco_flt_glb_lss_lvl_get(void); /* [enm] Lossy level */
+  int nco_flt_glb_lsy_alg_get(void); /* [enm] Lossy enum */
+  int nco_flt_glb_lsy_lvl_get(void); /* [enm] Lossy level */
   void nco_flt_glb_lsl_alg_set(int nco_flt_lsl_alg); 
   void nco_flt_glb_lsl_lvl_set(int nco_flt_lsl_lvl); 
-  void nco_flt_glb_lss_alg_set(int nco_flt_lss_alg); 
-  void nco_flt_glb_lss_lvl_set(int nco_flt_lss_lvl); 
+  void nco_flt_glb_lsy_alg_set(int nco_flt_lsy_alg); 
+  void nco_flt_glb_lsy_lvl_set(int nco_flt_lsy_lvl); 
   unsigned short nco_baa_cnv_get(void);
   unsigned short nco_bnr_cnv_get(void);
   unsigned short nco_dbg_lvl_get(void);
@@ -297,16 +297,16 @@ extern "C" {
 
   int nco_flt_glb_lsl_alg=0; /* [enm] Lossless compression algorithm */
   int nco_flt_glb_lsl_lvl=int_CEWI; /* [nbr] Lossless compression level */
-  int nco_flt_glb_lss_alg=0; /* [enm] Lossy compression algorithm */
-  int nco_flt_glb_lss_lvl=int_CEWI; /* [nbr] Lossy compression level */
+  int nco_flt_glb_lsy_alg=0; /* [enm] Lossy compression algorithm */
+  int nco_flt_glb_lsy_lvl=int_CEWI; /* [nbr] Lossy compression level */
   int nco_flt_glb_lsl_alg_get(void){return nco_flt_glb_lsl_alg;} /* [enm] Lossless enum */
   int nco_flt_glb_lsl_lvl_get(void){return nco_flt_glb_lsl_lvl;} /* [enm] Lossless level */
-  int nco_flt_glb_lss_alg_get(void){return nco_flt_glb_lss_alg;} /* [enm] Lossy enum */
-  int nco_flt_glb_lss_lvl_get(void){return nco_flt_glb_lss_lvl;} /* [enm] Lossy level */
+  int nco_flt_glb_lsy_alg_get(void){return nco_flt_glb_lsy_alg;} /* [enm] Lossy enum */
+  int nco_flt_glb_lsy_lvl_get(void){return nco_flt_glb_lsy_lvl;} /* [enm] Lossy level */
   void nco_flt_glb_lsl_alg_set(int nco_flt_lsl_alg){nco_flt_glb_lsl_alg=nco_flt_lsl_alg;} 
   void nco_flt_glb_lsl_lvl_set(int nco_flt_lsl_lvl){nco_flt_glb_lsl_lvl=nco_flt_lsl_lvl;} 
-  void nco_flt_glb_lss_alg_set(int nco_flt_lss_alg){nco_flt_glb_lss_alg=nco_flt_lss_alg;} 
-  void nco_flt_glb_lss_lvl_set(int nco_flt_lss_lvl){nco_flt_glb_lss_lvl=nco_flt_lss_lvl;} 
+  void nco_flt_glb_lsy_alg_set(int nco_flt_lsy_alg){nco_flt_glb_lsy_alg=nco_flt_lsy_alg;} 
+  void nco_flt_glb_lsy_lvl_set(int nco_flt_lsy_lvl){nco_flt_glb_lsy_lvl=nco_flt_lsy_lvl;} 
 
   unsigned short nco_fmt_xtn=0; /* [enm] Extended file format */
   unsigned short nco_fmt_xtn_get(void){return nco_fmt_xtn;} /* [enm] Extended file format */

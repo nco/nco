@@ -231,7 +231,7 @@ ncap_var_write
     (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
     /* Set HDF Lempel-Ziv compression level, if requested */
     //    if(prs_arg->dfl_lvl >= 0 && var->nbr_dim > 0) (void)nco_def_var_deflate(prs_arg->out_id,var_out_id,(int)NC_SHUFFLE,(int)True,prs_arg->dfl_lvl);    
-    if(prs_arg->dfl_lvl >= 0 && var->nbr_dim > 0) (void)nco_flt_def_out(prs_arg->out_id,var_out_id,prs_arg->dfl_lvl);    
+    if(prs_arg->dfl_lvl >= 0 && var->nbr_dim > 0) (void)nco_tst_def_out(prs_arg->out_id,var_out_id,prs_arg->dfl_lvl);    
     /* Set chunk sizes, if requested */
     if(prs_arg->cnk_sz && var->nbr_dim > 0) (void)nco_def_var_chunking(prs_arg->out_id,var_out_id,(int)NC_CHUNKED,prs_arg->cnk_sz);
     

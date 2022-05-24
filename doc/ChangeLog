@@ -1,8 +1,14 @@
-2022-05-23  Charlie Zender  <zender@uci.edu>
+2022-05-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
+
+	* Quiet hocus-pocus INFO message
+
+	* Use nco_flt_glb_lss/lsl_alg/lvl values with CCR codecs
+
+2022-05-23  Charlie Zender  <zender@uci.edu>
 
 	* Add nco_flt_glb_lss/lsl_alg/lvl_get/set() helper functions
 
