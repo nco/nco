@@ -737,7 +737,6 @@ main(int argc,char **argv)
 	//(void)fprintf(stdout,"%s: INFO %s reports user-specified filter string translates to CCR string \"%s\".\n",nco_prg_nm,nco_prg_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_glb_get()));
 	//nco_exit(EXIT_SUCCESS);
 	cmp_sng=(char *)strdup(optarg);
-	(void)nco_cmp_prs(cmp_sng);
       } /* !ccr */
       if(!strcmp(opt_crr,"fmt_val") || !strcmp(opt_crr,"val_fmt") || !strcmp(opt_crr,"value_format")) fmt_val=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
@@ -1077,6 +1076,9 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
+
+  /* Parse compression options */
+  if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,dfl_lvl);
 
   /* 20170107: Unlike all other operators, ncks may benefit from setting chunk cache when input file (not output file) is netCDF4 because there is anecdotal evidence that ncdump netCDF4 print speed may be improved by cache adjustments. We cannot verify whether input, output, or both file formats are netCDF4 because nco_set_chunk_cache() must be called before opening file(s). Setting this for netCDF3 library is harmless and calls a no-op stub function */
   /* Set/report global chunk cache */

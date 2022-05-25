@@ -20,9 +20,9 @@
 
 /* Filter variables are file scope for now, could shift to global scope later if necessary */
 static nco_flt_typ_enm nco_flt_glb_lsl_alg=nco_flt_dfl; /* [enm] Lossless compression algorithm */
-static int nco_flt_glb_lsl_lvl=int_CEWI; /* [nbr] Lossless compression level */
-static nco_flt_typ_enm nco_flt_glb_lsy_alg=nco_flt_dfl; /* [enm] Lossy compression algorithm */
-static int nco_flt_glb_lsy_lvl=int_CEWI; /* [nbr] Lossy compression level */
+static int nco_flt_glb_lsl_lvl=NC_MIN_INT; /* [nbr] Lossless compression level */
+static nco_flt_typ_enm nco_flt_glb_lsy_alg=nco_flt_nil; /* [enm] Lossy compression algorithm */
+static int nco_flt_glb_lsy_lvl=NC_MIN_INT; /* [nbr] Lossy compression level */
 
 /* Manipulate private compression algorithms through public interfaces */
 nco_flt_typ_enm nco_flt_glb_lsl_alg_get(void){return nco_flt_glb_lsl_alg;} /* [enm] Lossless enum */
@@ -36,7 +36,8 @@ void nco_flt_glb_lsy_lvl_set(nco_flt_typ_enm nco_flt_lsy_lvl){nco_flt_glb_lsy_lv
 
 int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
-(char * const cmp_sng) /* I [sng] Compression specification */
+(char * const cmp_sng, /* I [sng] Compression specification */
+ const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Parse and set global lossy/lossless compression settings
 
@@ -63,35 +64,41 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 
   size_t prm_nbr=0L; /* [nbr] Number of parameters in user-supplied list */
 
-  if(!cmp_sng){
-    (void)fprintf(stderr,"%s: ERROR %s reports supplied compression string is empty\n",nco_prg_nm_get(),cmp_sng);
-    nco_exit(EXIT_FAILURE);
+  if(cmp_sng){
+
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports requested filter string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
+
+    prm_lst=nco_lst_prs_1D(cmp_sng,",",(int *)&prm_nbr);
+
+    nco_flt_lsl_alg=nco_flt_sng2enm(prm_lst[0]);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossless compressor is \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_lsl_alg));
+    if(prm_nbr >= 2){
+      nco_flt_lsl_lvl=(int)strtol(prm_lst[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossless compression level is %d\n",nco_prg_nm_get(),fnc_nm,nco_flt_lsl_lvl);
+    } /* !prm_nbr */
+    if(prm_nbr >= 3){
+      nco_flt_lsy_alg=nco_flt_sng2enm(prm_lst[2]);
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossy quantization algorithm is \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_lsy_alg));
+    } /* !prm_nbr */
+    if(prm_nbr >= 4){
+      nco_flt_lsy_lvl=(int)strtol(prm_lst[3],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossy quantization parameter is %d\n",nco_prg_nm_get(),fnc_nm,nco_flt_lsy_lvl);
+    } /* !prm_nbr */
   } /* !cmp_sng */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports requested filter string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
+  /* Allow use of traditional --dfl_lvl to set DEFLATE filter */
+  if(nco_flt_lsl_alg == nco_flt_nil && dfl_lvl != NCO_DFL_LVL_UNDEFINED) nco_flt_lsl_alg=nco_flt_dfl;
 
-  prm_lst=nco_lst_prs_1D(cmp_sng,",",(int *)&prm_nbr);
-
-  nco_flt_lsl_alg=nco_flt_sng2enm(prm_lst[0]);
+  /* Allow user to mix --dfl_lvl and --cdc
+     For example, --dfl_lvl=3 --cdc=zst means use Zstandard with compression level 3 */
+  if(nco_flt_lsl_lvl == int_CEWI && dfl_lvl != NCO_DFL_LVL_UNDEFINED) nco_flt_lsl_lvl=dfl_lvl;
+  
   nco_flt_glb_lsl_alg_set(nco_flt_lsl_alg);
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossless compressor is \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_lsl_alg));
-  if(prm_nbr >= 2){
-    nco_flt_lsl_lvl=(int)strtol(prm_lst[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
-    nco_flt_glb_lsl_lvl_set(nco_flt_lsl_lvl);
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossless compression level is %d\n",nco_prg_nm_get(),fnc_nm,nco_flt_lsl_lvl);
-  } /* !prm_nbr */
-  if(prm_nbr >= 3){
-    nco_flt_lsy_alg=nco_flt_sng2enm(prm_lst[2]);
-    nco_flt_glb_lsl_alg_set(nco_flt_lsl_alg);
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossy quantization algorithm is \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_lsy_alg));
-  } /* !prm_nbr */
-  if(prm_nbr >= 4){
-    nco_flt_lsy_lvl=(int)strtol(prm_lst[3],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
-    nco_flt_glb_lsy_lvl_set(nco_flt_lsy_lvl);
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossy quantization parameter is %d\n",nco_prg_nm_get(),fnc_nm,nco_flt_lsy_lvl);
-  } /* !prm_nbr */
+  nco_flt_glb_lsl_lvl_set(nco_flt_lsl_lvl);
+  nco_flt_glb_lsy_alg_set(nco_flt_lsy_alg);
+  nco_flt_glb_lsy_lvl_set(nco_flt_lsy_lvl);
 
   return rcd;
   
@@ -383,7 +390,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
   } /* !VARIABLE_EXISTS_IN_INPUT */
 
   /* Protect against calling nco_def_var_deflate() more than once */
-  if(dfl_lvl >= 0 && !COPY_COMPRESSION_FROM_INPUT)
+  if(dfl_lvl != NCO_DFL_LVL_UNDEFINED && !COPY_COMPRESSION_FROM_INPUT)
     rcd=nco_flt_def_out(nc_out_id,var_out_id,dfl_lvl);
 
   return rcd;
@@ -414,7 +421,7 @@ nco_flt_def_out /* [fnc]  */
   int deflate; /* [flg] Turn-on deflate filter */
   int shuffle; /* [flg] Turn-on shuffle filter */
 
-  if(dfl_lvl >= 0){
+  if(dfl_lvl != NCO_DFL_LVL_UNDEFINED){
     /* Overwrite HDF Lempel-Ziv compression level, if requested */
     deflate=(int)True;
     /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
@@ -458,11 +465,13 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
 
   /* Deflation */
   int deflate; /* [flg] Turn-on deflate filter */
-  int dfl_lvl_in; /* [enm] Deflate level [0..9] */
+  int dfl_lvl_in; /* [enm] Deflate level [0..9] in input file */
+  int dfl_lvl_cpy; /* [enm] Copy of requested deflate level, if any */
   int shuffle; /* [flg] Turn-on shuffle filter */
   int var_in_id_cpy=-1; /* [id] Writable copy of input variable ID */
 
   var_in_id_cpy=var_in_id;
+  dfl_lvl_cpy=dfl_lvl;
 
   /* Write (or overwrite) var_in_id when var_nm_in is supplied */
   if(var_nm_in && nc_in_id >= 0){
@@ -498,9 +507,14 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
     (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
   } /* !dbg */
 
+  /* Set dfl_lvl_cpy to spoof that dfl_lvl was user-modified so any lossless codec works */
+  int nco_flt_lsl_lvl; /* [nbr] Lossless compression level */
+  nco_flt_lsl_lvl=nco_flt_glb_lsl_lvl_get();
+  if(nco_flt_lsl_lvl != NC_MIN_INT) dfl_lvl_cpy=nco_flt_lsl_lvl;
+  
   /* Protect against calling nco_def_var_deflate() more than once */
-  if(dfl_lvl >= 0 && !COPY_COMPRESSION_FROM_INPUT)
-    rcd=nco_tst_def_out(nc_out_id,var_out_id,dfl_lvl);
+  if(dfl_lvl_cpy != NCO_DFL_LVL_UNDEFINED && !COPY_COMPRESSION_FROM_INPUT)
+    rcd=nco_tst_def_out(nc_out_id,var_out_id,dfl_lvl_cpy);
 
   return rcd;
   
@@ -536,7 +550,7 @@ nco_tst_def_out /* [fnc]  */
     (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
   } /* !dbg */
 
-  if(dfl_lvl >= 0){
+  if(dfl_lvl != NCO_DFL_LVL_UNDEFINED){
     /* Overwrite HDF Lempel-Ziv compression level, if requested */
     deflate=(int)True;
     /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
@@ -551,28 +565,28 @@ nco_tst_def_out /* [fnc]  */
   } /* !dfl_lvl */
 
   /* Build list of available filters */
-  char ccr_flt_lst[200]; /* [sng] List of available CCR filters */
-  nco_bool ccr_has_flt=True; /* [flg] CCR has requested filter */
-  ccr_flt_lst[0]='\0';
-  strcat(ccr_flt_lst,"DEFLATE");
+  char cdc_lst[200]; /* [sng] List of available filters */
+  nco_bool cdc_has_flt=True; /* [flg] Available filters include requested filter */
+  cdc_lst[0]='\0';
+  strcat(cdc_lst,"DEFLATE");
   /* Tokens like CCR_HAS_BITGROOM are defined by CCR in ccr_meta.h */
 # if CCR_HAS_BZIP2
-  strcat(ccr_flt_lst,", Bzip2");
+  strcat(cdc_lst,", Bzip2");
 # endif /* !CCR_HAS_BZIP2 */
 # if CCR_HAS_LZ4
-  strcat(ccr_flt_lst,", LZ4");
+  strcat(cdc_lst,", LZ4");
 # endif /* !CCR_HAS_LZ4 */
 # if CCR_HAS_BITGROOM
-  strcat(ccr_flt_lst,", BitGroom");
+  strcat(cdc_lst,", BitGroom");
 # endif /* !CCR_HAS_BITGROOM */
 # if CCR_HAS_BITROUND
-  strcat(ccr_flt_lst,", BitRound");
+  strcat(cdc_lst,", BitRound");
 # endif /* !CCR_HAS_BITROUND */
 # if CCR_HAS_GRANULARBR
-  strcat(ccr_flt_lst,", GranularBR");
+  strcat(cdc_lst,", GranularBR");
 # endif /* !CCR_HAS_GRANULARBR */
 # if CCR_HAS_ZSTD
-  strcat(ccr_flt_lst,", Zstd");
+  strcat(cdc_lst,", Zstd");
 # endif /* !CCR_HAS_ZSTD */
   //(void)fprintf(stdout,"DEBUG quark: nco_flt_alg=%d, dfl_lvl=%d\n",(int)nco_flt_alg,dfl_lvl);
 
@@ -588,44 +602,37 @@ nco_tst_def_out /* [fnc]  */
   nco_flt_lsy_alg=nco_flt_glb_lsy_alg_get();
   nco_flt_lsy_lvl=nco_flt_glb_lsy_lvl_get();
 
-  /* Allow use of traditional --dfl_lvl to set DEFLATE filter */
-  if(nco_flt_lsl_alg == nco_flt_nil && dfl_lvl > 0){
-    nco_flt_lsl_alg=nco_flt_dfl;
-    nco_flt_glb_lsl_alg_set(nco_flt_lsl_alg);
-  } /* !nco_flt_lsl_alg */
-
   if(nco_flt_lsl_alg != nco_flt_nil) nco_flt_lsl_flg=True;
   if(nco_flt_lsy_alg != nco_flt_nil) nco_flt_lsy_flg=True;
 
-  /* Allow user to mix --dfl_lvl and --cdc
-     For example, --dfl_lvl=3 --cdc=zst means use Zstandard with compression level 3 */
-  if(nco_flt_lsl_lvl == int_CEWI && dfl_lvl > 0){
-    nco_flt_lsl_lvl=dfl_lvl;
-    nco_flt_glb_lsl_lvl_set(nco_flt_lsl_lvl);
-  } /* !nco_flt_lsl_lvl */
-  
   int flt_idx; /* [idx] Filter index */
   int flt_nbr=0; /* [nbr] Number of filters to apply */
   if(nco_flt_lsl_flg) flt_nbr++;
   if(nco_flt_lsy_flg) flt_nbr++;
 
-  /* If CCR is enabled, invoke applicable codec(s) */
+  /* Invoke applicable codec(s) 
+     Ensure lossy filter, if any, is applied before lossless filter */
   //  const nco_flt_typ_enm nco_flt_enm=(nco_flt_typ_enm)nco_flt_glb_get();
-  nco_flt_typ_enm nco_flt_alg[2]; /* [enm] Filter list */
-  int nco_flt_lvl[2]; /* [enm] Filter-level list */
+  const int flt_nbr_max=2; /* [nbr] Maximum number of filters supported */
+  nco_flt_typ_enm nco_flt_alg[flt_nbr_max]; /* [enm] Filter list */
+  int nco_flt_lvl[flt_nbr_max]; /* [enm] Filter-level list */
+  int flt_idx_srt; /* [idx] Index of first filter to apply */
+  const int idx_lsy=0; /* [idx] index of lossy compressor in array */
   const int idx_lsl=1; /* [idx] index of lossless compressor in array */
-  const int idx_lsy=0; /* [idx] index of lossless compressor in array */
-  
-  nco_flt_alg[idx_lsl]=nco_flt_lsl_alg;
-  nco_flt_lvl[idx_lsl]=nco_flt_lsl_lvl;
   nco_flt_alg[idx_lsy]=nco_flt_lsy_alg;
   nco_flt_lvl[idx_lsy]=nco_flt_lsy_lvl;
+  nco_flt_alg[idx_lsl]=nco_flt_lsl_alg;
+  nco_flt_lvl[idx_lsl]=nco_flt_lsl_lvl;
   
-  for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){ 
-    (void)fprintf(stdout,"DEBUG quark: nbr=%d, idx=%d, flt_alg=%s, flt_lvl=%d\n",flt_nbr,flt_idx,nco_flt_enm2sng(nco_flt_alg[flt_idx]),nco_flt_lvl[flt_idx]);
+  (void)fprintf(stdout,"DEBUG quark1: nbr=%d, cdc_lst=%s\n",flt_nbr,cdc_lst);
+
+  if(nco_flt_lsy_flg) flt_idx_srt=0; else flt_idx_srt=1;
+  for(flt_idx=flt_idx_srt;flt_idx<flt_nbr_max;flt_idx++){ 
+    (void)fprintf(stdout,"DEBUG quark2: nbr=%d, idx=%d, flt_alg=%s, flt_lvl=%d\n",flt_nbr,flt_idx,nco_flt_enm2sng(nco_flt_alg[flt_idx]),nco_flt_lvl[flt_idx]);
+    //    (void)fprintf(stdout,"DEBUG quark2: nco_flt_zst=%d, nco_flt_lsl_alg=%d, nco_flt_glb_lsl_alg=%d\n",(int)nco_flt_zst,(int)nco_flt_lsl_alg,(int)nco_flt_glb_lsl_alg);
     switch(nco_flt_alg[flt_idx]){
     case nco_flt_nil: /* If user did not select a filter then exit */
-      //      continue; /* Continue to next iteration if filter is unused */
+      //continue; /* Continue to next iteration if filter is unused */
       break;
     case nco_flt_dfl: /* DEFLATE */
       (void)nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,nco_flt_lvl[flt_idx]);
@@ -634,35 +641,35 @@ nco_tst_def_out /* [fnc]  */
 # if CCR_HAS_BZIP2
       if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_bzip2(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_BZIP2 */
-      ccr_has_flt=False;
+      cdc_has_flt=False;
 # endif /* !CCR_HAS_BZIP2 */
       break;
     case nco_flt_lz4: /* LZ4 */ 
 # if CCR_HAS_LZ4
       if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_lz4(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_LZ4 */
-      ccr_has_flt=False;
+      cdc_has_flt=False;
 # endif /* !CCR_HAS_LZ4 */
       break;
     case nco_flt_bgr: /* BitGroom */
 # if CCR_HAS_BITGROOM
       if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_bitgroom(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_BITGROOM */
-      ccr_has_flt=False;
+      cdc_has_flt=False;
 # endif /* !CCR_HAS_BITGROOM */
       break;
     case nco_flt_btr: /* BitRound */
 # if CCR_HAS_BITROUND
       if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_bitround(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_BITROUND */
-      ccr_has_flt=False;
+      cdc_has_flt=False;
 # endif /* !CCR_HAS_BITROUND */
       break;
     case nco_flt_gbr: /* Granular BitRound */
 # if CCR_HAS_GRANULARBR
       if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_granularbr(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_GRANULARBR */
-      ccr_has_flt=False;
+      cdc_has_flt=False;
 # endif /* !CCR_HAS_GRANULARBR */
       break;
     case nco_flt_zst: /* Zstandard */
@@ -670,20 +677,20 @@ nco_tst_def_out /* [fnc]  */
       /* NB: Zstandard accepts negative compression levels */
       (void)nc_def_var_zstandard(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_ZSTD */
-      ccr_has_flt=False;
+      cdc_has_flt=False;
 # endif /* !CCR_HAS_ZSTD */
       break;
     case nco_flt_dgr: /* DigitRound */
-      ccr_has_flt=False;
+      cdc_has_flt=False;
       if(nco_flt_lvl[flt_idx] <= 0) break;
     default: nco_dfl_case_flt_err(); break;
     } /* !nco_flt_alg */
   } /* !flt_idx */
   
-  if(!ccr_has_flt){
-    (void)fprintf(stdout,"%s: ERROR %s reports CCR library does not define API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and installed in the CCR when this NCO was built/installed. If the filter is newer, you might try updating the installed CCR then updating the installed NCO. Otherwise, re-try this command and specify an already-installed filter from this list: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(nco_flt_alg[flt_idx]),ccr_flt_lst);
+  if(!cdc_has_flt){
+    (void)fprintf(stdout,"%s: ERROR %s reports CCR library does not define API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and installed in the CCR when this NCO was built/installed. If the filter is newer, you might try updating the installed CCR then updating the installed NCO. Otherwise, re-try this command and specify an already-installed filter from this list: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(nco_flt_alg[flt_idx]),cdc_lst);
     nco_exit(EXIT_FAILURE);
-  } /* !ccr_has_flt */
+  } /* !cdc_has_flt */
     
   return rcd;
   

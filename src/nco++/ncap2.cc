@@ -417,7 +417,6 @@ main(int argc,char **argv)
       } /* !flt */
       if(!strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec")){
 	cmp_sng=(char *)strdup(optarg);
-	(void)nco_cmp_prs(cmp_sng);
       } /* !ccr */
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
@@ -562,6 +561,9 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
+
+  /* Parse compression options */
+  if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,dfl_lvl);
 
   /* Set/report global chunk cache */
   rcd+=nco_cnk_csh_ini(cnk_csh_byt);

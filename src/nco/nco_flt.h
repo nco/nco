@@ -57,7 +57,7 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
 extern "C" {
 #endif /* __cplusplus */
 
-/* Manipulate private compression algorithms through public interfaces */
+/* Manipulate private compression algorithm parameters through public interfaces */
 nco_flt_typ_enm nco_flt_glb_lsl_alg_get(void); /* [enm] Lossless enum */
 nco_flt_typ_enm nco_flt_glb_lsl_lvl_get(void); /* [enm] Lossless level */
 nco_flt_typ_enm nco_flt_glb_lsy_alg_get(void); /* [enm] Lossy enum */
@@ -69,7 +69,8 @@ void nco_flt_glb_lsy_lvl_set(nco_flt_typ_enm nco_flt_lsy_lvl);
 
 int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
-(char * const cmp_sng); /* I [sng] Compression specification */
+(char * const cmp_sng, /* I [sng] Compression specification */
+ const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
 void
 nco_flt_hdf5_prs /* [fnc] Parse user-provided filter string */
