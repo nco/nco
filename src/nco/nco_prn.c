@@ -299,7 +299,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		  nco_inq_varname(grp_id,var_id,var_nm);
 		  (void)fprintf(stdout,"%s: WARNING %s reports variable %s has %lu filters applied. The proper library functions to correctly handle multiple filters are not present in netCDF until version 4.8.0. Please recompile NCO with netCDF 4.8.0 or later to correctly interrogate and print the information about multiple filters associated with a variable.\n",nco_prg_nm_get(),fnc_nm,var_nm,(unsigned long)flt_nbr);
 		} /* !flt_nbr */
-		/* Print _Filter for (first filter of) filtered variables */
+		/* Print _Filter for (first filter of) filtered variables
+		   20220526 Wrap code in loop over filters and separate each filter by a pipe symbol "|" */
 		prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
 		rcd=nco_inq_var_filter(grp_id,var_id,NULL,NULL,prm_lst);
 		idx=att_nbr_ttl++;
