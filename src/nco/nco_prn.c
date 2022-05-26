@@ -305,7 +305,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		unsigned int *flt_lst; /* [nbr] Filter IDs */
 		flt_lst=(unsigned int *)nco_malloc(flt_nbr*sizeof(int));
 		rcd=nco_inq_var_filter_ids(grp_id,var_id,(size_t *)NULL,flt_lst);
-		/* Print _Filter for (first filter of) filtered variables
+		/* Print _Filter values for all filters of filtered variables
 		   20220526 Wrap code in loop over filters and separate each filter by a pipe symbol "|" */
 		idx=att_nbr_ttl++;
 		att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
@@ -319,7 +319,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		  (void)sprintf(sng_foo,"%u,",flt_lst[flt_idx]);
 		  strcat(val_hdn_sng,sng_foo);
 		  for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
-		    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"Filter index %lu, ID = %u: parameter #%lu of %lu = %u\n",flt_idx,flt_lst[flt_idx],prm_idx,prm_nbr,prm_lst[prm_idx]);
+		    //if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"Filter index %lu, ID = %u: parameter #%lu of %lu = %u\n",flt_idx,flt_lst[flt_idx],prm_idx,prm_nbr,prm_lst[prm_idx]);
 		    (void)sprintf(sng_foo,"%u%s",prm_lst[prm_idx],(prm_idx == prm_nbr-1) ? "" : ",");
 		    strcat(val_hdn_sng,sng_foo);
 		  } /* !prm_idx */
@@ -337,6 +337,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	} /* !4.6.0 */
 	/* _DeflateLevel */
 	if(!XML){
+	  /* 20220526 ncdump prints _DeflateLevel and _Shuffle but not _Filter when DEFLATE is the only filter applied */
 	  rcd=nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
 	  if(deflate){
 	    /* Print _DeflateLevel for deflated variables */

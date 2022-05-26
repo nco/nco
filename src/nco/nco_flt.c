@@ -257,7 +257,7 @@ char * /* O [sng] String describing compression filter */
 nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
 (const nco_flt_typ_enm nco_flt_enm) /* I [enm] Compression filter type */
 {
-  /* Purpose: Convert compression grid-type enum to descriptive string */
+  /* Purpose: Convert compression filter-type enum to descriptive string */
   switch(nco_flt_enm){
   case nco_flt_nil: return "Filter type is unset"; break;
   case nco_flt_dfl: return "DEFLATE"; break;
@@ -274,6 +274,29 @@ nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
   return (char *)NULL;
   
 } /* !nco_flt_enm2sng() */
+
+char * /* O [sng] String describing compression filter */
+nco_flt_id2sng /* [fnc] Convert compression filter ID to string */
+(const unsigned int nco_flt_id) /* I [id] Compression filter ID */
+{
+  /* Purpose: Convert compression filter ID to descriptive string */
+  switch(nco_flt_id){
+  case nco_flt_nil: return "Filter type is unset"; break;
+  case 1 : return "DEFLATE"; break;
+  case 307 : return "Bzip2"; break;
+  case 32004 : return "LZ4"; break;
+  case 32022 : return "BitGroom"; break;
+  case 32023 : return "Granular BitRound"; break;
+    //  case : return "DigitRound"; break;
+  case 37373: return "BitRound"; break;
+  case 32015 : return "Zstandard"; break;
+  case 32001 : return "BLOSC"; break;
+  default: nco_dfl_case_generic_err(); break;
+  } /* !nco_flt_id */
+
+  return (char *)NULL;
+  
+} /* !nco_flt_id2sng() */
 
 nco_flt_typ_enm /* O [enm] Filter enum */
 nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
@@ -384,7 +407,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
 	 After netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect
 	 It is therefore crucial not to call nco_def_var_deflate() more than once */
       rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
-      if(rcd == NC_NOERR) COPY_COMPRESSION_FROM_INPUT=True; else (void)fprintf(stdout,"DEBUG %s reports rcd=%d\n",fnc_nm,rcd);
+      if(rcd == NC_NOERR) COPY_COMPRESSION_FROM_INPUT=True;
     } /* !dfl_lvl */
 
   } /* !VARIABLE_EXISTS_IN_INPUT */
@@ -504,7 +527,7 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     char var_nm[NC_MAX_NAME+1L];
     rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
-    (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
+    //(void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
   } /* !dbg */
 
   /* If exotic codec option invoked, set dfl_lvl_cpy to spoof that dfl_lvl was user-modified 
@@ -548,7 +571,7 @@ nco_tst_def_out /* [fnc]  */
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     char var_nm[NC_MAX_NAME+1L];
     rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
-    (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
+    //(void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
   } /* !dbg */
 
   if(dfl_lvl != NCO_DFL_LVL_UNDEFINED){
@@ -625,12 +648,11 @@ nco_tst_def_out /* [fnc]  */
   nco_flt_alg[idx_lsl]=nco_flt_lsl_alg;
   nco_flt_lvl[idx_lsl]=nco_flt_lsl_lvl;
   
-  (void)fprintf(stdout,"DEBUG quark1: nbr=%d, cdc_lst=%s\n",flt_nbr,cdc_lst);
+  //(void)fprintf(stdout,"DEBUG quark1: nbr=%d, cdc_lst=%s\n",flt_nbr,cdc_lst);
 
   if(nco_flt_lsy_flg) flt_idx_srt=0; else flt_idx_srt=1;
   for(flt_idx=flt_idx_srt;flt_idx<flt_nbr_max;flt_idx++){ 
-    (void)fprintf(stdout,"DEBUG quark2: nbr=%d, idx=%d, flt_alg=%s, flt_lvl=%d\n",flt_nbr,flt_idx,nco_flt_enm2sng(nco_flt_alg[flt_idx]),nco_flt_lvl[flt_idx]);
-    //    (void)fprintf(stdout,"DEBUG quark2: nco_flt_zst=%d, nco_flt_lsl_alg=%d, nco_flt_glb_lsl_alg=%d\n",(int)nco_flt_zst,(int)nco_flt_lsl_alg,(int)nco_flt_glb_lsl_alg);
+    //(void)fprintf(stdout,"DEBUG quark2: nbr=%d, idx=%d, flt_alg=%s, flt_lvl=%d\n",flt_nbr,flt_idx,nco_flt_enm2sng(nco_flt_alg[flt_idx]),nco_flt_lvl[flt_idx]);
     switch(nco_flt_alg[flt_idx]){
     case nco_flt_nil: /* If user did not select a filter then exit */
       //continue; /* Continue to next iteration if filter is unused */

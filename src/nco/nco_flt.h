@@ -82,7 +82,11 @@ char * /* O [sng] Filter string */
 nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
 (const nco_flt_typ_enm nco_flt_typ); /* I [enm] Compression filter type */
 
-nco_flt_typ_enm /* O [enm] Filter enum */
+char * /* O [sng] String describing compression filter */
+nco_flt_id2sng /* [fnc] Convert compression filter ID to string */
+(const unsigned int nco_flt_id); /* I [id] Compression filter ID */
+
+  nco_flt_typ_enm /* O [enm] Filter enum */
 nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
 (const char *nco_flt_sng); /* [sng] User-specified filter string */
 
