@@ -490,13 +490,13 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
     rcd=nco_inq_var_deflate(nc_in_id,var_in_id_cpy,&shuffle,&deflate,&dfl_lvl_in);
 
     /* Copy original filters if user did not explicity set dfl_lvl for output */ 
-    if((deflate || shuffle) && dfl_lvl < 0){
+    if((deflate || shuffle) && dfl_lvl == NCO_DFL_LVL_UNDEFINED){
       /* Before netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
 	 Properties of final invocation before nc_enddef() would take effect
 	 After netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect
 	 It is therefore crucial not to call nco_def_var_deflate() more than once */
       rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
-      if(rcd == NC_NOERR) COPY_COMPRESSION_FROM_INPUT=True; else (void)fprintf(stdout,"DEBUG %s reports rcd=%d\n",fnc_nm,rcd);
+      if(rcd == NC_NOERR) COPY_COMPRESSION_FROM_INPUT=True;
     } /* !dfl_lvl */
 
   } /* !VARIABLE_EXISTS_IN_INPUT */
@@ -507,7 +507,8 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
     (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
   } /* !dbg */
 
-  /* Set dfl_lvl_cpy to spoof that dfl_lvl was user-modified so any lossless codec works */
+  /* If exotic codec option invoked, set dfl_lvl_cpy to spoof that dfl_lvl was user-modified 
+     This enables the extended codec branch in nco_tst_def_out() */
   int nco_flt_lsl_lvl; /* [nbr] Lossless compression level */
   nco_flt_lsl_lvl=nco_flt_glb_lsl_lvl_get();
   if(nco_flt_lsl_lvl != NC_MIN_INT) dfl_lvl_cpy=nco_flt_lsl_lvl;

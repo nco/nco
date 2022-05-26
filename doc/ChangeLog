@@ -1,10 +1,14 @@
-2022-05-25  Charlie Zender  <zender@uci.edu>
+2022-05-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
 
-	* Fix so CCR codecs work, not sure codec chains work
+	* Remove extra quotes form multi-word format names in _Format attribute
+
+2022-05-25  Charlie Zender  <zender@uci.edu>
+
+	* Fix so CCR codecs work, including codec chains
 
 2022-05-24  Charlie Zender  <zender@uci.edu>
 

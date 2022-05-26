@@ -265,7 +265,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    if(srg_typ == NC_CHUNKED){
 	      /* Support dynamic compression filters as of netCDF 4.6.0 (January, 2018)
 		 Unfortunately, I do not yet have an actual file or dynamic filter library for testing:
-		 https://www.unidata.ucar.edu/software/netcdf/docs/filters_8md_source.html */
+		 https://www.unidata.ucar.edu/software/netcdf/docs/filters_8md_source.html
+		 20220526 Code now supports CCR so now have plenty of dynamic filters! */
 	      unsigned int flt_id=NC_MAX_UINT;
 	      size_t flt_nbr;
 	      size_t prm_idx;
@@ -278,9 +279,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		 though not compressed variable in a netCDF4 dataset returns error -136:
 		 "NetCDF: Filter error: filter not defined for variable"
 		 Prior to 4.7.4, nc_inq_var_filter() returns NC_NOERR on such variables, and sets the filter ID to 0
-		 Workaround for netCDF 4.7.4 is to proceed only if first nc_inq_var_filter_flg() returns NC_NOERR */
-	      // 20200701 Dennis Heimbigner reverted the 4.7.4 change in 4.8.0-develop
-	      //if(NC_LIB_VERSION == 474 || NC_LIB_VERSION == 480){
+		 Workaround for netCDF 4.7.4 is to proceed only if first nc_inq_var_filter_flg() returns NC_NOERR
+		 20200701 Dennis Heimbigner reverted the 4.7.4 change in 4.8.0-develop
+		 Hence it suffices to treate 4.7.4 as a special case */
 	      if(NC_LIB_VERSION == 474){
 		rcd=nco_inq_var_filter_flg(grp_id,var_id,&flt_id,&prm_nbr,NULL);
 		if(rcd == NC_ENOFILTER){
@@ -294,9 +295,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      //if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
 	      if(flt_id != NC_MAX_UINT && flt_id != 0){
 		rcd=nco_inq_var_filter_ids(grp_id,var_id,&flt_nbr,NULL);
-		if(flt_nbr > 1){
+		if(flt_nbr > 1 && NC_LIB_VERSION < 474){
 		  nco_inq_varname(grp_id,var_id,var_nm);
-		  (void)fprintf(stdout,"%s: WARNING %s reports variable %s has %lu filters applied. The proper library functions to correctly handle multiple filters are not present in netCDF version 4.7.4. Please upgrade to netCDF 4.8.0 or later to handle multiple filters.\n",nco_prg_nm_get(),fnc_nm,var_nm,(unsigned long)flt_nbr);
+		  (void)fprintf(stdout,"%s: WARNING %s reports variable %s has %lu filters applied. The proper library functions to correctly handle multiple filters are not present in netCDF until version 4.8.0. Please recompile NCO with netCDF 4.8.0 or later to correctly interrogate and print the information about multiple filters associated with a variable.\n",nco_prg_nm_get(),fnc_nm,var_nm,(unsigned long)flt_nbr);
 		} /* !flt_nbr */
 		/* Print _Filter for (first filter of) filtered variables */
 		prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
@@ -1083,11 +1084,11 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
   case NC_STRING:
     return fmt_NC_STRING; 
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !typ */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end nco_typ_fmt_sng() */
+} /* !nco_typ_fmt_sng() */
 
 void
 nco_prn_var_val_cmt /* Print variable values as CDL comment (delimited by comma) */
@@ -1125,10 +1126,10 @@ nco_prn_var_val_cmt /* Print variable values as CDL comment (delimited by comma)
      (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var->type),dlm_sng);*/
 
   /* Find replacement format string at most once, then re-use */
-  #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-    /* Replace printf()-format statements with format for missing values */
-      fmt_sng_mss_val=nco_fmt_sng_printf_subst(dlm_sng);
-  #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+  /* Replace printf()-format statements with format for missing values */
+  fmt_sng_mss_val=nco_fmt_sng_printf_subst(dlm_sng);
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
   /* Print type in English in prefix text */
   if(var->type == NC_STRING) (void)fprintf(fp_out,"calendar format: "); else (void)fprintf(fp_out,"%s value%s: ",cdl_typ_nm(var->type),(var->sz > 1 ? "s":""));
@@ -1171,9 +1172,9 @@ nco_prn_var_val_cmt /* Print variable values as CDL comment (delimited by comma)
 
     } /* !is_mss_val */
 
-    if(lmn<sz-1L) (void)fprintf(fp_out,", ");
+    if(lmn < sz-1L) (void)fprintf(fp_out,", ");
 
-  } /* end loop over element */
+  } /* !lmn */
 
   (void)fprintf(fp_out,"\n");
 
@@ -1612,7 +1613,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   var.nm=(char *)nco_free(var.nm);
   if(strlen(unit_sng) > 0) unit_sng=(char *)nco_free(unit_sng);
  
-} /* end nco_prn_var_val_lmt() */
+} /* !nco_prn_var_val_lmt() */
 
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */
@@ -1905,7 +1906,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
   (void)fflush(fp_out);
 
-} /* end nco_prn_var_dfn() */
+} /* !nco_prn_var_dfn() */
 
 void
 nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
@@ -2689,11 +2690,11 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 		  unit_cln_crd=False;
 #endif /* !HAVE_UDUNITS2 */
                 } /* !unit_cln_crd */
-	      } /* end if att_typ */
-	    } /* end if rcd_lcl */
-	  } /* end if True */
+	      } /* !att_typ */
+	    } /* !rcd_lcl */
+	  } /* !True */
 	  
-        } /* end if is_crd_var */
+        } /* !is_crd_var */
 
         /* Typecast pointer before use */  
         (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
@@ -3060,7 +3061,9 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     if(prn_flg->fll_pth) (void)fprintf(fp_out," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(fp_out,"\n");
     if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA) (void)fprintf(fp_out,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
     if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_fl_sz_sng);
-    if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s// %sncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->PRN_GLB_METADATA ? "Generate binary file: " : "",nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
+    nco_bool qte_fmt_sng; /* [flg] Quote _Format string to protect whitespace */
+    if((prn_flg->fl_out_fmt = NC_FORMAT_64BIT_OFFSET) || (prn_flg->fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) || (prn_flg->fl_out_fmt == NC_FORMAT_CDF5)) qte_fmt_sng=True; else qte_fmt_sng=False;
+    if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s// %sncgen -k %s%s%s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->PRN_GLB_METADATA ? "Generate binary file: " : "",qte_fmt_sng ? "\"" : "",nco_fmt_hdn_sng(prn_flg->fl_out_fmt),qte_fmt_sng ? "\"" : "",prn_flg->fl_stb,prn_flg->fl_stb);
   }else if(JSN){
     nm_jsn=nm2sng_jsn(nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
     /* JSN print main opening brace */
@@ -3469,7 +3472,9 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   if(prn_flg->fll_pth) (void)fprintf(fp_out," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(fp_out,"\n");
   if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA) (void)fprintf(fp_out,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
   if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA && nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(fp_out,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_fl_sz_sng);
-  if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s// %sncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->PRN_GLB_METADATA ? "Generate binary file with this CDL: " : "",nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
+  nco_bool qte_fmt_sng; /* [flg] Quote _Format string to protect whitespace */
+  if((prn_flg->fl_out_fmt = NC_FORMAT_64BIT_OFFSET) || (prn_flg->fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) || (prn_flg->fl_out_fmt == NC_FORMAT_CDF5)) qte_fmt_sng=True; else qte_fmt_sng=False;
+  if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s// %sncgen -k %s%s%s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->PRN_GLB_METADATA ? "Generate binary file with this CDL: " : "",qte_fmt_sng ? "\"" : "",nco_fmt_hdn_sng(prn_flg->fl_out_fmt),qte_fmt_sng ? "\"" : "",prn_flg->fl_stb,prn_flg->fl_stb);
   
   /* Print type information for group */
   if(nbr_typ > 0){
