@@ -419,7 +419,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
      If supplied dfl_lvl is < 0 (i.e., unset) then copy input compression settings (if available)
      If supplied dfl_lvl is >= 0 (i.e., set) then set compression to dfl_lvl */
 
-  const char fnc_nm[]="nco_flt_def_wrp()"; /* [sng] Function name */
+  //const char fnc_nm[]="nco_flt_def_wrp()"; /* [sng] Function name */
 
   nco_bool VARIABLE_EXISTS_IN_INPUT=False; /* [flg] Variable exists in input file */
   nco_bool COPY_COMPRESSION_FROM_INPUT=False; /* [flg] Copy compression setting from input to output */
@@ -529,7 +529,7 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
      If supplied dfl_lvl is < 0 (i.e., unset) then copy input compression settings (if available)
      If supplied dfl_lvl is >= 0 (i.e., set) then set compression to dfl_lvl */
 
-  const char fnc_nm[]="nco_tst_def_wrp()"; /* [sng] Function name */
+  //const char fnc_nm[]="nco_tst_def_wrp()"; /* [sng] Function name */
 
   nco_bool VARIABLE_EXISTS_IN_INPUT=False; /* [flg] Variable exists in input file */
   nco_bool COPY_COMPRESSION_FROM_INPUT=False; /* [flg] Copy compression setting from input to output */
@@ -709,11 +709,11 @@ nco_tst_def_out /* [fnc]  */
       (void)nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,nco_flt_lvl[flt_idx]);
       break;
     case nco_flt_bz2: /* Bzip2 */
-# if CCR_HAS_BZIP2
+# if CCR_HAS_BZIP2 || NC_LIB_VER >= 490 
       if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_bzip2(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
-# else /* !CCR_HAS_BZIP2 */
+# else /* !CCR_HAS_BZIP2 || NC_LIB_VER >= 490 */
       cdc_has_flt=False;
-# endif /* !CCR_HAS_BZIP2 */
+# endif /* !CCR_HAS_BZIP2 || NC_LIB_VER >= 490 */
       break;
     case nco_flt_lz4: /* LZ4 */ 
 # if CCR_HAS_LZ4
@@ -744,12 +744,12 @@ nco_tst_def_out /* [fnc]  */
 # endif /* !CCR_HAS_GRANULARBR */
       break;
     case nco_flt_zst: /* Zstandard */
-# if CCR_HAS_ZSTD
+# if CCR_HAS_ZSTD || NC_LIB_VER >= 490 
       /* NB: Zstandard accepts negative compression levels */
       (void)nc_def_var_zstandard(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
-# else /* !CCR_HAS_ZSTD */
+# else /* !CCR_HAS_ZSTD || NC_LIB_VER >= 490 */
       cdc_has_flt=False;
-# endif /* !CCR_HAS_ZSTD */
+# endif /* !CCR_HAS_ZSTD || NC_LIB_VER >= 490  */
       break;
     case nco_flt_dgr: /* DigitRound */
       cdc_has_flt=False;

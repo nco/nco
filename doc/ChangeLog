@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
 
+	* Allow use of netCDF defined APIs for BZIP2, ZSTANDARD
+
+	* Add netCDF 4.9.0 BLOSC filters to table
+
 	* Implement nco_inq_filter_avail() and stubs for pre-4.9.0
 
 	* Print info for multiple filters per variable separated by pipes

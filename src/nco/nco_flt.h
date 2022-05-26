@@ -73,6 +73,21 @@ void nco_flt_glb_lsy_alg_set(nco_flt_typ_enm nco_flt_lsy_alg);
 void nco_flt_glb_lsl_lvl_set(int nco_flt_lsl_lvl); 
 void nco_flt_glb_lsy_lvl_set(int nco_flt_lsy_lvl); 
 
+#if !defined(CCR_HAS_BZIP2) && (NC_LIB_VERSION < 490)
+int nc_def_var_bzip2(int ncid, int varid, int level);
+int nc_inq_var_bzip2(int ncid, int varid, int* hasfilterp, int *levelp);
+#endif /* !CCR_HAS_BZIP2, !490, !4.9.0 */
+
+#if !defined(CCR_HAS_ZSTD) && (NC_LIB_VERSION < 490)
+int nc_def_var_zstandard(int ncid, int varid, int level);
+int nc_inq_var_zstandard(int ncid, int varid, int* hasfilterp, int *levelp);
+#endif /* !CCR_HAS_ZSTD, !490, !4.9.0 */
+
+#if !defined(CCR_HAS_BZIP2) && (NC_LIB_VERSION < 490)
+int nc_def_var_blosc(int ncid, int varid, unsigned subcompressor, unsigned level, unsigned blocksize, unsigned addshuffle);
+int nc_inq_var_blosc(int ncid, int varid, int* hasfilterp, unsigned* subcompressorp, unsigned* levelp, unsigned* blocksizep, unsigned* addshufflep);
+#endif /* !CCR_HAS_BLOSC, !490, !4.9.0 */
+
 int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 (char * const cmp_sng, /* I [sng] Compression specification */
