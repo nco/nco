@@ -521,6 +521,7 @@ int nco_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt
 int nco_inq_var_filter_flg(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
 int nco_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst);
 int nco_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
+int nco_inq_filter_avail(const int nc_id,const unsigned int flt_id);
 int nco_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ);
 int nco_inq_var_packing(const int nc_id,const int var_id,int * const packing);
 int nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id);
@@ -591,20 +592,23 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int nc_create_mem(const char * const fl_nm,const int mode,const size_t sz_ntl,int * const nc_id);
   int nc_open_memio(const char * const fl_nm,const int mode,NC_memio * const info,int * const nc_id);
   int nc_close_memio(const int nc_id,NC_memio * const info);
-#endif /* !4.6.2 */
+#endif /* !462, !4.6.2 */
 
 #if NC_LIB_VERSION < 460
   int nc_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int * const prm_lst);
   int nc_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
-#endif /* !4.6.0 */
+#endif /* !460, !4.6.0 */
 
 #if NC_LIB_VERSION == 474
 # define nc_inq_var_filter_ids nc_inq_var_filterids
-#endif /* !4.7.4 */
+#endif /* !474, !4.7.4 */
 #if NC_LIB_VERSION < 474
   int nc_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst);
   int nc_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
-#endif /* !4.7.4 */
+#endif /* !474, !4.7.4 */
+#if NC_LIB_VERSION < 490
+  int nc_inq_filter_avail(const int nc_id,const unsigned int flt_id);
+#endif /* !490, !4.9.0 */
 
   int nc_def_var_filter_ccr(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const char ** const prm_lst);
 

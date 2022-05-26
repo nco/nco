@@ -1014,7 +1014,7 @@ int nc_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nb
   (void)fprintf(stdout,"ERROR: %s reports inquire variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later.\nExiting...\n",fnc_nm,fnc_nm);
   nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nc_inq_var_filter_ids() */
+} /* !nc_inq_var_filter_ids() */
 
 int nc_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst)
 {
@@ -1029,7 +1029,22 @@ int nc_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int f
   nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nc_inq_var_filter_info() */
-#endif /* !4.7.4 */
+#endif /* !474, !4.7.4 */
+
+#if NC_LIB_VERSION < 490
+int nc_inq_filter_avail(const int nc_id,const unsigned int flt_id)
+{
+  /* Purpose: Pseudo-library stub function to inquire availability of a filter
+     This particular stub routine is only called by netCDF4-enabled code
+     when built against a netCDF library too old to have the nc_inq_filter_avail() function. */
+  int rcd;
+  const char fnc_nm[]="nc_inq_filter_avail()";
+  rcd=NC_NOERR+0*(nc_id+flt_id);
+  (void)fprintf(stdout,"ERROR: %s reports inquire filter availability was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.9.0 (released ~20220601) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* !nco_inq_filter_avail() */
+#endif /* !490, !4.9.0 */
 
 int nc_def_var_filter_ccr(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const char ** const prm_lst)
 {
@@ -2193,6 +2208,15 @@ int nco_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter_info()");
   return rcd;
 } /* !nco_inq_var_filter_info() */
+
+int nco_inq_filter_avail(const int nc_id,const unsigned int flt_id)
+{
+  /* Purpose: Wrapper for nc_inq_filter_avail() */
+  int rcd;
+  rcd=nc_inq_filter_avail(nc_id,flt_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_filter_avail()");
+  return rcd;
+} /* !nco_inq_filter_avail() */
 
 int
 nco_def_var_fletcher32

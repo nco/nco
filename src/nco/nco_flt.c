@@ -261,13 +261,19 @@ nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
   switch(nco_flt_enm){
   case nco_flt_nil: return "Filter type is unset"; break;
   case nco_flt_dfl: return "DEFLATE"; break;
-  case nco_flt_bzp: return "Bzip2"; break;
+  case nco_flt_bz2: return "Bzip2"; break;
   case nco_flt_lz4: return "LZ4"; break;
   case nco_flt_bgr: return "BitGroom"; break;
   case nco_flt_gbr: return "GranularBR"; break;
   case nco_flt_dgr: return "DigitRound"; break;
   case nco_flt_btr: return "BitRound"; break;
   case nco_flt_zst: return "Zstandard"; break;
+  case nco_flt_bls_lz: return "BLOSC LZ"; break;
+  case nco_flt_bls_lz4: return "BLOSC LZ4"; break;
+  case nco_flt_bls_lzh: return "BLOSC LZ4 HC"; break;
+  case nco_flt_bls_snp: return "BLOSC Snappy"; break;
+  case nco_flt_bls_dfl: return "BLOSC DEFLATE"; break;
+  case nco_flt_bls_zst: return "BLOSC Zstandard"; break;
   default: nco_dfl_case_generic_err(); break;
   } /* !nco_flt_enm */
 
@@ -323,9 +329,9 @@ nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
   if(!strcasecmp(nco_flt_sng,"deflate")) return nco_flt_dfl;
   if(!strcasecmp(nco_flt_sng,"dfl")) return nco_flt_dfl;
   if(!strcasecmp(nco_flt_sng,"zlib")) return nco_flt_dfl;
-  if(!strcasecmp(nco_flt_sng,"bzp")) return nco_flt_bzp;
-  if(!strcasecmp(nco_flt_sng,"bzip")) return nco_flt_bzp;
-  if(!strcasecmp(nco_flt_sng,"bzip2")) return nco_flt_bzp;
+  if(!strcasecmp(nco_flt_sng,"bzp")) return nco_flt_bz2;
+  if(!strcasecmp(nco_flt_sng,"bzip")) return nco_flt_bz2;
+  if(!strcasecmp(nco_flt_sng,"bzip2")) return nco_flt_bz2;
   if(!strcasecmp(nco_flt_sng,"lz4")) return nco_flt_lz4;
   if(!strcasecmp(nco_flt_sng,"bgr")) return nco_flt_bgr;
   if(!strcasecmp(nco_flt_sng,"bitgroom")) return nco_flt_bgr;
@@ -343,6 +349,49 @@ nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
   if(!strcasecmp(nco_flt_sng,"zstd")) return nco_flt_zst;
   if(!strcasecmp(nco_flt_sng,"zstandard")) return nco_flt_zst;
 
+  if(!strcasecmp(nco_flt_sng,"blosc lz4 hc")) return nco_flt_bls_lzh;
+  if(!strcasecmp(nco_flt_sng,"blosc_lz4_hc")) return nco_flt_bls_lzh;
+  if(!strcasecmp(nco_flt_sng,"blosclz4hc")) return nco_flt_bls_lzh;
+  if(!strcasecmp(nco_flt_sng,"bls_lzh")) return nco_flt_bls_lzh;
+  if(!strcasecmp(nco_flt_sng,"bls_lz4hc")) return nco_flt_bls_lzh;
+  if(!strcasecmp(nco_flt_sng,"blosc_lzh")) return nco_flt_bls_lzh;
+  if(!strcasecmp(nco_flt_sng,"blosc_lz4hc")) return nco_flt_bls_lzh;
+
+  if(!strcasecmp(nco_flt_sng,"blosc lz4")) return nco_flt_bls_lz4;
+  if(!strcasecmp(nco_flt_sng,"blosc_lz4")) return nco_flt_bls_lz4;
+  if(!strcasecmp(nco_flt_sng,"bls_lz4")) return nco_flt_bls_lz4;
+  if(!strcasecmp(nco_flt_sng,"blslz4")) return nco_flt_bls_lz4;
+  if(!strcasecmp(nco_flt_sng,"blosclz4")) return nco_flt_bls_lz4;
+
+  if(!strcasecmp(nco_flt_sng,"blosc lz")) return nco_flt_bls_lz;
+  if(!strcasecmp(nco_flt_sng,"blosc_lz")) return nco_flt_bls_lz;
+  if(!strcasecmp(nco_flt_sng,"bls_lz")) return nco_flt_bls_lz;
+  if(!strcasecmp(nco_flt_sng,"blslz")) return nco_flt_bls_lz;
+
+  if(!strcasecmp(nco_flt_sng,"blosc snappy")) return nco_flt_bls_snp;
+  if(!strcasecmp(nco_flt_sng,"bloscsnappy")) return nco_flt_bls_snp;
+  if(!strcasecmp(nco_flt_sng,"blosc_snappy")) return nco_flt_bls_snp;
+  if(!strcasecmp(nco_flt_sng,"bls_snp")) return nco_flt_bls_snp;
+  if(!strcasecmp(nco_flt_sng,"blssnp")) return nco_flt_bls_snp;
+  if(!strcasecmp(nco_flt_sng,"bls snp")) return nco_flt_bls_snp;
+
+  if(!strcasecmp(nco_flt_sng,"blosc deflate")) return nco_flt_bls_dfl;
+  if(!strcasecmp(nco_flt_sng,"bloscdeflate")) return nco_flt_bls_dfl;
+  if(!strcasecmp(nco_flt_sng,"blosc_deflate")) return nco_flt_bls_dfl;
+  if(!strcasecmp(nco_flt_sng,"bls_dfl")) return nco_flt_bls_dfl;
+  if(!strcasecmp(nco_flt_sng,"blsdfl")) return nco_flt_bls_dfl;
+  if(!strcasecmp(nco_flt_sng,"bls dfl")) return nco_flt_bls_dfl;
+
+  if(!strcasecmp(nco_flt_sng,"blosc zstandard")) return nco_flt_bls_zst;
+  if(!strcasecmp(nco_flt_sng,"blosczstandard")) return nco_flt_bls_zst;
+  if(!strcasecmp(nco_flt_sng,"blosc_zstandard")) return nco_flt_bls_zst;
+  if(!strcasecmp(nco_flt_sng,"bls_zst")) return nco_flt_bls_zst;
+  if(!strcasecmp(nco_flt_sng,"blszst")) return nco_flt_bls_zst;
+  if(!strcasecmp(nco_flt_sng,"bls zst")) return nco_flt_bls_zst;
+  if(!strcasecmp(nco_flt_sng,"bls_zstd")) return nco_flt_bls_zst;
+  if(!strcasecmp(nco_flt_sng,"blszstd")) return nco_flt_bls_zst;
+  if(!strcasecmp(nco_flt_sng,"bls zstd")) return nco_flt_bls_zst;
+  
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified filter \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_sng);
   nco_exit(EXIT_FAILURE);
   return nco_flt_nil; /* Statement should not be reached */
@@ -524,7 +573,7 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
 
   } /* !VARIABLE_EXISTS_IN_INPUT */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+  if(nco_dbg_lvl_get() >= nco_dbg_var){
     char var_nm[NC_MAX_NAME+1L];
     rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
     //(void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
@@ -571,7 +620,7 @@ nco_tst_def_out /* [fnc]  */
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     char var_nm[NC_MAX_NAME+1L];
     rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
-    //(void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
+    (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
   } /* !dbg */
 
   if(dfl_lvl != NCO_DFL_LVL_UNDEFINED){
@@ -655,12 +704,11 @@ nco_tst_def_out /* [fnc]  */
     //(void)fprintf(stdout,"DEBUG quark2: nbr=%d, idx=%d, flt_alg=%s, flt_lvl=%d\n",flt_nbr,flt_idx,nco_flt_enm2sng(nco_flt_alg[flt_idx]),nco_flt_lvl[flt_idx]);
     switch(nco_flt_alg[flt_idx]){
     case nco_flt_nil: /* If user did not select a filter then exit */
-      //continue; /* Continue to next iteration if filter is unused */
       break;
     case nco_flt_dfl: /* DEFLATE */
       (void)nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,nco_flt_lvl[flt_idx]);
       break;
-    case nco_flt_bzp: /* Bzip2 */
+    case nco_flt_bz2: /* Bzip2 */
 # if CCR_HAS_BZIP2
       if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_bzip2(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_BZIP2 */
@@ -706,12 +754,16 @@ nco_tst_def_out /* [fnc]  */
     case nco_flt_dgr: /* DigitRound */
       cdc_has_flt=False;
       if(nco_flt_lvl[flt_idx] <= 0) break;
-    default: nco_dfl_case_flt_err(); break;
+    default:
+      nco_dfl_case_flt_err();
+      break;
     } /* !nco_flt_alg */
   } /* !flt_idx */
   
+  (void)fprintf(stdout,"%s: DEBUG %s quark8\n",nco_prg_nm_get(),fnc_nm);
+
   if(!cdc_has_flt){
-    (void)fprintf(stdout,"%s: ERROR %s reports CCR library does not define API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and installed in the CCR when this NCO was built/installed. If the filter is newer, you might try updating the installed CCR then updating the installed NCO. Otherwise, re-try this command and specify an already-installed filter from this list: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(nco_flt_alg[flt_idx]),cdc_lst);
+    (void)fprintf(stdout,"%s: ERROR %s reports neither netCDF nor CCR library appears to define an API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and installed in netCDF nor in CCR. If the filter is newer, you might try updating the installed CCR then updating the installed NCO. Otherwise, re-try this command and specify only filters included in this list of available filters: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(nco_flt_alg[flt_idx]),cdc_lst);
     nco_exit(EXIT_FAILURE);
   } /* !cdc_has_flt */
     

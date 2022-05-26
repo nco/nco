@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
 
+	* Implement nco_inq_filter_avail() and stubs for pre-4.9.0
+
 	* Print info for multiple filters per variable separated by pipes
 
 	* Remove extra quotes form multi-word format names in _Format attribute
