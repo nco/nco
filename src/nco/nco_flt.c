@@ -20,19 +20,19 @@
 
 /* Filter variables are file scope for now, could shift to global scope later if necessary */
 static nco_flt_typ_enm nco_flt_glb_lsl_alg=nco_flt_dfl; /* [enm] Lossless compression algorithm */
-static int nco_flt_glb_lsl_lvl=NC_MIN_INT; /* [nbr] Lossless compression level */
 static nco_flt_typ_enm nco_flt_glb_lsy_alg=nco_flt_nil; /* [enm] Lossy compression algorithm */
+static int nco_flt_glb_lsl_lvl=NC_MIN_INT; /* [nbr] Lossless compression level */
 static int nco_flt_glb_lsy_lvl=NC_MIN_INT; /* [nbr] Lossy compression level */
 
 /* Manipulate private compression algorithms through public interfaces */
 nco_flt_typ_enm nco_flt_glb_lsl_alg_get(void){return nco_flt_glb_lsl_alg;} /* [enm] Lossless enum */
-nco_flt_typ_enm nco_flt_glb_lsl_lvl_get(void){return nco_flt_glb_lsl_lvl;} /* [enm] Lossless level */
 nco_flt_typ_enm nco_flt_glb_lsy_alg_get(void){return nco_flt_glb_lsy_alg;} /* [enm] Lossy enum */
-nco_flt_typ_enm nco_flt_glb_lsy_lvl_get(void){return nco_flt_glb_lsy_lvl;} /* [enm] Lossy level */
+int nco_flt_glb_lsl_lvl_get(void){return nco_flt_glb_lsl_lvl;} /* [enm] Lossless level */
+int nco_flt_glb_lsy_lvl_get(void){return nco_flt_glb_lsy_lvl;} /* [enm] Lossy level */
 void nco_flt_glb_lsl_alg_set(nco_flt_typ_enm nco_flt_lsl_alg){nco_flt_glb_lsl_alg=nco_flt_lsl_alg;} 
-void nco_flt_glb_lsl_lvl_set(nco_flt_typ_enm nco_flt_lsl_lvl){nco_flt_glb_lsl_lvl=nco_flt_lsl_lvl;} 
 void nco_flt_glb_lsy_alg_set(nco_flt_typ_enm nco_flt_lsy_alg){nco_flt_glb_lsy_alg=nco_flt_lsy_alg;} 
-void nco_flt_glb_lsy_lvl_set(nco_flt_typ_enm nco_flt_lsy_lvl){nco_flt_glb_lsy_lvl=nco_flt_lsy_lvl;} 
+void nco_flt_glb_lsl_lvl_set(int nco_flt_lsl_lvl){nco_flt_glb_lsl_lvl=nco_flt_lsl_lvl;} 
+void nco_flt_glb_lsy_lvl_set(int nco_flt_lsy_lvl){nco_flt_glb_lsy_lvl=nco_flt_lsy_lvl;} 
 
 int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */

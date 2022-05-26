@@ -59,13 +59,13 @@ extern "C" {
 
 /* Manipulate private compression algorithm parameters through public interfaces */
 nco_flt_typ_enm nco_flt_glb_lsl_alg_get(void); /* [enm] Lossless enum */
-nco_flt_typ_enm nco_flt_glb_lsl_lvl_get(void); /* [enm] Lossless level */
 nco_flt_typ_enm nco_flt_glb_lsy_alg_get(void); /* [enm] Lossy enum */
-nco_flt_typ_enm nco_flt_glb_lsy_lvl_get(void); /* [enm] Lossy level */
+int nco_flt_glb_lsl_lvl_get(void); /* [enm] Lossless level */
+int nco_flt_glb_lsy_lvl_get(void); /* [enm] Lossy level */
 void nco_flt_glb_lsl_alg_set(nco_flt_typ_enm nco_flt_lsl_alg); 
-void nco_flt_glb_lsl_lvl_set(nco_flt_typ_enm nco_flt_lsl_lvl); 
 void nco_flt_glb_lsy_alg_set(nco_flt_typ_enm nco_flt_lsy_alg); 
-void nco_flt_glb_lsy_lvl_set(nco_flt_typ_enm nco_flt_lsy_lvl); 
+void nco_flt_glb_lsl_lvl_set(int nco_flt_lsl_lvl); 
+void nco_flt_glb_lsy_lvl_set(int nco_flt_lsy_lvl); 
 
 int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
