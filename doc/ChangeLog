@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
 
-	* Allow use of netCDF defined APIs for BZIP2, ZSTANDARD
+	* Allow use of netCDF-defined APIs for BitGroom, GranularBR, BitRound
+
+	* Allow use of netCDF-defined APIs for BZIP2, ZSTANDARD, BLOSC
 
 	* Add netCDF 4.9.0 BLOSC filters to table
 
