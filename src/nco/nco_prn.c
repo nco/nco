@@ -268,6 +268,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		 https://www.unidata.ucar.edu/software/netcdf/docs/filters_8md_source.html
 		 20220526 Code now supports CCR so now have plenty of dynamic filters! */
 	      unsigned int flt_id=NC_MAX_UINT;
+	      size_t flt_idx;
 	      size_t flt_nbr;
 	      size_t prm_idx;
 	      size_t prm_nbr;
@@ -301,6 +302,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		} /* !flt_nbr */
 		/* Print _Filter for (first filter of) filtered variables
 		   20220526 Wrap code in loop over filters and separate each filter by a pipe symbol "|" */
+		//		for(flt_idx=0;flt_idx < flt_nbr;flt_idx++){
 		prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
 		rcd=nco_inq_var_filter(grp_id,var_id,NULL,NULL,prm_lst);
 		idx=att_nbr_ttl++;

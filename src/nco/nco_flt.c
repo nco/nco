@@ -74,7 +74,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossless compressor is \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_lsl_alg));
     if(prm_nbr >= 2){
       nco_flt_lsl_lvl=(int)strtol(prm_lst[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[1],"strtol",sng_cnv_rcd);
       if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossless compression level is %d\n",nco_prg_nm_get(),fnc_nm,nco_flt_lsl_lvl);
     } /* !prm_nbr */
     if(prm_nbr >= 3){
@@ -83,7 +83,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     } /* !prm_nbr */
     if(prm_nbr >= 4){
       nco_flt_lsy_lvl=(int)strtol(prm_lst[3],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[3],"strtol",sng_cnv_rcd);
       if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossy quantization parameter is %d\n",nco_prg_nm_get(),fnc_nm,nco_flt_lsy_lvl);
     } /* !prm_nbr */
   } /* !cmp_sng */
