@@ -988,7 +988,9 @@ int nc_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_
 {
   /* Purpose: Pseudo-library stub function to inquire a filter for a variable
      This particular stub routine is only called by netCDF4-enabled code
-     when built against a netCDF library too old to have the nc_inq_var_filter() function. */
+     when built against a netCDF library too old to have the nc_inq_var_filter() function.
+     NB: Deprecate NCO use of this function in favor of the newer nc_inq_var_filter_ids() 
+     and nc_inq_var_filter_info() functions */
   int rcd;
   const char fnc_nm[]="nc_inq_var_filter()";
   rcd=NC_NOERR+0*(nc_id+var_id);

@@ -268,12 +268,13 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		 https://www.unidata.ucar.edu/software/netcdf/docs/filters_8md_source.html
 		 20220526 Code now supports CCR so now have plenty of dynamic filters! */
 	      unsigned int flt_id=NC_MAX_UINT;
+	      char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */
+	      char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
 	      size_t flt_idx;
 	      size_t flt_nbr;
 	      size_t prm_idx;
 	      size_t prm_nbr;
 	      unsigned int *prm_lst=NULL;
-	      char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */
 	      /* 20200418 netCDF 4.7.4 nc_inq_var_filter() is backwards incompatible
 		 https://github.com/Unidata/netcdf-c/issues/1693
 		 As of 4.7.4, nc_inq_var_filter() called on a chunked and shuffled 
@@ -290,7 +291,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		  flt_id=0;
 		  prm_nbr=0;
 		} /* !rcd */
-	      }else{ /* !netCDF < 4.7.4 || >= 4.8.0 */
+	      }else{ /* !netCDF < 4.7.4 */
 		rcd=nco_inq_var_filter(grp_id,var_id,&flt_id,&prm_nbr,NULL);
 	      } /* !netCDF 4.7.4 */
 	      //if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
@@ -299,28 +300,37 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		if(flt_nbr > 1 && NC_LIB_VERSION < 474){
 		  nco_inq_varname(grp_id,var_id,var_nm);
 		  (void)fprintf(stdout,"%s: WARNING %s reports variable %s has %lu filters applied. The proper library functions to correctly handle multiple filters are not present in netCDF until version 4.8.0. Please recompile NCO with netCDF 4.8.0 or later to correctly interrogate and print the information about multiple filters associated with a variable.\n",nco_prg_nm_get(),fnc_nm,var_nm,(unsigned long)flt_nbr);
+		  flt_nbr=1;
 		} /* !flt_nbr */
+		unsigned int *flt_lst; /* [nbr] Filter IDs */
+		flt_lst=(unsigned int *)nco_malloc(flt_nbr*sizeof(int));
+		rcd=nco_inq_var_filter_ids(grp_id,var_id,(size_t *)NULL,flt_lst);
 		/* Print _Filter for (first filter of) filtered variables
 		   20220526 Wrap code in loop over filters and separate each filter by a pipe symbol "|" */
-		//		for(flt_idx=0;flt_idx < flt_nbr;flt_idx++){
-		prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
-		rcd=nco_inq_var_filter(grp_id,var_id,NULL,NULL,prm_lst);
 		idx=att_nbr_ttl++;
 		att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 		att[idx].nm=(char *)strdup("_Filter");
 		att[idx].type=NC_CHAR;
 		val_hdn_sng=(char *)nco_malloc(100L*sizeof(char));
-		sprintf(val_hdn_sng,"%u,",flt_id);
-		for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
-		  //if(flt_id == 37373 && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Filter parameter #%lu of %lu = %u\n",prm_idx,prm_nbr,prm_lst[prm_idx]);
-		  (void)sprintf(sng_foo,"%u%s",prm_lst[prm_idx],(prm_idx == prm_nbr-1) ? "" : ",");
+		for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
+		  rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],&prm_nbr,NULL);
+		  prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
+		  rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],NULL,prm_lst);
+		  (void)sprintf(sng_foo,"%u,",flt_lst[flt_idx]);
 		  strcat(val_hdn_sng,sng_foo);
-		} /* !prm_idx */
+		  for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
+		    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"Filter index %lu, ID = %u: parameter #%lu of %lu = %u\n",flt_idx,flt_lst[flt_idx],prm_idx,prm_nbr,prm_lst[prm_idx]);
+		    (void)sprintf(sng_foo,"%u%s",prm_lst[prm_idx],(prm_idx == prm_nbr-1) ? "" : ",");
+		    strcat(val_hdn_sng,sng_foo);
+		  } /* !prm_idx */
+		  if(flt_idx < flt_nbr-1) strcat(val_hdn_sng,spr_sng);
+		  if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst);
+		} /* !flt_idx */
 		att_sz=att[idx].sz=strlen(val_hdn_sng);
 		att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
 		strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
 		if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
-		if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst);
+		if(flt_lst) flt_lst=(unsigned int *)nco_free(flt_lst);  
 	      } /* !flt_id */
 	    } /* srg_typ != NC_CHUNKED */
 	  } /* !xml */

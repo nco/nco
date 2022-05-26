@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
 
+	* Print multiple info for multiple filters per variable separated by pipes
+
 	* Remove extra quotes form multi-word format names in _Format attribute
 
 2022-05-25  Charlie Zender  <zender@uci.edu>
