@@ -1,10 +1,12 @@
-2022-05-26  Charlie Zender  <zender@uci.edu>
+2022-05-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
 
 	* Allow use of netCDF-defined APIs for BitGroom, GranularBR, BitRound
+
+2022-05-26  Charlie Zender  <zender@uci.edu>
 
 	* Allow use of netCDF-defined APIs for BZIP2, ZSTANDARD, BLOSC
 

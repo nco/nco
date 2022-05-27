@@ -39,6 +39,20 @@
 # include <ccr_meta.h> /* CCR_VERSION, CCR_HAS_BITGROOM, ... */
 #endif /* !ENABLE_CCR */
 
+/* Quantization tokens introduced in netCDF 4.9.0 ~202206 */
+#ifndef NC_NOQUANTIZE
+# define NC_NOQUANTIZE 0 /**< No quantization in use. */    
+#endif
+#ifndef NC_QUANTIZE_BITGROOM
+# define NC_QUANTIZE_BITGROOM 1 /**< Use BitGroom quantization. */
+#endif
+#ifndef NC_QUANTIZE_GRANULARBR
+# define NC_QUANTIZE_GRANULARBR 2 /**< Use Granular BitRound quantization. */
+#endif
+#ifndef NC_QUANTIZE_BITROUND
+# define NC_QUANTIZE_BITROUND 3 /**< Use BitRound quantization. */
+#endif
+
 /* Filters types that NCO knows internally: 
    Convert string to filter enum in nco_flt_typ_set() */
 typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */

@@ -270,11 +270,11 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      unsigned int flt_id=NC_MAX_UINT;
 	      char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */
 	      char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
-	      size_t flt_idx;
-	      size_t flt_nbr;
-	      size_t prm_idx;
-	      size_t prm_nbr;
-	      unsigned int *prm_lst=NULL;
+	      size_t flt_idx; /* [idx] Filter index */
+	      size_t flt_nbr; /* [nbr] Filter number */
+	      size_t prm_idx; /* [idx] Parameter index */
+	      size_t prm_nbr; /* [nbr] Parameter number */
+	      unsigned int *prm_lst=NULL; /* [] Parameter array */
 	      /* 20200418 netCDF 4.7.4 nc_inq_var_filter() is backwards incompatible
 		 https://github.com/Unidata/netcdf-c/issues/1693
 		 As of 4.7.4, nc_inq_var_filter() called on a chunked and shuffled 
@@ -302,8 +302,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		  (void)fprintf(stdout,"%s: WARNING %s reports variable %s has %lu filters applied. The proper library functions to correctly handle multiple filters are not present in netCDF until version 4.8.0. Please recompile NCO with netCDF 4.8.0 or later to correctly interrogate and print the information about multiple filters associated with a variable.\n",nco_prg_nm_get(),fnc_nm,var_nm,(unsigned long)flt_nbr);
 		  flt_nbr=1;
 		} /* !flt_nbr */
-		unsigned int *flt_lst; /* [nbr] Filter IDs */
-		flt_lst=(unsigned int *)nco_malloc(flt_nbr*sizeof(int));
+		unsigned int *flt_lst=NULL; /* [nbr] Filter IDs */
+		flt_lst=(unsigned int *)nco_malloc(flt_nbr*sizeof(unsigned int));
 		rcd=nco_inq_var_filter_ids(grp_id,var_id,(size_t *)NULL,flt_lst);
 		/* Print _Filter values for all filters of filtered variables
 		   20220526 Wrap code in loop over filters and separate each filter by a pipe symbol "|" */

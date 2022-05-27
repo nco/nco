@@ -561,6 +561,33 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
     /* fxm: Generalize to inquire about all compression options */
     rcd=nco_inq_var_deflate(nc_in_id,var_in_id_cpy,&shuffle,&deflate,&dfl_lvl_in);
 
+    char *flt_sng=NULL;
+    char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */
+    char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
+    size_t flt_idx; /* [idx] Filter index */
+    size_t flt_nbr; /* [nbr] Filter number */
+    size_t prm_idx; /* [idx] Parameter index */
+    size_t prm_nbr; /* [nbr] Parameter number */
+    unsigned int *prm_lst=NULL;
+    unsigned int *flt_lst=NULL; /* [nbr] Filter IDs */
+    rcd=nco_inq_var_filter_ids(nc_in_id,var_in_id_cpy,&flt_nbr,NULL);
+    flt_lst=(unsigned int *)nco_malloc(flt_nbr*sizeof(unsigned int));
+    rcd=nco_inq_var_filter_ids(nc_in_id,var_in_id_cpy,(size_t *)NULL,flt_lst);
+    flt_sng=(char *)nco_malloc(100L*sizeof(char));
+    for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
+      rcd=nco_inq_var_filter_info(nc_in_id,var_in_id_cpy,flt_lst[flt_idx],&prm_nbr,NULL);
+      prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
+      rcd=nco_inq_var_filter_info(nc_in_id,var_in_id_cpy,flt_lst[flt_idx],NULL,prm_lst);
+      (void)sprintf(sng_foo,"%u,",flt_lst[flt_idx]);
+      strcat(flt_sng,sng_foo);
+      for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
+	strcat(flt_sng,sng_foo);
+      } /* !prm_idx */
+      if(flt_idx < flt_nbr-1) strcat(flt_sng,spr_sng);
+      if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst);
+    } /* !flt_idx */
+    if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
+    
     /* Copy original filters if user did not explicity set dfl_lvl for output */ 
     if((deflate || shuffle) && dfl_lvl == NCO_DFL_LVL_UNDEFINED){
       /* Before netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
@@ -643,24 +670,42 @@ nco_tst_def_out /* [fnc]  */
   cdc_lst[0]='\0';
   strcat(cdc_lst,"DEFLATE");
   /* Tokens like CCR_HAS_BITGROOM are defined by CCR in ccr_meta.h */
-# if CCR_HAS_BZIP2
+# if CCR_HAS_BZIP2 || NC_LIB_VER >= 490
   strcat(cdc_lst,", Bzip2");
 # endif /* !CCR_HAS_BZIP2 */
 # if CCR_HAS_LZ4
   strcat(cdc_lst,", LZ4");
 # endif /* !CCR_HAS_LZ4 */
-# if CCR_HAS_BITGROOM
+# if CCR_HAS_BITGROOM || NC_LIB_VER >= 490 
   strcat(cdc_lst,", BitGroom");
 # endif /* !CCR_HAS_BITGROOM */
-# if CCR_HAS_BITROUND
+# if CCR_HAS_BITROUND || NC_LIB_VER >= 490 
   strcat(cdc_lst,", BitRound");
 # endif /* !CCR_HAS_BITROUND */
-# if CCR_HAS_GRANULARBR
+# if CCR_HAS_GRANULARBR || NC_LIB_VER >= 490
   strcat(cdc_lst,", GranularBR");
 # endif /* !CCR_HAS_GRANULARBR */
-# if CCR_HAS_ZSTD
+# if CCR_HAS_ZSTD || NC_LIB_VER >= 490
   strcat(cdc_lst,", Zstd");
 # endif /* !CCR_HAS_ZSTD */
+# if CCR_HAS_BLOSC_LZ || NC_LIB_VER >= 490
+  strcat(cdc_lst,", BLOSC_LZ");
+# endif /* !CCR_HAS_BLOSC_LZ */
+# if CCR_HAS_BLOSC_LZ4 || NC_LIB_VER >= 490
+  strcat(cdc_lst,", BLOSC LZ4");
+# endif /* !CCR_HAS_BLOSC_LZ4 */
+# if CCR_HAS_BLOSC_LZ4_HC || NC_LIB_VER >= 490
+  strcat(cdc_lst,", BLOSC LZ4 HC");
+# endif /* !CCR_HAS_BLOSC_LZ4_HC */
+# if CCR_HAS_SNAPPY || NC_LIB_VER >= 490
+  strcat(cdc_lst,", Snappy");
+# endif /* !CCR_HAS_SNAPPY */
+# if CCR_HAS_BLOSC_DEFLATE || NC_LIB_VER >= 490
+  strcat(cdc_lst,", BLOSC DEFLATE");
+# endif /* !CCR_HAS_BLOSC_DEFLATE */
+# if CCR_HAS_BLOSC_ZSTANDARD || NC_LIB_VER >= 490
+  strcat(cdc_lst,", BLOSC Zstandard");
+# endif /* !CCR_HAS_BLOSC_ZSTANDARD */
   //(void)fprintf(stdout,"DEBUG quark: nco_flt_alg=%d, dfl_lvl=%d\n",(int)nco_flt_alg,dfl_lvl);
 
   int nco_flt_lsl_lvl; /* [nbr] Lossless compression level */
@@ -705,55 +750,70 @@ nco_tst_def_out /* [fnc]  */
     switch(nco_flt_alg[flt_idx]){
     case nco_flt_nil: /* If user did not select a filter then exit */
       break;
+
     case nco_flt_dfl: /* DEFLATE */
-      (void)nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,nco_flt_lvl[flt_idx]);
+      rcd+=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,nco_flt_lvl[flt_idx]);
       break;
+
     case nco_flt_bz2: /* Bzip2 */
 # if CCR_HAS_BZIP2 || NC_LIB_VER >= 490 
-      if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_bzip2(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
+      if(nco_flt_lvl[flt_idx] > 0) rcd+=nc_def_var_bzip2(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_BZIP2 || NC_LIB_VER >= 490 */
       cdc_has_flt=False;
 # endif /* !CCR_HAS_BZIP2 || NC_LIB_VER >= 490 */
       break;
+
     case nco_flt_lz4: /* LZ4 */ 
 # if CCR_HAS_LZ4
-      if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_lz4(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
+      if(nco_flt_lvl[flt_idx] > 0) rcd+=nc_def_var_lz4(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_LZ4 */
       cdc_has_flt=False;
 # endif /* !CCR_HAS_LZ4 */
       break;
+
     case nco_flt_bgr: /* BitGroom */
-# if CCR_HAS_BITGROOM
-      if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_bitgroom(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
+# if NC_LIB_VER >= 490 
+      if(nco_flt_lvl[flt_idx] > 0) rcd+=nc_def_var_quantize(nc_out_id,var_out_id,NC_QUANTIZE_BITGROOM,nco_flt_lvl[flt_idx]);
+# elif CCR_HAS_BITGROOM
+      if(nco_flt_lvl[flt_idx] > 0) rcd+=nc_def_var_bitgroom(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_BITGROOM */
       cdc_has_flt=False;
 # endif /* !CCR_HAS_BITGROOM */
       break;
+
     case nco_flt_btr: /* BitRound */
-# if CCR_HAS_BITROUND
-      if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_bitround(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
+# if NC_LIB_VER >= 490 
+      if(nco_flt_lvl[flt_idx] > 0) rcd+=nc_def_var_quantize(nc_out_id,var_out_id,NC_QUANTIZE_BITROUND,nco_flt_lvl[flt_idx]);
+# elif CCR_HAS_BITROUND
+      if(nco_flt_lvl[flt_idx] > 0) rcd+=nc_def_var_bitround(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_BITROUND */
       cdc_has_flt=False;
 # endif /* !CCR_HAS_BITROUND */
       break;
+
     case nco_flt_gbr: /* Granular BitRound */
-# if CCR_HAS_GRANULARBR
-      if(nco_flt_lvl[flt_idx] > 0) (void)nc_def_var_granularbr(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
+# if NC_LIB_VER >= 490 
+      if(nco_flt_lvl[flt_idx] > 0) rcd+=nc_def_var_quantize(nc_out_id,var_out_id,NC_QUANTIZE_GRANULARBR,nco_flt_lvl[flt_idx]);
+# elif CCR_HAS_GRANULARBR
+      if(nco_flt_lvl[flt_idx] > 0) rcd+=nc_def_var_granularbr(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
 # else /* !CCR_HAS_GRANULARBR */
       cdc_has_flt=False;
 # endif /* !CCR_HAS_GRANULARBR */
       break;
+
     case nco_flt_zst: /* Zstandard */
 # if CCR_HAS_ZSTD || NC_LIB_VER >= 490 
       /* NB: Zstandard accepts negative compression levels */
-      (void)nc_def_var_zstandard(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
-# else /* !CCR_HAS_ZSTD || NC_LIB_VER >= 490 */
+      rcd+=nc_def_var_zstandard(nc_out_id,var_out_id,nco_flt_lvl[flt_idx]);
+# else /* !NC_LIB_VER >= 490 */
       cdc_has_flt=False;
 # endif /* !CCR_HAS_ZSTD || NC_LIB_VER >= 490  */
       break;
+
     case nco_flt_dgr: /* DigitRound */
       cdc_has_flt=False;
       if(nco_flt_lvl[flt_idx] <= 0) break;
+
     default:
       nco_dfl_case_flt_err();
       break;
