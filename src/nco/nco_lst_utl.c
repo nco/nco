@@ -450,12 +450,11 @@ nco_lst_prs_sgl_2D /* [fnc] Create list of strings from given string and delimit
  const char * const dlm_sng, /* I [sng] Delimiter string */
  int * const nbr_lst) /* O [nbr] Number of elements in list */
 {
-  /* Similar to nco_lst_prs_2D() except for following            */
-  /* Only first char of dlm_sng is used and                      */
-  /* empty substrings are ignored and NOT returned as nulls      */
-  /* eg with dlm_sng=' ' and sng_in=" one two  three    five   " */
-  /* the following is returned "one"/"two"/"three"/"five"        */
-              
+  /* Similar to nco_lst_prs_2D() except for following:
+     Only first char of dlm_sng is used and
+     empty substrings are ignored and NOT returned as nulls
+     e.g., with dlm_sng=' ' and sng_in=" one two  three    five   "
+     the following is returned "one"/"two"/"three"/"five" */
                                     
   int sng_len;
   int nbr_sng;

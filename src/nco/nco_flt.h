@@ -102,6 +102,11 @@ int nc_def_var_blosc(int ncid, int varid, unsigned subcompressor, unsigned level
 int nc_inq_var_blosc(int ncid, int varid, int *hasfilterp, unsigned *subcompressorp, unsigned *levelp, unsigned *blocksizep, unsigned *addshufflep);
 #endif /* !CCR_HAS_BLOSC, !490, !4.9.0 */
 
+void
+nco_dfl_case_flt_enm_err /* [fnc] Print error and exit for illegal switch(nco_flt_enm) case */
+(nco_flt_typ_enm nco_flt_enm, /* [enm] Unrecognized enum */
+ char *fnc_err); /* [sng] Function where error occurred */
+
 int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 (char * const cmp_sng, /* I [sng] Compression specification */

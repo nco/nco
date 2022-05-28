@@ -734,7 +734,7 @@ main(int argc,char **argv)
       } /* !flt */
       if(!strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec")){
 	//	nco_flt_glb=nco_flt_sng2enm(optarg);
-	//(void)fprintf(stdout,"%s: INFO %s reports user-specified filter string translates to CCR string \"%s\".\n",nco_prg_nm,nco_prg_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_glb_get()));
+	//(void)fprintf(stdout,"%s: INFO %s reports user-specified filter string translates to NCO filter string \"%s\".\n",nco_prg_nm,nco_prg_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_glb_get()));
 	//nco_exit(EXIT_SUCCESS);
 	cmp_sng=(char *)strdup(optarg);
       } /* !ccr */

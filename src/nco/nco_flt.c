@@ -24,6 +24,12 @@ static nco_flt_typ_enm nco_flt_glb_lsy_alg=nco_flt_nil; /* [enm] Lossy compressi
 static int nco_flt_glb_lsl_lvl=NC_MIN_INT; /* [nbr] Lossless compression level */
 static int nco_flt_glb_lsy_lvl=NC_MIN_INT; /* [nbr] Lossy compression level */
 
+static int nco_flt_glb_nbr=0; /* [nbr] Number of codecs specified by user */
+static nco_flt_typ_enm *nco_flt_glb_alg=NULL; /* [nbr] List of filters specified by user */
+static int *nco_flt_glb_lvl=NULL; /* [nbr] List of compression levels for each filter */
+static int *nco_flt_glb_prm_nbr=NULL; /* [nbr] List of parameter numbers for each filter */
+static int **nco_flt_glb_prm=NULL; /* [nbr] List of lists of parameters for each filter */
+
 /* Manipulate private compression algorithms through public interfaces */
 nco_flt_typ_enm nco_flt_glb_lsl_alg_get(void){return nco_flt_glb_lsl_alg;} /* [enm] Lossless enum */
 nco_flt_typ_enm nco_flt_glb_lsy_alg_get(void){return nco_flt_glb_lsy_alg;} /* [enm] Lossy enum */
@@ -34,6 +40,18 @@ void nco_flt_glb_lsy_alg_set(nco_flt_typ_enm nco_flt_lsy_alg){nco_flt_glb_lsy_al
 void nco_flt_glb_lsl_lvl_set(int nco_flt_lsl_lvl){nco_flt_glb_lsl_lvl=nco_flt_lsl_lvl;} 
 void nco_flt_glb_lsy_lvl_set(int nco_flt_lsy_lvl){nco_flt_glb_lsy_lvl=nco_flt_lsy_lvl;} 
 
+void
+nco_dfl_case_flt_enm_err /* [fnc] Print error and exit for illegal switch(nco_flt_enm) case */
+(nco_flt_typ_enm nco_flt_enm, /* [enm] Unrecognized enum */
+ char *fnc_err) /* [sng] Function where error occurred */
+{
+  /* Purpose: Print error and exit when switch statement reaches illegal default case
+     Routine reduces bloat because many switch() statements invoke this functionality */
+  const char fnc_nm[]="nco_dfl_case_flt_enm_err()";
+  (void)fprintf(stdout,"%s: ERROR nco_flt_enm=%d is unrecognized in switch(nco_flt_enm) statement in function %s. This specific error handler ensures all switch(nco_flt_enm) statements are fully enumerated. Exiting...\n",fnc_nm,(int)nco_flt_enm,fnc_err);
+  nco_err_exit(0,fnc_nm);
+} /* !nco_dfl_case_flt_enm_err() */
+
 int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 (char * const cmp_sng, /* I [sng] Compression specification */
@@ -42,64 +60,86 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   /* Purpose: Parse and set global lossy/lossless compression settings
 
      Algorithm: 
-     NCO accepts compression strings as comma-separated lists of up to four values
-     First value is string identifying lossless compression algorithm, e.g., "Zstd","Deflate"
-     Second value, if present, is integer compression level for lossless algorithm 
-     Third value, if present, is string identifying lossy algorithm, e.g., "GranularBR"
-     Fourth value, if present, is integer compression level for lossy algorithm
+     NCO accepts compression strings as comma-separated lists of couplets
+     Couplet first value identifies compression algorithm, e.g., "Zstd","Deflate","BitGroom"
+     Couplet second value, if present, is integer compression level
+     Specify codecs in the desired order of their application
 
      Test:
-     ncks --dbg=2 --cdc=zstd,1,gbr,3 in.nc out.nc */
+     ncks --dbg=2 --cdc=gbr,3,zstd,1 in.nc out.nc */
 
   const char fnc_nm[]="nco_cmp_prs()";
 
   char **prm_lst; /* [sng] List of user-supplied filter parameters as strings */
+  char **flt_lst; /* [sng] List of user-supplied filters as pipe-separated lists of comma-separated strings */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  nco_flt_typ_enm nco_flt_lsl_alg=nco_flt_nil; /* [enm] Lossless compression algorithm */
-  nco_flt_typ_enm nco_flt_lsy_alg=nco_flt_nil; /* [enm] Lossy compression algorithm */
-  int nco_flt_lsl_lvl=int_CEWI; /* [nbr] Lossless compression level */
-  int nco_flt_lsy_lvl=int_CEWI; /* [nbr] Lossy compression level */
   int rcd=NCO_NOERR; /* [rcd] Return code */
 
-  size_t prm_nbr=0L; /* [nbr] Number of parameters in user-supplied list */
+  int prm_idx; /* [idx] Parameter index */
+  size_t flt_idx; /* [idx] Filter index */
+  size_t flt_nbr; /* [nbr] Filter number */
+  size_t prm_nbr=0L; /* [nbr] Number of parameters */
 
   if(cmp_sng){
 
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports requested filter string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
 
-    prm_lst=nco_lst_prs_1D(cmp_sng,",",(int *)&prm_nbr);
+    flt_lst=nco_lst_prs_1D(cmp_sng,"|",(int *)&flt_nbr);
 
-    nco_flt_lsl_alg=nco_flt_sng2enm(prm_lst[0]);
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossless compressor is \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_lsl_alg));
-    if(prm_nbr >= 2){
-      nco_flt_lsl_lvl=(int)strtol(prm_lst[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[1],"strtol",sng_cnv_rcd);
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossless compression level is %d\n",nco_prg_nm_get(),fnc_nm,nco_flt_lsl_lvl);
-    } /* !prm_nbr */
-    if(prm_nbr >= 3){
-      nco_flt_lsy_alg=nco_flt_sng2enm(prm_lst[2]);
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossy quantization algorithm is \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_lsy_alg));
-    } /* !prm_nbr */
-    if(prm_nbr >= 4){
-      nco_flt_lsy_lvl=(int)strtol(prm_lst[3],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[3],"strtol",sng_cnv_rcd);
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested lossy quantization parameter is %d\n",nco_prg_nm_get(),fnc_nm,nco_flt_lsy_lvl);
-    } /* !prm_nbr */
+    nco_flt_glb_nbr=flt_nbr;
+    nco_flt_glb_alg=(nco_flt_typ_enm *)nco_malloc(nco_flt_glb_nbr*sizeof(nco_flt_typ_enm));
+    nco_flt_glb_lvl=(int *)nco_malloc(nco_flt_glb_nbr*sizeof(int));
+    nco_flt_glb_prm_nbr=(int *)nco_malloc(nco_flt_glb_nbr*sizeof(int));
+    nco_flt_glb_prm=(int **)nco_malloc(nco_flt_glb_nbr*sizeof(int *));
+      
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s reports codec string contains flt_nbr=%d codecs separated by \"|\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_glb_nbr);
+
+    for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
+      
+      prm_lst=nco_lst_prs_1D(flt_lst[flt_idx],",",(int *)&prm_nbr);
+
+      /* First element in list is always name/ID */
+      nco_flt_glb_alg[flt_idx]=nco_flt_sng2enm(prm_lst[0]);
+
+      /* Any remaining elements are filter parameters in the HDF5 sense */
+      nco_flt_glb_prm_nbr[flt_idx]=prm_nbr-1;
+      nco_flt_glb_prm[flt_idx]= (nco_flt_glb_prm_nbr[flt_idx] > 0) ? (int *)nco_malloc(nco_flt_glb_prm_nbr[flt_idx]*sizeof(int)) : NULL;
+
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested codec is \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(nco_flt_glb_alg[flt_idx]));
+
+      for(prm_idx=1;prm_idx<prm_nbr;prm_idx++){
+	(void)fprintf(stdout,"%s: DEBUG flt_idx=%d prm_nbr=%d prm_idx=%d prm_val=%s\n",nco_prg_nm_get(),(int)flt_idx,(int)prm_nbr,(int)prm_idx,prm_lst[prm_idx]);
+	nco_flt_glb_prm[flt_idx][prm_idx-1]=(int)strtol(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtol",sng_cnv_rcd);
+      } /* !prm_idx */
+    } /* !flt_idx */
   } /* !cmp_sng */
 
   /* Allow use of traditional --dfl_lvl to set DEFLATE filter */
-  if(nco_flt_lsl_alg == nco_flt_nil && dfl_lvl != NCO_DFL_LVL_UNDEFINED) nco_flt_lsl_alg=nco_flt_dfl;
+  if(nco_flt_glb_nbr == 0 && dfl_lvl != NCO_DFL_LVL_UNDEFINED){
+    nco_flt_glb_nbr=1;
+    nco_flt_glb_alg=(nco_flt_typ_enm *)nco_malloc(nco_flt_glb_nbr*sizeof(nco_flt_typ_enm));
+    nco_flt_glb_lvl=(int *)nco_malloc(nco_flt_glb_nbr*sizeof(int));
+    nco_flt_glb_prm_nbr=(int *)nco_malloc(nco_flt_glb_nbr*sizeof(int));
+    nco_flt_glb_prm=(int **)nco_malloc(nco_flt_glb_nbr*sizeof(int *));
 
+    nco_flt_glb_alg[0]=nco_flt_dfl;
+    nco_flt_glb_prm_nbr[0]=1;
+    nco_flt_glb_prm[0]=(int *)nco_malloc(nco_flt_glb_prm_nbr[0]*sizeof(int));
+    nco_flt_glb_prm[0][0]=dfl_lvl;
+    nco_flt_glb_lvl[0]=nco_flt_glb_prm[0][0];
+  } /* !flt_nbr, !dfl_lvl */
+    
   /* Allow user to mix --dfl_lvl and --cdc
      For example, --dfl_lvl=3 --cdc=zst means use Zstandard with compression level 3 */
-  if(nco_flt_lsl_lvl == int_CEWI && dfl_lvl != NCO_DFL_LVL_UNDEFINED) nco_flt_lsl_lvl=dfl_lvl;
+  if(nco_flt_glb_nbr == 1 && nco_flt_glb_prm_nbr[0] == 0 && dfl_lvl != NCO_DFL_LVL_UNDEFINED){
+    nco_flt_glb_prm_nbr[0]=1;
+    nco_flt_glb_prm[0]=(int *)nco_malloc(nco_flt_glb_prm_nbr[0]*sizeof(int));
+    nco_flt_glb_prm[0][0]=dfl_lvl;
+    nco_flt_glb_lvl[0]=nco_flt_glb_prm[0][0];
+  } /* !flt_nbr, !dfl_lvl */
   
-  nco_flt_glb_lsl_alg_set(nco_flt_lsl_alg);
-  nco_flt_glb_lsl_lvl_set(nco_flt_lsl_lvl);
-  nco_flt_glb_lsy_alg_set(nco_flt_lsy_alg);
-  nco_flt_glb_lsy_lvl_set(nco_flt_lsy_lvl);
-
   return rcd;
   
 } /* !nco_cmp_prs() */
@@ -274,7 +314,8 @@ nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
   case nco_flt_bls_snp: return "BLOSC Snappy"; break;
   case nco_flt_bls_dfl: return "BLOSC DEFLATE"; break;
   case nco_flt_bls_zst: return "BLOSC Zstandard"; break;
-  default: nco_dfl_case_generic_err(); break;
+  default:
+    nco_dfl_case_flt_enm_err(nco_flt_enm,"nco_flt_enm2sng()"); break;
   } /* !nco_flt_enm */
 
   return (char *)NULL;
@@ -297,7 +338,9 @@ nco_flt_id2sng /* [fnc] Convert compression filter ID to string */
   case 37373: return "BitRound"; break;
   case 32015 : return "Zstandard"; break;
   case 32001 : return "BLOSC"; break;
-  default: nco_dfl_case_generic_err(); break;
+  default:
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG default case is in nco_flt_id2sng()\n",nco_prg_nm_get());
+    nco_dfl_case_generic_err(); break;
   } /* !nco_flt_id */
 
   return (char *)NULL;
@@ -411,7 +454,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
      Usage: 
      Until 20220501 the NCO code to define per-variable filters was scattered in ~four places 
      Introduction of new filters in netCDF 4.9.0 makes this untenable 
-     Here were functionalize the invocation of original netCDF4 filters DEFLATE and Shuffle
+     Routine functionalizes invocation of original netCDF4 filters DEFLATE and Shuffle
 
      Algorithm:
      If var_nm_in is supplied (i.e., is not NULL) then determine var_in_id from nco_inq_varid_flg()
@@ -431,6 +474,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
   int shuffle; /* [flg] Turn-on shuffle filter */
   int var_in_id_cpy=-1; /* [id] Writable copy of input variable ID */
 
+  /* Use copy so var_in_id can remain const in prototype */
   var_in_id_cpy=var_in_id;
 
   /* Write (or overwrite) var_in_id when var_nm_in is supplied */
@@ -521,7 +565,7 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
      Usage: 
      Until 20220501 the NCO code to define per-variable filters was scattered in ~four places 
      Introduction of new filters in netCDF 4.9.0 makes this untenable 
-     Here were functionalize the invocation of original netCDF4 filters DEFLATE and Shuffle
+     Routine functionalizes invocation of original netCDF4 filters DEFLATE and Shuffle
 
      Algorithm:
      If var_nm_in is supplied (i.e., is not NULL) then determine var_in_id from nco_inq_varid_flg()
@@ -529,10 +573,11 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
      If supplied dfl_lvl is < 0 (i.e., unset) then copy input compression settings (if available)
      If supplied dfl_lvl is >= 0 (i.e., set) then set compression to dfl_lvl */
 
-  //const char fnc_nm[]="nco_tst_def_wrp()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_tst_def_wrp()"; /* [sng] Function name */
 
   nco_bool VARIABLE_EXISTS_IN_INPUT=False; /* [flg] Variable exists in input file */
   nco_bool COPY_COMPRESSION_FROM_INPUT=False; /* [flg] Copy compression setting from input to output */
+  char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   /* Deflation */
@@ -542,6 +587,7 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
   int shuffle; /* [flg] Turn-on shuffle filter */
   int var_in_id_cpy=-1; /* [id] Writable copy of input variable ID */
 
+  /* Use copies so var_in_id, dfl_lvl can remain const in prototype */
   var_in_id_cpy=var_in_id;
   dfl_lvl_cpy=dfl_lvl;
 
@@ -564,6 +610,8 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
     char *flt_sng=NULL;
     char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */
     char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
+    char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
+
     size_t flt_idx; /* [idx] Filter index */
     size_t flt_nbr; /* [nbr] Filter number */
     size_t prm_idx; /* [idx] Parameter index */
@@ -586,6 +634,12 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
       if(flt_idx < flt_nbr-1) strcat(flt_sng,spr_sng);
       if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst);
     } /* !flt_idx */
+    
+    if(nco_dbg_lvl_get() >= nco_dbg_fl){
+      rcd=nco_inq_varname(nc_in_id,var_in_id_cpy,var_nm);
+      (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, flt_sng = %s\n",nco_prg_nm_get(),fnc_nm,var_nm,flt_sng);
+      (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d, dfl_lvl_in = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl,dfl_lvl_in);
+    } /* !dbg */
     if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
     
     /* Copy original filters if user did not explicity set dfl_lvl for output */ 
@@ -600,10 +654,9 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
 
   } /* !VARIABLE_EXISTS_IN_INPUT */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_var){
-    char var_nm[NC_MAX_NAME+1L];
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
     rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
-    //(void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
+    (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
   } /* !dbg */
 
   /* If exotic codec option invoked, set dfl_lvl_cpy to spoof that dfl_lvl was user-modified 
@@ -823,10 +876,12 @@ nco_tst_def_out /* [fnc]  */
   (void)fprintf(stdout,"%s: DEBUG %s quark8\n",nco_prg_nm_get(),fnc_nm);
 
   if(!cdc_has_flt){
-    (void)fprintf(stdout,"%s: ERROR %s reports neither netCDF nor CCR library appears to define an API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and installed in netCDF nor in CCR. If the filter is newer, you might try updating the installed CCR then updating the installed NCO. Otherwise, re-try this command and specify only filters included in this list of available filters: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(nco_flt_alg[flt_idx]),cdc_lst);
+    (void)fprintf(stdout,"%s: ERROR %s reports neither netCDF nor CCR library appears to define an API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and/or not installed in netCDF or in CCR. If the filter is newish and is supposed to be in CCR, update the installed CCR then recompile NCO. Otherwise, re-try this command and specify only filters included in this list of available filters: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(nco_flt_alg[flt_idx]),cdc_lst);
     nco_exit(EXIT_FAILURE);
   } /* !cdc_has_flt */
     
+  (void)fprintf(stdout,"%s: DEBUG %s quark9\n",nco_prg_nm_get(),fnc_nm);
+
   return rcd;
   
 } /* !nco_tst_def_out() */
