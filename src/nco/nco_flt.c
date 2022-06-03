@@ -110,11 +110,16 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 
       for(prm_idx=1;prm_idx<prm_nbr;prm_idx++){
 	(void)fprintf(stdout,"%s: DEBUG flt_idx=%d prm_nbr=%d prm_idx=%d prm_val=%s\n",nco_prg_nm_get(),(int)flt_idx,(int)prm_nbr,(int)prm_idx,prm_lst[prm_idx]);
+	(void)fprintf(stdout,"%s: DEBUG %s pre store \n",nco_prg_nm_get(),fnc_nm);
 	nco_flt_glb_prm[flt_idx][prm_idx-1]=(int)strtol(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	(void)fprintf(stdout,"%s: DEBUG %s post store \n",nco_prg_nm_get(),fnc_nm);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtol",sng_cnv_rcd);
+	(void)fprintf(stdout,"%s: DEBUG %s post store 2\n",nco_prg_nm_get(),fnc_nm);
       } /* !prm_idx */
     } /* !flt_idx */
   } /* !cmp_sng */
+
+  (void)fprintf(stdout,"%s: DEBUG %s pre traditional --dfl_lvl \n",nco_prg_nm_get(),fnc_nm);
 
   /* Allow use of traditional --dfl_lvl to set DEFLATE filter */
   if(nco_flt_glb_nbr == 0 && dfl_lvl != NCO_DFL_LVL_UNDEFINED){
@@ -140,6 +145,8 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     nco_flt_glb_lvl[0]=nco_flt_glb_prm[0][0];
   } /* !flt_nbr, !dfl_lvl */
   
+  (void)fprintf(stdout,"%s: DEBUG exiting %s\n",nco_prg_nm_get(),fnc_nm);
+
   return rcd;
   
 } /* !nco_cmp_prs() */
@@ -618,6 +625,9 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
     size_t prm_nbr; /* [nbr] Parameter number */
     unsigned int *prm_lst=NULL;
     unsigned int *flt_lst=NULL; /* [nbr] Filter IDs */
+
+    (void)fprintf(stdout,"DEBUG quark nco_flt.c 1\n");
+
     rcd=nco_inq_var_filter_ids(nc_in_id,var_in_id_cpy,&flt_nbr,NULL);
     flt_lst=(unsigned int *)nco_malloc(flt_nbr*sizeof(unsigned int));
     rcd=nco_inq_var_filter_ids(nc_in_id,var_in_id_cpy,(size_t *)NULL,flt_lst);
@@ -642,6 +652,8 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
     } /* !dbg */
     if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
     
+    (void)fprintf(stdout,"DEBUG quark nco_flt.c 2\n");
+
     /* Copy original filters if user did not explicity set dfl_lvl for output */ 
     if((deflate || shuffle) && dfl_lvl == NCO_DFL_LVL_UNDEFINED){
       /* Before netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
