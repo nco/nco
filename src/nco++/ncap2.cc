@@ -109,7 +109,7 @@ main(int argc,char **argv)
   char **gaa_arg=NULL; /* [sng] Global attribute arguments */
   char **var_lst_in=NULL_CEWI;
   char *cmd_ln;
-  char *cmp_sng=NULL; /* [sng] Compression string */
+  char *cmp_sng=NULL; /* [sng] Compression specification */
   char *cnk_arg[NC_MAX_DIMS];
   char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
   char *cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
@@ -816,6 +816,7 @@ main(int argc,char **argv)
   prs_arg.NCAP_MPI_SORT=(thr_nbr > 1 ? true:false);
   prs_arg.FLG_CLL_MTH=(flg_cll_mth ? true:false);
   prs_arg.dfl_lvl=dfl_lvl;  /* [enm] Deflate level */
+  prs_arg.cmp_sng=cmp_sng;  /* [sng] Compression specification */
   prs_arg.cnk_in=&cnk; /* chunking sct */
   
 #ifdef NCO_NETCDF4_AND_FILLVALUE

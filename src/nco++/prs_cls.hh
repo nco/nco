@@ -45,6 +45,7 @@ class fmc_cls;
   bool FLG_CLL_MTH;                      // if true then add @cell_methods attribute to var for an agg_cls operation
   cnk_sct *cnk_in; /* [nbr] Chunk sizes */
   int dfl_lvl; /* [enm] Deflate level */
+  char *cmp_sng; /* [sng] Compression specification */
 
   // Constructor
   prs_cls( NcapVector<dmn_sct*> &p_dmn_in_vtr, 
@@ -84,6 +85,7 @@ class fmc_cls;
      NCAP4_FILL=prs_cpy.NCAP4_FILL;
      FLG_CLL_MTH=prs_cpy.FLG_CLL_MTH;
      dfl_lvl=prs_cpy.dfl_lvl;
+     cmp_sng=prs_cpy.cmp_sng;
      cnk_in=prs_cpy.cnk_in;
    }
 
@@ -120,6 +122,7 @@ class fmc_cls;
      NCAP4_FILL=prs_cpy.NCAP4_FILL;
      FLG_CLL_MTH=prs_cpy.FLG_CLL_MTH;
      dfl_lvl=prs_cpy.dfl_lvl;      
+     cmp_sng=prs_cpy.cmp_sng;      
      cnk_in=prs_cpy.cnk_in;
      return *this;
    }

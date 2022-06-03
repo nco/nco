@@ -24,6 +24,7 @@ static nco_flt_typ_enm nco_flt_glb_lsy_alg=nco_flt_nil; /* [enm] Lossy compressi
 static int nco_flt_glb_lsl_lvl=NC_MIN_INT; /* [nbr] Lossless compression level */
 static int nco_flt_glb_lsy_lvl=NC_MIN_INT; /* [nbr] Lossy compression level */
 
+static char *nco_cmp_sng_std=NULL; /* [sng] Compression specification in NCO-standard format */
 static int nco_flt_glb_nbr=0; /* [nbr] Number of codecs specified by user */
 static nco_flt_typ_enm *nco_flt_glb_alg=NULL; /* [nbr] List of filters specified by user */
 static int *nco_flt_glb_lvl=NULL; /* [nbr] List of compression levels for each filter */
@@ -66,13 +67,14 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
      Specify codecs in the desired order of their application
 
      Test:
-     ncks --dbg=2 --cdc=gbr,3,zstd,1 in.nc out.nc */
+     ncks --dbg=2 --cdc=gbr,3|zstd,1 in.nc out.nc */
 
   const char fnc_nm[]="nco_cmp_prs()";
 
   char **prm_lst; /* [sng] List of user-supplied filter parameters as strings */
   char **flt_lst; /* [sng] List of user-supplied filters as pipe-separated lists of comma-separated strings */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+  char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
 
   int rcd=NCO_NOERR; /* [rcd] Return code */
 
@@ -85,7 +87,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
 
-    flt_lst=nco_lst_prs_1D(cmp_sng,"|",&flt_nbr);
+    flt_lst=nco_lst_prs_1D(cmp_sng,spr_sng,&flt_nbr);
 
     nco_flt_glb_nbr=flt_nbr;
     nco_flt_glb_alg=(nco_flt_typ_enm *)nco_malloc(nco_flt_glb_nbr*sizeof(nco_flt_typ_enm));
@@ -93,7 +95,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     nco_flt_glb_prm_nbr=(int *)nco_malloc(nco_flt_glb_nbr*sizeof(int));
     nco_flt_glb_prm=(int **)nco_malloc(nco_flt_glb_nbr*sizeof(int *));
       
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s reports codec string contains flt_nbr=%d codecs separated by \"|\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_glb_nbr);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s reports codec string contains flt_nbr=%d codecs separated by \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_glb_nbr,spr_sng);
 
     for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
       
@@ -112,14 +114,9 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 	(void)fprintf(stdout,"%s: DEBUG flt_idx=%d prm_nbr=%d prm_idx=%d prm_val=%s\n",nco_prg_nm_get(),flt_idx,prm_nbr,prm_idx,prm_lst[prm_idx]);
 	nco_flt_glb_prm[flt_idx][prm_idx-1]=(int)strtol(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtol",sng_cnv_rcd);
-	(void)fprintf(stdout,"%s: DEBUG %s post store \n",nco_prg_nm_get(),fnc_nm);
       } /* !prm_idx */
-      (void)fprintf(stdout,"%s: DEBUG %s after prm_idx loop \n",nco_prg_nm_get(),fnc_nm);
     } /* !flt_idx */
-    (void)fprintf(stdout,"%s: DEBUG %s after flt_idx loop \n",nco_prg_nm_get(),fnc_nm);
   } /* !cmp_sng */
-
-  (void)fprintf(stdout,"%s: DEBUG %s why doesnt macos reach this spot?\n",nco_prg_nm_get(),fnc_nm);
 
   /* Allow use of traditional --dfl_lvl to set DEFLATE filter */
   if(nco_flt_glb_nbr == 0 && dfl_lvl != NCO_DFL_LVL_UNDEFINED){
@@ -144,7 +141,29 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     nco_flt_glb_prm[0][0]=dfl_lvl;
     nco_flt_glb_lvl[0]=nco_flt_glb_prm[0][0];
   } /* !flt_nbr, !dfl_lvl */
+
+  /* Global user-specified specification has been merged with dfl_lvl 
+     Generate final global compression specification in NCO standard format */
+  char *cmp_sng_std=NULL; /* [sng] Compression specification in NCO-standard format */
+  char int_sng[100]; /* [sng] Buffer to hold printed integers */
+  cmp_sng_std=(char *)nco_malloc(100*sizeof(char)); /* [sng] Compression specification in NCO-standard format */
+  /* NUL-terminate string */
+  cmp_sng_std[0]='\0';
+  if(nco_flt_glb_nbr > 0){
+    for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
+      (void)strcat(cmp_sng_std,nco_flt_enm2sng(nco_flt_glb_alg[flt_idx]));
+      (void)strcat(cmp_sng_std,",");
+      int_sng[0]='\0';
+      for(prm_idx=0;prm_idx<nco_flt_glb_prm_nbr[flt_idx];prm_idx++){
+	(void)sprintf(int_sng,"%d%s",nco_flt_glb_prm[flt_idx][prm_idx], prm_idx < nco_flt_glb_prm_nbr[flt_idx]-1 ? "," : "");
+      } /* !prm_idx */
+      (void)strcat(cmp_sng_std,int_sng);
+      if(flt_idx < nco_flt_glb_nbr-1) (void)strcat(cmp_sng_std,spr_sng);
+    } /* !flt_idx */
+    nco_cmp_sng_std=cmp_sng_std;
+  } /* !nco_flt_glb_nbr */
   
+  (void)fprintf(stdout,"%s: DEBUG cmp_sng_std = %s\n",nco_prg_nm_get(),cmp_sng_std);
   (void)fprintf(stdout,"%s: DEBUG exiting %s\n",nco_prg_nm_get(),fnc_nm);
 
   return rcd;
@@ -585,6 +604,7 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
   nco_bool VARIABLE_EXISTS_IN_INPUT=False; /* [flg] Variable exists in input file */
   nco_bool COPY_COMPRESSION_FROM_INPUT=False; /* [flg] Copy compression setting from input to output */
   char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
+  char *flt_sng=NULL; /* [sng] Compression specification */
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   /* Deflation */
@@ -614,7 +634,6 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
     /* fxm: Generalize to inquire about all compression options */
     rcd=nco_inq_var_deflate(nc_in_id,var_in_id_cpy,&shuffle,&deflate,&dfl_lvl_in);
 
-    char *flt_sng=NULL;
     char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */
     char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
     char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
@@ -650,9 +669,6 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
       (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, flt_sng = %s\n",nco_prg_nm_get(),fnc_nm,var_nm,flt_sng);
       (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d, dfl_lvl_in = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl,dfl_lvl_in);
     } /* !dbg */
-    if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
-    
-    (void)fprintf(stdout,"DEBUG quark nco_flt.c 2\n");
 
     /* Copy original filters if user did not explicity set dfl_lvl for output */ 
     if((deflate || shuffle) && dfl_lvl == NCO_DFL_LVL_UNDEFINED){
@@ -673,14 +689,15 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
 
   /* If exotic codec option invoked, set dfl_lvl_cpy to spoof that dfl_lvl was user-modified 
      This enables the extended codec branch in nco_tst_def_out() */
-  int nco_flt_lsl_lvl; /* [nbr] Lossless compression level */
-  nco_flt_lsl_lvl=nco_flt_glb_lsl_lvl_get();
-  if(nco_flt_lsl_lvl != NC_MIN_INT) dfl_lvl_cpy=nco_flt_lsl_lvl;
   
   /* Protect against calling nco_def_var_deflate() more than once */
   if(dfl_lvl_cpy != NCO_DFL_LVL_UNDEFINED && !COPY_COMPRESSION_FROM_INPUT)
-    rcd=nco_tst_def_out(nc_out_id,var_out_id,dfl_lvl_cpy);
+    rcd=nco_tst_def_out(nc_out_id,var_out_id,dfl_lvl_cpy,flt_sng);
 
+  (void)fprintf(stdout,"DEBUG quark nco_flt.c 2\n");
+
+  if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
+    
   return rcd;
   
 } /* !nco_tst_def_wrp() */
@@ -689,7 +706,8 @@ int /* O [enm] Return code */
 nco_tst_def_out /* [fnc]  */
 (const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_out_id, /* I [id] Variable ID */
- const int dfl_lvl) /* I [enm] Deflate level [0..9] */
+ const int dfl_lvl, /* I [enm] Deflate level [0..9] */
+ char * const cmp_sng) /* I/O [sng] Compression specification */
 {
   /* Purpose: Set compression filters in newly defined variable in output file
 
@@ -708,6 +726,10 @@ nco_tst_def_out /* [fnc]  */
   /* Deflation */
   int deflate; /* [flg] Turn-on deflate filter */
   int shuffle; /* [flg] Turn-on shuffle filter */
+
+  if(cmp_sng){
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
+  } /* !cmp_sng */
 
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     char var_nm[NC_MAX_NAME+1L];

@@ -1546,7 +1546,6 @@ close_and_free:
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
-    (void)fprintf(stdout,"DEBUG quark ncks.c 1: cmp_sng=%s\n",cmp_sng);
     if(cmp_sng) cmp_sng=(char *)nco_free(cmp_sng);
     if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
     if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);

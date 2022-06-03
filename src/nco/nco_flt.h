@@ -158,7 +158,8 @@ int /* O [enm] Return code */
 nco_tst_def_out /* [fnc] Define filters based on requested  */
 (const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_out_id, /* I [id] Variable ID */
- const int dfl_lvl); /* I [enm] Deflate level [0..9] */
+ const int dfl_lvl, /* I [enm] Deflate level [0..9] */
+ char * const cmp_sng); /* I/O [sng] Compression specification */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -70,7 +70,7 @@ typedef union nod_typ_tag{ /* Nie02 nodeTypeTag */
    prs_sct is easy to confuse with yylval since both are passed to lexer
    yylval is union of all possible data types for semantic values
    prs_sct is passed into lexer by calling routine (e.g., main())
-   prs_sct elements are essentially global variables which can be modified in lexer
+   prs_sct elements are essentially global variables that can be modified in lexer
    Calling routine (e.g., main()) and parser then have access to prs_sct 
    Two elements of prs_sct, var_LHS & nco_op_typ, are more local in that
    they may change line-to-line in input script. */
@@ -84,18 +84,18 @@ typedef struct{ /* prs_sct */
   dmn_sct **dmn_in; /* [dmn] List of all  dimensions in input file */
   int nbr_dmn_in; /* [nbr] Number of  dimensions in above list */
   dmn_sct ***dmn_out; /* pointer to a list of dimensions currently in output file */
-  int *nbr_dmn_out;   /* number of dimensions in above list */
+  int *nbr_dmn_out; /* number of dimensions in above list */
   sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
   int sym_tbl_nbr; /* [nbr] Number of functions in table */
   nco_bool ntl_scn; /* [flg] Initial scan of script */
   var_sct *var_LHS; /* [var] LHS cast variable */
   var_sct ***var_lst; /* list of variables to be defined in O */
-  int *nbr_var;        /* [nbr] of variables in above list */ 
+  int *nbr_var; /* [nbr] of variables in above list */ 
   int nco_op_typ; /* [enm] Operation type */
   int dfl_lvl; /* [enm] Deflate level */
+  char *cmp_sng; /* [sng] Compression specification */
   size_t *cnk_sz; /* [nbr] Chunk sizes */
 } prs_sct;
-
   
 /*  funtion in ncap_lex.l */
 int 
@@ -287,8 +287,6 @@ typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
-
-
 
 int nco_yyparse (prs_sct *prs_arg);
 
