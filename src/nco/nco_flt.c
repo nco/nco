@@ -77,15 +77,15 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   int rcd=NCO_NOERR; /* [rcd] Return code */
 
   int prm_idx; /* [idx] Parameter index */
-  size_t flt_idx; /* [idx] Filter index */
-  size_t flt_nbr; /* [nbr] Filter number */
-  size_t prm_nbr=0L; /* [nbr] Number of parameters */
+  int flt_idx; /* [idx] Filter index */
+  int flt_nbr; /* [nbr] Filter number */
+  int prm_nbr=0L; /* [nbr] Number of parameters */
 
   if(cmp_sng){
 
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
 
-    flt_lst=nco_lst_prs_1D(cmp_sng,"|",(int *)&flt_nbr);
+    flt_lst=nco_lst_prs_1D(cmp_sng,"|",&flt_nbr);
 
     nco_flt_glb_nbr=flt_nbr;
     nco_flt_glb_alg=(nco_flt_typ_enm *)nco_malloc(nco_flt_glb_nbr*sizeof(nco_flt_typ_enm));
@@ -97,7 +97,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 
     for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
       
-      prm_lst=nco_lst_prs_1D(flt_lst[flt_idx],",",(int *)&prm_nbr);
+      prm_lst=nco_lst_prs_1D(flt_lst[flt_idx],",",&prm_nbr);
 
       /* First element in list is always name/ID */
       nco_flt_glb_alg[flt_idx]=nco_flt_sng2enm(prm_lst[0]);
@@ -109,17 +109,17 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
       if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested codec is \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(nco_flt_glb_alg[flt_idx]));
 
       for(prm_idx=1;prm_idx<prm_nbr;prm_idx++){
-	(void)fprintf(stdout,"%s: DEBUG flt_idx=%d prm_nbr=%d prm_idx=%d prm_val=%s\n",nco_prg_nm_get(),(int)flt_idx,(int)prm_nbr,(int)prm_idx,prm_lst[prm_idx]);
-	(void)fprintf(stdout,"%s: DEBUG %s pre store \n",nco_prg_nm_get(),fnc_nm);
+	(void)fprintf(stdout,"%s: DEBUG flt_idx=%d prm_nbr=%d prm_idx=%d prm_val=%s\n",nco_prg_nm_get(),flt_idx,prm_nbr,prm_idx,prm_lst[prm_idx]);
 	nco_flt_glb_prm[flt_idx][prm_idx-1]=(int)strtol(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	(void)fprintf(stdout,"%s: DEBUG %s post store \n",nco_prg_nm_get(),fnc_nm);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtol",sng_cnv_rcd);
-	(void)fprintf(stdout,"%s: DEBUG %s post store 2\n",nco_prg_nm_get(),fnc_nm);
+	(void)fprintf(stdout,"%s: DEBUG %s post store \n",nco_prg_nm_get(),fnc_nm);
       } /* !prm_idx */
+      (void)fprintf(stdout,"%s: DEBUG %s after prm_idx loop \n",nco_prg_nm_get(),fnc_nm);
     } /* !flt_idx */
+    (void)fprintf(stdout,"%s: DEBUG %s after flt_idx loop \n",nco_prg_nm_get(),fnc_nm);
   } /* !cmp_sng */
 
-  (void)fprintf(stdout,"%s: DEBUG %s pre traditional --dfl_lvl \n",nco_prg_nm_get(),fnc_nm);
+  (void)fprintf(stdout,"%s: DEBUG %s why doesnt macos reach this spot?\n",nco_prg_nm_get(),fnc_nm);
 
   /* Allow use of traditional --dfl_lvl to set DEFLATE filter */
   if(nco_flt_glb_nbr == 0 && dfl_lvl != NCO_DFL_LVL_UNDEFINED){

@@ -1078,7 +1078,7 @@ main(int argc,char **argv)
   } /* end while loop */
 
   /* Parse compression options */
-  if(cmp_sng || dfl_lvl >= 0) rcd+=nco_cmp_prs(cmp_sng,dfl_lvl);
+  if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,dfl_lvl);
 
   /* 20170107: Unlike all other operators, ncks may benefit from setting chunk cache when input file (not output file) is netCDF4 because there is anecdotal evidence that ncdump netCDF4 print speed may be improved by cache adjustments. We cannot verify whether input, output, or both file formats are netCDF4 because nco_set_chunk_cache() must be called before opening file(s). Setting this for netCDF3 library is harmless and calls a no-op stub function */
   /* Set/report global chunk cache */
