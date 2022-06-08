@@ -1078,7 +1078,7 @@ main(int argc,char **argv)
   } /* end while loop */
 
   /* Parse compression options */
-  if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,dfl_lvl);
+  if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,dfl_lvl,(int *)NULL,(nco_flt_typ_enm **)NULL,(int **)NULL,(int **)NULL,(int ***)NULL);
 
   /* 20170107: Unlike all other operators, ncks may benefit from setting chunk cache when input file (not output file) is netCDF4 because there is anecdotal evidence that ncdump netCDF4 print speed may be improved by cache adjustments. We cannot verify whether input, output, or both file formats are netCDF4 because nco_set_chunk_cache() must be called before opening file(s). Setting this for netCDF3 library is harmless and calls a no-op stub function */
   /* Set/report global chunk cache */
@@ -1547,6 +1547,7 @@ close_and_free:
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
     if(cmp_sng) cmp_sng=(char *)nco_free(cmp_sng);
+    //    if(nco_cdc_lst_glb) nco_cdc_lst_glb=(char *)nco_free(nco_cdc_lst_glb);
     if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
     if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);
     if(fl_in) fl_in=(char *)nco_free(fl_in);

@@ -65,6 +65,7 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_gbr=6, /* 6 [enm] Granular BitRound */
   nco_flt_dgr=7, /* 7 [enm] DigitRound */
   nco_flt_btr=8, /* 8 [enm] BitRound */
+  nco_flt_bls=9, /* 9 [enm] BLOSC */
   nco_flt_bls_lz=10, /* 10 [enm] BLOSC LZ */
   nco_flt_bls_lz4=11, /* 11 [enm] BLOSC LZ4 */
   nco_flt_bls_lzh=12, /* 12 [enm] BLOSC LZ4 HC */
@@ -76,16 +77,6 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-/* Manipulate private compression algorithm parameters through public interfaces */
-nco_flt_typ_enm nco_flt_glb_lsl_alg_get(void); /* [enm] Lossless enum */
-nco_flt_typ_enm nco_flt_glb_lsy_alg_get(void); /* [enm] Lossy enum */
-int nco_flt_glb_lsl_lvl_get(void); /* [enm] Lossless level */
-int nco_flt_glb_lsy_lvl_get(void); /* [enm] Lossy level */
-void nco_flt_glb_lsl_alg_set(nco_flt_typ_enm nco_flt_lsl_alg); 
-void nco_flt_glb_lsy_alg_set(nco_flt_typ_enm nco_flt_lsy_alg); 
-void nco_flt_glb_lsl_lvl_set(int nco_flt_lsl_lvl); 
-void nco_flt_glb_lsy_lvl_set(int nco_flt_lsy_lvl); 
 
 #if !defined(CCR_HAS_BZIP2) && (NC_LIB_VERSION < 490)
 int nc_def_var_bzip2(int ncid, int varid, int level);
@@ -109,8 +100,13 @@ nco_dfl_case_flt_enm_err /* [fnc] Print error and exit for illegal switch(nco_fl
 
 int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
-(char * const cmp_sng, /* I [sng] Compression specification */
- const int dfl_lvl); /* I [enm] Deflate level [0..9] */
+(char * const cmp_sng, /* I/O [sng] Compression specification */
+ const int dfl_lvl, /* I [enm] Deflate level [0..9] */
+ int *flt_glb_nbr, /* [nbr] Number of codecs specified */
+ nco_flt_typ_enm **flt_glb_alg, /* [nbr] List of filters specified */
+ int **flt_glb_lvl, /* [nbr] List of compression levels for each filter */
+ int **flt_glb_prm_nbr, /* [nbr] List of parameter numbers for each filter */
+ int ***flt_glb_prm); /* [nbr] List of lists of parameters for each filter */
 
 void
 nco_flt_hdf5_prs /* [fnc] Parse user-provided filter string */
@@ -126,7 +122,11 @@ char * /* O [sng] String describing compression filter */
 nco_flt_id2sng /* [fnc] Convert compression filter ID to string */
 (const unsigned int nco_flt_id); /* I [id] Compression filter ID */
 
-  nco_flt_typ_enm /* O [enm] Filter enum */
+nco_flt_typ_enm /* O [enm] Filter enum */
+nco_flt_id2enm /* [fnc] Convert compression filter ID to enum */
+(const unsigned int nco_flt_id); /* I [id] Compression filter ID */
+
+nco_flt_typ_enm /* O [enm] Filter enum */
 nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
 (const char *nco_flt_sng); /* [sng] User-specified filter string */
 

@@ -563,7 +563,7 @@ main(int argc,char **argv)
   } /* end while loop */
 
   /* Parse compression options */
-  if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,dfl_lvl);
+  if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,dfl_lvl,(int *)NULL,(nco_flt_typ_enm **)NULL,(int **)NULL,(int **)NULL,(int ***)NULL);
 
   /* Set/report global chunk cache */
   rcd+=nco_cnk_csh_ini(cnk_csh_byt);
@@ -1161,6 +1161,7 @@ main(int argc,char **argv)
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
     if(cmp_sng) cmp_sng=(char *)nco_free(cmp_sng);
+    //if(nco_cdc_lst_glb) nco_cdc_lst_glb=(char *)nco_free(nco_cdc_lst_glb);
     if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
     if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);
     if(fl_in) fl_in=(char*)nco_free(fl_in);
