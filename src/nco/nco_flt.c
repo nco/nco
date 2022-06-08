@@ -77,7 +77,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 
   if(cmp_sng){
 
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
+    if(nco_dbg_lvl_get() >= nco_dbg_std && !nco_cmp_sng_glb) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
 
     flt_lst=nco_lst_prs_1D(cmp_sng,spr_sng,&flt_nbr);
 
@@ -86,7 +86,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     flt_prm_nbr=(int *)nco_malloc(flt_nbr*sizeof(int));
     flt_prm=(int **)nco_malloc(flt_nbr*sizeof(int *));
       
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s reports codec string contains flt_nbr=%d codecs separated by \"%s\"\n",nco_prg_nm_get(),fnc_nm,flt_nbr,spr_sng);
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports codec string contains flt_nbr=%d codecs separated by \"%s\"\n",nco_prg_nm_get(),fnc_nm,flt_nbr,spr_sng);
 
     for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
       
@@ -99,10 +99,8 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
       flt_prm_nbr[flt_idx]=prm_nbr-1;
       flt_prm[flt_idx]= (flt_prm_nbr[flt_idx] > 0) ? (int *)nco_malloc(flt_prm_nbr[flt_idx]*sizeof(int)) : NULL;
 
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports requested codec is \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(flt_alg[flt_idx]));
-
       for(prm_idx=1;prm_idx<prm_nbr;prm_idx++){
-	(void)fprintf(stdout,"%s: DEBUG flt_idx=%d prm_nbr=%d prm_idx=%d prm_val=%s\n",nco_prg_nm_get(),flt_idx,prm_nbr,prm_idx,prm_lst[prm_idx]);
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG flt_idx=%d prm_nbr=%d prm_idx=%d prm_val=%s\n",nco_prg_nm_get(),flt_idx,prm_nbr,prm_idx,prm_lst[prm_idx]);
 	flt_prm[flt_idx][prm_idx-1]=(int)strtol(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtol",sng_cnv_rcd);
       } /* !prm_idx */
@@ -211,11 +209,13 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 # if CCR_HAS_BLOSC_ZSTANDARD || NC_LIB_VER >= 490
     strcat(nco_cdc_lst_glb,", BLOSC Zstandard");
 # endif /* !CCR_HAS_BLOSC_ZSTANDARD */
-    (void)fprintf(stdout,"%s: INFO %s reports nco_cdc_lst_glb=%s\n",nco_prg_nm_get(),fnc_nm,nco_cdc_lst_glb);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports available codec list is nco_cdc_lst_glb=%s\n",nco_prg_nm_get(),fnc_nm,nco_cdc_lst_glb);
   } /* !nco_cdc_lst_glb */
   
-  (void)fprintf(stdout,"%s: DEBUG cmp_sng_std = %s\n",nco_prg_nm_get(),cmp_sng_std);
-  (void)fprintf(stdout,"%s: DEBUG exiting %s\n",nco_prg_nm_get(),fnc_nm);
+  if(nco_dbg_lvl_get() >= nco_dbg_grp){
+    (void)fprintf(stdout,"%s: DEBUG cmp_sng_std = %s\n",nco_prg_nm_get(),cmp_sng_std);
+    (void)fprintf(stdout,"%s: DEBUG exiting %s\n",nco_prg_nm_get(),fnc_nm);
+  } /* !dbg */
   
   return rcd;
   
@@ -763,7 +763,7 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
       
     } /* !flt_nbr */
 
-    if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    if(nco_dbg_lvl_get() >= nco_dbg_var){
       rcd=nco_inq_varname(nc_in_id,var_in_id_cpy,var_nm);
       (void)fprintf(stdout,"%s: DEBUG %s reports variable %s has input file on-disk flt_sng = %s\n",nco_prg_nm_get(),fnc_nm,var_nm,(flt_sng) ? flt_sng : "none");
     } /* !dbg */
@@ -782,7 +782,7 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
     
   } /* !VARIABLE_EXISTS_IN_INPUT */
   
-  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+  if(nco_dbg_lvl_get() >= nco_dbg_grp){
     rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
     (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, cmp_sng_glb=\"%s\", flt_sng=\"%s\"\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_cmp_sng_glb ? nco_cmp_sng_glb : "none",flt_sng ? flt_sng : "none");
   } /* !dbg */
@@ -846,12 +846,12 @@ nco_tst_def_out /* [fnc]  */
   if(cmp_sng || dfl_lvl >= 0){
     /* Avoid mutililating global specification by passing copy to be parsed
        This also works when invoking nco_tst_def_out() with static cmp_sng */
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
+    if(nco_dbg_lvl_get() >= nco_dbg_std && !nco_cmp_sng_glb) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
     if(cmp_sng) cmp_sng_cpy=(char *)strdup(cmp_sng);
     (void)nco_cmp_prs(cmp_sng_cpy,dfl_lvl,&flt_nbr,&flt_alg,&flt_lvl,&flt_prm_nbr,&flt_prm);
   } /* !cmp_sng */
     
-  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+  if(nco_dbg_lvl_get() >= nco_dbg_var){
     char var_nm[NC_MAX_NAME+1L];
     rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
     (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
@@ -873,7 +873,7 @@ nco_tst_def_out /* [fnc]  */
 
   /* Invoke applicable codec(s) */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){ 
-    (void)fprintf(stdout,"%s: DEBUG %s executing filter: flt_nbr=%d, flt_idx=%d, flt_enm=%d flt_sng=%s, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2sng(flt_alg[flt_idx]),flt_lvl[flt_idx]);
+    if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s executing filter: flt_nbr=%d, flt_idx=%d, flt_enm=%d flt_sng=%s, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2sng(flt_alg[flt_idx]),flt_lvl[flt_idx]);
     switch(flt_alg[flt_idx]){
     case nco_flt_nil: /* If user did not select a filter then exit */
       cdc_has_flt=False;
