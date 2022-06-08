@@ -312,11 +312,13 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		att[idx].nm=(char *)strdup("_Filter");
 		att[idx].type=NC_CHAR;
 		val_hdn_sng=(char *)nco_malloc(100L*sizeof(char));
+		val_hdn_sng[0]='\0';
 		for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
 		  rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],&prm_nbr,NULL);
 		  prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
 		  rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],NULL,prm_lst);
-		  (void)sprintf(sng_foo,"%u,",flt_lst[flt_idx]);
+		  (void)sprintf(sng_foo,"%u",flt_lst[flt_idx]);
+		  if(prm_nbr > 0) strcat(sng_foo,",");
 		  strcat(val_hdn_sng,sng_foo);
 		  for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
 		    //if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"Filter index %lu, ID = %u: parameter #%lu of %lu = %u\n",flt_idx,flt_lst[flt_idx],prm_idx,prm_nbr,prm_lst[prm_idx]);
