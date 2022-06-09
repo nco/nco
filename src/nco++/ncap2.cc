@@ -1109,7 +1109,7 @@ main(int argc,char **argv)
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     //(void) nco_cnk_sz_set(out_id, (lmt_msa_sct **) NULL_CEWI, (int) 0, &cnk_map, &cnk_plc, cnk_sz_scl, cnk.cnk_dmn,cnk_nbr);
     dmn_cmn_sct cmn[NC_MAX_DIMS];
-    /* update member dmn_cmn_vtr() from dmn_out_vtr */
+    /* Update member dmn_cmn_vtr() from dmn_out_vtr */
     prs_arg.ncap_pop_dmn_cmn();
     for(idx=0;idx<nbr_var_fix;idx++){
       prs_arg.ncap_pop_var_dmn_cmn(var_fix[idx], cmn);
@@ -1160,7 +1160,8 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
-    if(cmp_sng) cmp_sng=(char *)nco_free(cmp_sng);
+    // 20220609: free() cmp_sng fails with ncap2, possibly because already freed with prs_sct?
+    //if(cmp_sng) cmp_sng=(char *)nco_free(cmp_sng);
     //if(nco_cdc_lst_glb) nco_cdc_lst_glb=(char *)nco_free(nco_cdc_lst_glb);
     if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
     if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);
@@ -1219,7 +1220,7 @@ main(int argc,char **argv)
   (void)nco_free(nco_prg_nm_get());
 
   nco_exit(antlr_ret);
-} /* end main() */
+} /* !main() */
 
 // Copy vector elements
 void 

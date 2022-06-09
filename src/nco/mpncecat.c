@@ -1003,4 +1003,4 @@ main(int argc,char **argv)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;
-} /* end main() */
+} /* !main() */

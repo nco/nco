@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
 
-	* Do not print _DeflateLevel or _Shuffle if a non-DEFLATE filter was applied
+	* Fix ncap2 compression segfault by not free()'ing cmp_sng in main() (unsure why)
+
+	* Do not print _DeflateLevel or _Shuffle if a non-DEFLATE filter was applied (print _Filter instead)
 
 	* Draft filter handler works on old-style DEFLATE specification (e.g., -L 1)
 

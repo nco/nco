@@ -18,7 +18,8 @@
 
 #include "nco_flt.h" /* Compression filters */
 
-/* Filter variables are file scope for now, could shift to global scope later if necessary */
+/* Filter variables are file scope for now, could shift to global scope later if necessary
+   20220609: fxm free() these two global variables */
 static char *nco_cdc_lst_glb=NULL; /* [sng] List of available filters */
 static char *nco_cmp_sng_glb=NULL; /* [sng] Global compression specification in NCO-standard format */
 

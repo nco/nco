@@ -1385,4 +1385,4 @@ main(int argc,char **argv)
   
   nco_exit_gracefully();
   return EXIT_SUCCESS;
-} /* end main() */
+} /* !main() */

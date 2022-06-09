@@ -1594,4 +1594,4 @@ close_and_free:
 
   nco_exit_gracefully();
   return EXIT_SUCCESS;
-} /* end main() */
+} /* !main() */
