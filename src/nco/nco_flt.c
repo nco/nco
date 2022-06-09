@@ -93,22 +93,27 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
       prm_lst=nco_lst_prs_1D(flt_lst[flt_idx],",",&prm_nbr);
 
       /* First element in list is always name/ID */
+      //(void)fprintf(stdout,"DEBUG quark3 prm_nbr=%d, prm_lst=%s\n",(int)prm_nbr,prm_lst[0]);
       flt_alg[flt_idx]=nco_flt_sng2enm(prm_lst[0]);
 
-      /* Any remaining elements are filter parameters in the HDF5 sense */
+      /* Remaining elements, if any, are filter parameters in the HDF5 sense */
       flt_prm_nbr[flt_idx]=prm_nbr-1;
-      flt_prm[flt_idx]= (flt_prm_nbr[flt_idx] > 0) ? (int *)nco_malloc(flt_prm_nbr[flt_idx]*sizeof(int)) : NULL;
+      int prm_nbr_min; /* [nbr] Minimum number of parameters to allocate space for */
+      prm_nbr_min=(flt_prm_nbr[flt_idx] > 1) ? flt_prm_nbr[flt_idx] : 1;
+      flt_prm[flt_idx]=(int *)nco_malloc(prm_nbr_min*sizeof(int));
 
-      for(prm_idx=1;prm_idx<prm_nbr;prm_idx++){
+      for(prm_idx=1;prm_idx<prm_nbr;prm_idx++){ /* NB: prm_nbr is one greater than # of HDF5 parameters */
 	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG flt_idx=%d prm_nbr=%d prm_idx=%d prm_val=%s\n",nco_prg_nm_get(),flt_idx,prm_nbr,prm_idx,prm_lst[prm_idx]);
 	flt_prm[flt_idx][prm_idx-1]=(int)strtol(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtol",sng_cnv_rcd);
       } /* !prm_idx */
+      /* Allocate room for at least one parameter so default values can be imposed */
+      if(flt_prm_nbr[flt_idx] == 0) flt_prm[flt_idx][0]=NC_MIN_INT;
       flt_lvl[flt_idx]=flt_prm[flt_idx][0];
     } /* !flt_idx */
   } /* !cmp_sng */
 
-  /* Allow use of traditional --dfl_lvl to set DEFLATE filter */
+  /* Allow use of traditional --dfl_lvl to set DEFLATE filter in global string */
   if(flt_nbr == 0 && dfl_lvl != NCO_DFL_LVL_UNDEFINED){
     flt_nbr=1;
     flt_alg=(nco_flt_typ_enm *)nco_malloc(flt_nbr*sizeof(nco_flt_typ_enm));
@@ -123,11 +128,30 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     flt_lvl[0]=flt_prm[0][0];
   } /* !flt_nbr, !dfl_lvl */
     
+  /* Allow user to rely on default filter parameters
+     For example, --cdc=zst means use Zstandard with compression level 3 */
+  if(flt_nbr == 1 && flt_alg[0] == nco_flt_zst && flt_prm_nbr[0] == 0 && flt_prm[0][0] == NC_MIN_INT){
+    flt_prm_nbr[0]=1;
+    flt_prm[0][0]=3;
+    flt_lvl[0]=flt_prm[0][0];
+  } /* !flt_nbr, !dfl_lvl */
+  /* -L dfl_lvl with unspecified codec causes NCO to use default DEFLATE compression level dfl_lvl */
+  if(flt_nbr == 1 && flt_alg[0] == nco_flt_dfl && flt_prm_nbr[0] == 0 && flt_prm[0][0] == NC_MIN_INT){
+    flt_prm_nbr[0]=1;
+    flt_prm[0][0]=1;
+    flt_lvl[0]=flt_prm[0][0];
+  } /* !flt_nbr, !dfl_lvl */
+  /* --cdc=dfl with unspecified compression level parameter means causes NCO to use default DEFLATE compression level 1 */
+  if(flt_nbr == 1 && flt_alg[0] == nco_flt_dfl && flt_prm_nbr[0] == 0 && flt_prm[0][0] == NC_MIN_INT){
+    flt_prm_nbr[0]=1;
+    flt_prm[0][0]=1;
+    flt_lvl[0]=flt_prm[0][0];
+  } /* !flt_nbr, !dfl_lvl */
+
   /* Allow user to mix --dfl_lvl and --cdc
      For example, --dfl_lvl=3 --cdc=zst means use Zstandard with compression level 3 */
   if(flt_nbr == 1 && flt_prm_nbr[0] == 0 && dfl_lvl != NCO_DFL_LVL_UNDEFINED){
     flt_prm_nbr[0]=1;
-    flt_prm[0]=(int *)nco_malloc(flt_prm_nbr[0]*sizeof(int));
     flt_prm[0][0]=dfl_lvl;
     flt_lvl[0]=flt_prm[0][0];
   } /* !flt_nbr, !dfl_lvl */
@@ -142,7 +166,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   if(flt_nbr > 0){
     for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
       (void)strcat(cmp_sng_std,nco_flt_enm2sng(flt_alg[flt_idx]));
-      (void)strcat(cmp_sng_std,",");
+      if(flt_prm_nbr[flt_idx] > 0) (void)strcat(cmp_sng_std,",");
       int_sng[0]='\0';
       for(prm_idx=0;prm_idx<flt_prm_nbr[flt_idx];prm_idx++){
 	(void)sprintf(int_sng,"%d%s",flt_prm[flt_idx][prm_idx], prm_idx < flt_prm_nbr[flt_idx]-1 ? "," : "");
@@ -487,12 +511,17 @@ nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
   if(!strcasecmp(nco_flt_sng,"default")) return nco_flt_nil;
   if(!strcasecmp(nco_flt_sng,"deflate")) return nco_flt_dfl;
   if(!strcasecmp(nco_flt_sng,"dfl")) return nco_flt_dfl;
+  if(!strcasecmp(nco_flt_sng,"gzp")) return nco_flt_dfl;
+  if(!strcasecmp(nco_flt_sng,"gz")) return nco_flt_dfl;
   if(!strcasecmp(nco_flt_sng,"zlib")) return nco_flt_dfl;
+  if(!strcasecmp(nco_flt_sng,"bz2")) return nco_flt_bz2;
   if(!strcasecmp(nco_flt_sng,"bzp")) return nco_flt_bz2;
+  if(!strcasecmp(nco_flt_sng,"bz")) return nco_flt_bz2;
   if(!strcasecmp(nco_flt_sng,"bzip")) return nco_flt_bz2;
   if(!strcasecmp(nco_flt_sng,"bzip2")) return nco_flt_bz2;
   if(!strcasecmp(nco_flt_sng,"lz4")) return nco_flt_lz4;
   if(!strcasecmp(nco_flt_sng,"bgr")) return nco_flt_bgr;
+  if(!strcasecmp(nco_flt_sng,"btg")) return nco_flt_bgr;
   if(!strcasecmp(nco_flt_sng,"bitgroom")) return nco_flt_bgr;
   if(!strcasecmp(nco_flt_sng,"Zen16")) return nco_flt_bgr;
   if(!strcasecmp(nco_flt_sng,"gbr")) return nco_flt_gbr;
@@ -727,7 +756,6 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
 
     char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */
     char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
-    char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
 
     size_t flt_idx; /* [idx] Filter index */
     size_t flt_nbr; /* [nbr] Filter number */
@@ -763,23 +791,6 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
       
     } /* !flt_nbr */
 
-    if(nco_dbg_lvl_get() >= nco_dbg_var){
-      rcd=nco_inq_varname(nc_in_id,var_in_id_cpy,var_nm);
-      (void)fprintf(stdout,"%s: DEBUG %s reports variable %s has input file on-disk flt_sng = %s\n",nco_prg_nm_get(),fnc_nm,var_nm,(flt_sng) ? flt_sng : "none");
-    } /* !dbg */
-
-#if 0
-    /* Copy original filters if user did not explicity set dfl_lvl for output */ 
-    if((deflate || shuffle) && dfl_lvl == NCO_DFL_LVL_UNDEFINED){
-      /* Before netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
-	 Properties of final invocation before nc_enddef() would take effect
-	 After netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect
-	 It is therefore crucial not to call nco_def_var_deflate() more than once */
-      rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
-      if(rcd == NC_NOERR) COPY_COMPRESSION_FROM_INPUT=True;
-    } /* !dfl_lvl */
-#endif /* !0 */
-    
   } /* !VARIABLE_EXISTS_IN_INPUT */
   
   if(nco_dbg_lvl_get() >= nco_dbg_grp){
@@ -793,12 +804,10 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
   if(nco_cmp_sng_glb) cmp_sng=nco_cmp_sng_glb;
   else if(flt_sng) cmp_sng=flt_sng;
   
-  /* Protect against calling nco_def_var_deflate() more than once */
-  //  if(dfl_lvl_cpy != NCO_DFL_LVL_UNDEFINED && !COPY_COMPRESSION_FROM_INPUT)
+  /* Call single routine that executes all requested filters */
   if(cmp_sng) rcd=nco_tst_def_out(nc_out_id,var_out_id,dfl_lvl_cpy,cmp_sng);
 
-  //(void)fprintf(stdout,"DEBUG quark nco_flt.c 2\n");
-
+  /* Free memory, if any, that holds input file on-disk filter string for this variable */
   if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
     
   return rcd;
@@ -857,20 +866,6 @@ nco_tst_def_out /* [fnc]  */
     (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, dfl_lvl = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,dfl_lvl);
   } /* !dbg */
 
-  if(dfl_lvl != NCO_DFL_LVL_UNDEFINED){
-    /* Overwrite HDF Lempel-Ziv compression level, if requested */
-    deflate=(int)True;
-    /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
-    if(dfl_lvl <= 0) shuffle=NC_NOSHUFFLE;
-    /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
-    if(dfl_lvl > 0) shuffle=NC_SHUFFLE;
-#ifndef ENABLE_CCR
-    /* If CCR is not enabled, perform normal deflation */
-    rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl);
-    return rcd;
-#endif /* ENABLE_CCR */
-  } /* !dfl_lvl */
-
   /* Invoke applicable codec(s) */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){ 
     if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s executing filter: flt_nbr=%d, flt_idx=%d, flt_enm=%d flt_sng=%s, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2sng(flt_alg[flt_idx]),flt_lvl[flt_idx]);
@@ -880,6 +875,12 @@ nco_tst_def_out /* [fnc]  */
       break;
 
     case nco_flt_dfl: /* DEFLATE */
+      /* Overwrite HDF Lempel-Ziv compression level, if requested */
+      deflate=(int)True;
+      /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
+      if(dfl_lvl <= 0) shuffle=NC_NOSHUFFLE;
+      /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
+      if(dfl_lvl > 0) shuffle=NC_SHUFFLE;
       rcd+=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,flt_lvl[flt_idx]);
       break;
 

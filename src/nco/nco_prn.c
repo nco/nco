@@ -131,6 +131,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   if(prn_flg->hdn && ((fl_fmt == NC_FORMAT_NETCDF4) || (fl_fmt == NC_FORMAT_NETCDF4_CLASSIC))){
     char *val_hdn_sng=NULL;
+    unsigned int flt_id=NC_MAX_UINT;
     int chk_typ; /* [enm] Checksum type [0..9] */
     int deflate; /* [flg] Deflation is on */
     int dfl_lvl; /* [enm] Deflate level [0..9] */
@@ -139,6 +140,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     int shuffle; /* [flg] Shuffling is on */
     int srg_typ; /* [enm] Storage type */
     size_t cnk_sz[NC_MAX_VAR_DIMS]; /* [nbr] Chunk sizes */
+    size_t flt_nbr; /* [nbr] Filter number */
     if(var_id == NC_GLOBAL){
       /* _Format */
       if(!XML){
@@ -267,11 +269,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		 Unfortunately, I do not yet have an actual file or dynamic filter library for testing:
 		 https://www.unidata.ucar.edu/software/netcdf/docs/filters_8md_source.html
 		 20220526 Code now supports CCR so now have plenty of dynamic filters! */
-	      unsigned int flt_id=NC_MAX_UINT;
 	      char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */
 	      char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
 	      size_t flt_idx; /* [idx] Filter index */
-	      size_t flt_nbr; /* [nbr] Filter number */
 	      size_t prm_idx; /* [idx] Parameter index */
 	      size_t prm_nbr; /* [nbr] Parameter number */
 	      unsigned int *prm_lst=NULL; /* [] Parameter array */
@@ -291,7 +291,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		  flt_id=0;
 		  prm_nbr=0;
 		} /* !rcd */
-	      }else{ /* !netCDF < 4.7.4 */
+	      }else{ /* !netCDF 4.7.4 */
 		rcd=nco_inq_var_filter(grp_id,var_id,&flt_id,&prm_nbr,NULL);
 	      } /* !netCDF 4.7.4 */
 	      //if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
@@ -305,44 +305,50 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		unsigned int *flt_lst=NULL; /* [nbr] Filter IDs */
 		flt_lst=(unsigned int *)nco_malloc(flt_nbr*sizeof(unsigned int));
 		rcd=nco_inq_var_filter_ids(grp_id,var_id,(size_t *)NULL,flt_lst);
-		/* Print _Filter values for all filters of filtered variables
-		   20220526 Wrap code in loop over filters and separate each filter by a pipe symbol "|" */
-		idx=att_nbr_ttl++;
-		att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
-		att[idx].nm=(char *)strdup("_Filter");
-		att[idx].type=NC_CHAR;
-		val_hdn_sng=(char *)nco_malloc(100L*sizeof(char));
-		val_hdn_sng[0]='\0';
-		for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
-		  rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],&prm_nbr,NULL);
-		  prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
-		  rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],NULL,prm_lst);
-		  (void)sprintf(sng_foo,"%u",flt_lst[flt_idx]);
-		  if(prm_nbr > 0) strcat(sng_foo,",");
-		  strcat(val_hdn_sng,sng_foo);
-		  for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
-		    //if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"Filter index %lu, ID = %u: parameter #%lu of %lu = %u\n",flt_idx,flt_lst[flt_idx],prm_idx,prm_nbr,prm_lst[prm_idx]);
-		    (void)sprintf(sng_foo,"%u%s",prm_lst[prm_idx],(prm_idx == prm_nbr-1) ? "" : ",");
+		/* 20220609 Print _Filter string if any non-DEFLATE filter was applied */
+		if(flt_nbr > 1 || flt_lst[0] != 1){
+		  /* Print _Filter values for all filters of filtered variables
+		     20220526 Wrap code in loop over filters and separate each filter by a pipe symbol "|" */
+		  idx=att_nbr_ttl++;
+		  att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+		  att[idx].nm=(char *)strdup("_Filter");
+		  att[idx].type=NC_CHAR;
+		  val_hdn_sng=(char *)nco_malloc(100L*sizeof(char));
+		  val_hdn_sng[0]='\0';
+		  for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
+		    rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],&prm_nbr,NULL);
+		    prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
+		    rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],NULL,prm_lst);
+		    (void)sprintf(sng_foo,"%u",flt_lst[flt_idx]);
+		    if(prm_nbr > 0) strcat(sng_foo,",");
 		    strcat(val_hdn_sng,sng_foo);
-		  } /* !prm_idx */
-		  if(flt_idx < flt_nbr-1) strcat(val_hdn_sng,spr_sng);
-		  if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst);
-		} /* !flt_idx */
-		att_sz=att[idx].sz=strlen(val_hdn_sng);
-		att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
-		strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
-		if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
-		if(flt_lst) flt_lst=(unsigned int *)nco_free(flt_lst);  
-	      } /* !flt_id */
+		    for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
+		      //if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"Filter index %lu, ID = %u: parameter #%lu of %lu = %u\n",flt_idx,flt_lst[flt_idx],prm_idx,prm_nbr,prm_lst[prm_idx]);
+		      (void)sprintf(sng_foo,"%u%s",prm_lst[prm_idx],(prm_idx == prm_nbr-1) ? "" : ",");
+		      strcat(val_hdn_sng,sng_foo);
+		    } /* !prm_idx */
+		    if(flt_idx < flt_nbr-1) strcat(val_hdn_sng,spr_sng);
+		    if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst);
+		  } /* !flt_idx */
+		  att_sz=att[idx].sz=strlen(val_hdn_sng);
+		  att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+		  strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
+		  if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
+		  if(flt_lst) flt_lst=(unsigned int *)nco_free(flt_lst);  
+		} /* !flt_id */
+	      } /* !flt_nbr && !flt_lst */
 	    } /* srg_typ != NC_CHUNKED */
 	  } /* !xml */
 	} /* !4.6.0 */
 	/* _DeflateLevel */
 	if(!XML){
-	  /* 20220526 ncdump prints _DeflateLevel and _Shuffle but not _Filter when DEFLATE is the only filter applied */
+	  /* 20220526 ncdump prints _DeflateLevel and _Shuffle but not _Filter when DEFLATE is the only filter applied
+	     ncks -O -7 -L 1 -C -v one_dmn_rec_var ~/nco/data/in.nc ~/foo.nc
+	     ncks -O -7 -C -v one_dmn_rec_var --cmp_sng='bz2,1|dfl,2' ~/nco/data/in.nc ~/foo.nc
+	     ncdump -s -h -v one_dmn_rec_var ~/foo.nc */
 	  rcd=nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
-	  if(deflate){
-	    /* Print _DeflateLevel for deflated variables */
+	  if(deflate && flt_nbr == 1 && flt_id == 1){
+	    /* Print _DeflateLevel for deflated variables (20220609: unless multiple filters are reported) */
 	    idx=att_nbr_ttl++;
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	    att[idx].nm=(char *)strdup("_DeflateLevel");
@@ -354,8 +360,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	} /* !xml */
 	/* _Shuffle */
 	if(!XML){
-	  if(shuffle){
-	    /* Print _Shuffle for shuffled variables */
+	  if(shuffle && flt_nbr == 1 && flt_id == 1){
+	    /* Print _Shuffle for shuffled variables (20220609: unless multiple filters are reported) */
 	    idx=att_nbr_ttl++;
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	    att[idx].nm=(char *)strdup("_Shuffle");
