@@ -77,8 +77,8 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
 
 /* Filter flags */
 typedef enum nco_flt_flg_enm{ /* [enm] Filter policies */
-  nco_flg_nil=0, /* 0 [enm] Filter flag is unset */
-  nco_flg_lsy_no=1, /* 1 [enm] Lossy filters not allowed for this variable */
+  nco_flt_flg_nil=0, /* 0 [enm] Filter flag is unset */
+  nco_flt_flg_lsy_no=1, /* 1 [enm] Lossy filters not allowed for this variable */
 } nco_flt_flg_enm; /* end nco_flt_flg_enm */
 
 #ifdef __cplusplus
@@ -166,7 +166,7 @@ nco_tst_def_out /* [fnc] Define filters based on requested  */
 (const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_out_id, /* I [id] Variable ID */
  const char * const cmp_sng, /* I/O [sng] Compression specification */
- const nco_flt_flg_enm * const flt_flgp); /* I [enm] Enumerated flags for fine-grained compression control */
+ const nco_flt_flg_enm flt_flg); /* I [enm] Enumerated flags for fine-grained compression control */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -641,15 +641,7 @@ main(int argc,char **argv)
     if(opt == 0){
       if(!strcmp(opt_crr,"baa") || !strcmp(opt_crr,"bit_alg")){
 	nco_baa_cnv=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(*sng_cnv_rcd){
-	  /* Interpretation as integer failed, try to interpret as algorithm string instead */
-	  char *qnt_sng; /* [sng] Quantization string */
-	  qnt_sng=(char *)strdup(optarg);
-	  nco_flt_glb=nco_flt_sng2enm(optarg);
-	  if(qnt_sng) qnt_sng=(char *)nco_free(qnt_sng);
-	  sng_cnv_rcd=NULL;
-	} /* !sng_cnv_rcd */
-	//if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* !baa */
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
@@ -732,12 +724,7 @@ main(int argc,char **argv)
 	/* [fnc] Parse filter string and exit */
 	if(flt_sng) nco_flt_hdf5_prs(flt_sng);
       } /* !flt */
-      if(!strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec")){
-	//	nco_flt_glb=nco_flt_sng2enm(optarg);
-	//(void)fprintf(stdout,"%s: INFO %s reports user-specified filter string translates to NCO filter string \"%s\".\n",nco_prg_nm,nco_prg_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_glb_get()));
-	//nco_exit(EXIT_SUCCESS);
-	cmp_sng=(char *)strdup(optarg);
-      } /* !ccr */
+      if(!strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec")) cmp_sng=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"fmt_val") || !strcmp(opt_crr,"val_fmt") || !strcmp(opt_crr,"value_format")) fmt_val=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));

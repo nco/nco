@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
 
-	* Refactor so nco_tst_def_out() receives pointer to filter flag instead of superfluous dfl_lvl
+	* Refactor so nco_cmp_sng_glb is global variable
+
+	* Refactor so nco_tst_def_out() receives filter flag instead of superfluous dfl_lvl
 
 	* nco_tst_def_out() uses nco_cmp_sng_glb if cmp_sng not passed
 

@@ -19,9 +19,8 @@
 #include "nco_flt.h" /* Compression filters */
 
 /* Filter variables are file scope for now, could shift to global scope later if necessary
-   20220609: fxm free() these two global variables */
+   20220609: fxm free() this/these global variables */
 static char *nco_cdc_lst_glb=NULL; /* [sng] List of available filters */
-static char *nco_cmp_sng_glb=NULL; /* [sng] Global compression specification in NCO-standard format */
 
 void
 nco_dfl_case_flt_enm_err /* [fnc] Print error and exit for illegal switch(nco_flt_enm) case */
@@ -81,7 +80,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 
   if(cmp_sng){
 
-    if(nco_dbg_lvl_get() >= nco_dbg_std && !nco_cmp_sng_glb) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
+    if(nco_dbg_lvl_get() >= nco_dbg_std && !nco_cmp_glb_get()) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
 
     flt_lst=nco_lst_prs_1D(cmp_sng,spr_sng,&flt_nbr);
 
@@ -181,7 +180,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   } /* !flt_nbr */
 
   /* If global user-requested compression specification string has not yet been saved, copy and save it */
-  if(!nco_cmp_sng_glb) nco_cmp_sng_glb=(char *)strdup(cmp_sng_std);
+  if(!nco_cmp_glb_get()) nco_cmp_glb_set((char *)strdup(cmp_sng_std));
 
   /* Variables to copy back to calling routine (or global variable) if requested */
   if(flt_glb_nbr) *flt_glb_nbr=flt_nbr;
@@ -799,17 +798,17 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
   
   if(nco_dbg_lvl_get() >= nco_dbg_grp){
     rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
-    (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, cmp_sng_glb=\"%s\", flt_sng=\"%s\"\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_cmp_sng_glb ? nco_cmp_sng_glb : "none",flt_sng ? flt_sng : "none");
+    (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, cmp_sng_glb=\"%s\", flt_sng=\"%s\"\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_cmp_glb_get() ? nco_cmp_glb_get() : "none",flt_sng ? flt_sng : "none");
   } /* !dbg */
 
   /* User-specified global compression options override on-disk input compression settings */
   char *cmp_sng=NULL; /* [sng] Compression specification */
   /* Use global options, if any were specified, otherwise use on-disk settings */
-  if(nco_cmp_sng_glb) cmp_sng=nco_cmp_sng_glb;
+  if(nco_cmp_glb_get()) cmp_sng=nco_cmp_glb_get();
   else if(flt_sng) cmp_sng=flt_sng;
   
   /* Call single routine that executes all requested filters */
-  if(cmp_sng) rcd=nco_tst_def_out(nc_out_id,var_out_id,cmp_sng,(nco_flt_flg_enm *)NULL);
+  if(cmp_sng) rcd=nco_tst_def_out(nc_out_id,var_out_id,cmp_sng,nco_flt_flg_nil);
 
   /* Free memory, if any, that holds input file on-disk filter string for this variable */
   if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
@@ -823,7 +822,7 @@ nco_tst_def_out /* [fnc]  */
 (const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_out_id, /* I [id] Variable ID */
  const char * const cmp_sng, /* I [sng] Compression specification */
- const nco_flt_flg_enm * const flt_flgp) /* I [enm] Enumerated flags for fine-grained compression control */
+ const nco_flt_flg_enm flt_flg) /* I [enm] Enumerated flags for fine-grained compression control */
 {
   /* Purpose: Set compression filters in newly defined variable in output file
 
@@ -846,7 +845,6 @@ nco_tst_def_out /* [fnc]  */
 
   nco_bool cdc_has_flt=True; /* [flg] Available filters include requested filter */
   nco_bool lsy_flt_ok=True; /* [flg] Lossy filters are authorized (i.e., not specifically disallowed) for this variable */
-  nco_flt_flg_enm flt_flg=nco_flg_nil; /* [enm] Enumerated flags for fine-grained compression control */
 
   /* Varibles to obtain by parsing compression specification */
   int flt_nbr=0; /* [nbr] Number of codecs specified */
@@ -855,18 +853,17 @@ nco_tst_def_out /* [fnc]  */
   int *flt_prm_nbr=NULL; /* [nbr] List of parameter numbers for each filter */
   int **flt_prm=NULL; /* [nbr] List of lists of parameters for each filter */
 
-  if(flt_flgp) flt_flg=*flt_flgp;
-  if(flt_flg == nco_flg_lsy_no) lsy_flt_ok=False;
+  if(flt_flg == nco_flt_flg_lsy_no) lsy_flt_ok=False;
   
-  if(cmp_sng || nco_cmp_sng_glb){
-    if(nco_dbg_lvl_get() >= nco_dbg_std && !nco_cmp_sng_glb) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
+  if(cmp_sng || nco_cmp_glb_get()){
+    if(nco_dbg_lvl_get() >= nco_dbg_std && !nco_cmp_glb_get()) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
     /* If parent routine passed a valid compression specification then use that
        This often occurs when copying variable's specifications from input files
        In this case, nco_tst_def_wrp() send the on-disk specification already merged with any global options
        Otherwise, if no specification is passed and a global specification exists, then use that 
        This often occurs when creating variables from scratch */
     if(cmp_sng) cmp_sng_cpy=(char *)strdup(cmp_sng);
-    else if(nco_cmp_sng_glb) cmp_sng_cpy=(char *)strdup(nco_cmp_sng_glb);
+    else if(nco_cmp_glb_get()) cmp_sng_cpy=(char *)strdup(nco_cmp_glb_get());
 
     /* Avoid mutililating global specification by passing copy to be parsed
        This also works when invoking nco_tst_def_out() with static cmp_sng */
