@@ -405,7 +405,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   dmn_cnt[dmn_idx_ydm]=ydm_nbr;
 
   (void)nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_3D,dmn_ids,&var_id);
-  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,var_id,NULL,nco_flt_flg_nil);
+  if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,var_id,NULL,nco_flt_flg_nil);
   
   /* Define "units" attributes */
   rcd=nco_char_att_put(out_id,NULL,"title",trr->ttl);

@@ -589,7 +589,7 @@ nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
 } /* !nco_flt_sng2enm() */
 
 int /* O [enm] Return code */
-nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
+nco_flt_old_wrp /* [fnc] Call filters immediately after variable definition */
 (const int nc_in_id, /* I [id] netCDF input file/group ID */
  const int var_in_id, /* I [id] Variable ID */
  const char * const var_nm_in, /* I [nm] Variable name [optional] */
@@ -610,7 +610,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
      If supplied dfl_lvl is < 0 (i.e., unset) then copy input compression settings (if available)
      If supplied dfl_lvl is >= 0 (i.e., set) then set compression to dfl_lvl */
 
-  //const char fnc_nm[]="nco_flt_def_wrp()"; /* [sng] Function name */
+  //const char fnc_nm[]="nco_flt_old_wrp()"; /* [sng] Function name */
 
   nco_bool VARIABLE_EXISTS_IN_INPUT=False; /* [flg] Variable exists in input file */
   nco_bool COPY_COMPRESSION_FROM_INPUT=False; /* [flg] Copy compression setting from input to output */
@@ -656,14 +656,14 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
 
   /* Protect against calling nco_def_var_deflate() more than once */
   if(dfl_lvl != NCO_DFL_LVL_UNDEFINED && !COPY_COMPRESSION_FROM_INPUT)
-    rcd=nco_flt_def_out(nc_out_id,var_out_id,dfl_lvl);
+    rcd=nco_flt_old_out(nc_out_id,var_out_id,dfl_lvl);
 
   return rcd;
   
-} /* !nco_flt_def_wrp() */
+} /* !nco_flt_old_wrp() */
   
 int /* O [enm] Return code */
-nco_flt_def_out /* [fnc]  */
+nco_flt_old_out /* [fnc]  */
 (const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_out_id, /* I [id] Variable ID */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
@@ -678,7 +678,7 @@ nco_flt_def_out /* [fnc]  */
      Algorithm:
      If supplied dfl_lvl is >= 0 (i.e., set) then set compression to dfl_lvl */
 
-  //  const char fnc_nm[]="nco_flt_def_out()"; /* [sng] Function name */
+  //  const char fnc_nm[]="nco_flt_old_out()"; /* [sng] Function name */
 
   int rcd=NC_NOERR; /* [rcd] Return code */
 
@@ -698,10 +698,10 @@ nco_flt_def_out /* [fnc]  */
 
   return rcd;
 
-} /* !nco_flt_def_out() */
+} /* !nco_flt_old_out() */
   
 int /* O [enm] Return code */
-nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
+nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
 (const int nc_in_id, /* I [id] netCDF input file/group ID */
  const int var_in_id, /* I [id] Variable ID */
  const char * const var_nm_in, /* I [nm] Variable name [optional] */
@@ -721,7 +721,7 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
      If supplied dfl_lvl is < 0 (i.e., unset) then copy input compression settings (if available)
      If supplied dfl_lvl is >= 0 (i.e., set) then set compression to dfl_lvl */
 
-  const char fnc_nm[]="nco_tst_def_wrp()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_flt_def_wrp()"; /* [sng] Function name */
 
   nco_bool VARIABLE_EXISTS_IN_INPUT=False; /* [flg] Variable exists in input file */
   //nco_bool COPY_COMPRESSION_FROM_INPUT=False; /* [flg] Copy compression setting from input to output */
@@ -807,17 +807,17 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
   else if(flt_sng) cmp_sng=flt_sng;
   
   /* Call single routine that executes all requested filters */
-  if(cmp_sng) rcd=nco_tst_def_out(nc_out_id,var_out_id,cmp_sng,nco_flt_flg_nil);
+  if(cmp_sng) rcd=nco_flt_def_out(nc_out_id,var_out_id,cmp_sng,nco_flt_flg_nil);
 
   /* Free memory, if any, that holds input file on-disk filter string for this variable */
   if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
     
   return rcd;
   
-} /* !nco_tst_def_wrp() */
+} /* !nco_flt_def_wrp() */
   
 int /* O [enm] Return code */
-nco_tst_def_out /* [fnc]  */
+nco_flt_def_out /* [fnc]  */
 (const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_out_id, /* I [id] Variable ID */
  const char * const cmp_sng, /* I [sng] Compression specification */
@@ -830,7 +830,7 @@ nco_tst_def_out /* [fnc]  */
      Introduction of new filters in netCDF 4.9.0 makes this untenable 
      Here were functionalize the invocation of original netCDF4 filters DEFLATE and Shuffle */
 
-  const char fnc_nm[]="nco_tst_def_out()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_flt_def_out()"; /* [sng] Function name */
 
   int rcd=NC_NOERR; /* [rcd] Return code */
 
@@ -858,14 +858,14 @@ nco_tst_def_out /* [fnc]  */
     if(nco_dbg_lvl_get() >= nco_dbg_std && !nco_cmp_glb_get()) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
     /* If parent routine passed a valid compression specification then use that
        This often occurs when copying variable's specifications from input files
-       In this case, nco_tst_def_wrp() send the on-disk specification already merged with any global options
+       In this case, nco_flt_def_wrp() send the on-disk specification already merged with any global options
        Otherwise, if no specification is passed and a global specification exists, then use that 
        This often occurs when creating variables from scratch */
     if(cmp_sng) cmp_sng_cpy=(char *)strdup(cmp_sng);
     else if(nco_cmp_glb_get()) cmp_sng_cpy=(char *)strdup(nco_cmp_glb_get());
 
     /* Avoid mutililating global specification by passing copy to be parsed
-       This also works when invoking nco_tst_def_out() with static cmp_sng */
+       This also works when invoking nco_flt_def_out() with static cmp_sng */
     (void)nco_cmp_prs(cmp_sng_cpy,(int *)NULL,&flt_nbr,&flt_alg,&flt_lvl,&flt_prm_nbr,&flt_prm);
   } /* !cmp_sng */
     
@@ -978,5 +978,5 @@ nco_tst_def_out /* [fnc]  */
 
   return rcd;
   
-} /* !nco_tst_def_out() */
+} /* !nco_flt_def_out() */
 

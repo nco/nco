@@ -1047,7 +1047,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	  if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s turning-off shuffle filter before unchunking variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  shuffle=NC_NOSHUFFLE;
 	  deflate=0;
-	  /* 20220503: Replace with more generic nco_flt_def() wrapper to turn-off all codecs? */
+	  /* 20220503: Replace with more generic nco_flt_old() wrapper to turn-off all codecs? */
 	  (void)nco_def_var_deflate(grp_id_out,var_id_out,shuffle,deflate,(int)0);
 	} /* !shuffle */
 	/* Redundant since default netCDF srg_typ = NC_CONTIGUOUS for variables that need not be chunked */

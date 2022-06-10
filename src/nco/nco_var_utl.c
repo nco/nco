@@ -1231,7 +1231,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       rcd=nco_inq_format(out_id,&fl_fmt);
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)
         if(dmn_nbr > 0)
- 	  rcd=nco_tst_def_wrp(in_id,(int)0,var[idx]->nm,out_id,var[idx]->id);
+ 	  rcd=nco_flt_def_wrp(in_id,(int)0,var[idx]->nm,out_id,var[idx]->id);
       
       if(nco_dbg_lvl_get() > 3 && nco_prg_id != ncwa){
         /* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm

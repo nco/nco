@@ -5219,7 +5219,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* Duplicate netCDF4 settings when possible */
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     /* NB: Compression depends on nbr_dmn_var_out not nbr_dmn_var! */
-    if(nbr_dmn_var_out > 0) rcd=nco_tst_def_wrp(grp_in_id,var_in_id,(char *)NULL,grp_out_id,var_out_id);
+    if(nbr_dmn_var_out > 0) rcd=nco_flt_def_wrp(grp_in_id,var_in_id,(char *)NULL,grp_out_id,var_out_id);
 
     /* 20141013 Previously called chunking only when user selected a chunking switch
        Now always call chunking because default is to preserve input chunking 

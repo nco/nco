@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
 
+	* Name-swap to nco_flt_def_out/wrp() is nco_flt_old_out/wrp(), nco_tst_def_out/wrp() is nco_flt_def_out/wrp()
+
 	* Adopt nco_tst_def_out() in regridder and map routines
 
 	* Refactor to eliminate dfl_lvl from nco_tst_def_wrp()
