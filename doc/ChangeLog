@@ -1,8 +1,14 @@
-2022-06-09  Charlie Zender  <zender@uci.edu>
+2022-06-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
+
+	* Refactor so nco_tst_def_out() receives pointer to filter flag instead of superfluous dfl_lvl
+
+	* nco_tst_def_out() uses nco_cmp_sng_glb if cmp_sng not passed
+
+2022-06-09  Charlie Zender  <zender@uci.edu>
 
 	* Fix ncap2 compression segfault by not free()'ing cmp_sng in main() (unsure why)
 

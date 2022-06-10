@@ -53,8 +53,9 @@
 # define NC_QUANTIZE_BITROUND 3 /**< Use BitRound quantization. */
 #endif
 
-/* Filters types that NCO knows internally: 
-   Convert string to filter enum in nco_flt_typ_set() */
+/* Filter types that NCO knows internally: 
+   Convert filter enum to string in nco_flt_enm2sng()
+   Convert string to filter enum in nco_flt_sng2enm() */
 typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_nil=0, /* 0 [enm] Filter type is unset */
   nco_flt_dfl=1, /* 1 [enm] DEFLATE */
@@ -73,6 +74,12 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_bls_dfl=14, /* 14 [enm] BLOSC DEFLATE */
   nco_flt_bls_zst=15, /* 15 [enm] BLOSC Zstandard */
 } nco_flt_typ_enm; /* end nco_flt_typ_enm */
+
+/* Filter flags */
+typedef enum nco_flt_flg_enm{ /* [enm] Filter policies */
+  nco_flg_nil=0, /* 0 [enm] Filter flag is unset */
+  nco_flg_lsy_no=1, /* 1 [enm] Lossy filters not allowed for this variable */
+} nco_flt_flg_enm; /* end nco_flt_flg_enm */
 
 #ifdef __cplusplus
 extern "C" {
@@ -101,7 +108,7 @@ nco_dfl_case_flt_enm_err /* [fnc] Print error and exit for illegal switch(nco_fl
 int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 (char * const cmp_sng, /* I/O [sng] Compression specification */
- const int dfl_lvl, /* I [enm] Deflate level [0..9] */
+ int * const dfl_lvl, /* I [enm] Deflate level [0..9] */
  int *flt_glb_nbr, /* [nbr] Number of codecs specified */
  nco_flt_typ_enm **flt_glb_alg, /* [nbr] List of filters specified */
  int **flt_glb_lvl, /* [nbr] List of compression levels for each filter */
@@ -158,8 +165,8 @@ int /* O [enm] Return code */
 nco_tst_def_out /* [fnc] Define filters based on requested  */
 (const int nc_out_id, /* I [id] netCDF output file/group ID */
  const int var_out_id, /* I [id] Variable ID */
- const int dfl_lvl, /* I [enm] Deflate level [0..9] */
- char * const cmp_sng); /* I/O [sng] Compression specification */
+ const char * const cmp_sng, /* I/O [sng] Compression specification */
+ const nco_flt_flg_enm * const flt_flgp); /* I [enm] Enumerated flags for fine-grained compression control */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -5192,7 +5192,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      /* 20220417 SGS regridding with missing values present additional complexity 
 		 Original SGS implementation assumes field and sgs_frc valid at same points
 		 However, ELM landunit-specific fields are missing in gridcells that lack those landunits
-		 For example, TSOI is missing in land gridcells that are entirely glacier 
+		 For example:
+		 TSOI is missing in land gridcells that are entirely glacier, 
+		 TSOIICE is missing in land gridcells that are vegetated,
+		 LAKEICETHICK is missing in land gridcells have no lakes
 		 Recently noticed that ELM archives (by default) a dozen or so such fields
 		 Such fields are means over the fractional landunit of the fractional land
 		 Erroneous regridding if landunit_fraction (in PCT_LANDUNIT) < landfrac
@@ -5219,7 +5222,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
 		    tally[idx_out]++;
 		  }else{ /* !mss_val_cmp_dbl */
-		    /* If input gridcell is not missing, and it has positive-definite area,
+		    /* If input field value is missing in a gridcell with positive-definite area,
 		       then input field has sub-sub-gridscale missing value in gridcell.
 		       Reduce effective area used for normalization appropriately */
 		    if((var_val_crr=sgs_frc_in[idx_in]) != mss_val_cmp_dbl)
@@ -5244,8 +5247,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		    }else{ /* !mss_val_cmp_dbl */
 		      /* Same sub-sub-gridcell procedure as for single-level fields except...
 			 Assume SGS normalization is vertically uniform
-			 The compute sub-SGS adjustment for first level only 
-			 Use sub-SGS-adjusted normalization factor for all levels
+			 Then compute sub-SGS adjustment for first level only 
+			 Use sub-SGS-adjusted normalization factor in level zero for all remaining levels
 			 Otherwise would need to re-copy/compute sgs_frc_out for every level */
 		      if(lvl_idx == 0)
 			if((var_val_crr=sgs_frc_in[idx_in]) != mss_val_cmp_dbl)
