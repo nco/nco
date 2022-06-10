@@ -1,10 +1,10 @@
 2022-06-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
+	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: adopt new filter handlers';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
 
-	* Name-swap to nco_flt_def_out/wrp() is nco_flt_old_out/wrp(), nco_tst_def_out/wrp() is nco_flt_def_out/wrp()
+	* Name-swap so nco_flt_def_out/wrp() is nco_flt_old_out/wrp(), nco_tst_def_out/wrp() is nco_flt_def_out/wrp()
 
 	* Adopt nco_tst_def_out() in regridder and map routines
 
