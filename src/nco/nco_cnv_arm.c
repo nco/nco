@@ -140,7 +140,7 @@ nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 
   /* Set HDF Lempel-Ziv compression level, if requested */
   //if(dfl_lvl >= 0) (void)nco_def_var_deflate(nc_id,time_id,(int)NC_SHUFFLE,(int)True,dfl_lvl);
-  if(dfl_lvl >= 0) rcd=nco_flt_def_out(nc_id,time_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd=nco_tst_def_out(nc_id,time_id,NULL,nco_flt_flg_lsy_no);
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: WARNING ARM file could not compress \"time\" variable\n",nco_prg_nm_get());
     rcd=NC_NOERR;

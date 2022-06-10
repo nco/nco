@@ -244,7 +244,6 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   int dmn_id_wvl; /* [id] Wavelength dimension ID */
   int dmn_id_xdm; /* [id] X-dimension ID */
   int dmn_id_ydm; /* [id] Y-dimension ID */
-  int dfl_lvl; /* [enm] Deflate level [0..9] */
   /* Terraref raw image files can be ~64 GB large so use netCDF4 */
   int fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
   int out_id; /* I [id] Output netCDF file ID */
@@ -297,8 +296,6 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
 
   var_typ_in=trr->var_typ_in; /* [enm] NetCDF type-equivalent of binary data (raw imagery) */
   var_typ_out=trr->var_typ_out; /* [enm] NetCDF type of data in output file */
-
-  dfl_lvl=trr->dfl_lvl;
 
   if(nco_dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stderr,"%s: INFO %s Terraref metadata: ",nco_prg_nm_get(),fnc_nm);
@@ -408,7 +405,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   dmn_cnt[dmn_idx_ydm]=ydm_nbr;
 
   (void)nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_3D,dmn_ids,&var_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,var_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,var_id,NULL,nco_flt_flg_nil);
   
   /* Define "units" attributes */
   rcd=nco_char_att_put(out_id,NULL,"title",trr->ttl);
