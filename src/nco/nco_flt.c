@@ -706,8 +706,7 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
  const int var_in_id, /* I [id] Variable ID */
  const char * const var_nm_in, /* I [nm] Variable name [optional] */
  const int nc_out_id, /* I [id] netCDF output file/group ID */
- const int var_out_id, /* I [id] Variable ID */
- const int dfl_lvl) /* I [enm] Deflate level [0..9] */
+ const int var_out_id) /* I [id] Variable ID */
 {
   /* Purpose: Copy compression settings (if any) from same variable in input to output file
 
@@ -733,13 +732,13 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
   /* Deflation */
   int deflate; /* [flg] Turn-on deflate filter */
   int dfl_lvl_in; /* [enm] Deflate level [0..9] in input file */
-  int dfl_lvl_cpy; /* [enm] Copy of requested deflate level, if any */
+  int dfl_lvl; /* [enm] Command-line requested deflate level, if any */
   int shuffle; /* [flg] Turn-on shuffle filter */
   int var_in_id_cpy=-1; /* [id] Writable copy of input variable ID */
 
   /* Use copies so var_in_id, dfl_lvl can remain const in prototype */
   var_in_id_cpy=var_in_id;
-  dfl_lvl_cpy=dfl_lvl;
+  dfl_lvl=NCO_DFL_LVL_UNDEFINED;
 
   /* Write (or overwrite) var_in_id when var_nm_in is supplied */
   if(var_nm_in && nc_in_id >= 0){
@@ -781,7 +780,7 @@ nco_tst_def_wrp /* [fnc] Call filters immediately after variable definition */
 	/* Overwrite on-disk DEFLATE level, if any, with user-specified level, if any */ 
 	if(dfl_lvl != NCO_DFL_LVL_UNDEFINED)
 	  if(flt_lst[flt_idx] == H5Z_FILTER_DEFLATE)
-	    prm_lst[0]=dfl_lvl_cpy;
+	    prm_lst[0]=dfl_lvl;
 	for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
 	  (void)sprintf(sng_foo,"%u",prm_lst[prm_idx]);
 	  strcat(flt_sng,sng_foo);

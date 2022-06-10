@@ -158,8 +158,7 @@ nco_tst_def_wrp /* [fnc] Define output filters based on input filters */
  const int var_in_id, /* I [id] Variable ID */
  const char * const var_nm_in, /* I [nm] Variable name [optional] */
  const int nc_out_id, /* I [id] netCDF output file/group ID */
- const int var_out_id, /* I [id] Variable ID */
- const int dfl_lvl); /* I [enm] Deflate level [0..9] */
+ const int var_out_id); /* I [id] Variable ID */
 
 int /* O [enm] Return code */
 nco_tst_def_out /* [fnc] Define filters based on requested  */

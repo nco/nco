@@ -50,7 +50,6 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   int dmn_ids[dmn_nbr_grd_max]; /* [id] Dimension IDs array for output variable */
 
-  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int fll_md_old; /* [enm] Old fill mode */
   int in_id_dst; /* I [id] Input netCDF file ID */
   int in_id_src; /* I [id] Input netCDF file ID */
@@ -476,7 +475,6 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   size_t wgt_nbr=1L; /* [nbr] Number of weights */
   size_t lnk_nbr; /* [nbr] Number of links */
 
-  dfl_lvl=rgr->dfl_lvl;
   fl_grd_dst=rgr->fl_grd_dst;
   fl_grd_src=rgr->fl_grd_src;
   fl_out_fmt=rgr->fl_out_fmt;
@@ -530,51 +528,51 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_def_var(out_id,"dst_grid_dims",NC_INT,dmn_nbr_1D,&dst_grid_rank_id,&dmn_sz_out_int_id);
 
   rcd+=nco_def_var(out_id,"area_a",crd_typ,dmn_nbr_1D,&src_grid_size_id,&area_in_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,area_in_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,area_in_id,NULL,nco_flt_flg_lsy_no);
   rcd+=nco_def_var(out_id,"frac_a",crd_typ,dmn_nbr_1D,&src_grid_size_id,&frc_in_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,frc_in_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,frc_in_id,NULL,nco_flt_flg_lsy_no);
   rcd+=nco_def_var(out_id,"mask_a",(nc_type)NC_INT,dmn_nbr_1D,&src_grid_size_id,&msk_in_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,msk_in_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,msk_in_id,NULL,nco_flt_flg_lsy_no);
   rcd+=nco_def_var(out_id,"xc_a",crd_typ,dmn_nbr_1D,&src_grid_size_id,&src_grd_ctr_lon_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,src_grd_ctr_lon_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,src_grd_ctr_lon_id,NULL,nco_flt_flg_lsy_no);
   rcd+=nco_def_var(out_id,"yc_a",crd_typ,dmn_nbr_1D,&src_grid_size_id,&src_grd_ctr_lat_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,src_grd_ctr_lat_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,src_grd_ctr_lat_id,NULL,nco_flt_flg_lsy_no);
   dmn_ids[0]=src_grid_size_id;
   dmn_ids[1]=src_grid_corners_id;
   rcd+=nco_def_var(out_id,"xv_a",crd_typ,dmn_nbr_2D,dmn_ids,&src_grd_crn_lon_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,src_grd_crn_lon_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,src_grd_crn_lon_id,NULL,nco_flt_flg_lsy_no);
   dmn_ids[0]=src_grid_size_id;
   dmn_ids[1]=src_grid_corners_id;
   rcd+=nco_def_var(out_id,"yv_a",crd_typ,dmn_nbr_2D,dmn_ids,&src_grd_crn_lat_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,src_grd_crn_lat_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,src_grd_crn_lat_id,NULL,nco_flt_flg_lsy_no);
 
   rcd+=nco_def_var(out_id,"area_b",crd_typ,dmn_nbr_1D,&dst_grid_size_id,&area_out_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,area_out_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,area_out_id,NULL,nco_flt_flg_lsy_no);
   rcd+=nco_def_var(out_id,"frac_b",crd_typ,dmn_nbr_1D,&dst_grid_size_id,&frc_out_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,frc_out_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,frc_out_id,NULL,nco_flt_flg_lsy_no);
   rcd+=nco_def_var(out_id,"mask_b",(nc_type)NC_INT,dmn_nbr_1D,&dst_grid_size_id,&msk_out_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,msk_out_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,msk_out_id,NULL,nco_flt_flg_lsy_no);
   rcd+=nco_def_var(out_id,"xc_b",crd_typ,dmn_nbr_1D,&dst_grid_size_id,&dst_grd_ctr_lon_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,dst_grd_ctr_lon_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,dst_grd_ctr_lon_id,NULL,nco_flt_flg_lsy_no);
   rcd+=nco_def_var(out_id,"yc_b",crd_typ,dmn_nbr_1D,&dst_grid_size_id,&dst_grd_ctr_lat_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,dst_grd_ctr_lat_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,dst_grd_ctr_lat_id,NULL,nco_flt_flg_lsy_no);
   dmn_ids[0]=dst_grid_size_id;
   dmn_ids[1]=dst_grid_corners_id;
   rcd+=nco_def_var(out_id,"xv_b",crd_typ,dmn_nbr_2D,dmn_ids,&dst_grd_crn_lon_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,dst_grd_crn_lon_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,dst_grd_crn_lon_id,NULL,nco_flt_flg_lsy_no);
   dmn_ids[0]=dst_grid_size_id;
   dmn_ids[1]=dst_grid_corners_id;
   rcd+=nco_def_var(out_id,"yv_b",crd_typ,dmn_nbr_2D,dmn_ids,&dst_grd_crn_lat_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,dst_grd_crn_lat_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,dst_grd_crn_lat_id,NULL,nco_flt_flg_lsy_no);
 
   /* Defining largest array last to help evade netCDF3-classic file format limits only works if
      largest array is S because x/yv_a/b come in pairs of equal size. So define S last. */
   rcd+=nco_def_var(out_id,"col",(nc_type)NC_INT,dmn_nbr_1D,&num_links_id,&col_src_adr_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,col_src_adr_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,col_src_adr_id,NULL,nco_flt_flg_lsy_no);
   rcd+=nco_def_var(out_id,"row",(nc_type)NC_INT,dmn_nbr_1D,&num_links_id,&row_dst_adr_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,row_dst_adr_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,row_dst_adr_id,NULL,nco_flt_flg_lsy_no);
   rcd+=nco_def_var(out_id,"S",crd_typ,dmn_nbr_1D,&num_links_id,&wgt_raw_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,wgt_raw_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,wgt_raw_id,NULL,nco_flt_flg_lsy_no);
 
   /* Implement CMIP6 conventions in Taylor, Oehmke, Ullrich, Zender et al. (2019), "CMIP6 Specifications for Regridding Weights" https://docs.google.com/document/d/1BfVVsKAk9MAsOYstwFSWI2ZBt5mrO_Nmcu7rLGDuL08/edit */
   rcd=nco_char_att_put(out_id,NULL,"title","netCDF Operators (NCO) Offline Regridding Weight Generator");
@@ -1221,7 +1219,6 @@ nco_msh_wrt
   //int thr_nbr=int_CEWI; /* [nbr] Thread number */
 
   int out_id; /* I [id] Output netCDF file ID */
-  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int dmn_ids[2]; /* [id] Dimension IDs array for output variable */
   int dmn_id_grd_crn; /* [id] Grid corners dimension ID */
@@ -1277,13 +1274,13 @@ nco_msh_wrt
 
   /* Define variables */
   (void)nco_def_var(out_id,grd_crn_lat_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lat_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,grd_crn_lat_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,grd_crn_lat_id,NULL,nco_flt_flg_lsy_no);
 
   (void)nco_def_var(out_id,grd_crn_lon_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lon_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,grd_crn_lon_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,grd_crn_lon_id,NULL,nco_flt_flg_lsy_no);
 
   (void)nco_def_var(out_id,grd_area_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_area_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,grd_area_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,grd_area_id,NULL,nco_flt_flg_lsy_no);
 
   //if(thr_nbr >= 1) (void)nco_thr_att_cat(out_id,thr_nbr);
 
@@ -1491,7 +1488,6 @@ int fl_out_fmt)
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   int out_id; /* I [id] Output netCDF file ID */
-  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int dmn_ids[3]; /* [id] Dimension IDs array for output variable */
   int grd_crn_lat_id; /* [id] Grid corner latitudes  variable ID */
   int grd_crn_lon_id; /* [id] Grid corner longitudes variable ID */
@@ -1589,27 +1585,27 @@ int fl_out_fmt)
 
   /* Define variables */
   rcd+=nco_def_var(out_id,grd_crn_lat_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lat_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,grd_crn_lat_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,grd_crn_lat_id,NULL,nco_flt_flg_lsy_no);
   nco_msh_att_char(out_id,grd_crn_lat_id,grd_crn_lat_nm,"units","degrees");
 
   rcd+=nco_def_var(out_id,grd_crn_lon_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lon_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,grd_crn_lon_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,grd_crn_lon_id,NULL,nco_flt_flg_lsy_no);
   nco_msh_att_char(out_id,grd_crn_lon_id,grd_crn_lon_nm,"units","degrees");
 
   rcd+=nco_def_var(out_id,grd_area_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_area_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,grd_area_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,grd_area_id,NULL,nco_flt_flg_lsy_no);
   nco_msh_att_char(out_id,grd_area_id,grd_area_nm,"units","steradians");
 
   rcd+=nco_def_var(out_id,grd_ctr_lon_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_ctr_lon_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,grd_ctr_lon_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,grd_ctr_lon_id,NULL,nco_flt_flg_lsy_no);
   nco_msh_att_char(out_id,grd_ctr_lon_id,grd_ctr_lon_nm,"units","degrees");
 
   rcd+=nco_def_var(out_id,grd_ctr_lat_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_ctr_lat_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,grd_ctr_lat_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,grd_ctr_lat_id,NULL,nco_flt_flg_lsy_no);
   nco_msh_att_char(out_id,grd_ctr_lat_id,grd_ctr_lat_nm,"units","degrees");
 
   rcd+=nco_def_var(out_id,msk_nm,NC_INT,dmn_nbr_1D,dmn_ids,&grd_msk_id);
-  if(dfl_lvl > 0) rcd+=nco_flt_def_out(out_id,grd_msk_id,dfl_lvl);
+  if(nco_cmp_glb_get()) rcd+=nco_tst_def_out(out_id,grd_msk_id,NULL,nco_flt_flg_lsy_no);
 
   rcd+=nco_def_var(out_id,dmn_sz_nm,NC_INT,dmn_nbr_1D,&dmn_ids[2],&grd_rnk_id);
 
