@@ -257,6 +257,7 @@ extern "C" {
   unsigned short nco_mrd_cnv_get(void);
   unsigned short nco_rth_cnv_get(void);
   unsigned short nco_upk_cnv_get(void);
+  void nco_cmp_glb_set(char *nco_cmp_glb_arg); /* [sng] Global compression specification */
   void nco_fmt_xtn_set(unsigned short nco_fmt_xtn_arg);
   void nco_mta_dlm_set(char *nco_mta_dlm_arg);
 

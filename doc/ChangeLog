@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha02: fxm';git push
 	git tag -a 5.0.8-alpha02 -m 'Vienna';git push --tags
 
-	* Refactor so nco_cmp_sng_glb is global variable
+	* Make nco_cmp_sng_glb global variable with get()/set() accessor functions
 
 	* Refactor so nco_tst_def_out() receives filter flag instead of superfluous dfl_lvl
 
