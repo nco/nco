@@ -5244,7 +5244,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		      /* Same sub-sub-gridcell procedure as for single-level fields except...
 			 Assume SGS normalization is vertically uniform
 			 Then compute sub-SGS adjustment for first level only 
-			 Use sub-SGS-adjusted normalization factor in level zero for all remaining levels
+			 Use sub-SGS-adjusted normalization factor computed in level 0 for all remaining levels
 			 Otherwise would need to re-copy/compute sgs_frc_out for every level */
 		      if(lvl_idx == 0)
 			if((var_val_crr=sgs_frc_in[idx_in]) != mss_val_cmp_dbl)
@@ -5256,14 +5256,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		    idx_out=dst_idx+val_out_fst;
 		    if(!tally[idx_out]){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[idx_out]/=sgs_frc_out_dpl[dst_idx];}
-		  } /* dst_idx */
+		  } /* !dst_idx */
 		  val_in_fst+=grd_sz_in;
 		  val_out_fst+=grd_sz_out;
-		} /* !lvl_idx */
-	      } /* lvl_nbr > 1 */
+		} /* !lvl_idx < lvl_nbr */
+	      } /* !lvl_nbr != 1 */
 	      if(sgs_frc_out_dpl) sgs_frc_out_dpl=(double *)nco_free(sgs_frc_out_dpl);
 	    } /* !has_mss_val */
-	  } /* !sgs_msk_nm */
+	  } /* !sgs_frc_nm, !sgs_msk_nm */
 	} /* !sgs_frc_out */
 
 	if(nco_typ_ntg(var_typ_out)){

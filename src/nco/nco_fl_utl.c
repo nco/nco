@@ -1682,7 +1682,7 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
   if(drc_out) drc_out=(char *)nco_free(drc_out);
 
   return fl_sys_blk_sz;
-} /* end nco_fl_blocksize() */
+} /* !nco_fl_blocksize() */
 
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */

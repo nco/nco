@@ -38,11 +38,11 @@ int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 (char * const cmp_sng, /* I/O [sng] Compression specification */
  int * const dfl_lvlp, /* I [enm] Deflate level [0..9] */
- int *flt_glb_nbr, /* [nbr] Number of codecs specified */
- nco_flt_typ_enm **flt_glb_alg, /* [nbr] List of filters specified */
- int **flt_glb_lvl, /* [nbr] List of compression levels for each filter */
- int **flt_glb_prm_nbr, /* [nbr] List of parameter numbers for each filter */
- int ***flt_glb_prm) /* [nbr] List of lists of parameters for each filter */
+ int *flt_nbrp, /* [nbr] Number of codecs specified */
+ nco_flt_typ_enm **flt_algp, /* [nbr] List of filters specified */
+ int **flt_lvlp, /* [nbr] List of compression levels for each filter */
+ int **flt_prm_nbrp, /* [nbr] List of parameter numbers for each filter */
+ int ***flt_prmp) /* [nbr] List of lists of parameters for each filter */
 {
   /* Purpose: Parse and set global lossy/lossless compression settings
 
@@ -183,12 +183,12 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   if(!nco_cmp_glb_get()) nco_cmp_glb_set((char *)strdup(cmp_sng_std));
 
   /* Variables to copy back to calling routine (or global variable) if requested */
-  if(flt_glb_nbr) *flt_glb_nbr=flt_nbr;
-  if(flt_glb_alg) *flt_glb_alg=flt_alg; else flt_alg=(nco_flt_typ_enm *)nco_free(flt_alg);
-  if(flt_glb_lvl) *flt_glb_lvl=flt_lvl; else flt_lvl=(int *)nco_free(flt_lvl);
-  if(flt_glb_prm_nbr) *flt_glb_prm_nbr=flt_prm_nbr; else flt_prm_nbr=(int *)nco_free(flt_prm_nbr);
-  if(flt_glb_prm){
-    *flt_glb_prm=flt_prm;
+  if(flt_nbrp) *flt_nbrp=flt_nbr;
+  if(flt_algp) *flt_algp=flt_alg; else flt_alg=(nco_flt_typ_enm *)nco_free(flt_alg);
+  if(flt_lvlp) *flt_lvlp=flt_lvl; else flt_lvl=(int *)nco_free(flt_lvl);
+  if(flt_prm_nbrp) *flt_prm_nbrp=flt_prm_nbr; else flt_prm_nbr=(int *)nco_free(flt_prm_nbr);
+  if(flt_prmp){
+    *flt_prmp=flt_prm;
   }else{
     for(flt_idx=0;flt_idx<flt_nbr;flt_idx++) flt_prm[flt_idx]=(int *)nco_free(flt_prm[flt_idx]);
     flt_prm=(int **)nco_free(flt_prm);
@@ -228,7 +228,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     strcat(nco_cdc_lst_glb,", BLOSC LZ4 HC");
 # endif /* !CCR_HAS_BLOSC_LZ4_HC */
 # if CCR_HAS_SNAPPY || NC_LIB_VER >= 490
-    strcat(nco_cdc_lst_glb,", Snappy");
+    strcat(nco_cdc_lst_glb,", BLOSC Snappy");
 # endif /* !CCR_HAS_SNAPPY */
 # if CCR_HAS_BLOSC_DEFLATE || NC_LIB_VER >= 490
     strcat(nco_cdc_lst_glb,", BLOSC DEFLATE");
@@ -828,7 +828,8 @@ nco_flt_def_out /* [fnc]  */
      Usage: 
      Until 20220501 the NCO code to define per-variable filters was scattered in ~four places 
      Introduction of new filters in netCDF 4.9.0 makes this untenable 
-     Here were functionalize the invocation of original netCDF4 filters DEFLATE and Shuffle */
+     Here were functionalize the invocation of original netCDF4 filters DEFLATE and Shuffle,
+     and add invocation of other known filters */
 
   const char fnc_nm[]="nco_flt_def_out()"; /* [sng] Function name */
 
@@ -839,6 +840,8 @@ nco_flt_def_out /* [fnc]  */
   /* Deflation */
   int deflate; /* [flg] Turn-on deflate filter */
   int shuffle; /* [flg] Turn-on shuffle filter */
+  unsigned int blk_sz; /* [nbr] Blocksize for BLOSC filter */
+  unsigned int add_shf=1; /* [flg] Add Shuffle to BLOSC filter */
 
   int flt_idx; /* [idx] Filter index */
 
@@ -869,6 +872,10 @@ nco_flt_def_out /* [fnc]  */
     (void)nco_cmp_prs(cmp_sng_cpy,(int *)NULL,&flt_nbr,&flt_alg,&flt_lvl,&flt_prm_nbr,&flt_prm);
   } /* !cmp_sng */
     
+  for(flt_idx=0;flt_idx<flt_nbr;flt_idx++)
+    if(flt_alg[flt_idx] == nco_flt_bls_snp)
+      rcd+=nco_inq_var_blk_sz(nc_out_id,var_out_id,&blk_sz);
+
   /* Invoke applicable codec(s) */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){ 
     if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s executing filter: flt_nbr=%d, flt_idx=%d, flt_enm=%d flt_sng=%s, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2sng(flt_alg[flt_idx]),flt_lvl[flt_idx]);
@@ -948,6 +955,15 @@ nco_flt_def_out /* [fnc]  */
 # endif /* !CCR_HAS_ZSTD || NC_LIB_VER >= 490  */
       break;
 
+    case nco_flt_bls_snp: /* BLOSC Snappy*/
+# if NC_LIB_VER >= 490 
+      rcd+=nc_def_var_blosc(nc_out_id,var_out_id,BLOSC_SNAPPY,(unsigned int)flt_lvl[flt_idx],blk_sz,add_shf);
+# else /* !NC_LIB_VER >= 490 */
+      add_shf+=0*add_shf;
+      cdc_has_flt=False;
+# endif /* NC_LIB_VER >= 490  */
+      break;
+
     case nco_flt_dgr: /* DigitRound */
       cdc_has_flt=False;
       break;
@@ -979,4 +995,67 @@ nco_flt_def_out /* [fnc]  */
   return rcd;
   
 } /* !nco_flt_def_out() */
+
+int /* O [enm] Return code */
+nco_inq_var_blk_sz
+(const int nc_id, /* I [id] netCDF output file/group ID */
+ const int var_id, /* I [id] Variable ID */
+ unsigned int * const blk_szp) /* O [B] Block size in bytes */
+{
+  /* Purpose: Determine block size used for chunked storage */
+  const char fnc_nm[]="nco_inq_blk_sz()"; /* [sng] Function name */
+  char var_nm[NC_MAX_NAME+1L];
+
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  int *dmn_id; /* [ID] Dimension IDs */
+  int dmn_idx; /* [idx] Dimension index */
+  int dmn_nbr; /* [nbr] Number of dimensions in variable */
+  int srg_typ; /* [enm] Storage type */
+
+  nc_type var_typ; /* [enm] Variable type */
+  unsigned int blk_sz; /* [nbr] Blocksize of each chunk */
+
+  size_t *cnk_sz; /* [nbr] Chunksize list */
+
+  rcd+=nco_inq_varname(nc_id,var_id,var_nm);
+
+  rcd+=nco_inq_varndims(nc_id,var_id,&dmn_nbr);
+  if(dmn_nbr == 0){
+    (void)fprintf(stderr,"%s: ERROR %s reports variable %s is scalar not array\n",nco_prg_nm_get(),fnc_nm,var_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !srg_typ */
+
+  rcd+=nco_inq_var_chunking(nc_id,var_id,&srg_typ,(size_t *)NULL);
+  if(srg_typ != NC_CHUNKED){
+    (void)fprintf(stderr,"%s: ERROR %s reports variable %s is not chunked\n",nco_prg_nm_get(),fnc_nm,var_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !srg_typ */
+
+  /* Allocate space to hold dimension IDs */
+  dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
+  /* Allocate space to hold chunksizes */
+  cnk_sz=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));    
+
+  /* Get dimension IDs */
+  rcd+=nco_inq_vardimid(nc_id,var_id,dmn_id);
+  /* Get chunksizes */
+  rcd+=nco_inq_var_chunking(nc_id,var_id,(int *)NULL,cnk_sz);
+  /* Inquire variable type */
+  rcd+=nco_inq_vartype(nc_id,var_id,&var_typ);
+
+  blk_sz=nco_typ_lng(var_typ);
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
+    blk_sz*=cnk_sz[dmn_idx];
+  
+  /* Free space holding dimension IDs and chunksizes */
+  if(cnk_sz) cnk_sz=(size_t *)nco_free(cnk_sz);
+  if(dmn_id) dmn_id=(int *)nco_free(dmn_id);
+
+  *blk_szp=blk_sz;
+  
+  if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s reports block size of variable %s is %u\n",nco_prg_nm_get(),fnc_nm,var_nm,blk_sz);
+
+    return rcd;
+} /* !nco_inq_var_blk_sz() */
 

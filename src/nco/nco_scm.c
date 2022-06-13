@@ -157,13 +157,13 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 {
   /* Purpose: Print netCDF library version */
 
-  char *cmp_dat_sng;
+  char *cpl_dat_sng;
   char *dlr_ptr;
   char *lbr_sng;
   char *lbr_vrs_sng;
   char *of_ptr;
 
-  size_t cmp_dat_sng_lng;
+  size_t cpl_dat_sng_lng;
   size_t lbr_vrs_sng_lng;
 
   /* Behavior of nc_inq_libvers() depends on library versions. Return values are:
@@ -187,17 +187,17 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 
   dlr_ptr=strstr(lbr_sng," $");
   if(of_ptr && dlr_ptr){
-    cmp_dat_sng_lng=(size_t)(dlr_ptr-of_ptr-4ul); /* 4 is the length of " of " */
-    cmp_dat_sng=(char *)nco_malloc(cmp_dat_sng_lng+1ul);
-    strncpy(cmp_dat_sng,of_ptr+4ul,cmp_dat_sng_lng); /* 4 is the length of " of " */
-    cmp_dat_sng[cmp_dat_sng_lng]='\0'; /* NUL-terminate */
+    cpl_dat_sng_lng=(size_t)(dlr_ptr-of_ptr-4ul); /* 4 is the length of " of " */
+    cpl_dat_sng=(char *)nco_malloc(cpl_dat_sng_lng+1ul);
+    strncpy(cpl_dat_sng,of_ptr+4ul,cpl_dat_sng_lng); /* 4 is the length of " of " */
+    cpl_dat_sng[cpl_dat_sng_lng]='\0'; /* NUL-terminate */
   }else{
-    cmp_dat_sng=(char *)strdup("Unknown");
+    cpl_dat_sng=(char *)strdup("Unknown");
   } /* endif */
 
-  (void)fprintf(stderr,"Linked to netCDF library version %s compiled %s\n",lbr_vrs_sng,cmp_dat_sng);
+  (void)fprintf(stderr,"Linked to netCDF library version %s compiled %s\n",lbr_vrs_sng,cpl_dat_sng);
 
-  cmp_dat_sng=(char *)nco_free(cmp_dat_sng);
+  cpl_dat_sng=(char *)nco_free(cpl_dat_sng);
   lbr_vrs_sng=(char *)nco_free(lbr_vrs_sng);
   lbr_sng=(char *)nco_free(lbr_sng);
 } /* end nco_lbr_vrs_prn() */
@@ -208,7 +208,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
   /* Purpose: Return mnemonic describing current NCO version 
      20191221: ncremap/ncclimo print left quote and first word of this string, so one-word strings look best 
      20200117: fixed this limitation, multi-word versions work fine */
-  return "Vienna";
+  return "Sievierodonetsk Strong";
 } /* !nco_nmn_get() */
 
 void

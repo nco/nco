@@ -481,6 +481,7 @@ cf_flg='Yes' # [sng] Produce CF climatology attribute?
 clm_flg='Yes' # [sng] Generate climatology
 clm_hfc_or_mth='No' # [sng] Generate monthly output climatology from monthly or HFC input
 clm_md='mth' # [sng] Climatology mode ('ann', 'dly', 'hfc', 'hfs', or 'mth')
+cmp_sng='' # [sng] Compression string
 csn_flg='No' # [flg] Trigger season-processing code
 csn_lst='mam,jja,son,djf' # [sng] Seasons to output (subset of mam,jja,son,djf,jfm,amj,jas,ond,fm,on)
 d2f_flg='No' # [flg] Convert double-precision fields to single-precision
@@ -574,6 +575,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--area_nm${fnt_nrm}  Area-variable name (default ${fnt_bld}${area_nm}${fnt_nrm}) [${fnt_tlc}area_nm, area_name, area${fnt_nrm}]"
     echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}] [${fnt_tlc}ann | dly | hfc | hfs | mth${fnt_nrm}]"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string to generate input names or to name HFC output (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
+    echo " ${fnt_bld}--cmp_sng${fnt_nrm}  Compression string (empty means none) (default ${fnt_bld}${cmp_sng}${fnt_nrm}) [${fnt_tlc}cmp, cmp_sng, compress, compression, cpr, cdc, codec ${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
     echo " ${fnt_bld}--dpf${fnt_nrm}      Days-per-file in every high-frequency splitter input file [${fnt_tlc}dpf, days_per_file${fnt_nrm}]"
@@ -739,6 +741,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       area_nm=?* | area_name=?* | area=?* ) area_nm="${LONG_OPTARG}" ;; # # Area-variable name
 	       clm_md=?* | climatology_mode=?* | climo_mode=?* ) clm_md_usr="${LONG_OPTARG}" ;; # -C # Climatology mode
 	       caseid=?* | case_id=?* | case=?* ) caseid="${LONG_OPTARG}" ;; # -c # CASEID
+	       cmp=?* | cmp_sng=?* | compress=? | compression=?* | cpr=?* | cdc=?* | codec=?* ) cmp_sng="${LONG_OPTARG}" ;; # # Compression string
 	       d2f | d2s | dbl_flt | dbl_sgl | double_float ) d2f_flg='Yes'; d2f_opt='--d2f' ;; # # Convert double-precision fields to single-precision
 	       d2f=?* | d2s=?* | dbl_flt=?* | dbl_sgl=?* | double_float=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # D2F
 	       wnt_md=?* | dcm_md=? | december_mode=?* | winter_mode=?* | dec_md=?* ) wnt_md="${LONG_OPTARG}" ;; # -a # Winter mode
@@ -1217,6 +1220,9 @@ if [ -n "${var_lst}" ] && [ "${tms_flg}" != 'Yes' ]; then
     fi # !xcl_flg
     nco_opt="${nco_opt} -v ${var_lst}"
 fi # !var_lst
+if [ -n "${cmp_sng}" ]; then
+    nco_opt="${nco_opt} --cmp=${cmp_sng}"
+fi # !cmp_sng
 if [ -n "${dfl_lvl}" ]; then
     nco_opt="${nco_opt} --dfl_lvl=${dfl_lvl}"
 fi # !dfl_lvl
@@ -1865,6 +1871,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: clm_flg  = ${clm_flg}\n"
     printf "dbg: clm_md   = ${clm_md}\n"
     printf "dbg: clm_nbr  = ${clm_nbr}\n"
+    printf "dbg: cmp_sng  = ${cmp_sng}\n"
     printf "dbg: csn_lst  = ${csn_lst}\n"
     printf "dbg: csn_nbr  = ${csn_nbr}\n"
     printf "dbg: d2f_flg  = ${d2f_flg}\n"

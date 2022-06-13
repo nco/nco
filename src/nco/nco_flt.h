@@ -39,7 +39,7 @@
 # include <ccr_meta.h> /* CCR_VERSION, CCR_HAS_BITGROOM, ... */
 #endif /* !ENABLE_CCR */
 
-/* Quantization tokens introduced in netCDF 4.9.0 ~202206 */
+/* Quantization tokens introduced in netcdf.h 4.9.0 ~202206 */
 #ifndef NC_NOQUANTIZE
 # define NC_NOQUANTIZE 0 /**< No quantization in use. */    
 #endif
@@ -51,6 +51,12 @@
 #endif
 #ifndef NC_QUANTIZE_BITROUND
 # define NC_QUANTIZE_BITROUND 3 /**< Use BitRound quantization. */
+#endif
+
+/* Filter tokens introduced in netcdf_filter.h 4.9.0 ~202206 */
+/*Assumes use of c-blosc library */
+#ifndef BLOSC_BLOSCLZ
+ enum BLOSC_SUBCOMPRESSORS {BLOSC_LZ=0, BLOSC_LZ4=1, BLOSC_LZ4HC=2, BLOSC_SNAPPY=3, BLOSC_ZLIB=4, BLOSC_ZSTD=5};
 #endif
 
 /* Filter types that NCO knows internally: 
@@ -109,11 +115,11 @@ int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 (char * const cmp_sng, /* I/O [sng] Compression specification */
  int * const dfl_lvl, /* I [enm] Deflate level [0..9] */
- int *flt_glb_nbr, /* [nbr] Number of codecs specified */
- nco_flt_typ_enm **flt_glb_alg, /* [nbr] List of filters specified */
- int **flt_glb_lvl, /* [nbr] List of compression levels for each filter */
- int **flt_glb_prm_nbr, /* [nbr] List of parameter numbers for each filter */
- int ***flt_glb_prm); /* [nbr] List of lists of parameters for each filter */
+ int *flt_nbrp, /* [nbr] Number of codecs specified */
+ nco_flt_typ_enm **flt_algp, /* [nbr] List of filters specified */
+ int **flt_lvlp, /* [nbr] List of compression levels for each filter */
+ int **flt_prm_nbrp, /* [nbr] List of parameter numbers for each filter */
+ int ***flt_prmp); /* [nbr] List of lists of parameters for each filter */
 
 void
 nco_flt_hdf5_prs /* [fnc] Parse user-provided filter string */
@@ -166,6 +172,12 @@ nco_flt_def_out /* [fnc] Define filters based on requested  */
  const int var_out_id, /* I [id] Variable ID */
  const char * const cmp_sng, /* I/O [sng] Compression specification */
  const nco_flt_flg_enm flt_flg); /* I [enm] Enumerated flags for fine-grained compression control */
+
+int /* O [enm] Return code */
+nco_inq_var_blk_sz
+(const int nc_id, /* I [id] netCDF output file/group ID */
+ const int var_id, /* I [id] Variable ID */
+ unsigned int * const blk_szp); /* O [B] Block size in bytes */
 
 #ifdef __cplusplus
 } /* end extern "C" */

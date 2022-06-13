@@ -10,25 +10,25 @@
 #include "nco_ctl.h" /* Program flow control functions */
 
 const char * /* O [sng] Compiler and version */
-nco_cmp_get(void) /* [fnc] Return compiler and version */
+nco_cpl_get(void) /* [fnc] Return compiler and version */
 { 
   /* Purpose: Return string containing compiler and version */
-  const char fnc_nm[]="nco_cmp_get()";
+  const char fnc_nm[]="nco_cpl_get()";
 #if defined(_AIX) && !defined(__GNUC__) && !defined(__xlC__)
 #define NCO_XLC_LIKELY
-  static const char cmp_nm[]="xlc"; /* [sng] Compiler name */
-  static const char cmp_sng[]="Token _AIX defined in nco_cmp_get(), probably compiled with AIX xlc_r or xlc"; /* [sng] Compiler string */
+  static const char cpl_nm[]="xlc"; /* [sng] Compiler name */
+  static const char cpl_sng[]="Token _AIX defined in nco_cpl_get(), probably compiled with AIX xlc_r or xlc"; /* [sng] Compiler string */
 #endif /* !_AIX */
 #if defined(__xlC__)
 #define NCO_XLC_LIKELY
-  static const char cmp_nm[]="xlC"; /* [sng] Compiler name */
-  static const char cmp_sng[]="Token __xlC__ defined in nco_cmp_get(), probably compiled with AIX xlC_r or xlC"; /* [sng] Compiler string */
+  static const char cpl_nm[]="xlC"; /* [sng] Compiler name */
+  static const char cpl_sng[]="Token __xlC__ defined in nco_cpl_get(), probably compiled with AIX xlC_r or xlC"; /* [sng] Compiler string */
 #endif /* !__xlC__ */
 #if defined(__INTEL_COMPILER)
   // https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/compiler-reference/macros/additional-predefined-macros.html
   /* Some compilers, including icc, also define __GNUC__ by default */
-  static const char cmp_nm[]="icc";
-  static const char cmp_sng[]="Token __INTEL_COMPILER defined in nco_cmp_get(), probably compiled with Intel icc"; /* [sng] Compiler string */
+  static const char cpl_nm[]="icc";
+  static const char cpl_sng[]="Token __INTEL_COMPILER defined in nco_cpl_get(), probably compiled with Intel icc"; /* [sng] Compiler string */
   static const char itl_vrs[]=TKN2SNG(__INTEL_COMPILER); // [sng] Compiler version
   if(nco_dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stderr,"%s: INFO icc version defined as __INTEL_COMPILER is %s\n",nco_prg_nm_get(),itl_vrs);
@@ -39,34 +39,34 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   /* Testing for GCC macros early is dangerous because some compilers, 
      including Intel icc and clang, define GCC macros for compatibility */
 #if defined(__GNUG__)
-  static const char cmp_nm[]="g++"; /* [sng] Compiler name */
-  static const char cmp_sng[]="Token __GNUG__ defined in nco_cmp_get(). Compiled with GNU g++ (or a compiler that emulates g++)."; /* [sng] Compiler string */
+  static const char cpl_nm[]="g++"; /* [sng] Compiler name */
+  static const char cpl_sng[]="Token __GNUG__ defined in nco_cpl_get(). Compiled with GNU g++ (or a compiler that emulates g++)."; /* [sng] Compiler string */
 #else /* !__GNUG__ */
-  static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
-  static const char cmp_sng[]="Token __GNUC__ defined in nco_cmp_get(). Compiled with GNU gcc (or a compiler that emulates gcc)."; /* [sng] Compiler string */
+  static const char cpl_nm[]="gcc"; /* [sng] Compiler name */
+  static const char cpl_sng[]="Token __GNUC__ defined in nco_cpl_get(). Compiled with GNU gcc (or a compiler that emulates gcc)."; /* [sng] Compiler string */
 #endif /* !__GNUG__ */
-  static const char cmp_vrs[]=TKN2SNG(__VERSION__); // [sng] Compiler version
-  static const char cmp_vrs_mjr[]=TKN2SNG(__GNUC__); // [sng] Compiler major version
-  static const char cmp_vrs_mnr[]=TKN2SNG(__GNUC_MINOR__); // [sng] Compiler minor version
-  static const char cmp_vrs_pch[]=TKN2SNG(__GNUC_PATCHLEVEL__); // [sng] Compiler patch version
+  static const char cpl_vrs[]=TKN2SNG(__VERSION__); // [sng] Compiler version
+  static const char cpl_vrs_mjr[]=TKN2SNG(__GNUC__); // [sng] Compiler major version
+  static const char cpl_vrs_mnr[]=TKN2SNG(__GNUC_MINOR__); // [sng] Compiler minor version
+  static const char cpl_vrs_pch[]=TKN2SNG(__GNUC_PATCHLEVEL__); // [sng] Compiler patch version
 
   /* 20200519: Construct numeric library version */
 # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
 
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
-    (void)fprintf(stderr,"%s: INFO GCC major version is %s\n",nco_prg_nm_get(),cmp_vrs_mjr);
-    (void)fprintf(stderr,"%s: INFO GCC minor version is %s\n",nco_prg_nm_get(),cmp_vrs_mnr);
-    (void)fprintf(stderr,"%s: INFO GCC patch version is %s\n",nco_prg_nm_get(),cmp_vrs_pch);
+    (void)fprintf(stderr,"%s: INFO GCC major version is %s\n",nco_prg_nm_get(),cpl_vrs_mjr);
+    (void)fprintf(stderr,"%s: INFO GCC minor version is %s\n",nco_prg_nm_get(),cpl_vrs_mnr);
+    (void)fprintf(stderr,"%s: INFO GCC patch version is %s\n",nco_prg_nm_get(),cpl_vrs_pch);
   } /* endif dbg */
   if(nco_dbg_lvl_get() >= nco_dbg_std){
-    (void)fprintf(stderr,"%s: INFO GCC version defined as __VERSION__ is %s\n",nco_prg_nm_get(),cmp_vrs);
+    (void)fprintf(stderr,"%s: INFO GCC version defined as __VERSION__ is %s\n",nco_prg_nm_get(),cpl_vrs);
     (void)fprintf(stderr,"%s: INFO GCC version constructed as integer is %d\n",nco_prg_nm_get(),GCC_LIB_VERSION);
   } /* endif dbg */
 #endif /* !__GNUC__ */
 #if defined(__clang__) && !defined(__INTEL_COMPILER)
   /* Some compilers, including clang, also define __GNUC__ by default */
-  static const char cmp_nm[]="clang";
-  static const char cmp_sng[]="Token __clang__ defined in nco_cmp_get(), compiled with LLVM clang"; /* [sng] Compiler string */
+  static const char cpl_nm[]="clang";
+  static const char cpl_sng[]="Token __clang__ defined in nco_cpl_get(), compiled with LLVM clang"; /* [sng] Compiler string */
   /* 20200513 Obtain clang info with this trick from LWN:
      cc -dM -E - < /dev/null | grep clang */
   static const char clg_vrs[]=TKN2SNG(__clang_version__); // [sng] Compiler version
@@ -87,8 +87,8 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
 #endif /* !__clang__ */
 #ifdef __NVCC__
   /* https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html */
-  static const char cmp_nm[]="nvc";
-  static const char cmp_sng[]="Token __NVCC__ defined in nco_cmp_get(), probably compiled with Nvidia CUDA nvc"; /* [sng] Compiler string */
+  static const char cpl_nm[]="nvc";
+  static const char cpl_sng[]="Token __NVCC__ defined in nco_cpl_get(), probably compiled with Nvidia CUDA nvc"; /* [sng] Compiler string */
   static const char nvd_vrs[]=TKN2SNG(__CUDACC_VER_BUILD__); // [sng] Compiler version
   static const char nvd_vrs_mjr[]=TKN2SNG(__CUDACC_VER_MAJOR__); // [sng] Compiler major version
   static const char nvd_vrs_mnr[]=TKN2SNG(__CUDACC_VER_MINOR__); // [sng] Compiler minor version
@@ -105,25 +105,25 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
 #endif /* !__NVCC__ */
 #ifdef __PATHCC__
   /* Some compilers, including pathcc, also define __GNUC__ by default */
-  static const char cmp_nm[]="pathcc";
-  static const char cmp_sng[]="Token __PATHCC__ defined in nco_cmp_get(), probably compiled with PathScale (Qlogic) pathcc"; /* [sng] Compiler string */
+  static const char cpl_nm[]="pathcc";
+  static const char cpl_sng[]="Token __PATHCC__ defined in nco_cpl_get(), probably compiled with PathScale (Qlogic) pathcc"; /* [sng] Compiler string */
 #endif /* !__PATHCC__ */
 #ifdef PGI_CC
-  static const char cmp_nm[]="pgcc";
-  static const char cmp_sng[]="Token PGI_CC defined in nco_cmp_get(), probably compiled with PGI pgcc"; /* [sng] Compiler string */
+  static const char cpl_nm[]="pgcc";
+  static const char cpl_sng[]="Token PGI_CC defined in nco_cpl_get(), probably compiled with PGI pgcc"; /* [sng] Compiler string */
 #endif /* !PGI_CC */
 
   /* No tokens matched */
 #if !defined(NCO_XLC_LIKELY) && !defined(__clang__) && !defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__NVCC__) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Unknown compiler */
-  static const char cmp_nm[]="unknown"; /* [sng] Compiler name */
-  static const char cmp_sng[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler string */
+  static const char cpl_nm[]="unknown"; /* [sng] Compiler name */
+  static const char cpl_sng[]="Unknown compiler tokens in nco_cpl_get(), compiler is unknown"; /* [sng] Compiler string */
 #endif /* !unknown */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports underlying compiler standardized name is \"%s\"\n%s\n",nco_prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports underlying compiler standardized name is \"%s\"\n%s\n",nco_prg_nm_get(),fnc_nm,cpl_nm,cpl_sng);
 
-  return cmp_nm;
-} /* end nco_cmp_get() */
+  return cpl_nm;
+} /* end nco_cpl_get() */
 
 const char * /* O [sng] MPI implementation */
 nco_mpi_get(void) /* [fnc] Return MPI implementation */

@@ -347,7 +347,7 @@ main(int argc,char **argv)
     {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-    {"cmp",no_argument,0,0},
+    {"cpl",no_argument,0,0},
     {"compiler",no_argument,0,0},
     {"copyright",no_argument,0,0},
     {"cpy",no_argument,0,0},
@@ -697,8 +697,8 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_cll_msr") || !strcmp(opt_crr,"no_cell_measures")) EXTRACT_CLL_MSR=False; /* [flg] Do not extract cell_measures variables */
       if(!strcmp(opt_crr,"frm_trm") || !strcmp(opt_crr,"formula_terms")) EXTRACT_FRM_TRM=True; /* [flg] Extract formula_terms variables */
       if(!strcmp(opt_crr,"no_frm_trm") || !strcmp(opt_crr,"no_formula_terms")) EXTRACT_FRM_TRM=False; /* [flg] Do not extract formula_terms variables */
-      if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
-        (void)fprintf(stdout,"%s\n",nco_cmp_get());
+      if(!strcmp(opt_crr,"cpl") || !strcmp(opt_crr,"compiler")){
+        (void)fprintf(stdout,"%s\n",nco_cpl_get());
         nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
       if(!strcmp(opt_crr,"cpy") || !strcmp(opt_crr,"copyright") || !strcmp(opt_crr,"license")){
@@ -724,7 +724,7 @@ main(int argc,char **argv)
 	/* [fnc] Parse filter string and exit */
 	if(flt_sng) nco_flt_hdf5_prs(flt_sng);
       } /* !flt */
-      if(!strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec")) cmp_sng=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"cmp_sng") || !strcmp(opt_crr,"cpr") || !strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec") || !strcmp(opt_crr,"compress")) cmp_sng=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"fmt_val") || !strcmp(opt_crr,"val_fmt") || !strcmp(opt_crr,"value_format")) fmt_val=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
@@ -825,7 +825,7 @@ main(int argc,char **argv)
 	rgr_var=(char *)strdup(optarg);
       } /* !rgr_var */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nBit-Adjustment Alg.\t--baa, --bit_alg\nBuild-engine\t\t--bld, --build_engine\nByte-swap algorithm\t--bsa, --byte_swap\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --shh, --secret\nLibrary used\t\t--lbr, --library\nLog level\t\t--log_lvl, --log_level\nList rank >= 2 vars\t--lst_rnk_ge2\nList extracted vars\t--lst_xtr\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nBit-Adjustment Alg.\t--baa, --bit_alg\nBuild-engine\t\t--bld, --build_engine\nByte-swap algorithm\t--bsa, --byte_swap\nCompiler used\t\t--cpl, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --shh, --secret\nLibrary used\t\t--lbr, --library\nLog level\t\t--log_lvl, --log_level\nList rank >= 2 vars\t--lst_rnk_ge2\nList extracted vars\t--lst_xtr\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"srm")) PRN_SRM=True; /* [flg] Print ncStream */

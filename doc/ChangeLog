@@ -1,3 +1,13 @@
+2022-06-13  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.8-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha03: Sievierodonetsk Strong';git push
+	git tag -a 5.0.8-alpha03 -m '';git push --tags
+
+	* Standardize invocation as --cmp, --cmp_sng instead of --cdc
+
+	* Add nco_inq_blk_sz() and BLOSC Snappy invocation option
+
 2022-06-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha02 release procedure:

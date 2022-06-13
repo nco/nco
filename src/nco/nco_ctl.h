@@ -44,7 +44,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 const char * /* O [sng] Compiler and version */
-nco_cmp_get(void); /* [fnc] Return compiler and version */
+nco_cpl_get(void); /* [fnc] Return compiler and version */
 
 void
 nco_exit /* [fnc] Wrapper for exit() */
