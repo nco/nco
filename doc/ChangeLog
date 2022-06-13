@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha03: Sievierodonetsk Strong';git push
 	git tag -a 5.0.8-alpha03 -m '';git push --tags
 
+	* Add --cmp to ncclimo
+
 	* Standardize invocation as --cmp, --cmp_sng instead of --cdc
 
 	* Add nco_inq_blk_sz() and BLOSC Snappy invocation option

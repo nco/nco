@@ -462,9 +462,12 @@ main(int argc,char **argv)
     {"file_print",required_argument,0,0}, /* [sng] Formatted text output file */
     {"prn_fl",required_argument,0,0}, /* [sng] Formatted text output file */
     {"print_file",required_argument,0,0}, /* [sng] Formatted text output file */
-    {"ccr",required_argument,0,0}, /* [sng] CCR codec name */
-    {"cdc",required_argument,0,0}, /* [sng] CCR codec name */
-    {"codec",required_argument,0,0}, /* [sng] CCR codec name */
+    {"cmp_sng",required_argument,0,0}, /* [sng] Compression string */
+    {"ccr",required_argument,0,0}, /* [sng] Compression string */
+    {"cdc",required_argument,0,0}, /* [sng] Compression string */
+    {"codec",required_argument,0,0}, /* [sng] Compression string */
+    {"compression",required_argument,0,0}, /* [sng] Compression string */
+    {"cpr",required_argument,0,0}, /* [sng] Compression string */
     {"flt",required_argument,0,0}, /* [sng] Filter string */
     {"filter",required_argument,0,0}, /* [sng] Filter string */
     {"fmt_val",required_argument,0,0}, /* [sng] Format string for variable values */

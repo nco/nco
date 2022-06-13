@@ -287,13 +287,16 @@ main(int argc,char **argv)
     {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
     {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
     {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
-    {"fl_fmt",required_argument,0,0},
-    {"file_format",required_argument,0,0},
+    {"cmp_sng",required_argument,0,0}, /* [sng] Compression string */
+    {"ccr",required_argument,0,0}, /* [sng] Compression string */
+    {"cdc",required_argument,0,0}, /* [sng] Compression string */
+    {"codec",required_argument,0,0}, /* [sng] Compression string */
+    {"compression",required_argument,0,0}, /* [sng] Compression string */
+    {"cpr",required_argument,0,0}, /* [sng] Compression string */
     {"flt",required_argument,0,0}, /* [sng] Filter string */
     {"filter",required_argument,0,0}, /* [sng] Filter string */
-    {"ccr",required_argument,0,0}, /* [sng] CCR codec name */
-    {"cdc",required_argument,0,0}, /* [sng] CCR codec name */
-    {"codec",required_argument,0,0}, /* [sng] CCR codec name */
+    {"fl_fmt",required_argument,0,0},
+    {"file_format",required_argument,0,0},
     {"gaa",required_argument,0,0}, /* [sng] Global attribute add */
     {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
     {"hdr_pad",required_argument,0,0},
