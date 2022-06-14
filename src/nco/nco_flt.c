@@ -1033,6 +1033,7 @@ nco_flt_def_out /* [fnc]  */
 
     case nco_flt_unk: /* Unknown filter referenced by ID not name */
       /* Unknown filters must call the filter handler with unsigned ints */
+      rcd+=nco_inq_filter_avail(nc_out_id,flt_id[flt_idx]);
       flt_prm_uns=(unsigned int *)nco_malloc(flt_prm_nbr[flt_idx]*sizeof(unsigned int));
       for(prm_idx=0;prm_idx<flt_prm_nbr[flt_idx];prm_idx++)
 	flt_prm_uns[prm_idx]=(unsigned int)flt_prm[flt_idx][prm_idx];

@@ -1,8 +1,8 @@
 2022-06-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha03: Sievierodonetsk Strong';git push
-	git tag -a 5.0.8-alpha03 -m '';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha03: Sievierodonetsk';git push
+	git tag -a 5.0.8-alpha03 -m 'Improve support for unknown HDF5 filter IDs, Shuffle, consistency with ncdump';git push --tags
 
 	* Invoking Shuffle filter as shf,1 or 2,1 both seem to work
 
