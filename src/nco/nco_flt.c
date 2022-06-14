@@ -40,6 +40,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
  int * const dfl_lvlp, /* I [enm] Deflate level [0..9] */
  int *flt_nbrp, /* [nbr] Number of codecs specified */
  nco_flt_typ_enm **flt_algp, /* [nbr] List of filters specified */
+ unsigned int **flt_idp, /* [ID] List of HDF5 filter IDs */
  int **flt_lvlp, /* [nbr] List of compression levels for each filter */
  int **flt_prm_nbrp, /* [nbr] List of parameter numbers for each filter */
  int ***flt_prmp) /* [nbr] List of lists of parameters for each filter */
@@ -72,6 +73,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   /* Varibles to copy back to calling routine if requested */
   int flt_nbr=0; /* [nbr] Number of codecs specified */
   nco_flt_typ_enm *flt_alg=NULL; /* [nbr] List of filters specified */
+  unsigned int *flt_id=NULL; /* [ID] Filter HDF5 ID */
   int *flt_lvl=NULL; /* [nbr] List of compression levels for each filter */
   int *flt_prm_nbr=NULL; /* [nbr] List of parameter numbers for each filter */
   int **flt_prm=NULL; /* [nbr] List of lists of parameters for each filter */
@@ -85,6 +87,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     flt_lst=nco_lst_prs_1D(cmp_sng,spr_sng,&flt_nbr);
 
     flt_alg=(nco_flt_typ_enm *)nco_malloc(flt_nbr*sizeof(nco_flt_typ_enm));
+    flt_id=(unsigned int *)nco_malloc(flt_nbr*sizeof(unsigned int));
     flt_lvl=(int *)nco_malloc(flt_nbr*sizeof(int));
     flt_prm_nbr=(int *)nco_malloc(flt_nbr*sizeof(int));
     flt_prm=(int **)nco_malloc(flt_nbr*sizeof(int *));
@@ -95,9 +98,9 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
       
       prm_lst=nco_lst_prs_1D(flt_lst[flt_idx],",",&prm_nbr);
 
-      /* First element in list is always name/ID */
+      /* First element in list is either NCO-recognized filter name or HDF5 filter ID */
       //(void)fprintf(stdout,"DEBUG quark3 prm_nbr=%d, prm_lst=%s\n",(int)prm_nbr,prm_lst[0]);
-      flt_alg[flt_idx]=nco_flt_sng2enm(prm_lst[0]);
+      flt_alg[flt_idx]=nco_flt_nm2enmid(prm_lst[0],flt_id+flt_idx);
 
       /* Remaining elements, if any, are filter parameters in the HDF5 sense */
       flt_prm_nbr[flt_idx]=prm_nbr-1;
@@ -120,11 +123,13 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   if(flt_nbr == 0 && dfl_lvl != NCO_DFL_LVL_UNDEFINED){
     flt_nbr=1;
     flt_alg=(nco_flt_typ_enm *)nco_malloc(flt_nbr*sizeof(nco_flt_typ_enm));
+    flt_id=(unsigned int *)nco_malloc(flt_nbr*sizeof(unsigned int));
     flt_lvl=(int *)nco_malloc(flt_nbr*sizeof(int));
     flt_prm_nbr=(int *)nco_malloc(flt_nbr*sizeof(int));
     flt_prm=(int **)nco_malloc(flt_nbr*sizeof(int *));
 
     flt_alg[0]=nco_flt_dfl;
+    flt_id[0]=H5Z_FILTER_DEFLATE;
     flt_prm_nbr[0]=1;
     flt_prm[0]=(int *)nco_malloc(flt_prm_nbr[0]*sizeof(int));
     flt_prm[0][0]=dfl_lvl;
@@ -168,7 +173,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   cmp_sng_std[0]='\0';
   if(flt_nbr > 0){
     for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
-      (void)strcat(cmp_sng_std,nco_flt_enm2sng(flt_alg[flt_idx]));
+      (void)strcat(cmp_sng_std,nco_flt_enm2nmid(flt_alg[flt_idx],NULL));
       if(flt_prm_nbr[flt_idx] > 0) (void)strcat(cmp_sng_std,",");
       int_sng[0]='\0';
       for(prm_idx=0;prm_idx<flt_prm_nbr[flt_idx];prm_idx++){
@@ -185,6 +190,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   /* Variables to copy back to calling routine (or global variable) if requested */
   if(flt_nbrp) *flt_nbrp=flt_nbr;
   if(flt_algp) *flt_algp=flt_alg; else flt_alg=(nco_flt_typ_enm *)nco_free(flt_alg);
+  if(flt_idp) *flt_idp=flt_id; else flt_id=(unsigned int *)nco_free(flt_id);
   if(flt_lvlp) *flt_lvlp=flt_lvl; else flt_lvl=(int *)nco_free(flt_lvl);
   if(flt_prm_nbrp) *flt_prm_nbrp=flt_prm_nbr; else flt_prm_nbr=(int *)nco_free(flt_prm_nbr);
   if(flt_prmp){
@@ -398,195 +404,229 @@ nco_flt_hdf5_prs /* [fnc] Parse user-legible string into HDF5 filter parameter l
 } /* !nco_flt_hdf5_prs() */
 
 char * /* O [sng] String describing compression filter */
-nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
-(const nco_flt_typ_enm nco_flt_enm) /* I [enm] Compression filter type */
+nco_flt_enm2nmid /* [fnc] Convert compression filter enum to string */
+(const nco_flt_typ_enm nco_flt_enm, /* I [enm] Compression filter type */
+ unsigned int * const flt_idp)  /* O [ID] HDF5 filter ID */
 {
-  /* Purpose: Convert compression filter-type enum to descriptive string */
+  /* Purpose: Convert compression filter-type enum to NCO-standardized name and HDF filter ID, if applicable */
+
   switch(nco_flt_enm){
   case nco_flt_nil: return "Filter type is unset"; break;
-  case nco_flt_dfl: return "DEFLATE"; break;
-  case nco_flt_bz2: return "Bzip2"; break;
-  case nco_flt_lz4: return "LZ4"; break;
-  case nco_flt_bgr: return "BitGroom"; break;
-  case nco_flt_gbr: return "GranularBR"; break;
+  case nco_flt_dfl: if(flt_idp) *flt_idp=H5Z_FILTER_DEFLATE; return "DEFLATE"; break; /* 1 */
+  case nco_flt_shf: if(flt_idp) *flt_idp=H5Z_FILTER_SHUFFLE; return "Shuffle"; break; /* 2 */
+  case nco_flt_f32: if(flt_idp) *flt_idp=H5Z_FILTER_FLETCHER32; return "Fletcher32"; break; /* 3 */
+  case nco_flt_szp: if(flt_idp) *flt_idp=H5Z_FILTER_SZIP; return "Szip"; break; /* 4 */
+  case nco_flt_bz2: if(flt_idp) *flt_idp=H5Z_FILTER_BZIP2; return "Bzip2"; break; /* 307 */
+  case nco_flt_lz4: if(flt_idp) *flt_idp=32004U; return "LZ4"; break; /* 32004 */
+  case nco_flt_bgr: if(flt_idp) *flt_idp=32022U; return "BitGroom"; break; /* 32022 */
+  case nco_flt_gbr: if(flt_idp) *flt_idp=32023U; return "GranularBR"; break; /* 32023 */
   case nco_flt_dgr: return "DigitRound"; break;
-  case nco_flt_btr: return "BitRound"; break;
-  case nco_flt_zst: return "Zstandard"; break;
-  case nco_flt_bls: return "BLOSC (unspecified)"; break;
-  case nco_flt_bls_lz: return "BLOSC LZ"; break;
-  case nco_flt_bls_lz4: return "BLOSC LZ4"; break;
-  case nco_flt_bls_lzh: return "BLOSC LZ4 HC"; break;
-  case nco_flt_bls_snp: return "BLOSC Snappy"; break;
-  case nco_flt_bls_dfl: return "BLOSC DEFLATE"; break;
-  case nco_flt_bls_zst: return "BLOSC Zstandard"; break;
+  case nco_flt_btr: if(flt_idp) *flt_idp=37373U; return "BitRound"; break; /* 37373 */
+  case nco_flt_zst: if(flt_idp) *flt_idp=32015U; return "Zstandard"; break; /* 32015 */
+  case nco_flt_bls: if(flt_idp) *flt_idp=32001U; return "BLOSC (unspecified)"; break; /* 32001 */
+  case nco_flt_bls_lz: if(flt_idp) *flt_idp=32001U; return "BLOSC LZ"; break; /* 32001 */
+  case nco_flt_bls_lz4: if(flt_idp) *flt_idp=32001U; return "BLOSC LZ4"; break; /* 32001 */
+  case nco_flt_bls_lzh: if(flt_idp) *flt_idp=32001U; return "BLOSC LZ4 HC"; break; /* 32001 */
+  case nco_flt_bls_snp: if(flt_idp) *flt_idp=32001U; return "BLOSC Snappy"; break; /* 32001 */
+  case nco_flt_bls_dfl: if(flt_idp) *flt_idp=32001U; return "BLOSC DEFLATE"; break; /* 32001 */
+  case nco_flt_bls_zst: if(flt_idp) *flt_idp=32001U; return "BLOSC Zstandard"; break; /* 32001 */
+  case nco_flt_unk: return "Unknown"; break;
   default:
-    nco_dfl_case_flt_enm_err(nco_flt_enm,"nco_flt_enm2sng()"); break;
+    nco_dfl_case_flt_enm_err(nco_flt_enm,"nco_flt_enm2nmid()"); break;
   } /* !nco_flt_enm */
 
   return (char *)NULL;
   
-} /* !nco_flt_enm2sng() */
+} /* !nco_flt_enm2nmid() */
 
 char * /* O [sng] String describing compression filter */
-nco_flt_id2sng /* [fnc] Convert compression filter HDF5 ID to string */
-(const unsigned int nco_flt_id) /* I [id] Compression filter HDF5 ID */
+nco_flt_id2nm /* [fnc] Convert compression filter HDF5 ID to string */
+(const unsigned int flt_id) /* I [id] Compression filter HDF5 ID */
 {
-  /* Purpose: Convert compression filter HDF5 ID to descriptive string */
-  switch(nco_flt_id){
+  /* Purpose: Convert compression filter HDF5 ID to descriptive string if possible */
+  switch(flt_id){
   case nco_flt_nil: return "Filter type is unset"; break;
-  case 1 : return "DEFLATE"; break;
-  case 307 : return "Bzip2"; break;
-  case 32004 : return "LZ4"; break;
-  case 32022 : return "BitGroom"; break;
-  case 32023 : return "Granular BitRound"; break;
+  case H5Z_FILTER_DEFLATE : return "DEFLATE"; break; /* 1 */
+  case H5Z_FILTER_SHUFFLE : return "Shuffle"; break; /* 2 */
+  case H5Z_FILTER_FLETCHER32 : return "Fletcher32"; break; /* 3 */
+  case H5Z_FILTER_SZIP : return "Szip"; break; /* 4 */
+  case H5Z_FILTER_BZIP2 : return "Bzip2"; break; /* 307 */
+  case 32004 : return "LZ4"; break; /* 32004 */
+  case 32022 : return "BitGroom"; break; /* 32022 */
+  case 32023 : return "Granular BitRound"; break; /* 32023 */
     //  case : return "DigitRound"; break;
-  case 37373: return "BitRound"; break;
-  case 32015 : return "Zstandard"; break;
-  case 32001 : return "BLOSC"; break;
+  case 37373: return "BitRound"; break; /* 37373 */
+  case H5Z_FILTER_ZSTD : return "Zstandard"; break; /* 32015 */
+  case H5Z_FILTER_BLOSC : return "BLOSC"; break; /* 32001 */
   default:
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG Filter ID = %u is unknown. Default case reached in nco_flt_id2sng()\n",nco_prg_nm_get(),nco_flt_id);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG HDF5 filter ID = %u is unknown. Default case reached in nco_flt_id2nm()\n",nco_prg_nm_get(),flt_id);
     nco_dfl_case_generic_err(); break;
-  } /* !nco_flt_id */
+  } /* !flt_id */
 
   return (char *)NULL;
   
-} /* !nco_flt_id2sng() */
+} /* !nco_flt_id2nm() */
 
 nco_flt_typ_enm /* O [enm] Filter enum */
-nco_flt_id2enm /* [fnc] Convert compression filter ID to enum */
-(const unsigned int nco_flt_id) /* I [id] Compression filter ID */
+nco_flt_id2enm /* [fnc] Convert HDF5 compression filter ID to enum */
+(const unsigned int flt_id) /* I [id] Compression filter ID */
 {
-  /* Purpose: Convert compression filter ID to descriptive string */
-  switch(nco_flt_id){
-  case 0: return nco_flt_nil; break;
-  case 1 : return nco_flt_dfl; break;
-  case 307 : return nco_flt_bz2; break;
-  case 32004 : return nco_flt_lz4; break;
-  case 32022 : return nco_flt_bgr; break;
-  case 32023 : return nco_flt_gbr; break;
-    //  case : return nco_flt_dgr; break;
-  case 37373: return nco_flt_btr; break;
-  case 32015 : return nco_flt_zst; break;
-  case 32001 : return nco_flt_bls; break;
-  default:
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG Filter ID = %u is unknown by NCO. Default case reached in nco_flt_id2enm()\n",nco_prg_nm_get(),nco_flt_id);
-    nco_dfl_case_generic_err(); break;
-  } /* !nco_flt_id */
+  /* Purpose: Convert HDF5 compression filter ID to NCO-recognized enum */
+  nco_flt_typ_enm flt_enm=nco_flt_unk; /* [enm] Compression filter type */
 
-  return nco_flt_nil;
-  
+  switch(flt_id){
+  case 0 : flt_enm=nco_flt_nil; break;
+  case 1 : flt_enm=nco_flt_dfl; break;
+  case 2 : flt_enm=nco_flt_shf; break;
+  case 3 : flt_enm=nco_flt_f32; break;
+  case 4 : flt_enm=nco_flt_szp; break;
+  case 307 : flt_enm=nco_flt_bz2; break;
+  case 32004 : flt_enm=nco_flt_lz4; break;
+  case 32022 : flt_enm=nco_flt_bgr; break;
+  case 32023 : flt_enm=nco_flt_gbr; break;
+    //  case : flt_enm=nco_flt_dgr; break;
+  case 37373: flt_enm=nco_flt_btr; break;
+  case 32015 : flt_enm=nco_flt_zst; break;
+  case 32001 : flt_enm=nco_flt_bls; break;
+  default: flt_enm=nco_flt_unk; break;
+  } /* !flt_id */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG nco_flt_id2enm() reports filter ID = %u is unknown by NCO, though may be present in filter directory.\n",nco_prg_nm_get(),flt_id);
+
+  return flt_enm;
 } /* !nco_flt_id2enm() */
 
 nco_flt_typ_enm /* O [enm] Filter enum */
-nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
-(const char *nco_flt_sng) /* [sng] User-specified filter string */
+nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
+(const char * const flt_nm, /* I [sng] User-specified filter name */
+ unsigned int * const flt_idp) /* O [ID] HDF5 filter ID */
 {
   /* Purpose: Convert user-specified string to enumerated filter type
      Return nco_flt_nil by default */
 
-  const char fnc_nm[]="nco_flt_sng2enm()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_flt_nm2enmid()"; /* [sng] Function name */
 
-  char *nco_prg_nm; /* [sng] Program name */
+  nco_bool FLT_NM_IS_ID=False; /* [flg] Filter name is HDF5 ID */
 
-  nco_prg_nm=nco_prg_nm_get(); /* [sng] Program name */
+  nco_flt_typ_enm flt_enm=nco_flt_unk; /* [enm] Compression filter type */
 
-  if(nco_flt_sng == NULL){
-    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit filter string. Defaulting to \"nil\".\n",nco_prg_nm,fnc_nm,nco_prg_nm);
-    return nco_flt_nil;
-  } /* !nco_flt_sng */
+  unsigned int flt_id=NC_MAX_UINT; /* [ID] HDF5 Filter ID */
+  
+  if(flt_nm == NULL) (void)fprintf(stdout,"%s: WARNING %s was invoked without explicit filter name.\n",nco_prg_nm_get(),fnc_nm);
 
   /* Filter HDF5 IDs gleaned from nc_inq_var_filter_info() or copied from ncks/ncdump output will be unsigned ints
-     Filter strings with an NCO-standardized key will be ... strings
-     First check if filter appears to be specified by HDF5 ID */
-  unsigned int flt_id; /* [ID] HDF5 Filter ID */
-  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-  flt_id=strtoul(nco_flt_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-  if(!*sng_cnv_rcd){
-    nco_flt_typ_enm nco_flt_enm; /* [enm] Compression filter type */
-    /* Filter appears to be specified by HDF5 ID */
-    nco_flt_enm=nco_flt_id2enm(flt_id);
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports filter string %s interpreted as HDF5 ID for filter \"%s\" with NCO enum %d\n",nco_prg_nm,fnc_nm,nco_flt_sng,nco_flt_id2sng(flt_id),(int)nco_flt_enm);
-    return nco_flt_enm;
-  } /* !sng_cnv_rcd */
+     Filter names with an NCO-standardized key will be ... strings
+     First check if filter name appears to be specified by HDF5 ID */
+  if(flt_idp){
+    char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+    flt_id=strtoul(flt_nm,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(!*sng_cnv_rcd){
+      /* Filter appears to be specified by HDF5 ID */
+      flt_enm=nco_flt_id2enm(flt_id);
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports filter string %s interpreted as HDF5 ID for filter \"%s\" with NCO enum %d\n",nco_prg_nm_get(),fnc_nm,flt_nm,nco_flt_id2nm(flt_id),(int)flt_enm);
+      FLT_NM_IS_ID=True;
+    } /* !sng_cnv_rcd */
+  } /* !flt_idp */
 
-  if(!strcasecmp(nco_flt_sng,"nil")) return nco_flt_nil;
-  if(!strcasecmp(nco_flt_sng,"none")) return nco_flt_nil;
-  if(!strcasecmp(nco_flt_sng,"default")) return nco_flt_nil;
-  if(!strcasecmp(nco_flt_sng,"deflate")) return nco_flt_dfl;
-  if(!strcasecmp(nco_flt_sng,"dfl")) return nco_flt_dfl;
-  if(!strcasecmp(nco_flt_sng,"gzp")) return nco_flt_dfl;
-  if(!strcasecmp(nco_flt_sng,"gz")) return nco_flt_dfl;
-  if(!strcasecmp(nco_flt_sng,"zlib")) return nco_flt_dfl;
-  if(!strcasecmp(nco_flt_sng,"bz2")) return nco_flt_bz2;
-  if(!strcasecmp(nco_flt_sng,"bzp")) return nco_flt_bz2;
-  if(!strcasecmp(nco_flt_sng,"bz")) return nco_flt_bz2;
-  if(!strcasecmp(nco_flt_sng,"bzip")) return nco_flt_bz2;
-  if(!strcasecmp(nco_flt_sng,"bzip2")) return nco_flt_bz2;
-  if(!strcasecmp(nco_flt_sng,"lz4")) return nco_flt_lz4;
-  if(!strcasecmp(nco_flt_sng,"bgr")) return nco_flt_bgr;
-  if(!strcasecmp(nco_flt_sng,"btg")) return nco_flt_bgr;
-  if(!strcasecmp(nco_flt_sng,"bitgroom")) return nco_flt_bgr;
-  if(!strcasecmp(nco_flt_sng,"Zen16")) return nco_flt_bgr;
-  if(!strcasecmp(nco_flt_sng,"gbr")) return nco_flt_gbr;
-  if(!strcasecmp(nco_flt_sng,"granularbr")) return nco_flt_gbr;
-  if(!strcasecmp(nco_flt_sng,"granular")) return nco_flt_gbr;
-  if(!strcasecmp(nco_flt_sng,"dgr")) return nco_flt_dgr;
-  if(!strcasecmp(nco_flt_sng,"digitround")) return nco_flt_dgr;
-  if(!strcasecmp(nco_flt_sng,"DCG19")) return nco_flt_dgr;
-  if(!strcasecmp(nco_flt_sng,"btr")) return nco_flt_btr;
-  if(!strcasecmp(nco_flt_sng,"bitround")) return nco_flt_btr;
-  if(!strcasecmp(nco_flt_sng,"Kou20")) return nco_flt_btr;
-  if(!strcasecmp(nco_flt_sng,"zst")) return nco_flt_zst;
-  if(!strcasecmp(nco_flt_sng,"zstd")) return nco_flt_zst;
-  if(!strcasecmp(nco_flt_sng,"zstandard")) return nco_flt_zst;
+  /* Parse descriptive name string to enum if possible, then fill-in ID if known */
+  if(!FLT_NM_IS_ID){
+    if(!strcasecmp(flt_nm,"nil")) flt_enm=nco_flt_nil;
+    else if(!strcasecmp(flt_nm,"none")) flt_enm=nco_flt_nil;
+    else if(!strcasecmp(flt_nm,"default")) flt_enm=nco_flt_nil;
+    
+    else if(!strcasecmp(flt_nm,"deflate")) flt_enm=nco_flt_dfl;
+    else if(!strcasecmp(flt_nm,"dfl")) flt_enm=nco_flt_dfl;
+    else if(!strcasecmp(flt_nm,"gzp")) flt_enm=nco_flt_dfl;
+    else if(!strcasecmp(flt_nm,"gz")) flt_enm=nco_flt_dfl;
+    else if(!strcasecmp(flt_nm,"zlib")) flt_enm=nco_flt_dfl;
+    
+    else if(!strcasecmp(flt_nm,"shf")) flt_enm=nco_flt_shf;
+    else if(!strcasecmp(flt_nm,"f32")) flt_enm=nco_flt_f32;
+    else if(!strcasecmp(flt_nm,"szp")) flt_enm=nco_flt_szp;
+    else if(!strcasecmp(flt_nm,"unk")) flt_enm=nco_flt_unk;
+    
+    else if(!strcasecmp(flt_nm,"bz2")) flt_enm=nco_flt_bz2;
+    else if(!strcasecmp(flt_nm,"bzp")) flt_enm=nco_flt_bz2;
+    else if(!strcasecmp(flt_nm,"bz")) flt_enm=nco_flt_bz2;
+    else if(!strcasecmp(flt_nm,"bzip")) flt_enm=nco_flt_bz2;
+    else if(!strcasecmp(flt_nm,"bzip2")) flt_enm=nco_flt_bz2;
+    
+    else if(!strcasecmp(flt_nm,"lz4")) flt_enm=nco_flt_lz4;
+    
+    else if(!strcasecmp(flt_nm,"bgr")) flt_enm=nco_flt_bgr;
+    else if(!strcasecmp(flt_nm,"btg")) flt_enm=nco_flt_bgr;
+    else if(!strcasecmp(flt_nm,"bitgroom")) flt_enm=nco_flt_bgr;
+    else if(!strcasecmp(flt_nm,"Zen16")) flt_enm=nco_flt_bgr;
+    
+    else if(!strcasecmp(flt_nm,"gbr")) flt_enm=nco_flt_gbr;
+    else if(!strcasecmp(flt_nm,"granularbr")) flt_enm=nco_flt_gbr;
+    else if(!strcasecmp(flt_nm,"granular")) flt_enm=nco_flt_gbr;
+    
+    else if(!strcasecmp(flt_nm,"dgr")) flt_enm=nco_flt_dgr;
+    else if(!strcasecmp(flt_nm,"digitround")) flt_enm=nco_flt_dgr;
+    else if(!strcasecmp(flt_nm,"DCG19")) flt_enm=nco_flt_dgr;
+    
+    else if(!strcasecmp(flt_nm,"btr")) flt_enm=nco_flt_btr;
+    else if(!strcasecmp(flt_nm,"bitround")) flt_enm=nco_flt_btr;
+    else if(!strcasecmp(flt_nm,"Kou20")) flt_enm=nco_flt_btr;
+    
+    else if(!strcasecmp(flt_nm,"zst")) flt_enm=nco_flt_zst;
+    else if(!strcasecmp(flt_nm,"zstd")) flt_enm=nco_flt_zst;
+    else if(!strcasecmp(flt_nm,"zstandard")) flt_enm=nco_flt_zst;
+    
+    else if(!strcasecmp(flt_nm,"blosc lz4 hc")) flt_enm=nco_flt_bls_lzh;
+    else if(!strcasecmp(flt_nm,"blosc_lz4_hc")) flt_enm=nco_flt_bls_lzh;
+    else if(!strcasecmp(flt_nm,"blosclz4hc")) flt_enm=nco_flt_bls_lzh;
+    else if(!strcasecmp(flt_nm,"bls_lzh")) flt_enm=nco_flt_bls_lzh;
+    else if(!strcasecmp(flt_nm,"bls_lz4hc")) flt_enm=nco_flt_bls_lzh;
+    else if(!strcasecmp(flt_nm,"blosc_lzh")) flt_enm=nco_flt_bls_lzh;
+    else if(!strcasecmp(flt_nm,"blosc_lz4hc")) flt_enm=nco_flt_bls_lzh;
+    
+    else if(!strcasecmp(flt_nm,"blosc lz4")) flt_enm=nco_flt_bls_lz4;
+    else if(!strcasecmp(flt_nm,"blosc_lz4")) flt_enm=nco_flt_bls_lz4;
+    else if(!strcasecmp(flt_nm,"bls_lz4")) flt_enm=nco_flt_bls_lz4;
+    else if(!strcasecmp(flt_nm,"blslz4")) flt_enm=nco_flt_bls_lz4;
+    else if(!strcasecmp(flt_nm,"blosclz4")) flt_enm=nco_flt_bls_lz4;
+    
+    else if(!strcasecmp(flt_nm,"blosc lz")) flt_enm=nco_flt_bls_lz;
+    else if(!strcasecmp(flt_nm,"blosc_lz")) flt_enm=nco_flt_bls_lz;
+    else if(!strcasecmp(flt_nm,"bls_lz")) flt_enm=nco_flt_bls_lz;
+    else if(!strcasecmp(flt_nm,"blslz")) flt_enm=nco_flt_bls_lz;
+    
+    else if(!strcasecmp(flt_nm,"blosc snappy")) flt_enm=nco_flt_bls_snp;
+    else if(!strcasecmp(flt_nm,"bloscsnappy")) flt_enm=nco_flt_bls_snp;
+    else if(!strcasecmp(flt_nm,"blosc_snappy")) flt_enm=nco_flt_bls_snp;
+    else if(!strcasecmp(flt_nm,"bls_snp")) flt_enm=nco_flt_bls_snp;
+    else if(!strcasecmp(flt_nm,"blssnp")) flt_enm=nco_flt_bls_snp;
+    else if(!strcasecmp(flt_nm,"bls snp")) flt_enm=nco_flt_bls_snp;
+    
+    else if(!strcasecmp(flt_nm,"blosc deflate")) flt_enm=nco_flt_bls_dfl;
+    else if(!strcasecmp(flt_nm,"bloscdeflate")) flt_enm=nco_flt_bls_dfl;
+    else if(!strcasecmp(flt_nm,"blosc_deflate")) flt_enm=nco_flt_bls_dfl;
+    else if(!strcasecmp(flt_nm,"bls_dfl")) flt_enm=nco_flt_bls_dfl;
+    else if(!strcasecmp(flt_nm,"blsdfl")) flt_enm=nco_flt_bls_dfl;
+    else if(!strcasecmp(flt_nm,"bls dfl")) flt_enm=nco_flt_bls_dfl;
+    
+    else if(!strcasecmp(flt_nm,"blosc zstandard")) flt_enm=nco_flt_bls_zst;
+    else if(!strcasecmp(flt_nm,"blosczstandard")) flt_enm=nco_flt_bls_zst;
+    else if(!strcasecmp(flt_nm,"blosc_zstandard")) flt_enm=nco_flt_bls_zst;
+    else if(!strcasecmp(flt_nm,"bls_zst")) flt_enm=nco_flt_bls_zst;
+    else if(!strcasecmp(flt_nm,"blszst")) flt_enm=nco_flt_bls_zst;
+    else if(!strcasecmp(flt_nm,"bls zst")) flt_enm=nco_flt_bls_zst;
+    else if(!strcasecmp(flt_nm,"bls_zstd")) flt_enm=nco_flt_bls_zst;
+    else if(!strcasecmp(flt_nm,"blszstd")) flt_enm=nco_flt_bls_zst;
+    else if(!strcasecmp(flt_nm,"bls zstd")) flt_enm=nco_flt_bls_zst;
 
-  if(!strcasecmp(nco_flt_sng,"blosc lz4 hc")) return nco_flt_bls_lzh;
-  if(!strcasecmp(nco_flt_sng,"blosc_lz4_hc")) return nco_flt_bls_lzh;
-  if(!strcasecmp(nco_flt_sng,"blosclz4hc")) return nco_flt_bls_lzh;
-  if(!strcasecmp(nco_flt_sng,"bls_lzh")) return nco_flt_bls_lzh;
-  if(!strcasecmp(nco_flt_sng,"bls_lz4hc")) return nco_flt_bls_lzh;
-  if(!strcasecmp(nco_flt_sng,"blosc_lzh")) return nco_flt_bls_lzh;
-  if(!strcasecmp(nco_flt_sng,"blosc_lz4hc")) return nco_flt_bls_lzh;
-
-  if(!strcasecmp(nco_flt_sng,"blosc lz4")) return nco_flt_bls_lz4;
-  if(!strcasecmp(nco_flt_sng,"blosc_lz4")) return nco_flt_bls_lz4;
-  if(!strcasecmp(nco_flt_sng,"bls_lz4")) return nco_flt_bls_lz4;
-  if(!strcasecmp(nco_flt_sng,"blslz4")) return nco_flt_bls_lz4;
-  if(!strcasecmp(nco_flt_sng,"blosclz4")) return nco_flt_bls_lz4;
-
-  if(!strcasecmp(nco_flt_sng,"blosc lz")) return nco_flt_bls_lz;
-  if(!strcasecmp(nco_flt_sng,"blosc_lz")) return nco_flt_bls_lz;
-  if(!strcasecmp(nco_flt_sng,"bls_lz")) return nco_flt_bls_lz;
-  if(!strcasecmp(nco_flt_sng,"blslz")) return nco_flt_bls_lz;
-
-  if(!strcasecmp(nco_flt_sng,"blosc snappy")) return nco_flt_bls_snp;
-  if(!strcasecmp(nco_flt_sng,"bloscsnappy")) return nco_flt_bls_snp;
-  if(!strcasecmp(nco_flt_sng,"blosc_snappy")) return nco_flt_bls_snp;
-  if(!strcasecmp(nco_flt_sng,"bls_snp")) return nco_flt_bls_snp;
-  if(!strcasecmp(nco_flt_sng,"blssnp")) return nco_flt_bls_snp;
-  if(!strcasecmp(nco_flt_sng,"bls snp")) return nco_flt_bls_snp;
-
-  if(!strcasecmp(nco_flt_sng,"blosc deflate")) return nco_flt_bls_dfl;
-  if(!strcasecmp(nco_flt_sng,"bloscdeflate")) return nco_flt_bls_dfl;
-  if(!strcasecmp(nco_flt_sng,"blosc_deflate")) return nco_flt_bls_dfl;
-  if(!strcasecmp(nco_flt_sng,"bls_dfl")) return nco_flt_bls_dfl;
-  if(!strcasecmp(nco_flt_sng,"blsdfl")) return nco_flt_bls_dfl;
-  if(!strcasecmp(nco_flt_sng,"bls dfl")) return nco_flt_bls_dfl;
-
-  if(!strcasecmp(nco_flt_sng,"blosc zstandard")) return nco_flt_bls_zst;
-  if(!strcasecmp(nco_flt_sng,"blosczstandard")) return nco_flt_bls_zst;
-  if(!strcasecmp(nco_flt_sng,"blosc_zstandard")) return nco_flt_bls_zst;
-  if(!strcasecmp(nco_flt_sng,"bls_zst")) return nco_flt_bls_zst;
-  if(!strcasecmp(nco_flt_sng,"blszst")) return nco_flt_bls_zst;
-  if(!strcasecmp(nco_flt_sng,"bls zst")) return nco_flt_bls_zst;
-  if(!strcasecmp(nco_flt_sng,"bls_zstd")) return nco_flt_bls_zst;
-  if(!strcasecmp(nco_flt_sng,"blszstd")) return nco_flt_bls_zst;
-  if(!strcasecmp(nco_flt_sng,"bls zstd")) return nco_flt_bls_zst;
+    if(flt_idp) (void)nco_flt_enm2nmid(flt_enm,flt_idp);
+  } /* !FLT_NM_IS_ID */
   
-  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified filter \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_sng);
-  nco_exit(EXIT_FAILURE);
-  return nco_flt_nil; /* Statement should not be reached */
-} /* !nco_flt_sng2enm() */
+  if(flt_enm == nco_flt_unk) (void)fprintf(stderr,"%s: WARNING %s reports unknown user-specified filter \"%s\"\n",nco_prg_nm_get(),fnc_nm,flt_nm);
+
+  /* Unknown filters should work if they are nonetheless installed
+     However, this requires that their HDF5 filter ID be parsed and stored */
+  return flt_enm;
+
+} /* !nco_flt_nm2enmid() */
 
 int /* O [enm] Return code */
 nco_flt_old_wrp /* [fnc] Call filters immediately after variable definition */
@@ -840,10 +880,12 @@ nco_flt_def_out /* [fnc]  */
   /* Deflation */
   int deflate; /* [flg] Turn-on deflate filter */
   int shuffle; /* [flg] Turn-on shuffle filter */
-  unsigned int blk_sz; /* [nbr] Blocksize for BLOSC filter */
   unsigned int add_shf=1; /* [flg] Add Shuffle to BLOSC filter */
+  unsigned int blk_sz; /* [nbr] Blocksize for BLOSC filter */
+  unsigned int *flt_prm_uns=NULL; /* [enm] Filter parameters stored as unsigned ints */
 
   int flt_idx; /* [idx] Filter index */
+  int prm_idx; /* [idx] Parameter index */
 
   nco_bool cdc_has_flt=True; /* [flg] Available filters include requested filter */
   nco_bool lsy_flt_ok=True; /* [flg] Lossy filters are authorized (i.e., not specifically disallowed) for this variable */
@@ -851,6 +893,7 @@ nco_flt_def_out /* [fnc]  */
   /* Varibles to obtain by parsing compression specification */
   int flt_nbr=0; /* [nbr] Number of codecs specified */
   nco_flt_typ_enm *flt_alg=NULL; /* [nbr] List of filters specified */
+  unsigned int *flt_id=NULL; /* [ID] List of HDF5 filter IDs */
   int *flt_lvl=NULL; /* [nbr] List of compression levels for each filter */
   int *flt_prm_nbr=NULL; /* [nbr] List of parameter numbers for each filter */
   int **flt_prm=NULL; /* [nbr] List of lists of parameters for each filter */
@@ -869,16 +912,17 @@ nco_flt_def_out /* [fnc]  */
 
     /* Avoid mutililating global specification by passing copy to be parsed
        This also works when invoking nco_flt_def_out() with static cmp_sng */
-    (void)nco_cmp_prs(cmp_sng_cpy,(int *)NULL,&flt_nbr,&flt_alg,&flt_lvl,&flt_prm_nbr,&flt_prm);
+    (void)nco_cmp_prs(cmp_sng_cpy,(int *)NULL,&flt_nbr,&flt_alg,&flt_id,&flt_lvl,&flt_prm_nbr,&flt_prm);
   } /* !cmp_sng */
     
+  /* Set extra parameters needed by BLOSC filters */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++)
-    if(flt_alg[flt_idx] == nco_flt_bls_snp)
+    if(flt_id[flt_idx] == nco_flt_bls)
       rcd+=nco_inq_var_blk_sz(nc_out_id,var_out_id,&blk_sz);
 
   /* Invoke applicable codec(s) */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){ 
-    if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s executing filter: flt_nbr=%d, flt_idx=%d, flt_enm=%d flt_sng=%s, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2sng(flt_alg[flt_idx]),flt_lvl[flt_idx]);
+    if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s executing filter: flt_nbr=%d, flt_idx=%d, flt_enm=%d flt_nm=%s, flt_id=%u, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2nmid(flt_alg[flt_idx],NULL),flt_id[flt_idx],flt_lvl[flt_idx]);
     switch(flt_alg[flt_idx]){
     case nco_flt_nil: /* If user did not select a filter then exit */
       cdc_has_flt=False;
@@ -968,13 +1012,22 @@ nco_flt_def_out /* [fnc]  */
       cdc_has_flt=False;
       break;
 
+    case nco_flt_unk: /* Unknown filter referenced by ID not name */
+      /* Unknown filters must call the filter handler with unsigned ints */
+      flt_prm_uns=(unsigned int *)nco_malloc(flt_prm_nbr[flt_idx]*sizeof(unsigned int));
+      for(prm_idx=0;prm_idx<flt_prm_nbr[flt_idx];prm_idx++)
+	flt_prm_uns[prm_idx]=(unsigned int)flt_prm[flt_idx][prm_idx];
+      rcd+=nco_def_var_filter(nc_out_id,var_out_id,flt_id[flt_idx],(unsigned int)flt_prm_nbr[flt_idx],flt_prm_uns);
+      if(flt_prm_uns) flt_prm_uns=(unsigned int *)nco_free(flt_prm_uns);
+      break;
+
     default:
       nco_dfl_case_flt_err();
       break;
     } /* !flt_alg */
 
     if(cdc_has_flt == False){
-      (void)fprintf(stdout,"%s: ERROR %s reports neither netCDF nor CCR library appears to define an API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and/or not installed in netCDF or in CCR. If the filter is newish and is supposed to be in CCR, update the installed CCR then recompile NCO. Otherwise, re-try this command and specify only filters included in this list of available filters: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(flt_alg[flt_idx]),nco_cdc_lst_glb);
+      (void)fprintf(stdout,"%s: ERROR %s reports neither netCDF nor CCR library appears to define an API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and/or not installed in netCDF or in CCR. If the filter is newish and is supposed to be in CCR, update the installed CCR then recompile NCO. Otherwise, re-try this command and specify only filters included in this list of available filters: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2nmid(flt_alg[flt_idx],NULL),nco_cdc_lst_glb);
       nco_exit(EXIT_FAILURE);
     } /* !cdc_has_flt */
 
