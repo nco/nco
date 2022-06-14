@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha03: Sievierodonetsk Strong';git push
 	git tag -a 5.0.8-alpha03 -m '';git push --tags
 
+	* Invoking Shuffle filter as shf,1 or 2,1 both seem to work
+
 	* Refactor to allow invocation with unknown filter ID
 
 2022-06-13  Charlie Zender  <zender@uci.edu>

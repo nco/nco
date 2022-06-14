@@ -360,8 +360,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	} /* !xml */
 	/* _Shuffle */
 	if(!XML){
-	  if(shuffle && flt_nbr == 1 && flt_id == 1){
-	    /* Print _Shuffle for shuffled variables (20220609: unless multiple filters are reported) */
+	  if(shuffle){
+	    /* Print _Shuffle for shuffled variables */
 	    idx=att_nbr_ttl++;
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	    att[idx].nm=(char *)strdup("_Shuffle");

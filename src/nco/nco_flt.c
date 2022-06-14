@@ -541,9 +541,16 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     else if(!strcasecmp(flt_nm,"zlib")) flt_enm=nco_flt_dfl;
     
     else if(!strcasecmp(flt_nm,"shf")) flt_enm=nco_flt_shf;
+    else if(!strcasecmp(flt_nm,"shuffle")) flt_enm=nco_flt_shf;
+    
     else if(!strcasecmp(flt_nm,"f32")) flt_enm=nco_flt_f32;
+    else if(!strcasecmp(flt_nm,"fletcher32")) flt_enm=nco_flt_f32;
+
     else if(!strcasecmp(flt_nm,"szp")) flt_enm=nco_flt_szp;
+    else if(!strcasecmp(flt_nm,"szip")) flt_enm=nco_flt_szp;
+
     else if(!strcasecmp(flt_nm,"unk")) flt_enm=nco_flt_unk;
+    else if(!strcasecmp(flt_nm,"unknown")) flt_enm=nco_flt_unk;
     
     else if(!strcasecmp(flt_nm,"bz2")) flt_enm=nco_flt_bz2;
     else if(!strcasecmp(flt_nm,"bzp")) flt_enm=nco_flt_bz2;
@@ -936,6 +943,18 @@ nco_flt_def_out /* [fnc]  */
       /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
       if(flt_lvl[flt_idx] > 0) shuffle=NC_SHUFFLE;
       rcd+=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,flt_lvl[flt_idx]);
+      break;
+
+    case nco_flt_shf: /* Shuffle */
+      if(flt_lvl[flt_idx] <= 0){
+	shuffle=NC_NOSHUFFLE;
+	deflate=(int)False;
+	rcd+=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,0);
+      }else{
+	shuffle=NC_SHUFFLE;
+	deflate=(int)True;
+	rcd+=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,0);
+      } /* !flt_lvl */
       break;
 
     case nco_flt_bz2: /* Bzip2 */
