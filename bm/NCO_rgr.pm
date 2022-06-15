@@ -2584,14 +2584,14 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array	
 
 #ncks #81
-# There are two 'two_dmn_var' beneath /g19/g19g1, chunk the deeper and check the shallower was not chunked
+# There are two 'two_dmn_var' beneath /g19/g19g1, chunk the deeper and check that the shallower was not chunked
 #ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
 #ncks -m --trd -C -v /g19/g19g1/two_dmn_var --hdn ~/foo.nc | grep chunked | cut -d ' ' -f 10-11
     $dsc_sng="(Groups) Chunking full dimension name does not chunk variables in parent group";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_7.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m --trd -C -v /g19/g19g1/two_dmn_var --hdn %tmp_fl_00% | grep chunked | cut -d ' ' -f 10-11";
     $tst_cmd[2]="chunked? no,";
-    $tst_cmd[3]="SS_OK";     
+    $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	

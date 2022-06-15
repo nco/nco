@@ -1,3 +1,11 @@
+2022-06-15  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.8-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha04: June Gloom Moon';git push
+	git tag -a 5.0.8-alpha04 -m '';git push --tags
+
+	* Store output decompressed when specification includes "none" or synonyms
+
 2022-06-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha03 release procedure:
