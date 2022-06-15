@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha04: June Gloom Moon';git push
 	git tag -a 5.0.8-alpha04 -m '';git push --tags
 
+	* Fix normalization of multi-level sub-SGS variables (to be just like single-level variables)
+	Expected this to completely solve vexing bug. Instead, it allowed regridding to complete,
+	though temperatures near 0.0 indicate a	different bug remains.
+
 	* Store output decompressed when specification includes "none" or synonyms
 
 2022-06-14  Charlie Zender  <zender@uci.edu>
