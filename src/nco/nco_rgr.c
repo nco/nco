@@ -4964,7 +4964,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  } /* !var_typ_in */
 	} /* !has_mss_val */
 
-	/* Re-initialize Boolean to True and override with False if variable _uses_ missing values */
+	/* Re-initialize Boolean to True and override with False if variable _uses_ missing values
+	   As of 20210909, "has_mss_val" should from here on be interpreted as "uses_mss_val" */
 	has_mss_val=True;
 	for(idx_in=0;idx_in<var_sz_in;idx_in++){
 	  if(var_val_dbl_in[idx_in] == mss_val_cmp_dbl) break;
