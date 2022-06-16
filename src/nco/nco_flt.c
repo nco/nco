@@ -901,15 +901,16 @@ nco_flt_def_out /* [fnc]  */
   /* Deflation */
   int deflate; /* [flg] Turn-on deflate filter */
   int shuffle; /* [flg] Turn-on shuffle filter */
-  unsigned int add_shf=1; /* [flg] Add Shuffle to BLOSC filter */
-  unsigned int blk_sz; /* [nbr] Blocksize for BLOSC filter */
-  unsigned int *flt_prm_uns=NULL; /* [enm] Filter parameters stored as unsigned ints */
-
   int flt_idx; /* [idx] Filter index */
   int prm_idx; /* [idx] Parameter index */
 
   nco_bool cdc_has_flt=True; /* [flg] Available filters include requested filter */
   nco_bool lsy_flt_ok=True; /* [flg] Lossy filters are authorized (i.e., not specifically disallowed) for this variable */
+
+  unsigned int add_shf=1; /* [flg] Add Shuffle to BLOSC filter */
+  unsigned int bls_sbc=NC_MAX_UINT;; /* [enm] BLOSC subcompressor */
+  unsigned int blk_sz; /* [nbr] Blocksize for BLOSC filter */
+  unsigned int *flt_prm_uns=NULL; /* [enm] Filter parameters stored as unsigned ints */
 
   /* Varibles to obtain by parsing compression specification */
   int flt_nbr=0; /* [nbr] Number of codecs specified */
@@ -1032,11 +1033,17 @@ nco_flt_def_out /* [fnc]  */
 # endif /* !CCR_HAS_ZSTD || NC_LIB_VER >= 490  */
       break;
 
-    case nco_flt_bls_snp: /* BLOSC Snappy*/
-# if NC_LIB_VER >= 490 
-      rcd+=nc_def_var_blosc(nc_out_id,var_out_id,BLOSC_SNAPPY,(unsigned int)flt_lvl[flt_idx],blk_sz,add_shf);
+    case nco_flt_bls_lz: bls_sbc=BLOSC_LZ; /* BLOSC LZ */
+    case nco_flt_bls_lz4: bls_sbc=BLOSC_LZ4; /* BLOSC LZ4 */
+    case nco_flt_bls_lzh: bls_sbc=BLOSC_LZ4HC; /* BLOSC LZ4 HC */
+    case nco_flt_bls_snp: bls_sbc=BLOSC_SNAPPY; /* BLOSC Snappy */
+    case nco_flt_bls_dfl: bls_sbc=BLOSC_ZLIB; /* BLOSC DEFLATE */
+    case nco_flt_bls_zst: bls_sbc=BLOSC_ZSTD; /* BLOSC Zstandard */
+# if NC_LIB_VER >= 490
+      rcd+=nc_def_var_blosc(nc_out_id,var_out_id,bls_sbc,(unsigned int)flt_lvl[flt_idx],blk_sz,add_shf);
 # else /* !NC_LIB_VER >= 490 */
       add_shf+=0*add_shf;
+      bls_sbc+=0*bls_sbc;
       cdc_has_flt=False;
 # endif /* NC_LIB_VER >= 490  */
       break;
