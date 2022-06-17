@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha04: June Gloom Moon';git push
 	git tag -a 5.0.8-alpha04 -m '';git push --tags
 
+	* Algorithmatize decision to print DEFLATE, Shuffle separately or use _Filter
+
+	* Add nco_inq_filter_avail_flg()
+
 	* Adopt NC_HAS_QUANTIZE and NC_HAS_ZSTD tokens from netcdf_meta.h
 
 	* Update to newer NC_ pre-processor tokens like NC_HAVE_NEW_CHUNKING_API, NC_HAVE_RENAME_GRP

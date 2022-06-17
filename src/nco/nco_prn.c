@@ -91,6 +91,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   nc_type var_typ;
 
   nco_bool flg_glb=False; /* [flg] Printing attributes for root-level group */
+  nco_bool flg_prn_dfl_shf_spr=False; /* [flg] Print DEFLATE and/or Shuffle keywords separately */
   
   bool jsn_obj=False; /* if true then print att in own object */
   const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
@@ -305,8 +306,16 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		unsigned int *flt_lst=NULL; /* [nbr] Filter IDs */
 		flt_lst=(unsigned int *)nco_malloc(flt_nbr*sizeof(unsigned int));
 		rcd=nco_inq_var_filter_ids(grp_id,var_id,(size_t *)NULL,flt_lst);
-		/* 20220609 Print _Filter string if any non-DEFLATE filter was applied */
-		if(flt_nbr > 1 || flt_lst[0] != 1){
+		/* 20220609 Print DEFLATE and/or Shuffle keywords separately in two circumstances for backwards-compatibility
+		   Otherwise print complete _Filter string */
+		if(flt_nbr == 2)
+		  if(flt_lst[0] == 2 && flt_lst[1] == 1)
+		    flg_prn_dfl_shf_spr=True;
+		/* If DEFLATE or Shuffle alone were applied */
+		if(flt_nbr == 1)
+		  if(flt_lst[0] == 1 || flt_lst[0] == 2)
+		    flg_prn_dfl_shf_spr=True;
+		if(flt_nbr > 0 && !flg_prn_dfl_shf_spr){
 		  /* Print _Filter values for all filters of filtered variables
 		     20220526 Wrap code in loop over filters and separate each filter by a pipe symbol "|" */
 		  idx=att_nbr_ttl++;
@@ -347,7 +356,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	     ncks -O -7 -C -v one_dmn_rec_var --cmp_sng='bz2,1|dfl,2' ~/nco/data/in.nc ~/foo.nc
 	     ncdump -s -h -v one_dmn_rec_var ~/foo.nc */
 	  rcd=nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
-	  if(deflate && flt_nbr == 1 && flt_id == 1){
+	  if(deflate && flg_prn_dfl_shf_spr){
 	    /* Print _DeflateLevel for deflated variables (20220609: unless multiple filters are reported) */
 	    idx=att_nbr_ttl++;
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
@@ -360,7 +369,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	} /* !xml */
 	/* _Shuffle */
 	if(!XML){
-	  if(shuffle){
+	  if(shuffle && flg_prn_dfl_shf_spr){
 	    /* Print _Shuffle for shuffled variables */
 	    idx=att_nbr_ttl++;
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));

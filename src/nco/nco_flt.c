@@ -220,10 +220,13 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     nco_cdc_lst_glb=(char *)nco_malloc(200*sizeof(char));
     nco_cdc_lst_glb[0]='\0';
     strcat(nco_cdc_lst_glb,"DEFLATE");
-    /* Tokens like CCR_HAS_BITGROOM are defined by CCR in ccr_meta.h */
-# if CCR_HAS_BZIP2 || NC_LIB_VER >= 490
+    /* CCR, netCDF define tokens like CCR_HAS_BITGROOM, NC_HAS_ZSTD in ccr_meta.h, netcdf_meta.h */
+
+    /* netCDF 4.9.0 lacks NC_HAS_BZIP2 token */
+# if CCR_HAS_BZIP2
     strcat(nco_cdc_lst_glb,", Bzip2");
 # endif /* !CCR_HAS_BZIP2 */
+
 # if CCR_HAS_LZ4
     strcat(nco_cdc_lst_glb,", LZ4");
 # endif /* !CCR_HAS_LZ4 */
@@ -973,11 +976,15 @@ nco_flt_def_out /* [fnc]  */
       break;
 
     case nco_flt_bz2: /* Bzip2 */
-# if CCR_HAS_BZIP2 || NC_LIB_VER >= 490 
-      if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_bzip2(nc_out_id,var_out_id,flt_lvl[flt_idx]);
-# else /* !CCR_HAS_BZIP2 || NC_LIB_VER >= 490 */
-      cdc_has_flt=False;
-# endif /* !CCR_HAS_BZIP2 || NC_LIB_VER >= 490 */
+      rcd+=nco_inq_filter_avail_flg(nc_out_id,flt_id[flt_idx]);
+      /* netCDF 4.9.0 lacks NC_HAS_BZIP2 token */
+      if(rcd == NC_NOERR){
+	rcd+=nc_def_var_bzip2(nc_out_id,var_out_id,flt_lvl[flt_idx]);
+      }else{ /* !rcd */
+	/* Reset rcd */
+	rcd=NC_NOERR;
+	cdc_has_flt=False;
+      } /* !rcd */
       break;
 
     case nco_flt_lz4: /* LZ4 */ 

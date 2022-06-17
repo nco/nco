@@ -522,6 +522,7 @@ int nco_inq_var_filter_flg(const int nc_id,const int var_id,unsigned int * const
 int nco_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst);
 int nco_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
 int nco_inq_filter_avail(const int nc_id,const unsigned int flt_id);
+int nco_inq_filter_avail_flg(const int nc_id,const unsigned int flt_id);
 int nco_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ);
 int nco_inq_var_packing(const int nc_id,const int var_id,int * const packing);
 int nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id);

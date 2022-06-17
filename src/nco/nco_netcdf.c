@@ -2219,6 +2219,16 @@ int nco_inq_filter_avail(const int nc_id,const unsigned int flt_id)
   return rcd;
 } /* !nco_inq_filter_avail() */
 
+int nco_inq_filter_avail_flg(const int nc_id,const unsigned int flt_id)
+{
+  /* Purpose: Wrapper for nc_inq_filter_avail(). Tolerates NC_ENOFILTER. */
+  int rcd;
+  rcd=nc_inq_filter_avail(nc_id,flt_id);
+  if(rcd == NC_ENOFILTER) return rcd;
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_filter_avail_flg()");
+  return rcd;
+} /* !nco_inq_filter_avail() */
+
 int
 nco_def_var_fletcher32
 (const int nc_id, /* I [ID] netCDF ID */
