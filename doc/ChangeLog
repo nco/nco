@@ -1,8 +1,10 @@
 2022-06-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha04: June Gloom Moon';git push
-	git tag -a 5.0.8-alpha04 -m '';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha04: June Strawberry Moon';git push
+	git tag -a 5.0.8-alpha04 -m 'all: support decompression, netCDF 4.9.0 compat; ncremap, ncclimo: cmp_sng; ncks fix sub-sgs rgr; ';git push --tags
+
+	* Tweak CMake searches for netcdf_filter.h NC_HAVE_RENAME_GRP
 
 	* Algorithmatize decision to print DEFLATE, Shuffle separately or use _Filter
 

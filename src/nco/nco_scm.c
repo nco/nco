@@ -200,7 +200,7 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
   cpl_dat_sng=(char *)nco_free(cpl_dat_sng);
   lbr_vrs_sng=(char *)nco_free(lbr_vrs_sng);
   lbr_sng=(char *)nco_free(lbr_sng);
-} /* end nco_lbr_vrs_prn() */
+} /* !nco_lbr_vrs_prn() */
 
 const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
@@ -208,7 +208,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
   /* Purpose: Return mnemonic describing current NCO version 
      20191221: ncremap/ncclimo print left quote and first word of this string, so one-word strings look best 
      20200117: fixed this limitation, multi-word versions work fine */
-  return "June Gloom Moon";
+  return "June Strawberry Moon";
 } /* !nco_nmn_get() */
 
 void

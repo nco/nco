@@ -958,7 +958,8 @@ nco_flt_def_out /* [fnc]  */
       deflate=(int)True;
       /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
       if(flt_lvl[flt_idx] <= 0) shuffle=NC_NOSHUFFLE;
-      /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
+      /* Shuffle by default when manually deflating (and do not shuffle when uncompressing)
+	 In rare cases Shuffle can increase compressed filesize */
       if(flt_lvl[flt_idx] > 0) shuffle=NC_SHUFFLE;
       rcd+=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,flt_lvl[flt_idx]);
       break;

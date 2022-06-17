@@ -77,7 +77,7 @@
 #ifndef H5Z_FILTER_BLOSC
 # define H5Z_FILTER_BLOSC 32001
 #endif
-/* 20220617: Unsure why two levels of ifdef protection are necessary here...but they are */
+/* 20220617: Two levels of ifdef protection appear to be necessary here on MacOS, Linux...why?*/
 #ifndef NETCDF_FILTER_H
 # ifndef BLOSC_SHUFFLE
 enum BLOSC_SHUFFLE {
@@ -94,7 +94,7 @@ BLOSC_BITSHUFFLE=2  /* bit-wise shuffle */
 
 /* Filter types that NCO knows internally: 
    Convert filter enum to string in nco_flt_enm2sng()
-o   Convert string to filter enum in nco_flt_sng2enmid() */
+   Convert string to filter enum in nco_flt_sng2enmid() */
 typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_nil=0, /* 0 [enm] Filter type is unset */
   nco_flt_dfl=1, /* 1 [enm] DEFLATE */

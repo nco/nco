@@ -158,6 +158,7 @@ endif()
 check_library_exists(${NETCDF_LIBRARY} nc_rename_grp "" has_nc_rename_grp)
 if (has_nc_rename_grp)
   message("-- Found nc_rename_grp in: " ${NETCDF_LIBRARY})
+  add_definitions(-DNC_HAVE_RENAME_GRP)
   add_definitions(-DHAVE_NC_RENAME_GRP)
 endif()
 
@@ -190,6 +191,11 @@ else()
   add_definitions(-DNC_LIB_VERSION=360)
 endif()
 
+find_path(path_netcdf_filter_h netcdf_filter.h PATHS ${NETCDF_INCLUDE})
+if (path_netcdf_filter_h)
+  message("-- Found netcdf_filter.h in: " ${path_netcdf_filter_h})
+endif()
+
 find_path(path_netcdf_mem_h netcdf_mem.h PATHS ${NETCDF_INCLUDE})
 if (path_netcdf_mem_h)
   message("-- Found netcdf_mem.h in: " ${path_netcdf_mem_h})
@@ -202,9 +208,9 @@ endif()
 
 if (has_nc_open_mem AND path_netcdf_mem_h)
   add_definitions(-DHAVE_NETCDF_MEM_H)
-  message("-- NetCDF diskless functionaliy enabled")
+  message("-- netCDF diskless functionaliy enabled")
 else()
-  message("-- NetCDF diskless functionaliy not available, netcdf_mem.h or nc_open_mem() not found")
+  message("-- netCDF diskless functionaliy not available, netcdf_mem.h or nc_open_mem() not found")
 endif()
 
 #if nc_def_var_filter() is available, nc_inq_path(), nc_inq_format() and has_nc_open_mem() are too
