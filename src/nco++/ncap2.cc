@@ -292,7 +292,6 @@ main(int argc,char **argv)
     {"cdc",required_argument,0,0}, /* [sng] Compression string */
     {"codec",required_argument,0,0}, /* [sng] Compression string */
     {"compression",required_argument,0,0}, /* [sng] Compression string */
-    {"cpr",required_argument,0,0}, /* [sng] Compression string */
     {"flt",required_argument,0,0}, /* [sng] Filter string */
     {"filter",required_argument,0,0}, /* [sng] Filter string */
     {"fl_fmt",required_argument,0,0},
@@ -418,7 +417,7 @@ main(int argc,char **argv)
 	/* [fnc] Parse filter string and exit */
 	if(flt_sng) nco_flt_hdf5_prs(flt_sng);
       } /* !flt */
-      if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"cmp_sng") || !strcmp(opt_crr,"cpr") || !strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec") || !strcmp(opt_crr,"compress")) cmp_sng=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"cmp_sng") || !strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec") || !strcmp(opt_crr,"compress")) cmp_sng=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
         gaa_arg[gaa_nbr++]=(char *)strdup(optarg);

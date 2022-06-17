@@ -22,7 +22,7 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #ifdef NC_HAVE_META_H
-# include <netcdf_meta.h> /* NC_VERSION_..., NC_HAVE_RENAME_GRP */
+# include <netcdf_meta.h> /* NC_VERSION_..., NC_HAS_QUANTIZE, NC_HAS_ZSTD */
 #endif /* !NC_HAVE_META_H */
 
 /* Personal headers */

@@ -4756,26 +4756,16 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     sgs_frc_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() sgs_frc_in value buffer");
     rcd=nco_get_vara(sgs_id,var_id_in,dmn_srt,dmn_cnt_in,sgs_frc_in,var_typ_rgr);
 
-    /* 20220616 Thresholds for Sub-SGS regridding to avoid rounding artifacts */
-    const double sub_sgs_frc_out_thr_sp=1.0e-6; /* [frc] Threshold sub-SGS fraction for validity/normalization with input sgs_frc in single-precision */
-    const double sub_sgs_frc_out_thr_dp=1.0e-12; /* [frc] Threshold sub-SGS fraction for validity/normalization with input sgs_frc in double-precision */
-    double sub_sgs_frc_out_thr=sub_sgs_frc_out_thr_dp; /* [frc] Threshold sub-SGS fraction for validity/normalization */
-    nc_type sgs_frc_typ_in=NC_NAT; /* [enm] Type of sgs_frc in input (source) file */
-    rcd=nco_inq_vartype(sgs_id,var_id_in,&sgs_frc_typ_in);
-    if(sgs_frc_typ_in == NC_FLOAT) sub_sgs_frc_out_thr=sub_sgs_frc_out_thr_sp;
-    /* Convert units of sub-SGS normalization threshold from fractional to absolute */
-    sub_sgs_frc_out_thr*=sgs_nrm;
-
-    /* If sgs_frc comes from external local file, close it now */
+    /* If sgs_frc_in comes from external local file, close that now, and prevent further usage of sgs_id */
     if(fl_sgs){
       rcd=nco_close(sgs_id);
       fl_sgs=(char *)nco_free(fl_sgs);
     } /* !fl_sgs */
     
-    /* Initialize output */
+    /* Allocate for output */
     sgs_frc_out=(double *)nco_malloc_dbg(grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() sgs_frc_out value buffer");
     
-    /* Initialize and regrid sgs_frc_out
+    /* Initialize sgs_frc_out and regrid sgs_frc_in into sgs_frc_out
        20190907: sgs_frc_in (landfrac) is _FillValue (1.0e36) for ELM datasets in all masked gridcells, and is always positive definite (never zero) in all unmasked gridcells because it it a true area. ELM sgs_frc_out is always positive definite gridcell area in unmasked gridcells, is zero (not a missing value) elsewhere 
        20190910: MPAS-Seaice datasets have no mask, and sgs_frc_in (timeMonthly_avg_iceAreaCell) is never (ncatted-appended) _FillValue (-9.99999979021477e+33) and is usually zero because it is time-mean area-fraction of sea ice which only exists in polar regions. MPAS-Seaice sgs_frc_out is zero in all gridcells without sea-ice.
        Regardless of input source, following blocks guarantee that sgs_frc_out is defined everywhere, is never a missing value (sgs_frc_out is zero where sgs_frc_in may have been _FillValue), and that it is always safe to multiply and normalize by sgs_frc_out in main regridding loop */
@@ -4850,25 +4840,30 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 #ifdef __GNUG__
 # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
 #endif /* !__GNUG__ */
-#if defined( __clangnot__ )
+#if defined( __clang__ ) && !defined(NCO_OPENMP_DEFINED)
   /* OpenMP clause to build NCO with Clang compilers */
-# pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,sub_sgs_frc_out_thr,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
+# define NCO_OPENMP_DEFINED
 #endif /* !__clang__ */
-#if defined( __INTEL_COMPILER )
+#if defined( __INTEL_COMPILER ) && !defined(NCO_OPENMP_DEFINED)
   /* OpenMP clause to build NCO with Intel compilers */
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,sub_sgs_frc_out_thr,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
+# define NCO_OPENMP_DEFINED
 #endif /* !__INTEL_COMPILER */
-#if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION < 490)
+#if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION < 490) && !defined(NCO_OPENMP_DEFINED)
   /* Old OpenMP clause to build NCO with GCC compiler versions < 4.9.0 */
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,sub_sgs_frc_out_thr,wgt_raw)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+# define NCO_OPENMP_DEFINED
 #endif /* !GCC < 490 */
-#if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION >= 900) && 0
+#if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION >= 900) && !defined(NCO_OPENMP_DEFINED) && 0
   /* Experimental OpenMP clause to build NCO with modern OpenMP5 GPU options */
-# pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,sub_sgs_frc_out_thr,wgt_raw)
+# pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+# define NCO_OPENMP_DEFINED
 #endif /* !GCC with experimental GPU_SUPPORT */
-#if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION >= 490)
+#if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION >= 490) && !defined(NCO_OPENMP_DEFINED)
   /* Standard OpenMP clause to build NCO on modern GCC versions >= 4.9.0 */
-# pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,sub_sgs_frc_out_thr,wgt_raw)
+# pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+# define NCO_OPENMP_DEFINED
 #endif /* !GCC >= 490 */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -5221,11 +5216,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		 Procedure works fine in theory and with sgs_frc that originates with double precision
 		 However, rounding errors can accumulate with single precision landfrac (as in CLM/ELM)
 		 These cause 2 bad temperatures for ne30pg2->180x360 regridding of vegetated-only gridcells
-		 Solution is to threshold normalization by sub_sgs_frc_out based on precision of sgs_frc */
+		 Solution is to threshold normalization by sub_sgs_frc_out, accounting for sgs_frc units */
+	      const double sub_sgs_frc_out_thr=sgs_nrm*1.0e-15; /* [frc] Threshold sub-SGS fraction for validity/normalization */
 	      double *sub_sgs_frc_out=NULL;
 	      double sgs_frc_in_crr; /* [frc] SGS fraction of current input (source) gridcell */
 	      double sub_sgs_frc_out_crr; /* [frc] SGS fraction of current output (destination) gridcell */
-
+	      
 	      sub_sgs_frc_out=(double *)nco_malloc_dbg(grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() sub_sgs_frc_out value buffer");
 	      memcpy(sub_sgs_frc_out,sgs_frc_out,grd_sz_out*nco_typ_lng(var_typ_rgr));
 	      

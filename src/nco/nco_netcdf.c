@@ -1482,7 +1482,8 @@ int nco_def_grp_flg(const int nc_id,const char * const grp_nm,int * const grp_id
   return rcd;
 } /* !nco_def_grp_flg() */
 
-#ifndef HAVE_NC_RENAME_GRP
+/* NC_HAVE_RENAME_GRP replaced HAVE_NC_RENAME_GRP in netCDF 4.9.0 */ 
+#if !defined(NC_HAVE_RENAME_GRP) && !defined(HAVE_NC_RENAME_GRP)
 int
 nc_rename_grp(int grp_id,const char * const grp_nm)
 {
@@ -1500,7 +1501,7 @@ nc_rename_grp(int grp_id,const char * const grp_nm)
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nc_rename_grp() */
-#endif /* HAVE_NC_RENAME_GRP */
+#endif /* NC_HAVE_RENAME_GRP */
 
 int
 nco_rename_grp(int grp_id,const char * const grp_nm)
@@ -3230,8 +3231,8 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
 #ifndef HAVE_NETCDF4_H
 /* NB: netCDF chunking/deflate define/inquire functions work only on netCDF4 files
    NCO stubs perform no-ops on netCDF3 files */
-# ifdef NC_HAVE_NEW_CHUNKING_API
-  /* Newer, post-200906 netCDF4 API has chk_sz as const
+# if defined(NC_HAVE_NEW_CHUNKING_API) || defined(HAVE_NEW_CHUNKING_API)
+/* Newer, post-200906 netCDF4 API has chk_sz as const
      netcdf.h signals this API with NC_HAVE_NEW_CHUNKING_API as of ~200911 */
 int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz){return 1;}
 # else /* !NC_HAVE_NEW_CHUNKING_API */

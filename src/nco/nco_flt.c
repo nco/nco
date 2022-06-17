@@ -227,16 +227,16 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 # if CCR_HAS_LZ4
     strcat(nco_cdc_lst_glb,", LZ4");
 # endif /* !CCR_HAS_LZ4 */
-# if CCR_HAS_BITGROOM || NC_LIB_VER >= 490 
+# if CCR_HAS_BITGROOM || NC_HAS_QUANTIZE 
     strcat(nco_cdc_lst_glb,", BitGroom");
 # endif /* !CCR_HAS_BITGROOM */
-# if CCR_HAS_BITROUND || NC_LIB_VER >= 490 
+# if CCR_HAS_BITROUND || NC_HAS_QUANTIZE 
     strcat(nco_cdc_lst_glb,", BitRound");
 # endif /* !CCR_HAS_BITROUND */
-# if CCR_HAS_GRANULARBR || NC_LIB_VER >= 490
+# if CCR_HAS_GRANULARBR || NC_HAS_QUANTIZE
     strcat(nco_cdc_lst_glb,", GranularBR");
 # endif /* !CCR_HAS_GRANULARBR */
-# if CCR_HAS_ZSTD || NC_LIB_VER >= 490
+# if CCR_HAS_ZSTD || NC_HAS_ZSTD
     strcat(nco_cdc_lst_glb,", Zstandard");
 # endif /* !CCR_HAS_ZSTD */
 # if CCR_HAS_BLOSC_LZ || NC_LIB_VER >= 490
@@ -990,7 +990,7 @@ nco_flt_def_out /* [fnc]  */
 
     case nco_flt_bgr: /* BitGroom */
       if(lsy_flt_ok){
-# if NC_LIB_VER >= 490 
+# if NC_HAS_QUANTIZE 
 	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_quantize(nc_out_id,var_out_id,NC_QUANTIZE_BITGROOM,flt_lvl[flt_idx]);
 # elif CCR_HAS_BITGROOM
 	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_bitgroom(nc_out_id,var_out_id,flt_lvl[flt_idx]);
@@ -1002,7 +1002,7 @@ nco_flt_def_out /* [fnc]  */
 
     case nco_flt_btr: /* BitRound */
       if(lsy_flt_ok){
-# if NC_LIB_VER >= 490 
+# if NC_HAS_QUANTIZE 
 	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_quantize(nc_out_id,var_out_id,NC_QUANTIZE_BITROUND,flt_lvl[flt_idx]);
 # elif CCR_HAS_BITROUND
 	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_bitround(nc_out_id,var_out_id,flt_lvl[flt_idx]);
@@ -1014,7 +1014,7 @@ nco_flt_def_out /* [fnc]  */
 
     case nco_flt_gbr: /* Granular BitRound */
       if(lsy_flt_ok){
-# if NC_LIB_VER >= 490 
+# if NC_HAS_QUANTIZE 
 	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_quantize(nc_out_id,var_out_id,NC_QUANTIZE_GRANULARBR,flt_lvl[flt_idx]);
 # elif CCR_HAS_GRANULARBR
 	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_granularbr(nc_out_id,var_out_id,flt_lvl[flt_idx]);
@@ -1025,12 +1025,12 @@ nco_flt_def_out /* [fnc]  */
       break;
 
     case nco_flt_zst: /* Zstandard */
-# if CCR_HAS_ZSTD || NC_LIB_VER >= 490 
+# if CCR_HAS_ZSTD || NC_HAS_ZSTD
       /* NB: Zstandard accepts negative compression levels */
       rcd+=nc_def_var_zstandard(nc_out_id,var_out_id,flt_lvl[flt_idx]);
-# else /* !NC_LIB_VER >= 490 */
+# else /* !NC_HAS_ZSTD */
       cdc_has_flt=False;
-# endif /* !CCR_HAS_ZSTD || NC_LIB_VER >= 490  */
+# endif /* !CCR_HAS_ZSTD || NC_HAS_ZSTD */
       break;
 
     case nco_flt_bls_lz: bls_sbc=BLOSC_LZ; /* BLOSC LZ */

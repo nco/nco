@@ -549,7 +549,7 @@ ifneq (${null},$(findstring AIX,${PVM_ARCH}))
  CPP_TKN_OS += -I/usr/vacpp/include
 endif # AIX
 ifeq (${CNK},Y)
- CPP_TKN_OS += -DHAVE_NEW_CHUNKING_API
+ CPP_TKN_OS += -DHAVE_NEW_CHUNKING_API -DNC_HAVE_NEW_CHUNKING_API
 endif # !CNK
 ifeq (${DAP},Y)
  CPP_TKN_OS += -DENABLE_DAP

@@ -49,7 +49,7 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #ifdef NC_HAVE_META_H
-# include <netcdf_meta.h> /* NC_VERSION_..., HAVE_NC_RENAME_GRP */	 
+# include <netcdf_meta.h> /* NC_VERSION_..., NC_HAS_QUANTIZE, NC_HAS_ZSTD */
 #endif /* !NC_HAVE_META_H */
 #ifndef NC_LIB_VERSION
 # define NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH )
@@ -564,9 +564,10 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 /* End Attribute routines */
 
 /* Begin libnetcdf prototypes (i.e., for completely new library routines not yet in netcdf.h */
-#ifndef HAVE_NC_RENAME_GRP
+/* NC_HAVE_RENAME_GRP replaced HAVE_NC_RENAME_GRP in netCDF 4.9.0 */ 
+#if !defined(NC_HAVE_RENAME_GRP) && !defined(HAVE_NC_RENAME_GRP)
   int nc_rename_grp(int grp_id,const char * const grp_nm);
-#endif /* HAVE_NC_RENAME_GRP */
+#endif /* NC_HAVE_RENAME_GRP */
   /* nc_open_mem() is defined in netCDF >= 4.4.0, however ...
      Ubuntu (Xenial at least) used broken netCDF CMake (not autoconf) to package 4.4.0, and it does not install netcdf_mem.h:
      https://github.com/nco/nco/issues/44
@@ -617,7 +618,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   /* Begin netCDF4 stubs */
 #ifndef HAVE_NETCDF4_H
   /* Stubs so netCDF4 functions work without protection in netCDF3 environments */
-# ifdef NC_HAVE_NEW_CHUNKING_API
+# if defined(NC_HAVE_NEW_CHUNKING_API) || defined(HAVE_NEW_CHUNKING_API)
   /* Newer, post-200906 netCDF4 API has chk_sz as const
      netcdf.h signals this API with NC_HAVE_NEW_CHUNKING_API as of ~200911 */
   int nc_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz);

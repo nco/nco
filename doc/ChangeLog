@@ -1,8 +1,26 @@
-2022-06-15  Charlie Zender  <zender@uci.edu>
+2022-06-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha04: June Gloom Moon';git push
 	git tag -a 5.0.8-alpha04 -m '';git push --tags
+
+	* Adopt NC_HAS_QUANTIZE and NC_HAS_ZSTD tokens from netcdf_meta.h
+
+	* Update to newer NC_ pre-processor tokens like NC_HAVE_NEW_CHUNKING_API, NC_HAVE_RENAME_GRP
+
+	* Update release return codes to netCDF 4.9.2
+
+	* Work on compatibility with netCDF 4.9.0, released 20220610
+
+2022-06-16  Charlie Zender  <zender@uci.edu>
+
+	* WTF with OpenMP and sub_sgs_frc_out_thr? Add remaining BLOSC sub-compressors.
+
+	* Solution is to threshold normalization by sub_sgs_frc_out based on input sgs_frc precision
+
+	* Rounding errors due to single precision landfrac CLM/ELM caused 2 bad temperatures in 180x360 regridding of vegetated-only gridcells
+
+2022-06-15  Charlie Zender  <zender@uci.edu>
 
 	* Fix normalization of multi-level sub-SGS variables (to be just like single-level variables)
 	Expected this to completely solve vexing bug. Instead, it allowed regridding to complete,

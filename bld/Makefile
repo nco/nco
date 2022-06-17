@@ -24,8 +24,7 @@
 # grele.ess.uci.edu  : NCO + netCDF Makefile  All else GCC
 # katabatic.ess.uci.e: NCO          CMake     All else clang
 # sastrugi.ess.uci.ed: NCO + netCDF Configure All else clang
-# spectral.ess.uci.ed: NCO + netCDF Configure All else clang
-# Travis CI          : NCO          Configure All else gcc,clang,g++
+# spectral.ess.uci.ed: NCO          Configure All else clang
 
 # Usage (testing):
 # make tst                           # Vanilla regression test
@@ -682,7 +681,8 @@ CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY -DHAVE_GETPAGESIZE -
 # Assume netCDF >= 3.6.1
 CPP_TKN_OS += -DHAVE_NC_INQ_FORMAT
 # Assume netCDF >= 4.3.1
-CPP_TKN_OS += -DHAVE_NC_RENAME_GRP
+# NC_HAVE_RENAME_GRP replaced HAVE_NC_RENAME_GRP in netCDF 4.9.0
+CPP_TKN_OS += -DHAVE_NC_RENAME_GRP -DNC_HAVE_RENAME_GRP
 # Assume netCDF >= 4.3.2
 CPP_TKN_OS += -DHAVE_NC_INQ_PATH
 # Assume netCDF >= 4.6.1
@@ -703,7 +703,7 @@ ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
  CPP_TKN_OS += -DNEED_GETOPT_LONG
 endif # !(AIX || SGI)
 ifeq (${CNK},Y)
- CPP_TKN_OS += -DHAVE_NEW_CHUNKING_API
+ CPP_TKN_OS += -DHAVE_NEW_CHUNKING_API -DNC_HAVE_NEW_CHUNKING_API
 endif # !CNK
 ifeq (${DAP},Y)
  CPP_TKN_OS += -DENABLE_DAP

@@ -19,7 +19,7 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #ifdef NC_HAVE_META_H
-# include <netcdf_meta.h> /* NC_VERSION_..., HAVE_NC_RENAME_GRP */	 
+# include <netcdf_meta.h> /* NC_VERSION_..., NC_HAS_QUANTIZE, NC_HAS_ZSTD */
 #endif /* !NC_HAVE_META_H */
 #ifndef NC_LIB_VERSION
 # define NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH )
@@ -77,17 +77,20 @@
 #ifndef H5Z_FILTER_BLOSC
 # define H5Z_FILTER_BLOSC 32001
 #endif
-#ifndef BLOSC_SHUFFLE
+/* 20220617: Unsure why two levels of ifdef protection are necessary here...but they are */
+#ifndef NETCDF_FILTER_H
+# ifndef BLOSC_SHUFFLE
 enum BLOSC_SHUFFLE {
 BLOSC_NOSHUFFLE=0,  /* no shuffle */
 BLOSC_SHUFFLE=1,  /* byte-wise shuffle */
 BLOSC_BITSHUFFLE=2  /* bit-wise shuffle */
 };
-#endif
+# endif
 /* Assumes use of c-blosc library */
-#ifndef BLOSC_BLOSCLZ
+# ifndef BLOSC_BLOSCLZ
  enum BLOSC_SUBCOMPRESSORS {BLOSC_LZ=0, BLOSC_LZ4=1, BLOSC_LZ4HC=2, BLOSC_SNAPPY=3, BLOSC_ZLIB=4, BLOSC_ZSTD=5};
-#endif
+# endif
+#endif /* !NETCDF_FILTER_H */
 
 /* Filter types that NCO knows internally: 
    Convert filter enum to string in nco_flt_enm2sng()
