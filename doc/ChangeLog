@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha04: June Strawberry Moon';git push
 	git tag -a 5.0.8-alpha04 -m 'all: support decompression, netCDF 4.9.0 compat; ncremap, ncclimo: cmp_sng; ncks fix sub-sgs rgr; ';git push --tags
 
+	* Refactor BLOSC_ token definition
+
 	* Tweak CMake searches for netcdf_filter.h NC_HAVE_RENAME_GRP
 
 	* Algorithmatize decision to print DEFLATE, Shuffle separately or use _Filter

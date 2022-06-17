@@ -77,20 +77,18 @@
 #ifndef H5Z_FILTER_BLOSC
 # define H5Z_FILTER_BLOSC 32001
 #endif
-/* 20220617: Two levels of ifdef protection appear to be necessary here on MacOS, Linux...why?*/
-#ifndef NETCDF_FILTER_H
-# ifndef BLOSC_SHUFFLE
-enum BLOSC_SHUFFLE {
-BLOSC_NOSHUFFLE=0,  /* no shuffle */
-BLOSC_SHUFFLE=1,  /* byte-wise shuffle */
-BLOSC_BITSHUFFLE=2  /* bit-wise shuffle */
-};
+/* 20220617 My understanding of this is not complete
+   Thus this compatibility code is not optimal
+   All it needs to do is define some tokens so nco_flt.c will build
+   It does not need to defines the enums themselves */
+# ifndef BLOSC_LZ
+#  define BLOSC_LZ 0
+#  define BLOSC_LZ4 1
+#  define BLOSC_LZ4HC 2
+#  define BLOSC_SNAPPY 3
+#  define BLOSC_ZLIB 4
+#  define BLOSC_ZSTD 5
 # endif
-/* Assumes use of c-blosc library */
-# ifndef BLOSC_BLOSCLZ
- enum BLOSC_SUBCOMPRESSORS {BLOSC_LZ=0, BLOSC_LZ4=1, BLOSC_LZ4HC=2, BLOSC_SNAPPY=3, BLOSC_ZLIB=4, BLOSC_ZSTD=5};
-# endif
-#endif /* !NETCDF_FILTER_H */
 
 /* Filter types that NCO knows internally: 
    Convert filter enum to string in nco_flt_enm2sng()
