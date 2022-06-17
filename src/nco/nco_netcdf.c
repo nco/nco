@@ -1028,7 +1028,7 @@ int nc_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int f
   (void)fprintf(stdout,"ERROR: %s reports inquire variable filter information was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later.\nExiting...\n",fnc_nm,fnc_nm);
   nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nc_inq_var_filter_info() */
+} /* !nc_inq_var_filter_info() */
 #endif /* !474, !4.7.4 */
 
 #if NC_LIB_VERSION < 490

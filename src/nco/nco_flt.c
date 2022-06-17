@@ -22,6 +22,25 @@
    20220609: fxm free() this/these global variables */
 static char *nco_cdc_lst_glb=NULL; /* [sng] List of available filters */
 
+#if !defined(CCR_HAS_BZIP2) && (NC_LIB_VERSION < 490)
+int nc_def_var_bzip2
+(const int nc_id, /* I [ID] netCDF ID */
+ const int var_id, /* I [ID] Variable ID */
+ const int cmp_lvl) /* I [enm] Compression level */
+{
+  /* Purpose: Pseudo-library stub filter for Bzip2
+     This particular stub routine is only called by netCDF4-enabled code
+     when built against a netCDF library too old to have the nc_def_var_bzip2() function. */
+  int rcd;
+  const char fnc_nm[]="nc_def_var_bzip2()";
+  rcd=NC_NOERR+0*(nc_id+var_id);
+  *prm_nbr=*prm_lst=rcd; /* CEWI */
+  (void)fprintf(stdout,"ERROR: %s reports Bzip2 filter wrapper was foiled because neither libnetcdf.a does nor CCR contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.9.0 (released ~20220610) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* !nc_def_var_bzip2() */
+#endif /* !490, !4.9.0 */
+
 void
 nco_dfl_case_flt_enm_err /* [fnc] Print error and exit for illegal switch(nco_flt_enm) case */
 (nco_flt_typ_enm nco_flt_enm, /* [enm] Unrecognized enum */
