@@ -1,10 +1,10 @@
 2022-06-17  Charlie Zender  <zender@uci.edu>
 
-	* Provide nc_def_var_bzip() stub when necessary
-
 	* NCO 5.0.8-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha05: Kahakai';git push
 	git tag -a 5.0.8-alpha05 -m '';git push --tags
+
+	* Provide nc_def_var_bzip() stub when necessary
 
 	* NCO 5.0.8-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha04: June Strawberry Moon';git push

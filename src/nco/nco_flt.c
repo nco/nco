@@ -33,9 +33,8 @@ int nc_def_var_bzip2
      when built against a netCDF library too old to have the nc_def_var_bzip2() function. */
   int rcd;
   const char fnc_nm[]="nc_def_var_bzip2()";
-  rcd=NC_NOERR+0*(nc_id+var_id);
-  *prm_nbr=*prm_lst=rcd; /* CEWI */
-  (void)fprintf(stdout,"ERROR: %s reports Bzip2 filter wrapper was foiled because neither libnetcdf.a does nor CCR contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.9.0 (released ~20220610) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  rcd=NC_NOERR+0*(nc_id+var_id+cmp_lvl);
+  (void)fprintf(stdout,"ERROR: %s reports Bzip2 filter wrapper was foiled because neither libnetcdf.a nor CCR contain a real %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.9.0 (released ~20220610) or later.\nExiting...\n",fnc_nm,fnc_nm);
   nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* !nc_def_var_bzip2() */
