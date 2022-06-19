@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha05: Kahakai';git push
 	git tag -a 5.0.8-alpha05 -m '';git push --tags
 
+	* Never search NULL cmp_sng for "none"
+
 	* Remove OpenMP default(none) on Clang: not helpful, breaks frazil
 
 2022-06-17  Charlie Zender  <zender@uci.edu>
