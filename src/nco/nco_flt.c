@@ -101,7 +101,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   if(dfl_lvlp) dfl_lvl=*dfl_lvlp;
 
   /* Decide whether to decompress before chopping up compression specification */
-  if(cmp_sng || !nco_cmp_glb_get()){
+  if(cmp_sng || nco_cmp_glb_get()){
     /* Interpret a local or global specification that contains any of the (case-insensitive) strings 
        "none" (or its synonyms) as a request to decompress all output variables */
     if(strcasestr(cmp_sng,"none") || strcasestr(cmp_sng,"uncompress") || strcasestr(cmp_sng,"decompress") || strcasestr(cmp_sng,"defilter")) FLG_COMPRESS=False;
