@@ -1595,7 +1595,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 
   /* Print implicit or explicit buffer request depending on debugging level */
   if(flg_rqs_vrb_mpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() will request file buffer of default size\n",nco_prg_nm_get(),fnc_nm); 
-  if(flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() will request file buffer size = %lu bytes\n",nco_prg_nm_get(),fnc_nm,(unsigned long)*bfr_sz_hnt); 
+  if(flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() will request file buffer size = %lu bytes\n",nco_prg_nm_get(),fnc_nm,*bfr_sz_hnt); 
 
   /* Pass local copy of size hint otherwise user-specified value is overwritten on first call */
 #ifdef ENABLE_MPI
@@ -1606,7 +1606,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 
   /* Print results using same verbosity criteria
      NB: bfr_sz_hnt_lcl is never NULL because nco__open() always returns a valid size */
-  if(flg_rqs_vrb_mpl || flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() opened file with buffer size = %lu bytes\n",nco_prg_nm_get(),fnc_nm,(unsigned long)bfr_sz_hnt_lcl);
+  if(flg_rqs_vrb_mpl || flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() opened file with buffer size = %lu bytes\n",nco_prg_nm_get(),fnc_nm,bfr_sz_hnt_lcl);
 
   /* 20131222: Update underlying file-type using new nc_inq_format_extended() function */
   fl_fmt_xtn_prv=nco_fmt_xtn_get();

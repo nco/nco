@@ -648,7 +648,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif bfr_sz */
+      } /* !bfr_sz */
       if(!strcmp(opt_crr,"bsa") || !strcmp(opt_crr,"byte_swap")){
 	nco_bnr_cnv=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
