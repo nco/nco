@@ -1601,7 +1601,11 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 #ifdef ENABLE_MPI
   rcd=nco_open_par(fl_nm,md_open|NC_MPIIO,MPI_COMM_WORLD,MPI_INFO_NULL,nc_id);
 #else /* !ENABLE_MPI */
+  /* 20220621 netCDF 4.9.0 seems to emit (or flush?) stderr messages from nc__open() and nc_open():
+     Messages print value of HOME as CWD, e.g., ">>> HOME=|/Users/zender/nco|"
+     Perhaps this results from building netCDF with --enable-logging? */
   rcd=nco__open(fl_nm,md_open,&bfr_sz_hnt_lcl,nc_id);
+  //rcd=nco_open(fl_nm,md_open,nc_id);
 #endif /* !ENABLE_MPI */
 
   /* Print results using same verbosity criteria

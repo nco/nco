@@ -30,6 +30,7 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_flt.h" /* Compression filters */
 #include "nco_grp_utl.h" /* Group utilities */
 #include "nco_mmr.h" /* Memory management */
 #ifdef _MSC_VER

@@ -994,6 +994,10 @@ nco_flt_def_out /* [fnc]  */
       } /* !flt_lvl */
       break;
 
+    case nco_flt_f32: /* Fletcher32 */
+      rcd+=nco_def_var_fletcher32(nc_out_id,var_out_id,NC_FLETCHER32);
+      break;
+
     case nco_flt_bz2: /* Bzip2 */
       rcd+=nco_inq_filter_avail_flg(nc_out_id,flt_id[flt_idx]);
       /* netCDF 4.9.0 lacks NC_HAS_BZIP2 token */
