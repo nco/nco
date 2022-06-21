@@ -846,14 +846,16 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
        20220621: fxm this routine would need to parse nco_cmp_sng_glb to determine user-specified dfl_lvl */
 #if NC_LIB_VERSION < 474
     /* Copy original filters if user did not explicity set dfl_lvl for output */ 
-    if((deflate || shuffle) && dfl_lvl_in < 0){
-      /* Before netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
-	 Properties of final invocation before nc_enddef() would take effect
-	 After netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect
-	 It is therefore crucial not to call nco_def_var_deflate() more than once */
+    if(dfl_lvl_in != NCO_DFL_LVL_UNDEFINED){
+      /* Overwrite HDF Lempel-Ziv compression level, if requested */
+      deflate=(int)True;
+      /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
+      if(dfl_lvl_in <= 0) shuffle=NC_NOSHUFFLE;
+      /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating (and do not shuffle when uncompressing) */
+      if(dfl_lvl_in > 0) shuffle=NC_SHUFFLE;
       rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
       return rcd;
-    } /* !dfl_lvl */
+    } /* !dfl_lvl_in */
 #endif /* !474, !4.7.4 */
 
     char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */

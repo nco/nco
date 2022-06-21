@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha05: Kahakai';git push
 	git tag -a 5.0.8-alpha05 -m '';git push --tags
 
-	* For netCDF < 474 copy input deflate settings and skip	nco_flt_def_out()
+	* For netCDF < 474 copy input deflate settings and skip nco_flt_def_out()
 
 	* Print Fletcher32 keyword without printing _Filter as well
 
