@@ -842,6 +842,20 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
     /* NB: dfl_lvl_in will be zero if deflate == 0 */
     rcd=nco_inq_var_deflate(nc_in_id,var_in_id_cpy,&shuffle,&deflate,&dfl_lvl_in);
 
+    /* Generic filter calls DNE prior to 4.7.4 so copy input settings and return
+       20220621: fxm this routine would need to parse nco_cmp_sng_glb to determine user-specified dfl_lvl */
+#if NC_LIB_VERSION < 474
+    /* Copy original filters if user did not explicity set dfl_lvl for output */ 
+    if((deflate || shuffle) && dfl_lvl_in < 0){
+      /* Before netCDF 4.8.0, nco_def_var_deflate() could be called multiple times 
+	 Properties of final invocation before nc_enddef() would take effect
+	 After netCDF 4.8.0 first instance of nco_def_var_deflate() takes effect
+	 It is therefore crucial not to call nco_def_var_deflate() more than once */
+      rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
+      return rcd;
+    } /* !dfl_lvl */
+#endif /* !474, !4.7.4 */
+
     char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */
     char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
 

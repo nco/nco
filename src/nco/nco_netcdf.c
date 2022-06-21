@@ -1010,8 +1010,9 @@ int nc_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nb
   int rcd;
   const char fnc_nm[]="nc_inq_var_filter_ids()";
   rcd=NC_NOERR+0*(nc_id+var_id);
-  *flt_nbr=*flt_lst=rcd; /* CEWI */
-  (void)fprintf(stdout,"ERROR: %s reports inquire variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  if(flt_nbr) *flt_nbr=rcd; /* CEWI */
+  if(flt_lst) *flt_lst=rcd; /* CEWI */
+  (void)fprintf(stdout,"ERROR: %s reports inquire variable filter was foiled because libnetcdf.a does not actually contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later...preferably much later!\nExiting...\n",fnc_nm,fnc_nm);
   nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* !nc_inq_var_filter_ids() */
