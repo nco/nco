@@ -260,22 +260,22 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 #if defined(CCR_HAS_ZSTD) || defined(NC_HAS_ZSTD)
     strcat(nco_cdc_lst_glb,", Zstandard");
 #endif /* !CCR_HAS_ZSTD */
-#if defined(CCR_HAS_BLOSC_LZ) || defined(NC_LIB_VER) >= 490
+#if defined(CCR_HAS_BLOSC_LZ) || defined(NC_LIB_VERSION) >= 490
     strcat(nco_cdc_lst_glb,", BLOSC_LZ");
 #endif /* !CCR_HAS_BLOSC_LZ */
-#if defined(CCR_HAS_BLOSC_LZ4) || defined(NC_LIB_VER) >= 490
+#if defined(CCR_HAS_BLOSC_LZ4) || defined(NC_LIB_VERSION) >= 490
     strcat(nco_cdc_lst_glb,", BLOSC LZ4");
 #endif /* !CCR_HAS_BLOSC_LZ4 */
-#if defined(CCR_HAS_BLOSC_LZ4_HC) || defined(NC_LIB_VER) >= 490
+#if defined(CCR_HAS_BLOSC_LZ4_HC) || defined(NC_LIB_VERSION) >= 490
     strcat(nco_cdc_lst_glb,", BLOSC LZ4 HC");
 #endif /* !CCR_HAS_BLOSC_LZ4_HC */
-#if defined(CCR_HAS_SNAPPY) || defined(NC_LIB_VER) >= 490
+#if defined(CCR_HAS_SNAPPY) || defined(NC_LIB_VERSION) >= 490
     strcat(nco_cdc_lst_glb,", BLOSC Snappy");
 #endif /* !CCR_HAS_SNAPPY */
-#if defined(CCR_HAS_BLOSC_DEFLATE) || defined(NC_LIB_VER) >= 490
+#if defined(CCR_HAS_BLOSC_DEFLATE) || defined(NC_LIB_VERSION) >= 490
     strcat(nco_cdc_lst_glb,", BLOSC DEFLATE");
 #endif /* !CCR_HAS_BLOSC_DEFLATE */
-#if defined(CCR_HAS_BLOSC_ZSTANDARD) || defined(NC_LIB_VER) >= 490
+#if defined(CCR_HAS_BLOSC_ZSTANDARD) || defined(NC_LIB_VERSION) >= 490
     strcat(nco_cdc_lst_glb,", BLOSC Zstandard");
 #endif /* !CCR_HAS_BLOSC_ZSTANDARD */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports available codec list is nco_cdc_lst_glb=%s\n",nco_prg_nm_get(),fnc_nm,nco_cdc_lst_glb);
@@ -976,7 +976,7 @@ nco_flt_def_out /* [fnc]  */
     
   /* Set extra parameters needed by BLOSC filters */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++)
-    if(flt_id[flt_idx] == nco_flt_bls)
+    if(flt_id[flt_idx] == H5Z_FILTER_BLOSC)
       rcd+=nco_inq_var_blk_sz(nc_out_id,var_out_id,&blk_sz);
 
   /* Invoke applicable codec(s) */
@@ -1085,13 +1085,13 @@ nco_flt_def_out /* [fnc]  */
     case nco_flt_bls_snp: bls_sbc=BLOSC_SNAPPY; /* BLOSC Snappy */
     case nco_flt_bls_dfl: bls_sbc=BLOSC_ZLIB; /* BLOSC DEFLATE */
     case nco_flt_bls_zst: bls_sbc=BLOSC_ZSTD; /* BLOSC Zstandard */
-#if NC_LIB_VER >= 490
+#if NC_LIB_VERSION >= 490
       rcd+=nc_def_var_blosc(nc_out_id,var_out_id,bls_sbc,(unsigned int)flt_lvl[flt_idx],blk_sz,add_shf);
-#else /* !NC_LIB_VER >= 490 */
+#else /* !NC_LIB_VERSION >= 490 */
       add_shf+=0*add_shf;
       bls_sbc+=0*bls_sbc;
       cdc_has_flt=False;
-#endif /* NC_LIB_VER >= 490  */
+#endif /* NC_LIB_VERSION >= 490  */
       break;
 
     case nco_flt_dgr: /* DigitRound */

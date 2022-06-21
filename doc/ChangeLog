@@ -1,5 +1,11 @@
 2022-06-21  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.8-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha06: Kai Elua';git push
+	git tag -a 5.0.8-alpha06 -m 'all: add hdn.cdl xmp; ncks Fletcher32.';git push --tags
+
+	* Fix NC_LIB_VER to be NC_LIB_VERSION
+
 	* NCO 5.0.8-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha05: Kahakai';git push
 	git tag -a 5.0.8-alpha05 -m 'all: add hdn.cdl xmp; ncks Fletcher32.';git push --tags
