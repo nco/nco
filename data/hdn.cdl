@@ -45,6 +45,34 @@ netcdf hdn {
     int four(lat);
   four:_ChunkSizes=2;
 
+    int five(lat);
+  five:_Shuffle=1;
+  five:_Fletcher32=1;
+  five:_NOFILL=1;
+
+    int six(lat);
+  six:_DeflateLevel=1;
+  six:_Shuffle=1;
+  six:_Fletcher32=1;
+
+    int seven(lat);
+  seven:_Shuffle=1;
+  seven:_Fletcher32=1;
+
+    int eight(lat);
+  eight:_DeflateLevel=1;
+  eight:_NOFILL=1;
+
+    int nine(lat);
+  nine:_Fletcher32=1;
+  nine:_NOFILL=1;
+
+    int ten(lat);
+  ten:_Shuffle=1;
+
+    int eleven(lat);
+  eleven:_Fletcher32=1;
+
     int var_chk(lat);
   var_chk:purpose="Variable with checksumming. Original _Fletcher32 = 1";
   var_chk:_Fletcher32=1;
@@ -86,6 +114,13 @@ netcdf hdn {
     two=2,2;
     three=3,3;
     four=4,4;
+    five=5,5;
+    six=6,6;
+    seven=7,7;
+    eight=8,8;
+    nine=9,9;
+    ten=10,10;
+    eleven=11,11;
     var_cmp=1,1;
     var_cmp_0=1,1;
     var_cmp_1=1,1;

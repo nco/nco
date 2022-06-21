@@ -90,6 +90,11 @@
 #  define BLOSC_ZSTD 5
 # endif
 
+/* NCO-specific filter tokens */
+#ifndef NCO_FLT_SNG_LNG_MAX
+#define NCO_FLT_SNG_LNG_MAX 200L
+#endif /* !NCO_FLT_SNG_LNG_MAX */
+
 /* Filter types that NCO knows internally: 
    Convert filter enum to string in nco_flt_enm2sng()
    Convert string to filter enum in nco_flt_sng2enmid() */

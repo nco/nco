@@ -194,9 +194,9 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   /* Global user-specified specification has been merged with dfl_lvl 
      Generate final global compression specification in NCO standard format */
   char *cmp_sng_std=NULL; /* [sng] Compression specification in NCO-standard format */
-  char int_sng[100]; /* [sng] Buffer to hold printed integers */
+  char int_sng[100]; /* [sng] Buffer to hold printed integer parameters for a single filter */
   if(flt_nbr > 0){
-    cmp_sng_std=(char *)nco_malloc(100*sizeof(char)); /* [sng] Compression specification in NCO-standard format */
+    cmp_sng_std=(char *)nco_malloc(NCO_FLT_SNG_LNG_MAX*sizeof(char)); /* [sng] Compression specification in NCO-standard format */
     /* NUL-terminate string */
     cmp_sng_std[0]='\0';
     for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
@@ -237,7 +237,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   if(!nco_cdc_lst_glb){
     nco_cdc_lst_glb=(char *)nco_malloc(200*sizeof(char));
     nco_cdc_lst_glb[0]='\0';
-    strcat(nco_cdc_lst_glb,"DEFLATE");
+    strcat(nco_cdc_lst_glb,"DEFLATE, Shuffle, Fletcher32");
     /* CCR, netCDF define tokens like CCR_HAS_BITGROOM, NC_HAS_ZSTD in ccr_meta.h, netcdf_meta.h */
 
     /* netCDF 4.9.0 lacks NC_HAS_BZIP2 token */
@@ -872,7 +872,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
     flt_lst=(unsigned int *)nco_malloc(flt_nbr*sizeof(unsigned int));
     if(flt_nbr > 0){
       rcd=nco_inq_var_filter_ids(nc_in_id,var_in_id_cpy,(size_t *)NULL,flt_lst);
-      flt_sng=(char *)nco_malloc(100L*sizeof(char));
+      flt_sng=(char *)nco_malloc(NCO_FLT_SNG_LNG_MAX*sizeof(char));
       for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
 	rcd=nco_inq_var_filter_info(nc_in_id,var_in_id_cpy,flt_lst[flt_idx],&prm_nbr,NULL);
 	prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
