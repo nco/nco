@@ -2,7 +2,9 @@
 
 	* NCO 5.0.8-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha05: Kahakai';git push
-	git tag -a 5.0.8-alpha05 -m '';git push --tags
+	git tag -a 5.0.8-alpha05 -m 'all: add hdn.cdl xmp; ncks Fletcher32.';git push --tags
+
+	* Add extra test cases to hdn.cdl
 
 	* For netCDF < 474 copy input deflate settings and skip nco_flt_def_out()
 
