@@ -124,6 +124,7 @@ main(int argc,char **argv)
   char **var_lst_in=NULL_CEWI;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
+  char *cmp_sng=NULL; /* [sng] Compression string */
   char *cnk_arg[NC_MAX_DIMS];
   char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
   char *cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
@@ -297,6 +298,11 @@ main(int argc,char **argv)
     {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
     {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
     {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
+    {"cmp_sng",required_argument,0,0}, /* [sng] Compression string */
+    {"ccr",required_argument,0,0}, /* [sng] Compression string */
+    {"cdc",required_argument,0,0}, /* [sng] Compression string */
+    {"codec",required_argument,0,0}, /* [sng] Compression string */
+    {"compression",required_argument,0,0}, /* [sng] Compression string */
     {"fl_fmt",required_argument,0,0},
     {"file_format",required_argument,0,0},
     {"gaa",required_argument,0,0}, /* [sng] Global attribute add */
@@ -435,6 +441,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_frm_trm") || !strcmp(opt_crr,"no_formula_terms")) EXTRACT_FRM_TRM=False; /* [flg] Do not extract formula_terms variables */
       if(!strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_mmr_cln=False; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"cmp_sng") || !strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec") || !strcmp(opt_crr,"compress")) cmp_sng=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
@@ -619,6 +626,9 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
+
+  /* Parse compression options */
+  if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,&dfl_lvl,(int *)NULL,(nco_flt_typ_enm **)NULL,(unsigned int **)NULL,(int **)NULL,(int **)NULL,(int ***)NULL);
 
   /* Set/report global chunk cache */
   rcd+=nco_cnk_csh_ini(cnk_csh_byt);
@@ -1000,6 +1010,7 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(cmp_sng) cmp_sng=(char *)nco_free(cmp_sng);
     if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
     if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);
     if(grp_out) grp_out=(char *)nco_free(grp_out);
