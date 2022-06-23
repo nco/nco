@@ -1,8 +1,12 @@
-2022-06-21  Charlie Zender  <zender@uci.edu>
+2022-06-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha06: Kai Elua';git push
-	git tag -a 5.0.8-alpha06 -m 'all: add hdn.cdl xmp; ncks Fletcher32.';git push --tags
+	git tag -a 5.0.8-alpha06 -m 'nc_inq_filter_avail stub';git push --tags
+
+	* Improve nc_inq_filter_avail() stub to handle DEFLATE, SHUFFLE, FLETCHER32
+
+2022-06-21  Charlie Zender  <zender@uci.edu>
 
 	* Fix NC_LIB_VER to be NC_LIB_VERSION
 

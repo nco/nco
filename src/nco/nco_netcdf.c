@@ -1041,11 +1041,19 @@ int nc_inq_filter_avail(const int nc_id,const unsigned int flt_id)
      when built against a netCDF library too old to have the nc_inq_filter_avail() function. */
   int rcd;
   const char fnc_nm[]="nc_inq_filter_avail()";
-  rcd=NC_NOERR+0*(nc_id+flt_id);
-  (void)fprintf(stdout,"ERROR: %s reports inquire filter availability was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.9.0 (released ~20220601) or later.\nExiting...\n",fnc_nm,fnc_nm);
-  nco_err_exit(rcd,fnc_nm);
+  switch(flt_id){
+  case H5Z_FILTER_DEFLATE: 
+  case H5Z_FILTER_SHUFFLE:
+  case H5Z_FILTER_FLETCHER32:
+    rcd=NC_NOERR;
+    break;
+  default:
+    rcd=NC_ENOFILTER;
+    break;
+  } /* !flt_id */
+  (void)fprintf(stdout,"INFO: NCO stub function for %s reports an inquiry on filter availability of HDF5 filter ID = %lu. Stub function employed because libnetcdf.a does not contain %s. Please rebuild NCO against netCDF library version 4.9.0 (released ~20220601) or later to support the capability to find and call filters besides DEFLATE, Shuffle, and Fletcher32.\nExiting...\n",fnc_nm,flt_id,fnc_nm);
   return rcd;
-} /* !nco_inq_filter_avail() */
+} /* !nc_inq_filter_avail() */
 #endif /* !490, !4.9.0 */
 
 int nc_def_var_filter_ccr(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const char ** const prm_lst)
