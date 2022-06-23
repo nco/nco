@@ -126,7 +126,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
       prm_lst=nco_lst_prs_1D(flt_lst[flt_idx],",",&prm_nbr);
 
       /* First element in list is either NCO-recognized filter name or HDF5 filter ID */
-      //(void)fprintf(stdout,"DEBUG quark3 prm_nbr=%d, prm_lst=%s\n",(int)prm_nbr,prm_lst[0]);
+      //(void)fprintf(stdout,"%s: DEBUG quark3 cmp_sng=%s, flt_nbr=%d, flt_idx=%d, prm_nbr=%d, prm_lst[0]=%s\n",nco_prg_nm_get(),cmp_sng,flt_nbr,flt_idx,prm_nbr,prm_lst[0]);
       flt_alg[flt_idx]=nco_flt_nm2enmid(prm_lst[0],flt_id+flt_idx);
 
       /* Remaining elements, if any, are filter parameters in the HDF5 sense */
