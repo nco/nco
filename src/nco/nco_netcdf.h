@@ -609,7 +609,6 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int nc_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
 #endif /* !474, !4.7.4 */
 #if NC_LIB_VERSION < 490
-  int nc_inq_filter_avail(const int nc_id,const unsigned int flt_id);
   int nc_def_var_quantize(int nc_id,int var_id,int qnt_md,int nsd);
   int nc_inq_var_quantize(int nc_id,int var_id,int *qnt_md,int *nsdp);
 #endif /* !490, !4.9.0 */
