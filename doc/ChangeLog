@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha06: Kai Elua';git push
 	git tag -a 5.0.8-alpha06 -m 'nc_inq_filter_avail stub';git push --tags
 
+	* Move nc_inq_filter_avail() and HDF5 tokens from nco_flt.[ch] to nco_netcdf.[ch]
+
 	* Move nc_inq_filter_avail() stub nco_flt.[ch] since it involves so many HDF5 tokens
 
 	* Improve nc_inq_filter_avail() stub to handle DEFLATE, SHUFFLE, FLETCHER32

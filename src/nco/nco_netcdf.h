@@ -270,6 +270,32 @@
 # define NC_EFILLVALUE    (-122)    /**< Attempt to define fill value when data already exists. */
 #endif /* !HAVE_NETCDF4_H */
 
+/* Filter tokens introduced in netcdf_filter.h 4.9.0 ~202206
+   Some of these are needed by nc_filter_avail() stub */
+/* Must match values in <H5Zpublic.h> */
+#ifndef H5Z_FILTER_DEFLATE
+# define H5Z_FILTER_DEFLATE 1
+#endif
+#ifndef H5Z_FILTER_SHUFFLE
+# define H5Z_FILTER_SHUFFLE 2
+#endif
+#ifndef H5Z_FILTER_FLETCHER32
+# define H5Z_FILTER_FLETCHER32 3
+#endif
+#ifndef H5Z_FILTER_SZIP
+# define H5Z_FILTER_SZIP 4
+#endif
+/* Other Standard Filters */
+#ifndef H5Z_FILTER_ZSTD
+# define H5Z_FILTER_ZSTD 32015
+#endif
+#ifndef H5Z_FILTER_BZIP2
+# define H5Z_FILTER_BZIP2 307
+#endif
+#ifndef H5Z_FILTER_BLOSC
+# define H5Z_FILTER_BLOSC 32001
+#endif
+
 /* define MAX CHUNK SIZE here as its not present in netcdf.h */
 #define NCO_MAX_CHUNK_SIZE (0xFFFFFFFF)
 
@@ -609,6 +635,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int nc_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
 #endif /* !474, !4.7.4 */
 #if NC_LIB_VERSION < 490
+  int nc_inq_filter_avail(const int nc_id,const unsigned int flt_id);
   int nc_def_var_quantize(int nc_id,int var_id,int qnt_md,int nsd);
   int nc_inq_var_quantize(int nc_id,int var_id,int *qnt_md,int *nsdp);
 #endif /* !490, !4.9.0 */

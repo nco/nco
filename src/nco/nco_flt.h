@@ -131,10 +131,6 @@ typedef enum nco_flt_flg_enm{ /* [enm] Filter policies */
 extern "C" {
 #endif /* __cplusplus */
 
-#if NC_LIB_VERSION < 490
-  int nc_inq_filter_avail(const int nc_id,const unsigned int flt_id);
-#endif /* !490, !4.9.0 */
-
 #if !defined(CCR_HAS_BZIP2) && (NC_LIB_VERSION < 490)
 int nc_def_var_bzip2(int ncid, int varid, int level);
 int nc_inq_var_bzip2(int ncid, int varid, int *hasfilterp, int *levelp);
