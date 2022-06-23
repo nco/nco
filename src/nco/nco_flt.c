@@ -554,6 +554,7 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
       /* Filter appears to be specified by HDF5 ID */
       flt_enm=nco_flt_id2enm(flt_id);
       if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports filter string %s interpreted as HDF5 ID for filter \"%s\" with NCO enum %d\n",nco_prg_nm_get(),fnc_nm,flt_nm,nco_flt_id2nm(flt_id),(int)flt_enm);
+      *flt_idp=flt_id;
       FLT_NM_IS_ID=True;
     } /* !sng_cnv_rcd */
   } /* !flt_idp */
@@ -811,7 +812,6 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
   /* Deflation */
   int deflate; /* [flg] Turn-on deflate filter */
   int dfl_lvl_in; /* [enm] Deflate level [0..9] in input file */
-  int dfl_lvl; /* [enm] Command-line requested deflate level, if any */
   int shuffle; /* [flg] Turn-on shuffle filter */
   int var_in_id_cpy=-1; /* [id] Writable copy of input variable ID */
 
@@ -819,7 +819,6 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
 
   /* Use copies so var_in_id, dfl_lvl can remain const in prototype */
   var_in_id_cpy=var_in_id;
-  dfl_lvl=NCO_DFL_LVL_UNDEFINED;
 
   /* Write (or overwrite) var_in_id when var_nm_in is supplied */
   if(var_nm_in && nc_in_id >= 0){
@@ -845,7 +844,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
     /* Generic filter calls DNE prior to 4.7.4 so copy input settings and return
        20220621: fxm this routine would need to parse nco_cmp_sng_glb to determine user-specified dfl_lvl */
 #if NC_LIB_VERSION < 474
-    /* Copy original filters if user did not explicity set dfl_lvl for output */ 
+    /* Copy original filters and return if newer filters unavailable */ 
     if(dfl_lvl_in != NCO_DFL_LVL_UNDEFINED){
       /* Overwrite HDF Lempel-Ziv compression level, if requested */
       deflate=(int)True;
@@ -879,10 +878,6 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
 	rcd=nco_inq_var_filter_info(nc_in_id,var_in_id_cpy,flt_lst[flt_idx],NULL,prm_lst);
 	(void)sprintf(sng_foo,"%u,",flt_lst[flt_idx]);
 	strcat(flt_sng,sng_foo);
-	/* Overwrite on-disk DEFLATE level, if any, with user-specified level, if any */ 
-	if(dfl_lvl != NCO_DFL_LVL_UNDEFINED)
-	  if(flt_lst[flt_idx] == H5Z_FILTER_DEFLATE)
-	    prm_lst[0]=dfl_lvl;
 	for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
 	  (void)sprintf(sng_foo,"%u",prm_lst[prm_idx]);
 	  strcat(flt_sng,sng_foo);

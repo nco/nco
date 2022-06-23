@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha06: Kai Elua';git push
 	git tag -a 5.0.8-alpha06 -m 'nc_inq_filter_avail stub';git push --tags
 
+	* Ensure nco_flt_nm2enmid() always returns ID if requested
+
+	* Ensure nco_flt_def_wrp() does not rely on command-line dfl_lvl being explicitly passed
+
 	* Merge compression infrastructure into ncbo, ncecat, ncflint, ncpdq, ncra, ncwa
 
 	* Move nc_inq_filter_avail() and HDF5 tokens from nco_flt.[ch] to nco_netcdf.[ch]
