@@ -1070,6 +1070,7 @@ nco_flt_def_out /* [fnc]  */
 #if CCR_HAS_ZSTD || NC_HAS_ZSTD
       /* NB: Zstandard accepts negative compression levels */
       rcd+=nc_def_var_zstandard(nc_out_id,var_out_id,flt_lvl[flt_idx]);
+      //(void)fprintf(stdout,"%s: DEBUG quark5 cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, rcd=%d\n",nco_prg_nm_get(),cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],rcd);
 #else /* !NC_HAS_ZSTD */
       cdc_has_flt=False;
 #endif /* !CCR_HAS_ZSTD || NC_HAS_ZSTD */
@@ -1113,6 +1114,8 @@ nco_flt_def_out /* [fnc]  */
       (void)fprintf(stdout,"%s: ERROR %s reports neither netCDF nor CCR library appears to define an API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and/or not installed in netCDF or in CCR. If the filter is newish and is supposed to be in CCR, update the installed CCR then recompile NCO. Otherwise, re-try this command and specify only filters included in this list of available filters: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2nmid(flt_alg[flt_idx],NULL),nco_cdc_lst_glb);
       nco_exit(EXIT_FAILURE);
     } /* !cdc_has_flt */
+
+    if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: WARNING %s returned from filter execution with bad return code: cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, flt_id=%u, rcd=%d \"%s\". Proceeding anyway, though do not expect this filter to have been applied in the output file.\n",nco_prg_nm_get(),fnc_nm,cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],flt_id[flt_idx],rcd,nc_strerror(rcd));
 
   } /* !flt_idx */
   

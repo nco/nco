@@ -858,6 +858,8 @@ ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${L
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Spectral 20220617 with netCDF-dev and no CCR
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' NETCDF_ROOT=/opt/netcdf UDUNITS2_PATH=/opt/homebrew ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+# Spectral 20220624 with netCDF-dev and CCR
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' NETCDF_ROOT=/opt/netcdf UDUNITS2_PATH=/opt/homebrew ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Rigb 20190912 (fxm)
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='' CXX=${LINUX_CXX} CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo

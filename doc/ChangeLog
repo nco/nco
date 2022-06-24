@@ -2,7 +2,11 @@
 
 	* NCO 5.0.8-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha06: Kai Elua';git push
-	git tag -a 5.0.8-alpha06 -m 'nc_inq_filter_avail stub';git push --tags
+	git tag -a 5.0.8-alpha06 -m 'improve nc_inq_filter_avail() stub, fix nco_flt_nm2enmid(), nco_flt_def_wrp(), nco_flt_def_out() bugs';git push --tags
+
+	* netCDF 4.9.0 only lets quantize succeed with NETCDF4 files (possible netCDF bug)
+
+	* netCDF 4.9.0 Zstandard and Bzip2 codecs fail when duplicate codecs with same API from CCR are also available
 
 	* NUL-terminate flt_sng before strcat()
 
