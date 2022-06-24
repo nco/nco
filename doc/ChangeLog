@@ -1,8 +1,12 @@
-2022-06-23  Charlie Zender  <zender@uci.edu>
+2022-06-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha06: Kai Elua';git push
 	git tag -a 5.0.8-alpha06 -m 'nc_inq_filter_avail stub';git push --tags
+
+	* NUL-terminate flt_sng before strcat()
+
+2022-06-23  Charlie Zender  <zender@uci.edu>
 
 	* Ensure nco_flt_nm2enmid() always returns ID if requested
 

@@ -313,8 +313,8 @@ make install
 # Personal recipe last used successfully: 20210817
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
-export PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
-export LD_LIBRARY_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
+export PATH=${MY_BIN_DIR}:'/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
+export LD_LIBRARY_PATH=${MY_LIB_DIR}:'/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
 # NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
 # 20220104 NB: ANTLR_ROOT in ${HOME} is only used at compile-time, not run-time
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
@@ -857,7 +857,7 @@ ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${L
 # Spectral 20220422 with CCR
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Spectral 20220617 with netCDF-dev and no CCR
-ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' NETCDF_ROOT=/opt/netcdf ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' NETCDF_ROOT=/opt/netcdf UDUNITS2_PATH=/opt/homebrew ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Rigb 20190912 (fxm)
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='' CXX=${LINUX_CXX} CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo

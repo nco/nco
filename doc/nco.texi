@@ -9725,32 +9725,40 @@ for @acronym{NSD}=3 on our benchmark @w{1 GB} climate model output
 dataset. 
 @example
 @verbatim
-ncks -7 -L 1         --ppc default=3 in.nc out.nc # Granular BitRound
-ncks -7 -L 1 --baa=0 --ppc default=3 in.nc out.nc # BitGroom
-ncks -7 -L 1 --baa=1 --ppc default=3 in.nc out.nc # BitShave
-ncks -7 -L 1 --baa=2 --ppc default=3 in.nc out.nc # BitSet
-ncks -7 -L 1 --baa=3 --ppc default=3 in.nc out.nc # DigitRound
-ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # Granular BitRound
-ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitGroomRound
-ncks -7 -L 1 --baa=6 --ppc default=10 in.nc out.nc # HalfShave
-ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce
-ncks -7 -L 1 --baa=8 --ppc default=10 in.nc out.nc # BitRound
+ncks -7 -L 1         --ppc default=3 in.nc out.nc # Granular BitRound (NSD)
+ncks -7 -L 1 --baa=0 --ppc default=3 in.nc out.nc # BitGroom (NSD)
+ncks -7 -L 1 --baa=1 --ppc default=3 in.nc out.nc # BitShave (NSD)
+ncks -7 -L 1 --baa=2 --ppc default=3 in.nc out.nc # BitSet (NSD)
+ncks -7 -L 1 --baa=3 --ppc default=3 in.nc out.nc # DigitRound (NSD)
+ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # Granular BitRound (NSD)
+ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitGroomRound (NSD)
+ncks -7 -L 1 --baa=6 --ppc default=10 in.nc out.nc # HalfShave (NSB)
+ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce (NSD)
+ncks -7 -L 1 --baa=8 --ppc default=10 in.nc out.nc # BitRound (NSB)
 @end verbatim
 @end example
 These @acronym{NSD} algorithms write an algorithm-specific attribute,
 e.g., @code{QuantizeGranularBitRoundNumberOfSignificantDigits} or
-@code{QuantizeDigitRountNumberOfSignificantDigits}.
+@code{QuantizeDigitRoundNumberOfSignificantDigits}.
 Documentation on these algorithms is best found in the literature.
 While Bit-Groom/Shave/Set are described above, documentation on
 Bit-Adjustment-Algorithms (@acronym{BAA}) 3--8 will be improved in the  
 future.  
 
 As of @w{version 5.0.5} (January 2022), @acronym{NCO} supports
-two quantization codecs that expect a user-specified number of
-significant bits (@acronym{NSB}, or "keepbits) to retain.
+two quantization codecs (BitRound and HalfShave) that expect a
+user-specified number of significant bits (@acronym{NSB}, or
+``keepbits'') to retain. 
 The @acronym{NSB} argument contrasts with the number of significant 
-digits (@acronym{NSD}) parameter expected by BitGroom, DigitRound, and
-GranularBR.
+digits (@acronym{NSD}) parameter expected by the other codecs
+(like BitGroom, DigitRound, and GranularBR).
+The valid ranges of @acronym{NSD} are 1--7 for @acronym{NC_FLOAT}
+and 1--15 for @acronym{NC_DOUBLE}.
+The valid ranges of @acronym{NSB} are 1--23 for @acronym{NC_FLOAT}
+and 1--52 for @acronym{NC_DOUBLE}.
+The upper limits of @acronym{NSB} are the number of explicitly
+represented bits in the @acronym{IEEE} single- and double-precision
+formats (the implicit bit does not count).
 
 It is safe to attempt @acronym{PPC} on input that has already been
 rounded. 

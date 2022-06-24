@@ -872,6 +872,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
     if(flt_nbr > 0){
       rcd=nco_inq_var_filter_ids(nc_in_id,var_in_id_cpy,(size_t *)NULL,flt_lst);
       flt_sng=(char *)nco_malloc(NCO_FLT_SNG_LNG_MAX*sizeof(char));
+      flt_sng[0]='\0';
       for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
 	rcd=nco_inq_var_filter_info(nc_in_id,var_in_id_cpy,flt_lst[flt_idx],&prm_nbr,NULL);
 	prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
