@@ -1,5 +1,11 @@
 2022-06-24  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.0.8-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.8-beta01: Rothaniel';git push
+	git tag -a 5.0.8-beta01 -m 'Filterorama';git push --tags
+
+	* Re-protect nco_flt_def_wrp() call within NETCDF4 ifdefs in nco_grp_utl.c
+
 	* NCO 5.0.8-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-alpha06: Kai Elua';git push
 	git tag -a 5.0.8-alpha06 -m 'improve nc_inq_filter_avail() stub, fix nco_flt_nm2enmid(), nco_flt_def_wrp(), nco_flt_def_out() bugs';git push --tags
