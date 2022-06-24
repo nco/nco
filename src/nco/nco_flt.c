@@ -521,7 +521,7 @@ nco_flt_id2enm /* [fnc] Convert HDF5 compression filter ID to enum */
   default: flt_enm=nco_flt_unk; break;
   } /* !flt_id */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG nco_flt_id2enm() reports filter ID = %u is unknown by NCO, though may be present in filter directory.\n",nco_prg_nm_get(),flt_id);
+  if(flt_enm == nco_flt_unk) (void)fprintf(stdout,"%s: DEBUG nco_flt_id2enm() reports filter ID = %u is unknown by NCO, though may be present in filter directory.\n",nco_prg_nm_get(),flt_id);
 
   return flt_enm;
 } /* !nco_flt_id2enm() */
@@ -875,9 +875,13 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
       flt_sng[0]='\0';
       for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
 	rcd=nco_inq_var_filter_info(nc_in_id,var_in_id_cpy,flt_lst[flt_idx],&prm_nbr,NULL);
-	prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
-	rcd=nco_inq_var_filter_info(nc_in_id,var_in_id_cpy,flt_lst[flt_idx],NULL,prm_lst);
-	(void)sprintf(sng_foo,"%u,",flt_lst[flt_idx]);
+	if(prm_nbr > 0){
+	  prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
+	  rcd=nco_inq_var_filter_info(nc_in_id,var_in_id_cpy,flt_lst[flt_idx],NULL,prm_lst);
+	} /* !prm_nbr */
+	/* 20200624: prm_lst is NULL iff prm_nbr==0, e.g., for Fletcher32
+	   Only append zero if parameters exist */
+	(void)sprintf(sng_foo,"%u%s",flt_lst[flt_idx],(prm_nbr > 0) ? "," : "");
 	strcat(flt_sng,sng_foo);
 	for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
 	  (void)sprintf(sng_foo,"%u",prm_lst[prm_idx]);
@@ -885,6 +889,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
 	  if(prm_idx < prm_nbr-1) strcat(flt_sng,",");
 	} /* !prm_idx */
 	if(flt_idx < flt_nbr-1) (void)strcat(flt_sng,spr_sng);
+	//(void)fprintf(stdout,"%s: DEBUG quark1 flt_sng=%s, flt_nbr=%d, flt_idx=%d, flt_id=%d, prm_nbr=%d\n",nco_prg_nm_get(),flt_sng,(int)flt_nbr,(int)flt_idx,(int)flt_lst[flt_idx],(int)prm_nbr);
 	if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst);
       } /* !flt_idx */
       if(flt_lst) flt_lst=(unsigned int *)nco_free(flt_lst);
@@ -893,7 +898,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
   
   if(nco_dbg_lvl_get() >= nco_dbg_grp){
     rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
-    (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, cmp_sng_glb=\"%s\", flt_sng=\"%s\"\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_cmp_glb_get() ? nco_cmp_glb_get() : "none",flt_sng ? flt_sng : "none");
+    (void)fprintf(stdout,"%s: DEBUG %s reports variable %s, cmp_sng_glb=\"%s\", flt_sng=\"%s\"\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_cmp_glb_get() ? nco_cmp_glb_get() : "no user-specified filters",flt_sng ? flt_sng : "no on-disk filters");
   } /* !dbg */
 
   /* Use global options, if any were specified, otherwise use on-disk settings */
