@@ -235,7 +235,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 
   /* Build list of available filters once */
   if(!nco_cdc_lst_glb){
-    nco_cdc_lst_glb=(char *)nco_malloc(200*sizeof(char));
+    nco_cdc_lst_glb=(char *)nco_malloc(NCO_FLT_SNG_LNG_MAX*sizeof(char));
     nco_cdc_lst_glb[0]='\0';
     strcat(nco_cdc_lst_glb,"DEFLATE, Shuffle, Fletcher32");
     /* CCR, netCDF define tokens like CCR_HAS_BITGROOM, NC_HAS_ZSTD in ccr_meta.h, netcdf_meta.h */

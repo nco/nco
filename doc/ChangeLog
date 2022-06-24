@@ -2,7 +2,7 @@
 
 	* NCO 5.0.8-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-beta01: Rothaniel';git push
-	git tag -a 5.0.8-beta01 -m 'Filterorama';git push --tags
+	git tag -a 5.0.8-beta01 -m 'Filterama';git push --tags
 
 	* Clip erroneous trailing commas from inferred filter strings for filters with zero parameters (like Fletcher32)
 
