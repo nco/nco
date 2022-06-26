@@ -1,3 +1,13 @@
+2022-06-26  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.0.8-beta02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.0.8-beta02: Iron Champs';git push
+	git tag -a 5.0.8-beta02 -m '';git push --tags
+
+	* Verify netCDF library quantization yields same CRs as NCO library quantization
+
+	* Prevent quantization of non-floating-point variables
+
 2022-06-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-beta01 release procedure:

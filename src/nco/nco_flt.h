@@ -124,7 +124,9 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
 /* Filter flags */
 typedef enum nco_flt_flg_enm{ /* [enm] Filter policies */
   nco_flt_flg_nil=0, /* 0 [enm] Filter flag is unset */
-  nco_flt_flg_lsy_no=1, /* 1 [enm] Lossy filters not allowed for this variable */
+  nco_flt_flg_all_ok=1, /* 1 [enm] Any filter is OK to apply for this variable */
+  nco_flt_flg_lsy_no=2, /* 2 [enm] Lossy filters not allowed for this variable (e.g., to preserve precision for coordinates) */
+  nco_flt_flg_qnt_no=3, /* 3 [enm] Quantization filters not allowed for this variable (e.g., variable is not floating-point) */
 } nco_flt_flg_enm; /* end nco_flt_flg_enm */
 
 #ifdef __cplusplus

@@ -902,17 +902,21 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
   } /* !dbg */
 
   /* Use global options, if any were specified, otherwise use on-disk settings */
-  if(nco_cmp_glb_get()) cmp_sng=nco_cmp_glb_get();
-  else if(flt_sng) cmp_sng=flt_sng;
-  
+  if(nco_cmp_glb_get()) cmp_sng=nco_cmp_glb_get(); else if(flt_sng) cmp_sng=flt_sng;
+
+  /* Prevent quantization of non-floating-point variables */
+  nco_flt_flg_enm flt_flg=nco_flt_flg_all_ok; /* [enm] Enumerated flag for fine-grained compression control */
+  nc_type var_typ; /* [enm] netCDF type of output variable (usually same as input) */
+  rcd=nco_inq_vartype(nc_out_id,var_out_id,&var_typ);
+  if(var_typ != NC_FLOAT && var_typ != NC_DOUBLE) flt_flg=nco_flt_flg_qnt_no;
+
   /* Call single routine that executes all requested filters */
-  if(cmp_sng) rcd=nco_flt_def_out(nc_out_id,var_out_id,cmp_sng,nco_flt_flg_nil);
+  if(cmp_sng) rcd=nco_flt_def_out(nc_out_id,var_out_id,cmp_sng,flt_flg);
 
   /* Free memory, if any, that holds input file on-disk filter string for this variable */
   if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
     
   return rcd;
-  
 } /* !nco_flt_def_wrp() */
   
 int /* O [enm] Return code */
@@ -958,7 +962,7 @@ nco_flt_def_out /* [fnc]  */
   int *flt_prm_nbr=NULL; /* [nbr] List of parameter numbers for each filter */
   int **flt_prm=NULL; /* [nbr] List of lists of parameters for each filter */
 
-  if(flt_flg == nco_flt_flg_lsy_no) lsy_flt_ok=False;
+  if(flt_flg == nco_flt_flg_lsy_no || flt_flg == nco_flt_flg_qnt_no) lsy_flt_ok=False;
   
   if(cmp_sng || nco_cmp_glb_get()){
     if(nco_dbg_lvl_get() >= nco_dbg_std && !nco_cmp_glb_get()) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);
@@ -1120,8 +1124,12 @@ nco_flt_def_out /* [fnc]  */
       nco_exit(EXIT_FAILURE);
     } /* !cdc_has_flt */
 
-    if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: WARNING %s returned from filter execution with bad return code: cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, flt_id=%u, rcd=%d \"%s\". Proceeding anyway, though do not expect this filter to have been applied in the output file.\n",nco_prg_nm_get(),fnc_nm,cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],flt_id[flt_idx],rcd,nc_strerror(rcd));
-
+    if(rcd != NC_NOERR){
+      char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
+      rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
+      (void)fprintf(stdout,"%s: WARNING %s returned from filter execution on variable %s with bad return code: cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, flt_id=%u, rcd=%d \"%s\". Proceeding anyway, though do not expect this filter to have been applied in the output file.\n",nco_prg_nm_get(),fnc_nm,var_nm,cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],flt_id[flt_idx],rcd,nc_strerror(rcd));
+    } /* !rcd */
+      
   } /* !flt_idx */
   
   /* Free compression string */
