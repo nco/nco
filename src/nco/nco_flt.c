@@ -1128,6 +1128,7 @@ nco_flt_def_out /* [fnc]  */
       char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
       rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
       (void)fprintf(stdout,"%s: WARNING %s returned from filter execution on variable %s with bad return code: cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, flt_id=%u, rcd=%d \"%s\". Proceeding anyway, though do not expect this filter to have been applied in the output file.\n",nco_prg_nm_get(),fnc_nm,var_nm,cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],flt_id[flt_idx],rcd,nc_strerror(rcd));
+      rcd=NC_NOERR;
     } /* !rcd */
       
   } /* !flt_idx */

@@ -4,9 +4,11 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-beta02: Iron Champs';git push
 	git tag -a 5.0.8-beta02 -m '';git push --tags
 
+	* Reset rcd to NC_NOERR after non-fatal filter errors
+
 	* Verify netCDF library quantization yields same CRs as NCO library quantization
 
-	* Prevent quantization of non-floating-point variables
+	* Prevent attempted quantization of non-floating-point variables (to avoid bad return codes from netCDF)
 
 2022-06-24  Charlie Zender  <zender@uci.edu>
 
