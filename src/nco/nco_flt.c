@@ -940,6 +940,7 @@ nco_flt_def_out /* [fnc]  */
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   char *cmp_sng_cpy=NULL; /* [sng] Compression specification copy */
+  char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
 
   /* Deflation */
   int deflate; /* [flg] Turn-on deflate filter */
@@ -951,8 +952,8 @@ nco_flt_def_out /* [fnc]  */
   nco_bool lsy_flt_ok=True; /* [flg] Lossy filters are authorized (i.e., not specifically disallowed) for this variable */
 
   unsigned int add_shf=1; /* [flg] Add Shuffle to BLOSC filter */
-  unsigned int bls_sbc=NC_MAX_UINT;; /* [enm] BLOSC subcompressor */
-  unsigned int blk_sz; /* [nbr] Blocksize for BLOSC filter */
+  unsigned int bls_sbc=NC_MAX_UINT; /* [enm] BLOSC subcompressor */
+  unsigned int blk_sz=0U; /* [nbr] Blocksize for BLOSC filter */
   unsigned int *flt_prm_uns=NULL; /* [enm] Filter parameters stored as unsigned ints */
 
   /* Varibles to obtain by parsing compression specification */
@@ -980,14 +981,17 @@ nco_flt_def_out /* [fnc]  */
     (void)nco_cmp_prs(cmp_sng_cpy,(int *)NULL,&flt_nbr,&flt_alg,&flt_id,&flt_lvl,&flt_prm_nbr,&flt_prm);
   } /* !cmp_sng */
     
+  /* Get variable name for debugging output */
+  rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
+
   /* Set extra parameters needed by BLOSC filters */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++)
     if(flt_id[flt_idx] == H5Z_FILTER_BLOSC)
       rcd+=nco_inq_var_blk_sz(nc_out_id,var_out_id,&blk_sz);
-
+  
   /* Invoke applicable codec(s) */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){ 
-    if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s executing filter: flt_nbr=%d, flt_idx=%d, flt_enm=%d flt_nm=%s, flt_id=%u, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2nmid(flt_alg[flt_idx],NULL),flt_id[flt_idx],flt_lvl[flt_idx]);
+    if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s executing filter for %s: flt_nbr=%d, flt_idx=%d, flt_enm=%d flt_nm=%s, flt_id=%u, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,var_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2nmid(flt_alg[flt_idx],NULL),flt_id[flt_idx],flt_lvl[flt_idx]);
     switch(flt_alg[flt_idx]){
     case nco_flt_nil: /* If user did not select a filter then exit */
       cdc_has_flt=False;
@@ -1093,7 +1097,7 @@ nco_flt_def_out /* [fnc]  */
     case nco_flt_bls_dfl: bls_sbc=BLOSC_ZLIB; /* BLOSC DEFLATE */
     case nco_flt_bls_zst: bls_sbc=BLOSC_ZSTD; /* BLOSC Zstandard */
 #if NC_LIB_VERSION >= 490
-      rcd+=nc_def_var_blosc(nc_out_id,var_out_id,bls_sbc,(unsigned int)flt_lvl[flt_idx],blk_sz,add_shf);
+      if(blk_sz > 0U) rcd+=nc_def_var_blosc(nc_out_id,var_out_id,bls_sbc,(unsigned int)flt_lvl[flt_idx],blk_sz,add_shf); else if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports variable %s is not chunked so will not attempt BLOSC compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
 #else /* !NC_LIB_VERSION >= 490 */
       add_shf+=0*add_shf;
       bls_sbc+=0*bls_sbc;
@@ -1126,8 +1130,6 @@ nco_flt_def_out /* [fnc]  */
     } /* !cdc_has_flt */
 
     if(rcd != NC_NOERR){
-      char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
-      rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
       (void)fprintf(stdout,"%s: WARNING %s returned from filter execution on variable %s with bad return code: cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, flt_id=%u, rcd=%d \"%s\". Proceeding anyway, though do not expect this filter to have been applied in the output file.\n",nco_prg_nm_get(),fnc_nm,var_nm,cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],flt_id[flt_idx],rcd,nc_strerror(rcd));
       rcd=NC_NOERR;
     } /* !rcd */
@@ -1168,7 +1170,7 @@ nco_inq_var_blk_sz
   int srg_typ; /* [enm] Storage type */
 
   nc_type var_typ; /* [enm] Variable type */
-  unsigned int blk_sz; /* [nbr] Blocksize of each chunk */
+  unsigned int blk_sz=0U; /* [nbr] Blocksize of each chunk */
 
   size_t *cnk_sz; /* [nbr] Chunksize list */
 
@@ -1176,14 +1178,22 @@ nco_inq_var_blk_sz
 
   rcd+=nco_inq_varndims(nc_id,var_id,&dmn_nbr);
   if(dmn_nbr == 0){
-    (void)fprintf(stderr,"%s: ERROR %s reports variable %s is scalar not array\n",nco_prg_nm_get(),fnc_nm,var_nm);
+    (void)fprintf(stderr,"%s: ERROR %s reports variable %s is scalar not array. Unsuitable for BLOSC compression filters, bailing now...\n",nco_prg_nm_get(),fnc_nm,var_nm);
     nco_exit(EXIT_FAILURE);
   } /* !srg_typ */
 
   rcd+=nco_inq_var_chunking(nc_id,var_id,&srg_typ,(size_t *)NULL);
   if(srg_typ != NC_CHUNKED){
-    (void)fprintf(stderr,"%s: ERROR %s reports variable %s is not chunked\n",nco_prg_nm_get(),fnc_nm,var_nm);
-    nco_exit(EXIT_FAILURE);
+    /* netCDF autormatically and silently chunks variables of storage type NC_CONTIGUOUS for DEFLATE, Zstandard filters
+       Such variables are set to the netCDF4 default chunk sizes (thus ignoring user-specified sizes?) 
+       However, netCDF does chunk NC_CONTIGUOUS variables sent to BLOSC filters 
+       nco_inq_var_blk_sz() is only called in preparation for BLOSC filters 
+       20220627: For now it's OK to set NC_CONTIGUOUS block size to 0U and return 
+       Revisit this issue once we get BLOSC filters actually working
+       May require put nco_cnk_sz_set_trv() before nco_flt_def_wrp() to utilize user-defined chunk sizes? */
+    // (void)fprintf(stdout,"%s: INFO %s reports variable %s is not chunked so will not attempt BLOSC compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
+    *blk_szp=blk_sz;
+    return rcd;
   } /* !srg_typ */
 
   /* Allocate space to hold dimension IDs */
@@ -1210,6 +1220,6 @@ nco_inq_var_blk_sz
   
   if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s reports block size of variable %s is %u\n",nco_prg_nm_get(),fnc_nm,var_nm,blk_sz);
 
-    return rcd;
+  return rcd;
 } /* !nco_inq_var_blk_sz() */
 
