@@ -45,6 +45,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   char *nm_cdl;
   char *nm_jsn;
+  char *flt_hlp_sng=NULL; /* [sng] English name of HDF5 filter */
   char *sng_val_sng=NULL_CEWI; /* [sng] String of NC_CHAR */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and destination in sprintf(). NB: free() only one of these two pointers. */
   char *spr_sng=NULL; /* [sng] Output separator string */
@@ -323,24 +324,33 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		if(flt_nbr == 2 && ((flg_prn_dfl_spr && flg_prn_shf_spr) || (flg_prn_dfl_spr && flg_prn_f32_spr) || (flg_prn_shf_spr && flg_prn_f32_spr))) flg_prn_flt_spr=False;
 		if(flt_nbr == 3 && flg_prn_dfl_spr && flg_prn_shf_spr && flg_prn_f32_spr) flg_prn_flt_spr=False;
 		if(flt_nbr > 0 && flg_prn_flt_spr){
-		  /* Print _Filter values for all filters of filtered variables
-		     20220526 Wrap code in loop over filters and separate each filter by a pipe symbol "|" */
+		  /* Print _Filter values for all non-separately printed filters of filtered variables
+		     20220526 Wrap code in loop over filters and separate each filter by a pipe symbol "|"
+		     20220627 ncdump has flaw in printed output when DEFLATE invoked with other non-default filter:
+		     ncks -O -4 --dbg=4 --cmp='1,1|zstandard,3' -C -v one_dmn_rec_var_flt ~/nco/data/in.nc ~/foo.nc
+		     ncks -m -C --hdn ~/foo.nc
+		     ncdump -s -h ~/foo.nc */
 		  idx=att_nbr_ttl++;
 		  att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 		  att[idx].nm=(char *)strdup("_Filter");
 		  att[idx].type=NC_CHAR;
 		  val_hdn_sng=(char *)nco_malloc(100L*sizeof(char));
+		  if(nco_dbg_lvl_get() >= nco_dbg_fl) flt_hlp_sng=(char *)nco_malloc(100L*sizeof(char));
 		  val_hdn_sng[0]='\0';
+		  if(flt_hlp_sng) flt_hlp_sng[0]='\0';
 		  for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
+		    /* Exclude Filters that will be separately printed from Filter string */
 		    if(flt_lst[flt_idx] == H5Z_FILTER_DEFLATE || flt_lst[flt_idx] == H5Z_FILTER_SHUFFLE || flt_lst[flt_idx] == H5Z_FILTER_FLETCHER32) continue;
-		    if(cnt_prn_flt > cnt_prn_spr && flt_idx < flt_nbr-1){
+		    if(cnt_prn_flt > cnt_prn_spr){
 		      strcat(val_hdn_sng,spr_sng);
+		      if(flt_hlp_sng) strcat(flt_hlp_sng,cma_sng);
 		      cnt_prn_spr++;
 		    } /* !cnt_prn_flt */
 		    rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],&prm_nbr,NULL);
 		    prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
 		    rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],NULL,prm_lst);
 		    (void)sprintf(sng_foo,"%u",flt_lst[flt_idx]);
+		    if(flt_hlp_sng) strcat(flt_hlp_sng,nco_flt_id2nm(flt_lst[flt_idx]));
 		    if(prm_nbr > 0) strcat(sng_foo,",");
 		    strcat(val_hdn_sng,sng_foo);
 		    for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
@@ -582,18 +592,18 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     (void)cast_void_nctype(cls_typ,&att[idx].val);
     
     if(CDL){
-      	/* CDL attribute values of many types must have type-specific suffixes (e.g., s, u, ull) unless they are user-defined types that, like variables, can always be disambiguated by their explicit (not implicit) type specifier that resolves to a base atomic-type */
-      	(void)sprintf(att_sng_pln,"%s",cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
-      	(void)sprintf(att_sng_dlm,"%s%%s",cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
-    }else if(XML) {
-    	(void)sprintf(att_sng_pln,"%s", nco_typ_fmt_sng_att_xml(bs_typ) );
-      	(void)sprintf(att_sng_dlm,"%s%%s", nco_typ_fmt_sng_att_xml(bs_typ) );
-    }else if(JSN) {
-    	(void)sprintf(att_sng_pln,"%s", nco_typ_fmt_sng_att_jsn(bs_typ) );
-		(void)sprintf(att_sng_dlm,"%s%%s", nco_typ_fmt_sng_att_jsn(bs_typ) );
+      /* CDL attribute values of many types must have type-specific suffixes (e.g., s, u, ull) unless they are user-defined types that, like variables, can always be disambiguated by their explicit (not implicit) type specifier that resolves to a base atomic-type */
+      (void)sprintf(att_sng_pln,"%s",cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
+      (void)sprintf(att_sng_dlm,"%s%%s",cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
+    }else if(XML){
+      (void)sprintf(att_sng_pln,"%s",nco_typ_fmt_sng_att_xml(bs_typ));
+      (void)sprintf(att_sng_dlm,"%s%%s",nco_typ_fmt_sng_att_xml(bs_typ));
+    }else if(JSN){
+      (void)sprintf(att_sng_pln,"%s",nco_typ_fmt_sng_att_jsn(bs_typ));
+      (void)sprintf(att_sng_dlm,"%s%%s",nco_typ_fmt_sng_att_jsn(bs_typ));
     }else{
-		(void)sprintf(att_sng_pln,"%s", nco_typ_fmt_sng(bs_typ));
-		(void)sprintf(att_sng_dlm,"%s%%s", nco_typ_fmt_sng(bs_typ));
+      (void)sprintf(att_sng_pln,"%s",nco_typ_fmt_sng(bs_typ));
+      (void)sprintf(att_sng_dlm,"%s%%s",nco_typ_fmt_sng(bs_typ));
     }
     switch(cls_typ){
     case NC_FLOAT:
@@ -633,12 +643,12 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
 	    sng_val_sng_cpy=sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
 
-	  } /* endif first element of string array */
+	  } /* !lmn first element of string array */
 	  /* New string begins each element where penultimate dimension changes */
 	  if(lmn%sng_lng == 0L){
 	    if(CDL_OR_JSN) (void)fprintf(fp_out,"\"");
 	    sng_val_sng[0]='\0';
-	  } /* endif new string */
+	  } /* !lmn */
 	  (void)strcat(sng_val_sng,(CDL ? chr2sng_cdl(chr_val,val_sng) : XML ? chr2sng_xml(chr_val,val_sng) : chr2sng_jsn(chr_val,val_sng)));
 	  if(chr_val == '\n' && lmn != att_szm1 && CDL) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
 	  if(lmn%sng_lng == sng_lngm1){
@@ -650,8 +660,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	}else{ /* Traditional */
 	  /* Assume \0 is string terminator and do not print it */
 	  if(chr_val != '\0') (void)fprintf(fp_out,"%c",chr_val);
-	} /* endelse CDL, XML, Traditional */
-      } /* end loop over element */
+	} /* !CDL, XML, Traditional */
+      } /* !lmn */
       break;
     case NC_BYTE: for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(fp_out,att_sng_dlm,att[idx].val.bp[lmn],(lmn != att_szm1) ? spr_sng : ""); break;
     case NC_UBYTE: for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(fp_out,att_sng_dlm,att[idx].val.ubp[lmn],(lmn != att_szm1) ? spr_sng : ""); break;
@@ -781,7 +791,13 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     if(CDL){
       if(nco_dbg_lvl_get() >= nco_dbg_std){
 	/* 20161129: Add netCDF attribute type as comment after semi-colon. Yes, "string" is redundant. */
-	(void)fprintf(fp_out," ; // %s\n",cdl_typ_nm(bs_typ));
+	(void)fprintf(fp_out," ; // %s",cdl_typ_nm(bs_typ));
+	/* 20220627: Add helpful Filter names to _Filter string */
+	if(flt_hlp_sng && !strcmp(att[idx].nm,"_Filter")){
+	  (void)fprintf(fp_out," %s",flt_hlp_sng);
+	  flt_hlp_sng=(char *)nco_free(flt_hlp_sng);
+	} /* !flt_hlp_sng */
+	(void)fprintf(fp_out,"\n");
       }else{ /* !dbg */
 	(void)fprintf(fp_out," ;\n");
       } /* !dbg */

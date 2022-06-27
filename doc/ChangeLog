@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8-beta02: Iron Champs';git push
 	git tag -a 5.0.8-beta02 -m 'all: xcl cf crd_lk_var from lsy flt';git push --tags
 
+	* Print filter names in CDL comments for _Filter when dbg >= 2
+
 	* Remove DEFLATE, Shuffle, and Fletcher32 from Filter string. Always print them separately.
 
 	* Prevent calling BLOSC filter on variables of storage type NC_CONTIGUOUS
