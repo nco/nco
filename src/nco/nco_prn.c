@@ -91,7 +91,10 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   nc_type var_typ;
 
   nco_bool flg_glb=False; /* [flg] Printing attributes for root-level group */
-  nco_bool flg_prn_dfl_shf_f32_spr=False; /* [flg] Print DEFLATE and/or Shuffle and/or Fletcher32 keywords separately */
+  nco_bool flg_prn_dfl_spr=False; /* [flg] Print DEFLATE keyword separately */
+  nco_bool flg_prn_shf_spr=False; /* [flg] Print Shuffle keyword separately */
+  nco_bool flg_prn_f32_spr=False; /* [flg] Print Fletcher32 keyword separately */
+  nco_bool flg_prn_flt_spr=True; /* [flg] Print DEFLATE and/or Shuffle and/or Fletcher32 keywords separately */
   
   bool jsn_obj=False; /* if true then print att in own object */
   const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
@@ -303,27 +306,23 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		  (void)fprintf(stdout,"%s: WARNING %s reports variable %s has %lu filters applied. The proper library functions to correctly handle multiple filters are not present in netCDF until version 4.8.0. Please recompile NCO with netCDF 4.8.0 or later to correctly interrogate and print the information about multiple filters associated with a variable.\n",nco_prg_nm_get(),fnc_nm,var_nm,(unsigned long)flt_nbr);
 		  flt_nbr=1;
 		} /* !flt_nbr */
+		unsigned cnt_prn_flt=0U; /* [nbr] Number of filters actually printed in _Filter string */
+		unsigned cnt_prn_spr=0U; /* [nbr] Number of separators actually printed in _Filter string */
 		unsigned int *flt_lst=NULL; /* [nbr] Filter IDs */
 		flt_lst=(unsigned int *)nco_malloc(flt_nbr*sizeof(unsigned int));
 		rcd=nco_inq_var_filter_ids(grp_id,var_id,(size_t *)NULL,flt_lst);
 		/* 20220609 Print DEFLATE and/or Shuffle and/or Fletcher32 keywords separately (under certain circumstances) for backwards-compatibility
 		   Otherwise print complete _Filter string */
 		/* If all three original netCDF filters were applied in the canonical order... */
-		if(flt_nbr == 3)
-		  if(flt_lst[0] == H5Z_FILTER_FLETCHER32 && flt_lst[1] == H5Z_FILTER_SHUFFLE && flt_lst[2] == H5Z_FILTER_DEFLATE)
-		    flg_prn_dfl_shf_f32_spr=True;
-		/* If any two of the three original netCDF filters were applied... */
-		if(flt_nbr == 2)
-		  if((flt_lst[0] == H5Z_FILTER_SHUFFLE && flt_lst[1] == H5Z_FILTER_DEFLATE) ||
-		     (flt_lst[0] == H5Z_FILTER_FLETCHER32 && flt_lst[1] == H5Z_FILTER_DEFLATE) ||
-		     (flt_lst[0] == H5Z_FILTER_FLETCHER32 && flt_lst[1] == H5Z_FILTER_SHUFFLE) ||
-		     False)
-		    flg_prn_dfl_shf_f32_spr=True;
-		/* If DEFLATE or Shuffle or Fletchdf32 alone were applied... */
-		if(flt_nbr == 1)
-		  if(flt_lst[0] == H5Z_FILTER_DEFLATE || flt_lst[0] == H5Z_FILTER_SHUFFLE || flt_lst[0] == H5Z_FILTER_FLETCHER32)
-		    flg_prn_dfl_shf_f32_spr=True;
-		if(flt_nbr > 0 && !flg_prn_dfl_shf_f32_spr){
+		for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
+		  if(flt_lst[flt_idx] == H5Z_FILTER_FLETCHER32) flg_prn_f32_spr=True;
+		  if(flt_lst[flt_idx] == H5Z_FILTER_SHUFFLE) flg_prn_shf_spr=True;
+		  if(flt_lst[flt_idx] == H5Z_FILTER_DEFLATE) flg_prn_dfl_spr=True;
+		} /* !flt_idx */
+		if(flt_nbr == 1 && (flg_prn_dfl_spr || flg_prn_shf_spr || flg_prn_f32_spr)) flg_prn_flt_spr=False;
+		if(flt_nbr == 2 && ((flg_prn_dfl_spr && flg_prn_shf_spr) || (flg_prn_dfl_spr && flg_prn_f32_spr) || (flg_prn_shf_spr && flg_prn_f32_spr))) flg_prn_flt_spr=False;
+		if(flt_nbr == 3 && flg_prn_dfl_spr && flg_prn_shf_spr && flg_prn_f32_spr) flg_prn_flt_spr=False;
+		if(flt_nbr > 0 && flg_prn_flt_spr){
 		  /* Print _Filter values for all filters of filtered variables
 		     20220526 Wrap code in loop over filters and separate each filter by a pipe symbol "|" */
 		  idx=att_nbr_ttl++;
@@ -333,6 +332,11 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		  val_hdn_sng=(char *)nco_malloc(100L*sizeof(char));
 		  val_hdn_sng[0]='\0';
 		  for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
+		    if(flt_lst[flt_idx] == H5Z_FILTER_DEFLATE || flt_lst[flt_idx] == H5Z_FILTER_SHUFFLE || flt_lst[flt_idx] == H5Z_FILTER_FLETCHER32) continue;
+		    if(cnt_prn_flt > cnt_prn_spr && flt_idx < flt_nbr-1){
+		      strcat(val_hdn_sng,spr_sng);
+		      cnt_prn_spr++;
+		    } /* !cnt_prn_flt */
 		    rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],&prm_nbr,NULL);
 		    prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
 		    rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],NULL,prm_lst);
@@ -344,7 +348,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		      (void)sprintf(sng_foo,"%u%s",prm_lst[prm_idx],(prm_idx == prm_nbr-1) ? "" : ",");
 		      strcat(val_hdn_sng,sng_foo);
 		    } /* !prm_idx */
-		    if(flt_idx < flt_nbr-1) strcat(val_hdn_sng,spr_sng);
+		    cnt_prn_flt++;
 		    if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst);
 		  } /* !flt_idx */
 		  att_sz=att[idx].sz=strlen(val_hdn_sng);
@@ -364,7 +368,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	     ncks -O -7 -C -v one_dmn_rec_var --cmp_sng='bz2,1|dfl,2' ~/nco/data/in.nc ~/foo.nc
 	     ncdump -s -h -v one_dmn_rec_var ~/foo.nc */
 	  rcd=nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
-	  if(deflate && flg_prn_dfl_shf_f32_spr){
+	  if(deflate && flg_prn_dfl_spr){
 	    /* Print _DeflateLevel for deflated variables (20220609: unless multiple filters are reported) */
 	    idx=att_nbr_ttl++;
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
@@ -377,7 +381,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	} /* !xml */
 	/* _Shuffle */
 	if(!XML){
-	  if(shuffle && flg_prn_dfl_shf_f32_spr){
+	  if(shuffle && flg_prn_shf_spr){
 	    /* Print _Shuffle for shuffled variables */
 	    idx=att_nbr_ttl++;
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
@@ -393,7 +397,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	/* _Fletcher32 */
 	if(!XML){
 	  rcd=nco_inq_var_fletcher32(grp_id,var_id,&chk_typ);
-	  if(chk_typ && flg_prn_dfl_shf_f32_spr){
+	  if(chk_typ && flg_prn_f32_spr){
 	    /* Print _Fletcher32 for checksummed variables */
 	    idx=att_nbr_ttl++;
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
