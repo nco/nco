@@ -909,7 +909,8 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
   nc_type var_typ; /* [enm] netCDF type of output variable (usually same as input) */
   rcd=nco_inq_vartype(nc_out_id,var_out_id,&var_typ);
   if(var_typ != NC_FLOAT && var_typ != NC_DOUBLE) flt_flg=nco_flt_flg_qnt_no;
-
+  if(nco_is_crd_var(nc_out_id,var_out_id) || nco_is_spc_in_cf_att(nc_out_id,"bounds",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"climatology",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"coordinates",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"grid_mapping",var_out_id,NULL)) flt_flg=nco_flt_flg_prc_fll;
+  
   /* Call single routine that executes all requested filters */
   if(cmp_sng) rcd=nco_flt_def_out(nc_out_id,var_out_id,cmp_sng,flt_flg);
 
@@ -962,7 +963,7 @@ nco_flt_def_out /* [fnc]  */
   int *flt_prm_nbr=NULL; /* [nbr] List of parameter numbers for each filter */
   int **flt_prm=NULL; /* [nbr] List of lists of parameters for each filter */
 
-  if(flt_flg == nco_flt_flg_lsy_no || flt_flg == nco_flt_flg_qnt_no) lsy_flt_ok=False;
+  if(flt_flg == nco_flt_flg_prc_fll || flt_flg == nco_flt_flg_qnt_no) lsy_flt_ok=False;
   
   if(cmp_sng || nco_cmp_glb_get()){
     if(nco_dbg_lvl_get() >= nco_dbg_std && !nco_cmp_glb_get()) (void)fprintf(stderr,"%s: INFO %s reports requested codec string = %s\n",nco_prg_nm_get(),fnc_nm,cmp_sng);

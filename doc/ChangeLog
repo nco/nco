@@ -1,8 +1,14 @@
-2022-06-26  Charlie Zender  <zender@uci.edu>
+2022-06-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.0.8-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.0.8-beta02: Iron Champs';git push
-	git tag -a 5.0.8-beta02 -m '';git push --tags
+	git tag -a 5.0.8-beta02 -m 'all: xcl cf crd_lk_var from lsy flt';git push --tags
+
+	* Write nco_is_crd_var() and preserve full precision (prevent lossy filters) on bonafide 1D coordinates
+
+	* Preserve full precision (prevent lossy filters) on CF bounds, climatology, coordinates, and grid_mapping variables
+
+2022-06-26  Charlie Zender  <zender@uci.edu>
 
 	* Reset rcd to NC_NOERR after non-fatal filter errors
 

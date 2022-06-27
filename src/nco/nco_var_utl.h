@@ -120,6 +120,11 @@ extern "C" {
   (var_sct **var_lst, /* I/O [sct] Variable structure list to free */
    const int var_nbr); /* I [nbr] Number of variable structures in list */
 
+  nco_bool /* [flg] Variable is a bonafide 1D coordinate */
+  nco_is_crd_var /* [fnc] Variable is a bonafide 1D coordinate */
+  (const int nc_id, /* I [id] netCDF file ID */
+   const int var_id); /* I [id] Variable ID */
+
   nco_bool /* [flg] Variable is listed in this CF attribute, thereby associated */
   nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby associated */
   (const int nc_id,    /* I [id] netCDF file ID */

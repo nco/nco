@@ -1546,6 +1546,20 @@ nco_lst_cf_att /* [fnc] look in all vars for att cf_nm */
   return ra_lst;
 } /* !nco_lst_cf_att() */
 
+nco_bool /* [flg] Variable is a bonafide 1D coordinate */
+nco_is_crd_var /* [fnc] Variable is a bonafide 1D coordinate */
+(const int nc_id, /* I [id] netCDF file ID */
+ const int var_id) /* I [id] Variable ID */
+{
+  /* Purpose: Is variable a bonafide 1D coordinate? */ 
+  int rcd;
+  int dmn_id;
+  char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
+  rcd=nco_inq_varname(nc_id,var_id,var_nm);
+  rcd=nco_inq_dimid_flg(nc_id,var_nm,&dmn_id);
+  if(rcd == NC_NOERR) return True; else return False;
+} /* !nco_is_crd_var() */
+
 nco_bool /* [flg] Variable is listed in a "coordinates" attribute */
 nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute */
 (const int nc_id, /* I [id] netCDF file ID */
@@ -2090,10 +2104,10 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   
   /* 20130112: Variables associated with "bounds", "climatology", "coordinates", and "grid_mapping" attributes should,
      in most cases, be treated as coordinates */
-  if(nco_is_spc_in_cf_att(var->nc_id, "bounds", var->id, NULL)) var->is_crd_var=True;
-  if(nco_is_spc_in_cf_att(var->nc_id, "climatology", var->id, NULL)) var->is_crd_var=True;
-  if(nco_is_spc_in_cf_att(var->nc_id, "coordinates", var->id, NULL)) var->is_crd_var=True;
-  if(nco_is_spc_in_cf_att(var->nc_id, "grid_mapping", var->id, NULL)) var->is_crd_var=True;
+  if(nco_is_spc_in_cf_att(var->nc_id,"bounds",var->id,NULL)) var->is_crd_var=True;
+  if(nco_is_spc_in_cf_att(var->nc_id,"climatology",var->id,NULL)) var->is_crd_var=True;
+  if(nco_is_spc_in_cf_att(var->nc_id,"coordinates",var->id,NULL)) var->is_crd_var=True;
+  if(nco_is_spc_in_cf_att(var->nc_id,"grid_mapping",var->id,NULL)) var->is_crd_var=True;
   
   /* Portions of variable structure depend on packing properties, e.g., typ_upk
      nco_pck_dsk_inq() fills in these portions harmlessly */
