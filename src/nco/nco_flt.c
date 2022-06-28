@@ -568,8 +568,10 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     else if(!strcasecmp(flt_nm,"deflate")) flt_enm=nco_flt_dfl;
     else if(!strcasecmp(flt_nm,"dfl")) flt_enm=nco_flt_dfl;
     else if(!strcasecmp(flt_nm,"gzp")) flt_enm=nco_flt_dfl;
+    else if(!strcasecmp(flt_nm,"gzip")) flt_enm=nco_flt_dfl;
     else if(!strcasecmp(flt_nm,"gz")) flt_enm=nco_flt_dfl;
     else if(!strcasecmp(flt_nm,"zlib")) flt_enm=nco_flt_dfl;
+    else if(!strcasecmp(flt_nm,"zlb")) flt_enm=nco_flt_dfl;
     
     else if(!strcasecmp(flt_nm,"shf")) flt_enm=nco_flt_shf;
     else if(!strcasecmp(flt_nm,"shuffle")) flt_enm=nco_flt_shf;
@@ -594,18 +596,27 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     else if(!strcasecmp(flt_nm,"bgr")) flt_enm=nco_flt_bgr;
     else if(!strcasecmp(flt_nm,"btg")) flt_enm=nco_flt_bgr;
     else if(!strcasecmp(flt_nm,"bitgroom")) flt_enm=nco_flt_bgr;
+    else if(!strcasecmp(flt_nm,"bit-groom")) flt_enm=nco_flt_bgr;
+    else if(!strcasecmp(flt_nm,"bit groom")) flt_enm=nco_flt_bgr;
     else if(!strcasecmp(flt_nm,"Zen16")) flt_enm=nco_flt_bgr;
     
     else if(!strcasecmp(flt_nm,"gbr")) flt_enm=nco_flt_gbr;
     else if(!strcasecmp(flt_nm,"granularbr")) flt_enm=nco_flt_gbr;
     else if(!strcasecmp(flt_nm,"granular")) flt_enm=nco_flt_gbr;
+    else if(!strcasecmp(flt_nm,"granular bitround")) flt_enm=nco_flt_gbr;
+    else if(!strcasecmp(flt_nm,"granular-bitround")) flt_enm=nco_flt_gbr;
+    else if(!strcasecmp(flt_nm,"granularbitround")) flt_enm=nco_flt_gbr;
     
     else if(!strcasecmp(flt_nm,"dgr")) flt_enm=nco_flt_dgr;
     else if(!strcasecmp(flt_nm,"digitround")) flt_enm=nco_flt_dgr;
+    else if(!strcasecmp(flt_nm,"digit round")) flt_enm=nco_flt_dgr;
+    else if(!strcasecmp(flt_nm,"digit-round")) flt_enm=nco_flt_dgr;
     else if(!strcasecmp(flt_nm,"DCG19")) flt_enm=nco_flt_dgr;
     
     else if(!strcasecmp(flt_nm,"btr")) flt_enm=nco_flt_btr;
     else if(!strcasecmp(flt_nm,"bitround")) flt_enm=nco_flt_btr;
+    else if(!strcasecmp(flt_nm,"bit round")) flt_enm=nco_flt_btr;
+    else if(!strcasecmp(flt_nm,"bit-round")) flt_enm=nco_flt_btr;
     else if(!strcasecmp(flt_nm,"Kou20")) flt_enm=nco_flt_btr;
     
     else if(!strcasecmp(flt_nm,"zst")) flt_enm=nco_flt_zst;
@@ -910,7 +921,11 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
   rcd=nco_inq_vartype(nc_out_id,var_out_id,&var_typ);
   if(var_typ != NC_FLOAT && var_typ != NC_DOUBLE) flt_flg=nco_flt_flg_qnt_no;
   if(nco_is_crd_var(nc_out_id,var_out_id) || nco_is_spc_in_cf_att(nc_out_id,"bounds",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"climatology",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"coordinates",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"grid_mapping",var_out_id,NULL)) flt_flg=nco_flt_flg_prc_fll;
-  
+
+  if(nco_dbg_lvl_get() >= nco_dbg_var){
+    if(flt_flg != nco_flt_flg_all_ok) (void)fprintf(stdout,"%s: DEBUG %s reports variable type or NCO guidelines (based on coordinate-like variables and CF rules) prevent variable %s from using lossy compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
+  } /* !dbg */
+
   /* Call single routine that executes all requested filters */
   if(cmp_sng) rcd=nco_flt_def_out(nc_out_id,var_out_id,cmp_sng,flt_flg);
 

@@ -338,6 +338,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		  if(nco_dbg_lvl_get() >= nco_dbg_fl) flt_hlp_sng=(char *)nco_malloc(100L*sizeof(char));
 		  val_hdn_sng[0]='\0';
 		  if(flt_hlp_sng) flt_hlp_sng[0]='\0';
+		  if(flt_hlp_sng) strcat(flt_hlp_sng,"Codec(s): ");
 		  for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
 		    /* Exclude Filters that will be separately printed from Filter string */
 		    if(flt_lst[flt_idx] == H5Z_FILTER_DEFLATE || flt_lst[flt_idx] == H5Z_FILTER_SHUFFLE || flt_lst[flt_idx] == H5Z_FILTER_FLETCHER32) continue;

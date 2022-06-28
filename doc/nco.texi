@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.8-beta02
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 24 June 2022
+@set update-date 28 June 2022
 @set update-month June 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -421,7 +421,7 @@ operators.
 The operators facilitate manipulation and analysis of data stored in the 
 self-describing netCDF format, available from
 (@uref{http://www.unidata.ucar.edu/software/netcdf}).
-Each @acronym{NCO} operator (e.g., ncks) takes netCDF input
+Each @acronym{NCO} operator (e.g., @command{ncks}) takes netCDF input
 file(s), performs an operation (e.g., averaging, hyperslabbing, or
 renaming), and outputs a processed netCDF file. 
 Although most users of netCDF data are involved in scientific research,
@@ -9250,6 +9250,12 @@ variables.
 @end html
 @node Compression, Deflation, Chunking, Shared features
 @section Compression
+@cindex @code{--cmp_sng}
+@cindex @code{--compression}
+@cindex codecs
+@cindex Zstandard
+@cindex Bzip2
+@cindex Granular BitRound
 @cindex @code{--ppc}
 @cindex @code{--precision_preserving_compression}
 @cindex @code{--quantize}
@@ -9269,6 +9275,66 @@ Long options: @samp{--ppc @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
 @samp{--quantize @var{var1}[,@var{var2}[,...]]=@var{prc}}@*
 @end cartouche
 
+Compression is a rapidly developing area in geoscientific software,
+and with @acronym{NCO} in particular.
+Documentation of these features can quickly become out-of-date.
+A brief review of compression support from the early days until now:
+@acronym{NCO} first supported Linear Packing with @command{ncpdq}
+in 2004.
+The advent of netCDF4 allowed @acronym{NCO} to supported lossless
+compression with the @acronym{DEFLATE} algorithm beginning in 2007.
+In 2016 we developed the lossy BitGroom quantization algorithm, and
+introduced complete support for it, and its relatives BitShave, and
+BitSet in all arithmetic operators.
+In 2020 we reduced the quantization error of BitGroom by implementing
+@acronym{IEEE}-rounding (aka BitRound), and newer quantization
+algorithms including BitGroomRound, HalfShave, and DigitRound.
+In 2020 @acronym{NSF} awarded us support to develop the Community
+Codec Respository to put a user-friendly @acronym{API} on the
+@acronym{HDF5} shared-library filter mechanism so that all
+netCDF users could shift to more modern codecs.
+By the end of 2021 the @acronym{CCR} supported codecs for
+Bzip2, Zstandard, BitGroom, and Granular BitRound.
+The netCDF team at Unidata had meanwhile become convinced of the
+importance of expanding compression options in the base netCDF
+C-library.
+Together, we merged the quantization, Bzip2, and Zstandard codecs and
+@acronym{API} from the @acronym{CCR} into what became (in June, 2022)
+netCDF version 4.9.0. 
+@acronym{NCO} version 5.0.8 (released in July, 2022) introduced full
+support for @acronym{CCR} codecs, generic (i.e., non-@acronym{CCR})
+@acronym{HDF5} codecs, and the quantization algorithms and modern
+lossless codecs newly supported in netCDF 4.9.0.
+
+Access to the quantization and compression options is available
+through three complementary, backwards-compatible and overlapping
+@acronym{API}s designed to accomodate the successive generations of
+compression features. 
+The original generation of compression options remain accessible
+through the standard @command{ncpdq} (for Linear Packing) and
+@code{-L} (synonyms for @code{--deflate} and @code{--dfl_lvl}) for 
+@acronym{DEFLATE}. 
+The second generation of compression options refers to the
+@code{--ppc} and @code{--baa} (and related synonyms) options to
+control the type and level of quantization algorithm algorithm to
+apply, and the variables to operate on.
+These options call quantization and rounding routines implemented
+within @acronym{NCO} itself, rather than in external libraries.
+The @code{--cmp_sng} (and synonyms) options provides an @acronym{API}
+for @acronym{NCO} to invoke all lossy and lossless codecs in external
+libraries, including the netCDF C-library, the @acronym{CCR}, and
+@acronym{HDF5} codecs.
+
+The @code{--cmp_sng} (and synonyms @code{--cmp} and
+@code{--compression}) options take as argument a string @var{cmp_sng}
+that contains a list of quantization and compression algorithms and
+their respective levels.
+The @var{cmp_sng} should be formatted with the same @acronym{API} 
+for filters supported by the @command{nccopy} command and the netCDF
+@code{_Filter} attribute. 
+
+
+ 
 @acronym{NCO} implements or accesses four different compression
 algorithms, the standard lossless @acronym{DEFLATE} algorithm
 and three lossy compression algorithms.
@@ -18100,7 +18166,7 @@ pre-processing using other tools such as Awk, Perl, or Python.
 @noindent
 SYNTAX
 @example 
-ncbo [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
+ncbo [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
@@ -20583,7 +20649,7 @@ Moreover, the climatologies can be generated in parallel.
 @noindent
 SYNTAX
 @example
-ncecat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
+ncecat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
@@ -20853,7 +20919,7 @@ of changing variable dimensionality, including the record dimension.
 SYNTAX
 @example
 nces [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb @var{y1},@var{y2},@var{m1},@var{m2},@var{tpd}]
-[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
+[--cmp @var{cmp_sng}] [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...]
@@ -21121,7 +21187,7 @@ ncks ~/out.nc
 @noindent
 SYNTAX
 @example
-ncflint [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
+ncflint [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]  [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--fl_fmt @var{fl_fmt}]
@@ -21417,8 +21483,8 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 SYNTAX
 @example
-ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [--area_wgt]
-[-b @var{fl_bnr}] [-C] [-c] [--cdl] [--chk_map] [--chk_nan]
+ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [--area_wgt] [-b @var{fl_bnr}]
+[-C] [-c] [--cdl] [--chk_map] [--chk_nan] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
@@ -23510,7 +23576,8 @@ For more details @xref{Wrapped Coordinates}.
 @noindent
 SYNTAX
 @example
-ncpdq [-3] [-4] [-5] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
+ncpdq [-3] [-4] [-5] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]]
+[-C] [-c] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
@@ -24159,7 +24226,8 @@ changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb @var{y1},@var{y2},@var{m1},@var{m2},@var{tpd}]
+ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
+[--cb @var{y1},@var{y2},@var{m1},@var{m2},@var{tpd}] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]
@@ -24478,7 +24546,7 @@ weighted mean statistics.
 @noindent
 SYNTAX
 @example
-ncrcat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
+ncrcat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]
@@ -28583,7 +28651,8 @@ Variables not prefixed with a period (@code{global}) must be present.
 @noindent
 SYNTAX
 @example
-ncwa [-3] [-4] [-5] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
+ncwa [-3] [-4] [-5] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]]
+[-B @var{mask_cond}] [-b] [-C] [-c] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
