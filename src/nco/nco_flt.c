@@ -449,7 +449,7 @@ nco_flt_enm2nmid /* [fnc] Convert compression filter enum to string */
   case nco_flt_bz2: if(flt_idp) *flt_idp=H5Z_FILTER_BZIP2; return "Bzip2"; break; /* 307 */
   case nco_flt_lz4: if(flt_idp) *flt_idp=32004U; return "LZ4"; break; /* 32004 */
   case nco_flt_bgr: if(flt_idp) *flt_idp=32022U; return "BitGroom"; break; /* 32022 */
-  case nco_flt_gbr: if(flt_idp) *flt_idp=32023U; return "GranularBR"; break; /* 32023 */
+  case nco_flt_gbr: if(flt_idp) *flt_idp=32023U; return "Granular BitRound"; break; /* 32023 */
   case nco_flt_dgr: return "DigitRound"; break;
   case nco_flt_btr: if(flt_idp) *flt_idp=37373U; return "BitRound"; break; /* 37373 */
   case nco_flt_zst: if(flt_idp) *flt_idp=32015U; return "Zstandard"; break; /* 32015 */
