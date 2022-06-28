@@ -131,6 +131,8 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 
       /* Remaining elements, if any, are filter parameters in the HDF5 sense */
       flt_prm_nbr[flt_idx]=prm_nbr-1;
+      /* Allocate space for at least one parameter so default parameters can be supplied
+	 For example, user might specify "shuffle" with no parameter, and we can supply the default */
       int prm_nbr_min; /* [nbr] Minimum number of parameters to allocate space for */
       prm_nbr_min=(flt_prm_nbr[flt_idx] > 1) ? flt_prm_nbr[flt_idx] : 1;
       flt_prm[flt_idx]=(int *)nco_malloc(prm_nbr_min*sizeof(int));
@@ -163,33 +165,31 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     flt_lvl[0]=flt_prm[0][0];
   } /* !flt_nbr, !dfl_lvl */
     
-  /* Allow user to rely on default filter parameters
-     For example, --cdc=zst means use Zstandard with compression level 3 */
-  if(flt_nbr == 1 && flt_alg[0] == nco_flt_zst && flt_prm_nbr[0] == 0 && flt_prm[0][0] == NC_MIN_INT){
-    flt_prm_nbr[0]=1;
-    flt_prm[0][0]=3;
-    flt_lvl[0]=flt_prm[0][0];
-  } /* !flt_nbr, !dfl_lvl */
-  /* -L dfl_lvl with unspecified codec causes NCO to use default DEFLATE compression level dfl_lvl */
-  if(flt_nbr == 1 && flt_alg[0] == nco_flt_dfl && flt_prm_nbr[0] == 0 && flt_prm[0][0] == NC_MIN_INT){
-    flt_prm_nbr[0]=1;
-    flt_prm[0][0]=1;
-    flt_lvl[0]=flt_prm[0][0];
-  } /* !flt_nbr, !dfl_lvl */
-  /* --cdc=dfl with unspecified compression level parameter means causes NCO to use default DEFLATE compression level 1 */
-  if(flt_nbr == 1 && flt_alg[0] == nco_flt_dfl && flt_prm_nbr[0] == 0 && flt_prm[0][0] == NC_MIN_INT){
-    flt_prm_nbr[0]=1;
-    flt_prm[0][0]=1;
-    flt_lvl[0]=flt_prm[0][0];
-  } /* !flt_nbr, !dfl_lvl */
-
-  /* Allow user to mix --dfl_lvl and --cdc
-     For example, --dfl_lvl=3 --cdc=zst means use Zstandard with compression level 3 */
-  if(flt_nbr == 1 && flt_prm_nbr[0] == 0 && dfl_lvl != NCO_DFL_LVL_UNDEFINED){
-    flt_prm_nbr[0]=1;
-    flt_prm[0][0]=dfl_lvl;
-    flt_lvl[0]=flt_prm[0][0];
-  } /* !flt_nbr, !dfl_lvl */
+  const int lvl_dfl_dfl=1; /* [enm] Default level for DEFLATE */
+  const int lvl_dfl_shf=4; /* [enm] Default level for Shuffle */
+  const int lvl_dfl_zst=2; /* [enm] Default level for Zstandard */
+    
+  /* Supply default levels values for selected filters */
+  for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
+    /* '--cmp=dfl' with unspecified level causes NCO to use default DEFLATE level */
+    if(flt_alg[flt_idx] == nco_flt_dfl && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
+      flt_prm_nbr[flt_idx]=1;
+      flt_prm[flt_idx][0]=lvl_dfl_dfl;
+      flt_lvl[flt_idx]=flt_prm[flt_idx][0];
+    } /* !dfl */
+    /* '--cmp=shf' with unspecified level causes NCO to use default Shuffle level */
+    if(flt_alg[flt_idx] == nco_flt_shf && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
+      flt_prm_nbr[flt_idx]=1;
+      flt_prm[flt_idx][0]=lvl_dfl_shf;
+      flt_lvl[flt_idx]=flt_prm[flt_idx][0];
+    } /* !shf */
+    /* '--cmp=zst' with unspecified level causes NCO to use default Zstandard level */
+    if(flt_alg[flt_idx] == nco_flt_zst && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
+      flt_prm_nbr[flt_idx]=1;
+      flt_prm[flt_idx][0]=lvl_dfl_zst;
+      flt_lvl[flt_idx]=flt_prm[flt_idx][0];
+    } /* !zst */
+  } /* !flt_idx */
 
   /* Global user-specified specification has been merged with dfl_lvl 
      Generate final global compression specification in NCO standard format */
@@ -577,6 +577,7 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     else if(!strcasecmp(flt_nm,"shuffle")) flt_enm=nco_flt_shf;
     
     else if(!strcasecmp(flt_nm,"f32")) flt_enm=nco_flt_f32;
+    else if(!strcasecmp(flt_nm,"fletcher")) flt_enm=nco_flt_f32;
     else if(!strcasecmp(flt_nm,"fletcher32")) flt_enm=nco_flt_f32;
 
     else if(!strcasecmp(flt_nm,"szp")) flt_enm=nco_flt_szp;

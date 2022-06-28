@@ -9329,12 +9329,99 @@ The @code{--cmp_sng} (and synonyms @code{--cmp} and
 @code{--compression}) options take as argument a string @var{cmp_sng}
 that contains a list of quantization and compression algorithms and
 their respective levels.
-The @var{cmp_sng} should be formatted with the same @acronym{API} 
-for filters supported by the @command{nccopy} command and the netCDF
-@code{_Filter} attribute. 
+The @var{cmp_sng} must adhere to a superset of the filter-list
+@acronym{API} introduced by the @command{nccopy} command and reported
+in the netCDF @code{_Filter} attribute.
+This @acronym{API} uses the @acronym{UNIX} pipe symbole @code{|} to
+separate the codecs applied as @acronym{HDF5} filters to a variable:
+@example
+@verbatim
+% ncks --hdn -m foo.nc | grep _Filter
+      u:_Filter = "307,2|32015,3" ;
+% ncdump -h -s foo.nc | grep _Filter
+		u:_Filter = "307,2|32015,3" ;
+@end verbatim
+@end example
+The above example shows a variable compressed with two successive
+codecs with @acronym{HDF5} filter @acronym{ID}s 307 and 32015,
+respectively. 
+@acronym{NCO} translates the numeric @acronym{ID}s into filter
+names in the @acronym{CDL} comments when invoked with a higher
+debugging level: 
+@example
+@verbatim
+% ncks -D 2 --hdn -m foo.nc | grep _Filter
+      u:_Filter = "307,2|32015,3" ; // char Codec(s): Bzip2, Zstandard
+@end verbatim
+@end example
+Provide any operator (besides @command{ncrename} and
+@command{ncatted}) with a @var{cmp_sng} comprised of an arbitrary
+number of @acronym{HDF5} filters specified either by numeric
+@acronym{ID} or by name, or by @acronym{NCO}-supported synonyms:
+@example
+@verbatim
+% ncks --cmp="307,2|32015,3" in.nc out.nc # Filter numeric IDs
+% ncks --cmp="Bzip2,2|Zstandard,3" in.nc out.nc # Filter names
+% ncks --cmp="bzp,2|zst,3" in.nc out.nc # Filter abbreviations
+@end verbatim
+@end example
+@acronym{NCO} also uses this @acronym{API} to invoke the netCDF
+quantization algorithms such as Granular BitGroom and BitRound. 
+netCDF records the operation of quantization algorithms in a
+@code{_Quantize} attribute, e.g.,
+@example
+@verbatim
+% ncks --cmp="gbr,2|zst,3" in.nc out.nc
+% ncks -D 2 --hdn -m foo.nc | grep 'Filt|Quant'
+      u:_QuantizeGranularBitRoundNumberOfSignificantDigits = 2 ;
+      u:_Filter = "32015,3" ; // char Codec(s): Zstandard
+@end verbatim
+@end example
 
+Specifying the compression string with codec names should make
+compression much easier for users to understand and employ.
+There are, however, a few wrinkles and legacy conventions that
+might surprise users when first encountered.
+For instance, the codecs for @acronym{DEFLATE}, Shuffle, and
+Fletcher32 have always been built-into netCDF.
+User can instruct @acronym{NCO} to apply these filters with the
+new @acronym{API}, yet their application to a dataset will still
+be reported using the ``old'' per-filter attributes introduced
+with netCDF4 in about 2007:
+@example
+@verbatim
+% ncks --cmp="fletcher32|shuffle,1|deflate,1" in.nc out.nc
+% ncks -D 2 --hdn -m foo.nc | grep 'Filt|Quant'
+      u:_QuantizeGranularBitRoundNumberOfSignificantDigits = 2 ;
+      u:_Filter = "32015,3" ; // char Codec(s): Zstandard
+@end verbatim
+@end example
 
- 
+Their application may be instructed 
+continues to be reported as separate metadata attributes
+@code{--cmp_sng} (and synonyms @code{--cmp} and
+
+@code{--cmp_sng} (and synonyms @code{--cmp} and
+
+Note that @acronym{NCO} and netCDF implement their quantization
+algorithms internally, whereas the @acronym{CCR} implements them as
+external shared-library codecs (valid only with netCDF4 files).
+Since these quantization algorithms leave data in @acronym{IEEE}
+format no codec/filter is required to read (or write) them.
+Quantization therefore works with netCDF3 datasets, not just netCDF4.
+netCDF applications that attempt to read data compressed with
+shared-library filters must be linked to the same shared filters 
+or the ``decompression'' step will fail.
+Datasets produced with netCDF-supported codecs (Bzip2, DEFLATE,
+Zstandard) will be readable by all users (who upgrade to netCDF 4.9.0 
+or later), whereas datasets produced with codecs from the
+@acronym{CCR} or elsewhere will only be readable by users who have 
+taken the extra step to install those codecs.
+Where possible, people should encode datasets with netCDF-supported 
+algorithms and codecs in preference to @acronym{CCR} or raw
+@acronym{HDF5} codecs. 
+Doing so will make the datasets more portable.
+
 @acronym{NCO} implements or accesses four different compression
 algorithms, the standard lossless @acronym{DEFLATE} algorithm
 and three lossy compression algorithms.
