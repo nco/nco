@@ -9328,7 +9328,7 @@ libraries, including the netCDF C-library, the @acronym{CCR}, and
 The @code{--cmp_sng} (and synonyms @code{--cmp} and
 @code{--compression}) options take as argument a string @var{cmp_sng}
 that contains a list of quantization and compression algorithms and
-their respective levels.
+their respective parameters.
 The @var{cmp_sng} must adhere to a superset of the filter-list
 @acronym{API} introduced by the @command{nccopy} command and reported
 in the netCDF @code{_Filter} attribute.
@@ -9355,7 +9355,7 @@ debugging level:
 @end verbatim
 @end example
 
-Provide any operator (besides @command{ncrename} and
+You may provide any operator (besides @command{ncrename} and
 @command{ncatted}) with a @var{cmp_sng} comprised of an arbitrary
 number of @acronym{HDF5} filters specified either by numeric
 @acronym{ID} or by name, or by @acronym{NCO}-supported synonyms:
@@ -9373,62 +9373,233 @@ netCDF records the operation of quantization algorithms in a
 @example
 @verbatim
 % ncks --cmp="gbr,2|zst,3" in.nc out.nc 
-% ncks -D 2 --hdn -m foo.nc | grep 'Filt|Quant'
+% ncks -D 2 --hdn -m out.nc | grep 'Filt|Quant'
       u:_QuantizeGranularBitRoundNumberOfSignificantDigits = 2 ;
       u:_Filter = "32015,3" ; // char Codec(s): Zstandard
 @end verbatim
 @end example
-@acronym{NCO} applies the filters in the order specified, insofar
-as it can.
-Thus it is important to follow the above example and to specify
+@acronym{NCO} calls the filters in the order specified.
+Thus, it is important to follow the above example and to specify
 compression pre-filters like quantization and Shuffle prior to any
-lossless codecs. 
+lossless codecs.  
+However, the netCDF library imposes rules that can override the
+user-specified order for the Shuffle and Fletcher32 filters as
+described below (these are always helpful in real-world situations).
+
+The @samp{--cmp} option specifies a global compression configuration.
+This is fine for lossless codecs, since there is little evidence to
+motivate per-variable lossless compression levels for real-world data.
+By contrast, it is often desirable to configure quantization levels on
+a per-variable basis.
+This is because the real information content of geophysical variables
+can differ strongly due to a multitude of factors including the field
+meaning, spatial location, and dimensional units.
+@acronym{NCO} applies any quantization filter specified in
+@var{cmp_sng} uniformly to all variables encountered (the @samp{--ppc}
+quantization option/@acronym{API} is still available for per-variable
+quantization parameters, as discussed below). 
+The one exception is that @acronym{NCO} prohibits quantization of
+``coordinate-like variables''.
+Variables that are tradiational (1-dimensional) coordinates, or that
+are mentioned in the values of @acronym{CF} @code{bounds},
+@code{climatology}, @code{coordinates}, or @code{grid_mapping}
+attributes, all count as coordinate-like variables.
+Such variables include quantities like gridcell areas and boundaries.
+@acronym{NCO} eschews quantizing such variables to avoid unforeseen
+or unanticipated degradation of numerical accuracy due to propagation
+of quantization errors in post-processing.
 
 Specifying the compression string with codec names should make
-compression much easier for users to understand and employ.
+lossy and lossless compression easier for users to understand and
+employ. 
 There are, however, a few wrinkles and legacy conventions that
 might surprise users when first encountered.
 For instance, the codecs for @acronym{DEFLATE}, Shuffle, and
 Fletcher32 have always been built-in to netCDF.
-User can instruct @acronym{NCO} to apply these filters with the
+Users can instruct @acronym{NCO} to apply these filters with the
 new @acronym{API}, yet their application to a dataset will still
 be reported using the ``old'' per-filter attributes:
 @example
 @verbatim
 % ncks --cmp="fletcher32|shuffle|deflate" in.nc out.nc
-% ncks -D 2 --hdn -m foo.nc | grep 'Filt|Quant'
+% ncks --hdn -m out.nc
 ...
-      u:_DeflateLevel = 1 ; // int
-      u:_Shuffle = "true" ; // char
-      u:_Fletcher32 = "true" ; // char
+      u:_DeflateLevel = 1 ;
+      u:_Shuffle = "true" ;
+      u:_Fletcher32 = "true" ;
 ...
 @end verbatim
 @end example
 As this example shows, it is not required to give filter parameter
 arguments to all filters.
-When the user omits the filter level parameter for select filters
-that require such a parameter, @acronym{NCO} automatically inserts
-an appropriate default filter level.
-@acronym{NCO} assumes default filter levels of 1, 4, 1, and 3, for the
-filters @acronym{DEFLATE}, Shuffle, Bzip2, and Zstandard, respectively. 
+When the user omits filter parameters (e.g., compression level,
+@acronym{NSD}, @acronym{NSB}, or other filter configurator) 
+for select filters that require such a parameter, @acronym{NCO}
+automatically inserts an appropriate default filter parameter.
+@acronym{NCO} assumes default parameters 1, 4, 1, and 3, for the
+lossless filters @acronym{DEFLATE}, Shuffle, Bzip2, and Zstandard,
+respectively.   
+@acronym{NCO} assumes default parameters 3, 3, and 9, for the lossy
+quantization algorithms BitGroom, Granular BitGroom, and BitRound,
+respectively.   
 Note that the netCDF filter for the Fletcher32 checksum algorithm
-does not accept a parameter argument, and @acronym{NCO} will ignore
-any argument provided to this filter.
+does not accept a parameter argument, and @acronym{NCO} ignores
+any parameters provided to this filter.
 @example
 @verbatim
-% ncks --cmp="fletcher32|shuffle|deflate|zstandard" ...
-% ncks --cmp="f32|shf|dfl|zst" ...       # Shorthand, default levels
-% ncks --cmp="f32|shf=4|dfl=1|zst=3" ... # Explicit levels
+% ncks --cmp="fletcher32|shuffle|granularbr|deflate|zstandard" ...
+% ncks --cmp="f32|shf|gbr|dfl|zst" ... # Shorthand, default parameters
+% ncks --cmp="f32|shf,4|gbr,3|dfl,1|zst,3" ... # Explicit parameters
 @end verbatim
 @end example
 
 The @code{cmd_sng} option supports an arbitrary number of filters.
-An example that invokes most netCDF-supported algorithms is
+An example that compressess then reads a file with most
+netCDF-supported algorithms shows the mixture of filter-specific
+attributes (@code{_Shuffle}, @code{_DeflateLevel}, @code{_Fletcher32})
+and generic filter attributes (@code{_Filter}) that result:
 @example
 @verbatim
-ncks --cmp='f32|shf|dfl|bz2|zst' ~/nco/data/in.nc ~/foo.nc
+% ncks --cmp='f32|shf|gbr|dfl|bz2|zst' in.nc ~/foo.nc
+% ncks --hdn -m out.nc
+    float u(time) ;
+      u:long_name = "Zonal wind speed" ;
+      u:units = "meter second-1" ;
+      u:_QuantizeGranularBitRoundNumberOfSignificantDigits = 3 ;
+      u:_Storage = "chunked" ;
+      u:_ChunkSizes = 1024 ;
+      u:_Filter = "307,1|32015,3" ;
+      u:_DeflateLevel = 1 ;
+      u:_Shuffle = "true" ;
+      u:_Fletcher32 = "true" ;
+      u:_Endianness = "little" ;
 @end verbatim
 @end example
+Note that the @code{_Filter} value is a valid @var{cmp_sng} for
+use as an argument to the @code{--cmp_sng} option.
+This enables users to easily duplicate the compression settings
+of one dataset in another dataset.
+
+In the absence of instructions to the contrary, @acronym{NCO}
+preserves the compression settings of datasets that it copies or
+subsets. 
+It simply defaults to copying the per-variable compression settings 
+from the input file.
+If the copy or subset command includes global compression instructions
+(i.e., the @samp{--cmp} or @samp{-L} options), those instructions will
+override the settings in the input file.
+The user can eliminate all compression filters by setting
+@var{cmp_sng} to the special value @code{none} (or to its synonyms
+@code{uncompress}, @code{decompress}, @code{defilter}, or
+@code{unset}).  
+@example
+@verbatim
+% ncks --cmp='f32|shf|gbr|dfl|bz2|zst' in.nc out.nc
+% ncks --cmp='none' out.nc none.nc
+% ncks --hdn -m none.nc
+    float u(time) ;
+      u:long_name = "Zonal wind speed" ;
+      u:units = "meter second-1" ;
+      u:_QuantizeGranularBitRoundNumberOfSignificantDigits = 3 ;
+      u:_Storage = "chunked" ;
+      u:_ChunkSizes = 1024 ;
+      u:_Endianness = "little" ;
+@end verbatim
+@end example
+The uncompressed copy has no filter attributes remaining because all
+filters have been removed.
+The @code{_Quantize} attribute remains because the quantization was
+applied as an internal algorithm not as an @acronym{HDF5} filter.
+In contrast to lossless compression filters, lossy quantization
+algorithms can never be ``removed'' much less undone because, by
+definition, they are lossy.
+Removing compression is ``all or nothing'' in that there is currently
+no way to remove only one or a few codecs and leave the rest in place.
+To do that, the user must instead recompress the dataset using a
+@var{cmp_sng} that comprises all of the desired codecs.
+@example
+@verbatim
+% ncks --cmp='shf|zst' ... # Compress
+% ncks --cmp='none' ...    # Decompress (remove Shuffle and Zstd)
+% ncks --cmp=zst,4 ...     # Recompress to new Zstd level, no Shuffle
+@end verbatim
+@end example
+
+Both the netCDF library and @acronym{NCO} continue to treat the
+Shuffle filter specially. 
+If the Shuffle and @acronym{DEFLATE} algorithms are both invoked
+through the standard netCDF @acronym{API} (i.e.,
+@code{nc_def_var_deflate()}), then the netCDF library ensures that the
+Shuffle filter is called before @acronym{DEFLATE}, indeed before any
+filter except @code{Fletcher32} (which performs a checksum, not
+compression).  
+This behavior is welcome as it avoids inadvertent mis-use of Shuffle.
+Prior to version 5.0.8, @acronym{NCO} always invoked Shuffle with
+@acronym{DEFLATE}, and did not expose the Shuffle filter to user
+control.
+@acronym{NCO} now exposes Shuffle to user control for all filters
+except @acronym{DEFLATE}.
+In other words, users must explicitly request Shuffle for all
+non-@acronym{DEFLATE} codecs, otherwise Shuffle will not be
+employed prior to those codecs.
+@example
+@verbatim
+% ncks --cmp='dfl' ...     # Invoke Shuffle then DEFLATE
+% ncks --cmp='shf|dfl' ... # Same (default Shuffle stride 4-bytes)
+% ncks --cmp='zst' ...     # Invoke Zstandard (no Shuffle)
+% ncks --cmp='shf|zst' ... # Invoke Shuffle then Zstandard
+% ncks --cmp='zst|shf' ... # Same (netCDF enforces Shuffle-first rule)
+% ncks --cmp='shf' ...     # Invoke only Shuffle
+% ncks --cmp='shf,8|zst' ... # Shuffle stride 8-bytes then Zstandard
+% ncks --cmp='shf,8|dfl' ... # Shuffle strid remains default 4-bytes
+@end verbatim
+@end example
+The last example above shows how to invoke Shuffle with non-default
+byte stride
+@footnote{Full disclosure:
+Documentation of the meaning of the Shuffle parameter is scarce.
+I think though am not certain that the Shuffle parameter refers to the
+number of contiguous byte-groups that the algorithm rearranges a chunk
+of data into. 
+I call this the stride.
+Thus the default stride of 4 means that Shuffle rearranges a chunk of
+4-byte integers into four consecutive sequences, the first comprises
+all the leading bytes, the second comprises all the second bytes, etc.
+A well-behaved stride should evenly divide the number of bytes in a
+data chunk.}.
+The netCDF library, and thus @acronym{NCO}, always uses the default
+Shuffle stride (4 bytes) with the @acronym{DEFLATE} filter.
+Specifying a different stride only has an effect with
+non-@acronym{DEFLATE} filters.  
+This ensures @acronym{NCO}'s behavior with @acronym{DEFLATE} does not change 
+There are no plans to alter @acronym{NCO}'s filter handler to give
+users full control of Shuffle with the @acronym{DEFLATE} filter.
+Please let us know if this feature would be of interest to you.
+
+@unnumberedsubsec Best Practices for Real World Lossy Compression
+We have found that the optimal blend of storage space, speed,
+accuracy, information content, portability, and user-friendliness of
+lossy compression is best obtained by using per-variable quantization
+together with global lossless compression.
+@acronym{NCO} can configure per-variable quantization levels together
+with global lossless filters when the quantization algorithm is
+specified with the @samp{--ppc} option/@acronym{API} and the lossless
+filters are specified with the @samp{--cmp_sng} option/@acronym{API}.
+Granular BitRound (GranularBR) and BitRound are state-of-the-art
+quantization algorithms that are configured with the number of
+significant decimal digits (NSD) or number of significant bits (NSB), 
+respectively.
+@example
+@verbatim
+ncks -7 --ppc default=3 ...            # GranularBR, NSD=3
+ncks -7 --baa=4 --ppc default=3 ...    # Same
+ncks -7 --baa=4 --ppc dfl=3 ...        # Same
+ncks -7 --baa=8 --ppc default=9  ...   # BitRound, NSB=9
+@end verbatim
+@end example
+The example above shows that, in the context of @samp{--ppc},
+the keyword @code{dfl} is a synonym for @code{default} and has
+nothing to do with the @acronym{DEFLATE} codec.
 
 Note that @acronym{NCO} and netCDF implement their quantization
 algorithms internally, whereas the @acronym{CCR} implements them as
@@ -9449,6 +9620,29 @@ algorithms and codecs in preference to @acronym{CCR} or raw
 @acronym{HDF5} codecs. 
 Doing so will make the datasets more portable.
 
+@unnumberedsubsec Limitations of Current Compression @acronym{API}
+The @acronym{NCO} filter @acronym{API} will evolve in a (hopefully)
+backward-compatible manner as experience and feedback are gained.
+All filter parameters are eventually passed to @acronym{HDF5} as
+unsigned integers. 
+However, the current @acronym{API} treats all input arguments in
+@var{cmp_sng} signed integers for ease-of-use.
+For example, it is easier to specify a Zstandard filter level of
+negative one as @samp{zstd,-1} than as @samp{zstd,4294967295}. 
+However, @acronym{NCO} currently has no easy way to specify
+the floating-point configuration parameters required by some
+@acronym{CCR} filters and many external filters.
+That said, most of the code to support the filter parameter syntax
+documented at
+@url{https://docs.unidata.ucar.edu/netcdf-c/current/md__home_wfisher_Desktop_gitprojects_netcdf_c_docs_filters.html#filters_syntax}
+and implemented in @command{ncgen} and @command{nccopy} is ready and
+we expect to support that syntax in @acronym{NCO} 5.0.9.
+That syntax is backward compatible with the integer-only input
+assumptions already embedded in @acronym{NCO} 5.0.8.
+In the meantime, we request your feedback, use-cases, and suggestions
+before adopting a final approach.
+
+@unnumberedsubsec Older Compression @acronym{API}
 @acronym{NCO} implements or accesses four different compression
 algorithms, the standard lossless @acronym{DEFLATE} algorithm
 and three lossy compression algorithms.

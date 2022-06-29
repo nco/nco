@@ -104,7 +104,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   if(cmp_sng || nco_cmp_glb_get()){
     /* Interpret a local or global specification that contains any of the (case-insensitive) strings 
        "none" (or its synonyms) as a request to decompress all output variables */
-    if(strcasestr(cmp_sng,"none") || strcasestr(cmp_sng,"uncompress") || strcasestr(cmp_sng,"decompress") || strcasestr(cmp_sng,"defilter")) FLG_COMPRESS=False;
+    if(strcasestr(cmp_sng,"none") || strcasestr(cmp_sng,"uncompress") || strcasestr(cmp_sng,"decompress") || strcasestr(cmp_sng,"defilter") || strcasestr(cmp_sng,"unset")) FLG_COMPRESS=False;
   } /* !cmp_sng */
     
   if(cmp_sng && FLG_COMPRESS){

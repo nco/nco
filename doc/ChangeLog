@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.0.8: Iron Champs';git push
 	git tag -a 5.0.8 -m 'all: filters, cmp_sng, CCR, nc 4.9.0; ncremap fix sub-sgs nrm, add ssgs thr';git push --tags
 
+	* Add PPC default synonyms dfl, global, glb
+
 	* Change name/acronym from BitGroomRound (RND) to BitGroomBitRound (BGB)
 
 	* Add default levels for BitGroom, BitRound, and GranularBR

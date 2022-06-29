@@ -91,7 +91,10 @@ nco_ppc_ini /* Set PPC based on user specifications */
 
   /* PPC "default" specified, set all non-coordinate variables to default first */
   for(ppc_var_idx=0;ppc_var_idx<ppc_var_nbr;ppc_var_idx++){
-    if(!strcasecmp(ppc_lst[ppc_var_idx].key,"default")){
+    if(!strcasecmp(ppc_lst[ppc_var_idx].key,"default") ||
+       !strcasecmp(ppc_lst[ppc_var_idx].key,"dfl") ||
+       !strcasecmp(ppc_lst[ppc_var_idx].key,"global") ||
+       !strcasecmp(ppc_lst[ppc_var_idx].key,"glb")){
       nco_ppc_set_dflt(nc_id,ppc_lst[ppc_var_idx].val,trv_tbl);
       break; /* Only one default is needed */
     } /* endif */
@@ -99,7 +102,10 @@ nco_ppc_ini /* Set PPC based on user specifications */
 
   /* Set explicit, non-default PPCs that can overwrite default */
   for(ppc_var_idx=0;ppc_var_idx<ppc_var_nbr;ppc_var_idx++){
-    if(!strcasecmp(ppc_lst[ppc_var_idx].key,"default")) continue;
+    if(!strcasecmp(ppc_lst[ppc_var_idx].key,"default") ||
+       !strcasecmp(ppc_lst[ppc_var_idx].key,"dfl") ||
+       !strcasecmp(ppc_lst[ppc_var_idx].key,"global") ||
+       !strcasecmp(ppc_lst[ppc_var_idx].key,"glb")) continue;
     nco_ppc_set_var(ppc_lst[ppc_var_idx].key,ppc_lst[ppc_var_idx].val,trv_tbl);
   } /* end for */
 
