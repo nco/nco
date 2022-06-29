@@ -745,7 +745,7 @@ extern "C" {
     nco_baa_set, /* 2 BitSet (option since 20160117) */
     nco_baa_dgr, /* 3 DigitRound (DCG19 option since 20210928, default 20210928--20211003) */
     nco_baa_gbr, /* 4 Granular BitRound (option since 20211003, default 20211003--present) */
-    nco_baa_bgr_btr, /* 5 BitGroomRound (option since 20200717, default 20200717--20210928) */
+    nco_baa_bgb, /* 5 BitGroomBitRound (option since 20200717, default 20200717--20210928) */
     nco_baa_sh2, /* 6 BitHalf-shave (option since 20200715) */
     nco_baa_brt, /* 7 BruteForce (option since 20210428) */
     nco_baa_btr, /* 8 BitRound (option since 20211215 */

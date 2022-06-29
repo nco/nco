@@ -9804,7 +9804,7 @@ examples.
 <a name="QuantizeBitShaveNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitShaveNumberOfSignificantDigits -->
 <a name="QuantizeBitSetNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitSetNumberOfSignificantDigits -->
 <a name="QuantizeDigitRoundNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeDigitRoundNumberOfSignificantDigits -->
-<a name="QuantizeBitGroomRoundNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitGroomRoundNumberOfSignificantDigits -->
+<a name="QuantizeBitGroomBitRoundNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitGroomBitRoundNumberOfSignificantDigits -->
 <a name="QuantizeHalfShaveNumberOfSignificantBits"></a> <!-- http://nco.sf.net/nco.html#QuantizeHalfShaveNumberOfSignificantBits -->
 <a name="QuantizeBruteForceNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBruteForceNumberOfSignificantDigits -->
 <a name="QuantizeBitRoundNumberOfSignificantBits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitRoundNumberOfSignificantBits -->
@@ -9816,7 +9816,7 @@ examples.
 @cindex @code{QuantizeBitShaveNumberOfSignificantDigits}
 @cindex @code{QuantizeDigitRoundNumberOfSignificantDigits}
 @cindex @code{QuantizeGranularBitRoundNumberOfSignificantDigits}
-@cindex @code{QuantizeBitGroomRoundNumberOfSignificantDigits}
+@cindex @code{QuantizeBitGroomBitRoundNumberOfSignificantDigits}
 @cindex @code{QuantizeHalfShaveNumberOfSignificantBits}
 @cindex @code{QuantizeBruteForceNumberOfSignificantDigits}
 @cindex @code{QuantizeBitRoundNumberOfSignificantBits}
@@ -9876,7 +9876,7 @@ during statistical operations.}, respectively.
 <a name="BitShave"></a> <!-- http://nco.sf.net/nco.html#BitShave -->
 <a name="BitSet"></a> <!-- http://nco.sf.net/nco.html#BitSet -->
 <a name="DigitRound"></a> <!-- http://nco.sf.net/nco.html#DigitRound -->
-<a name="BitGroomRound"></a> <!-- http://nco.sf.net/nco.html#BitGroomRound -->
+<a name="BitGroomBitRound"></a> <!-- http://nco.sf.net/nco.html#BitGroomBitRound -->
 <a name="HalfShave"></a> <!-- http://nco.sf.net/nco.html#HalfShave -->
 <a name="BruteForce"></a> <!-- http://nco.sf.net/nco.html#BruteForce -->
 <a name="BitRound"></a> <!-- http://nco.sf.net/nco.html#BitRound -->
@@ -9888,7 +9888,7 @@ during statistical operations.}, respectively.
 @cindex BitShave
 @cindex BitSet
 @cindex DigitRound
-@cindex BitGroomRound
+@cindex BitGroomBitRound
 @cindex HalfShave
 @cindex BruteForce
 @cindex BitRound
@@ -9911,10 +9911,10 @@ ncks -7 -L 1 --baa=1 --ppc default=3 in.nc out.nc # BitShave (NSD)
 ncks -7 -L 1 --baa=2 --ppc default=3 in.nc out.nc # BitSet (NSD)
 ncks -7 -L 1 --baa=3 --ppc default=3 in.nc out.nc # DigitRound (NSD)
 ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # Granular BitRound (NSD)
-ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitGroomRound (NSD)
-ncks -7 -L 1 --baa=6 --ppc default=10 in.nc out.nc # HalfShave (NSB)
+ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitGroomBitRound (NSD)
+ncks -7 -L 1 --baa=6 --ppc default=9 in.nc out.nc # HalfShave (NSB)
 ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce (NSD)
-ncks -7 -L 1 --baa=8 --ppc default=10 in.nc out.nc # BitRound (NSB)
+ncks -7 -L 1 --baa=8 --ppc default=9 in.nc out.nc # BitRound (NSB)
 @end verbatim
 @end example
 These @acronym{NSD} algorithms write an algorithm-specific attribute,

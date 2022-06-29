@@ -695,7 +695,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   case nco_baa_bgr:
   case nco_baa_shv:
   case nco_baa_set:
-  case nco_baa_bgr_btr:
+  case nco_baa_bgb:
   case nco_baa_brt:
     /* Most NCO lossy routines expect user to provide NSD */
     /* Disallow unreasonable quantization */
@@ -771,7 +771,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   case nco_baa_bgr:
   case nco_baa_shv:
   case nco_baa_set:
-  case nco_baa_bgr_btr:
+  case nco_baa_bgb:
   case nco_baa_brt:
   case nco_baa_sh2:
   case nco_baa_btr:
@@ -982,7 +982,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !GranularBitRound = GBG */
-    case nco_baa_bgr_btr:
+    case nco_baa_bgb:
     case nco_baa_btr:
       /* BitRound and
 	 BitGroom with BitRound (instead of shave/set):
@@ -996,7 +996,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !BitRound = BTR */
-      /* !BitGroomRound = RND */
+      /* !BitGroomBitRound = BGB */
     case nco_baa_sh2:
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them
@@ -1154,7 +1154,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !GranularBitRound = GBG */
-    case nco_baa_bgr_btr:
+    case nco_baa_bgb:
     case nco_baa_btr:
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using software emulation of IEEE arithmetic, shave LSB using bit-mask
@@ -1167,7 +1167,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !BitRound = BTR */
-      /* !BitGroomRound = RND */
+      /* !BitGroomBitRound = BGB */
     case nco_baa_sh2:
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them
