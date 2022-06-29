@@ -167,8 +167,11 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     
   const int lvl_dfl_dfl=1; /* [enm] Default level for DEFLATE */
   const int lvl_dfl_shf=4; /* [enm] Default level for Shuffle */
-  const int lvl_dfl_zst=3; /* [enm] Default level for Zstandard */
   const int lvl_dfl_bz2=1; /* [enm] Default level for Bzip2 */
+  const int lvl_dfl_zst=3; /* [enm] Default level for Zstandard */
+  const int lvl_dfl_bgr=3; /* [enm] Default level (NSD) for BitGroom */
+  const int lvl_dfl_gbr=3; /* [enm] Default level (NSD) for GranularBR */
+  const int lvl_dfl_btr=9; /* [enm] Default level (NSB) for BitRound */
     
   /* Supply default levels values for selected filters */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
@@ -184,18 +187,36 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
       flt_prm[flt_idx][0]=lvl_dfl_shf;
       flt_lvl[flt_idx]=flt_prm[flt_idx][0];
     } /* !shf */
-    /* '--cmp=zst' with unspecified level causes NCO to use default Zstandard level */
-    if(flt_alg[flt_idx] == nco_flt_zst && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
-      flt_prm_nbr[flt_idx]=1;
-      flt_prm[flt_idx][0]=lvl_dfl_zst;
-      flt_lvl[flt_idx]=flt_prm[flt_idx][0];
-    } /* !zst */
     /* '--cmp=bz2' with unspecified level causes NCO to use default Bzip2 level */
     if(flt_alg[flt_idx] == nco_flt_bz2 && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
       flt_prm_nbr[flt_idx]=1;
       flt_prm[flt_idx][0]=lvl_dfl_bz2;
       flt_lvl[flt_idx]=flt_prm[flt_idx][0];
     } /* !bz2 */
+    /* '--cmp=zst' with unspecified level causes NCO to use default Zstandard level */
+    if(flt_alg[flt_idx] == nco_flt_zst && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
+      flt_prm_nbr[flt_idx]=1;
+      flt_prm[flt_idx][0]=lvl_dfl_zst;
+      flt_lvl[flt_idx]=flt_prm[flt_idx][0];
+    } /* !zst */
+    /* '--cmp=bgr' with unspecified level causes NCO to use default BitGroom level */
+    if(flt_alg[flt_idx] == nco_flt_bgr && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
+      flt_prm_nbr[flt_idx]=1;
+      flt_prm[flt_idx][0]=lvl_dfl_bgr;
+      flt_lvl[flt_idx]=flt_prm[flt_idx][0];
+    } /* !bgr */
+    /* '--cmp=gbr' with unspecified level causes NCO to use default GranularBR level */
+    if(flt_alg[flt_idx] == nco_flt_gbr && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
+      flt_prm_nbr[flt_idx]=1;
+      flt_prm[flt_idx][0]=lvl_dfl_gbr;
+      flt_lvl[flt_idx]=flt_prm[flt_idx][0];
+    } /* !gbr */
+    /* '--cmp=btr' with unspecified level causes NCO to use default BitRound level */
+    if(flt_alg[flt_idx] == nco_flt_btr && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
+      flt_prm_nbr[flt_idx]=1;
+      flt_prm[flt_idx][0]=lvl_dfl_btr;
+      flt_lvl[flt_idx]=flt_prm[flt_idx][0];
+    } /* !btr */
   } /* !flt_idx */
 
   /* Global user-specified specification has been merged with dfl_lvl 
