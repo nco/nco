@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.8-beta02
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 28 June 2022
+@set update-date 29 June 2022
 @set update-month June 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9576,31 +9576,6 @@ There are no plans to alter @acronym{NCO}'s filter handler to give
 users full control of Shuffle with the @acronym{DEFLATE} filter.
 Please let us know if this feature would be of interest to you.
 
-@unnumberedsubsec Best Practices for Real World Lossy Compression
-We have found that the optimal blend of storage space, speed,
-accuracy, information content, portability, and user-friendliness of
-lossy compression is best obtained by using per-variable quantization
-together with global lossless compression.
-@acronym{NCO} can configure per-variable quantization levels together
-with global lossless filters when the quantization algorithm is
-specified with the @samp{--ppc} option/@acronym{API} and the lossless
-filters are specified with the @samp{--cmp_sng} option/@acronym{API}.
-Granular BitRound (GranularBR) and BitRound are state-of-the-art
-quantization algorithms that are configured with the number of
-significant decimal digits (NSD) or number of significant bits (NSB), 
-respectively.
-@example
-@verbatim
-ncks -7 --ppc default=3 ...            # GranularBR, NSD=3
-ncks -7 --baa=4 --ppc default=3 ...    # Same
-ncks -7 --baa=4 --ppc dfl=3 ...        # Same
-ncks -7 --baa=8 --ppc default=9  ...   # BitRound, NSB=9
-@end verbatim
-@end example
-The example above shows that, in the context of @samp{--ppc},
-the keyword @code{dfl} is a synonym for @code{default} and has
-nothing to do with the @acronym{DEFLATE} codec.
-
 Note that @acronym{NCO} and netCDF implement their quantization
 algorithms internally, whereas the @acronym{CCR} implements them as
 external shared-library codecs (valid only with netCDF4 files).
@@ -9610,11 +9585,11 @@ Quantization therefore works with netCDF3 datasets, not just netCDF4.
 netCDF applications that attempt to read data compressed with
 shared-library filters must be linked to the same shared filters 
 or the ``decompression'' step will fail.
-Datasets produced with netCDF-supported codecs (Bzip2, DEFLATE,
-Zstandard) will be readable by all users (who upgrade to netCDF 4.9.0 
-or later), whereas datasets produced with codecs from the
-@acronym{CCR} or elsewhere will only be readable by users who have 
-taken the extra step to install those codecs.
+Datasets produced with netCDF-supported codecs (Bzip2,
+@acronym{DEFLATE}, Zstandard) will be readable by all users (who
+upgrade to netCDF 4.9.0 or later), whereas datasets produced with
+codecs from the @acronym{CCR} or elsewhere will only be readable by
+users who have taken the extra step to install those codecs.
 Where possible, people should encode datasets with netCDF-supported 
 algorithms and codecs in preference to @acronym{CCR} or raw
 @acronym{HDF5} codecs. 
@@ -9641,6 +9616,108 @@ That syntax is backward compatible with the integer-only input
 assumptions already embedded in @acronym{NCO} 5.0.8.
 In the meantime, we request your feedback, use-cases, and suggestions
 before adopting a final approach.
+
+netCDF 4.9.0 contains an inadvertent, albeit significant, constraint.
+due to a recently discovered bug.
+Namely, the quantization algorithms internal to netCDF work only on
+netCDF4 datasets of type @acronym{NETCDF4}.
+They do not yet work on netCDF3 or @acronym{NETCDF4_CLASSIC}-format
+datasets.
+We expect this bug to be fixed soon, and certainly in netCDF 4.9.1.
+Note that this bug does not affect the same quantization algorithms as
+implemented in @acronym{NCO}.
+In other words, quantization to netCDF3 and
+@acronym{NETCDF4_CLASSIC}-format output files @emph{must} currently be
+invoked through the @samp{--ppc} (not @samp{--cmp}) option. 
+This restriction will be lifted once the netCDF bug is fixed.
+Per-variable quantization settings must also be invoked through
+@samp{--ppc} (not @samp{--cmp}) for all output formats, until and
+unless this feature is migrated to @samp{--cmp} (there are no plans
+to do so).
+Feedback welcome!
+
+@unnumberedsubsec Best Practices for Real World Lossy Compression
+We have found that the optimal blend of storage space, speed,
+accuracy, information content, portability, and user-friendliness of
+lossy compression is best obtained by using per-variable quantization
+together with global lossless compression.
+@acronym{NCO} can configure per-variable quantization levels together
+with global lossless filters when the quantization algorithm is
+specified with the @samp{--ppc} option/@acronym{API} and the lossless
+filters are specified with the @samp{--cmp_sng} option/@acronym{API}.
+Granular BitRound (GranularBR) and BitRound are state-of-the-art
+quantization algorithms that are configured with the number of
+significant decimal digits (@acronym{NSD}) or number of significant
+bits (@acronym{NSB}), respectively.
+
+One can devise an optimal approach in about four steps: 
+First, select a global lossless codec that produces a reasonable
+tradeoff between compression ratio (@acronym{CR}) and speed.
+Try a few standard codecs with Shuffle to explore this tradeoff:
+@example
+@verbatim
+ncks -7 --cmp='shf|zst' ...
+ncks -7 --cmp='shf|dfl' ...
+ncks -7 --cmp='shf|bz2' ...
+@end verbatim
+@end example
+The @samp{-7} switch creates output in @acronym{NETCDF4_CLASSIC}
+format.
+This highly portable format supports codecs and is also mandated by
+many archives such as @acronym{CMIP6}.
+The only other viable format choice is @samp{-4} for @acronym{NETCDF4}. 
+That format must be used if any variables make use of the extended
+netCDF4 atomic types.
+
+The second step is to choose the quantization algorithm and
+its default level.
+Quantization can significantly improve the @acronym{CR} without
+sacrificing any scientifically meaningful data.
+The goal in this step is to choose the strongest quantization that
+preserves all the meaningful precision of @emph{most} fields, and
+that dials-in the @acronym{CR} to close to the desired value.
+@example
+@verbatim
+ncks -7 --ppc default=3 ...          # GranularBR, NSD=3
+ncks -7 --baa=4 --ppc default=3 ...  # Same
+ncks -7 --baa=4 --ppc dfl=3 ...      # Same
+ncks -7 --baa=8 --ppc default=9  ... # BitRound, NSB=9
+@end verbatim
+@end example
+The example above shows that, in the context of @samp{--ppc},
+the keyword @code{dfl} is a synonym for @code{default} and has
+nothing to do with the @acronym{DEFLATE} codec.
+
+The third step is to develop per-variable exceptions to the
+default quantization of the previous step.
+This can be a process of trial-and-error, or semi-automated through
+techniques such as determining an acceptable information content
+threshold for each variable
+@footnote{See, e.g., the procedure described in ``Compressing
+atmospheric data into its real information content'' by M.~Klower et
+al., available at @url{https://doi.org/10.1038/s43588-021-00156-2}.}.
+@example
+@verbatim
+ncks --ppc p,w,z=5 --ppc q,RH=4 --ppc T,u,v=3 # Multiple ppc options
+ncks --ppc p,w,z=5#q,RH=4#T,u,v=3 ...  # Combined ppc option
+ncks --ppc Q.?=5#FS.?,FL.?=4#RH=.3 ... # Regular expressions
+ncks --baa=8 --ppc p,w,z=15#q,RH=12#T,u,v=9 ... # BitRound (NSB)
+ncks --baa=8 --ppc CO2=15#AER.?=12#U,V=6 ... # Klower et al. 
+@end verbatim
+@end example
+No compression is necessary in this step, as it presumably involves
+evaluating the adequacy of the quantized values at matching
+observations or at meeting other error metrics.
+
+The fourth step combines the lossless with lossy algorithms:
+@example
+@verbatim
+ncks -7 --ppc default=3#Q.?=5#FS.?,FL.?=4 --cmp='shf|zst' ...
+ncks -7 --baa=4 --ppc default=3#Q.?=5#FS.?,FL.?=4 --cmp='shf|zst' ...
+ncks -7 --baa=8 --ppc default=9#Q.?=15#FS.?,FL.?=12 --cmp='shf|zst' ...
+ncks -7 --ppc dfl=3 --cmp='shf|zst' ... # A useful starting point?
+@end verbatim
+@end example
 
 @unnumberedsubsec Older Compression @acronym{API}
 @acronym{NCO} implements or accesses four different compression
@@ -10151,8 +10228,10 @@ fields, except, say, wind speeds which are only known to integer values
 ncks -4 --ppc default=5 --ppc u,v=.0 in.nc out.nc
 @end example
 To preserve five digits in all variables except coordinate variables
-and @var{u} and @var{v}, use the @samp{default} option and separately
-specify the exceptions:
+and @var{u} and @var{v}, first specify a default value with the
+@samp{default} keyword (or synonym keywords @samp{dfl}, @samp{global},
+or @samp{glb}), and separately specify the exceptions with
+per-variable key-value pairs: 
 @example
 ncks --ppc default=5 --ppc u,v=20 in.nc out.nc
 @end example
