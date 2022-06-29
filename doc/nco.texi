@@ -9354,6 +9354,7 @@ debugging level:
       u:_Filter = "307,2|32015,3" ; // char Codec(s): Bzip2, Zstandard
 @end verbatim
 @end example
+
 Provide any operator (besides @command{ncrename} and
 @command{ncatted}) with a @var{cmp_sng} comprised of an arbitrary
 number of @acronym{HDF5} filters specified either by numeric
@@ -9368,40 +9369,66 @@ number of @acronym{HDF5} filters specified either by numeric
 @acronym{NCO} also uses this @acronym{API} to invoke the netCDF
 quantization algorithms such as Granular BitGroom and BitRound. 
 netCDF records the operation of quantization algorithms in a
-@code{_Quantize} attribute, e.g.,
+@code{_Quantize} attribute.
 @example
 @verbatim
-% ncks --cmp="gbr,2|zst,3" in.nc out.nc
+% ncks --cmp="gbr,2|zst,3" in.nc out.nc 
 % ncks -D 2 --hdn -m foo.nc | grep 'Filt|Quant'
       u:_QuantizeGranularBitRoundNumberOfSignificantDigits = 2 ;
       u:_Filter = "32015,3" ; // char Codec(s): Zstandard
 @end verbatim
 @end example
+@acronym{NCO} applies the filters in the order specified, insofar
+as it can.
+Thus it is important to follow the above example and to specify
+compression pre-filters like quantization and Shuffle prior to any
+lossless codecs. 
 
 Specifying the compression string with codec names should make
 compression much easier for users to understand and employ.
 There are, however, a few wrinkles and legacy conventions that
 might surprise users when first encountered.
 For instance, the codecs for @acronym{DEFLATE}, Shuffle, and
-Fletcher32 have always been built-into netCDF.
+Fletcher32 have always been built-in to netCDF.
 User can instruct @acronym{NCO} to apply these filters with the
 new @acronym{API}, yet their application to a dataset will still
-be reported using the ``old'' per-filter attributes introduced
-with netCDF4 in about 2007:
+be reported using the ``old'' per-filter attributes:
 @example
 @verbatim
-% ncks --cmp="fletcher32|shuffle,1|deflate,1" in.nc out.nc
+% ncks --cmp="fletcher32|shuffle|deflate" in.nc out.nc
 % ncks -D 2 --hdn -m foo.nc | grep 'Filt|Quant'
-      u:_QuantizeGranularBitRoundNumberOfSignificantDigits = 2 ;
-      u:_Filter = "32015,3" ; // char Codec(s): Zstandard
+...
+      u:_DeflateLevel = 1 ; // int
+      u:_Shuffle = "true" ; // char
+      u:_Fletcher32 = "true" ; // char
+...
+@end verbatim
+@end example
+As this example shows, it is not required to give filter parameter
+arguments to all filters.
+When the user omits the filter level parameter for select filters
+that require such a parameter, @acronym{NCO} automatically inserts
+an appropriate default filter level.
+@acronym{NCO} assumes default filter levels of 1, 4, 1, and 3, for the
+filters @acronym{DEFLATE}, Shuffle, Bzip2, and Zstandard, respectively. 
+Note that the netCDF filter for the Fletcher32 checksum algorithm
+does not accept a parameter argument, and @acronym{NCO} will ignore
+any argument provided to this filter.
+@example
+@verbatim
+% ncks --cmp="fletcher32|shuffle|deflate|zstandard" ...
+% ncks --cmp="f32|shf|dfl|zst" ...       # Shorthand, default levels
+% ncks --cmp="f32|shf=4|dfl=1|zst=3" ... # Explicit levels
 @end verbatim
 @end example
 
-Their application may be instructed 
-continues to be reported as separate metadata attributes
-@code{--cmp_sng} (and synonyms @code{--cmp} and
-
-@code{--cmp_sng} (and synonyms @code{--cmp} and
+The @code{cmd_sng} option supports an arbitrary number of filters.
+An example that invokes most netCDF-supported algorithms is
+@example
+@verbatim
+ncks --cmp='f32|shf|dfl|bz2|zst' ~/nco/data/in.nc ~/foo.nc
+@end verbatim
+@end example
 
 Note that @acronym{NCO} and netCDF implement their quantization
 algorithms internally, whereas the @acronym{CCR} implements them as

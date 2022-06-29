@@ -167,7 +167,8 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     
   const int lvl_dfl_dfl=1; /* [enm] Default level for DEFLATE */
   const int lvl_dfl_shf=4; /* [enm] Default level for Shuffle */
-  const int lvl_dfl_zst=2; /* [enm] Default level for Zstandard */
+  const int lvl_dfl_zst=3; /* [enm] Default level for Zstandard */
+  const int lvl_dfl_bz2=1; /* [enm] Default level for Bzip2 */
     
   /* Supply default levels values for selected filters */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
@@ -189,6 +190,12 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
       flt_prm[flt_idx][0]=lvl_dfl_zst;
       flt_lvl[flt_idx]=flt_prm[flt_idx][0];
     } /* !zst */
+    /* '--cmp=bz2' with unspecified level causes NCO to use default Bzip2 level */
+    if(flt_alg[flt_idx] == nco_flt_bz2 && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
+      flt_prm_nbr[flt_idx]=1;
+      flt_prm[flt_idx][0]=lvl_dfl_bz2;
+      flt_lvl[flt_idx]=flt_prm[flt_idx][0];
+    } /* !bz2 */
   } /* !flt_idx */
 
   /* Global user-specified specification has been merged with dfl_lvl 
