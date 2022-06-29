@@ -102,23 +102,23 @@
 typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_nil=0, /* 0 [enm] Filter type is unset */
   nco_flt_dfl=1, /* 1 [enm] DEFLATE */
-  nco_flt_bz2=2, /* 2 [enm] Bzip2 */
-  nco_flt_lz4=3, /* 3 [enm] LZ4 */
-  nco_flt_zst=4, /* 4 [enm] Zstandard */
-  nco_flt_bgr=5, /* 5 [enm] BitGroom */
-  nco_flt_gbr=6, /* 6 [enm] Granular BitRound */
-  nco_flt_dgr=7, /* 7 [enm] DigitRound */
-  nco_flt_btr=8, /* 8 [enm] BitRound */
-  nco_flt_bls=9, /* 9 [enm] BLOSC */
-  nco_flt_bls_lz=10, /* 10 [enm] BLOSC LZ */
-  nco_flt_bls_lz4=11, /* 11 [enm] BLOSC LZ4 */
-  nco_flt_bls_lzh=12, /* 12 [enm] BLOSC LZ4 HC */
-  nco_flt_bls_snp=13, /* 13 [enm] BLOSC Snappy */
-  nco_flt_bls_dfl=14, /* 14 [enm] BLOSC DEFLATE */
-  nco_flt_bls_zst=15, /* 15 [enm] BLOSC Zstandard */
-  nco_flt_shf=16, /* 16 [enm] Shuffle */
-  nco_flt_f32=17, /* 17 [enm] Fletcher32 */
-  nco_flt_szp=18, /* 18 [enm] Szip */
+  nco_flt_shf=2, /* 2 [enm] Shuffle */
+  nco_flt_f32=3, /* 3 [enm] Fletcher32 */
+  nco_flt_szp=4, /* 4 [enm] Szip */
+  nco_flt_bz2=5, /* 5 [enm] Bzip2 */
+  nco_flt_lz4=6, /* 6 [enm] LZ4 */
+  nco_flt_zst=7, /* 7 [enm] Zstandard */
+  nco_flt_bgr=8, /* 8 [enm] BitGroom */
+  nco_flt_dgr=9, /* 9 [enm] DigitRound */
+  nco_flt_gbr=10, /* 10 [enm] Granular BitRound */
+  nco_flt_btr=11, /* 11 [enm] BitRound */
+  nco_flt_bls=12, /* 12 [enm] BLOSC */
+  nco_flt_bls_lz=13, /* 13 [enm] BLOSC LZ */
+  nco_flt_bls_lz4=14, /* 14 [enm] BLOSC LZ4 */
+  nco_flt_bls_lzh=15, /* 15 [enm] BLOSC LZ4 HC */
+  nco_flt_bls_snp=16, /* 16 [enm] BLOSC Snappy */
+  nco_flt_bls_dfl=17, /* 17 [enm] BLOSC DEFLATE */
+  nco_flt_bls_zst=18, /* 18 [enm] BLOSC Zstandard */
   nco_flt_unk=19, /* 19 [enm] Unknown filter (reference by ID not name) */
 } nco_flt_typ_enm; /* end nco_flt_typ_enm */
 
