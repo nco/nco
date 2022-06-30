@@ -23,10 +23,28 @@ scp -p ~/nco/doc/milestones_old.shtml dust.ess.uci.edu:Sites/nco
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
 <dt><a name="News"></a></dt>
-<h2>Releases &amp; Milestones from 2003&ndash;2017 (versions 2.8.4&ndash;4.7.1)</h2>
+<h2>Releases &amp; Milestones from 2003&ndash;2020 (versions 2.8.4&ndash;4.9.7)</h2>
 
 <ul>
 
+<li>2020 Dec&nbsp;27: 4.9.7 Small features/fixes
+<li>2020 Nov&nbsp;30: 4.9.6 Small features/fixes
+<li>2020 Sep&nbsp;23: 4.9.5 A feature and fixes
+<li>2020 Sep&nbsp;04: 4.9.4 High Frequency climos
+<li>2020 May&nbsp;31: 4.9.3 Sundry features/fixes
+<li>2020 Feb&nbsp;14: 4.9.2 BSD License
+<li>2019 Dec&nbsp;19: 4.9.1 Sundry features/fixes
+<li>2019 Dec&nbsp;04: 4.9.0 ncremap lollapalooza
+<li>2019 Jul&nbsp;01: 4.8.1 Sundry features/fixes
+<li>2019 May&nbsp;15: 4.8.0 Vertical interpolation
+<li>2019 Feb&nbsp;20: 4.7.9 Sundry features/fixes
+<li>2018 Nov&nbsp;16: 4.7.8 CMIP6
+<li>2018 Sep&nbsp;21: 4.7.7 Sundry features/fixes
+<li>2018 Aug&nbsp;11: 4.7.6 ncremap RRG, MWF
+<li>2018 Jun&nbsp;10: 4.7.5 Sundry features/fixes
+<li>2018 Apr&nbsp;06: 4.7.4 CF2-Group compliance
+<li>2018 Mar&nbsp;02: 4.7.3 Sundry features/fixes
+<li>2018 Jan&nbsp;25: 4.7.2 Tempest2
 <li>2017 Dec&nbsp;21: 4.7.1 Conda Windows port
 <li>2017 Nov&nbsp;08: 4.7.0 Sundry features/fixes
 <li>2017 Sep&nbsp;18: 4.6.9 CDF5, CMake

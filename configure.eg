@@ -547,17 +547,18 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: 
-# Personal recipe last modified: 20220518 (first try)
-# Personal recipe last used successfully: never "librca.so*': No such file or directory"
+# Personal recipe last modified: 20220630
+# Personal recipe last used successfully: 20220630 (except antlr/ncap2)
 module load PrgEnv-gnu
 module load gcc/11.2.0
 module load cray-hdf5/1.12.1.1
 module load cray-netcdf/4.8.1.1
+module load gsl/2.7
 export HDF5_DISABLE_VERSION_CHECK=1
 export HDF5_USE_FILE_LOCKING=FALSE
 #module load udunits
 cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_perlmutter CC='gcc' CXX='g++' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_DIR='/opt/cray/pe/netcdf/4.8.1.1/gnu/9.1' NETCDF_INC='/opt/cray/pe/netcdf/4.8.1.1/gnu/9.1/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.8.1.1/gnu/9.1/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_perlmutter --datadir=${HOME}/nco/data --libdir=${HOME}/lib_perlmutter --mandir=${HOME}/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_perlmutter CC='gcc' CXX='g++' NETCDF_DIR='/opt/cray/pe/netcdf/4.8.1.1/gnu/9.1' NETCDF_INC='/opt/cray/pe/netcdf/4.8.1.1/gnu/9.1/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.8.1.1/gnu/9.1/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${HOME}/bin_perlmutter --datadir=${HOME}/nco/data --libdir=${HOME}/lib_perlmutter --mandir=${HOME}/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1

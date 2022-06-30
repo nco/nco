@@ -9273,6 +9273,9 @@ Short options: None@*
 Long options: @samp{--ppc @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
 @samp{--precision_preserving_compression @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
 @samp{--quantize @var{var1}[,@var{var2}[,...]]=@var{prc}}@*
+@samp{--cmp cmp_sng}@*
+@samp{--cmp @var{codec1}[,@var{params1}[|@var{codec2}[,@var{params2}[|...]]]]}@*
+@samp{--codec @var{codec1}[,@var{params1}[|@var{codec2}[,@var{params2}[|...]]]]}@*
 @end cartouche
 
 Compression is a rapidly developing area in geoscientific software,
@@ -9460,7 +9463,7 @@ attributes (@code{_Shuffle}, @code{_DeflateLevel}, @code{_Fletcher32})
 and generic filter attributes (@code{_Filter}) that result:
 @example
 @verbatim
-% ncks --cmp='f32|shf|gbr|dfl|bz2|zst' in.nc ~/foo.nc
+% ncks --cmp='f32|shf|gbr|dfl|bz2|zst' in.nc out.nc
 % ncks --hdn -m out.nc
     float u(time) ;
       u:long_name = "Zonal wind speed" ;
@@ -9479,6 +9482,8 @@ Note that the @code{_Filter} value is a valid @var{cmp_sng} for
 use as an argument to the @code{--cmp_sng} option.
 This enables users to easily duplicate the compression settings
 of one dataset in another dataset.
+One can also find the global @var{cmp_sng} that @acronym{NCO} used to 
+compress a dataset in the global @code{history} attribute.
 
 In the absence of instructions to the contrary, @acronym{NCO}
 preserves the compression settings of datasets that it copies or
@@ -9487,7 +9492,7 @@ It simply defaults to copying the per-variable compression settings
 from the input file.
 If the copy or subset command includes global compression instructions
 (i.e., the @samp{--cmp} or @samp{-L} options), those instructions will
-override the settings in the input file.
+override the per-variable settings in the input file.
 The user can eliminate all compression filters by setting
 @var{cmp_sng} to the special value @code{none} (or to its synonyms
 @code{uncompress}, @code{decompress}, @code{defilter}, or
@@ -9516,7 +9521,7 @@ definition, they are lossy.
 Removing compression is ``all or nothing'' in that there is currently
 no way to remove only one or a few codecs and leave the rest in place.
 To do that, the user must instead recompress the dataset using a
-@var{cmp_sng} that comprises all of the desired codecs.
+@var{cmp_sng} that includes only the desired codecs.
 @example
 @verbatim
 % ncks --cmp='shf|zst' ... # Compress
@@ -9637,10 +9642,11 @@ to do so).
 Feedback welcome!
 
 @unnumberedsubsec Best Practices for Real World Lossy Compression
-We have found that the optimal blend of storage space, speed,
-accuracy, information content, portability, and user-friendliness of
-lossy compression is best obtained by using per-variable quantization
-together with global lossless compression.
+The workflow to compress large-scale, user-facing datasets requires 
+consideration of multiple factors including storage space, speed,
+accuracy, information content, portability, and user-friendliness.
+We have found that this blend is best obtained by using per-variable
+quantization together with global lossless compression.
 @acronym{NCO} can configure per-variable quantization levels together
 with global lossless filters when the quantization algorithm is
 specified with the @samp{--ppc} option/@acronym{API} and the lossless
@@ -9653,6 +9659,8 @@ bits (@acronym{NSB}), respectively.
 One can devise an optimal approach in about four steps: 
 First, select a global lossless codec that produces a reasonable
 tradeoff between compression ratio (@acronym{CR}) and speed.
+The speed of the final workflow will depend mostly on the lossless
+codec employed and its compression settings.
 Try a few standard codecs with Shuffle to explore this tradeoff:
 @example
 @verbatim
@@ -9673,9 +9681,12 @@ The second step is to choose the quantization algorithm and
 its default level.
 Quantization can significantly improve the @acronym{CR} without
 sacrificing any scientifically meaningful data.
+Lossless algorithms are unlikely to significantly alter the workflow
+throughput unless applied so agressively that they considerably
+reduce the entropy seen by the lossless codec.
 The goal in this step is to choose the strongest quantization that
 preserves all the meaningful precision of @emph{most} fields, and
-that dials-in the @acronym{CR} to close to the desired value.
+that dials-in the @acronym{CR} to the desired value.
 @example
 @verbatim
 ncks -7 --ppc default=3 ...          # GranularBR, NSD=3
@@ -9684,9 +9695,9 @@ ncks -7 --baa=4 --ppc dfl=3 ...      # Same
 ncks -7 --baa=8 --ppc default=9  ... # BitRound, NSB=9
 @end verbatim
 @end example
-The example above shows that, in the context of @samp{--ppc},
-the keyword @code{dfl} is a synonym for @code{default} and has
-nothing to do with the @acronym{DEFLATE} codec.
+As an argument to @samp{--ppc}, the keyword @code{dfl} is just a
+synonym for @code{default} and has nothing to do with
+@acronym{DEFLATE}.  
 
 The third step is to develop per-variable exceptions to the
 default quantization of the previous step.
@@ -9696,26 +9707,28 @@ threshold for each variable
 @footnote{See, e.g., the procedure described in ``Compressing
 atmospheric data into its real information content'' by M.~Klower et
 al., available at @url{https://doi.org/10.1038/s43588-021-00156-2}.}.
+The per-variable arguments to @samp{--ppc} can take many forms:
 @example
 @verbatim
-ncks --ppc p,w,z=5 --ppc q,RH=4 --ppc T,u,v=3 # Multiple ppc options
-ncks --ppc p,w,z=5#q,RH=4#T,u,v=3 ...  # Combined ppc option
+ncks --ppc p,w,z=5 --ppc q,RH=4 --ppc T,u,v=3 # Multiple options
+ncks --ppc p,w,z=5#q,RH=4#T,u,v=3 ...  # Combined option
 ncks --ppc Q.?=5#FS.?,FL.?=4#RH=.3 ... # Regular expressions
 ncks --baa=8 --ppc p,w,z=15#q,RH=12#T,u,v=9 ... # BitRound (NSB)
 ncks --baa=8 --ppc CO2=15#AER.?=12#U,V=6 ... # Klower et al. 
 @end verbatim
 @end example
-No compression is necessary in this step, as it presumably involves
+No compression is necessary in this step, which presumably involves 
 evaluating the adequacy of the quantized values at matching
 observations or at meeting other error metrics.
 
-The fourth step combines the lossless with lossy algorithms:
+The fourth and final step combines the lossless and lossy algorithms
+to produce the final workflow:
 @example
 @verbatim
+ncks -7 --ppc dfl=3 --cmp='shf|zst' ... # A useful starting point?
 ncks -7 --ppc default=3#Q.?=5#FS.?,FL.?=4 --cmp='shf|zst' ...
 ncks -7 --baa=4 --ppc default=3#Q.?=5#FS.?,FL.?=4 --cmp='shf|zst' ...
 ncks -7 --baa=8 --ppc default=9#Q.?=15#FS.?,FL.?=12 --cmp='shf|zst' ...
-ncks -7 --ppc dfl=3 --cmp='shf|zst' ... # A useful starting point?
 @end verbatim
 @end example
 
@@ -29592,8 +29605,8 @@ maintain netCDF, UDUnits, and OPeNDAP.
 @cindex James Gallagher
 @cindex Ed Hartnett
 @cindex Dennis Heimbigner
-Since 1995 @acronym{NCO} has received support from, I believe, the
-entire staff of all these projects, including 
+Since 1995 @acronym{NCO} has received support from nearly the entire
+staff of all these projects, including  
 Russ Rew, 
 John Caron,
 Glenn Davis, 

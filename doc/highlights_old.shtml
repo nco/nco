@@ -23,8 +23,112 @@ scp -p ~/nco/doc/highlights_old.shtml dust.ess.uci.edu:Sites/nco
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
 <dt><a name="News"></a></dt>
-<h2>Release Highlights from 200001&ndash;201712 (versions 1.1.47&ndash;4.7.1)</h2>
+<h2>Release Highlights from 200001&ndash;202012 (versions 1.1.47&ndash;4.9.7)</h2>
 
+<li><b>NCO 4.9.7</b>:
+<tt>ncap2 --ccr=Filter</tt> link to CCR filters;
+<tt>ncclimo --glb_avg</tt> Fixed;
+<tt>ncclimo --tpd</tt> Fixed;
+<tt>ncremap</tt> Infer MPAS grids from restart files;</li>
+<li><b>NCO 4.9.6</b>: 
+<tt>ncclimo/ncremap</tt> Cori MPI/cmem support;
+<tt>ncclimo/ncremap --prc_typ</tt> harmonization;
+<tt>ncclimo --var_xtr</tt> extra timeseries variables;
+<tt>ncra -N</tt> Numerator-only support for integration;</li>
+<li><b>NCO 4.9.5</b>: 
+<tt>ncclimo --area/--hrz_dmn</tt> (for CAM/EAM);</li>
+<li><b>NCO 4.9.4</b>:
+<tt>ncclimo</tt> high-frequency climos;
+<tt>nces --wgt</tt> per-file weights;
+<tt>nces --prw</tt> per-record weights;
+<tt>nces/ncra/ncrcat --cb</tt> climatology bounds;
+<tt>ncra --prm_ints</tt> promote integers;
+<tt>ncks, ncremap</tt> regridding vectorization;
+<tt>ncra, ncrcat ilv</tt> interleave output;
+<tt>ncremap</tt> distance-weighted extrapolation weight generation algorithm;</li>
+<li><b>NCO 4.9.3</b>:
+<tt>ncks --frac_b_fix</tt> map-file correction;
+<tt>ncremap --correct_areas</tt> for TR FV destination maps;
+<tt>ncremap</tt> parallelize K-D tree loading;</li>
+<li><b>NCO 4.9.2</b>:
+<tt>ncks --chk_map</tt> improvements;
+<tt>ncclimo/ncremap HDF5_USE_FILE_LOCKING='FALSE'</tt>;
+<tt>ncpdq -U</tt> unpacks all coordinates;
+<tt>ncremap</tt> pressure->hybrid flexibility;
+<tt>ncremap</tt> small-circle weights;</li>
+<li><b>NCO 4.9.1</b>: 
+<tt>ncclimo --glb_avg</tt> spatial average timeseries;
+<tt>ncpdq --flt_dbl</tt> map;
+<tt>ncremap --vrt_xtr=mss_val</tt> bugfix</li>
+<li><b>NCO 4.9.0</b>: 
+<tt>ncks --chk_map</tt> map-file evaluation;
+<tt>ncks --chk_nan</tt> find all NaNs;
+<tt>ncremap</tt> simulaneous horizontal and vertical regridding;
+<tt>ncremap</tt> invokes NCO weight-generator;
+<tt>ncremap --job_nbr</tt> parallelism;
+<tt>ncremap --sgs_frc</tt> sub-gridscale acceleration;
+<tt>ncremap --vrt</tt> vertical grid flexibility</li>
+<li><b>NCO 4.8.1</b>: 
+<tt>ncap2</tt> fixes single-file handling;
+<tt>ncclimo</tt> fine-grained seasonal parallelism;
+<tt>ncclimo</tt> supports vertical interpolation;
+<tt>ncremap --xtr_mth=mss_val</tt> interpolation;
+<tt>ncremap --msh_fl=msh.nc</tt> mesh-file output;
+<tt>ncremap</tt> infers n2s Gaussian grids;
+<tt>ncremap</tt> outputs n2s grids in CCW order;
+<tt>ncremap</tt> vertical interpolation supports ECMWF IFS;</li>
+<li><b>NCO 4.8.0</b>: 
+<tt>ncap2</tt> allows no input file;
+<tt>ncclimo --job_nbr</tt> climo granularity;
+<tt>ncclimo</tt> ~20x faster on Cori;
+<tt>ncclimo</tt> kill not orphan children;
+<tt>ncks --rgr</tt> NCO generates intersection meshes and weights;
+<tt>ncks --chk_nan</tt> Check file for NaNs;
+<tt>ncremap --no_stdin</tt> for Conda-feedstock tests;
+<tt>ncremap --vrt_fl</tt> Vertical interpolation/regridding;</li>
+<li><b>NCO 4.7.9</b>: 
+<tt>ncatted --hdn</tt> Improved compliance;
+<tt>ncrcat --rec_apn</tt> Re-basing;
+<tt>ncclimo --dpt_fl</tt> depth-coordinates;
+<tt>ncremap</tt> SGS fix, lat/lon_dmn_nm;</li>
+<li><b>NCO 4.7.8</b>: 
+<tt>ncremap/ncclimo --d2f</tt> Double->Float map;</li>
+<li><b>NCO 4.7.7</b>: 
+<tt>ncpdq -M dbl_flt</tt> Double->Float map;
+<tt>ncremap --skl</tt> skeleton files;
+<tt>ncremap</tt> symmetric Gaussian interfaces;
+<tt>ncremap</tt> North-to-South grids;
+Deprecate filename sanitization whitelist;
+ERWG <tt>--ignore_degenerate</tt>;
+Extract <tt>ilev</tt> with <tt>lev</tt>;</li>
+<li><b>NCO 4.7.6</b>: 
+HPSS opt-in on all operators;
+<tt>ncap2</tt> strings under Windows;
+<tt>ncks</tt> ENUM, VLEN subsetting;
+<tt>ncks</tt> VLEN missing value braces;
+<tt>ncremap</tt> RRG, MWF modes;</li>
+<li><b>NCO 4.7.5</b>: 
+<tt>ncclimo</tt> supports mpassi name and <tt>yyyy-mm-01-00000</tt> rx's;
+<tt>ncremap</tt> fix CLM PJCS bug;
+<tt>ncks</tt> XML <tt>ncml:</tt> prefixes;
+<tt>ncks</tt> ENUM, VLEN CDL/XML/JSON support;
+Sanitize exceptions for DAP4 protocol;
+<tt>ncap2</tt> pack() arguments;</li>
+<li><b>NCO 4.7.4</b>: 
+<tt>ncks</tt> printing gracefully skips non-atomic types;
+<tt>ncremap</tt> supports ERWG 7.1.0r features conserve2nd, extrapolation;
+<tt>ncremap</tt> guesses column dimension for unstructured grids;
+Support absolute/relative Out-of-Group (OOG) variables in CF2-Group;</li>
+<li><b>NCO 4.7.3</b>:
+Sanitize input/output filenames;
+<tt>ncclimo</tt> Support <tt>YYYY-MM</tt> and <tt>YYYY-MM-01</tt> rx's;
+<tt>ncks --fmt_val --fl_prn</tt> for printing;
+<tt>ncremap --a2o</tt> for TempestRemap2 ordering;
+<tt>ncap2</tt> silence compiler warnings;</li>
+<li><b>NCO 4.7.2</b>:
+<tt>ncclimo</tt> splitter <i>ypf</i> bugfix;
+<tt>ncremap</tt> canonical positional arguments;
+<tt>ncremap</tt> TempestRemap2 support;</li>
 <li><b>NCO 4.7.1</b>: 
 Conda Windows port;
 <tt>ncclimo --clm_md=dly/ann</tt> fix;

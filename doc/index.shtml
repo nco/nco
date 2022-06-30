@@ -152,7 +152,7 @@ and
 
 <ul>
 <li>2022 Jul&nbsp;01: 5.0.9 <i>In Progress...</i>
-<li>2022 Jun&nbsp;30: 5.0.8 Filters
+<li>2022 Jun&nbsp;30: 5.0.8 Compression filters
 <li>2022 May&nbsp;02: 5.0.7 SGS + Sub-SGS fixes
 <li>2022 Feb&nbsp;02: 5.0.6 Small fixes
 <li>2022 Jan&nbsp;24: 5.0.5 BitRound
@@ -163,25 +163,7 @@ and
 <li>2021 Jun&nbsp;18: 5.0.0 ncremap masks, fixes
 <li>2021 May&nbsp;14: 4.9.9 ncremap masks, fixes
 <li>2021 Mar&nbsp;21: 4.9.8 Small features/fixes
-<li>2020 Dec&nbsp;27: 4.9.7 Small features/fixes
-<li>2020 Nov&nbsp;30: 4.9.6 Small features/fixes
-<li>2020 Sep&nbsp;23: 4.9.5 A feature and fixes
-<li>2020 Sep&nbsp;04: 4.9.4 High Frequency climos
-<li>2020 May&nbsp;31: 4.9.3 Sundry features/fixes
-<li>2020 Feb&nbsp;14: 4.9.2 BSD License
-<li>2019 Dec&nbsp;19: 4.9.1 Sundry features/fixes
-<li>2019 Dec&nbsp;04: 4.9.0 ncremap lollapalooza
-<li>2019 Jul&nbsp;01: 4.8.1 Sundry features/fixes
-<li>2019 May&nbsp;15: 4.8.0 Vertical interpolation
-<li>2019 Feb&nbsp;20: 4.7.9 Sundry features/fixes
-<li>2018 Nov&nbsp;16: 4.7.8 CMIP6
-<li>2018 Sep&nbsp;21: 4.7.7 Sundry features/fixes
-<li>2018 Aug&nbsp;11: 4.7.6 ncremap RRG, MWF
-<li>2018 Jun&nbsp;10: 4.7.5 Sundry features/fixes
-<li>2018 Apr&nbsp;06: 4.7.4 CF2-Group compliance
-<li>2018 Mar&nbsp;02: 4.7.3 Sundry features/fixes
-<li>2018 Jan&nbsp;25: 4.7.2 Tempest2
-<li><a href="./milestones_old.shtml">Milestones from 200301&ndash;201712 (versions 2.8.4&ndash;4.7.1)</a></li>
+<li><a href="./milestones_old.shtml">Milestones from 200301&ndash;202012 (versions 2.8.4&ndash;4.9.7)</a></li>
 <li><a href="./nco_news.shtml">News and Announcements from 199801&ndash;200212 (versions 1.1.0&ndash;2.8.3) and earlier</a></li>
 </ul>
 <hr></p>
@@ -412,6 +394,46 @@ developed for geoscience data analysis.</p>
 <h2>NCO-Related Publications and Presentations</h2>
 <ul>
 
+<li><!-- Zen22 --> <a name="Zen22"></a> <!--http://www.ess.uci.edu/~zender#Zen22 -->
+Zender, C.&nbsp;S. (2022),
+What Geoscientists Want: Short and Sweet Commands with Eco-friendly Data, 
+Presented to the Computational and Information Systems Lab (CISL) Seminar Series,
+National Center for Atmospheric Research,
+Boulder,&nbsp;CO, February&ndash;16, 2022 (virtual). 
+<a href="http://dust.ess.uci.edu/smn/smn_leptoukh_cisl_202202.pdf">PDF</a></li>
+
+<li><!-- Zen21 --> <a name="Zen21"></a> <!--http://www.ess.uci.edu/~zender#Zen21 -->
+Zender, C.&nbsp;S. (2021),
+What Geoscientists Want: Short and Sweet Commands with Eco-friendly Data, 
+Presented to the 104th American Geophysical Union Fall Meeting,
+New Orleans,&nbsp;LA, December&nbsp;13&nbsp;17, 2021.
+Abstract IN32C-01.
+<a href="http://doi.org/10.1002/essoar.10509577.1.">MP4</a>, 
+<a href="http://dust.ess.uci.edu/smn/smn_leptoukh_agu_202112.pdf">PDF</a></li>
+
+<li><!-- HZF21 --> <a name="HZF21"></a> <!--http://www.ess.uci.edu/~zender#HZF21 -->
+Hartnett, E.&nbsp;J., C.&nbsp;S. Zender, W.&nbsp;Fisher, D.&nbsp;Heimbigner, H.&nbsp;Lei, B.&nbsp;Curtis, and K.&nbsp;Gerheiser (2021), 
+Quantization and Next-Generation Zlib Compression for Fully Backward-Compatible, Faster, and More Effective Data Compression in NetCDF Files,
+Presented by E.&nbsp;Hartnett to the 104th American Geophysical Union (AGU) Fall Meeting,
+New Orleans,&nbsp;LA, December&nbsp;13&nbsp;17, 2021.
+Abstract IN15A-05.
+<a href="http://dust.ess.uci.edu/smn/http://dust.ess.uci.edu/ppr/ppr_HZF21.pdf">PDF</a></li>
+
+<li><!-- Zen21 --> <a name="Zen21"></a> <!--http://www.ess.uci.edu/~zender#Zen21 -->
+Zender, C.&nbsp;S. (2021),
+Using the self-describing netCDF format to accelerate scientific workflows,
+Presented to the US Climate Variability and Predictability Program (CLIVAR) Working Group on Emerging Data Science Tools for Climate Variability and Predictability, 
+May&nbsp;3, 2021 (virtual).
+<a href="https://youtu.be/p36vNHH_m3U">MP4</a>, 
+<a href="http://dust.ess.uci.edu/smn/smn_nco_clivar_202105.pdf">PDF</a></li> 
+
+<li><!-- HaZ21 --> <a name="HaZ21"></a> <!--http://www.ess.uci.edu/~zender#HaZ21 -->
+Hartnett, E.&nbsp;J. and C.&nbsp;S. Zender (2021),
+Additional netCDF Compression Options with the Community Codec Repository (CCR),
+Presented by E.&nbsp;Hartnett to the 37th AMS Conference on Environmental Information Processing Technologies (EIPT) at the American Meteorological Society Annual Meeting, 
+Paper&nbsp;573, January 10&ndash;15 (virtual).
+<a href="http://dust.ess.uci.edu/smn/http://dust.ess.uci.edu/ppr/ppr_HaZ21.pdf">PDF</a></li>
+
 <li><!-- ZenXX --> <a name="ZenXX"></a> <!--http://www.ess.uci.edu/~zender#ZenXX -->
 Jelenak,&nbsp;A., P.&nbsp;Leonard, and C.&nbsp;S. Zender (2019):
 NASA Dataset Interoperability Recommendations for Earth Science,
@@ -554,7 +576,7 @@ netCDF4 user-defined types support;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
 <li><b>NCO 5.0.8</b>: (<i>In Progress, features in-progress or complete include</i>)
-<tt>all</tt> link to modern codecs;</li>
+<tt>all --cmp_sng</tt> Access modern codecs netCDF, CCR, or HDF5;</li>
 <li><b>NCO 5.0.7</b>: (<i>Current Stable Release</i>)
 <tt>all</tt> BitGroom 52 not 53 bits;
 <tt>ncclimo/ncremap</tt> fix -P bug, warn if SGS not invoked;
@@ -593,111 +615,8 @@ netCDF4 user-defined types support;
 <tt>ncclimo --mth_[srt/end]</tt> in monthly splitter;
 <tt>ncremap</tt> fix MPAS grid inferral;
 <tt>ncremap</tt> deconvolve S1D sparse matrix fields (for CLM/ELM);</li>
-<li><b>NCO 4.9.7</b>:
-<tt>ncap2 --ccr=Filter</tt> link to CCR filters;
-<tt>ncclimo --glb_avg</tt> Fixed;
-<tt>ncclimo --tpd</tt> Fixed;
-<tt>ncremap</tt> Infer MPAS grids from restart files;</li>
-<li><b>NCO 4.9.6</b>: 
-<tt>ncclimo/ncremap</tt> Cori MPI/cmem support;
-<tt>ncclimo/ncremap --prc_typ</tt> harmonization;
-<tt>ncclimo --var_xtr</tt> extra timeseries variables;
-<tt>ncra -N</tt> Numerator-only support for integration;</li>
-<li><b>NCO 4.9.5</b>: 
-<tt>ncclimo --area/--hrz_dmn</tt> (for CAM/EAM);</li>
-<li><b>NCO 4.9.4</b>:
-<tt>ncclimo</tt> high-frequency climos;
-<tt>nces --wgt</tt> per-file weights;
-<tt>nces --prw</tt> per-record weights;
-<tt>nces/ncra/ncrcat --cb</tt> climatology bounds;
-<tt>ncra --prm_ints</tt> promote integers;
-<tt>ncks, ncremap</tt> regridding vectorization;
-<tt>ncra, ncrcat ilv</tt> interleave output;
-<tt>ncremap</tt> distance-weighted extrapolation weight generation algorithm;</li>
-<li><b>NCO 4.9.3</b>:
-<tt>ncks --frac_b_fix</tt> map-file correction;
-<tt>ncremap --correct_areas</tt> for TR FV destination maps;
-<tt>ncremap</tt> parallelize K-D tree loading;</li>
-<li><b>NCO 4.9.2</b>:
-<tt>ncks --chk_map</tt> improvements;
-<tt>ncclimo/ncremap HDF5_USE_FILE_LOCKING='FALSE'</tt>;
-<tt>ncpdq -U</tt> unpacks all coordinates;
-<tt>ncremap</tt> pressure->hybrid flexibility;
-<tt>ncremap</tt> small-circle weights;</li>
-<li><b>NCO 4.9.1</b>: 
-<tt>ncclimo --glb_avg</tt> spatial average timeseries;
-<tt>ncpdq --flt_dbl</tt> map;
-<tt>ncremap --vrt_xtr=mss_val</tt> bugfix</li>
-<li><b>NCO 4.9.0</b>: 
-<tt>ncks --chk_map</tt> map-file evaluation;
-<tt>ncks --chk_nan</tt> find all NaNs;
-<tt>ncremap</tt> simulaneous horizontal and vertical regridding;
-<tt>ncremap</tt> invokes NCO weight-generator;
-<tt>ncremap --job_nbr</tt> parallelism;
-<tt>ncremap --sgs_frc</tt> sub-gridscale acceleration;
-<tt>ncremap --vrt</tt> vertical grid flexibility</li>
-<li><b>NCO 4.8.1</b>: 
-<tt>ncap2</tt> fixes single-file handling;
-<tt>ncclimo</tt> fine-grained seasonal parallelism;
-<tt>ncclimo</tt> supports vertical interpolation;
-<tt>ncremap --xtr_mth=mss_val</tt> interpolation;
-<tt>ncremap --msh_fl=msh.nc</tt> mesh-file output;
-<tt>ncremap</tt> infers n2s Gaussian grids;
-<tt>ncremap</tt> outputs n2s grids in CCW order;
-<tt>ncremap</tt> vertical interpolation supports ECMWF IFS;</li>
-<li><b>NCO 4.8.0</b>: 
-<tt>ncap2</tt> allows no input file;
-<tt>ncclimo --job_nbr</tt> climo granularity;
-<tt>ncclimo</tt> ~20x faster on Cori;
-<tt>ncclimo</tt> kill not orphan children;
-<tt>ncks --rgr</tt> NCO generates intersection meshes and weights;
-<tt>ncks --chk_nan</tt> Check file for NaNs;
-<tt>ncremap --no_stdin</tt> for Conda-feedstock tests;
-<tt>ncremap --vrt_fl</tt> Vertical interpolation/regridding;</li>
-<li><b>NCO 4.7.9</b>: 
-<tt>ncatted --hdn</tt> Improved compliance;
-<tt>ncrcat --rec_apn</tt> Re-basing;
-<tt>ncclimo --dpt_fl</tt> depth-coordinates;
-<tt>ncremap</tt> SGS fix, lat/lon_dmn_nm;</li>
-<li><b>NCO 4.7.8</b>: 
-<tt>ncremap/ncclimo --d2f</tt> Double->Float map;</li>
-<li><b>NCO 4.7.7</b>: 
-<tt>ncpdq -M dbl_flt</tt> Double->Float map;
-<tt>ncremap --skl</tt> skeleton files;
-<tt>ncremap</tt> symmetric Gaussian interfaces;
-<tt>ncremap</tt> North-to-South grids;
-Deprecate filename sanitization whitelist;
-ERWG <tt>--ignore_degenerate</tt>;
-Extract <tt>ilev</tt> with <tt>lev</tt>;</li>
-<li><b>NCO 4.7.6</b>: 
-HPSS opt-in on all operators;
-<tt>ncap2</tt> strings under Windows;
-<tt>ncks</tt> ENUM, VLEN subsetting;
-<tt>ncks</tt> VLEN missing value braces;
-<tt>ncremap</tt> RRG, MWF modes;</li>
-<li><b>NCO 4.7.5</b>: 
-<tt>ncclimo</tt> supports mpassi name and <tt>yyyy-mm-01-00000</tt> rx's;
-<tt>ncremap</tt> fix CLM PJCS bug;
-<tt>ncks</tt> XML <tt>ncml:</tt> prefixes;
-<tt>ncks</tt> ENUM, VLEN CDL/XML/JSON support;
-Sanitize exceptions for DAP4 protocol;
-<tt>ncap2</tt> pack() arguments;</li>
-<li><b>NCO 4.7.4</b>: 
-<tt>ncks</tt> printing gracefully skips non-atomic types;
-<tt>ncremap</tt> supports ERWG 7.1.0r features conserve2nd, extrapolation;
-<tt>ncremap</tt> guesses column dimension for unstructured grids;
-Support absolute/relative Out-of-Group (OOG) variables in CF2-Group;</li>
-<li><b>NCO 4.7.3</b>:
-Sanitize input/output filenames;
-<tt>ncclimo</tt> Support <tt>YYYY-MM</tt> and <tt>YYYY-MM-01</tt> rx's;
-<tt>ncks --fmt_val --fl_prn</tt> for printing;
-<tt>ncremap --a2o</tt> for TempestRemap2 ordering;
-<tt>ncap2</tt> silence compiler warnings;</li>
-<li><b>NCO 4.7.2</b>:
-<tt>ncclimo</tt> splitter <i>ypf</i> bugfix;
-<tt>ncremap</tt> canonical positional arguments;
-<tt>ncremap</tt> TempestRemap2 support;</li>
-<li><a href="./highlights_old.shtml">Release Highlights from 200001&ndash;201712 (versions 1.1.47&ndash;4.7.1)</a></li>
+<li><a href="./highlights_old.shtml">Release Highlights from 200001&ndash;202012 (versions 1.1.47&ndash;4.9.7)</a>
+</li>
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#hgh -->

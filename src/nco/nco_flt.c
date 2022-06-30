@@ -322,7 +322,8 @@ nco_flt_hdf5_prs /* [fnc] Parse user-legible string into HDF5 filter parameter l
      Example filter strings: "32022,3", "32004,1U,1,-1,1.0f,-1.0d,1UL,-1L,1US,-1S" 
 
      Test:
-     ncks --dbg=2 --filter="32022,3" */
+     ncks --dbg=2 --filter="32022,3"
+     ncks --dbg=2 --filter="32004,1U,1,-1,1.0f,-1.0d,1UL,-1L,1US,-1S" */
 
   const char fnc_nm[]="nco_flt_hdf5_prs()";
 
