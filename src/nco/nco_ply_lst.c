@@ -718,8 +718,6 @@ int *pl_cnt_vrl_ret){
   const char fnc_nm[]="nco_poly_lst_mk_vrl()";
 
   nco_bool bDirtyRats=False;
-  nco_bool bSort=True;
-
 
   int pl_cnt_vrl=0;
 
@@ -781,12 +779,12 @@ int *pl_cnt_vrl_ret){
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined(__INTEL_COMPILER)
-#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,bSort,grd_lon_typ,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
+#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,grd_lon_typ,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,grd_lon_typ,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
+#  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,grd_lon_typ,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 # else /* !old g++ */
-#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,bSort,grd_lon_typ,mem_lst, nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
+#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,grd_lon_typ,mem_lst, nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx=0;idx<pl_cnt_in;idx++){
@@ -1313,7 +1311,7 @@ int *wgt_cnt_bln_ret) {
   /* reporting step */
   int thr_quota_step;
   /* max number of nearest neighbours to consider - nr-reference from rgr_nfo */
-  int const max_nbr_idw=20;
+  const int max_nbr_idw=20;
   int nbr_idw=0;
 
   double pow_idw=0.0;

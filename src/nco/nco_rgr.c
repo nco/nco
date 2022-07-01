@@ -1544,9 +1544,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Define new coordinates and grid variables in regridded file */
   const int dmn_nbr_0D=0; /* [nbr] Rank of 0-D grid variables (scalars) */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
-  //const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
-  //const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
-  //const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
   
   if(flg_grd_out_hyb){
     rcd+=nco_def_var(out_id,"hyai",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&hyai_id);
