@@ -317,8 +317,39 @@ influence of your monetary donations on NCO development:
 
 <a name="nsf"></a> <!-- http://nco.sf.net#nsf -->
 <dt><a name="prp_e3"></a></dt> <!-- http://nco.sf.net#prp_e3 -->
-<h2>NSF EarthCube Project</h2>
+<h2>NSF Compression Project</h2>
 <img src="nsf.png" height=180 width=180 align=right>
+<p>
+The National Science Foundation Grant
+<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=2004993">NSF OAC-2004993</a>
+funded our
+<a href="http://dust.ess.uci.edu/prp/prp_cssi/prp_cssi.pdf">CANDEE Project</a>,
+&ldquo;Elements: Advanced Lossless and Lossy Compression Algorithms for netCDF Datasets in Earth and Engineering Sciences (CANDEE)&rdquo;
+from 20200701&ndash;20230630 as part of the 
+Cyberinfrastructure for Sustained Scientific Innovation 
+(<a href="https://beta.nsf.gov/funding/opportunities/cyberinfrastructure-sustained-scientific-innovation-cssi">CSSI</a>)
+program. 
+
+<p>UCI's goal is to enable modern lossy and lossless compression in
+  geoscientific and engineering research that employs the netCDF/HDF
+  data format.
+  We first developed, with our partner E.&nbsp;Hartnett (NOAA), the
+  Community Codec Repository 
+  (<a href="http://github.com/ccr/ccr">CCR</a>)
+  a robust, extensible software infrastructure for making compression algorithms
+  transparently available for netCDF users.
+  We then developed the Granular BitGroom quantization algorithm, and
+  implemented it, and the BitRound algorithm, and the Zstandard codec,
+  into the CCR and into the netCDF-C library for wider adoption.
+  We are quantifying the efficacy of quantization/compression at
+  reducing dataset size, and thereby storage, power, and associate GHG
+  emissions.
+  We are proposing adoption of these methods in CMIP7.
+<hr></p>
+
+<a name="nsf"></a> <!-- http://nco.sf.net#nsf -->
+<dt><a name="prp_e3"></a></dt> <!-- http://nco.sf.net#prp_e3 -->
+<h2>NSF EarthCube Project</h2>
 <p>
 The National Science Foundation Grant
 <a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=1541031">NSF ICER-1541031</a>
@@ -393,7 +424,6 @@ developed for geoscience data analysis.</p>
 <dt><a name="Publications"></a><a name="pub"></a><a name="pubs"></a></dt>
 <h2>NCO-Related Publications and Presentations</h2>
 <ul>
-
 <li><!-- Zen22 --> <a name="Zen22"></a> <!--http://www.ess.uci.edu/~zender#Zen22 -->
 Zender, C.&nbsp;S. (2022),
 What Geoscientists Want: Short and Sweet Commands with Eco-friendly Data, 
@@ -572,49 +602,51 @@ You may retrieve the source of tagged versions directly with, e.g.,
 <li><b>NCO 5.1.0</b>: (<i>Distant Future</i>)
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
-<li><b>NCO 5.0.9</b>: (<i>Future</i>)
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
+<li><b>NCO 5.0.9</b>: (<i>Future</i>)
+<tt>all --cmp_sng</tt> automatically translate human-legible codec parameters</li>
 <li><b>NCO 5.0.8</b>: (<i>In Progress, features in-progress or complete include</i>)
-<tt>all --cmp_sng</tt> Access modern codecs netCDF, CCR, or HDF5;</li>
+<tt>all --cmp_sng</tt> to access modern codecs in netCDF, CCR, or HDF5;
+<tt>ncremap</tt> fix two sub-SGS issues</li>
 <li><b>NCO 5.0.7</b>: (<i>Current Stable Release</i>)
 <tt>all</tt> BitGroom 52 not 53 bits;
 <tt>ncclimo/ncremap</tt> fix -P bug, warn if SGS not invoked;
-<tt>ncremap --add_fll</tt> use <tt>mss_val_cmp_dbl</tt>;</li>
+<tt>ncremap --add_fll</tt> use <tt>mss_val_cmp_dbl</tt></li>
 <li><b>NCO 5.0.6</b>: 
-<tt>ncclimo/ncremap</tt> small bug-fixes;</li>
+<tt>ncclimo/ncremap</tt> small bug-fixes</li>
 <li><b>NCO 5.0.5</b>: 
 <tt>all</tt> quantize add BitRound;
 <tt>ncatted</tt> Prepend mode;
-<tt>ncclimo</tt> climos filenames from stdin/positional arguments;</li>
+<tt>ncclimo</tt> climos filenames from stdin/positional arguments</li>
 <li><b>NCO 5.0.4</b>: 
 <tt>ncclimo</tt> <tt>--stdin</tt> API, <tt>--permute</tt> API, <tt>--wnt_md</tt>;
 <tt>ncremap</tt> improve ERWG, MOAB invocation and support;
 <tt>ncremap</tt> <tt>--area_dgn</tt>, <tt>--alg=idw</tt>;
-<tt>ncwa</tt> fix averaging with compression;</li>
+<tt>ncwa</tt> fix averaging with compression</li>
 <li><b>NCO 5.0.3</b>: 
 <tt>all</tt> quantize add DigitRound, default to Granular BitGroom;
-<tt>ncremap</tt> fix MOAB support;</li>
+<tt>ncremap</tt> fix MOAB support</li>
 <li><b>NCO 5.0.2</b>: 
 <tt>all</tt> regridder, bitmasks respect <tt>NC_FILL_FLOAT/DOUBLE</tt>;
 <tt>ncclimo</tt> splitter support for regular expressions;
-<tt>ncremap</tt> support MOAB/<tt>mbtempest</tt>;</li>
+<tt>ncremap</tt> support MOAB/<tt>mbtempest</tt></li>
 <li><b>NCO 5.0.1</b>: 
-<tt>ncremap</tt> support MPI-enabled weight generators;</li>
+<tt>ncremap</tt> support MPI-enabled weight generators</li>
 <li><b>NCO 5.0.0</b>:
 <tt>ncks -X</tt> support wrapped longitude;
 <tt>ncremap</tt> fixes for <tt>mask_a/b</tt>, MPI, <tt>msk_nm</tt>, stdin;
-<tt>ncremap --add_fll, --msk_apl, --no_permute</tt>;</li>
+<tt>ncremap --add_fll, --msk_apl, --no_permute</tt></li>
 <li><b>NCO 4.9.9</b>: 
 <tt>Windows</tt> fix DAP https support;
 <tt>ncks --chk_map</tt> account for masks;
 <tt>ncclimo --mth_[srt/end]</tt> in high-frequency splitter, fix tpd, dpf inferral;
-<tt>ncremap</tt> curvilinear inferral, mask fixes, integer rounding, TR allow_no_overlap;</li>
+<tt>ncremap</tt> curvilinear inferral, mask fixes, integer rounding, TR allow_no_overlap</li>
 <li><b>NCO 4.9.8</b>: 
 <tt>ncclimo/ncremap</tt> MALI climos;
 <tt>ncclimo --mth_[srt/end]</tt> in monthly splitter;
 <tt>ncremap</tt> fix MPAS grid inferral;
-<tt>ncremap</tt> deconvolve S1D sparse matrix fields (for CLM/ELM);</li>
+<tt>ncremap</tt> deconvolve S1D sparse matrix fields (for CLM/ELM)</li>
 <li><a href="./highlights_old.shtml">Release Highlights from 200001&ndash;202012 (versions 1.1.47&ndash;4.9.7)</a>
 </li>
 </ul>

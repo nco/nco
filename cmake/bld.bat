@@ -21,7 +21,7 @@ if not defined DevEnvDir (
  call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
  if errorlevel 1 goto :eof
 )
-set MSVC_VERSION="Visual Studio 16 2019"
+set MSVC_VERSION="Visual Studio 17 2022"
 echo using %MSVC_VERSION%
 
 if "%~1" == "crt" (

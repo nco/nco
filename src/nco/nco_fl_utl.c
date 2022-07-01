@@ -339,7 +339,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
 } /* end nco_fl_cp() */
 
 #ifdef _MSC_VER
-char * nco_fl_info_get(const char *){return NULL;}
+char * nco_fl_info_get(const char * const fl_nm_lcl){return NULL;}
 #else /* !_MSC_VER */
 char * /* O [sng] Canonical file name*/
 nco_fl_info_get /* [fnc] Determine canonical filename and properties */
