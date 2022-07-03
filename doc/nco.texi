@@ -83,6 +83,7 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @t{}: Selects the fixed-width font used by @code{}
 @sansserif{}: Selects a sanserif font
 @slanted{}: Selects a slanted font
+@caption{}: Caption of floating figures
 @code{}: Program text, e.g., @code{if(foo) x=y;}
 @command{}: Commands, e.g., @command{ncra}
 @dfn{}: Define use of term, e.g., @dfn{supercalifragilisticexpialidocious}
@@ -90,6 +91,8 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @emph{}: Emphasize text, e.g., @emph{important}
 @env{}: Environment variable, e.g., @env{HOME}
 @file{}: Filename, e.g., @file{in.nc}
+@float: Environment for TeX floating figures (e.g., @float Figure,fgr:glb)
+@image{drc/nm,sz} Directory, filename (w/o suffix) and figure horizontal size
 @html: Text until @end html passed without translation
 @ifhtml: Text until @end ifhtml passed with translation
 @kbd{}: Keyboard input, e.g., @kbd{ncra in.nc out.nc}
@@ -9372,6 +9375,29 @@ higher debugging level:
 @end verbatim
 @end example
 
+@html
+<a name="dfl"></a> <!-- http://nco.sf.net/nco.html#dfl -->
+<a name="zst"></a> <!-- http://nco.sf.net/nco.html#zst -->
+<a name="bz2"></a> <!-- http://nco.sf.net/nco.html#bz2 -->
+<a name="shf"></a> <!-- http://nco.sf.net/nco.html#shf -->
+<a name="gbr"></a> <!-- http://nco.sf.net/nco.html#gbr -->
+<a name="bgr"></a> <!-- http://nco.sf.net/nco.html#bgr -->
+<a name="bgb"></a> <!-- http://nco.sf.net/nco.html#bgb -->
+<a name="btr"></a> <!-- http://nco.sf.net/nco.html#btr -->
+<a name="f32"></a> <!-- http://nco.sf.net/nco.html#f32 -->
+<a name="dns"></a> <!-- http://nco.sf.net/nco.html#dns -->
+@end html
+@cindex @code{dfl}
+@cindex @code{zst}
+@cindex @code{bz2}
+@cindex @code{shf}
+@cindex @code{gbr}
+@cindex @code{bgr}
+@cindex @code{bgb}
+@cindex @code{f32}
+@cindex @code{dns}
+@cindex Shuffle
+@cindex Fletchdf32
 You may provide any operator (besides @command{ncrename} and
 @command{ncatted}) with a @var{cmp_sng} comprised of an arbitrary
 number of @acronym{HDF5} filters specified either by numeric
@@ -9556,21 +9582,29 @@ This behavior is welcome as it avoids inadvertent mis-use of Shuffle.
 Prior to version 5.0.8, @acronym{NCO} always invoked Shuffle with
 @acronym{DEFLATE}, and did not expose the Shuffle filter to user
 control.
-@acronym{NCO} now exposes Shuffle to user control for all filters
-except @acronym{DEFLATE}.
-In other words, users must explicitly request Shuffle for all
+@acronym{NCO} now exposes Shuffle to user control for all filters.
+To preserve backward compatibility, invoking the @acronym{DEFLATE}
+algorithm with the @code{dfl} or @code{deflate} names (or with the
+numeric @acronym{HDF5} filter @acronym{ID} of @code{1}) still sets
+the Shuffle filter to true.
+To invoke @acronym{DEFLATE} without Shuffle, use the special filter
+names @code{dns} or @code{DEFLATE No Shuffe}.
+In summary, users must explicitly request Shuffle for all
 non-@acronym{DEFLATE} codecs, otherwise Shuffle will not be
 employed prior to those codecs.
+
 @example
 @verbatim
 % ncks --cmp='dfl' ...     # Invoke Shuffle then DEFLATE
 % ncks --cmp='shf|dfl' ... # Same (default Shuffle stride 4-bytes)
+% ncks --cmp='dns' ...     # Invoke DEFLATE (no Shuffle)
+% ncks --cmp='shf|dns' ... # Invoke Shufflet then DEFLATE
 % ncks --cmp='zst' ...     # Invoke Zstandard (no Shuffle)
 % ncks --cmp='shf|zst' ... # Invoke Shuffle then Zstandard
 % ncks --cmp='zst|shf' ... # Same (netCDF enforces Shuffle-first rule)
 % ncks --cmp='shf' ...     # Invoke only Shuffle
 % ncks --cmp='shf,8|zst' ... # Shuffle stride 8-bytes then Zstandard
-% ncks --cmp='shf,8|dfl' ... # Shuffle strid remains default 4-bytes
+% ncks --cmp='shf,8|dfl' ... # Shuffle stride remains default 4-bytes
 @end verbatim
 @end example
 The last example above shows how to invoke Shuffle with non-default
@@ -9646,14 +9680,14 @@ In the meantime, we request your feedback, use-cases, and suggestions
 before adopting a final approach.
 
 netCDF 4.9.0 contains an inadvertent, albeit significant, constraint.
-due to a recently discovered bug.
 Namely, the quantization algorithms internal to netCDF work only on
 netCDF4 datasets of type @acronym{NETCDF4}.
-They do not yet work @acronym{NETCDF4_CLASSIC}-format datasets,
-and, by design, may never be implemented for any @acronym{CLASSIC} or
-other netCDF format.
-We expect the @acronym{NETCDF4_CLASSIC} bug to be fixed soon,
-certainly by netCDF 4.9.1.  
+A recently discovered bug prevents them from working on
+@acronym{NETCDF4_CLASSIC}-format datasets. 
+And, by design, they may never be implemented for any
+@acronym{CLASSIC} or other netCDF3 formats.
+The fix to the @acronym{NETCDF4_CLASSIC} bug is available now, and
+will be included in netCDF 4.9.1.  
 Note that this bug does not affect the same quantization algorithms as
 implemented in @acronym{NCO} (or in the @acronym{CCR}, for that
 matter). 
@@ -9758,6 +9792,21 @@ ncks -7 --baa=4 --ppc default=3#Q.?=5#FS.?,FL.?=4 --cmp='shf|zst' ...
 ncks -7 --baa=8 --ppc default=9#Q.?=15#FS.?,FL.?=12 --cmp='shf|zst' ...
 @end verbatim
 @end example
+
+Real world examples of these compression practices are shown in 
+@ref{fgr:qnt_cr_dfl}, @ref{fgr:qnt_cr_zst}, and @ref{fgr:qnt_cr_bz2}.
+@float Figure,fgr:qnt_cr_dfl
+@image{fgr/qnt_cr_dfl,5.5in} 
+@caption{Quantization and then compression by @acronym{DEFLATE}.}
+@end float
+@float Figure,fgr:qnt_cr_zst
+@image{fgr/qnt_cr_zst,5.5in} 
+@caption{Quantization and then compression by Zstandard.}
+@end float
+@float Figure,fgr:qnt_cr_bz2
+@image{fgr/qnt_cr_bz2,5.5in} 
+@caption{Quantization and then compression by Bzip2.}
+@end float
 
 @unnumberedsubsec Older Compression @acronym{API}
 @acronym{NCO} implements or accesses four different compression
