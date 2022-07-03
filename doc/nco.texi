@@ -9570,6 +9570,13 @@ To do that, the user must instead recompress the dataset using a
 @end verbatim
 @end example
 
+Shuffle is an important filter than can boost lossless compression
+ratios of geoscientific data by 10--20% (@pxref{fgr:qnt_cr_dfl}).
+@float Figure,fgr:qnt_cr_dfl
+@image{fgr/qnt_cr_dfl,5.5in} 
+@caption{Quantization and then compression by @acronym{DEFLATE},
+including the contribution of Shuffle.}
+@end float
 Both the netCDF library and @acronym{NCO} continue to treat the
 Shuffle filter specially. 
 If the Shuffle and @acronym{DEFLATE} algorithms are both invoked
@@ -9624,10 +9631,11 @@ The netCDF library, and thus @acronym{NCO}, always uses the default
 Shuffle stride (4 bytes) with the @acronym{DEFLATE} filter.
 Specifying a different stride only has an effect with
 non-@acronym{DEFLATE} filters.  
-This ensures @acronym{NCO}'s behavior with @acronym{DEFLATE} does not change 
-There are no plans to alter @acronym{NCO}'s filter handler to give
-users full control of Shuffle with the @acronym{DEFLATE} filter.
-Please let us know if this feature would be of interest to you.
+This ensures @acronym{NCO}'s default behavior with @acronym{DEFLATE}
+does not change.
+As explained above, invoke @acronym{DEFLATE} with @samp{--cmp=dns}
+instead of @samp{--cmp=dfl} if you wish to suppress the otherwise
+automatic invocation of Shuffle.
 
 Note that @acronym{NCO} and netCDF implement their quantization
 algorithms internally, whereas the @acronym{CCR} implements them as
@@ -9737,6 +9745,14 @@ many archives such as @acronym{CMIP6}.
 The only other viable format choice is @samp{-4} for @acronym{NETCDF4}. 
 That format must be used if any variables make use of the extended
 netCDF4 atomic types.
+Our experience with @acronym{ESM} data shows that Bzip2 often yields
+the best @acronym{CR} (@pxref{fgr:qnt_cr_bz2}).
+However Bzip2 is much slower than Zstandard which yields a comparable
+@acronym{CR}.
+@float Figure,fgr:qnt_cr_bz2
+@image{fgr/qnt_cr_bz2,5.5in} 
+@caption{Quantization and then compression by Bzip2.}
+@end float
 
 The second step is to choose the quantization algorithm and
 its default level.
@@ -9792,20 +9808,12 @@ ncks -7 --baa=4 --ppc default=3#Q.?=5#FS.?,FL.?=4 --cmp='shf|zst' ...
 ncks -7 --baa=8 --ppc default=9#Q.?=15#FS.?,FL.?=12 --cmp='shf|zst' ...
 @end verbatim
 @end example
-
-Real world examples of these compression practices are shown in 
-@ref{fgr:qnt_cr_dfl}, @ref{fgr:qnt_cr_zst}, and @ref{fgr:qnt_cr_bz2}.
-@float Figure,fgr:qnt_cr_dfl
-@image{fgr/qnt_cr_dfl,5.5in} 
-@caption{Quantization and then compression by @acronym{DEFLATE}.}
-@end float
+The example above uses Zstandard (@pxref{fgr:qnt_cr_zst}) because it
+is significant faster than other codecs with comparable @acronym{CR}s,
+e.g., Bzip2. 
 @float Figure,fgr:qnt_cr_zst
 @image{fgr/qnt_cr_zst,5.5in} 
 @caption{Quantization and then compression by Zstandard.}
-@end float
-@float Figure,fgr:qnt_cr_bz2
-@image{fgr/qnt_cr_bz2,5.5in} 
-@caption{Quantization and then compression by Bzip2.}
 @end float
 
 @unnumberedsubsec Older Compression @acronym{API}
