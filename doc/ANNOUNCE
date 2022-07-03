@@ -33,9 +33,11 @@ ncks --cmp='granularbr,3|shuffle|zstandard,3' ... # Long-names
 ncks --cmp='gbr,3|shf|zst,3' ... # Abbreviations
 ncks --cmp='gbr|shf|zst' ...     # Default levels
 ncks --cmp='f32|gbr|shf|bz2|dfl|zst' ... # Multiple codecs
-ncwa --cmp='gbr|shf|zst' ...     # Other operators
+ncwa --cmp='gbr|shf|zst' ...     # Other operators...
+ncbo --cmp='gbr|shf|zst' ...     # All numeric operators, in fact
+ncclimo --cmp='btr\|shf\|zstd' ... # Climo generator
 ncremap --cmp='btr\|shf\|zstd' ... # Regridder
-Full documentation is at
+Full documentation (including figures) is at
 http://nco.sf.net/nco.html#compression
 Thanks to Ed Hartnett (NOAA) and Dennis Heimbigner (Unidata) for
 guiding the addition of these features into the CCR and netCDF.

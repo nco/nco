@@ -507,6 +507,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest sysadmin-compiled module usage: module load nco/5.0.1 # 20220701
 # Personal recipe last modified: 20220701
 # Personal recipe last used successfully: 20220701
+module purge # After login, purge before load or risk this: "error while loading shared libraries: libiomp5.so: cannot open shared object file: No such file or directory"
 module load PrgEnv-intel
 module load cray-netcdf
 module load gsl/2.7
