@@ -119,7 +119,8 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_bls_snp=16, /* 16 [enm] BLOSC Snappy */
   nco_flt_bls_dfl=17, /* 17 [enm] BLOSC DEFLATE */
   nco_flt_bls_zst=18, /* 18 [enm] BLOSC Zstandard */
-  nco_flt_unk=19, /* 19 [enm] Unknown filter (reference by ID not name) */
+  nco_flt_dns=19, /* 19 [enm] DEFLATE No Shuffle */
+  nco_flt_unk=20, /* 20 [enm] Unknown filter (reference by ID not name) */
 } nco_flt_typ_enm; /* end nco_flt_typ_enm */
 
 /* Filter flags */

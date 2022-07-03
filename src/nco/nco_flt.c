@@ -175,8 +175,8 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     
   /* Supply default levels values for selected filters */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
-    /* '--cmp=dfl' with unspecified level causes NCO to use default DEFLATE level */
-    if(flt_alg[flt_idx] == nco_flt_dfl && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
+    /* '--cmp=dfl' or '--cmp=dns' with unspecified level causes NCO to use default DEFLATE level */
+    if((flt_alg[flt_idx] == nco_flt_dfl || flt_alg[flt_idx] == nco_flt_dns) && flt_prm_nbr[flt_idx] == 0 && flt_prm[flt_idx][0] == NC_MIN_INT){
       flt_prm_nbr[flt_idx]=1;
       flt_prm[flt_idx][0]=lvl_dfl_dfl;
       flt_lvl[flt_idx]=flt_prm[flt_idx][0];
@@ -472,6 +472,7 @@ nco_flt_enm2nmid /* [fnc] Convert compression filter enum to string */
   switch(nco_flt_enm){
   case nco_flt_nil: return "Filter type is unset"; break;
   case nco_flt_dfl: if(flt_idp) *flt_idp=H5Z_FILTER_DEFLATE; return "DEFLATE"; break; /* 1 */
+  case nco_flt_dns: if(flt_idp) *flt_idp=H5Z_FILTER_DEFLATE; return "DEFLATE No Shuffle"; break; /* 1 */
   case nco_flt_shf: if(flt_idp) *flt_idp=H5Z_FILTER_SHUFFLE; return "Shuffle"; break; /* 2 */
   case nco_flt_f32: if(flt_idp) *flt_idp=H5Z_FILTER_FLETCHER32; return "Fletcher32"; break; /* 3 */
   case nco_flt_szp: if(flt_idp) *flt_idp=H5Z_FILTER_SZIP; return "Szip"; break; /* 4 */
@@ -602,6 +603,9 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     else if(!strcasecmp(flt_nm,"zlib")) flt_enm=nco_flt_dfl;
     else if(!strcasecmp(flt_nm,"zlb")) flt_enm=nco_flt_dfl;
     
+    else if(!strcasecmp(flt_nm,"dns")) flt_enm=nco_flt_dns;
+    else if(!strcasecmp(flt_nm,"deflate no shuffle")) flt_enm=nco_flt_dns;
+
     else if(!strcasecmp(flt_nm,"shf")) flt_enm=nco_flt_shf;
     else if(!strcasecmp(flt_nm,"shuffle")) flt_enm=nco_flt_shf;
     
@@ -1043,6 +1047,8 @@ nco_flt_def_out /* [fnc]  */
       break;
 
     case nco_flt_dfl: /* DEFLATE */
+      // 20220703 Handle nco_flt_dns as specific type of nco_flt_unk below   
+      //    case nco_flt_dns: /* DEFLATE No Shuffle */
       /* Overwrite HDF Lempel-Ziv compression level, if requested */
       deflate=(int)True;
       /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
@@ -1050,6 +1056,7 @@ nco_flt_def_out /* [fnc]  */
       /* Shuffle by default when manually deflating (and do not shuffle when uncompressing)
 	 In rare cases Shuffle can increase compressed filesize */
       if(flt_lvl[flt_idx] > 0) shuffle=NC_SHUFFLE;
+      if(flt_alg[flt_idx] == nco_flt_dns) shuffle=NC_NOSHUFFLE;
       rcd+=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,flt_lvl[flt_idx]);
       break;
 
@@ -1154,6 +1161,9 @@ nco_flt_def_out /* [fnc]  */
       cdc_has_flt=False;
       break;
 
+      /* nco_flt_dns can be handled either by a variant of nco_flt_dfl or as a specific nco_flt_unk
+	 We handle it here to exercise the nco_flt_unk mechanism */
+    case nco_flt_dns: /* DEFLATE No Shuffle */
     case nco_flt_unk: /* Unknown filter referenced by ID not name */
       /* Unknown filters must call the filter handler with unsigned ints */
       rcd+=nco_inq_filter_avail(nc_out_id,flt_id[flt_idx]);

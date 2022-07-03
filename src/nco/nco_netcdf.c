@@ -2224,7 +2224,9 @@ int nco_inq_filter_avail(const int nc_id,const unsigned int flt_id)
 {
   /* Purpose: Wrapper for nc_inq_filter_avail() */
   int rcd;
+  const char fnc_nm[]="nco_inq_filter_avail()"; /* [sng] Function name */
   rcd=nc_inq_filter_avail(nc_id,flt_id);
+  if(rcd == NC_ENOFILTER) (void)fprintf(stdout,"ERROR %s reports HDF5 filter ID = %u was not found as an HDF5 shared library filter. HINT: Try setting the environment variable HDF5_PLUGIN_PATH to point to the directory containing shared library filters, /usr/local/hdf5/lib/plugin by default (the location may be different on your system). Hence try something like \"export HDF5_PLUGIN_PATH=/usr/local/hdf5/lib/plugin\"\n",fnc_nm,flt_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_filter_avail()");
   return rcd;
 } /* !nco_inq_filter_avail() */

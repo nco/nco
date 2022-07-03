@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.0.8-beta02
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 1 July 2022
+@set update-date 3 July 2022
 @set update-month July 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9284,7 +9284,7 @@ Long options: @samp{--ppc @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
 @end cartouche
 
 Compression is a rapidly developing area in geoscientific software,
-and with @acronym{NCO} in particular.
+and @acronym{NCO} is no exception.
 Documentation of these features can quickly become out-of-date.
 A brief review of compression support from the early days until now:
 @acronym{NCO} first supported Linear Packing with @command{ncpdq}
@@ -9296,11 +9296,18 @@ introduced complete support for it, and its relatives BitShave, and
 BitSet in all arithmetic operators.
 In 2020 we reduced the quantization error of BitGroom by implementing
 @acronym{IEEE}-rounding (aka BitRound), and newer quantization
-algorithms including BitGroomRound, HalfShave, and DigitRound.
+algorithms including BitGroomRound, HalfShave, and DigitRound
+@footnote{R. Kouznetsov contributed the masking techinques used in
+BitRound, BitGroomBitRound, and HalfShave. Thanks Rostislav!}.
 In 2020 @acronym{NSF} awarded us support to develop the Community
 Codec Respository to put a user-friendly @acronym{API} on the
 @acronym{HDF5} shared-library filter mechanism so that all
-netCDF users could shift to more modern codecs.
+netCDF users could shift to more modern codecs
+This strategy aligned with needs of operational forecasters supported
+by software engineers at the @acronym{NOAA} @acronym{EMC}, who
+contributed to developing and testing the @acronym{CCR}
+@footnote{E. Hartnett (@acronym{NOAA} @acronym{EMC}) co-founded and
+co-maintains the @acronym{CCR}. Thanks Ed!}.
 By the end of 2021 the @acronym{CCR} supported codecs for
 Bzip2, Zstandard, BitGroom, and Granular BitRound.
 The netCDF team at Unidata had meanwhile become convinced of the
@@ -9308,34 +9315,36 @@ importance of expanding compression options in the base netCDF
 C-library.
 Together, we merged the quantization, Bzip2, and Zstandard codecs and
 @acronym{API} from the @acronym{CCR} into what became (in June, 2022)
-netCDF version 4.9.0. 
+netCDF version 4.9.0
+@footnote{D. Heimbigner (Unidata) helped implement all these features
+into netCDF. Thanks Dennis!}.
 @acronym{NCO} version 5.0.8 (released in July, 2022) introduced full
 support for @acronym{CCR} codecs, generic (i.e., non-@acronym{CCR})
 @acronym{HDF5} codecs, and the quantization algorithms and modern
 lossless codecs newly supported in netCDF 4.9.0.
 
 Access to the quantization and compression options is available
-through three complementary, backwards-compatible and overlapping
+through three complementary, backwards-compatible, and overlapping
 @acronym{API}s designed to accomodate the successive generations of
 compression features. 
 The original generation of compression options remain accessible
 through the standard @command{ncpdq} (for Linear Packing) and
-@code{-L} (synonyms for @code{--deflate} and @code{--dfl_lvl}) for 
-@acronym{DEFLATE}. 
+@acronym{NCO}-wide @code{-L} option (or its synonyms @code{--deflate}
+and @code{--dfl_lvl}) for @acronym{DEFLATE}. 
 The second generation of compression options refers to the
-@code{--ppc} and @code{--baa} (and related synonyms) options to
-control the type and level of quantization algorithm algorithm to
-apply, and the variables to operate on.
+@code{--ppc} and @code{--baa} (and related synonyms) options that
+control the type and level of quantization algorithm, and the
+variables to operate on.
 These options call quantization and rounding routines implemented
 within @acronym{NCO} itself, rather than in external libraries.
-The @code{--cmp_sng} (and synonyms) options provides an @acronym{API}
-for @acronym{NCO} to invoke all lossy and lossless codecs in external
-libraries, including the netCDF C-library, the @acronym{CCR}, and
-@acronym{HDF5} codecs.
+The new @code{--cmp_sng} (and synonyms) option provides an
+@acronym{API} for @acronym{NCO} to invoke all lossy and lossless
+codecs in external libraries, including the netCDF C-library, the
+@acronym{CCR}, and generic @acronym{HDF5} codecs.
 
 The @code{--cmp_sng} (and synonyms @code{--cmp} and
 @code{--compression}) options take as argument a string @var{cmp_sng}
-that contains a list of quantization and compression algorithms and
+which contains a list of quantization and compression algorithms and
 their respective parameters.
 The @var{cmp_sng} must adhere to a superset of the filter-list
 @acronym{API} introduced by the @command{nccopy} command and reported
@@ -9344,21 +9353,21 @@ This @acronym{API} uses the @acronym{UNIX} pipe symbole @code{|} to
 separate the codecs applied as @acronym{HDF5} filters to a variable:
 @example
 @verbatim
-% ncks --hdn -m foo.nc | grep _Filter
+% ncks --hdn -m in.nc | grep _Filter
       u:_Filter = "307,2|32015,3" ;
-% ncdump -h -s foo.nc | grep _Filter
+% ncdump -h -s in.nc | grep _Filter
 		u:_Filter = "307,2|32015,3" ;
 @end verbatim
 @end example
 The above example shows a variable compressed with two successive
 codecs with @acronym{HDF5} filter @acronym{ID}s 307 and 32015,
 respectively. 
-@acronym{NCO} translates the numeric @acronym{ID}s into filter
-names in the @acronym{CDL} comments when invoked with a higher
-debugging level: 
+@acronym{NCO} translates @acronym{HDF5} numeric filter @acronym{ID}s
+into filter names in the @acronym{CDL} comments when invoked with a
+higher debugging level: 
 @example
 @verbatim
-% ncks -D 2 --hdn -m foo.nc | grep _Filter
+% ncks -D 2 --hdn -m in.nc | grep _Filter
       u:_Filter = "307,2|32015,3" ; // char Codec(s): Bzip2, Zstandard
 @end verbatim
 @end example
@@ -9366,7 +9375,7 @@ debugging level:
 You may provide any operator (besides @command{ncrename} and
 @command{ncatted}) with a @var{cmp_sng} comprised of an arbitrary
 number of @acronym{HDF5} filters specified either by numeric
-@acronym{ID} or by name, or by @acronym{NCO}-supported synonyms:
+@acronym{ID} or by name, including @acronym{NCO}-supported synonyms:
 @example
 @verbatim
 % ncks --cmp="307,2|32015,3" in.nc out.nc # Filter numeric IDs
@@ -9595,26 +9604,35 @@ Quantization therefore works with netCDF3 datasets, not just netCDF4.
 netCDF applications that attempt to read data compressed with
 shared-library filters must be linked to the same shared filters 
 or the ``decompression'' step will fail.
-Datasets produced with netCDF-supported codecs (Bzip2,
-@acronym{DEFLATE}, Zstandard) will be readable by all users (who
-upgrade to netCDF 4.9.0 or later), whereas datasets produced with
-codecs from the @acronym{CCR} or elsewhere will only be readable by
-users who have taken the extra step to install those codecs.
+Datasets produced with netCDF or @acronym{CCR}-supported codecs
+(Bzip2, @acronym{DEFLATE}, Zstandard) will be readable by all users
+who upgrade to netCDF 4.9.0 or later or who install the
+@acronym{CCR}.
+There is no difference between a losslessly compressed dataset
+produced with a @acronym{CCR}-supplied vs. a netCDF-supplied
+filter.
+However, reading a dataset quantized by a @acronym{CCR} filter (e.g.,
+BitGroom or GranularBG) requires access to the @acronym{CCR} filter,
+which forces users to take an extra step to install the
+@acronym{CCR}. 
+This is an unfortunate artifact of implementing quantization as a
+codec (which the @acronym{CCR} must do) vs. an internal numerical
+function (which netCDF and @acronym{NCO} do).
 Where possible, people should encode datasets with netCDF-supported 
 algorithms and codecs in preference to @acronym{CCR} or raw
 @acronym{HDF5} codecs. 
-Doing so will make the datasets more portable.
+Doing so will increase dataset portability.
 
 @unnumberedsubsec Limitations of Current Compression @acronym{API}
 The @acronym{NCO} filter @acronym{API} will evolve in a (hopefully)
 backward-compatible manner as experience and feedback are gained.
 All filter parameters are eventually passed to @acronym{HDF5} as
 unsigned integers. 
-However, the current @acronym{API} treats all input arguments in
+By contrast, the current @acronym{API} treats all input arguments in
 @var{cmp_sng} signed integers for ease-of-use.
 For example, it is easier to specify a Zstandard filter level of
 negative one as @samp{zstd,-1} than as @samp{zstd,4294967295}. 
-However, @acronym{NCO} currently has no easy way to specify
+@acronym{NCO} currently has no easy way to specify
 the floating-point configuration parameters required by some
 @acronym{CCR} filters and many external filters.
 That said, most of the code to support the filter parameter syntax
@@ -9631,15 +9649,19 @@ netCDF 4.9.0 contains an inadvertent, albeit significant, constraint.
 due to a recently discovered bug.
 Namely, the quantization algorithms internal to netCDF work only on
 netCDF4 datasets of type @acronym{NETCDF4}.
-They do not yet work on netCDF3 or @acronym{NETCDF4_CLASSIC}-format
-datasets.
-We expect this bug to be fixed soon, and certainly in netCDF 4.9.1.
+They do not yet work @acronym{NETCDF4_CLASSIC}-format datasets,
+and, by design, may never be implemented for any @acronym{CLASSIC} or
+other netCDF format.
+We expect the @acronym{NETCDF4_CLASSIC} bug to be fixed soon,
+certainly by netCDF 4.9.1.  
 Note that this bug does not affect the same quantization algorithms as
-implemented in @acronym{NCO}.
+implemented in @acronym{NCO} (or in the @acronym{CCR}, for that
+matter). 
 In other words, quantization to netCDF3 and
 @acronym{NETCDF4_CLASSIC}-format output files @emph{must} currently be
 invoked through the @samp{--ppc} (not @samp{--cmp}) option. 
-This restriction will be lifted once the netCDF bug is fixed.
+This restriction will be partially lifted once the
+@acronym{NETCDF4_CLASSIC} bug is fixed in netCDF. 
 Per-variable quantization settings must also be invoked through
 @samp{--ppc} (not @samp{--cmp}) for all output formats, until and
 unless this feature is migrated to @samp{--cmp} (there are no plans
