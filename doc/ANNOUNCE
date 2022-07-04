@@ -1,18 +1,20 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.0.8 are unfurled
+netCDF Operators NCO version 5.1.0 are unfurled
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.0.8 supports the new netCDF 4.9.0 features for filters and
-quantization). There is also an ncremap fix for sub-sub-gridscale
-regridding, e.g., landunit-specific regridding. Users of sub-SGS
-regridding, and anyone interested is using modern compression
-algorithms such as Bzip2, Zstandard, and BitRound. 
+Version 5.1.0 supports the new netCDF 4.9.0 features for filters and
+quantization). This is a significant new feature so we bumped the
+version to 5.1.0 instead of 5.0.8. There is also an ncremap fix for
+sub-sub-gridscale regridding, e.g., landunit-specific
+regridding. Users of sub-SGS regridding, and anyone interested is
+using modern compression and quantization algorithms such as Bzip2,
+Zstandard, and BitRound.  
 
-Work on NCO 5.0.9 has commenced and will polish support for
+Work on NCO 5.1.1 has commenced and will polish support for
 quantization/compression algorithms.
 
 Enjoy,
@@ -30,7 +32,7 @@ Codecs from the netCDF C-library, the Community Codec Repository
 (CCR), and from user-installed HDF5 filters may all be used.
 The commands will look something like this:
 ncks --cmp='granularbr,3|shuffle|zstandard,3' ... # Long-names
-ncks --cmp='gbr,3|shf|zst,3' ... # Abbreviations
+ncks --cmp='gbr,3|shf|zst,3' ... # Abbreviations and levels
 ncks --cmp='gbr|shf|zst' ...     # Default levels
 ncks --cmp='f32|gbr|shf|bz2|dfl|zst' ... # Multiple codecs
 ncwa --cmp='gbr|shf|zst' ...     # Other operators...
@@ -63,7 +65,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.0.8 built/tested under
+These problems occur with NCO 5.1.0 built/tested under
 MacOS 12.4 with netCDF 4.9.0 on HDF5 1.12.2 and with
 Linux with netCDF 4.9.0 on HDF5 1.8.19.
 

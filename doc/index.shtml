@@ -70,7 +70,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Bienvenue sur le netCDF Operator (NCO) site</h1>
 
 <p><h2>
-Current stable NCO version is 5.0.8 released <!--#flastmod file="src/nco-5.0.8.tar.gz"-->
+Current stable NCO version is 5.1.0 released <!--#flastmod file="src/nco-5.1.0.tar.gz"-->
 </h2>
 
 <table border=0 width=100%>
@@ -151,8 +151,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2022 Jul&nbsp;01: 5.0.9 <i>In Progress...</i>
-<li>2022 Jun&nbsp;30: 5.0.8 Compression filters
+<li>2022 Jul&nbsp;01: 5.1.1 <i>In Progress...</i>
+<li>2022 Jun&nbsp;30: 5.1.0 Compression filters
 <li>2022 May&nbsp;02: 5.0.7 SGS + Sub-SGS fixes
 <li>2022 Feb&nbsp;02: 5.0.6 Small fixes
 <li>2022 Jan&nbsp;24: 5.0.5 BitRound
@@ -597,19 +597,19 @@ Identical copies of those tarballs are also stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge for historical
 continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
-<tt>git clone -b 5.0.8 http://github.com/nco/nco.git nco-5.0.8</tt></a>.
+<tt>git clone -b 5.1.0 http://github.com/nco/nco.git nco-5.1.0</tt></a>.
 <ul>
-<li><b>NCO 5.1.0</b>: (<i>Distant Future</i>)
+<li><b>NCO 5.1.2</b>: (<i>Future</i>)
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
-<li><b>NCO 5.0.9</b>: (<i>Future</i>)
-<tt>all --cmp_sng</tt> automatically translate human-legible codec parameters</li>
-<li><b>NCO 5.0.8</b>: (<i>In Progress, features in-progress or complete include</i>)
+<li><b>NCO 5.1.1</b>: (<i>In Progress, features in-progress or complete include</i>)
+<tt>all --cmp_sng</tt> accept human-legible floating-point, unsigned codec parameters</li>
+<li><b>NCO 5.1.0</b>: (<i>Current Stable Release</i>)
 <tt>all --cmp_sng</tt> to access modern codecs in netCDF, CCR, or HDF5;
 <tt>ncremap</tt> fix two sub-SGS issues</li>
-<li><b>NCO 5.0.7</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 5.0.7</b>: 
 <tt>all</tt> BitGroom 52 not 53 bits;
 <tt>ncclimo/ncremap</tt> fix -P bug, warn if SGS not invoked;
 <tt>ncremap --add_fll</tt> use <tt>mss_val_cmp_dbl</tt></li>
@@ -702,7 +702,7 @@ Or, alternatively, permanently add conda-forge (which teems with goodies besides
 &lsquo;<tt>conda config --add channels conda-forge</tt>&rsquo;, then
 install NCO with &lsquo;<tt>conda install nco</tt>&rsquo;.
 The default NCO installed by <tt>conda</tt> is generally within a month of the latest release. 
-<li><a href="https://github.com/conda-forge/nco-feedstock">nco-5.0.8</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
+<li><a href="https://github.com/conda-forge/nco-feedstock">nco-5.1.0</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
 Thanks to Rich Signell, Filipe Fernandes, Pedro Vicente, Xylar Asay-Davis and others for developing and maintaining the NCO package for conda.
 </ul>
 
@@ -711,7 +711,7 @@ Thanks to Rich Signell, Filipe Fernandes, Pedro Vicente, Xylar Asay-Davis and ot
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-5.0.8</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-5.1.0</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="https://launchpad.net/ubuntu/+source/nco">Ubuntu NCO</a> homepages.
@@ -719,8 +719,8 @@ Thanks to Rich Signell, Filipe Fernandes, Pedro Vicente, Xylar Asay-Davis and ot
 NCO packages in the Debian/Ubuntu repositories (e.g., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="https://github.com/nco/nco/tree/master/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_5.0.8-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="https://launchpad.net/ubuntu/+source/nco/5.0.8-1">nco_5.0.8-1_amd64.deb</a> : Executables AMD64-compatible</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_5.1.0-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="https://launchpad.net/ubuntu/+source/nco/5.1.0-1">nco_5.1.0-1_amd64.deb</a> : Executables AMD64-compatible</li>
 Thanks to Daniel Baumann, Sebastian Couwenberg, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -764,10 +764,10 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <!-- 
 # MacOS 12.3 (Monterey) systems (firn, sastrugi):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin;tar cvzf ${DATA}/nco-5.0.8.macos.12.3.tar.gz nc*;scp ${DATA}/nco-5.0.8.macos.12.3.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-5.1.0.macos.12.3.tar.gz nc*;scp ${DATA}/nco-5.1.0.macos.12.3.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date executables are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-5.0.8.macos.12.3.tar.gz">nco-5.0.8.macos.12.3.tar.gz</a> (<!--#fsize file="src/nco-5.0.8.macos.12.3.tar.gz"-->): Executables MacOS 12.3-compatible (last updated <!--#flastmod file="src/nco-5.0.8.macos.12.3.tar.gz"-->). Maintained by NCO Project.</li>
+<li><a href="src/nco-5.1.0.macos.12.3.tar.gz">nco-5.1.0.macos.12.3.tar.gz</a> (<!--#fsize file="src/nco-5.1.0.macos.12.3.tar.gz"-->): Executables MacOS 12.3-compatible (last updated <!--#flastmod file="src/nco-5.1.0.macos.12.3.tar.gz"-->). Maintained by NCO Project.</li>
 <li><a href="http://fink.sf.net">Fink</a> packages for <a href="http://fink.sf.net/pdb/package.php/nco">NCO</a>: Currently NCO 4.9.5. Maintained by Alexander Hansen.</li> 
 <li><a href="http://brew.sh">Homebrew</a> packages for <a href="https://formulae.brew.sh/formula/nco">NCO</a>: Currently NCO 5.0.0. Install with &lsquo;<tt>brew install nco</tt>&rsquo;. Maintained by Carlo Cabrera, Ian Lancaster, Alejandro Soto, and others over the years.</li> 
 <li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>: <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a>: Currently NCO 4.9.9. Install with &lsquo;<tt>sudo port install nco</tt>&rsquo;. Maintained by Takeshi Enomoto.</li>
@@ -970,12 +970,12 @@ On the <a href="https://sourceforge.net/p/nco/bugs">Bug Tickets</a> site.</li>
 The simplest way to acquire the source is to download the compressed tarball:
 <ul>
 <li>
-<!-- scp ${DATA}/nco-5.0.8.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
-<a href="https://github.com/nco/nco/archive/5.0.8.tar.gz">nco-5.0.8.tar.gz</a> 
-(<!--#fsize file="src/nco-5.0.8.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-5.0.8.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-5.0.8.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha256 src/nco-5.0.8.tar.gz"--> 
+<!-- scp ${DATA}/nco-5.1.0.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
+<a href="https://github.com/nco/nco/archive/5.1.0.tar.gz">nco-5.1.0.tar.gz</a> 
+(<!--#fsize file="src/nco-5.1.0.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-5.1.0.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-5.1.0.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha256 src/nco-5.1.0.tar.gz"--> 
 </li>
 </ul>
 
@@ -996,8 +996,8 @@ To avoid the churn that comes with using the latest snapshot,
 potential contributors may wish to retrieve a recent tagged (i.e.,
 stable and released) version, 
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
-then checks out NCO version <tt>5.0.8</tt>:
-<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 5.0.8</tt></p>
+then checks out NCO version <tt>5.1.0</tt>:
+<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 5.1.0</tt></p>
 However, the most efficient way to actively track and develop NCO is to
 retrieve the current (&ldquo;bleeding edge&rdquo;) NCO snapshot.
 This command retrieves the latest NCO master branch into a local
@@ -1007,12 +1007,12 @@ directory named <tt>nco</tt>:
 Track changes to the development version using
 <p><tt>cd nco;git pull</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>5.0.8</tt>) and the development version is that the
+(e.g., <tt>5.1.0</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>5.0.8</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>5.1.0</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 Snapshots will include the sub-version and patch-level in the version
-information (e.g., <tt>5.0.8-alpha06</tt>). 
+information (e.g., <tt>5.1.0-alpha06</tt>). 
 
 <!--
 <a name="doxy"></a>
@@ -1189,9 +1189,9 @@ As of 20131101 there is no Cygwin package for ANTLR, and the Cygwin netCDF packa
 
 <li>Once you have installed the pre-requisites as shown above, you may then build the latest stable NCO and install it in, e.g., <tt>/usr/local</tt> with: 
 <tt>
-<dt>wget https://github.com/nco/nco/archive/5.0.8.tar.gz</dt>
-<dt>tar xvzf 5.0.8.tar.gz</dt>
-<dt>cd nco-5.0.8</dt>
+<dt>wget https://github.com/nco/nco/archive/5.1.0.tar.gz</dt>
+<dt>tar xvzf 5.1.0.tar.gz</dt>
+<dt>cd nco-5.1.0</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>

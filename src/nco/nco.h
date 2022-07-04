@@ -363,10 +363,10 @@ extern "C" {
 # define NCO_VERSION_MAJOR 5
 #endif /* !NCO_VERSION_MAJOR */
 #ifndef NCO_VERSION_MINOR
-# define NCO_VERSION_MINOR 0
+# define NCO_VERSION_MINOR 1
 #endif /* !NCO_VERSION_MINOR */
 #ifndef NCO_VERSION_PATCH
-# define NCO_VERSION_PATCH 8
+# define NCO_VERSION_PATCH 0
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
 # define NCO_VERSION_NOTE "-beta03" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
@@ -376,7 +376,7 @@ extern "C" {
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "5.0.8-beta03"
+# define NCO_VERSION "5.1.0-beta03"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */

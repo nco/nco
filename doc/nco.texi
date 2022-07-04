@@ -128,11 +128,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.0.8-beta03
-@set doc-edition 5.0.8-beta03
+@set nco-edition 5.1.0-beta03
+@set doc-edition 5.1.0-beta03
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 3 July 2022
+@set update-date 4 July 2022
 @set update-month July 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2274,7 +2274,7 @@ symbolic link presented next.
 @cindex symbolic links
 @cindex Perl
 Even when its internal limits have not been reached, the
-@command{xargs} technique may not be sophisticated enough to handle 
+@command{xargs} technique may not be flexible enough to handle 
 all situations. 
 A full scripting language like Perl or Python can handle any level of
 complexity of filtering input filenames, and any number of filenames.
@@ -9292,39 +9292,49 @@ Documentation of these features can quickly become out-of-date.
 A brief review of compression support from the early days until now:
 @acronym{NCO} first supported Linear Packing with @command{ncpdq}
 in 2004.
-The advent of netCDF4 allowed @acronym{NCO} to supported lossless
+The advent of netCDF4 allowed @acronym{NCO} to support lossless
 compression with the @acronym{DEFLATE} algorithm beginning in 2007.
-In 2016 we developed the lossy BitGroom quantization algorithm, and
-introduced complete support for it, and its relatives BitShave, and
-BitSet in all arithmetic operators.
+Nearly a decade elapsed before the next features came in 2015 when,
+thanks to support from the @acronym{DOE}, we developed the lossy
+BitGroom quantization algorithm.
+@acronym{NCO} soon introduced a flexible per-variable @acronym{API}
+(@samp{--ppc}) to support it, and its relatives BitShave, and BitSet,
+in all arithmetic operators. 
+This work helped spur interest and research on other Bit Adjustment
+Algorithms (@acronym{BAA}s) that perform quantization.
+
 In 2020 we reduced the quantization error of BitGroom by implementing
 @acronym{IEEE}-rounding (aka BitRound), and newer quantization
-algorithms including BitGroomRound, HalfShave, and DigitRound
+algorithms including BitGroomBitRound, HalfShave, and DigitRound
 @footnote{R. Kouznetsov contributed the masking techinques used in
 BitRound, BitGroomBitRound, and HalfShave. Thanks Rostislav!}.
-In 2020 @acronym{NSF} awarded us support to develop the Community
-Codec Respository to put a user-friendly @acronym{API} on the
-@acronym{HDF5} shared-library filter mechanism so that all
-netCDF users could shift to more modern codecs
+These algorithms are all accessible via the @samp{--baa} option.
+In 2020 @acronym{NSF} awarded support for us to develop the Community 
+Codec Respository to put a friendlier @acronym{API} on the
+@acronym{HDF5} shared-library filter mechanism so that all netCDF
+users could shift to more modern and efficient codecs than
+@acronym{DEFLATE}. 
 This strategy aligned with needs of operational forecasters supported
-by software engineers at the @acronym{NOAA} @acronym{EMC}, who
-contributed to developing and testing the @acronym{CCR}
-@footnote{E. Hartnett (@acronym{NOAA} @acronym{EMC}) co-founded and
-co-maintains the @acronym{CCR}. Thanks Ed!}.
-By the end of 2021 the @acronym{CCR} supported codecs for
-Bzip2, Zstandard, BitGroom, and Granular BitRound.
-The netCDF team at Unidata had meanwhile become convinced of the
-importance of expanding compression options in the base netCDF
-C-library.
+by software engineers at the @acronym{NOAA} Environmental Modeling
+Center (@acronym{EMC}), who contributed to developing and testing the
+@acronym{CCR} @footnote{E. Hartnett of @acronym{NOAA} @acronym{EMC} is 
+co-founder and co-maintainer of the @acronym{CCR}. Thanks Ed!}.
+By the end of 2021 the @acronym{CCR} supported codecs for Bzip2,
+Zstandard, BitGroom, and Granular BitRound. 
+The @acronym{CCR} performance helped persuade the netCDF team at
+Unidata of the importance and practicality of expanding compression
+options in the base netCDF C-library beyond the venerable
+@acronym{DEFLATE} algorithm.
 Together, we merged the quantization, Bzip2, and Zstandard codecs and
 @acronym{API} from the @acronym{CCR} into what became (in June, 2022)
 netCDF version 4.9.0
 @footnote{D. Heimbigner (Unidata) helped implement all these features
 into netCDF. Thanks Dennis!}.
-@acronym{NCO} version 5.0.8 (released in July, 2022) introduced full
-support for @acronym{CCR} codecs, generic (i.e., non-@acronym{CCR})
-@acronym{HDF5} codecs, and the quantization algorithms and modern
-lossless codecs newly supported in netCDF 4.9.0.
+@acronym{NCO} version 5.1.0 (released in July, 2022) unified these
+advances by fully supporting its own quantization methods,
+@acronym{CCR} codecs, generic (i.e., non-@acronym{CCR}) @acronym{HDF5}
+codecs, and the quantization algorithms and modern lossless codecs in
+netCDF 4.9.0.  
 
 Access to the quantization and compression options is available
 through three complementary, backwards-compatible, and overlapping
@@ -9586,7 +9596,7 @@ Shuffle filter is called before @acronym{DEFLATE}, indeed before any
 filter except @code{Fletcher32} (which performs a checksum, not
 compression).  
 This behavior is welcome as it avoids inadvertent mis-use of Shuffle.
-Prior to version 5.0.8, @acronym{NCO} always invoked Shuffle with
+Prior to version 5.1.0, @acronym{NCO} always invoked Shuffle with
 @acronym{DEFLATE}, and did not expose the Shuffle filter to user
 control.
 @acronym{NCO} now exposes Shuffle to user control for all filters.
@@ -9683,7 +9693,7 @@ documented at
 and implemented in @command{ncgen} and @command{nccopy} is ready and
 we expect to support that syntax in @acronym{NCO} 5.0.9.
 That syntax is backward compatible with the integer-only input
-assumptions already embedded in @acronym{NCO} 5.0.8.
+assumptions already embedded in @acronym{NCO} 5.1.0.
 In the meantime, we request your feedback, use-cases, and suggestions
 before adopting a final approach.
 
