@@ -128,11 +128,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.1.0-beta03
-@set doc-edition 5.1.0-beta03
+@set nco-edition 5.1.0-beta04
+@set doc-edition 5.1.0-beta04
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 4 July 2022
+@set update-date 5 July 2022
 @set update-month July 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9615,7 +9615,7 @@ employed prior to those codecs.
 % ncks --cmp='dfl' ...     # Invoke Shuffle then DEFLATE
 % ncks --cmp='shf|dfl' ... # Same (default Shuffle stride 4-bytes)
 % ncks --cmp='dns' ...     # Invoke DEFLATE (no Shuffle)
-% ncks --cmp='shf|dns' ... # Invoke Shufflet then DEFLATE
+% ncks --cmp='shf|dns' ... # Invoke Shuffle then DEFLATE
 % ncks --cmp='zst' ...     # Invoke Zstandard (no Shuffle)
 % ncks --cmp='shf|zst' ... # Invoke Shuffle then Zstandard
 % ncks --cmp='zst|shf' ... # Same (netCDF enforces Shuffle-first rule)

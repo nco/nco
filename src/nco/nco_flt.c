@@ -288,24 +288,13 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 #if defined(CCR_HAS_ZSTD) || defined(NC_HAS_ZSTD)
     strcat(nco_cdc_lst_glb,", Zstandard");
 #endif /* !CCR_HAS_ZSTD */
-#if defined(CCR_HAS_BLOSC_LZ) || defined(NC_LIB_VERSION) >= 490
-    strcat(nco_cdc_lst_glb,", BLOSC_LZ");
-#endif /* !CCR_HAS_BLOSC_LZ */
-#if defined(CCR_HAS_BLOSC_LZ4) || defined(NC_LIB_VERSION) >= 490
-    strcat(nco_cdc_lst_glb,", BLOSC LZ4");
-#endif /* !CCR_HAS_BLOSC_LZ4 */
-#if defined(CCR_HAS_BLOSC_LZ4_HC) || defined(NC_LIB_VERSION) >= 490
-    strcat(nco_cdc_lst_glb,", BLOSC LZ4 HC");
-#endif /* !CCR_HAS_BLOSC_LZ4_HC */
-#if defined(CCR_HAS_SNAPPY) || defined(NC_LIB_VERSION) >= 490
-    strcat(nco_cdc_lst_glb,", BLOSC Snappy");
-#endif /* !CCR_HAS_SNAPPY */
-#if defined(CCR_HAS_BLOSC_DEFLATE) || defined(NC_LIB_VERSION) >= 490
-    strcat(nco_cdc_lst_glb,", BLOSC DEFLATE");
-#endif /* !CCR_HAS_BLOSC_DEFLATE */
-#if defined(CCR_HAS_BLOSC_ZSTANDARD) || defined(NC_LIB_VERSION) >= 490
-    strcat(nco_cdc_lst_glb,", BLOSC Zstandard");
-#endif /* !CCR_HAS_BLOSC_ZSTANDARD */
+
+    /* netCDF 4.9.0 lacks NC_HAS_BLOSC token
+       The nc_inq_filter_avail() could check for BLOSC, given an open netCDF file
+       In the meantime, assume BLOSC is installed in netCDF 490? */
+#if defined(CCR_HAS_BLOSC) || NC_LIB_VERSION >= 490
+    strcat(nco_cdc_lst_glb,", BLOSC (DEFLATE, LZ, LZ4, LZ4 HC, Snappy, Zstandard)");
+#endif /* !CCR_HAS_BLOSC */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports available codec list is nco_cdc_lst_glb=%s\n",nco_prg_nm_get(),fnc_nm,nco_cdc_lst_glb);
   } /* !nco_cdc_lst_glb */
   
@@ -604,7 +593,9 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     else if(!strcasecmp(flt_nm,"zlb")) flt_enm=nco_flt_dfl;
     
     else if(!strcasecmp(flt_nm,"dns")) flt_enm=nco_flt_dns;
+    else if(!strcasecmp(flt_nm,"dflnoshf")) flt_enm=nco_flt_dns;
     else if(!strcasecmp(flt_nm,"deflate no shuffle")) flt_enm=nco_flt_dns;
+    else if(!strcasecmp(flt_nm,"deflatenoshuffle")) flt_enm=nco_flt_dns;
 
     else if(!strcasecmp(flt_nm,"shf")) flt_enm=nco_flt_shf;
     else if(!strcasecmp(flt_nm,"shuffle")) flt_enm=nco_flt_shf;
@@ -1000,7 +991,7 @@ nco_flt_def_out /* [fnc]  */
   nco_bool cdc_has_flt=True; /* [flg] Available filters include requested filter */
   nco_bool lsy_flt_ok=True; /* [flg] Lossy filters are authorized (i.e., not specifically disallowed) for this variable */
 
-  unsigned int add_shf=1; /* [flg] Add Shuffle to BLOSC filter */
+  unsigned int bls_shf=0; /* [flg] BLOSC (not HDF5) will perform Shuffle filter */
   unsigned int bls_sbc=NC_MAX_UINT; /* [enm] BLOSC subcompressor */
   unsigned int blk_sz=0U; /* [nbr] Blocksize for BLOSC filter */
   unsigned int *flt_prm_uns=NULL; /* [enm] Filter parameters stored as unsigned ints */
@@ -1036,7 +1027,17 @@ nco_flt_def_out /* [fnc]  */
   /* Set extra parameters needed by BLOSC filters */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++)
     if(flt_id[flt_idx] == H5Z_FILTER_BLOSC)
-      rcd+=nco_inq_var_blk_sz(nc_out_id,var_out_id,&blk_sz);
+      break;
+  /* If a BLOSC filter has been requested ... */
+  if(flt_idx != flt_nbr){
+    /* Determine block size for BLOSC */
+    rcd+=nco_inq_var_blk_sz(nc_out_id,var_out_id,&blk_sz);
+    /* If Shuffle has also been requested, then use BLOSC shuffle not HDF5 Shuffle
+       BLOSC shuffle is faster since it is optimized to use AVX2 instructions etc etc */
+    for(flt_idx=0;flt_idx<flt_nbr;flt_idx++)
+      if(flt_id[flt_idx] == H5Z_FILTER_SHUFFLE)
+	bls_shf=1;
+  } /* flt_idx */
   
   /* Invoke applicable codec(s) */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){ 
@@ -1061,6 +1062,8 @@ nco_flt_def_out /* [fnc]  */
       break;
 
     case nco_flt_shf: /* Shuffle */
+      /* Allow BLOSC Shuffle to pre-empt HDF5 Shuffle */
+      if(bls_shf) continue;
       if(flt_lvl[flt_idx] <= 0){
 	shuffle=NC_NOSHUFFLE;
 	deflate=(int)False;
@@ -1149,9 +1152,9 @@ nco_flt_def_out /* [fnc]  */
     case nco_flt_bls_dfl: bls_sbc=BLOSC_ZLIB; /* BLOSC DEFLATE */
     case nco_flt_bls_zst: bls_sbc=BLOSC_ZSTD; /* BLOSC Zstandard */
 #if NC_LIB_VERSION >= 490
-      if(blk_sz > 0U) rcd+=nc_def_var_blosc(nc_out_id,var_out_id,bls_sbc,(unsigned int)flt_lvl[flt_idx],blk_sz,add_shf); else if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports variable %s is not chunked so will not attempt BLOSC compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
+      if(blk_sz > 0U) rcd+=nc_def_var_blosc(nc_out_id,var_out_id,bls_sbc,(unsigned int)flt_lvl[flt_idx],blk_sz,bls_shf); else if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports variable %s is not chunked so will not attempt BLOSC compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
 #else /* !NC_LIB_VERSION >= 490 */
-      add_shf+=0*add_shf;
+      bls_shf+=0*bls_shf;
       bls_sbc+=0*bls_sbc;
       cdc_has_flt=False;
 #endif /* NC_LIB_VERSION >= 490  */
