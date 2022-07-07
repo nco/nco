@@ -190,7 +190,11 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
 (const char * const flt_nm, /* I [sng] User-specified filter name */
  unsigned int * const flt_idp);  /* O [ID] HDF5 filter ID */
 
-int /* O [enm] Return code */
+char * /* O [sng] String describing BLOSC sub-compressor */
+nco_flt_sbc2nm /* [fnc] Convert BLOSC sub-compressor ID to name */
+(const unsigned int sbc_id); /* I [id] BLOSC sub-compressor ID */
+
+  int /* O [enm] Return code */
 nco_flt_old_wrp /* [fnc] Define output filters based on input filters */
 (const int nc_in_id, /* I [id] netCDF input file/group ID */
  const int var_in_id, /* I [id] Variable ID */

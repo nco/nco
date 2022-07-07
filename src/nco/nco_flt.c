@@ -499,13 +499,13 @@ nco_flt_enm2nmid /* [fnc] Convert compression filter enum to string */
   case nco_flt_dgr: return "DigitRound"; break;
   case nco_flt_btr: if(flt_idp) *flt_idp=37373U; return "BitRound"; break; /* 37373 */
   case nco_flt_zst: if(flt_idp) *flt_idp=32015U; return "Zstandard"; break; /* 32015 */
-  case nco_flt_bls: if(flt_idp) *flt_idp=32001U; return "BLOSC (unspecified)"; break; /* 32001 */
-  case nco_flt_bls_lz: if(flt_idp) *flt_idp=32001U; return "BLOSC LZ"; break; /* 32001 */
-  case nco_flt_bls_lz4: if(flt_idp) *flt_idp=32001U; return "BLOSC LZ4"; break; /* 32001 */
-  case nco_flt_bls_lzh: if(flt_idp) *flt_idp=32001U; return "BLOSC LZ4 HC"; break; /* 32001 */
-  case nco_flt_bls_snp: if(flt_idp) *flt_idp=32001U; return "BLOSC Snappy"; break; /* 32001 */
-  case nco_flt_bls_dfl: if(flt_idp) *flt_idp=32001U; return "BLOSC DEFLATE"; break; /* 32001 */
-  case nco_flt_bls_zst: if(flt_idp) *flt_idp=32001U; return "BLOSC Zstandard"; break; /* 32001 */
+  case nco_flt_bls: if(flt_idp) *flt_idp=32001U; return "Blosc"; break; /* 32001 */
+  case nco_flt_bls_lz: if(flt_idp) *flt_idp=32001U; return "Blosc LZ"; break; /* 32001 */
+  case nco_flt_bls_lz4: if(flt_idp) *flt_idp=32001U; return "Blosc LZ4"; break; /* 32001 */
+  case nco_flt_bls_lzh: if(flt_idp) *flt_idp=32001U; return "Blosc LZ4 HC"; break; /* 32001 */
+  case nco_flt_bls_snp: if(flt_idp) *flt_idp=32001U; return "Blosc Snappy"; break; /* 32001 */
+  case nco_flt_bls_dfl: if(flt_idp) *flt_idp=32001U; return "Blosc DEFLATE"; break; /* 32001 */
+  case nco_flt_bls_zst: if(flt_idp) *flt_idp=32001U; return "Blosc Zstandard"; break; /* 32001 */
   case nco_flt_unk: return "Unknown"; break;
   default:
     nco_dfl_case_flt_enm_err(nco_flt_enm,"nco_flt_enm2nmid()"); break;
@@ -533,7 +533,7 @@ nco_flt_id2nm /* [fnc] Convert compression filter HDF5 ID to string */
     //  case : return "DigitRound"; break;
   case 37373: return "BitRound"; break; /* 37373 */
   case H5Z_FILTER_ZSTD : return "Zstandard"; break; /* 32015 */
-  case H5Z_FILTER_BLOSC : return "BLOSC"; break; /* 32001 */
+  case H5Z_FILTER_BLOSC : return "Blosc"; break; /* 32001 */
   default:
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG HDF5 filter ID = %u is unknown. Default case reached in nco_flt_id2nm()\n",nco_prg_nm_get(),flt_id);
     nco_dfl_case_generic_err(); break;
@@ -542,6 +542,27 @@ nco_flt_id2nm /* [fnc] Convert compression filter HDF5 ID to string */
   return (char *)NULL;
   
 } /* !nco_flt_id2nm() */
+
+char * /* O [sng] String describing BLOSC sub-compressor */
+nco_flt_sbc2nm /* [fnc] Convert BLOSC sub-compressor ID to name */
+(const unsigned int sbc_id) /* I [id] BLOSC sub-compressor ID */
+{
+  /* Purpose: Convert BLOSC sub-compressor ID to descriptive string if possible */
+  switch(sbc_id){
+  case BLOSC_LZ: return "LZ"; break; /* 0 */
+  case BLOSC_LZ4: return "LZ4"; break; /* 1 */
+  case BLOSC_LZ4HC: return "LZ4HC"; break; /* 2 */
+  case BLOSC_SNAPPY: return "Snappy"; break; /* 3 */
+  case BLOSC_ZLIB: return "DEFLATE"; break; /* 4 */
+  case BLOSC_ZSTD: return "ZStandard"; break; /* 5 */
+  default:
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG BLOSC sub-compressor ID = %u is unknown. Default case reached in nco_flt_sbc2nm()\n",nco_prg_nm_get(),sbc_id);
+    nco_dfl_case_generic_err(); break;
+  } /* !sbc_id */
+
+  return (char *)NULL;
+  
+} /* !nco_flt_sbc2nm() */
 
 nco_flt_typ_enm /* O [enm] Filter enum */
 nco_flt_id2enm /* [fnc] Convert HDF5 compression filter ID to enum */
@@ -689,6 +710,9 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     else if(!strcasecmp(flt_nm,"blslz4")) flt_enm=nco_flt_bls_lz4;
     else if(!strcasecmp(flt_nm,"blosclz4")) flt_enm=nco_flt_bls_lz4;
     
+    else if(!strcasecmp(flt_nm,"blosc")) flt_enm=nco_flt_bls;
+    else if(!strcasecmp(flt_nm,"bls")) flt_enm=nco_flt_bls;
+
     else if(!strcasecmp(flt_nm,"blosc lz")) flt_enm=nco_flt_bls_lz;
     else if(!strcasecmp(flt_nm,"blosc_lz")) flt_enm=nco_flt_bls_lz;
     else if(!strcasecmp(flt_nm,"bls_lz")) flt_enm=nco_flt_bls_lz;
@@ -1172,20 +1196,15 @@ nco_flt_def_out /* [fnc]  */
 #endif /* !CCR_HAS_ZSTD || NC_HAS_ZSTD */
       break;
 
-    case nco_flt_bls_lz: bls_sbc=BLOSC_LZ; /* BLOSC LZ */
-    case nco_flt_bls_lz4: bls_sbc=BLOSC_LZ4; /* BLOSC LZ4 */
-    case nco_flt_bls_lzh: bls_sbc=BLOSC_LZ4HC; /* BLOSC LZ4 HC */
-    case nco_flt_bls_snp: bls_sbc=BLOSC_SNAPPY; /* BLOSC Snappy */
-    case nco_flt_bls_dfl: bls_sbc=BLOSC_ZLIB; /* BLOSC DEFLATE */
-    case nco_flt_bls_zst: bls_sbc=BLOSC_ZSTD; /* BLOSC Zstandard */
-#if NC_LIB_VERSION >= 490
-      if(blk_sz > 0U) rcd+=nc_def_var_blosc(nc_out_id,var_out_id,bls_sbc,(unsigned int)flt_lvl[flt_idx],blk_sz,bls_shf); else if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports variable %s is not chunked so will not attempt BLOSC compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
-#else /* !NC_LIB_VERSION >= 490 */
-      bls_shf+=0*bls_shf;
-      bls_sbc+=0*bls_sbc;
-      cdc_has_flt=False;
-#endif /* NC_LIB_VERSION >= 490  */
-      break;
+      /* Set BLOSC sub-compressor here, then execte filter outside switch statement */
+    case nco_flt_bls: /* BLOSC default compressor is BLOSC LZ */
+    case nco_flt_bls_lz: /* BLOSC LZ */
+      bls_sbc=BLOSC_LZ; break;
+    case nco_flt_bls_lz4: bls_sbc=BLOSC_LZ4; break; /* BLOSC LZ4 */
+    case nco_flt_bls_lzh: bls_sbc=BLOSC_LZ4HC; break; /* BLOSC LZ4 HC */
+    case nco_flt_bls_snp: bls_sbc=BLOSC_SNAPPY; break; /* BLOSC Snappy */
+    case nco_flt_bls_dfl: bls_sbc=BLOSC_ZLIB; break; /* BLOSC DEFLATE */
+    case nco_flt_bls_zst: bls_sbc=BLOSC_ZSTD; break; /* BLOSC Zstandard */
 
     case nco_flt_dgr: /* DigitRound */
       cdc_has_flt=False;
@@ -1208,6 +1227,31 @@ nco_flt_def_out /* [fnc]  */
       nco_dfl_case_flt_err();
       break;
     } /* !flt_alg */
+
+    /* Execute BLOSC filters here, outside switch statement (for conciseness) */
+    if(bls_sbc != NC_MAX_UINT){
+#if NC_LIB_VERSION >= 490
+      rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id[flt_idx]);
+      /* netCDF 4.9.0 lacks NC_HAS_BLOSC token */
+      if(rcd == NC_NOERR){
+	if(blk_sz > 0U){
+	  //rcd+=NCZ_codec_initialize();
+	  rcd+=nc_def_var_blosc(nc_out_id,var_out_id,bls_sbc,(unsigned int)flt_lvl[flt_idx],blk_sz,bls_shf);
+	  //rcd+=NCZ_codec_finalize();
+	}else if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports variable %s is not chunked so will not attempt BLOSC compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
+      }else{ /* !rcd */
+	/* Reset rcd */
+	rcd=NC_NOERR;
+	cdc_has_flt=False;
+      } /* !rcd */
+#else /* !NC_LIB_VERSION >= 490 */
+      bls_shf+=0*bls_shf;
+      bls_sbc+=0*bls_sbc;
+      cdc_has_flt=False;
+#endif /* NC_LIB_VERSION >= 490  */
+      /* Reset bls_sbc */
+      bls_sbc=NC_MAX_UINT; 
+    } /* !bls_sbc */
 
     if(cdc_has_flt == False){
       (void)fprintf(stdout,"%s: ERROR %s reports neither netCDF nor CCR library appears to define an API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and/or not installed in netCDF or in CCR. If the filter is newish and is supposed to be in CCR, update the installed CCR then recompile NCO. Otherwise, re-try this command and specify only filters included in this list of available filters: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2nmid(flt_alg[flt_idx],NULL),nco_cdc_lst_glb);

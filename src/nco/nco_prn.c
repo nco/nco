@@ -351,7 +351,18 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		    prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
 		    rcd=nco_inq_var_filter_info(grp_id,var_id,flt_lst[flt_idx],NULL,prm_lst);
 		    (void)sprintf(sng_foo,"%u",flt_lst[flt_idx]);
-		    if(flt_hlp_sng) strcat(flt_hlp_sng,nco_flt_id2nm(flt_lst[flt_idx]));
+		    if(flt_hlp_sng){
+		      strcat(flt_hlp_sng,nco_flt_id2nm(flt_lst[flt_idx]));
+		      if(flt_lst[flt_idx] == H5Z_FILTER_BLOSC){
+			/* Blosc stores seven parameters */
+			if(prm_nbr == 7){
+			  /* Blosc Shuffle was used if penultimate parameter is 1 */
+			  if(prm_lst[5] == 1U) strcat(flt_hlp_sng," Shuffle, Blosc ");
+			  /* Blosc sub-compressor ID is last parameter in list */
+			  strcat(flt_hlp_sng,nco_flt_sbc2nm(prm_lst[6]));
+			} /* !prm_nbr */
+		      } /* !flt_lst */
+		    } /* !flt_hlp_sng */		      
 		    if(prm_nbr > 0) strcat(sng_foo,",");
 		    strcat(val_hdn_sng,sng_foo);
 		    for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
