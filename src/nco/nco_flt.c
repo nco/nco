@@ -79,6 +79,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   char **prm_lst; /* [sng] List of user-supplied filter parameters as strings */
   char **flt_lst; /* [sng] List of user-supplied filters as pipe-separated lists of comma-separated strings */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+  char flt_nm_id[7]; /* [sng] Filter ID converted to string name */
   char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
 
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level [0..9] */
@@ -172,7 +173,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   const int lvl_dfl_bgr=3; /* [enm] Default level (NSD) for BitGroom */
   const int lvl_dfl_gbr=3; /* [enm] Default level (NSD) for GranularBR */
   const int lvl_dfl_btr=9; /* [enm] Default level (NSB) for BitRound */
-  const int lvl_dfl_bls=1; /* [enm] Default level BLOSC LZ and Snappy filters */
+  const int lvl_dfl_bls=1; /* [enm] Default level Blosc LZ and Snappy filters */
     
   /* Supply default levels values for selected filters */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
@@ -234,7 +235,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
       case nco_flt_bls_lz4:
       case nco_flt_bls_lzh:
       case nco_flt_bls_snp:
-	/* '--cmp=bls_???' with unspecified level causes NCO to use default BLOSC level */
+	/* '--cmp=bls_???' with unspecified level causes NCO to use default Blosc level */
 	flt_prm_nbr[flt_idx]=1;
 	flt_prm[flt_idx][0]=lvl_dfl_bls;
 	flt_lvl[flt_idx]=flt_prm[flt_idx][0];
@@ -255,7 +256,13 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     /* NUL-terminate string */
     cmp_sng_std[0]='\0';
     for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
-      (void)strcat(cmp_sng_std,nco_flt_enm2nmid(flt_alg[flt_idx],NULL));
+      if(flt_alg[flt_idx] != nco_flt_unk){
+	(void)strcat(cmp_sng_std,nco_flt_enm2nmid(flt_alg[flt_idx],NULL));
+      }else{
+        flt_nm_id[0]='\0';
+	(void)sprintf(flt_nm_id,"%u",flt_id[flt_idx]);
+	(void)strcat(cmp_sng_std,flt_nm_id);
+      } /* !flt_alg */
       if(flt_prm_nbr[flt_idx] > 0) (void)strcat(cmp_sng_std,",");
       int_sng[0]='\0';
       for(prm_idx=0;prm_idx<flt_prm_nbr[flt_idx];prm_idx++){
@@ -288,43 +295,6 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   } /* !flt_idx */
   if(cmp_sng_std) cmp_sng_std=(char *)nco_free(cmp_sng_std);
 
-  /* Build list of available filters once */
-  if(!nco_cdc_lst_glb){
-    nco_cdc_lst_glb=(char *)nco_malloc(NCO_FLT_SNG_LNG_MAX*sizeof(char));
-    nco_cdc_lst_glb[0]='\0';
-    strcat(nco_cdc_lst_glb,"DEFLATE, Shuffle, Fletcher32");
-    /* CCR, netCDF define tokens like CCR_HAS_BITGROOM, NC_HAS_ZSTD in ccr_meta.h, netcdf_meta.h */
-
-    /* netCDF 4.9.0 lacks NC_HAS_BZIP2 token */
-#ifdef CCR_HAS_BZIP2
-    strcat(nco_cdc_lst_glb,", Bzip2");
-#endif /* !CCR_HAS_BZIP2 */
-
-#ifdef CCR_HAS_LZ4
-    strcat(nco_cdc_lst_glb,", LZ4");
-#endif /* !CCR_HAS_LZ4 */
-#if defined(CCR_HAS_BITGROOM) || defined(NC_HAS_QUANTIZE)
-    strcat(nco_cdc_lst_glb,", BitGroom");
-#endif /* !CCR_HAS_BITGROOM */
-#if defined(CCR_HAS_BITROUND)|| defined(NC_HAS_QUANTIZE)
-    strcat(nco_cdc_lst_glb,", BitRound");
-#endif /* !CCR_HAS_BITROUND */
-#if defined(CCR_HAS_GRANULARBR) || defined(NC_HAS_QUANTIZE)
-    strcat(nco_cdc_lst_glb,", GranularBR");
-#endif /* !CCR_HAS_GRANULARBR */
-#if defined(CCR_HAS_ZSTD) || defined(NC_HAS_ZSTD)
-    strcat(nco_cdc_lst_glb,", Zstandard");
-#endif /* !CCR_HAS_ZSTD */
-
-    /* netCDF 4.9.0 lacks NC_HAS_BLOSC token
-       The nc_inq_filter_avail() could check for BLOSC, given an open netCDF file
-       In the meantime, assume BLOSC is installed in netCDF 490? */
-#if defined(CCR_HAS_BLOSC) || NC_LIB_VERSION >= 490
-    strcat(nco_cdc_lst_glb,", BLOSC (DEFLATE, LZ, LZ4, LZ4 HC, Snappy, Zstandard)");
-#endif /* !CCR_HAS_BLOSC */
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports available codec list is nco_cdc_lst_glb=%s\n",nco_prg_nm_get(),fnc_nm,nco_cdc_lst_glb);
-  } /* !nco_cdc_lst_glb */
-  
   return rcd;
 } /* !nco_cmp_prs() */
 
@@ -535,19 +505,19 @@ nco_flt_id2nm /* [fnc] Convert compression filter HDF5 ID to string */
   case H5Z_FILTER_ZSTD : return "Zstandard"; break; /* 32015 */
   case H5Z_FILTER_BLOSC : return "Blosc"; break; /* 32001 */
   default:
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG HDF5 filter ID = %u is unknown. Default case reached in nco_flt_id2nm()\n",nco_prg_nm_get(),flt_id);
-    nco_dfl_case_generic_err(); break;
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO HDF5 filter ID = %u is unknown in nco_flt_id2nm(). This is fine so long as the associated filter is in the plugin directory.\n",nco_prg_nm_get(),flt_id);
+    break;
   } /* !flt_id */
 
   return (char *)NULL;
   
 } /* !nco_flt_id2nm() */
 
-char * /* O [sng] String describing BLOSC sub-compressor */
-nco_flt_sbc2nm /* [fnc] Convert BLOSC sub-compressor ID to name */
-(const unsigned int sbc_id) /* I [id] BLOSC sub-compressor ID */
+char * /* O [sng] String describing Blosc sub-compressor */
+nco_flt_sbc2nm /* [fnc] Convert Blosc sub-compressor ID to name */
+(const unsigned int sbc_id) /* I [id] Blosc sub-compressor ID */
 {
-  /* Purpose: Convert BLOSC sub-compressor ID to descriptive string if possible */
+  /* Purpose: Convert Blosc sub-compressor ID to descriptive string if possible */
   switch(sbc_id){
   case BLOSC_LZ: return "LZ"; break; /* 0 */
   case BLOSC_LZ4: return "LZ4"; break; /* 1 */
@@ -556,7 +526,7 @@ nco_flt_sbc2nm /* [fnc] Convert BLOSC sub-compressor ID to name */
   case BLOSC_ZLIB: return "DEFLATE"; break; /* 4 */
   case BLOSC_ZSTD: return "ZStandard"; break; /* 5 */
   default:
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG BLOSC sub-compressor ID = %u is unknown. Default case reached in nco_flt_sbc2nm()\n",nco_prg_nm_get(),sbc_id);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG Blosc sub-compressor ID = %u is unknown. Default case reached in nco_flt_sbc2nm()\n",nco_prg_nm_get(),sbc_id);
     nco_dfl_case_generic_err(); break;
   } /* !sbc_id */
 
@@ -742,10 +712,22 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     else if(!strcasecmp(flt_nm,"blszstd")) flt_enm=nco_flt_bls_zst;
     else if(!strcasecmp(flt_nm,"bls zstd")) flt_enm=nco_flt_bls_zst;
 
-    if(flt_idp) (void)nco_flt_enm2nmid(flt_enm,flt_idp);
+    else if(!strcasecmp(flt_nm,"unknown")) flt_enm=nco_flt_unk;
+
+    if(flt_idp && flt_enm != nco_flt_unk) (void)nco_flt_enm2nmid(flt_enm,flt_idp);
+
+    if(flt_enm == nco_flt_unk){
+      /* "Unknown" filters will be used as IDs, only exit() when name is truly _unknown_ (not "unknown") */
+      if(strcasecmp(flt_nm,"unknown")){
+	(void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified filter \"%s\". HINT: This filter was apparently specified by an unrecognized name. Therefore NCO has no way to assign it an HDF5 filter ID to invoke. If the filter does exist (and NCO just does not know it by name) then replace the name by the HDF5 filter ID in the invocation and the filter will be found and used if it is available in the plugin directory. Otherwise, eliminate this filter (or fix the spelling of its name) in the invocation and retry.\n",nco_prg_nm_get(),fnc_nm,flt_nm);
+	nco_exit(EXIT_FAILURE);
+      } /* !flt_nm */
+    } /* !flt_enm */
   } /* !FLT_NM_IS_ID */
-  
-  if(flt_enm == nco_flt_unk) (void)fprintf(stderr,"%s: WARNING %s reports unknown user-specified filter \"%s\"\n",nco_prg_nm_get(),fnc_nm,flt_nm);
+
+  if(flt_enm == nco_flt_unk && FLT_NM_IS_ID){
+    (void)fprintf(stderr,"%s: INFO %s user-specified filter \"%s\" is not in the NCO database of recognized filters. However, it should work if it is a valid HDF5 filter ID with an associated filter in the plugin directory.\n",nco_prg_nm_get(),fnc_nm,flt_nm);
+  } /* !flt_enm */
 
   /* Unknown filters should work if they are nonetheless installed
      However, this requires that their HDF5 filter ID be parsed and stored */
@@ -1042,9 +1024,9 @@ nco_flt_def_out /* [fnc]  */
   nco_bool cdc_has_flt=True; /* [flg] Available filters include requested filter */
   nco_bool lsy_flt_ok=True; /* [flg] Lossy filters are authorized (i.e., not specifically disallowed) for this variable */
 
-  unsigned int bls_shf=0; /* [flg] BLOSC (not HDF5) will perform Shuffle filter */
-  unsigned int bls_sbc=NC_MAX_UINT; /* [enm] BLOSC subcompressor */
-  unsigned int blk_sz=0U; /* [nbr] Blocksize for BLOSC filter */
+  unsigned int bls_shf=0; /* [flg] Blosc (not HDF5) will perform Shuffle filter */
+  unsigned int bls_sbc=NC_MAX_UINT; /* [enm] Blosc subcompressor */
+  unsigned int blk_sz=0U; /* [nbr] Blocksize for Blosc filter */
   unsigned int *flt_prm_uns=NULL; /* [enm] Filter parameters stored as unsigned ints */
 
   /* Varibles to obtain by parsing compression specification */
@@ -1075,21 +1057,24 @@ nco_flt_def_out /* [fnc]  */
   /* Get variable name for debugging output */
   rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
 
-  /* Set extra parameters needed by BLOSC filters */
+  /* Set extra parameters needed by Blosc filters */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++)
     if(flt_id[flt_idx] == H5Z_FILTER_BLOSC)
       break;
-  /* If a BLOSC filter has been requested ... */
+  /* If a Blosc filter has been requested ... */
   if(flt_idx != flt_nbr){
-    /* Determine block size for BLOSC */
-    rcd+=nco_inq_var_blk_sz(nc_out_id,var_out_id,&blk_sz);
-    /* If Shuffle has also been requested, then use BLOSC shuffle not HDF5 Shuffle
-       BLOSC shuffle is faster since it is optimized to use AVX2 instructions etc etc */
+    /* Determine block size for Blosc */
+    rcd=nco_inq_var_blk_sz(nc_out_id,var_out_id,&blk_sz);
+    /* If Shuffle has also been requested, then use Blosc shuffle not HDF5 Shuffle
+       Blosc shuffle is faster since it is optimized to use AVX2 instructions etc etc */
     for(flt_idx=0;flt_idx<flt_nbr;flt_idx++)
       if(flt_id[flt_idx] == H5Z_FILTER_SHUFFLE)
 	bls_shf=1;
   } /* flt_idx */
   
+  /* Build list of available filters once */
+  if(!nco_cdc_lst_glb && flt_nbr > 0) rcd=nco_cdc_lst_bld(nc_out_id);
+
   /* Invoke applicable codec(s) */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){ 
     if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s executing filter for %s: flt_nbr=%d, flt_idx=%d, flt_enm=%d flt_nm=%s, flt_id=%u, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,var_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2nmid(flt_alg[flt_idx],NULL),flt_id[flt_idx],flt_lvl[flt_idx]);
@@ -1113,7 +1098,7 @@ nco_flt_def_out /* [fnc]  */
       break;
 
     case nco_flt_shf: /* Shuffle */
-      /* Allow BLOSC Shuffle to pre-empt HDF5 Shuffle */
+      /* Allow Blosc Shuffle to pre-empt HDF5 Shuffle */
       if(bls_shf) continue;
       if(flt_lvl[flt_idx] <= 0){
 	shuffle=NC_NOSHUFFLE;
@@ -1196,15 +1181,15 @@ nco_flt_def_out /* [fnc]  */
 #endif /* !CCR_HAS_ZSTD || NC_HAS_ZSTD */
       break;
 
-      /* Set BLOSC sub-compressor here, then execte filter outside switch statement */
-    case nco_flt_bls: /* BLOSC default compressor is BLOSC LZ */
-    case nco_flt_bls_lz: /* BLOSC LZ */
+      /* Set Blosc sub-compressor here, then execte filter outside switch statement */
+    case nco_flt_bls: /* Blosc default compressor is Blosc LZ */
+    case nco_flt_bls_lz: /* Blosc LZ */
       bls_sbc=BLOSC_LZ; break;
-    case nco_flt_bls_lz4: bls_sbc=BLOSC_LZ4; break; /* BLOSC LZ4 */
-    case nco_flt_bls_lzh: bls_sbc=BLOSC_LZ4HC; break; /* BLOSC LZ4 HC */
-    case nco_flt_bls_snp: bls_sbc=BLOSC_SNAPPY; break; /* BLOSC Snappy */
-    case nco_flt_bls_dfl: bls_sbc=BLOSC_ZLIB; break; /* BLOSC DEFLATE */
-    case nco_flt_bls_zst: bls_sbc=BLOSC_ZSTD; break; /* BLOSC Zstandard */
+    case nco_flt_bls_lz4: bls_sbc=BLOSC_LZ4; break; /* Blosc LZ4 */
+    case nco_flt_bls_lzh: bls_sbc=BLOSC_LZ4HC; break; /* Blosc LZ4 HC */
+    case nco_flt_bls_snp: bls_sbc=BLOSC_SNAPPY; break; /* Blosc Snappy */
+    case nco_flt_bls_dfl: bls_sbc=BLOSC_ZLIB; break; /* Blosc DEFLATE */
+    case nco_flt_bls_zst: bls_sbc=BLOSC_ZSTD; break; /* Blosc Zstandard */
 
     case nco_flt_dgr: /* DigitRound */
       cdc_has_flt=False;
@@ -1228,19 +1213,19 @@ nco_flt_def_out /* [fnc]  */
       break;
     } /* !flt_alg */
 
-    /* Execute BLOSC filters here, outside switch statement (for conciseness) */
+    /* Execute Blosc filters here, outside switch statement (for conciseness) */
     if(bls_sbc != NC_MAX_UINT){
 #if NC_LIB_VERSION >= 490
       rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id[flt_idx]);
       /* netCDF 4.9.0 lacks NC_HAS_BLOSC token */
       if(rcd == NC_NOERR){
-	if(blk_sz > 0U){
-	  //rcd+=NCZ_codec_initialize();
+#define NCO_MIN_CNK_BLOSC 1U
+	if(blk_sz >= NCO_MIN_CNK_BLOSC){
 	  rcd+=nc_def_var_blosc(nc_out_id,var_out_id,bls_sbc,(unsigned int)flt_lvl[flt_idx],blk_sz,bls_shf);
-	  //rcd+=NCZ_codec_finalize();
-	}else if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports variable %s is not chunked so will not attempt BLOSC compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	}else if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports variable %s is not chunked or has chunksize < %u B so will not attempt Blosc compression\n",nco_prg_nm_get(),fnc_nm,var_nm,NCO_MIN_CNK_BLOSC);
       }else{ /* !rcd */
 	/* Reset rcd */
+	(void)fprintf(stdout,"%s: WARNING %s reports nc_inq_filter_avail() did not find netCDF codec for requested filter \"%s\".\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2nmid(flt_alg[flt_idx],NULL));
 	rcd=NC_NOERR;
 	cdc_has_flt=False;
       } /* !rcd */
@@ -1249,7 +1234,7 @@ nco_flt_def_out /* [fnc]  */
       bls_sbc+=0*bls_sbc;
       cdc_has_flt=False;
 #endif /* NC_LIB_VERSION >= 490  */
-      /* Reset bls_sbc */
+      /* Reset bls_sbc to default */
       bls_sbc=NC_MAX_UINT; 
     } /* !bls_sbc */
 
@@ -1282,6 +1267,60 @@ nco_flt_def_out /* [fnc]  */
 } /* !nco_flt_def_out() */
 
 int /* O [enm] Return code */
+nco_cdc_lst_bld
+(const int nc_out_id) /* I [id] netCDF output file/group ID */
+{
+  /* Purpose: Build list of available quantization algorithms and HDF5 Filters */
+  /* Build list of available filters once */
+  const char fnc_nm[]="nc_cdc_lst_bld()";
+
+  char char_foo;
+
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  unsigned int flt_id; /* [ID] HDF5 filter ID */
+
+  /* Build list of available filters once */
+  if(!nco_cdc_lst_glb){
+    /* Lame attempt to avoid races when multiple threads "simultaneously" check this pointer
+       Idea is to instantly set the global value before waiting for the following system
+       call to malloc() to complete */
+    nco_cdc_lst_glb=&char_foo;
+    nco_cdc_lst_glb=(char *)nco_malloc(NCO_FLT_SNG_LNG_MAX*sizeof(char));
+    nco_cdc_lst_glb[0]='\0';
+
+    strcat(nco_cdc_lst_glb,"DEFLATE, Shuffle, Fletcher32");
+
+    /* CCR, netCDF define tokens like CCR_HAS_BITGROOM, NC_HAS_ZSTD in ccr_meta.h, netcdf_meta.h */
+#if defined(CCR_HAS_BITGROOM) || defined(NC_HAS_QUANTIZE)
+    strcat(nco_cdc_lst_glb,", BitGroom");
+#endif /* !CCR_HAS_BITGROOM */
+#if defined(CCR_HAS_BITROUND)|| defined(NC_HAS_QUANTIZE)
+    strcat(nco_cdc_lst_glb,", BitRound");
+#endif /* !CCR_HAS_BITROUND */
+#if defined(CCR_HAS_GRANULARBR) || defined(NC_HAS_QUANTIZE)
+    strcat(nco_cdc_lst_glb,", GranularBR");
+#endif /* !CCR_HAS_GRANULARBR */
+
+    flt_id=H5Z_FILTER_BZIP2;
+    rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
+    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Bzip2"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. This filter is expected to be available with all default installations of netCDF version 4.9.0 or higher. HINT: \n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id);
+
+    flt_id=H5Z_FILTER_ZSTD;
+    rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
+    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Zstandard"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. This filter is expected to be available with all default installations of netCDF version 4.9.0 or higher. HINT: \n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id);
+
+    flt_id=H5Z_FILTER_BLOSC;
+    rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
+    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Blosc (LZ = default, LZ4, LZ4 HC, DEFLATE, Snappy, Zstandard)"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. This filter is expected to be available with all default installations of netCDF version 4.9.0 or higher. HINT: \n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id);    
+
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports available codec list is nco_cdc_lst_glb=%s\n",nco_prg_nm_get(),fnc_nm,nco_cdc_lst_glb);
+  } /* !nco_cdc_lst_glb */
+  
+  return rcd;
+} /* !nco_cdc_lst_bld() */
+
+int /* O [enm] Return code */
 nco_inq_var_blk_sz
 (const int nc_id, /* I [id] netCDF output file/group ID */
  const int var_id, /* I [id] Variable ID */
@@ -1307,7 +1346,7 @@ nco_inq_var_blk_sz
 
   rcd+=nco_inq_varndims(nc_id,var_id,&dmn_nbr);
   if(dmn_nbr == 0){
-    (void)fprintf(stderr,"%s: ERROR %s reports variable %s is scalar not array. Unsuitable for BLOSC compression filters, bailing now...\n",nco_prg_nm_get(),fnc_nm,var_nm);
+    (void)fprintf(stderr,"%s: ERROR %s reports variable %s is scalar not array. Unsuitable for Blosc compression filters, bailing now...\n",nco_prg_nm_get(),fnc_nm,var_nm);
     nco_exit(EXIT_FAILURE);
   } /* !srg_typ */
 
@@ -1315,12 +1354,12 @@ nco_inq_var_blk_sz
   if(srg_typ != NC_CHUNKED){
     /* netCDF autormatically and silently chunks variables of storage type NC_CONTIGUOUS for DEFLATE, Zstandard filters
        Such variables are set to the netCDF4 default chunk sizes (thus ignoring user-specified sizes?) 
-       However, netCDF does chunk NC_CONTIGUOUS variables sent to BLOSC filters 
-       nco_inq_var_blk_sz() is only called in preparation for BLOSC filters 
+       However, netCDF does chunk NC_CONTIGUOUS variables sent to Blosc filters 
+       nco_inq_var_blk_sz() is only called in preparation for Blosc filters 
        20220627: For now it's OK to set NC_CONTIGUOUS block size to 0U and return 
-       Revisit this issue once we get BLOSC filters actually working
+       Revisit this issue once we get Blosc filters actually working
        May require put nco_cnk_sz_set_trv() before nco_flt_def_wrp() to utilize user-defined chunk sizes? */
-    // (void)fprintf(stdout,"%s: INFO %s reports variable %s is not chunked so will not attempt BLOSC compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
+    // (void)fprintf(stdout,"%s: INFO %s reports variable %s is not chunked so will not attempt Blosc compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
     *blk_szp=blk_sz;
     return rcd;
   } /* !srg_typ */

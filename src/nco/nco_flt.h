@@ -230,6 +230,10 @@ nco_inq_var_blk_sz
  const int var_id, /* I [id] Variable ID */
  unsigned int * const blk_szp); /* O [B] Block size in bytes */
 
+int /* O [enm] Return code */
+nco_cdc_lst_bld
+(const int nc_out_id); /* I [id] netCDF output file/group ID */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
