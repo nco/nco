@@ -417,6 +417,18 @@ extern "C" {
 #ifndef NC_CONTIGUOUS
 # define NC_CONTIGUOUS (1)
 #endif
+  /* Added ~2019 */
+#ifndef NC_COMPACT
+# define NC_COMPACT (2)
+#endif
+  /* Added 202206 netCDF 4.9.0 */
+#ifndef NC_UNKNOWN_STORAGE
+# define NC_UNKNOWN_STORAGE (3)
+#endif
+  /* Added 202206 netCDF 4.9.0 */
+#ifndef NC_VIRTUAL
+# define NC_VIRTUAL (4)
+#endif
 #ifndef NC_NOCHECKSUM
 # define NC_NOCHECKSUM 0
 #endif

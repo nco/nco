@@ -4,6 +4,12 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.0: Rattlesnake';git push
 	git tag -a 5.1.0 -m 'all: filters, cmp_sng, CCR, nc 4.9.0; ncremap fix sub-sgs nrm, add ssgs thr';git push --tags
 
+	* Consider variable compressed (and thus requiring chunking) in	nco_cnk_sz_set_trv() whenever _any_ filters have been applied to it
+
+	* Add NC_COMPACT to metadata printing
+
+	* Add NC_EINVAL debugging to nco_def_var_chunking()
+
 	* NCO 5.1.0-beta04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.0-beta04: Steerage';git push
 	git tag -a 5.1.0-beta04 -m 'all: documentation, polishing, default levels, dns, blosc';git push --tags

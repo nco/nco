@@ -591,7 +591,7 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
       /* Filter appears to be specified by HDF5 ID */
       flt_enm=nco_flt_id2enm(flt_id);
       if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports filter string %s interpreted as HDF5 ID for filter \"%s\" with NCO enum %d. Filter enum will be set to Unknown so that filter is invoked via generic nc_def_var_filter() rather than by any specific filter wrapper.\n",nco_prg_nm_get(),fnc_nm,flt_nm,nco_flt_id2nm(flt_id),(int)flt_enm);
-      flt_enm=nco_flt_unk;
+      //flt_enm=nco_flt_unk;
       *flt_idp=flt_id;
       FLT_NM_IS_ID=True;
     } /* !sng_cnv_rcd */

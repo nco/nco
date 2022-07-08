@@ -2032,6 +2032,11 @@ int nco_def_var_chunking
 
     if(sz > NCO_MAX_CHUNK_SIZE) (void)fprintf(stderr, "%s: ERROR Total requested chunk size = %lu exceeds netCDF maximium-supported chunk size = %u\n",fnc_nm,sz,NCO_MAX_CHUNK_SIZE);
   } /* !rcd */
+  if(rcd == NC_EINVAL){
+    char var_nm[NC_MAX_NAME+1L];
+    (void)nco_inq_varname(nc_id,var_id,var_nm);
+    (void)fprintf(stdout,"%s: ERROR variable \"%s\" caused NC_EINVAL because of, according to the netCDF-C documentation, \"Attempt to set contiguous or compact storage for var with one or more unlimited dimensions, or chunking for a scalar var.\"\n",fnc_nm,var_nm);
+  } /* !rcd */
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
 
@@ -2492,7 +2497,7 @@ nco_get_var(const int nc_id,const int var_id,void * const vp,const nc_type var_t
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
     (void)fprintf(stdout,"ERROR: %s failed to nc_get_var() variable \"%s\"\n",fnc_nm,var_nm);
-  } /* endif */
+  } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* !nco_get_var */

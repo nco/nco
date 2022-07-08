@@ -246,7 +246,11 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	    att[idx].nm=(char *)strdup("_Storage");
 	    att[idx].type=NC_CHAR;
-	    val_hdn_sng= (srg_typ == NC_CONTIGUOUS) ? (char *)strdup("contiguous") : (char *)strdup("chunked");
+	    if(srg_typ == NC_CONTIGUOUS) val_hdn_sng=(char *)strdup("contiguous");
+	    else if(srg_typ == NC_CHUNKED) val_hdn_sng=(char *)strdup("chunked");
+	    else if(srg_typ == NC_COMPACT) val_hdn_sng=(char *)strdup("compact");
+	    else if(srg_typ == NC_UNKNOWN_STORAGE) val_hdn_sng=(char *)strdup("unknown_storage");
+	    else if(srg_typ == NC_VIRTUAL) val_hdn_sng=(char *)strdup("virtual");
 	    att_sz=att[idx].sz=strlen(val_hdn_sng);
 	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
 	    strncpy(att[idx].val.cp,val_hdn_sng,att_sz);

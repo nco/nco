@@ -140,7 +140,7 @@ nco_cnk_csh_ini /* [fnc] Initialize global chunk cache user-specified input */
 
   float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
 
-  int rcd=0; /* [enm] Return code  */
+  int rcd=0; /* [enm] Return code */
   
   size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
   size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
@@ -906,6 +906,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   size_t cnk_min_byt; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_dfl; /* [nbr] Chunksize default */
   size_t cnk_sz_scl; /* [nbr] Chunk size scalar */
+  size_t flt_nbr; /* [nbr] Filter number */
   size_t typ_sz; /* [B] Bytes per value */
   size_t var_sz_byt; /* [B] Size of variable in output file */
 
@@ -994,6 +995,11 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   (void)nco_inq_var_deflate(grp_id_out,var_id_out,&shuffle,&deflate,(int *)NULL);
   if(deflate) is_cmp_var=True; 
 
+  /* 20220708 Compression filters can be, like, anything nowadays
+     New is_cmp_var criterion will be true whenever any Filter has been applied */
+  (void)nco_inq_var_filter_ids(grp_id_out,var_id_out,&flt_nbr,NULL);
+  if(flt_nbr > 0) is_cmp_var=True;
+  
   /* Is variable check-summed? */
   (void)nco_inq_var_fletcher32(grp_id_out,var_id_out,&chk_typ);
   if(chk_typ != NC_NOCHECKSUM) is_chk_var=True;
@@ -1002,7 +1008,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   if(is_rec_var || is_chk_var || is_cmp_var) must_be_chunked=True; else must_be_chunked=False;
 
   /* Is variable currently chunked? */
-  if( var_id_in>=0 &&  (nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || (NC_LIB_VERSION >= 433 && NC_LIB_VERSION != 474)))
+  if(var_id_in>=0 && (nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || (NC_LIB_VERSION >= 433 && NC_LIB_VERSION != 474)))
     is_chunked=nco_cnk_dsk_inq(grp_id_in,var_id_in);
   else
     is_chunked=False;
