@@ -2531,7 +2531,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   case nco_rgr_mpf_NCO:
   case nco_rgr_mpf_Tempest:
   case nco_rgr_mpf_unknown:
-    rcd+=nco_inq_dimid(in_id,"n_a",&src_grid_size_id);
+    rcd+=nco_inq_dimid_flg(in_id,"n_a",&src_grid_size_id);
+    if(rcd != NC_NOERR){
+      (void)fprintf(stderr,"%s: ERROR %s reports requested dimension \"n_a\" is not in input file. HINT: This does not appear to be a \"map-file\" of any known type. A map-file must contain the weights needed to regrid from the source to destination grid. Perhaps you have give a data-file to the regridder instead? Please read the manual http://nco.sf.net/nco.html#ncremap and reformulate your command accordingly.\n",nco_prg_nm_get(),fnc_nm);
+      nco_exit(EXIT_FAILURE);
+    } /* !rcd */
     rcd+=nco_inq_dimid(in_id,"n_b",&dst_grid_size_id);
     rcd+=nco_inq_dimid(in_id,"nv_a",&src_grid_corners_id);
     rcd+=nco_inq_dimid(in_id,"nv_b",&dst_grid_corners_id);

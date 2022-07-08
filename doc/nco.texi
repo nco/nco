@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.0-beta04
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 5 July 2022
+@set update-date 8 July 2022
 @set update-month July 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9368,20 +9368,25 @@ separate the codecs applied as @acronym{HDF5} filters to a variable:
 @verbatim
 % ncks --hdn -m in.nc | grep _Filter
       u:_Filter = "307,2|32015,3" ;
+      U:_Filter = "32001,2,2,4,4185932,5,1,1" ;
 % ncdump -h -s in.nc | grep _Filter
 		u:_Filter = "307,2|32015,3" ;
+                U:_Filter = "32001,2,2,4,4185932,5,1,1" ;
 @end verbatim
 @end example
-The above example shows a variable compressed with two successive
-codecs with @acronym{HDF5} filter @acronym{ID}s 307 and 32015,
-respectively. 
-@acronym{NCO} translates @acronym{HDF5} numeric filter @acronym{ID}s
-into filter names in the @acronym{CDL} comments when invoked with a
-higher debugging level: 
+The above example shows variables compressed with two successive
+codecs.
+The variable @code{u} was compressed with codecs with @acronym{HDF5}
+filter @acronym{ID}s 307 and 32015, respectively.  
+@acronym{NCO} translates these mysterious @acronym{HDF5} numeric
+filter @acronym{ID}s into filter names in the @acronym{CDL} comments
+when invoked with a higher debugging level: 
 @example
 @verbatim
 % ncks -D 2 --hdn -m in.nc | grep _Filter
-      u:_Filter = "307,2|32015,3" ; // char Codec(s): Bzip2, Zstandard
+      u:_Filter = "307,2|32015,3" ; // char codec(s): Bzip2, Zstandard
+      U:_Filter = "32001,2,2,4,4185932,5,1,1" ; // char codec(s): \
+                                              Blosc Shuffle, Blosc LZ4
 @end verbatim
 @end example
 
@@ -9606,10 +9611,14 @@ numeric @acronym{HDF5} filter @acronym{ID} of @code{1}) still sets
 the Shuffle filter to true.
 To invoke @acronym{DEFLATE} without Shuffle, use the special filter
 names @code{dns} or @code{DEFLATE No Shuffe}.
+Specifying the Shuffle filter along with any Blosc compressor causes
+@acronym{NCO} to invoke the Blosc version of Shuffle instead of the
+@acronym{HDF5} version of Shuffle.
+The Blosc Shuffle should execute more rapidly because it takes
+advantage of @acronym{AVX2} instructions, etc.
 In summary, users must explicitly request Shuffle for all
 non-@acronym{DEFLATE} codecs, otherwise Shuffle will not be
 employed prior to those codecs.
-
 @example
 @verbatim
 % ncks --cmp='dfl' ...     # Invoke Shuffle then DEFLATE
@@ -9622,6 +9631,8 @@ employed prior to those codecs.
 % ncks --cmp='shf' ...     # Invoke only Shuffle
 % ncks --cmp='shf,8|zst' ... # Shuffle stride 8-bytes then Zstandard
 % ncks --cmp='shf,8|dfl' ... # Shuffle stride remains default 4-bytes
+% ncks --cmp='bls' ...     # Invoke Blosc (LZ by default) without Shuffle
+% ncks --cmp='shf|bls' ... # Invoke Blosc (not HDF5) Shuffle, then Blosc LZ
 @end verbatim
 @end example
 The last example above shows how to invoke Shuffle with non-default
@@ -9697,6 +9708,12 @@ assumptions already embedded in @acronym{NCO} 5.1.0.
 In the meantime, we request your feedback, use-cases, and suggestions
 before adopting a final approach.
 
+Another limitation of @acronym{NCO} 5.1.0 is that the Blosc filters
+may fail without explanation.
+We are working to understand why this is the case and hope to have
+a fix by 5.1.1.
+This is why the manual does not yet document much about Blosc filters.
+
 netCDF 4.9.0 contains an inadvertent, albeit significant, constraint.
 Namely, the quantization algorithms internal to netCDF work only on
 netCDF4 datasets of type @acronym{NETCDF4}.
@@ -9704,8 +9721,8 @@ A recently discovered bug prevents them from working on
 @acronym{NETCDF4_CLASSIC}-format datasets. 
 And, by design, they may never be implemented for any
 @acronym{CLASSIC} or other netCDF3 formats.
-The fix to the @acronym{NETCDF4_CLASSIC} bug is available now, and
-will be included in netCDF 4.9.1.  
+The fix to the @acronym{NETCDF4_CLASSIC} bug is available now in the
+main netCDF trunk, and will be officially released in netCDF 4.9.1.  
 Note that this bug does not affect the same quantization algorithms as
 implemented in @acronym{NCO} (or in the @acronym{CCR}, for that
 matter). 
@@ -26323,8 +26340,8 @@ most common rectangular grids as @acronym{SCRIP}-format grid-files.
 Create a grid by supplying @command{ncremap} with a grid-file name and
 ``grid-formula'' (@var{grd_sng}) that contains, at a minimum, the
 grid-resolution.
-The grid-formula is a hash-separated string of name-value pairs each
-representing a grid parameter.
+The grid-formula is a single hash-separated string of name-value pairs
+each representing a grid parameter.
 All parameters except grid resolution have reasonable defaults, so a
 grid-formula can be as simple as @samp{latlon=180,360}: 
 @example
@@ -26339,7 +26356,7 @@ Grid-file generation documentation in the @acronym{NCO} Users Guide at
 @url{http://nco.sf.net/nco.html#grid} describes all the grid
 parameters and contains many examples.
 Note that the examples in this section use grid generation
-@acronym{API} for @command{ncremap} version 4.7.6 (August, 2018) and
+@acronym{API} for @command{ncremap} version 4.7.6 (August, 2018) and 
 later.
 Earlier versions can use the @command{ncks} @acronym{API} explained
 at @ref{Grid Generation} in the Users Guide.  
@@ -26384,6 +26401,11 @@ box, i.e., the outside edges of the region, in @acronym{SNWE} order:
 ncremap -g grd.nc -G ttl="Equi-Angular 1x1 Greenland grid"#latlon=30,90#snwe=55.0,85.0,-90.0,0.0
 @end verbatim
 @end example
+The @var{grd_sng} argument to @samp{-G} or @samp{--grd_sng} must be 
+a @emph{single} hash-separated string of name-value pairs, e.g.,
+@code{latlon=....#lat_typ=...#ttl="My title"}.
+@command{ncremap} will not correctly parse any other format, such
+as multiple separate name-value pairs without hashes.
 
 @html
 <a name="in_drc"></a> <!-- http://nco.sf.net/nco.html#in_drc -->
