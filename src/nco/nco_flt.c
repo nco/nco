@@ -79,7 +79,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   char **prm_lst; /* [sng] List of user-supplied filter parameters as strings */
   char **flt_lst; /* [sng] List of user-supplied filters as pipe-separated lists of comma-separated strings */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-  char flt_nm_id[7]; /* [sng] Filter ID converted to string name */
+  char flt_nm_id[12]; /* [sng] Filter ID converted to name string */
   char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
 
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level [0..9] */
@@ -590,7 +590,8 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     if(!*sng_cnv_rcd){
       /* Filter appears to be specified by HDF5 ID */
       flt_enm=nco_flt_id2enm(flt_id);
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports filter string %s interpreted as HDF5 ID for filter \"%s\" with NCO enum %d\n",nco_prg_nm_get(),fnc_nm,flt_nm,nco_flt_id2nm(flt_id),(int)flt_enm);
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports filter string %s interpreted as HDF5 ID for filter \"%s\" with NCO enum %d. Filter enum will be set to Unknown so that filter is invoked via generic nc_def_var_filter() rather than by any specific filter wrapper.\n",nco_prg_nm_get(),fnc_nm,flt_nm,nco_flt_id2nm(flt_id),(int)flt_enm);
+      flt_enm=nco_flt_unk;
       *flt_idp=flt_id;
       FLT_NM_IS_ID=True;
     } /* !sng_cnv_rcd */
@@ -726,7 +727,7 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
   } /* !FLT_NM_IS_ID */
 
   if(flt_enm == nco_flt_unk && FLT_NM_IS_ID){
-    (void)fprintf(stderr,"%s: INFO %s user-specified filter \"%s\" is not in the NCO database of recognized filters. However, it should work if it is a valid HDF5 filter ID with an associated filter in the plugin directory.\n",nco_prg_nm_get(),fnc_nm,flt_nm);
+    if(flt_id != NC_MAX_UINT && !nco_flt_id2nm(flt_id)) (void)fprintf(stderr,"%s: INFO %s user-specified filter \"%s\" is not in the NCO database of recognized filters. However, it should work if it is a valid HDF5 filter ID with an associated filter in the plugin directory.\n",nco_prg_nm_get(),fnc_nm,flt_nm);
   } /* !flt_enm */
 
   /* Unknown filters should work if they are nonetheless installed
@@ -948,7 +949,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
 	  prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
 	  rcd=nco_inq_var_filter_info(nc_in_id,var_in_id_cpy,flt_lst[flt_idx],NULL,prm_lst);
 	} /* !prm_nbr */
-	/* 20200624: prm_lst is NULL iff prm_nbr==0, e.g., for Fletcher32
+	/* 20200624: prm_lst is NULL iff prm_nbr == 0, e.g., for Fletcher32
 	   Only append zero if parameters exist */
 	(void)sprintf(sng_foo,"%u%s",flt_lst[flt_idx],(prm_nbr > 0) ? "," : "");
 	strcat(flt_sng,sng_foo);
@@ -1077,7 +1078,7 @@ nco_flt_def_out /* [fnc]  */
 
   /* Invoke applicable codec(s) */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){ 
-    if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s executing filter for %s: flt_nbr=%d, flt_idx=%d, flt_enm=%d flt_nm=%s, flt_id=%u, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,var_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2nmid(flt_alg[flt_idx],NULL),flt_id[flt_idx],flt_lvl[flt_idx]);
+    if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s executing filter for %s: flt_nbr=%d, flt_idx=%d, flt_enm=%d, flt_nm=%s, flt_id=%u, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,var_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2nmid(flt_alg[flt_idx],NULL),flt_id[flt_idx],flt_lvl[flt_idx]);
     switch(flt_alg[flt_idx]){
     case nco_flt_nil: /* If user did not select a filter then exit */
       cdc_has_flt=False;
