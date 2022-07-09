@@ -1018,8 +1018,8 @@ int nc_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nb
   rcd=nco_inq_var_deflate(nc_id,var_id,&shuffle,&deflate,&dfl_lvl);
   if(flt_nbr){
     *flt_nbr=0L;
-    if(shuffle == NC_SHUFFLE) *flt_nbr++;
-    if(deflate) *flt_nbr++;
+    if(shuffle == NC_SHUFFLE) *flt_nbr=(*flt_nbr)+1L;
+    if(deflate) *flt_nbr=(*flt_nbr)+1L;
   } /* !flt_nbr */
   if(flt_lst){
     flt_idx=0;
