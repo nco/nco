@@ -127,6 +127,9 @@
 #ifndef NC_NOSHUFFLE
 # define NC_NOSHUFFLE 0
 #endif
+#ifndef NC_SHUFFLE
+# define NC_SHUFFLE   1
+#endif
 
   /* 20131222: Seven compatibility tokens introduced in netCDF 4.3.1-rc7 netcdf.h
      20151222: Tokens are superseded in netCDF 4.4.0-RC4 netcdf.h by same tokens with "FORMATX" instead of "FORMAT"
