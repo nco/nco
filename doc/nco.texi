@@ -8353,10 +8353,12 @@ that the UDUnits2 library has failed to initialize.
 To fix this, export the full location (path+name) of the UDUnits2
 @acronym{XML} database file @file{udunits2.xml} to the shell:
 @example
+@verbatim
 # Example UDUnits2 XML database locations:
 export UDUNITS2_XML_PATH='/opt/homebrew/share/udunits/udunits2.xml' # Homebrew
 export UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml' # MacPorts
 export UDUNITS2_XML_PATH="${HOME}/anaconda/share/udunits/udunits2.xml" # Anaconda
+@end verbatim
 @end example
 One can then invoke (without recompilation) @acronym{NCO} again, and
 UDUnits2 should work. 
