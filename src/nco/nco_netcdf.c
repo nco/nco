@@ -1023,12 +1023,17 @@ int nc_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nb
   } /* !flt_nbr */
   if(flt_lst){
     flt_idx=0;
-    if(shuffle == NC_SHUFFLE) flt_lst[flt_idx++]=H5Z_FILTER_SHUFFLE;
-    if(deflate) flt_lst[flt_idx++]=H5Z_FILTER_DEFLATE;
+    if(shuffle == NC_SHUFFLE){
+      flt_lst[flt_idx]=(unsigned int)H5Z_FILTER_SHUFFLE;
+      flt_idx++;
+    } /* !shuffle */
+    if(deflate){
+      flt_lst[flt_idx]=(unsigned int)H5Z_FILTER_DEFLATE;
+      flt_idx++;
+    } /* !deflate */      
   } /* !flt_lst */
-  (void)fprintf(stdout,"WARNING: NCO was linked to and old version (%d) of netCDF that does not support %s functionality for filters other than Shuffle and DEFLATE. Correct behavior at interrogating or subsetting newer files cannot be guaranteed for variables that use other compression filters. To obtain a fully functioning NCO for newer datasets, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later...preferably much later!\n",NC_LIB_VERSION,fnc_nm);
-  //(void)fprintf(stdout,"ERROR: %s reports inquire variable filter was foiled because libnetcdf.a does not actually contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later...preferably much later!\nExiting...\n",fnc_nm,fnc_nm);
-  //nco_err_exit(rcd,fnc_nm);
+  // Too Noisy:
+  //(void)fprintf(stdout,"WARNING: NCO was linked to and old version (%d) of netCDF that does not support %s functionality for filters other than Shuffle and DEFLATE. Correct behavior at interrogating or subsetting newer files cannot be guaranteed for variables that use other compression filters. To obtain a fully functioning NCO for newer datasets, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later...preferably much later!\n",NC_LIB_VERSION,fnc_nm);
   return rcd;
 } /* !nc_inq_var_filter_ids() */
 

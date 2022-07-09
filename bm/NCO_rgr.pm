@@ -1903,6 +1903,7 @@ if($USER eq 'zender'){
 # 
 
 #ncks #19 groups: add associated variable "lat" of "area" to extraction list
+# ncks -h -O -v area ~/nco/data/in_grp.nc ~/foo.nc
     $dsc_sng="(Groups) Extract associated coordinate variable";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --trd -s '%g' -v lat %tmp_fl_00%";
