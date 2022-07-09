@@ -124,6 +124,9 @@
 #ifndef NC_NOCHECKSUM
 # define NC_NOCHECKSUM 0
 #endif
+#ifndef NC_FLETCHER32
+# define NC_FLETCHER32 1
+#endif
 #ifndef NC_NOSHUFFLE
 # define NC_NOSHUFFLE 0
 #endif

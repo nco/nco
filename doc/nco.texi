@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.0-beta05
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 8 July 2022
+@set update-date 9 July 2022
 @set update-month July 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -8353,13 +8353,13 @@ that the UDUnits2 library has failed to initialize.
 To fix this, export the full location (path+name) of the UDUnits2
 @acronym{XML} database file @file{udunits2.xml} to the shell:
 @example
-# MacPorts location
-export UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'
-# Example Anaconda location
-export UDUNITS2_XML_PATH='/home/zender/anaconda/share/udunits/udunits2.xml'
+# Example UDUnits2 XML database locations:
+export UDUNITS2_XML_PATH='/opt/homebrew/share/udunits/udunits2.xml' # Homebrew
+export UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml' # MacPorts
+export UDUNITS2_XML_PATH="${HOME}/anaconda/share/udunits/udunits2.xml" # Anaconda
 @end example
 One can then invoke (without recompilation) @acronym{NCO} again, and
-UDUnit2 should work. 
+UDUnits2 should work. 
 This run-time flexibility can enable the full functionality of
 pre-built binaries on machines with libraries in different locations.
 
