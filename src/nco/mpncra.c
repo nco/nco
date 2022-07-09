@@ -1417,7 +1417,7 @@ main(int argc,char **argv)
     
     /* Add time variable to output file
        NB: nco_cnv_arm_time_install() contains OpenMP critical region */
-    if(CNV_ARM && nco_prg_id == ncrcat) (void)nco_cnv_arm_time_install(out_id,base_time_srt,dfl_lvl);
+    if(CNV_ARM && nco_prg_id == ncrcat) (void)nco_cnv_arm_time_install(out_id,base_time_srt);
 #ifdef ENABLE_MPI
     nco_close(out_id); 
     printf("DEBUG: Mgr prc_rnk %d closed out file %d after fixing date, time \n", prc_rnk, out_id);

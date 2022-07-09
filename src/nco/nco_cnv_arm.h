@@ -42,8 +42,7 @@ nco_cnv_arm_time_mk /* [fnc] Return time corresponding to current time offset */
 void
 nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 (const int nc_id, /* I [id] netCDF file ID */
- const nco_int base_time_srt, /* I [s] base_time of first input file */
- const int dfl_lvl); /* I [enm] Deflate level [0..9] */
+ const nco_int base_time_srt); /* I [s] base_time of first input file */
 
 nco_int /* O [s] Value of base_time variable */
 nco_cnv_arm_base_time_get /* [fnc] Get base_time variable from ARM file */

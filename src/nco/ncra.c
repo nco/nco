@@ -2068,7 +2068,7 @@ main(int argc,char **argv)
 
   /* Add time variable to output file
      NB: nco_cnv_arm_time_install() contains OpenMP critical region */
-  if(CNV_ARM && nco_prg_id == ncrcat) (void)nco_cnv_arm_time_install(grp_out_id,base_time_srt,dfl_lvl);
+  if(CNV_ARM && nco_prg_id == ncrcat) (void)nco_cnv_arm_time_install(grp_out_id,base_time_srt);
 
   /* Copy averages to output file for ncfe and ncge always and for ncra when trailing file(s) was/were superfluous */
   if(FLG_BFR_NRM){
