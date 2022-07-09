@@ -167,7 +167,7 @@ nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   time_offset=(double *)nco_free(time_offset);
 
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
-} /* end nco_cnv_arm_time_install */
+} /* !nco_cnv_arm_time_install */
 
 nco_int /* O [s] Value of base_time variable */
 nco_cnv_arm_base_time_get /* [fnc] Get base_time variable from ARM file */

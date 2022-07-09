@@ -924,6 +924,13 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
       if(dfl_lvl_in > 0) shuffle=NC_SHUFFLE;
       rcd=nco_def_var_deflate(nc_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
       return rcd;
+    }else{ /* !dfl_lvl_in */
+      /* This branch handles copying compressor information with old libraries (Grele has netCDF 4.6.0!)
+	 NCO can only handle DEFLATE (as in the above if-branch) with libraries this old
+	 If we continue this function then library will need to execute newish API calls for filters
+	 By definition the old library lacks those calls
+	 Nothing else to do but return now and pray user is not trying to copy new file with old library */
+      return rcd;
     } /* !dfl_lvl_in */
 #endif /* !474, !4.7.4 */
 
