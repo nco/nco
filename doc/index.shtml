@@ -1143,6 +1143,8 @@ For RPM-based systems like Fedora and CentOS (substitute <tt>yum</tt> for <tt>dn
 <dt>sudo dnf install zlib-devel -y # zlib</dt>
 <dt>sudo dnf install librx librx-devel -y # RX</dt>
 <dt>sudo dnf install udunits2 udunits2-devel -y # UDUnits</dt>
+<dt>sudo dnf install blosc # Blosc codecs</dt>
+<dt>sudo dnf install libzstd # Zstandard codec</dt>
 </tt>
 
 <dt><a name="brew"></a></dt> <!-- http://nco.sf.net#brew -->
