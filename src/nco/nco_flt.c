@@ -1310,17 +1310,19 @@ nco_cdc_lst_bld
     strcat(nco_cdc_lst_glb,", GranularBR");
 #endif /* !CCR_HAS_GRANULARBR */
 
+    const char hlp_txt[]="This is probably fixable because this filter is supported by all default installations of netCDF version 4.9.0 or higher. HINT: If you build netCDF from source, please be sure it was configured with the following options: \"--enable-nczarr\" and \"--with-plugin-dir=${HDF5_PLUGIN_PATH}\". The latter is especially important in netCDF 4.9.0. Also, please be sure the library for the missing filter (e.g., libzstd.a, libblosc.a, libbz2.a) is in an automatically searched directory, e.g., $LD_LIBRARY_PATH or /usr/lib.";
+
     flt_id=H5Z_FILTER_BZIP2;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
-    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Bzip2"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. This filter is expected to be available with all default installations of netCDF version 4.9.0 or higher. HINT: \n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id);
+    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Bzip2"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 
     flt_id=H5Z_FILTER_ZSTD;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
-    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Zstandard"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. This filter is expected to be available with all default installations of netCDF version 4.9.0 or higher. HINT: \n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id);
+    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Zstandard"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 
     flt_id=H5Z_FILTER_BLOSC;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
-    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Blosc (LZ = default, LZ4, LZ4 HC, DEFLATE, Snappy, Zstandard)"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. This filter is expected to be available with all default installations of netCDF version 4.9.0 or higher. HINT: \n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id);    
+    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Blosc (LZ = default, LZ4, LZ4 HC, DEFLATE, Snappy, Zstandard)"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports available codec list is nco_cdc_lst_glb=%s\n",nco_prg_nm_get(),fnc_nm,nco_cdc_lst_glb);
   } /* !nco_cdc_lst_glb */
