@@ -151,8 +151,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2022 Jul&nbsp;01: 5.1.1 <i>In Progress...</i>
-<li>2022 Jun&nbsp;30: 5.1.0 Compression filters
+<li>2022 Aug&nbsp;15: 5.1.1 <i>In Progress...</i>
+<li>2022 Jul&nbsp;12: 5.1.0 Compression filters
 <li>2022 May&nbsp;02: 5.0.7 SGS + Sub-SGS fixes
 <li>2022 Feb&nbsp;02: 5.0.6 Small fixes
 <li>2022 Jan&nbsp;24: 5.0.5 BitRound
@@ -605,6 +605,8 @@ netCDF4 user-defined types support;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
 <li><b>NCO 5.1.1</b>: (<i>In Progress, features in-progress or complete include</i>)
+<tt>all</tt> Blosc codec robust support;
+<tt>all</tt> Support NCZarr I/O;
 <tt>all --cmp_sng</tt> accept human-legible floating-point, unsigned codec parameters</li>
 <li><b>NCO 5.1.0</b>: (<i>Current Stable Release</i>)
 <tt>all --cmp_sng</tt> to access modern codecs in netCDF, CCR, or HDF5;

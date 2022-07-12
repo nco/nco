@@ -602,23 +602,24 @@ Charlie Zender@*
 May, 2019@*
 Laguna Beach, California@*
 
-The @acronym{DOE} @acronym{E3SM} project has provided reliable support 
-for @acronym{NCO} development and maintenance since 2015, an eternity 
-in the world of research funding!
-This support has enabled us to add cutting-edge features including
-quantization, vertical interpolation, and support for multiple
-regridding weight-generators.
+The @acronym{DOE} @acronym{E3SM} project has supported @acronym{NCO}
+development and maintenance since 2015. 
+This is an eternity in the world of research funding!
+Their reliable support has enabled us to add cutting-edge features
+including quantization, vertical interpolation, and support for
+multiple regridding weight-generators.
 Recently @acronym{NSF} supported us to enable user-friendly support
 for modern compression algorithms that can make geoscience data 
 analysis greener by reducing dataset size, and thereby storage,
 power, and associated greenhouse gas emissions.
-I am grateful for the support to pursue fresh ideas with amazing
-colleagues. 
+I am grateful for this this agency support that inspires me to create
+new features that help my amazing colleagues pursue their scientific
+ideas.  
 
 @sp 1
 @noindent
 Charlie Zender@*
-June, 2022@*
+July, 2022@*
 Laguna Beach, California@*
 @ignore
 @end ignore
