@@ -310,7 +310,7 @@ make install
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20210817 (search e3sm-u_latest)
-# Personal recipe last used successfully: 20210817
+# Personal recipe last used successfully: 20220712
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
 export PATH=${MY_BIN_DIR}:'/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
@@ -387,7 +387,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20201221 (use gcc netCDF 4.7.4)
-# Personal recipe last used successfully: 20210321
+# Personal recipe last used successfully: 20220712
 cd ~/nco;/bin/rm -f *.foo;make distclean
 module load gcc/9.2.0-ugetvbp
 module load openmpi/4.0.4-hpcx-hghvhj5
@@ -506,7 +506,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: module load nco/5.0.1 # 20220701
 # Personal recipe last modified: 20220701
-# Personal recipe last used successfully: 20220701
+# Personal recipe last used successfully: 20220712
 module purge # After login, purge before load or risk this: "error while loading shared libraries: libiomp5.so: cannot open shared object file: No such file or directory"
 module load PrgEnv-intel
 module load cray-netcdf

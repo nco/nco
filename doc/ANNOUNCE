@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.0 are unfurled
+netCDF Operators NCO version 5.1.0 brachiate toward you
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
@@ -8,7 +8,7 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 What's new?
 Version 5.1.0 supports the new netCDF 4.9.0 features for filters and
 quantization. This is a significant new feature that justifies the
-version bump from 5.0.7 to to 5.1.0. There is also an ncremap fix for 
+version bump from 5.0.7 to 5.1.0. There is also an ncremap fix for 
 sub-sub-gridscale regridding, e.g., landunit-specific regridding.
 Users of sub-SGS regridding, and anyone interested is using modern
 compression or quantization algorithms such as Bzip2, Zstandard, 
