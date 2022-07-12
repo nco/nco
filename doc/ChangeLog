@@ -1,8 +1,12 @@
-2022-07-11  Charlie Zender  <zender@uci.edu>
+2022-07-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.0 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.0: Rattlesnake';git push
 	git tag -a 5.1.0 -m 'all: filters, cmp_sng, CCR, nc 4.9.0; ncremap fix sub-sgs nrm, add ssgs thr';git push --tags
+
+	* Warn about Blosc codec in docs
+
+2022-07-11  Charlie Zender  <zender@uci.edu>
 
 	* Tidy nco_fl_mk_lcl() in preparation for Zarr-access work
 

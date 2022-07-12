@@ -128,11 +128,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.1.0-beta05
-@set doc-edition 5.1.0-beta05
+@set nco-edition 5.1.0
+@set doc-edition 5.1.0
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 9 July 2022
+@set update-date 12 July 2022
 @set update-month July 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9716,13 +9716,17 @@ We are working to understand why this is the case and hope to have
 a fix by 5.1.1.
 This is why the manual does not yet document much about Blosc filters.
 
-netCDF 4.9.0 contains an inadvertent, albeit significant, constraint.
-Namely, the quantization algorithms internal to netCDF work only on
-netCDF4 datasets of type @acronym{NETCDF4}.
+netCDF 4.9.0 contains some inadvertent mistakes that will be fixed
+in 4.9.1.
+First, the quantization algorithms internal to netCDF work only on
+datasets of type @acronym{NETCDF4}.
 A recently discovered bug prevents them from working on
-@acronym{NETCDF4_CLASSIC}-format datasets. 
-And, by design, they may never be implemented for any
-@acronym{CLASSIC} or other netCDF3 formats.
+@acronym{NETCDF4_CLASSIC}-format datasets 
+@footnote{Quantization may never be implemented in netCDF for any 
+@acronym{CLASSIC} or other netCDF3 formats since there is no
+compression advantage to doing so.
+Use the @acronym{NCO} implementation to quantize to netCDF3 output
+formats.}.
 The fix to the @acronym{NETCDF4_CLASSIC} bug is available now in the
 main netCDF trunk, and will be officially released in netCDF 4.9.1.  
 Note that this bug does not affect the same quantization algorithms as
@@ -9737,7 +9741,14 @@ Per-variable quantization settings must also be invoked through
 @samp{--ppc} (not @samp{--cmp}) for all output formats, until and
 unless this feature is migrated to @samp{--cmp} (there are no plans
 to do so).
-Feedback welcome!
+
+Another sticky expected to be fixed in netCDF 4.9.1 is the use of the
+Blosc codec.
+NCZarr uses Blosc internally, however the @acronym{HDF5} Blosc codec
+in netCDF 4.9.0 requires some fixes before it can be considered
+robust.
+That is why we do not yet advertise its use in @acronym{NCO}.
+Feedback on any or all of these constraints is welcome.
 
 @unnumberedsubsec Best Practices for Real World Lossy Compression
 The workflow to compress large-scale, user-facing datasets requires 

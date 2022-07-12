@@ -691,6 +691,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   FILE *fp_in;
 
   nco_bool DAP_URL=False; /* DAP handles netCDF API, no retrieval necessary */
+  nco_bool FILE_URL=False; /* Retrieve file via NCZarr protocol */
   nco_bool FTP_URL=False; /* Retrieve remote file via FTP */
   nco_bool FTP_NETRC=False; /* Retrieve remote file via FTP with .netrc file */
   nco_bool FTP_OR_SFTP_URL; /* FTP or SFTP */
@@ -706,6 +707,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   const char fnc_nm[]="nco_fl_mk_lcl()"; /* [sng] Function name */
   const char dap4_url_sng[]="dap4://";
   const char ftp_url_sng[]="ftp://";
+  const char file_url_sng[]="file://";
   const char http_url_sng[]="http://";
   const char https_url_sng[]="https://";
   const char sftp_url_sng[]="sftp://";
@@ -724,13 +726,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   fl_nm_lcl=(char *)strdup(fl_nm);
 
   /* Remove any URL and machine-name components from local filename */
-  if(strstr(fl_nm_lcl,sftp_url_sng) == fl_nm_lcl){
+  if(strstr(fl_nm_lcl,sftp_url_sng) == fl_nm_lcl){ /* !sftp */
     SFTP_URL=True;
     url_sng_lng=strlen(sftp_url_sng);
-  }else if(strstr(fl_nm_lcl,ftp_url_sng) == fl_nm_lcl){ /* !sftp */
+  }else if(strstr(fl_nm_lcl,ftp_url_sng) == fl_nm_lcl){ /* !ftp */
     FTP_URL=True;
     url_sng_lng=strlen(ftp_url_sng);
-  } /* !ftp */
+  } /* !file */
   FTP_OR_SFTP_URL=FTP_URL || SFTP_URL;
 
   if(FTP_OR_SFTP_URL){
@@ -746,6 +748,12 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
+  }else if(strstr(fl_nm_lcl,file_url_sng) == fl_nm_lcl){ /* !file */
+    if(strstr(fl_nm_lcl,"mode=nczarr") || strstr(fl_nm_lcl,"mode=zarr")){
+      FILE_URL=True;
+      url_sng_lng=strlen(file_url_sng);
+      if(FILE_URL) FILE_URL=True; /* CEWI */
+    } /* !fl_nm_lcl */
   }else if((strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,https_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,dap4_url_sng) == fl_nm_lcl)){
     /* Filename starts with "http://" or "https://" or "dap4://" so try DAP first (if available), then wget */
 

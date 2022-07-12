@@ -5,13 +5,14 @@
 // Usage:
 // ncgen -7 -b -o ${HOME}/nco/data/zarr.nc ${HOME}/nco/data/zarr.cdl
 // ncgen -7 -lb -o "file://zarr#mode=nczarr,file" ${HOME}/nco/data/zarr.cdl
+// ncgen -7 -lb -o "file:///Users/zender/zarr#mode=nczarr,file" ${HOME}/nco/data/zarr.cdl
 
 netcdf zarr {
   dimensions:
     dmn = 2 ;
   variables:
     int var(dmn) ;
-    var:purpose = "var" ;
+    var:purpose = "Test variable for NCZarr interface" ;
     var:_FillValue = -32767 ;
 
     data:
