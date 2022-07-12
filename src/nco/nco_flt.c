@@ -1227,7 +1227,10 @@ nco_flt_def_out /* [fnc]  */
       rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id[flt_idx]);
       /* netCDF 4.9.0 lacks NC_HAS_BLOSC token */
       if(rcd == NC_NOERR){
-#define NCO_MIN_CNK_BLOSC 1U
+	/* Description of Blosc performance with small blocksizes:
+	   https://github.com/Blosc/c-blosc/issues/307
+	   https://github.com/Blosc/c-blosc/issues/337 */
+#define NCO_MIN_CNK_BLOSC 4096U
 	if(blk_sz >= NCO_MIN_CNK_BLOSC){
 	  rcd+=nc_def_var_blosc(nc_out_id,var_out_id,bls_sbc,(unsigned int)flt_lvl[flt_idx],blk_sz,bls_shf);
 	}else if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports variable %s is not chunked or has chunksize < %u B so will not attempt Blosc compression\n",nco_prg_nm_get(),fnc_nm,var_nm,NCO_MIN_CNK_BLOSC);

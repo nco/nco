@@ -1,6 +1,12 @@
-nco (5.1.0-1) unstable; urgency=low
+nco (5.1.1-1) unstable; urgency=low
 
   * new upstream version fxm:
+
+ -- Charlie Zender <zender@uci.edu>  Fri, 19 Aug 2022 12:25:57 -0700
+
+nco (5.1.0-1) unstable; urgency=low
+
+  * new upstream version Rattlesnake: filters, cmp_sng, CCR, nc 4.9.0; ncremap fix sub-sgs nrm, add ssgs thr
 
  -- Charlie Zender <zender@uci.edu>  Tue, 12 Jul 2022 12:25:56 -0700
 
