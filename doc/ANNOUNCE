@@ -7,15 +7,15 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 Version 5.1.0 supports the new netCDF 4.9.0 features for filters and
-quantization). This is a significant new feature so we bumped the
-version to 5.1.0 instead of 5.0.8. There is also an ncremap fix for
-sub-sub-gridscale regridding, e.g., landunit-specific
-regridding. Users of sub-SGS regridding, and anyone interested is
-using modern compression and quantization algorithms such as Bzip2,
-Zstandard, and BitRound.  
+quantization. This is a significant new feature that justifies the
+version bump from 5.0.7 to to 5.1.0. There is also an ncremap fix for 
+sub-sub-gridscale regridding, e.g., landunit-specific regridding.
+Users of sub-SGS regridding, and anyone interested is using modern
+compression or quantization algorithms such as Bzip2, Zstandard, 
+Granular BitGroom, and BitRound.   
 
 Work on NCO 5.1.1 has commenced and will polish support for
-quantization/compression algorithms.
+quantization/compression algorithms and add support for NCZarr I/O.
 
 Enjoy,
 Charlie
