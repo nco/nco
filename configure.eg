@@ -329,16 +329,16 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket to build NCO: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/4.9.3 # 20201208
-# Personal recipe last modified: 20210321 (search e3sm-u 1.4.0)
-# Personal recipe last used successfully: 20220202
-export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
+# Personal recipe last modified: 20220712 (search andes gpfs not rhea)
+# Personal recipe last used successfully: 20220712
+export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.4.0/lib
-export NETCDF_ROOT=/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.4.0
-export PATH=${PATH}:/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.4.0/bin
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest/lib
+export NETCDF_ROOT=/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest
+export PATH=${PATH}:/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest/bin
 cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.4.0' OPTS=D OMP=Y allinone;cd -
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
 # LCRC uses Spack module written and tested by Adam Stewart: https://github.com/LLNL/spack/pull/4370/files
@@ -592,20 +592,6 @@ cd ~/nco;git reset --hard origin/master
 module load gcc/8.4.0
 CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 
-# 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on mira:
-# Sysadmin upgrade request: 20170825
-# Latest sysadmin-compiled module usage:  # fxm
-# Personal recipe last modified: 2016??
-# Personal recipe last used successfully: 2016??
-cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/netcdf/current' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-/bin/cp -f config.log nco.config.log.foo
-/bin/cp -f libtool nco.libtool.foo
-make clean;make > nco.make.foo 2>&1
-make check >> nco.make.foo 2>&1
-make install >> nco.make.foo 2>&1
-scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-
 # 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on roger:
 # Sysadmin upgrade request: Yan Liu <yanliu@illinois.edu>
 # Latest sysadmin-compiled module usage: module load nco/4.6.5 # 20170315
@@ -621,55 +607,6 @@ make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-
-# 20180124: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on theta:
-# Sysadmin upgrade request: support@alcf.anl.gov
-# Latest ticket to build NCO: 368436 on 20180502
-# Latest sysadmin-compiled module usage:  # fxm
-# Personal recipe last modified: 20180823
-# Problem is that .bashrc resets PATH so cannot find icc/gcc ...
-# Personal recipe last used successfully: 20190313 (Traditional build only, no ncap2)
-# module unload python
-# module use /projects/ClimateEnergy_2/software/modulefiles/all
-# module load e3sm-unified/1.1.2
-cd ~/nco;/bin/rm -f *.foo;make distclean
-module load cray-netcdf
-#module add PrgEnv-intel
-#module swap PrgEnv-intel PrgEnv-gnu
-#module swap PrgEnv-gnu PrgEnv-intel
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_theta CC='icc' CXX='icpc' GSL_ROOT='csz_not_available_yet' NETCDF_INC='/opt/cray/pe/netcdf/4.4.1.1.6/intel/16.0/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.4.1.1.6/intel/16.0/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.4.1.1.6' UDUNITS2_PATH='csz_not_available_yet' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-/bin/cp -f config.log nco.config.log.foo
-/bin/cp -f libtool nco.libtool.foo
-make clean;make > nco.make.foo 2>&1
-make check >> nco.make.foo 2>&1
-make install >> nco.make.foo 2>&1
-scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-# 20180823 Attempt with bld/Makefile:
-export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
-export LINUX_CXX='g++ -std=c++11'
-export LINUX_FC='gfortran'
-module unload PrgEnv-intel # CSZ 
-module load PrgEnv-gnu # CSZ 
-module load cray-netcdf
-export LD_LIBRARY_PATH=/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib:${LD_LIBRARY_PATH}
-export NETCDF_ROOT=/opt/cray/pe/netcdf/4.6.1.2
-export PATH=/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/bin:${PATH}
-cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL=N NETCDF_INC='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib' NETCDF_INC='/opt/cray/pe/netcdf/4.6.1.2' UDUNITS=N OPTS=D OMP=Y allinone;cd -
-
-# gcc/g++ 20160420 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on titan:
-# Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
-# Latest ticket to build NCO: 347675 on 20170316, 381695 on 20180413
-# Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170411
-# Personal recipe last modified: 20170814
-# Personal recipe last used successfully: 20180921 (except ncap2 error with antlr link)
-export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
-module add gcc # change GCC from v 4.3.4 to 4.9.0
-#module add gsl # not used yet
-#module add cray-netcdf # not used yet
-#module add udunits # not used yet
-export PATH=${PATH}:'/opt/cray/netcdf/4.4.1.1/bin'
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL=N NETCDF_ROOT='/opt/cray/netcdf/4.4.1.1' NETCDF_INC='/opt/cray/netcdf/4.4.1.1/GNU/49/include' NETCDF_LIB='/opt/cray/netcdf/4.4.1.1/GNU/49/lib' OPTS=D OMP=Y UDUNITS_INC='/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/include' UDUNITS_LIB='/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib -lexpat' allinone;cd -
 
 # gcc/g++ Sysadmins: use this to install/update NCO in /opt/nco
 cd ~/nco;/bin/rm -f *.foo;make distclean

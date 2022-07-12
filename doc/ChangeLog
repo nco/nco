@@ -1,5 +1,7 @@
 2022-07-12  Charlie Zender  <zender@uci.edu>
 
+	* Add stubs to let NCO examine files with NCZarr file:// schema
+
 	* NCO 5.1.1-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha01: Bali';git push
 	git tag -a 5.1.1-alpha01 -m 'Functionally identical to 5.1.0';git push --tags

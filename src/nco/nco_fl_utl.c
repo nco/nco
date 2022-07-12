@@ -691,7 +691,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   FILE *fp_in;
 
   nco_bool DAP_URL=False; /* DAP handles netCDF API, no retrieval necessary */
-  nco_bool FILE_URL=False; /* Retrieve file via NCZarr protocol */
+  nco_bool NCZARR_URL=False; /* Retrieve file via NCZarr protocol */
+  nco_bool DAP_OR_NCZARR_URL=False; /* DAP or NCZARR */
   nco_bool FTP_URL=False; /* Retrieve remote file via FTP */
   nco_bool FTP_NETRC=False; /* Retrieve remote file via FTP with .netrc file */
   nco_bool FTP_OR_SFTP_URL; /* FTP or SFTP */
@@ -707,14 +708,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   const char fnc_nm[]="nco_fl_mk_lcl()"; /* [sng] Function name */
   const char dap4_url_sng[]="dap4://";
   const char ftp_url_sng[]="ftp://";
-  const char file_url_sng[]="file://";
+  const char nczarr_url_sng[]="file://";
   const char http_url_sng[]="http://";
   const char https_url_sng[]="https://";
   const char sftp_url_sng[]="sftp://";
 
-#ifdef ENABLE_DAP
+  int in_id; /* [id] Temporary input file ID */
   int rcd; /* [rcd] Return code */
-#endif /* !ENABLE_DAP */
   int rcd_stt=0; /* [rcd] Return code from stat() */
   int rcd_sys; /* [rcd] Return code from system() */
 
@@ -748,18 +748,28 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
-  }else if(strstr(fl_nm_lcl,file_url_sng) == fl_nm_lcl){ /* !file */
+  }else if(strstr(fl_nm_lcl,nczarr_url_sng) == fl_nm_lcl){ /* !file */
     if(strstr(fl_nm_lcl,"mode=nczarr") || strstr(fl_nm_lcl,"mode=zarr")){
-      FILE_URL=True;
-      url_sng_lng=strlen(file_url_sng);
-      if(FILE_URL) FILE_URL=True; /* CEWI */
-    } /* !fl_nm_lcl */
+      url_sng_lng=strlen(nczarr_url_sng);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s attempting to open %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
+      rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
+      if(rcd == NC_NOERR){
+	/* Close file to prevent accumulating dangling open files on DAP server */
+	rcd=nco_close(in_id);
+	/* Great! NCZarr worked so file has earned NCZarr identification */
+	NCZARR_URL=True;
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s successfully opened this file using NCZarr file:\\ protocol\n",nco_prg_nm_get(),fnc_nm);
+	/* 20220712: Set rcd_stt=0 to mimic successful stat() return like DAP (NCZarr protocol also treats files as local) */
+	rcd_stt=0;
+      }else{ /* !rcd */
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports requested input file has \"file://\" prefix without \"mode=zarr\" suffix\n",nco_prg_nm_get(),fnc_nm);
+      } /* !rcd */
+    } /* !fl_nm_lcl, nczarr */
   }else if((strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,https_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,dap4_url_sng) == fl_nm_lcl)){
     /* Filename starts with "http://" or "https://" or "dap4://" so try DAP first (if available), then wget */
 
 #ifdef ENABLE_DAP
     /* Filename has http:// prefix so try DAP access to unadulterated filename */
-    int in_id; /* [id] Temporary input file ID */
 
     /* Attempt nc_open() on HTTP protocol files. Success means DAP found file.
        Do not worry about NC_DISKLESS here since any file will be immediately closed */
@@ -807,7 +817,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     (void)fprintf(stderr,"%s: HINT: Obtain or build DAP-enabled NCO, e.g., with configure --enable-dap-netcdf ...\n",nco_prg_nm_get());
 #endif /* !ENABLE_DAP */
 
-    if(DAP_URL == False){ /* DAP access to http:// file failed */
+    DAP_OR_NCZARR_URL=DAP_URL || NCZARR_URL;
+
+    if(DAP_OR_NCZARR_URL == False){ /* DAP access to http:// file failed */
       /* Attempt to retrieve URLs directly when DAP access fails. Tests:
 	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
 	 ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget
@@ -860,7 +872,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   } /* end if */
 
   /* Does file exist on local system? */
-  if(!DAP_URL) rcd_stt=stat(fl_nm_lcl,&stat_sct);
+  if(!DAP_OR_NCZARR_URL) rcd_stt=stat(fl_nm_lcl,&stat_sct);
   if(rcd_stt == -1 && (nco_dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"\n%s: INFO stat() #1 failed: %s does not exist\n",nco_prg_nm_get(),fl_nm_lcl);
 
   /* If not, does file exist on local system under same path interpreted relative to current working directory? */
@@ -1261,7 +1273,6 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     }else{
       /* This is appropriate place to insert invocation of shell command
 	 to retrieve file asynchronously and then to return status to NCO synchronously. */
-      
       int fl_sz_crr=-2;
       int fl_sz_ntl=-1;
       int tm_nbr=100; /* Maximum number of sleep periods before error exit */
@@ -1306,10 +1317,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   } /* end if file was already on the local system */
   
   if(nco_dbg_lvl_get() >= nco_dbg_fl)
-    if(DAP_URL && fl_pth_lcl)
+    if(DAP_OR_NCZARR_URL && fl_pth_lcl)
       (void)fprintf(stderr,"%s: INFO User-specified option \"-l %s\" was not used since input file was not retrieved from remote location\n",nco_prg_nm_get(),fl_pth_lcl);
 
-  if(!DAP_URL){
+  if(!DAP_OR_NCZARR_URL){
     /* File is (now, anyway) truly local---does local system have read permission? */
     if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
       (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s, or file does not exist\n",nco_prg_nm_get(),fl_nm_lcl);
@@ -1964,7 +1975,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
   return fl_out_tmp;
 
-} /* end nco_fl_out_open() */
+} /* !nco_fl_out_open() */
 
 void
 nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output file */

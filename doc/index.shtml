@@ -10,6 +10,7 @@ Usage:
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
 scp -p ~/nco/doc/index.shtml dust.ess.uci.edu:Sites/nco
 /usr/bin/scp ~/nco/doc/doe.jpg ~/nco/doc/index.shtml ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_nco_stk.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_srl.png ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png zender,nco@web.sf.net:/home/project-web/nco/htdocs
+/usr/bin/scp ~/nco/doc/fgr/qnt_cr* zender,nco@web.sf.net:/home/project-web/nco/htdocs/fgr
 scp -p ~/nco/doc/index.shtml ~/nco/doc/logo_cog.png ~/nco/doc/logo_cog_nmr.png ~/nco/doc/logo_nco_stk.png ~/nco/doc/logo_pch.png ~/nco/doc/logo_srl.png ~/nco/doc/nasa.png ~/nco/doc/nco.png ~/nco/doc/nsf.png dust.ess.uci.edu:Sites/nco
 scp -p ~/nco/doc/.htaccess zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 scp -p ~/nco/doc/.htaccess dust.ess.uci.edu:Sites/nco/src

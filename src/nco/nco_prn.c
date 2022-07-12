@@ -358,7 +358,16 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		    if(flt_hlp_sng){
 		      strcat(flt_hlp_sng,nco_flt_id2nm(flt_lst[flt_idx]));
 		      if(flt_lst[flt_idx] == H5Z_FILTER_BLOSC){
-			/* Blosc stores seven parameters */
+			/* Blosc stores seven parameters 
+			   netcdf-c/plugins/H5Zblosc.c
+			   HDF5 Blosc filter takes 7 parameters as follows:
+			   param[0] -- FILTER_BLOSC_VERSION (ignored)
+			   param[1] -- BLOSC_VERSION_FORMAT (ignored)
+			   param[2] -- typesize in bytes
+			   param[3] -- chunksize in bytes (ignored)
+			   param[4] -- compression level
+			   param[5] -- shuffle enabled
+			   param[6] -- compressor to use */
 			if(prm_nbr == 7){
 			  /* Blosc Shuffle was used if penultimate parameter is 1 */
 			  if(prm_lst[5] == 1U) strcat(flt_hlp_sng," Shuffle, Blosc ");
