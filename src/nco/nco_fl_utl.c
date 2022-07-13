@@ -752,14 +752,14 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if(strstr(fl_nm_lcl,"mode=nczarr") || strstr(fl_nm_lcl,"mode=zarr")){
 #if NC_HAS_NCZARR
       url_sng_lng=strlen(nczarr_url_sng);
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s attempting to open %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s attempting to open %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
       rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
       if(rcd == NC_NOERR){
 	/* Close file to prevent accumulating dangling open files on DAP server */
 	rcd=nco_close(in_id);
 	/* Great! NCZarr worked so file has earned NCZarr identification */
 	NCZARR_URL=True;
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s successfully opened this file using NCZarr file:// protocol\n",nco_prg_nm_get(),fnc_nm);
+	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s successfully opened this file using NCZarr file:// protocol\n",nco_prg_nm_get(),fnc_nm);
 	/* 20220712: Set rcd_stt=0 to mimic successful stat() return like DAP (NCZarr protocol also treats files as local) */
 	rcd_stt=0;
       }else{ /* !rcd */

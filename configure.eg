@@ -862,7 +862,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # gcc/g++ Zender uses this to debug NCO with custom-built netCDF binaries in /usr/local with clang (frazil)
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # 20170810 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
-CC='clang' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='clang -std=c++11' CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
@@ -872,7 +872,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 
 # gcc/g++ Zender uses this to debug NCO with system netCDF binaries with clang (frazil)
 cd ~/nco;/bin/rm -f *.foo;make distclean
-CC='clang' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='clang -std=c++11' CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib64' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib64' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
