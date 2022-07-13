@@ -1,8 +1,12 @@
-2022-07-12  Charlie Zender  <zender@uci.edu>
+2022-07-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha02: Bali';git push
 	git tag -a 5.1.1-alpha02 -m 'fxm';git push --tags
+
+	* Treat NCZarr files with file:// scheme like DAP files so printing works
+
+2022-07-12  Charlie Zender  <zender@uci.edu>
 
 	* Call nco_cdc_lst_bld() only if an invoked filter was not found
 

@@ -758,12 +758,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	rcd=nco_close(in_id);
 	/* Great! NCZarr worked so file has earned NCZarr identification */
 	NCZARR_URL=True;
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s successfully opened this file using NCZarr file:// protocol\n",nco_prg_nm_get(),fnc_nm);
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s successfully opened this file using NCZarr file:// protocol\n",nco_prg_nm_get(),fnc_nm);
 	/* 20220712: Set rcd_stt=0 to mimic successful stat() return like DAP (NCZarr protocol also treats files as local) */
 	rcd_stt=0;
       }else{ /* !rcd */
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports requested input file has \"file://\" prefix without \"mode=zarr\" suffix\n",nco_prg_nm_get(),fnc_nm);
+	if(!NCZARR_URL) (void)fprintf(stdout,"%s: INFO %s failed to open this Zarr-looking using NCZarr file:// protocol\n",nco_prg_nm_get(),fnc_nm);
       } /* !rcd */
+      if(!NCZARR_URL) (void)fprintf(stdout,"%s: WARNING %s reports requested input file has \"file://\" prefix without \"mode=zarr\" suffix. %s code is in limbo, needs work.\n",nco_prg_nm_get(),fnc_nm,fnc_nm);
     } /* !fl_nm_lcl, nczarr */
   }else if((strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,https_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,dap4_url_sng) == fl_nm_lcl)){
     /* Filename starts with "http://" or "https://" or "dap4://" so try DAP first (if available), then wget */
@@ -817,9 +818,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     (void)fprintf(stderr,"%s: HINT: Obtain or build DAP-enabled NCO, e.g., with configure --enable-dap-netcdf ...\n",nco_prg_nm_get());
 #endif /* !ENABLE_DAP */
 
-    DAP_OR_NCZARR_URL=DAP_URL || NCZARR_URL;
-
-    if(DAP_OR_NCZARR_URL == False){ /* DAP access to http:// file failed */
+    if(!DAP_URL){ /* DAP access to http:// file failed */
       /* Attempt to retrieve URLs directly when DAP access fails. Tests:
 	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
 	 ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget
@@ -862,15 +861,17 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
       if(!fl_pth_lcl_tmp){
 	(void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of scp or rcp path %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
-	  nco_exit(EXIT_FAILURE);
-	} /* endif */
-        fl_nm_lcl_tmp=fl_nm_lcl;
-        fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
-        (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
-        fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
-    } /* endif period is three or four characters from colon */
-  } /* end if */
+	nco_exit(EXIT_FAILURE);
+      } /* !fl_pth_lcl_tmp */
+      fl_nm_lcl_tmp=fl_nm_lcl;
+      fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
+      (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
+      fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
+    } /* !cln_ptr period is three or four characters from colon */
+  } /* !DAP_OR_NCZARR_URL */
 
+  DAP_OR_NCZARR_URL=DAP_URL || NCZARR_URL;
+  
   /* Does file exist on local system? */
   if(!DAP_OR_NCZARR_URL) rcd_stt=stat(fl_nm_lcl,&stat_sct);
   if(rcd_stt == -1 && (nco_dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"\n%s: INFO stat() #1 failed: %s does not exist\n",nco_prg_nm_get(),fl_nm_lcl);
@@ -1327,7 +1328,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       nco_exit(EXIT_FAILURE);
     }else{
       (void)fclose(fp_in);
-    } /* end else */
+    } /* !fopen() */
 
     /* For local files, perform optional file diagnostics */
     if(nco_dbg_lvl_get() >= nco_dbg_std){
@@ -1337,7 +1338,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       if(fl_nm_cnc) fl_nm_cnc=(char *)nco_free(fl_nm_cnc);
     } /* endif dbg */
 
-  } /* end if file is truly local */
+  } /* !file is truly local */
 
   /* Free input filename space */
   fl_nm=(char *)nco_free(fl_nm);

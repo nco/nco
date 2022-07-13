@@ -137,6 +137,7 @@ main(int argc,char **argv)
   char *fl_in=NULL;
   char *fl_in_dpl=NULL; /* [sng] Duplicate of fl_in */
   char *fl_in_stub=NULL; /* [sng] Filename component of fl_in */
+  char *fl_in_frg=NULL; /* [sng] Location of fragment component (e.g., "mode=") of fl_in */
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
   char *fl_prn=NULL; /* [sng] Formatted text output file */
@@ -1124,6 +1125,10 @@ main(int argc,char **argv)
 #endif /* !WIN32 */
   fl_in_stub=strrchr(fl_in_dpl,sls_chr);
   if(fl_in_stub) fl_in_stub++; else fl_in_stub=fl_in_dpl;
+  fl_in_frg=strstr(fl_in_stub,"#mode");
+  if(fl_in_frg) *fl_in_frg='\0';
+  //(void)fprintf(stderr,"%s: DEBUG quark main() reports fl_lst_in=%s, fl_in=%s, fl_pth_lcl=%s, fl_in_frg=%s, fl_in_stub=%s\n",nco_prg_nm_get(),fl_lst_in[0],fl_in,fl_pth_lcl,fl_in_frg,fl_in_stub);
+
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   if(SHARE_OPEN) md_open=md_open|NC_SHARE;
