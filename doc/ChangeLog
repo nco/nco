@@ -1,7 +1,7 @@
 2022-07-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha02: Bali';git push
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha02: Webb';git push
 	git tag -a 5.1.1-alpha02 -m 'ncks: read/hyperslab/print NCZarr files';git push --tags
 
 	* Add external data type NC_FORMATX_NCZARR
