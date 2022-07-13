@@ -1080,9 +1080,6 @@ nco_flt_def_out /* [fnc]  */
 	bls_shf=1;
   } /* flt_idx */
   
-  /* Build list of available filters once */
-  if(!nco_cdc_lst_glb && flt_nbr > 0) (void)nco_cdc_lst_bld(nc_out_id);
-
   /* Invoke applicable codec(s) */
   for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){ 
     if(nco_dbg_lvl_get() >= nco_dbg_grp) (void)fprintf(stdout,"%s: DEBUG %s executing filter for %s: flt_nbr=%d, flt_idx=%d, flt_enm=%d, flt_nm=%s, flt_id=%u, flt_lvl=%d\n",nco_prg_nm_get(),fnc_nm,var_nm,flt_nbr,flt_idx,flt_alg[flt_idx],nco_flt_enm2nmid(flt_alg[flt_idx],NULL),flt_id[flt_idx],flt_lvl[flt_idx]);
@@ -1249,7 +1246,10 @@ nco_flt_def_out /* [fnc]  */
       bls_sbc=NC_MAX_UINT; 
     } /* !bls_sbc */
 
-    if(cdc_has_flt == False){
+    if(!cdc_has_flt){
+      /* Build list of available filters the first time it might be useful in a debugging message */
+      if(!nco_cdc_lst_glb) (void)nco_cdc_lst_bld(nc_out_id);
+
       (void)fprintf(stdout,"%s: ERROR %s reports neither netCDF nor CCR library appears to define an API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and/or not installed by netCDF (or CCR). If the filter is supposed to be in netCDF (or CCR), be sure that the external filter libraries (e.g., libzstd.a) were installed when netCDF (or CCR) is installed. Otherwise, re-try this command and specify only filters included in this list of available filters: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2nmid(flt_alg[flt_idx],NULL),nco_cdc_lst_glb);
       nco_exit(EXIT_FAILURE);
     } /* !cdc_has_flt */

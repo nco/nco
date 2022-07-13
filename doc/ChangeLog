@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha02: Bali';git push
 	git tag -a 5.1.1-alpha02 -m 'fxm';git push --tags
 
+	* Call nco_cdc_lst_bld() only if an invoked filter was not found
+
 	* Add stubs to let NCO examine files with NCZarr file:// schema
 
 	* NCO 5.1.1-alpha01 release procedure:
