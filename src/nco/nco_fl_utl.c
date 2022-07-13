@@ -758,7 +758,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	rcd=nco_close(in_id);
 	/* Great! NCZarr worked so file has earned NCZarr identification */
 	NCZARR_URL=True;
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s successfully opened this file using NCZarr file:\\ protocol\n",nco_prg_nm_get(),fnc_nm);
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s successfully opened this file using NCZarr file:// protocol\n",nco_prg_nm_get(),fnc_nm);
 	/* 20220712: Set rcd_stt=0 to mimic successful stat() return like DAP (NCZarr protocol also treats files as local) */
 	rcd_stt=0;
       }else{ /* !rcd */
