@@ -658,6 +658,8 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
       return "NC_FORMATX_DAP2";
     case NC_FORMATX_DAP4:
       return "NC_FORMATX_DAP4";
+    case NC_FORMATX_NCZARR:
+      return "NC_FORMATX_NCZARR";
     case NC_FORMATX_UNDEFINED:
       return "NC_FORMATX_UNDEFINED";
     default: nco_dfl_case_nc_type_err(); break;

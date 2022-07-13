@@ -850,9 +850,10 @@ case ${host} in
     i*86-*-linux-gnu | x86_64*-linux* )
 	case ${CC} in
 	    como* ) CFLAGS="${CFLAGS} --c99" ; ;;
-# 20150525: fxm Remove -no-gcc from icc flags as per ocehugo
+# 20150525: Remove -no-gcc from icc flags as per ocehugo
 #	    icc* ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
-	    icc* ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE" ; ;;
+# 20220713: Remove "-D_BSD_SOURCE -D_POSIX_SOURCE" from icc
+	    icc* ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS}" ; ;;
 	    pathcc* ) CFLAGS="${CFLAGS} -std=c99" ; ;;
 	    pgcc* ) CFLAGS="${CFLAGS} -c9x" ; CPPFLAGS="${CPPFLAGS} -DPGI_CC" ; ;;
 	esac
@@ -900,7 +901,6 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # 20070310: Change to no-shadow so ncoLexer.cpp compiles
 # 20150115: Replace '-D_BSD_SOURCE -D_POSIX_SOURCE' with '-D_DEFAULT_SOURCE'
 # 20210525: Replace '-std=c99' with '-std=gnu11'
-
     GCC_CMD_ARGS='-std=gnu11 -pedantic -D_DEFAULT_SOURCE'
     GCC_BASE_FLAGS='-Wall -Wuninitialized -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4'
     GCC_BASE_FLAGS="${GCC_BASE_FLAGS} ${OPENMP_CFLAGS}"
@@ -1205,7 +1205,9 @@ if test $ac_compiler_gnu = 'yes'; then
     # 20160418: default cori gcc is 4.3.4 from 2008!
     # 20160418: default cori gcc is 4.3.4 from 2008!
     # 20210525: Replace '-std=c99' with '-std=gnu11' 
-    CFLAGS="${CFLAGS} -std=gnu11 -D_BSD_SOURCE -D_POSIX_SOURCE"
+    #CFLAGS="${CFLAGS} -std=gnu11 -D_BSD_SOURCE -D_POSIX_SOURCE"
+    # 20220713: Remove "-D_BSD_SOURCE -D_POSIX_SOURCE" from gnu
+    CFLAGS="${CFLAGS} -std=gnu11"
     case ${host} in
 # MacOS does not understand shared libraries
 # clang -O4 DNE, highest clang optimization is -O3 

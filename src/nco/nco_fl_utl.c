@@ -750,6 +750,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,nczarr_url_sng) == fl_nm_lcl){ /* !file */
     if(strstr(fl_nm_lcl,"mode=nczarr") || strstr(fl_nm_lcl,"mode=zarr")){
+#if NC_HAS_NCZARR
       url_sng_lng=strlen(nczarr_url_sng);
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s attempting to open %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
       rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
@@ -762,8 +763,12 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	/* 20220712: Set rcd_stt=0 to mimic successful stat() return like DAP (NCZarr protocol also treats files as local) */
 	rcd_stt=0;
       }else{ /* !rcd */
-	if(!NCZARR_URL) (void)fprintf(stdout,"%s: INFO %s failed to open this Zarr-looking using NCZarr file:// protocol\n",nco_prg_nm_get(),fnc_nm);
+	if(!NCZARR_URL) (void)fprintf(stdout,"%s: INFO %s failed to open this Zarr-looking file using NCZarr file:// protocol. HINT: Check that file exists and NCZarr is enabled.\n",nco_prg_nm_get(),fnc_nm);
       } /* !rcd */
+#else /* !NC_HAS_NCZARR */
+      (void)fprintf(stdout,"%s: ERROR %s interpreted %s as NCZarr file but NCZarr was not enabled in this netCDF library. HINT: Install a netCDF-library (4.8.0 or later) configured with --enable-nczarr (which is the default setting), then rebuild NCO with that library.\n",nco_prg_nm_get(),fnc_nm);
+      nco_exit(EXIT_FAILURE);
+#endif /* !NC_HAS_NCZARR */
       if(!NCZARR_URL) (void)fprintf(stdout,"%s: WARNING %s reports requested input file has \"file://\" prefix without \"mode=zarr\" suffix. %s code is in limbo, needs work.\n",nco_prg_nm_get(),fnc_nm,fnc_nm);
     } /* !fl_nm_lcl, nczarr */
   }else if((strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,https_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,dap4_url_sng) == fl_nm_lcl)){

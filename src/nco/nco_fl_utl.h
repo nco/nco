@@ -48,6 +48,9 @@ typedef int pid_t;
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
+#ifdef NC_HAVE_META_H
+# include <netcdf_meta.h> /* NC_VERSION_..., NC_HAS_QUANTIZE, NC_HAS_ZSTD, NC_HAS_NCZARR */
+#endif /* !NC_HAVE_META_H */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* Personal headers */

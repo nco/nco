@@ -2,7 +2,11 @@
 
 	* NCO 5.1.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha02: Bali';git push
-	git tag -a 5.1.1-alpha02 -m 'fxm';git push --tags
+	git tag -a 5.1.1-alpha02 -m 'ncks: print NCZarr files';git push --tags
+
+	* Add external data typeNC_FORMATX_NCZARR
+
+	* Remove "-D_BSD_SOURCE -D_POSIX_SOURCE" from gnu and icc in configure.ac
 
 	* Treat NCZarr files with file:// scheme like DAP files so printing works
 
@@ -16,7 +20,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha01: Bali';git push
 	git tag -a 5.1.1-alpha01 -m 'Functionally identical to 5.1.0';git push --tags
 
-	* Increase NCO_MIN_CNK_BLOSC from 1U to 4096U to prevent Blosc errors
+	* Increase NCO_MIN_CNK_BLOSC from 1U to 4096U to prevent some Blosc errors
 
 	* NCO 5.1.0 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.0: Rattlesnake';git push

@@ -532,6 +532,9 @@ extern "C" {
 #ifndef NC_FORMATX_DAP4
 # define NC_FORMATX_DAP4    (6)
 #endif
+#ifndef NC_FORMATX_NCZARR
+# define NC_FORMATX_NCZARR  (10)
+#endif
 
   /* Three compatibility tokens from pnetcdf.h introduced to NCO 20140604 
      These were first fully supported in 201708 (NCO 4.6.9) */
@@ -561,6 +564,10 @@ extern "C" {
 #endif
 #ifndef NC_EDAPSVC
 # define NC_EDAPSVC (-70)      /**< DAP server error */
+#endif
+  /* Backwards-compatibility error codes implemented in 202207 to diagnose problems with NCZarr */
+#ifndef NC_ENCZARR
+# define NC_ENCZARR (-137)    /**< Error at NCZarr layer. */
 #endif
 
   /* Backwards-compatibility error codes implemented in 202004 to workaround netCDF 4.7.4 backwards incompatibility with nc_inq_var_filter()
