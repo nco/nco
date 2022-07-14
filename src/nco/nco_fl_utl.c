@@ -1720,7 +1720,7 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
        https://docs.unidata.ucar.edu/netcdf-c/current/md__home_wfisher_Desktop_gitprojects_netcdf_c_docs_nczarr.html
        scheme://host:port/path?query#fragment, e.g., file://${HOME}/zarr#mode=nczarr,zarr"
        Isolate (and run stat() on) just the path, or "." if path is NULL */
-    char *fl_frg=NULL; /* [sng] Location of fragment component (e.g., "mode=") of fl */
+    char *fl_frg; /* [sng] Location of fragment component (e.g., "mode=") of fl */
     int pfx_lng=0; /* [nbr] Number of characters used by NCZarr schema string */
     if(drc_out == strstr(drc_out,"file://")) pfx_lng=7;
     drc_out+=pfx_lng;
@@ -2125,3 +2125,44 @@ nco_fl_rm /* [fnc] Remove file */
   rm_cmd=(char *)nco_free(rm_cmd);
 } /* !nco_fl_rm() */
 
+char * /* O [sng] Filepath */
+nco_fl_ncz2pth /* [fnc] Convert NCZarr filename to file path */
+(const char * const fl_nm) /* I [sng] NCZarr filename */
+{
+  /* Purpose: Convert NCZarr filename to file path
+
+     NCZarr output specifications are of this form
+     https://docs.unidata.ucar.edu/netcdf-c/current/md__home_wfisher_Desktop_gitprojects_netcdf_c_docs_nczarr.html
+     scheme://host:port/path?query#fragment
+
+     NCZarr filename examples:
+     file://${HOME}/zarr#mode=nczarr,zarr
+     https:///  zarr#mode=nczarr,zarr
+
+     The output will be a local path on which stat() can be run
+     The path will be the directory path, if it present in the input
+     If the input is a filename without a path, then the returned path will be "." 
+
+     NB: The calling routine is responsible for freeing the returned string
+
+     If no path (including ".") can be determined, the function returns NULL */
+
+  char *fl_pth=NULL; /* [sng] Duplicate of fl_nm */
+  char *fl_frg_lcn; /* [sng] Location of fragment component (e.g., "#mode=") of fl_pth */
+
+  int fl_fmt_xtn=nco_fmt_xtn_nil; /* I [enm] Extended file format of source file */
+
+  if(fl_fmt_xtn == nco_fmt_xtn_nczarr){
+
+    int pfx_lng=0; /* [nbr] Number of characters used by NCZarr schema string */
+
+    if(fl_pth == strstr(fl_pth,"file://")) pfx_lng=7;
+    fl_pth+=pfx_lng;
+    fl_frg_lcn=strstr(fl_pth,"#mode");
+    if(fl_frg_lcn) *fl_frg_lcn='\0';
+
+  } /* !fl_fmt_xtn */
+
+  return fl_pth;
+  
+} /* !nco_fl_ncz2pth() */

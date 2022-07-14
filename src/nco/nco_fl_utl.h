@@ -187,6 +187,10 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
  int * const nc_id); /* O [id] File ID */
 
+char * /* O [sng] Filepath */
+nco_fl_ncz2pth /* [fnc] Convert NCZarr filename to file path */
+(const char * const fl_nm); /* I [sng] NCZarr filename */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

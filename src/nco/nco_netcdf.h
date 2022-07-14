@@ -191,6 +191,9 @@
 #ifndef NC_FORMATX_DAP4
 # define NC_FORMATX_DAP4    (6)
 #endif
+#ifndef NC_FORMATX_NCZARR
+# define NC_FORMATX_NCZARR  (10)
+#endif
 
 /* Three compatibility tokens from pnetcdf.h introduced to NCO 20140604 
    First actually used 20160114 */

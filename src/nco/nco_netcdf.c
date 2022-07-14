@@ -1114,7 +1114,7 @@ int nc_inq_filter_avail(const int nc_id,const unsigned int flt_id)
     rcd=NC_ENOFILTER;
     break;
   } /* !flt_id */
-  (void)fprintf(stdout,"INFO: NCO stub function for %s reports an inquiry on filter availability of HDF5 filter ID = %lu. Stub function employed because libnetcdf.a does not contain %s. Please rebuild NCO against netCDF library version 4.9.0 (released ~20220601) or later to support the capability to find and call filters besides DEFLATE, Shuffle, and Fletcher32.\n",fnc_nm,flt_id,fnc_nm);
+  (void)fprintf(stdout,"INFO: NCO stub function for %s reports an inquiry on filter availability of HDF5 filter ID = %u. Stub function employed because libnetcdf.a does not contain %s. Please rebuild NCO against netCDF library version 4.9.0 (released ~20220601) or later to support the capability to find and call filters besides DEFLATE, Shuffle, and Fletcher32.\n",fnc_nm,flt_id,fnc_nm);
   return rcd;
 } /* !nc_inq_filter_avail() */
 #endif /* !490, !4.9.0 */
