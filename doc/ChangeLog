@@ -1,8 +1,12 @@
-2022-07-13  Charlie Zender  <zender@uci.edu>
+2022-07-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha03: Moon Sun Run';git push
 	git tag -a 5.1.1-alpha03 -m '';git push --tags
+
+	* Call nc_inq_filter_avail() only if it exists and might be successful, quiet messages
+
+2022-07-13  Charlie Zender  <zender@uci.edu>
 
 	* Retrofit nco_fl_blocksize() and nco_fl_mv() to handle NCZarr file:// schema storage
 

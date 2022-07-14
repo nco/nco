@@ -1205,7 +1205,9 @@ nco_flt_def_out /* [fnc]  */
     case nco_flt_dns: /* DEFLATE No Shuffle */
     case nco_flt_unk: /* Unknown filter referenced by ID not name */
       /* Unknown filters must call the filter handler with unsigned ints */
+#if NC_LIB_VERSION >= 490
       rcd+=nco_inq_filter_avail(nc_out_id,flt_id[flt_idx]);
+#endif /* NC_LIB_VERSION >= 490  */
       flt_prm_uns=(unsigned int *)nco_malloc(flt_prm_nbr[flt_idx]*sizeof(unsigned int));
       for(prm_idx=0;prm_idx<flt_prm_nbr[flt_idx];prm_idx++)
 	flt_prm_uns[prm_idx]=(unsigned int)flt_prm[flt_idx][prm_idx];
@@ -1289,8 +1291,6 @@ nco_cdc_lst_bld
 
   int rcd=NC_NOERR; /* [rcd] Return code */
 
-  unsigned int flt_id; /* [ID] HDF5 filter ID */
-
   /* Build list of available filters once */
   if(!nco_cdc_lst_glb){
     /* Lame attempt to avoid races when multiple threads "simultaneously" check this pointer
@@ -1313,19 +1313,32 @@ nco_cdc_lst_bld
     strcat(nco_cdc_lst_glb,", GranularBR");
 #endif /* !CCR_HAS_GRANULARBR */
 
-    const char hlp_txt[]="This is probably fixable because this filter is supported by all default installations of netCDF version 4.9.0 or higher. HINT: If you build netCDF from source, please be sure it was configured with the following options: \"--enable-nczarr\" and \"--with-plugin-dir=${HDF5_PLUGIN_PATH}\". The latter is especially important in netCDF 4.9.0. Also, please be sure the library for the missing filter (e.g., libzstd.a, libblosc.a, libbz2.a) is in an automatically searched directory, e.g., $LD_LIBRARY_PATH or /usr/lib.";
-
+#if defined(_CCR_H) || (NC_LIB_VERSION >= 490)
+  unsigned int flt_id; /* [ID] HDF5 filter ID */
+  const char hlp_txt[]="This is probably fixable because this filter is supported by all default installations of netCDF version 4.9.0 or higher. HINT: If you build netCDF from source, please be sure it was configured with the following options: \"--enable-nczarr\" and \"--with-plugin-dir=${HDF5_PLUGIN_PATH}\". The latter is especially important in netCDF 4.9.0. Also, please be sure the library for the missing filter (e.g., libzstd.a, libblosc.a, libbz2.a) is in an automatically searched directory, e.g., $LD_LIBRARY_PATH or /usr/lib.";
+#endif /* NC_LIB_VERSION >= 490 */
+  
+    /* Only call nc_inq_filter_avail() if it exists and might be successful */
+#if defined(CCR_HAS_BZIP2) || (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_BZIP2;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
     if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Bzip2"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
-
+#endif /* !BZIP2 */
+    
+#if defined(CCR_HAS_ZSTD) || (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_ZSTD;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
     if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Zstandard"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
+#endif /* !ZSTD */
 
+#if defined(CCR_HAS_BLOSC) || (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_BLOSC;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
     if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Blosc (LZ = default, LZ4, LZ4 HC, DEFLATE, Snappy, Zstandard)"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
+#endif /* !BLOSC */
+
+    /* Reset return code */
+    rcd=NC_NOERR;
 
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports available codec list is nco_cdc_lst_glb=%s\n",nco_prg_nm_get(),fnc_nm,nco_cdc_lst_glb);
   } /* !nco_cdc_lst_glb */

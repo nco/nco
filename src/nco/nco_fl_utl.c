@@ -330,13 +330,13 @@ nco_fl_cp /* [fnc] Copy first file to second */
   if(rcd == -1){
     (void)fprintf(stdout,"%s: ERROR nco_fl_cp() is unable to execute cp command \"%s\"\n",nco_prg_nm_get(),cmd_cp);
     nco_exit(EXIT_FAILURE);
-  } /* end if */
+  } /* !rcd */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"done\n");
 
   cmd_cp=(char *)nco_free(cmd_cp);
   if(fl_dst_cdl) fl_dst_cdl=(char *)nco_free(fl_dst_cdl);
   if(fl_src_cdl) fl_src_cdl=(char *)nco_free(fl_src_cdl);
-} /* end nco_fl_cp() */
+} /* !nco_fl_cp() */
 
 #ifdef _MSC_VER
 char * nco_fl_info_get(const char * const fl_nm_lcl){return NULL;}
@@ -2002,7 +2002,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt_lcl,out_id);
       (void)nco_redef(*out_id);
       return fl_out_tmp;
-    } /* end if */
+    } /* !FORCE_APPEND */
 
     /* Ensure one exit condition for each valid switch in following case statement */
     while(strcasecmp(usr_rpl,"o") && strcasecmp(usr_rpl,"a") && strcasecmp(usr_rpl,"e")){
@@ -2030,7 +2030,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 	    usr_rpl[usr_rpl_lng-1]='\0';
 
       if(nco_dbg_lvl_get() == nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports that fgets() read \"%s\" (after removing trailing newline) from stdin\n",nco_prg_nm_get(),fnc_nm,(rcd_fgets == NULL) ? "NULL" : usr_rpl);
-    } /* end while user reply is not yet "o", "a", or "e" */
+    } /* !usr_rpl "o", "a", or "e" */
 
     /* Ensure one case statement for each exit condition in preceding while loop */
     usr_rpl_int=(int)usr_rpl[0];
