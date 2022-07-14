@@ -315,22 +315,13 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
             inflag = lcl_inflag;
 
-            /* there is a subtle  trick here - a point is "force added" by setting the flags pqFace and qpFace */
-            //if (pcode[0] == '2')
-            //  nco_sph_add_pnt(R->shp, r, p);
 
             if (inflag == poly_vrl_pin) {
-
-              if(pcode[0]=='2')
-                nco_sph_add_pnt_chk(vrt_info, inflag, a1,-1, R->shp, r, p  );
 
               pqFace = 1;
               qpFace = 0;
 
             } else if (inflag == poly_vrl_qin) {
-
-              if(pcode[0]=='2')
-                nco_sph_add_pnt_chk(vrt_info, inflag, -1, b1,  R->shp, r, p  );
 
               pqFace = 0;
               qpFace = 1;
@@ -979,7 +970,6 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
 
 
-
   if (DEBUG_SPH) {
     fprintf(stderr, "%s: bInt=%s codes=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm, (bInt ? "True" : "False"),
             codes, pt[0], pt[1], pt[2]);
@@ -1456,42 +1446,22 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
   if (nco_sph_dot_nm(Pcross, Qcross) < 0.99)
     return False;
 
-  dx_p1 = 1.0 - nco_sph_dot_nm(p0, p1);
-
-  dx_q0 = 1.0 - nco_sph_dot_nm(p0, q0);
-
-  /*
-  if( dx_q0< DOT_TOLERANCE)
-    dx_q0=0.0;
-  */
-  if(dx_q0<0.0)
-    dx_q0=fabs(dx_q0);
 
 
-  if (dx_q0 != 0.0) {
-    nx3 = nco_sph_cross(p0, q0, Tcross);
+  dx_p1 = nco_sph_dist(p0, p1);
 
-    if (nco_sph_dot_nm(Pcross, Tcross) < 0.0)
-      dx_q0 *= -1.0;
-
+  dx_q0 = nco_sph_dist(p0, q0);
+  if(dx_q0 !=0.0) {
+      nx3 = nco_sph_cross(p0, q0, Tcross);
+      if (nco_sph_dot_nm(Pcross, Tcross) < 0.0)
+          dx_q0 *= -1.0;
   }
 
-  dx_q1 = 1.0 - nco_sph_dot_nm(p0, q1);
-
-  /*
-  if(dx_q1 <DOT_TOLERANCE)
-    dx_q1=0.0;
-  */
-
-  if(dx_q1<0.0)
-    dx_q1=fabs(dx_q1);
-
-
+  dx_q1 = nco_sph_dist(p0, q1);
   if (dx_q1 != 0.0) {
-    nx3 = nco_sph_cross(p0, q1, Tcross);
-
-    if (nco_sph_dot_nm(Pcross, Tcross) < 0.0)
-      dx_q1 *= -1.0;
+      nx3 = nco_sph_cross(p0, q1, Tcross);
+      if (nco_sph_dot_nm(Pcross, Tcross) < 0.0)
+          dx_q1 *= -1.0;
   }
 
   /* we now have 4 "points to order"
@@ -1522,7 +1492,10 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     codes[0]= '2';
     nco_sph_adi(r0, p0);
     nco_sph_adi(r1, q1);
-    *inflag=poly_vrl_qin;
+    if( dx_q1 == dx_p1 )
+        *inflag=poly_vrl_unk;
+    else
+        *inflag=poly_vrl_qin;
 
   }
 
@@ -1539,28 +1512,32 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     codes[0]= '2';
     nco_sph_adi(r0, q0);
     nco_sph_adi(r1, q1);
-    *inflag=poly_vrl_qin;
+    if( dx_q1== dx_p1 )
+        *inflag=poly_vrl_unk;
+    else
+        *inflag=poly_vrl_qin;
   }
-
-
   else if( dx_q0 <0.0 && dx_q1 > dx_p1    )
   {
     codes[0]='2';
     nco_sph_adi(r0,p0 );
     nco_sph_adi(r1,p1 );
     *inflag=poly_vrl_pin;
-  } else{
+  }else{
     codes[0]='0';
   }
 
 
-  /* points very close together - so use only first one*/
-  if (codes[0] == '2' && !nco_sph_metric(r0, r1))
-    codes[0] = '1';
+  /* points very close together - so use only first one
+  if (False || codes[0] == '2' && !nco_sph_metric(r0, r1))
+      codes[0] ='1';
+  */
 
-  /* q1 and p1 vertices are the same */
+
+  /* q1 and p1 vertices are the same
   if(codes[0]=='2' && fabs( dx_q1 -dx_p1 )<DOT_TOLERANCE)
-    *inflag=poly_vrl_unk;
+        *inflag=poly_vrl_unk;
+  */
 
   if(DEBUG_SPH ) {
     if (codes[0] >= '1')
@@ -2328,6 +2305,7 @@ nco_sph_add_pnt_chk( vrt_info_sct *vrt_info, poly_vrl_flg_enm in_flag, int p_vrt
     return;
 
 
+
   /* only add  point if its distinct from previous point */
   if ( *r==0 || nco_sph_metric(R[*r-1], P )  )
   {
@@ -2490,7 +2468,12 @@ for(idx=0; idx<np;idx++)
 
   dp= nco_sph_dot(Vc, sP[idx]);
 
-  (dp>=0.0 ? pos_cnt++ : neg_cnt++);
+  if( dp>0.0 )
+      pos_cnt++;
+  else if( fabs(dp) > 1.5e-16 )
+      neg_cnt++;
+
+  //(dp>=0.0 ? pos_cnt++ : neg_cnt++);
 
   if(DEBUG_SPH)
     printf("%s(): idx=%d dp=%g\n", fnc_nm, idx, dp);
