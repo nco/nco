@@ -749,7 +749,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,nczarr_url_sng) == fl_nm_lcl){ /* !file */
-    if(strstr(fl_nm_lcl,"mode=nczarr") || strstr(fl_nm_lcl,"mode=zarr")){
+    if(strstr(fl_nm_lcl,"#mode=nczarr") || strstr(fl_nm_lcl,"#mode=zarr")){
 #if NC_HAS_NCZARR
       url_sng_lng=strlen(nczarr_url_sng);
       if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s attempting to open %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
@@ -1363,6 +1363,8 @@ nco_fl_mv /* [fnc] Move first file to second */
   char *fl_dst_cdl;
   char *fl_src_cdl;
 
+  const char fl_scheme_sng[]="file://"; /* [sng] String indicating file:// scheme for NCZarr */
+
 #ifdef _MSC_VER
   const char cmd_mv_fmt[]="move %s %s";
 #else /* !_MSC_VER */
@@ -1372,21 +1374,50 @@ nco_fl_mv /* [fnc] Move first file to second */
   int rcd_sys; /* [rcd] Return code from system() */
   const int fmt_chr_nbr=4;
 
-  /* Only bother to perform system() call if files are not identical */
-  if(!strcmp(fl_src,fl_dst)){
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_src);
-    return;
-  } /* end if */
-
   /* 20131227 Allow for whitespace characters in fl_dst 
      Assume CDL translation results in acceptable name for shell commands */
   fl_src_cdl=nm2sng_fl(fl_src);
   fl_dst_cdl=nm2sng_fl(fl_dst);
 
+  char *fl_pth_src_cdl=fl_src_cdl; /* [sng] Path component of fl_src_cdl */
+  char *fl_pth_dst_cdl=fl_dst_cdl; /* [sng] Path component of fl_dst_cdl */
+
+  /* 20220713 Allow for NCZarr storage */
+  int fl_fmt_xtn_src=nco_fmt_xtn_nil; /* I [enm] Extended file format of source file */
+  int fl_fmt_xtn_dst=nco_fmt_xtn_nil; /* I [enm] Extended file format of destination file */
+  char *fl_frg_lcn; /* [sng] Location of fragment component (e.g., "#mode=") of fl_pth */
+
+  if(fl_src == strstr(fl_src,fl_scheme_sng))
+    if(strstr(fl_src,"#mode=nczarr") || strstr(fl_src,"#mode=zarr"))
+      fl_fmt_xtn_src=nco_fmt_xtn_nczarr;
+  if(fl_dst == strstr(fl_dst,fl_scheme_sng))
+    if(strstr(fl_dst,"#mode=nczarr") || strstr(fl_dst,"#mode=zarr"))
+      fl_fmt_xtn_dst=nco_fmt_xtn_nczarr;
+
+  if(fl_fmt_xtn_src == nco_fmt_xtn_nczarr){
+    fl_pth_src_cdl+=strlen(fl_scheme_sng);
+    fl_frg_lcn=strstr(fl_pth_src_cdl,"\\#mode");
+    *fl_frg_lcn='\0'; 
+  } /* !fl_fmt_xtn_src */
+
+  if(fl_fmt_xtn_dst == nco_fmt_xtn_nczarr){
+    fl_pth_dst_cdl+=strlen(fl_scheme_sng);
+    fl_frg_lcn=strstr(fl_pth_dst_cdl,"\\#mode");
+    *fl_frg_lcn='\0'; 
+  } /* !fl_fmt_xtn_dst */
+
+  /* Only bother to perform system() call if files are not identical */
+  if(!strcmp(fl_pth_src_cdl,fl_pth_dst_cdl)){
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_src);
+    return;
+  } /* !strcmp() */
+
   /* Construct and execute move command */
-  cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",nco_prg_nm_get(),fl_src_cdl,fl_dst_cdl);
-  (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src_cdl,fl_dst_cdl);
+  cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_pth_src_cdl)+strlen(fl_pth_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
+
+  (void)sprintf(cmd_mv,cmd_mv_fmt,fl_pth_src_cdl,fl_pth_dst_cdl);
+
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",nco_prg_nm_get(),fl_pth_src_cdl,fl_pth_dst_cdl);
   rcd_sys=system(cmd_mv);
   /* 20160802: Until today, failure was diagnosed iff rcd == -1
      Unclear what rcd == -1 actually means to systems, because rcd == 0 always indicates success and
@@ -1398,10 +1429,10 @@ nco_fl_mv /* [fnc] Move first file to second */
   } /* end if */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"done\n");
 
-  cmd_mv=(char *)nco_free(cmd_mv);
+  if(cmd_mv) cmd_mv=(char *)nco_free(cmd_mv);
   if(fl_dst_cdl) fl_dst_cdl=(char *)nco_free(fl_dst_cdl);
   if(fl_src_cdl) fl_src_cdl=(char *)nco_free(fl_src_cdl);
-} /* end nco_fl_mv() */
+} /* !nco_fl_mv() */
 
 char * /* O [sng] Name of file to retrieve */
 nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
@@ -1659,7 +1690,8 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 
 size_t /* [B] Blocksize */
 nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain this file */
-(const char * const fl_out) /* [sng] Filename */
+(const int nc_id, /* I [id] netCDF group ID */
+ const char * const fl_nm) /* I [sng] Filename */
 {
   /* Purpose: Find blocksize of filesystem will or does contain this file */
   const char fnc_nm[]="nco_fl_blocksize()"; /* [sng] Function name */
@@ -1669,20 +1701,42 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
   const char sls_chr='/';   /* [chr] Slash character */
 #endif /* !WIN32 */
   
-  char *drc_out; /* [sng] Directory containing output file */
+  char *drc_out; /* [sng] Directory containing output file (use for stat()) */
+  char *drc_out_free; /* [sng] Directory containing output file (use for free()) */
   char *sls_ptr; /* [sng] Pointer to slash */
   
+  int fl_fmt_xtn; /* I [enm] Extended file format */
   int rcd_stt=0; /* [rcd] Return code from stat() */
   
   size_t fl_sys_blk_sz=0UL; /* [nbr] File system blocksize for I/O */
 
   struct stat stat_sct;
 
-  drc_out=(char *)strdup(fl_out);
+  drc_out=drc_out_free=(char *)strdup(fl_nm);
   
+  (void)nco_inq_format_extended(nc_id,&fl_fmt_xtn,(int *)NULL);
+  if(fl_fmt_xtn == nco_fmt_xtn_nczarr){
+    /* NCZarr output specifications are of this form
+       https://docs.unidata.ucar.edu/netcdf-c/current/md__home_wfisher_Desktop_gitprojects_netcdf_c_docs_nczarr.html
+       scheme://host:port/path?query#fragment, e.g., file://${HOME}/zarr#mode=nczarr,zarr"
+       Isolate (and run stat() on) just the path, or "." if path is NULL */
+    char *fl_frg=NULL; /* [sng] Location of fragment component (e.g., "mode=") of fl */
+    int pfx_lng=0; /* [nbr] Number of characters used by NCZarr schema string */
+    if(drc_out == strstr(drc_out,"file://")) pfx_lng=7;
+    drc_out+=pfx_lng;
+    fl_frg=strstr(drc_out,"#mode");
+    if(fl_frg) *fl_frg='\0';
+  } /* !fl_fmt_xtn */
+
+  /* Normal situation is that output fl_nm does not contain schema prefix
+     NCZarr names have had both the schema and fragment removed
+     They can now be treated like normal filepaths
+     Use filename manipulation to truncates the end of the path,
+     or replace a local filename by its UNIX directory "." */
+    
   /* Find last occurence of '/' */
   sls_ptr=strrchr(drc_out,sls_chr);
-  
+    
   if(sls_ptr){
     /* Filename includes path component(s)
        NUL-terminate file name at last slash */
@@ -1692,7 +1746,7 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
        Replace filename by local directory specification, i.e., by UNIX "."  */
     drc_out[0]='.'; 
     drc_out[1]='\0'; 
-  } /* endif */
+  } /* !sls_ptr */
 
   /* Blocksize information in stat structure:
      blksize_t st_blksize blocksize for file system I/O
@@ -1702,13 +1756,13 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
   if(rcd_stt == -1){
     (void)fprintf(stdout,"%s: ERROR %s reports output file directory %s does not exist, unable to stat()\n",nco_prg_nm_get(),fnc_nm,drc_out);
     nco_exit(EXIT_FAILURE);
-  } /* end if */
+  } /* !rcd_stt */
 #ifndef _MSC_VER
   fl_sys_blk_sz=(size_t)stat_sct.st_blksize;
 #endif /* _MSC_VER */
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports preferred output filesystem I/O block size: %ld bytes\n",nco_prg_nm_get(),fnc_nm,(long)fl_sys_blk_sz);
   
-  if(drc_out) drc_out=(char *)nco_free(drc_out);
+  if(drc_out_free) drc_out_free=(char *)nco_free(drc_out_free);
 
   return fl_sys_blk_sz;
 } /* !nco_fl_blocksize() */
@@ -1732,18 +1786,23 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
      to fl_out and process ID so that errors cannot infect intended output file.
      Calling routine has responsibility to close and free fl_out_tmp */
 
-  char *fl_out_tmp;
+  char *fl_out_tmp=NULL; /* [sng] Temporary file name */ 
+  char *fl_out_dpl=NULL; /* [sng] Duplicate of fl_out */
+  char *fl_pth_lcn=NULL; /* [sng] Location of path component of fl_out_tmp */
   char *pid_sng; /* String containing decimal representation of PID */
 
+  const char fl_scheme_sng[]="file://"; /* [sng] String indicating file:// scheme for NCZarr */
   const char fnc_nm[]="nco_fl_out_open()"; /* [sng] Function name */
   const char tmp_sng_1[]="pid"; /* Extra string appended to temporary filenames */
   const char tmp_sng_2[]="tmp"; /* Extra string appended to temporary filenames */
 
+  int fl_fmt_xtn=nco_fmt_xtn_nil; /* I [enm] Extended file format */
   int md_create; /* [enm] Mode flag for nco_create() call */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rcd_stt; /* [rcd] Return code */
 
   long fl_out_tmp_lng; /* [nbr] Length of temporary file name */
+  //long frg_sng_lng; /* [nbr] Length of NCZarr fragment (e.g., "#mode=nczarr,zarr") */
   long pid_sng_lng; /* [nbr] Theoretical length of decimal representation of this PID */
   long pid_sng_lng_max; /* [nbr] Maximum length of decimal representation of any PID */
 
@@ -1794,11 +1853,42 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   (void)sprintf(pid_sng,"%ld",(long)pid);
   /* Theoretical length of decimal representation of PID is 1+ceil(log10(PID)) where the 1 is required iff PID is exact power of 10 */
   pid_sng_lng=1L+(long)ceil(log10((double)pid));
-  /* NCO temporary file name is user-specified file name + "." + tmp_sng_1 + PID + "." + nco_prg_nm + "." + tmp_sng_2 + NUL */
+
+  /* NCO temporary file name is user-specified file name + "." + tmp_sng_1 + PID + "." + nco_prg_nm + "." + tmp_sng_2 + NUL 
+     NCZarr names have _same length_, just organized from components in different order  (see below) */
   fl_out_tmp_lng=strlen(fl_out)+1UL+strlen(tmp_sng_1)+strlen(pid_sng)+1UL+strlen(nco_prg_nm_get())+1UL+strlen(tmp_sng_2)+1UL;
   /* NB: Calling routine has responsibility to free() this memory */
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
-  (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,nco_prg_nm_get(),tmp_sng_2);
+
+  if(fl_out == strstr(fl_out,fl_scheme_sng))
+    if(strstr(fl_out,"#mode=nczarr") || strstr(fl_out,"#mode=zarr"))
+      fl_fmt_xtn=nco_fmt_xtn_nczarr;
+  if(fl_fmt_xtn == nco_fmt_xtn_nczarr){
+    /* https://docs.unidata.ucar.edu/netcdf-c/current/md__home_wfisher_Desktop_gitprojects_netcdf_c_docs_nczarr.html
+       NCZarr output specifications are of this form:
+       scheme://host:port/path?query#fragment (e.g., file://${HOME}/zarr#mode=nczarr,zarr")
+       Insert the volatile components of the temporary output name immediately after
+       the path and before the fragment... */
+    char *fl_frg_lcn; /* [sng] Location of fragment component (e.g., "#mode=") of fl_out */
+    char *fl_frg_dpl; /* [sng] Copy of fragment component (e.g., "#mode=") of fl_out */
+    fl_out_dpl=(char *)strdup(fl_out);
+    fl_frg_lcn=strstr(fl_out_dpl,"#mode");
+    //frg_sng_lng=strlen(fl_frg_lcn);
+    /* Copy fragment before modifying its contents */
+    fl_frg_dpl=(char *)strdup(fl_frg_lcn);
+    /* Terminate fl_out_dpl at fl_frg */
+    *fl_frg_lcn='\0';
+
+    /* NCO temporary file name is user-specified file name until fragment + "." + tmp_sng_1 + PID + "." + nco_prg_nm + "." + tmp_sng_2 + fl_frg_dpl + NUL */
+    (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s%s",fl_out_dpl,tmp_sng_1,pid_sng,nco_prg_nm_get(),tmp_sng_2,fl_frg_dpl);
+    fl_pth_lcn=fl_out_tmp+strlen(fl_scheme_sng);
+
+    if(fl_frg_dpl) fl_frg_dpl=(char *)nco_free(fl_frg_dpl);
+  }else{
+    /* Normal situation for non-NCZarr storage */
+    (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,nco_prg_nm_get(),tmp_sng_2);
+  } /* !fl_fmt_xtn */
+
   if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: %s reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",nco_prg_nm_get(),fnc_nm,(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
 
   /* Free temporary memory */
@@ -1841,15 +1931,18 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
   if(WRT_TMP_FL){
     /* If temporary file already exists, prompt user to remove temporary files and exit */
-    rcd_stt=stat(fl_out_tmp,&stat_sct);
+    if(fl_fmt_xtn == nco_fmt_xtn_nczarr) rcd_stt=stat(fl_pth_lcn,&stat_sct); else rcd_stt=stat(fl_out_tmp,&stat_sct);
     if(rcd_stt != -1){
-      (void)fprintf(stdout,"%s: ERROR temporary file %s already exists, remove and try again\n",nco_prg_nm_get(),fl_out_tmp);
+      (void)fprintf(stdout,"%s: ERROR temporary file %s already exists, remove and try again\n",nco_prg_nm_get(),(fl_fmt_xtn == nco_fmt_xtn_nczarr) ? fl_pth_lcn : fl_out_tmp);
       nco_exit(EXIT_FAILURE);
-    } /* end if */
+    } /* !rcd_stt */
   }else{ /* !WRT_TMP_FL */
     /* Name "temporary output file" same as final output file et voilà, no temporary file! */
     (void)strcpy(fl_out_tmp,fl_out);
   } /* !WRT_TMP_FL */
+
+  /* No longer need duplicate name created only for NCZarr datasets */
+  if(fl_out_dpl) fl_out_dpl=(char *)nco_free(fl_out_dpl);
 
   /* Initialize local buffer size hint with user-input value */
   bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
@@ -1861,7 +1954,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
 #endif /* !ENABLE_MPI */
     return fl_out_tmp;
-  } /* end if */
+  } /* !FORCE_OVERWRITE */
 
   /* Following code block could be potentially be used by ncrename and ncatted
      Doing so would align file I/O for these operators with rest of NCO
@@ -1882,8 +1975,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt_lcl,out_id);
       (void)nco_redef(*out_id);
       return fl_out_tmp;
-    } /* end if */
-  } /* end if false */
+    } /* !nco_prg_id */
+  } /* !False */
 
   /* If permanent output file already exists, query user whether to overwrite, append, or exit */
   rcd_stt=stat(fl_out,&stat_sct);
@@ -1963,7 +2056,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       *FORCE_APPEND=True;
       break;
     default: nco_dfl_case_nc_type_err(); break;
-    } /* end switch */
+    } /* !use_rpl_int */
 
   }else{ /* Output file does not already exist */
     md_create=NC_NOCLOBBER;
@@ -1996,7 +2089,7 @@ nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output
   if(rcd != NC_NOERR){
     (void)fprintf(stdout,"%s: ERROR nco_fl_out_cls() is unable to nco_close() file %s\n",nco_prg_nm_get(),fl_out_tmp);
     nco_exit(EXIT_FAILURE);
-  } /* end if */
+  } /* !rcd */
 
   /* Only bother to perform system() call if files are not identical */
   if(!strcmp(fl_out_tmp,fl_out)){
@@ -2004,9 +2097,9 @@ nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output
     return;
   }else{
     (void)nco_fl_mv(fl_out_tmp,fl_out);
-  } /* end if */
+  } /* !fl_out_tmp */
 
-} /* end nco_fl_out_cls() */
+} /* !nco_fl_out_cls() */
 
 void
 nco_fl_rm /* [fnc] Remove file */
@@ -2021,7 +2114,7 @@ nco_fl_rm /* [fnc] Remove file */
   const char rm_cmd_sys_dep[]="rm -f";
 #endif /* !_MSC_VER */
 
-  /* Remember to add one for the space and one for the terminating NUL character */
+  /* Add one for the space and one for the terminating NUL character */
   rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1UL+strlen(fl_nm)+1UL)*sizeof(char));
   (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
 
@@ -2030,5 +2123,5 @@ nco_fl_rm /* [fnc] Remove file */
   if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",nco_prg_nm_get(),fl_nm);
 
   rm_cmd=(char *)nco_free(rm_cmd);
-} /* end nco_fl_rm() */
+} /* !nco_fl_rm() */
 

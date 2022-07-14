@@ -744,6 +744,8 @@ extern "C" {
     nco_fmt_xtn_pnetcdf=NC_FORMAT_PNETCDF, /* 4 PnetCDF */
     nco_fmt_xtn_dap2=NC_FORMAT_DAP2, /* 5 DAP2 */
     nco_fmt_xtn_dap4=NC_FORMAT_DAP4, /* 6 DAP4 */
+    /* 20220713: Tokens defined as of netCDF 4.8.0 */
+    nco_fmt_xtn_nczarr=NC_FORMATX_NCZARR, /* 10 NCZARR */
   }; /* end nco_fmt_xtn */
 
   enum nco_mrd_cnv{ /* [enm] Multiple Record Dimension convention: for ncecat and ncpdq */

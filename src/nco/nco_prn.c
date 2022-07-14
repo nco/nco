@@ -4507,6 +4507,8 @@ jsn_fmt_xtn_nm /* [fnc] Return string describing JSON filetype */
     return "dap2";
   case nco_fmt_xtn_dap4: /* 6 NC_FORMAT_DAP4 DAP4 */
     return "dap4";
+  case nco_fmt_xtn_nczarr: /* 10 NC_FORMAT_NCZARR NCZARR */
+    return "nczarr";
   default: nco_dfl_case_fmt_xtn_err(); break;
   } /* end switch */
 

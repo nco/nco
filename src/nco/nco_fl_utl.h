@@ -153,7 +153,8 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 
 size_t /* [B] Blocksize */
 nco_fl_blocksize /* [fnc] Find blocksize of filesystem will or does contain this file */
-(const char * const fl_out); /* [sng] Filename */
+(const int nc_id, /* I [id] netCDF group ID */
+ const char * const fl_nm); /* I [sng] Filename */
 
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */

@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha03: Moon Sun Run';git push
 	git tag -a 5.1.1-alpha03 -m '';git push --tags
 
+	* Retrofit nco_fl_blocksize() and nco_fl_mv() to handle NCZarr file:// schema storage
+
 	* NCO 5.1.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha02: Webb';git push
 	git tag -a 5.1.1-alpha02 -m 'ncks: read/hyperslab/print NCZarr files';git push --tags

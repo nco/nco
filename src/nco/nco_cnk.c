@@ -158,7 +158,7 @@ nco_cnk_csh_ini /* [fnc] Initialize global chunk cache user-specified input */
   } /* !dbg */
 
   return rcd;
-} /* end nco_cnk_csh_ini() */
+} /* !nco_cnk_csh_ini() */
 
 int /* [rcd] Return code */
 nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
@@ -211,7 +211,7 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
      Yellowstong /tmp         4096 524288 <-- probably hardcoded default not actual blocksize reported */
 
   /* Discover blocksize if possible */
-  fl_sys_blk_sz=nco_fl_blocksize(fl_out);
+  fl_sys_blk_sz=nco_fl_blocksize(in_id,fl_out);
 
   if(cnk_sz_byt > 0ULL){
     /* Use user-specified chunk size if available */
@@ -263,7 +263,7 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
   if(cnk->cnk_plc == nco_cnk_plc_nco) cnk->cnk_plc=nco_cnk_plc_all;
 
   return rcd;
-} /* end nco_cnk_ini() */
+} /* !nco_cnk_ini() */
 
 cnk_dmn_sct ** /* O [sct] Structure list with user-specified per-dimension chunking information */
 nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements */
