@@ -2,7 +2,7 @@
 
 	* NCO 5.1.1-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha03: Moon Sun Run';git push
-	git tag -a 5.1.1-alpha03 -m '';git push --tags
+	git tag -a 5.1.1-alpha03 -m 'nco_fl_[mv,rm,cp] works with NCZarr';git push --tags
 
 	* Verify that file manipulation works for NCZarr I/O!
 
