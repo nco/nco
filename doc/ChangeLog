@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha03: Moon Sun Run';git push
 	git tag -a 5.1.1-alpha03 -m '';git push --tags
 
+	* Finish and employ nco_fl_is_nczarr()
+
 	* Prototype nco_fl_ncztopth(), fix compile issue for NCZarr with old netCDF
 
 	* Call nc_inq_filter_avail() only if it exists and might be successful, quiet messages

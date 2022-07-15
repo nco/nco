@@ -748,29 +748,26 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
-  }else if(strstr(fl_nm_lcl,nczarr_url_sng) == fl_nm_lcl){ /* !file */
-    if(strstr(fl_nm_lcl,"#mode=nczarr") || strstr(fl_nm_lcl,"#mode=zarr")){
+  }else if(nco_fl_is_nczarr(fl_nm_lcl)){
 #if NC_HAS_NCZARR
-      url_sng_lng=strlen(nczarr_url_sng);
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s attempting to open %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
-      rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
-      if(rcd == NC_NOERR){
-	/* Close file to prevent accumulating dangling open files on DAP server */
-	rcd=nco_close(in_id);
-	/* Great! NCZarr worked so file has earned NCZarr identification */
-	NCZARR_URL=True;
-	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s successfully opened this file using NCZarr file:// protocol\n",nco_prg_nm_get(),fnc_nm);
-	/* 20220712: Set rcd_stt=0 to mimic successful stat() return like DAP (NCZarr protocol also treats files as local) */
-	rcd_stt=0;
-      }else{ /* !rcd */
-	if(!NCZARR_URL) (void)fprintf(stdout,"%s: INFO %s failed to open this Zarr-looking file using NCZarr file:// protocol. HINT: Check that file exists and NCZarr is enabled.\n",nco_prg_nm_get(),fnc_nm);
-      } /* !rcd */
+    url_sng_lng=strlen(nczarr_url_sng);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s attempting to open %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
+    rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
+    if(rcd == NC_NOERR){
+      /* Close file to prevent accumulating dangling open files on DAP server */
+      rcd=nco_close(in_id);
+      /* Great! NCZarr worked so file has earned NCZarr identification */
+      NCZARR_URL=True;
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s successfully opened this file using NCZarr file:// protocol\n",nco_prg_nm_get(),fnc_nm);
+      /* 20220712: Set rcd_stt=0 to mimic successful stat() return like DAP (NCZarr protocol also treats files as local) */
+      rcd_stt=0;
+    }else{ /* !rcd */
+      if(!NCZARR_URL) (void)fprintf(stdout,"%s: INFO %s failed to open this Zarr-looking file using NCZarr file:// protocol. HINT: Check that file exists and NCZarr is enabled.\n",nco_prg_nm_get(),fnc_nm);
+    } /* !rcd */
 #else /* !NC_HAS_NCZARR */
-      (void)fprintf(stdout,"%s: ERROR %s interpreted %s as NCZarr file but NCZarr was not enabled in this netCDF library. HINT: Install a netCDF-library (4.8.0 or later) configured with --enable-nczarr (which is the default setting), then rebuild NCO with that library.\n",nco_prg_nm_get(),fnc_nm);
-      nco_exit(EXIT_FAILURE);
+    (void)fprintf(stdout,"%s: ERROR %s interpreted %s as NCZarr file but NCZarr was not enabled in this netCDF library. HINT: Install a netCDF-library (4.8.0 or later) configured with --enable-nczarr (which is the default setting), then rebuild NCO with that library.\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
 #endif /* !NC_HAS_NCZARR */
-      if(!NCZARR_URL) (void)fprintf(stdout,"%s: WARNING %s reports requested input file has \"file://\" prefix without \"mode=zarr\" suffix. %s code is in limbo, needs work.\n",nco_prg_nm_get(),fnc_nm,fnc_nm);
-    } /* !fl_nm_lcl, nczarr */
   }else if((strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,https_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,dap4_url_sng) == fl_nm_lcl)){
     /* Filename starts with "http://" or "https://" or "dap4://" so try DAP first (if available), then wget */
 
@@ -1387,12 +1384,8 @@ nco_fl_mv /* [fnc] Move first file to second */
   int fl_fmt_xtn_dst=nco_fmt_xtn_nil; /* I [enm] Extended file format of destination file */
   char *fl_frg_lcn; /* [sng] Location of fragment component (e.g., "#mode=") of fl_pth */
 
-  if(fl_src == strstr(fl_src,fl_scheme_sng))
-    if(strstr(fl_src,"#mode=nczarr") || strstr(fl_src,"#mode=zarr"))
-      fl_fmt_xtn_src=nco_fmt_xtn_nczarr;
-  if(fl_dst == strstr(fl_dst,fl_scheme_sng))
-    if(strstr(fl_dst,"#mode=nczarr") || strstr(fl_dst,"#mode=zarr"))
-      fl_fmt_xtn_dst=nco_fmt_xtn_nczarr;
+  if(nco_fl_is_nczarr(fl_src)) fl_fmt_xtn_src=nco_fmt_xtn_nczarr;
+  if(nco_fl_is_nczarr(fl_dst)) fl_fmt_xtn_dst=nco_fmt_xtn_nczarr;
 
   if(fl_fmt_xtn_src == nco_fmt_xtn_nczarr){
     fl_pth_src_cdl+=strlen(fl_scheme_sng);
@@ -1860,9 +1853,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* NB: Calling routine has responsibility to free() this memory */
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
 
-  if(fl_out == strstr(fl_out,fl_scheme_sng))
-    if(strstr(fl_out,"#mode=nczarr") || strstr(fl_out,"#mode=zarr"))
-      fl_fmt_xtn=nco_fmt_xtn_nczarr;
+  if(nco_fl_is_nczarr(fl_out)) fl_fmt_xtn=nco_fmt_xtn_nczarr;
   if(fl_fmt_xtn == nco_fmt_xtn_nczarr){
     /* https://docs.unidata.ucar.edu/netcdf-c/current/md__home_wfisher_Desktop_gitprojects_netcdf_c_docs_nczarr.html
        NCZarr output specifications are of this form:
@@ -2125,11 +2116,56 @@ nco_fl_rm /* [fnc] Remove file */
   rm_cmd=(char *)nco_free(rm_cmd);
 } /* !nco_fl_rm() */
 
-char * /* O [sng] Filepath */
-nco_fl_ncz2pth /* [fnc] Convert NCZarr filename to file path */
-(const char * const fl_nm) /* I [sng] NCZarr filename */
+nco_bool /* O [flg] Variable is listed in a "coordinates" attribute */
+nco_fl_is_nczarr /* [fnc] Filename is valid NCZarr specification */
+(const char * const fl_nm) /* I [sng] Filename */
 {
-  /* Purpose: Convert NCZarr filename to file path
+  /* Purpose: Determine whether NCZarr conventions apply to this filename */
+  const char fnc_nm[]="nco_fl_is_nczarr()"; /* [sng] Function name */
+  const char * ncz_scm_arr[] = {
+    "file://",
+    "s3://",
+    "https://",
+  };
+  const int scm_nbr=(sizeof(ncz_scm_arr)/sizeof(const char *));
+  const char * ncz_frg_arr[] = {
+    "#mode=nczarr",
+    "#mode=zarr",
+  };
+  const int frg_nbr=(sizeof(ncz_frg_arr)/sizeof(const char *));
+
+  int scm_idx; /* [idx] Index for scheme array */
+  int frg_idx; /* [idx] Index for fragment array */
+  
+  nco_bool fl_is_nczarr=False; /* [flg] Filename is valid NCZarr syntax */
+
+  /* Does filename begin with one of the three valid NCZarr schemes? */
+  for(scm_idx=0;scm_idx<scm_nbr;scm_idx++)
+    if(fl_nm == strstr(fl_nm,ncz_scm_arr[scm_idx]))
+      break;
+  if(scm_idx < scm_nbr){
+    /* Does filename end with an NCZarr fragment? */
+    for(frg_idx=0;frg_idx<frg_nbr;frg_idx++)
+      if(strstr(fl_nm,ncz_frg_arr[frg_idx]))
+	break;
+    if(frg_idx < frg_nbr) fl_is_nczarr=True; else (void)fprintf(stdout,"%s: WARNING %s reports file %s has NCZarr prefix without NCZarr fragment. This may throw code into Limbo...\n",nco_prg_nm_get(),fnc_nm,fl_nm);
+  } /* !scm_idx */
+  
+  return fl_is_nczarr;
+} /* !nco_fl_is_nczarr() */
+  
+int /* O [rcd] Return code */
+nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
+(const char * const ncz_nm, /* I [sng] NCZarr filename */
+ char ** const psx_fll, /* O [sng] Full POSIX path with filename, suitable for file stat() */
+ char ** const psx_drc, /* O [sng] POSIX path only, no filename, suitable for directory stat() */
+ char ** const psx_stb) /* O [sng] POSIX filename (stub) without path or suffix, suitable for netCDF dataset name */
+{
+  /* Purpose: Convert NCZarr filename to POSIX file path components
+     Up to three file path components can be returned:
+     pth_fll: Full POSIX path with filename, suitable for file stat() 
+     pth_drc: POSIX path only, no filename, suitable for directory stat()
+     psx_stb: POSIX filename (stub) without path or suffix, suitable for netCDF dataset name
 
      NCZarr output specifications are of this form
      https://docs.unidata.ucar.edu/netcdf-c/current/md__home_wfisher_Desktop_gitprojects_netcdf_c_docs_nczarr.html
@@ -2139,13 +2175,14 @@ nco_fl_ncz2pth /* [fnc] Convert NCZarr filename to file path */
      file://${HOME}/zarr#mode=nczarr,zarr
      https:///  zarr#mode=nczarr,zarr
 
-     The output will be a local path on which stat() can be run
-     The path will be the directory path, if it present in the input
+     The output will be a local path or name that POSIX (e.g. stat()) understands
+     The directory component will be as much of the directory path as is given
      If the input is a filename without a path, then the returned path will be "." 
 
-     NB: The calling routine is responsible for freeing the returned string
+     All non-NULL arguments will be returned
+     NB: Calling routine is responsible for freeing returned string(s)
 
-     If no path (including ".") can be determined, the function returns NULL */
+     Function returns NCO_ERR or NCO_NOERR */
 
   char *fl_pth=NULL; /* [sng] Duplicate of fl_nm */
   char *fl_frg_lcn; /* [sng] Location of fragment component (e.g., "#mode=") of fl_pth */
@@ -2163,6 +2200,6 @@ nco_fl_ncz2pth /* [fnc] Convert NCZarr filename to file path */
 
   } /* !fl_fmt_xtn */
 
-  return fl_pth;
+  return NCO_NOERR;
   
-} /* !nco_fl_ncz2pth() */
+} /* !nco_fl_ncz2psx() */

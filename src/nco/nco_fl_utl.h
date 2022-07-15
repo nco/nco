@@ -180,16 +180,23 @@ void
 nco_fl_rm /* [fnc] Remove file */
 (char *fl_nm); /* I [sng] File to be removed */
 
-int /* [rcd] Return code */
+int /* O [rcd] Return code */
 nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity */
 (const char * const fl_nm, /* I [sng] Name of file to open */
  const int md_open, /* I [enm] Mode flag for nc_open() call */
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
  int * const nc_id); /* O [id] File ID */
 
-char * /* O [sng] Filepath */
-nco_fl_ncz2pth /* [fnc] Convert NCZarr filename to file path */
-(const char * const fl_nm); /* I [sng] NCZarr filename */
+nco_bool /* O [flg] Variable is listed in a "coordinates" attribute */
+nco_fl_is_nczarr /* [fnc] Filename is valid NCZarr specification */
+(const char * const fl_nm); /* I [sng] Filename */
+
+int /* O [rcd] Return code */
+nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
+(const char * const ncz_nm, /* I [sng] NCZarr filename */
+ char ** const psx_fll, /* O [sng] Full POSIX path with filename, suitable for file stat() */
+ char ** const psx_drc, /* O [sng] POSIX path only, no filename, suitable for directory stat() */
+ char ** const psx_stb); /* O [sng] POSIX filename (stub) without path or suffix, suitable for netCDF dataset name */
 
 #ifdef __cplusplus
 } /* end extern "C" */
