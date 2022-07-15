@@ -237,9 +237,9 @@ nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
     
     if(usr_rpl == 'n') nco_exit(EXIT_SUCCESS);
 
-  } /* end if rcd_sys != -1 */
+  } /* !rcd_sys */
   
-} /* end nco_fl_overwrite_prm() */
+} /* !nco_fl_overwrite_prm() */
 
 #ifdef _MSC_VER
 void nco_fl_chmod(const char * const fl_nm){}
@@ -1363,11 +1363,14 @@ nco_fl_mv /* [fnc] Move first file to second */
 (const char * const fl_src, /* I [sng] Name of source file to move */
  const char * const fl_dst) /* I [sng] Name of destination file */
 {
-  /* Purpose: Move first file to second */
+  /* Purpose: Move first file (or directory) to second */
+
+  const char fnc_nm[]="nco_fl_mv()"; /* [sng] Function name */
+
   char *cmd_mv;
   char *fl_dst_cdl;
   char *fl_src_cdl;
-
+  
 #ifdef _MSC_VER
   const char cmd_mv_fmt[]="move %s %s";
 #else /* !_MSC_VER */
@@ -1398,6 +1401,22 @@ nco_fl_mv /* [fnc] Move first file to second */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_src);
     return;
   } /* !strcmp() */
+
+  if(dst_is_drc){
+    /* Determine if destination directory already exists */
+    int rcd_stt=NC_MIN_INT; /* [rcd] Return code from stat() */
+    struct stat stat_sct;
+
+    rcd_stt=stat(fl_dst_psx,&stat_sct);
+    if(!rcd_stt) (void)fprintf(stderr,"%s: DEBUG %s reports destination directory %s already exists on local system. Attempting to remove directory tree...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
+ 
+    /* Remove any directory tree (i.e., NCZarr store) that already exists at destination location
+       Otherwise, the temporary store will land within (instead of replace) the extant directory */
+    char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
+    fl_dst_dpl=(char *)strdup(fl_dst);
+    nco_fl_rm(fl_dst_dpl);
+    if(fl_dst_dpl) fl_dst_dpl=nco_free(fl_dst_dpl);
+  } /* !dst_is_drc */
 
   /* Construct and execute move command */
   cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
