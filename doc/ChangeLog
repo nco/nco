@@ -1,8 +1,12 @@
-2022-07-14  Charlie Zender  <zender@uci.edu>
+2022-07-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha03: Moon Sun Run';git push
 	git tag -a 5.1.1-alpha03 -m '';git push --tags
+
+	* Draft and test nco_fl_ncz2psx()...it fails
+
+2022-07-14  Charlie Zender  <zender@uci.edu>
 
 	* Finish and employ nco_fl_is_nczarr()
 

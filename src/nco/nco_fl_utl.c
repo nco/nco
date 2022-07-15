@@ -1695,7 +1695,6 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
 #endif /* !WIN32 */
   
   char *drc_out; /* [sng] Directory containing output file (use for stat()) */
-  char *drc_out_free; /* [sng] Directory containing output file (use for free()) */
   char *sls_ptr; /* [sng] Pointer to slash */
   
   int fl_fmt_xtn; /* I [enm] Extended file format */
@@ -1705,42 +1704,29 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
 
   struct stat stat_sct;
 
-  drc_out=drc_out_free=(char *)strdup(fl_nm);
-  
   (void)nco_inq_format_extended(nc_id,&fl_fmt_xtn,(int *)NULL);
   if(fl_fmt_xtn == nco_fmt_xtn_nczarr){
-    /* NCZarr output specifications are of this form
-       https://docs.unidata.ucar.edu/netcdf-c/current/md__home_wfisher_Desktop_gitprojects_netcdf_c_docs_nczarr.html
-       scheme://host:port/path?query#fragment, e.g., file://${HOME}/zarr#mode=nczarr,zarr"
-       Isolate (and run stat() on) just the path, or "." if path is NULL */
-    char *fl_frg; /* [sng] Location of fragment component (e.g., "mode=") of fl */
-    int pfx_lng=0; /* [nbr] Number of characters used by NCZarr schema string */
-    if(drc_out == strstr(drc_out,"file://")) pfx_lng=7;
-    drc_out+=pfx_lng;
-    fl_frg=strstr(drc_out,"#mode");
-    if(fl_frg) *fl_frg='\0';
-  } /* !fl_fmt_xtn */
-
-  /* Normal situation is that output fl_nm does not contain schema prefix
-     NCZarr names have had both the schema and fragment removed
-     They can now be treated like normal filepaths
-     Use filename manipulation to truncates the end of the path,
-     or replace a local filename by its UNIX directory "." */
-    
-  /* Find last occurence of '/' */
-  sls_ptr=strrchr(drc_out,sls_chr);
-    
-  if(sls_ptr){
-    /* Filename includes path component(s)
-       NUL-terminate file name at last slash */
-    *sls_ptr='\0';
+    (void)nco_fl_ncz2psx(fl_nm,NULL,&drc_out,NULL);
   }else{
-    /* Filename is relative to local directory
-       Replace filename by local directory specification, i.e., by UNIX "."  */
-    drc_out[0]='.'; 
-    drc_out[1]='\0'; 
-  } /* !sls_ptr */
-
+  /* Use filename manipulation to truncate the end of the path,
+     or replace a local filename by its UNIX directory "." */
+    drc_out=(char *)strdup(fl_nm);
+    
+    /* Find last occurence of '/' */
+    sls_ptr=strrchr(drc_out,sls_chr);
+    
+    if(sls_ptr){
+      /* Filename includes path component(s)
+	 NUL-terminate file name at last slash */
+      *sls_ptr='\0';
+    }else{
+      /* Filename is relative to local directory
+	 Replace filename by local directory specification, i.e., by UNIX "." */
+      drc_out[0]='.'; 
+      drc_out[1]='\0'; 
+    } /* !sls_ptr */
+  } /* !fl_fmt_xtn */
+  
   /* Blocksize information in stat structure:
      blksize_t st_blksize blocksize for file system I/O
      20140105: Although blksize_t defined in stat(), there is actually no Linux type named blksize_t 
@@ -1755,7 +1741,7 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
 #endif /* _MSC_VER */
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports preferred output filesystem I/O block size: %ld bytes\n",nco_prg_nm_get(),fnc_nm,(long)fl_sys_blk_sz);
   
-  if(drc_out_free) drc_out_free=(char *)nco_free(drc_out_free);
+  if(drc_out) drc_out=(char *)nco_free(drc_out);
 
   return fl_sys_blk_sz;
 } /* !nco_fl_blocksize() */
@@ -2156,7 +2142,7 @@ nco_fl_is_nczarr /* [fnc] Filename is valid NCZarr specification */
   
 int /* O [rcd] Return code */
 nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
-(const char * const ncz_nm, /* I [sng] NCZarr filename */
+(const char * const fl_ncz, /* I [sng] NCZarr filename */
  char ** const psx_fll, /* O [sng] Full POSIX path with filename, suitable for file stat() */
  char ** const psx_drc, /* O [sng] POSIX path only, no filename, suitable for directory stat() */
  char ** const psx_stb) /* O [sng] POSIX filename (stub) without path or suffix, suitable for netCDF dataset name */
@@ -2179,27 +2165,135 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
      The directory component will be as much of the directory path as is given
      If the input is a filename without a path, then the returned path will be "." 
 
-     All non-NULL arguments will be returned
+     All non-NULL arguments will be returned with newly allocated strings
      NB: Calling routine is responsible for freeing returned string(s)
 
      Function returns NCO_ERR or NCO_NOERR */
 
-  char *fl_pth=NULL; /* [sng] Duplicate of fl_nm */
-  char *fl_frg_lcn; /* [sng] Location of fragment component (e.g., "#mode=") of fl_pth */
+  const char fnc_nm[]="nco_fl_ncz2psx()"; /* [sng] Function name */
 
-  int fl_fmt_xtn=nco_fmt_xtn_nil; /* I [enm] Extended file format of source file */
+  const char * ncz_scm_arr[] = {
+    "file://",
+    "s3://",
+    "https://",
+  };
+  const int scm_nbr=(sizeof(ncz_scm_arr)/sizeof(const char *));
+  const char * ncz_frg_arr[] = {
+    "#mode=nczarr",
+    "#mode=zarr",
+  };
+  const int frg_nbr=(sizeof(ncz_frg_arr)/sizeof(const char *));
 
-  if(fl_fmt_xtn == nco_fmt_xtn_nczarr){
+  int scm_idx; /* [idx] Index for scheme array */
+  int frg_idx; /* [idx] Index for fragment array */
+  
+  nco_bool fl_is_nczarr=False; /* [flg] Filename is valid NCZarr syntax */
 
-    int pfx_lng=0; /* [nbr] Number of characters used by NCZarr schema string */
+  /* Does filename begin with one of the three valid NCZarr schemes? */
+  for(scm_idx=0;scm_idx<scm_nbr;scm_idx++)
+    if(fl_ncz == strstr(fl_ncz,ncz_scm_arr[scm_idx]))
+      break;
+  if(scm_idx < scm_nbr){
+    /* Does filename end with an NCZarr fragment? */
+    for(frg_idx=0;frg_idx<frg_nbr;frg_idx++)
+      if(strstr(fl_ncz,ncz_frg_arr[frg_idx]))
+	break;
+    if(frg_idx < frg_nbr) fl_is_nczarr=True; else (void)fprintf(stdout,"%s: WARNING %s reports file %s has NCZarr prefix without NCZarr fragment. This may throw code into Limbo...\n",nco_prg_nm_get(),fnc_nm,fl_ncz);
+  } /* !scm_idx */
+  
+  nco_bool flg_psx=False; /* [flg] At least one POSIX path/name was requested */
+  if(psx_fll || psx_drc || psx_stb) flg_psx=True;
 
-    if(fl_pth == strstr(fl_pth,"file://")) pfx_lng=7;
-    fl_pth+=pfx_lng;
-    fl_frg_lcn=strstr(fl_pth,"#mode");
-    if(fl_frg_lcn) *fl_frg_lcn='\0';
+  if(flg_psx && fl_is_nczarr){
+    char *fl_frg_lcn; /* [sng] Location of fragment component (e.g., "#mode=") of fl_pth */
 
-  } /* !fl_fmt_xtn */
+    char *psx_fll_lcl; /* O [sng] Full POSIX path with filename, suitable for file stat() */
+    char *psx_drc_lcl; /* O [sng] POSIX path only, no filename, suitable for directory stat() */
+    char *psx_stb_lcl; /* O [sng] POSIX filename (stub) without path or suffix, suitable for netCDF dataset name */
+    
+    char *psx_fll_tmp=NULL; /* [sng] Temporary space for full POSIX path with filename */
+    char *psx_drc_tmp=NULL; /* [sng] Temporary space for POSIX path only, no filename */
+    char *psx_stb_tmp=NULL; /* [sng] Temporary space for POSIX filename (stub) without path or suffix */
 
-  return NCO_NOERR;
+    size_t scm_pfx_lng=0; /* [nbr] Number of characters used by NCZarr schema string */
+
+    if(psx_fll) psx_fll_tmp=(char *)strdup(fl_ncz);
+    if(psx_drc) psx_drc_tmp=(char *)strdup(fl_ncz);
+    if(psx_stb) psx_stb_tmp=(char *)strdup(fl_ncz);
+
+    /* First (order matters), truncate fragments from full copies of NCZarr filenames */
+    fl_frg_lcn=strstr(fl_ncz,ncz_frg_arr[frg_idx]);
+    if(fl_frg_lcn){
+      ptrdiff_t fl_frg_fst; /* [nbr] Fragment offset from beginning of fl_ncz */
+      fl_frg_fst=fl_frg_lcn-fl_ncz;
+
+      if(psx_fll) psx_fll_tmp[fl_frg_fst]='\0';
+      if(psx_drc) psx_drc_tmp[fl_frg_fst]='\0';
+      if(psx_stb) psx_stb_tmp[fl_frg_fst]='\0';
+
+      *fl_frg_lcn='\0';
+    } /* !fl_frg_fst */
+
+    /* Second (order matters), shift POSIX string start by appropriate amount */
+    scm_pfx_lng=strlen(ncz_scm_arr[scm_idx]);
+
+    /* All returned strings must omit the NCZarr scheme */
+    if(psx_fll) psx_fll_lcl=psx_fll_tmp+scm_pfx_lng;
+    if(psx_drc) psx_drc_lcl=psx_drc_tmp+scm_pfx_lng;
+    if(psx_stb) psx_stb_lcl=psx_stb_tmp+scm_pfx_lng;
+
+    if(psx_stb || psx_drc){
+#ifdef WIN32
+      const char sls_chr='\\';   /* [chr] Slash character */
+#else /* !WIN32 */
+      const char sls_chr='/';   /* [chr] Slash character */
+#endif /* !WIN32 */
+      char *sls_ptr; /* [ptr] Location of last slash in fl_ncz */
+      ptrdiff_t sls_fst=0; /* [nbr] Offset of final slash from beginning of POSIX portion of fl_ncz */
+      sls_ptr=strrchr(fl_ncz+scm_pfx_lng,sls_chr);
+      if(sls_ptr) sls_fst=fl_ncz+scm_pfx_lng-sls_ptr;
+
+      /* Directory-only string omits the filename */
+      if(psx_drc){
+	if(sls_ptr){
+	  /* NCZarr filename includes POSIX path component(s)
+	     NUL-terminate file name at last slash */
+	  psx_drc_lcl[sls_fst]='\0';
+	}else{
+	  /* NCZarr filename is relative to local directory
+	     Replace filename by local directory specification, i.e., by UNIX "." */
+	  psx_drc_lcl[0]='.';
+	  psx_drc_lcl[1]='\0';
+	} /* !sls_ptr */
+      } /* !psx_drc */	  
+      
+      /* Filename-only string omits the directory path */
+      if(psx_stb)
+	if(sls_ptr)
+	  psx_stb_lcl+=sls_fst;
+
+    } /* !psx_stb, !psx_drc */
+
+    /* Duplicate appropriate POSIX portions of fl_ncz
+       NB: Calling routine must free() these mallocs() */
+    if(psx_fll) psx_fll_lcl=(char *)strdup(psx_fll_lcl);
+    if(psx_drc) psx_drc_lcl=(char *)strdup(psx_drc_lcl);
+    if(psx_stb) psx_stb_lcl=(char *)strdup(psx_stb_lcl);
+
+    /* Now safe to free() temporary copies of fl_ncz */
+    if(psx_fll_tmp) psx_fll_tmp=(char *)nco_free(psx_fll_tmp);
+    if(psx_drc_tmp) psx_drc_tmp=(char *)nco_free(psx_drc_tmp);
+    if(psx_stb_tmp) psx_stb_tmp=(char *)nco_free(psx_stb_tmp);
+
+    /* Return requested POSIX strings in calling variables */
+    if(psx_fll) *psx_fll=psx_fll_lcl;
+    if(psx_drc) *psx_drc=psx_drc_lcl;
+    if(psx_stb) *psx_stb=psx_stb_lcl;
+
+  } /* !fl_fmt_xtn, !flg_psx */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports psx_fll = %s, psx_drc = %s, psx_stb= %s\n",nco_prg_nm_get(),fnc_nm,*psx_fll,*psx_drc,*psx_stb);
+
+  return fl_is_nczarr;
   
 } /* !nco_fl_ncz2psx() */

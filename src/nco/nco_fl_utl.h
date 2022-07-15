@@ -193,7 +193,7 @@ nco_fl_is_nczarr /* [fnc] Filename is valid NCZarr specification */
 
 int /* O [rcd] Return code */
 nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
-(const char * const ncz_nm, /* I [sng] NCZarr filename */
+(const char * const fl_ncz, /* I [sng] NCZarr filename */
  char ** const psx_fll, /* O [sng] Full POSIX path with filename, suitable for file stat() */
  char ** const psx_drc, /* O [sng] POSIX path only, no filename, suitable for directory stat() */
  char ** const psx_stb); /* O [sng] POSIX filename (stub) without path or suffix, suitable for netCDF dataset name */
