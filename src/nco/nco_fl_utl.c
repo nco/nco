@@ -1360,8 +1360,6 @@ nco_fl_mv /* [fnc] Move first file to second */
   char *fl_dst_cdl;
   char *fl_src_cdl;
 
-  const char fl_scheme_sng[]="file://"; /* [sng] String indicating file:// scheme for NCZarr */
-
 #ifdef _MSC_VER
   const char cmd_mv_fmt[]="move %s %s";
 #else /* !_MSC_VER */
@@ -1371,46 +1369,30 @@ nco_fl_mv /* [fnc] Move first file to second */
   int rcd_sys; /* [rcd] Return code from system() */
   const int fmt_chr_nbr=4;
 
-  /* 20131227 Allow for whitespace characters in fl_dst 
-     Assume CDL translation results in acceptable name for shell commands */
-  fl_src_cdl=nm2sng_fl(fl_src);
-  fl_dst_cdl=nm2sng_fl(fl_dst);
-
-  char *fl_pth_src_cdl=fl_src_cdl; /* [sng] Path component of fl_src_cdl */
-  char *fl_pth_dst_cdl=fl_dst_cdl; /* [sng] Path component of fl_dst_cdl */
+  char *fl_src_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_src */
+  char *fl_dst_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_dst */
 
   /* 20220713 Allow for NCZarr storage */
-  int fl_fmt_xtn_src=nco_fmt_xtn_nil; /* I [enm] Extended file format of source file */
-  int fl_fmt_xtn_dst=nco_fmt_xtn_nil; /* I [enm] Extended file format of destination file */
-  char *fl_frg_lcn; /* [sng] Location of fragment component (e.g., "#mode=") of fl_pth */
+  if(nco_fl_is_nczarr(fl_src)) (void)nco_fl_ncz2psx(fl_src,&fl_src_psx,NULL,NULL);
+  if(nco_fl_is_nczarr(fl_dst)) (void)nco_fl_ncz2psx(fl_dst,&fl_dst_psx,NULL,NULL);
 
-  if(nco_fl_is_nczarr(fl_src)) fl_fmt_xtn_src=nco_fmt_xtn_nczarr;
-  if(nco_fl_is_nczarr(fl_dst)) fl_fmt_xtn_dst=nco_fmt_xtn_nczarr;
-
-  if(fl_fmt_xtn_src == nco_fmt_xtn_nczarr){
-    fl_pth_src_cdl+=strlen(fl_scheme_sng);
-    fl_frg_lcn=strstr(fl_pth_src_cdl,"\\#mode");
-    *fl_frg_lcn='\0'; 
-  } /* !fl_fmt_xtn_src */
-
-  if(fl_fmt_xtn_dst == nco_fmt_xtn_nczarr){
-    fl_pth_dst_cdl+=strlen(fl_scheme_sng);
-    fl_frg_lcn=strstr(fl_pth_dst_cdl,"\\#mode");
-    *fl_frg_lcn='\0'; 
-  } /* !fl_fmt_xtn_dst */
+  /* 20131227 Allow for whitespace and naughty characters in fl_[src,dst]
+     Assume CDL translation results in acceptable name for shell commands */
+  fl_src_cdl= (fl_src_psx) ? nm2sng_fl(fl_src_psx) : nm2sng_fl(fl_src);
+  fl_dst_cdl= (fl_dst_psx) ? nm2sng_fl(fl_dst_psx) : nm2sng_fl(fl_dst);
 
   /* Only bother to perform system() call if files are not identical */
-  if(!strcmp(fl_pth_src_cdl,fl_pth_dst_cdl)){
+  if(!strcmp(fl_src_cdl,fl_dst_cdl)){
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_src);
     return;
   } /* !strcmp() */
 
   /* Construct and execute move command */
-  cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_pth_src_cdl)+strlen(fl_pth_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
+  cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
 
-  (void)sprintf(cmd_mv,cmd_mv_fmt,fl_pth_src_cdl,fl_pth_dst_cdl);
+  (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src_cdl,fl_dst_cdl);
 
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",nco_prg_nm_get(),fl_pth_src_cdl,fl_pth_dst_cdl);
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",nco_prg_nm_get(),fl_src_cdl,fl_dst_cdl);
   rcd_sys=system(cmd_mv);
   /* 20160802: Until today, failure was diagnosed iff rcd == -1
      Unclear what rcd == -1 actually means to systems, because rcd == 0 always indicates success and
@@ -1425,6 +1407,8 @@ nco_fl_mv /* [fnc] Move first file to second */
   if(cmd_mv) cmd_mv=(char *)nco_free(cmd_mv);
   if(fl_dst_cdl) fl_dst_cdl=(char *)nco_free(fl_dst_cdl);
   if(fl_src_cdl) fl_src_cdl=(char *)nco_free(fl_src_cdl);
+  if(fl_dst_psx) fl_dst_psx=(char *)nco_free(fl_dst_psx);
+  if(fl_src_psx) fl_src_psx=(char *)nco_free(fl_src_psx);
 } /* !nco_fl_mv() */
 
 char * /* O [sng] Name of file to retrieve */
