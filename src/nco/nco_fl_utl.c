@@ -2251,7 +2251,7 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
       char *sls_ptr; /* [ptr] Location of last slash in fl_ncz */
       ptrdiff_t sls_fst=0; /* [nbr] Offset of final slash from beginning of POSIX portion of fl_ncz */
       sls_ptr=strrchr(fl_ncz+scm_pfx_lng,sls_chr);
-      if(sls_ptr) sls_fst=fl_ncz+scm_pfx_lng-sls_ptr;
+      if(sls_ptr) sls_fst=sls_ptr-fl_ncz-scm_pfx_lng;
 
       /* Directory-only string omits the filename */
       if(psx_drc){
@@ -2292,7 +2292,7 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
 
   } /* !fl_fmt_xtn, !flg_psx */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports psx_fll = %s, psx_drc = %s, psx_stb= %s\n",nco_prg_nm_get(),fnc_nm,*psx_fll,*psx_drc,*psx_stb);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports psx_fll = %s, psx_drc = %s, psx_stb= %s\n",nco_prg_nm_get(),fnc_nm,psx_fll ? *psx_fll : "NULL",psx_drc ? *psx_drc : "NULL",psx_stb ? *psx_stb : "NULL");
 
   return fl_is_nczarr;
   
