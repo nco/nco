@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha03: Moon Sun Run';git push
 	git tag -a 5.1.1-alpha03 -m '';git push --tags
 
+	* Prevent MSVC build errors by searching in volatile not const strings
+
 	* Fix invalid pointer references
 
 	* Draft and test nco_fl_ncz2psx()...it fails

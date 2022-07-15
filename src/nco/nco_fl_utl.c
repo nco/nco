@@ -2205,6 +2205,7 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
   if(psx_fll || psx_drc || psx_stb) flg_psx=True;
 
   if(flg_psx && fl_is_nczarr){
+    char *fl_ncz_dpl; /* [sng] Duplicate of fl_ncz */
     char *fl_frg_lcn; /* [sng] Location of fragment component (e.g., "#mode=") of fl_pth */
 
     char *psx_fll_lcl; /* O [sng] Full POSIX path with filename, suitable for file stat() */
@@ -2217,15 +2218,16 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
 
     size_t scm_pfx_lng=0; /* [nbr] Number of characters used by NCZarr schema string */
 
+    fl_ncz_dpl=(char *)strdup(fl_ncz);
     if(psx_fll) psx_fll_tmp=(char *)strdup(fl_ncz);
     if(psx_drc) psx_drc_tmp=(char *)strdup(fl_ncz);
     if(psx_stb) psx_stb_tmp=(char *)strdup(fl_ncz);
 
     /* First (order matters), truncate fragments from full copies of NCZarr filenames */
-    fl_frg_lcn=strstr(fl_ncz,ncz_frg_arr[frg_idx]);
+    fl_frg_lcn=strstr(fl_ncz_dpl,ncz_frg_arr[frg_idx]);
     if(fl_frg_lcn){
-      ptrdiff_t fl_frg_fst; /* [nbr] Fragment offset from beginning of fl_ncz */
-      fl_frg_fst=fl_frg_lcn-fl_ncz;
+      ptrdiff_t fl_frg_fst; /* [nbr] Fragment offset from beginning of fl_ncz_dpl */
+      fl_frg_fst=fl_frg_lcn-fl_ncz_dpl;
 
       if(psx_fll) psx_fll_tmp[fl_frg_fst]='\0';
       if(psx_drc) psx_drc_tmp[fl_frg_fst]='\0';
@@ -2248,10 +2250,17 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
 #else /* !WIN32 */
       const char sls_chr='/';   /* [chr] Slash character */
 #endif /* !WIN32 */
-      char *sls_ptr; /* [ptr] Location of last slash in fl_ncz */
+      char *sls_ptr; /* [ptr] Location of last slash in fl_ncz_dpl */
       ptrdiff_t sls_fst=0; /* [nbr] Offset of final slash from beginning of POSIX portion of fl_ncz */
-      sls_ptr=strrchr(fl_ncz+scm_pfx_lng,sls_chr);
-      if(sls_ptr) sls_fst=sls_ptr-fl_ncz-scm_pfx_lng;
+      /* The search for the POSIX directory slash could find the slashes in the scheme prefix
+	 unless we offset the start of the string by the scheme prefix length.
+	 However, doing that naïvely violates "const" property of fl_ncz (MSVC compilers only)
+	 Specifically the expression strrchr(fl_ncz,...) triggers an MSVC const-conversion error
+	 Presumably because the function is not allowed to return a pointer to a location in the const-string
+	 Because that point could then be used to modify the const-string
+	 Hence we perform the search on a non-const copy of fl_ncz */
+      sls_ptr=strrchr(fl_ncz_dpl+scm_pfx_lng,sls_chr);
+      if(sls_ptr) sls_fst=sls_ptr-fl_ncz_dpl-scm_pfx_lng;
 
       /* Directory-only string omits the filename */
       if(psx_drc){
@@ -2281,6 +2290,7 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
     if(psx_stb) psx_stb_lcl=(char *)strdup(psx_stb_lcl);
 
     /* Now safe to free() temporary copies of fl_ncz */
+    if(fl_ncz_dpl) fl_ncz_dpl=(char *)nco_free(fl_ncz_dpl);
     if(psx_fll_tmp) psx_fll_tmp=(char *)nco_free(psx_fll_tmp);
     if(psx_drc_tmp) psx_drc_tmp=(char *)nco_free(psx_drc_tmp);
     if(psx_stb_tmp) psx_stb_tmp=(char *)nco_free(psx_stb_tmp);
@@ -2292,7 +2302,7 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
 
   } /* !fl_fmt_xtn, !flg_psx */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports psx_fll = %s, psx_drc = %s, psx_stb= %s\n",nco_prg_nm_get(),fnc_nm,psx_fll ? *psx_fll : "NULL",psx_drc ? *psx_drc : "NULL",psx_stb ? *psx_stb : "NULL");
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports psx_fll = %s, psx_drc = %s, psx_stb = %s\n",nco_prg_nm_get(),fnc_nm,psx_fll ? *psx_fll : "NULL",psx_drc ? *psx_drc : "NULL",psx_stb ? *psx_stb : "NULL");
 
   return fl_is_nczarr;
   
