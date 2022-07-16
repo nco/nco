@@ -294,7 +294,7 @@ nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
 #endif /* !_MSC_VER */
 
 void
-nco_fl_cp /* [fnc] Copy first file to second */
+nco_fl_cp /* [fnc] Copy first file (or directory) to second */
 (const char * const fl_src, /* I [sng] Name of source file to copy */
  const char * const fl_dst) /* I [sng] Name of destination file */
 {
@@ -1415,7 +1415,7 @@ nco_fl_mv /* [fnc] Move first file to second */
     char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
     fl_dst_dpl=(char *)strdup(fl_dst);
     nco_fl_rm(fl_dst_dpl);
-    if(fl_dst_dpl) fl_dst_dpl=nco_free(fl_dst_dpl);
+    if(fl_dst_dpl) fl_dst_dpl=(char *)nco_free(fl_dst_dpl);
   } /* !dst_is_drc */
 
   /* Construct and execute move command */
