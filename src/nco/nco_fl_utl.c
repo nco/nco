@@ -299,17 +299,26 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
  const char * const fl_dst) /* I [sng] Name of destination file */
 {
   /* Purpose: Copy first file to second */
+
+  const char fnc_nm[]="nco_fl_cp()"; /* [sng] Function name */
+
   char *cmd_cp;
   char *fl_dst_cdl;
   char *fl_src_cdl;
+  char *cmd_cp_typ;
+
 #ifdef _MSC_VER
-  const char cmd_cp_fmt[]="copy %s %s";
+  char cmd_cp_fl[]="copy %s %s";
+  char cmd_cp_drc[]="copy /E %s %s";
 #else /* !_MSC_VER */
-  const char cmd_cp_fmt[]="/bin/cp %s %s";
+  char cmd_cp_fl[]="/bin/cp %s %s";
+  char cmd_cp_drc[]="/bin/cp -r %s %s";
 #endif /* !_MSC_VER */
 
-  int rcd;
+  int rcd_sys;
   const int fmt_chr_nbr=4;
+
+  nco_bool dst_is_drc=False; /* [flg] Destination is a directory */
 
   /* Perform system() call iff files are not identical */
   if(!strcmp(fl_src,fl_dst)){
@@ -317,26 +326,46 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
     return;
   } /* !strcmp() */
 
-  /* 20220715 Allow for NCZarr storage */
+  /* 20220713 Allow for NCZarr storage */
   char *fl_src_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_src */
   char *fl_dst_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_dst */
   if(nco_fl_is_nczarr(fl_src)) (void)nco_fl_ncz2psx(fl_src,&fl_src_psx,NULL,NULL);
-  if(nco_fl_is_nczarr(fl_dst)) (void)nco_fl_ncz2psx(fl_dst,&fl_dst_psx,NULL,NULL);
+  if(nco_fl_is_nczarr(fl_dst)){
+    dst_is_drc=True;
+    (void)nco_fl_ncz2psx(fl_dst,&fl_dst_psx,NULL,NULL);
+  } /* !nco_fl_is_nczarr() */
 
   /* 20131227 Allow for whitespace and naughty characters in fl_[src,dst]
      Assume CDL translation results in acceptable name for shell commands */
   fl_src_cdl= (fl_src_psx) ? nm2sng_fl(fl_src_psx) : nm2sng_fl(fl_src);
   fl_dst_cdl= (fl_dst_psx) ? nm2sng_fl(fl_dst_psx) : nm2sng_fl(fl_dst);
 
+  if(dst_is_drc){
+    /* Determine if destination directory already exists */
+    int rcd_stt=NC_MIN_INT; /* [rcd] Return code from stat() */
+    struct stat stat_sct;
+
+    rcd_stt=stat(fl_dst_psx,&stat_sct);
+    if(!rcd_stt && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports destination directory %s already exists on local system. Attempting to remove directory tree...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
+ 
+    /* Remove any directory tree (i.e., NCZarr store) that already exists at destination location
+       Otherwise, the temporary store will land within (instead of replace) the extant directory */
+    char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
+    fl_dst_dpl=(char *)strdup(fl_dst);
+    nco_fl_rm(fl_dst_dpl);
+    if(fl_dst_dpl) fl_dst_dpl=(char *)nco_free(fl_dst_dpl);
+  } /* !dst_is_drc */
+
+  if(dst_is_drc) cmd_cp_typ=cmd_cp_drc; else cmd_cp_typ=cmd_cp_fl;
   /* Construct and execute copy command */
-  cmd_cp=(char *)nco_malloc((strlen(cmd_cp_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
+  cmd_cp=(char *)nco_malloc((strlen(cmd_cp_typ)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
+  (void)sprintf(cmd_cp,cmd_cp_typ,fl_src_cdl,fl_dst_cdl);
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: Copying %s to %s...",nco_prg_nm_get(),fl_src_cdl,fl_dst_cdl);
-  (void)sprintf(cmd_cp,cmd_cp_fmt,fl_src_cdl,fl_dst_cdl);
-  rcd=system(cmd_cp);
-  if(rcd == -1){
+  rcd_sys=system(cmd_cp);
+  if(rcd_sys == -1){
     (void)fprintf(stdout,"%s: ERROR nco_fl_cp() is unable to execute cp command \"%s\"\n",nco_prg_nm_get(),cmd_cp);
     nco_exit(EXIT_FAILURE);
-  } /* !rcd */
+  } /* !rcd_sys */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"done\n");
 
   if(cmd_cp) cmd_cp=(char *)nco_free(cmd_cp);
@@ -1382,6 +1411,12 @@ nco_fl_mv /* [fnc] Move first file to second */
 
   nco_bool dst_is_drc=False; /* [flg] Destination is a directory */
 
+  /* Only bother to perform system() call if files are not identical */
+  if(!strcmp(fl_src,fl_dst)){
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_src);
+    return;
+  } /* !strcmp() */
+
   /* 20220713 Allow for NCZarr storage */
   char *fl_src_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_src */
   char *fl_dst_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_dst */
@@ -1396,19 +1431,13 @@ nco_fl_mv /* [fnc] Move first file to second */
   fl_src_cdl= (fl_src_psx) ? nm2sng_fl(fl_src_psx) : nm2sng_fl(fl_src);
   fl_dst_cdl= (fl_dst_psx) ? nm2sng_fl(fl_dst_psx) : nm2sng_fl(fl_dst);
 
-  /* Only bother to perform system() call if files are not identical */
-  if(!strcmp(fl_src_cdl,fl_dst_cdl)){
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_src);
-    return;
-  } /* !strcmp() */
-
   if(dst_is_drc){
     /* Determine if destination directory already exists */
     int rcd_stt=NC_MIN_INT; /* [rcd] Return code from stat() */
     struct stat stat_sct;
 
     rcd_stt=stat(fl_dst_psx,&stat_sct);
-    if(!rcd_stt) (void)fprintf(stderr,"%s: DEBUG %s reports destination directory %s already exists on local system. Attempting to remove directory tree...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
+    if(!rcd_stt && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports destination directory %s already exists on local system. Attempting to remove directory tree...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
  
     /* Remove any directory tree (i.e., NCZarr store) that already exists at destination location
        Otherwise, the temporary store will land within (instead of replace) the extant directory */
@@ -1420,7 +1449,6 @@ nco_fl_mv /* [fnc] Move first file to second */
 
   /* Construct and execute move command */
   cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
-
   (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src_cdl,fl_dst_cdl);
 
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",nco_prg_nm_get(),fl_src_cdl,fl_dst_cdl);
@@ -2096,15 +2124,15 @@ nco_fl_rm /* [fnc] Remove file or directory */
   /* Purpose: Remove specified file or directory from local system */
 
 #ifdef _MSC_VER
-  char rm_cmd_fl[]="del /F";
-  char rm_cmd_drc[]="rmdir /S /Q";
+  char cmd_rm_fl[]="del /F";
+  char cmd_rm_drc[]="rmdir /S /Q";
 #else /* !_MSC_VER */
-  char rm_cmd_fl[]="rm -f";
-  char rm_cmd_drc[]="rm -f -r";
+  char cmd_rm_fl[]="rm -f";
+  char cmd_rm_drc[]="rm -f -r";
 #endif /* !_MSC_VER */
 
-  char *rm_cmd;
-  char *rm_cmd_typ;
+  char *cmd_rm;
+  char *cmd_rm_typ;
   char *obj_to_rm=NULL;
 
   int rcd_sys;
@@ -2120,16 +2148,16 @@ nco_fl_rm /* [fnc] Remove file or directory */
     obj_is_drc=True;
   } /* !nco_fl_is_nczarr() */
   
-  if(obj_is_drc) rm_cmd_typ=rm_cmd_drc; else rm_cmd_typ=rm_cmd_fl;
+  if(obj_is_drc) cmd_rm_typ=cmd_rm_drc; else cmd_rm_typ=cmd_rm_fl;
   /* Add one for the space and one for the terminating NUL character */
-  rm_cmd=(char *)nco_malloc((strlen(rm_cmd_typ)+1UL+strlen(obj_to_rm)+1UL)*sizeof(char));
-  (void)sprintf(rm_cmd,"%s %s",rm_cmd_typ,obj_to_rm);
+  cmd_rm=(char *)nco_malloc((strlen(cmd_rm_typ)+1UL+strlen(obj_to_rm)+1UL)*sizeof(char));
+  (void)sprintf(cmd_rm,"%s %s",cmd_rm_typ,obj_to_rm);
 
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",nco_prg_nm_get(),obj_to_rm,rm_cmd);
-  rcd_sys=system(rm_cmd);
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",nco_prg_nm_get(),obj_to_rm,cmd_rm);
+  rcd_sys=system(cmd_rm);
   if(rcd_sys == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",nco_prg_nm_get(),obj_to_rm);
 
-  rm_cmd=(char *)nco_free(rm_cmd);
+  cmd_rm=(char *)nco_free(cmd_rm);
 
   if(fl_psx) fl_psx=(char *)nco_free(fl_psx);
 } /* !nco_fl_rm() */
