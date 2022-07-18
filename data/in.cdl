@@ -8,6 +8,8 @@
 // "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
 // /usr/local/bin/ncgen -k netCDF-4 -b -o in_4.nc in.cdl
 // /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc ${HOME}/nco/data/in.cdl
+// /usr/local/bin/ncgen -7 -lb -o "file://${HOME}/in#mode=nczarr,file" ${HOME}/nco/data/in.cdl
+
 // NB: netCDF-classic files will be enormous unless/until _ChunkSizes attributes added to time
 // /usr/local/bin/ncgen -k hdf5-nc3 -b -o in_4c.nc in.cdl
 // /usr/local/bin/ncgen -k hdf5-nc3 -b -o ${HOME}/nco/data/in_4c.nc ${HOME}/nco/data/in.cdl

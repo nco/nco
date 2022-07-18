@@ -290,7 +290,7 @@ nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
     } /* endif rcd_sys */
   } /* end if chmod */
   
-} /* end nco_fl_chmod() */
+} /* !nco_fl_chmod() */
 #endif /* !_MSC_VER */
 
 void
@@ -2128,7 +2128,7 @@ nco_fl_rm /* [fnc] Remove file or directory */
   char cmd_rm_drc[]="rmdir /S /Q";
 #else /* !_MSC_VER */
   char cmd_rm_fl[]="rm -f";
-  char cmd_rm_drc[]="rm -f -r";
+  char cmd_rm_drc[]="rm -f -R";
 #endif /* !_MSC_VER */
 
   char *cmd_rm;
@@ -2155,12 +2155,64 @@ nco_fl_rm /* [fnc] Remove file or directory */
 
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",nco_prg_nm_get(),obj_to_rm,cmd_rm);
   rcd_sys=system(cmd_rm);
-  if(rcd_sys == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",nco_prg_nm_get(),obj_to_rm);
+  if(rcd_sys) (void)fprintf(stderr,"%s: WARNING unable to remove %s, rcs_sys = %d, continuing anyway...\n",nco_prg_nm_get(),obj_to_rm,rcd_sys);
 
   cmd_rm=(char *)nco_free(cmd_rm);
 
   if(fl_psx) fl_psx=(char *)nco_free(fl_psx);
 } /* !nco_fl_rm() */
+
+#ifdef _MSC_VER
+void nco_fl_chmod2(const char * const fl_nm){}
+#else /* !_MSC_VER */
+void
+nco_fl_chmod2 /* [fnc] Ensure file is user/owner-writable */
+(const char * const fl_nm) /* I [sng] Name of file or directory */
+{
+  /* Purpose: Remove specified file or directory from local system */
+
+  const char fnc_nm[]="nco_fl_chmod2()"; /* [sng] Function name */
+
+  char cmd_chmod_fl[]="chmod o+w";
+  char cmd_chmod_drc[]="chmod o+w -R";
+
+  char *cmd_chmod;
+  char *cmd_chmod_typ;
+  char *fl_nm_dpl;
+  char *obj_to_chmod=NULL;
+
+  int rcd_sys;
+
+  nco_bool obj_is_drc=False; /* [flg] Object to change is a directory */
+  fl_nm_dpl=(char *)strdup(fl_nm);
+  obj_to_chmod=fl_nm_dpl;
+  
+  /* 20220713 Allow for NCZarr storage */
+  char *fl_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_nm */
+  if(nco_fl_is_nczarr(fl_nm)){
+    (void)nco_fl_ncz2psx(fl_nm,&fl_psx,NULL,NULL);
+    obj_to_chmod=fl_psx;
+    obj_is_drc=True;
+  } /* !nco_fl_is_nczarr() */
+  
+  if(obj_is_drc) cmd_chmod_typ=cmd_chmod_drc; else cmd_chmod_typ=cmd_chmod_fl;
+  /* Add one for the space and one for the terminating NUL character */
+  cmd_chmod=(char *)nco_malloc((strlen(cmd_chmod_typ)+1UL+strlen(obj_to_chmod)+1UL)*sizeof(char));
+  (void)sprintf(cmd_chmod,"%s %s",cmd_chmod_typ,obj_to_chmod);
+
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG Changing mode of %s with %s\n",nco_prg_nm_get(),obj_to_chmod,cmd_chmod);
+  rcd_sys=system(cmd_chmod);
+  if(rcd_sys == -1){
+    (void)fprintf(stderr,"%s: ERROR %s was unable to make output file %s writable by user with %s, exiting...\n",nco_prg_nm_get(),fnc_nm,obj_to_chmod,cmd_chmod);
+    nco_exit(EXIT_FAILURE);
+  } /* !rcd_sys */
+  
+  cmd_chmod=(char *)nco_free(cmd_chmod);
+
+  if(fl_nm_dpl) fl_nm_dpl=(char *)nco_free(fl_nm_dpl);
+  if(fl_psx) fl_psx=(char *)nco_free(fl_psx);
+} /* !nco_fl_chmod2() */
+#endif /* !_MSC_VER */
 
 nco_bool /* O [flg] Variable is listed in a "coordinates" attribute */
 nco_fl_is_nczarr /* [fnc] Filename is valid NCZarr specification */

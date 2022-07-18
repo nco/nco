@@ -416,8 +416,8 @@ main(int argc,char **argv)
     (void)nco_fl_cp(fl_in,fl_out);
 
     /* Ensure output file is user/owner-writable */
-    (void)nco_fl_chmod(fl_out);
-  } /* end if FL_OUT_NEW */
+    (void)nco_fl_chmod2(fl_out);
+  } /* !FL_OUT_NEW */
 
   /* Open file. Writing must be enabled and file should be in define mode for renaming */
   if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;

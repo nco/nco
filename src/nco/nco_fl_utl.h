@@ -101,6 +101,10 @@ nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
 (const char * const fl_nm); /* I [sng] Name of file */
 
 void
+nco_fl_chmod2 /* [fnc] Ensure file is user/owner-writable */
+(const char * const fl_nm); /* I [sng] Name of file or directory */
+
+void
 nco_fl_cp /* [fnc] Copy first file to second */
 (const char * const fl_src, /* I [sng] Name of source file to copy */
  const char * const fl_dst); /* I [sng] Name of destination file */
