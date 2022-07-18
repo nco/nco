@@ -2173,8 +2173,8 @@ nco_fl_chmod2 /* [fnc] Ensure file is user/owner-writable */
 
   const char fnc_nm[]="nco_fl_chmod2()"; /* [sng] Function name */
 
-  char cmd_chmod_fl[]="chmod o+w";
-  char cmd_chmod_drc[]="chmod o+w -R";
+  char cmd_chmod_fl[]="chmod u+w";
+  char cmd_chmod_drc[]="chmod u+w -R";
 
   char *cmd_chmod;
   char *cmd_chmod_typ;
