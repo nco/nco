@@ -41,7 +41,7 @@ cd ~/nco/doc;texi2dvi nco.texi;makeinfo --html --ifinfo --no-split --output=nco.
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco_rfr_crd.pdf ../README ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco_rfr_crd.pdf ../README ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:Sites/nco;cd -
 dvips -o nco.ps nco.dvi 
-dvips -Ppdf -G0 -o nco.ps nco.dvi 
+dvips -Ppdf -G0 -o nco.ps nco.dvi
 makeinfo --html --ifinfo --no-split --output=nco.html nco.texi
 makeinfo --no-split --output=nco.info nco.texi
 makeinfo --no-headers --no-split --output=nco.txt nco.texi
@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.1-alpha04
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 17 July 2022
+@set update-date 31 July 2022
 @set update-month July 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide

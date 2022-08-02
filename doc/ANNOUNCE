@@ -1,20 +1,16 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.0 brachiate toward you
+netCDF Operators NCO version 5.1.1 lunge toward you
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.1.0 supports the new netCDF 4.9.0 features for filters and
-quantization. This is a significant new feature that justifies the
-version bump from 5.0.7 to 5.1.0. There is also an ncremap fix for 
-sub-sub-gridscale regridding, e.g., landunit-specific regridding.
-Users of sub-SGS regridding, and anyone interested is using modern
-compression or quantization algorithms such as Bzip2, Zstandard, 
-Granular BitGroom, and BitRound.   
+Version 5.1.1 instroduces support for NCZarr and refines support
+for the (relatively) new netCDF 4.9.X features for filters and
+quantization. The operators now support NCZarr I/O for most features.
 
-Work on NCO 5.1.1 has commenced and will polish support for
+Work on NCO 5.1.2 has commenced and will polish support for
 quantization/compression algorithms and add support for NCZarr I/O.
 
 Enjoy,
@@ -46,18 +42,8 @@ guiding the addition of these features into the CCR and netCDF.
 
 BUG FIXES:
    
-A. NCO 5.0.7 contained a bug in its new feature that allows missing
-values in fields with valid SGS area. ncremap < 5.0.7 assumed fields
-to be valid wherever sgs_frc > 0.0. This assumption is valid for ~95%
-of ELM/CLM fields. However, it low-biased landunit-specific fields
-(like TSOI, H2OSOI) in transition areas (e.g., ablation zone) with
-valid SGS, and invalid landunit. NCO 5.0.7 mostly fixed that, though
-it had a corner-case bug triggered mostly in multi-level fields
-(like TLAKE, TSOI). The normalization for multi-level fields is now
-correct, thus allowing sub-sub-gridscale regridding to work in all
-known cases.
-ncremap -P elm --map=map.nc in.nc out.nc
-http://nco.sf.net/nco.html#sgs
+A. NCO 5.1.0 could spew numerous and redundant diagnostic messages
+about missing codecs. 5.1.1 quiets these messages.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

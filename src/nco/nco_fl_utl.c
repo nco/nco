@@ -786,6 +786,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(nco_fl_is_nczarr(fl_nm_lcl)){
+    /* Important to check for NCZarr before https_url_sng because https is a legal NCZarr scheme */
 #if NC_HAS_NCZARR
     url_sng_lng=strlen(nczarr_url_sng);
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s attempting to open %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
@@ -799,10 +800,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       /* 20220712: Set rcd_stt=0 to mimic successful stat() return like DAP (NCZarr protocol also treats files as local) */
       rcd_stt=0;
     }else{ /* !rcd */
-      if(!NCZARR_URL) (void)fprintf(stdout,"%s: INFO %s failed to open this Zarr-looking file using NCZarr file:// protocol. HINT: Check that file exists and NCZarr is enabled.\n",nco_prg_nm_get(),fnc_nm);
+      if(!NCZARR_URL) (void)fprintf(stdout,"%s: INFO %s failed to nc_open() this Zarr-scheme file even though NCZarr is enabled. HINT: Check that filename adheres to this syntax: scheme://host:port/path?query#fragment and that filename exists. NB: s3 scheme requires that netCDF be configured with –enable-nczarr-s3 option.\n",nco_prg_nm_get(),fnc_nm);
     } /* !rcd */
 #else /* !NC_HAS_NCZARR */
-    (void)fprintf(stdout,"%s: ERROR %s interpreted %s as NCZarr file but NCZarr was not enabled in this netCDF library. HINT: Install a netCDF-library (4.8.0 or later) configured with --enable-nczarr (which is the default setting), then rebuild NCO with that library.\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s interpreted %s as NCZarr file but NCZarr was not enabled in this netCDF library. HINT: Install a netCDF-library (4.8.0 or later) configured with --enable-nczarr (a default netCDF setting), and, for S3 support, with --enable-nczarr-s3 (not a default netCDF setting), then rebuild NCO with that library.\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
 #endif /* !NC_HAS_NCZARR */
   }else if((strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,https_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,dap4_url_sng) == fl_nm_lcl)){
@@ -1884,7 +1885,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
   if(nco_fl_is_nczarr(fl_out)) fl_fmt_xtn=nco_fmt_xtn_nczarr;
   if(fl_fmt_xtn == nco_fmt_xtn_nczarr){
-    /* 20220715 fxm: Exploit nco_fl_ncz2psx() formalism when constructing temporary filename */
+    /* 20220715 fxm: Exploit nco_fl_ncz2psx() formalism when constructing temporary filename
+       Currently this code only works for file:// scheme */
     char *fl_frg_lcn; /* [sng] Location of fragment component (e.g., "#mode=") of fl_out */
     char *fl_frg_dpl; /* [sng] Copy of fragment component (e.g., "#mode=") of fl_out */
     fl_out_dpl=(char *)strdup(fl_out);
@@ -2220,13 +2222,13 @@ nco_fl_is_nczarr /* [fnc] Filename is valid NCZarr specification */
 {
   /* Purpose: Determine whether NCZarr conventions apply to this filename */
   const char fnc_nm[]="nco_fl_is_nczarr()"; /* [sng] Function name */
-  const char * ncz_scm_arr[] = {
+  const char * ncz_scm_arr[]={
     "file://",
     "s3://",
     "https://",
   };
   const int scm_nbr=(sizeof(ncz_scm_arr)/sizeof(const char *));
-  const char * ncz_frg_arr[] = {
+  const char * ncz_frg_arr[]={
     "#mode=nczarr",
     "#mode=zarr",
   };
@@ -2284,13 +2286,13 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
 
   const char fnc_nm[]="nco_fl_ncz2psx()"; /* [sng] Function name */
 
-  const char * ncz_scm_arr[] = {
+  const char * ncz_scm_arr[]={
     "file://",
     "s3://",
     "https://",
   };
   const int scm_nbr=(sizeof(ncz_scm_arr)/sizeof(const char *));
-  const char * ncz_frg_arr[] = {
+  const char * ncz_frg_arr[]={
     "#mode=nczarr",
     "#mode=zarr",
   };
