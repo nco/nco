@@ -3409,8 +3409,7 @@ var_sct *var_rhs;
 
    bret=false;
 
-   if(vid->getType()==VAR_ID &&  vid->getFirstChild()  && vid->getFirstChild()->getType()==LMT_LIST )  
-     err_prn(fnc_nm, "the \"where statement\" cannot handle a variable with limits on the Left-Hand-Side of an assign statement. Please  remove the limts and try again\nThe variable involved is \""+ vid->getText()+"\"");
+   if(vid->getType()==VAR_ID && vid->getFirstChild() && vid->getFirstChild()->getType() == LMT_LIST) err_prn(fnc_nm, "the \"where()\" statement cannot handle a variable with limits on the Left-Hand-Side of an assign statement. Please remove the limits and try again.\nHINT: The variable involved is \""+vid->getText()+"\"");
                      
    //var_lhs=prs_arg->ncap_var_init(var_nm,true);
    var_lhs=out(vid);
