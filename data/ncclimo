@@ -508,8 +508,9 @@ fl_nbr=0 # [nbr] Number of files to split
 fl_rmd=0 # [nbr] Number of files/months beyond an integral number of years
 fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experiment')
 gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
-glb_avg='No' # [sng] Global average timeseries
+glb_avg='No' # [sng] Global average (only) timeseries
 hdr_pad='10000' # [B] Pad at end of header section
+hms_avg='No' # [sng] Hemispheric and global average timeseries
 hrz_dmn='ncol' # [sng] Name of horizontal dimension(s) (comma-separated, if 2-D, e.g. 'lat,lon')
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
 inp_aut='No' # [sng] Input file list automatically generated
@@ -584,8 +585,9 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year (default ${fnt_bld}${yr_end}${fnt_nrm}) [${fnt_tlc}yr_end, end_yr, year_end, end_year, end${fnt_nrm}]"
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (nickname) (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm}) [${fnt_tlc}fml_nm, fml, family_name${fnt_nrm}]"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is inherited from input) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
-    echo " ${fnt_bld}--glb_avg${fnt_nrm}  Global average timeseries (default ${fnt_bld}${glb_avg}${fnt_nrm}) [${fnt_tlc}glb_avg, global_average${fnt_nrm}]"
+    echo " ${fnt_bld}--glb_avg${fnt_nrm}  Global average (only) timeseries (default ${fnt_bld}${glb_avg}${fnt_nrm}) [${fnt_tlc}glb_avg, global_average${fnt_nrm}]"
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm}) [${fnt_tlc}hst_nm, history_name, history${fnt_nrm}]"
+    echo " ${fnt_bld}--hms_avg${fnt_nrm}  Hemispheric and global average timeseries (default ${fnt_bld}${hms_avg}${fnt_nrm}) [${fnt_tlc}hms_avg, hemispheric_average${fnt_nrm}]"
     echo " ${fnt_bld}--hrz_dmn${fnt_nrm}  Horizontal dimension name(s) (default ${fnt_bld}${hrz_dmn}${fnt_nrm}) [${fnt_tlc}hrz_dmn, dmn_hrz, hrz_dmn_nm, horizontal_dimension${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
@@ -755,8 +757,10 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       hst_nm=?* | history_name=?* | history=?* ) hst_nm="${LONG_OPTARG}" ;; # -h # History tape name
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
-	       glb_avg | global_average ) glb_avg='Yes' ;; # # Global average timeseries
+	       glb_avg | global_average ) glb_avg='Yes' ;; # # Global average (only) timeseries
 	       glb_avg=?* | global_average=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Global average timeseries
+	       hms_avg | hemispheric_average ) hms_avg='Yes' ;; # # Hemispheric and global average timeseries
+	       hms_avg=?* | hemispheric_average=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Hemispheric average timeseries
 	       hrz_dmn=?* | hrz_dmn_nm=?* | dmn_hrz=?* | horizontal_dimension=?* ) hrz_dmn="${LONG_OPTARG}" ;; # # Horizontal dimension name(s)
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       lnk_flg=?* | link_flag=?* ) lnk_flg="${LONG_OPTARG}" ;; # -l # Link E3SM to AMWG name
@@ -1540,8 +1544,8 @@ if [ "${tms_flg}" = 'Yes' ]; then
 
 else # !tms_flg
 
-    if [ "${glb_avg}" = 'Yes' ]; then 
-	echo "${spt_nm}: ERROR Global average functionality is intended for time-series (splitting) mode only. If you would like ${spt_nm} to provide global mean output for other types of climatologies, please talk to Charlie."
+    if [ "${glb_avg}" = 'Yes' ] || [ "${hms_avg}" = 'Yes' ]; then 
+	echo "${spt_nm}: ERROR Global and hemispheric average functionality are intended for time-series (splitting) mode only. If you would like ${spt_nm} to provide global and/or hemispheric mean output for other types of climatologies, please talk to Charlie."
 	echo "${spt_nm}: HINT Create global means of climos with, e.g., \"ncwa -w ${area_nm} in.nc out.nc\""
 	echo "${spt_nm}: HINT See averaging documentation at http://nco.sf.net/nco.html#ncwa"
 	exit 1
@@ -1893,6 +1897,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
     printf "dbg: glb_avg  = ${glb_avg}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
+    printf "dbg: hms_avg  = ${hms_avg}\n"
     printf "dbg: hrd_pth  = ${hrd_pth}\n"
     printf "dbg: hrz_dmn  = ${hrz_dmn}\n"
     printf "dbg: hst_nm   = ${hst_nm}\n"
@@ -2486,8 +2491,8 @@ fi # !clm_md
 # Block 1 Loop N: Split
 if [ "${tms_flg}" = 'Yes' ]; then
 	
-    if [ "${glb_avg}" = 'Yes' ]; then 
-	# 20191217 Global average timeseries require area variable
+    if [ "${glb_avg}" = 'Yes' ] || [ "${hms_avg}" = 'Yes' ]; then 
+	# 20191217 Global and hemispheric average timeseries require area variable
 	var_xtr="${var_xtr},${area_nm}"
     else # !glb_avg
 	# Extract area variable from model output known to contain it
@@ -2749,9 +2754,13 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		done # !var_idx
 	    fi # !par_opt
 	    
-	    if [ "${glb_avg}" = 'Yes' ]; then 
+	    if [ "${glb_avg}" = 'Yes' ] || [ "${hms_avg}" = 'Yes' ]; then 
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
-		    cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
+		    if [ "${hms_avg}" = 'Yes' ]; then 
+			cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
+		    else
+			cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
+		    fi # !hms_avg
 		    if [ ${dbg_lvl} -ge 1 ]; then
 			echo ${cmd_avg[${var_idx}]}
 		    fi # !dbg
