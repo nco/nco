@@ -222,6 +222,12 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ~/PRECT_200101_200212.nc # Single file input
 
 # Debugging and Benchmarking:
+# E3SM v2:
+# ncclimo -P eam -v FSNT,AODVIS,TREFHT -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc
+# cd ${DATA}/ne30/raw;ls v2.LR*eam*201[34]-??*.nc | ncclimo --split --dbg=1 --hms_avg -s 2013 -e 2014 --var=TREFHT,FSNT,AODVIS --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls v2.LR*elm*201[34]-??*.nc | ncclimo -P elm --split --dbg=1 --hms_avg -s 2013 -e 2014 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm
+# ncclimo -P eam --var_lst=FSNT,AODVIS,TREFHT --caseid=v2.LR.historical_0101 --yr_srt=2013 --yr_end=2014 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc
+# E3SM v1:
 # ncclimo -P eam -m cam -v FSNT,AODVIS,TREFHT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo -P eam -m cam --var_lst=FSNT,AODVIS,TREFHT --caseid=20180129.DECKv1b_piControl.ne30_oEC.edison --yr_srt=1 --yr_end=2 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo -v TOTEXTTAU -c merra2_198001.nc4 -s 1980 -e 2015 -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm
@@ -250,7 +256,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Split directory:
 # ncclimo --dbg=1 --ypf=50 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split global mean
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 --glb_avg -s 1 -e 2 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls 2018*000[12]-??*.nc | ncclimo --split --dbg=1 --glb_avg -s 1 -e 2 --var=FSNT,AODVIS,TREFHT --drc_out=${DATA}/ne30/clm
+# Split hemispheric mean
+# cd ${DATA}/ne30/raw;ls 2018*000[12]-??*.nc | ncclimo --split --dbg=1 --hms_avg -s 1 -e 2 --var=FSNT,AODVIS,TREFHT --drc_out=${DATA}/ne30/clm
 # Split all:
 # cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split ELM:
@@ -268,7 +276,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # SGS:
 # ncclimo -P elm -m clm2 -d 1 -v TBOT,FSDS -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc --sgs_frc=${DATA}/grids/clm2_landfrac_t42.nc/landfrac 
 # ncclimo -P elm -m clm2 -d 1 -v TBOT,FSDS -c F_acmev03_enso_camse_clm45bgc_ne30_co2cycle -s 2000 -e 2000 -i ${DATA}/ne30/raw -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30np4.nc/landfrac
-# ncclimo -P elm -d 1 --split -v TBOT,FSDS -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30pg2.nc/landfrac
+# ncclimo -P elm -d 1 -v TBOT,FSDS -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30pg2.nc/landfrac
 # Seasons:
 # ncclimo -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo -d 1 --csn_lst=jfm,jas,ann -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
@@ -511,7 +519,7 @@ gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --
 glb_avg='No' # [sng] Global average (only) timeseries
 hdr_pad='10000' # [B] Pad at end of header section
 hms_avg='No' # [sng] Hemispheric and global average timeseries
-hrz_dmn='ncol' # [sng] Name of horizontal dimension(s) (comma-separated, if 2-D, e.g. 'lat,lon')
+hrz_dmn='ncol' # [sng] Name of horizontal dimension(s) (e.g., 'lndgrid' and comma-separated if 2-D, e.g. 'lat,lon')
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
 inp_aut='No' # [sng] Input file list automatically generated
 inp_glb='No' # [sng] Input file list from globbing directory 
@@ -519,6 +527,7 @@ inp_psn='No' # [sng] Input file list from positional arguments
 inp_std='No' # [sng] Input file list from stdin
 job_nbr=12 # [nbr] Job simultaneity for parallelism
 job_nbr_wrn=150 # [nbr] Maximum number of simultaneous jobs before WARNING is printed
+lat_nm='lat' # [sng] Latitude variable name (e.g., 'lat')
 lnk_flg='No' # [sng] Link E3SM-climo to AMWG-climo filenames
 map_opt='' # [sng] Map-file options (e.g., '--map=map.nc')
 mdl_nm='eam' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
@@ -2490,14 +2499,20 @@ fi # !clm_md
 
 # Block 1 Loop N: Split
 if [ "${tms_flg}" = 'Yes' ]; then
-	
+
     if [ "${glb_avg}" = 'Yes' ] || [ "${hms_avg}" = 'Yes' ]; then 
+	if [ -n "${sgs_frc}" ]; then
+	    area_wgt="${area_nm}*${sgs_frc}"
+	else
+	    area_wgt="${area_nm}"
+	fi # !sgs_frc
+	
 	# 20191217 Global and hemispheric average timeseries require area variable
-	var_xtr="${var_xtr},${area_nm}"
+	var_xtr="${var_xtr},${area_nm},${lat_nm}"
     else # !glb_avg
 	# Extract area variable from model output known to contain it
 	case ${mdl_nm} in
-	    cam* | eam* | mosart* ) var_xtr="${var_xtr},${area_nm}" ;;
+	    cam* | eam* | mosart* ) var_xtr="${var_xtr},${area_nm},${lat_nm}" ;;
 	esac # !mdl_nm
     fi # !glb_avg
 	
@@ -2757,7 +2772,8 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    if [ "${glb_avg}" = 'Yes' ] || [ "${hms_avg}" = 'Yes' ]; then 
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 		    if [ "${hms_avg}" = 'Yes' ]; then 
-			cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
+			cmd_hms="defdim(\"rgn\",2);*${var_sbs[${var_idx}]}_tmp=0.0f*${var_sbs[${var_idx}]}.avg(\$${hrz_dmn});${var_sbs[${var_idx}]}_rgn[time,rgn]=${var_sbs[${var_idx}]}_tmp;*${lat_nm}_area=${lat_nm}+0.0*${area_nm};*msk_sth=0*${lat_nm}_area.int();*msk_nrt=0*${lat_nm}_area.int();where(${lat_nm}_area < 0.0) msk_sth=1; elsewhere msk_nrt=1;${var_sbs[${var_idx}]}_rgn(:,0)=((${var_sbs[${var_idx}]}*${area_wgt}*msk_sth).avg(\$${hrz_dmn})/(${area_wgt}*msk_sth).avg(\$${hrz_dmn})).float();${var_sbs[${var_idx}]}_rgn(:,1)=((${var_sbs[${var_idx}]}*${area_wgt}*msk_nrt).avg(\$${hrz_dmn})/(${area_wgt}*msk_nrt).avg(\$${hrz_dmn})).float();${var_sbs[${var_idx}]}=((${var_sbs[${var_idx}]}*${area_wgt}).avg(\$${hrz_dmn})/${area_wgt}.avg(\$${hrz_dmn})).float();if(exists(time_bnds)) time_bnds=time_bnds";
+			cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncap2 -O -v -s '${cmd_hms}' ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
 		    else
 			cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
 		    fi # !hms_avg
@@ -2768,7 +2784,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 			if [ -z "${par_opt}" ]; then
 			    eval ${cmd_avg[${var_idx}]}
 			    if [ "$?" -ne 0 ]; then
-				printf "${spt_nm}: ERROR global average cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
+				printf "${spt_nm}: ERROR global and/or hemispheric average cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
 				exit 1
 			    fi # !err
 			else # !par_opt
@@ -2783,9 +2799,9 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 			wait ${avg_pid[${var_idx}]}
 			if [ "$?" -eq 0 ]; then
-			    printf "`date`: Globally averaged ${cmd_avg[${var_idx}]##* }\n"
+			    printf "`date`: Globally and/or hemispherically averaged ${cmd_avg[${var_idx}]##* }\n"
 			else
-			    printf "${spt_nm}: ERROR Failed to globally average. cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
+			    printf "${spt_nm}: ERROR Failed to globally and/or hemispherically average. cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
 			    # 20190323: exiting parent here creates orphans, kill live children then exit
 			    for ((kid_idx=var_idx+1;kid_idx<=var_idx_end;kid_idx++)); do
 				kill -9 ${avg_pid[${kid_idx}]}

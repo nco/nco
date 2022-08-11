@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.1-alpha04
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 31 July 2022
-@set update-month July 2022
+@set update-date 11 August 2022
+@set update-month August 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -15104,15 +15104,18 @@ These functions are used to manipulate missing values and @acronym{RAM} variable
 
 @table @code
 @item set_miss(expr)
- Takes one argument the missing value. Sets or overwrites the existing missing value. The argument given is converted if necessary to the variable type
+ Takes one argument, the missing value. Sets or overwrites the existing
+ missing value. The argument given is converted if necessary to the
+ variable type. (NB: pre-existing missing values, if any, are not converted).
 @item change_miss(expr)
- Changes the missing value elements of the variable to the new missing value (n.b. an expensive function).
+ Changes the missing value elements of the variable to the new missing
+ value (NB: an expensive function).
 @item get_miss() 
  Returns the missing value of a variable in Input or Output  
 @item delete_miss()
  Deletes the missing value associated with a variable.
 @item has_miss()
-Returns 1 (True) if the variable has a missing else returns 0 (False)
+ Returns 1 (True) if the variable has a missing else returns 0 (False)
 @item number_miss
  Returns the number of missing values a variable contains
 @item ram_write()
