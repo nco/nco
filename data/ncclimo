@@ -2501,14 +2501,17 @@ fi # !clm_md
 if [ "${tms_flg}" = 'Yes' ]; then
 
     if [ "${glb_avg}" = 'Yes' ] || [ "${hms_avg}" = 'Yes' ]; then 
-	if [ -n "${sgs_frc}" ]; then
-	    area_wgt="${area_nm}*${sgs_frc}"
-	else
-	    area_wgt="${area_nm}"
-	fi # !sgs_frc
 	
 	# 20191217 Global and hemispheric average timeseries require area variable
 	var_xtr="${var_xtr},${area_nm},${lat_nm}"
+
+	if [ -n "${sgs_frc}" ]; then
+	    area_wgt="${area_nm}*${sgs_frc}"
+	    var_xtr="${var_xtr},${sgs_frc}"
+	else
+	    area_wgt="${area_nm}"
+	fi # !sgs_frc
+
     else # !glb_avg
 	# Extract area variable from model output known to contain it
 	case ${mdl_nm} in
