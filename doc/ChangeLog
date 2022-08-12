@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha05: Round Ray';git push
 	git tag -a 5.1.1-alpha05 -m 'nco_fl_chmod, ncatted, ncrename with NCZarr;ncclimo hms_avg';git push --tags
 
+	* ncclimo/ncremap: Add Cori build environment modules to NCO_OVERRIDE_PATH (required for Intel)
+
 	* NCO 5.1.1-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha04: Curtis';git push
 	git tag -a 5.1.1-alpha04 -m 'nco_fl_chmod, ncatted, ncrename with NCZarr;ncclimo hms_avg';git push --tags
