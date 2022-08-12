@@ -159,6 +159,13 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export PATH='/home/zender/bin_cooley'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
 	cori* )
+	    # 20220811 Add build environment modules
+	    module purge
+	    module load PrgEnv-intel
+	    module load cray-netcdf
+	    module load gsl/2.7
+	    module load antlr/2.7.7-intel
+	    module load udunits
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
 		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
