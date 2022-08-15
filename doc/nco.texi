@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.1-alpha04
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 11 August 2022
+@set update-date 12 August 2022
 @set update-month August 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22675,11 +22675,13 @@ alter @file{map.nc} in-xsplace, so backup the original file first.
 @cindex @code{NaNf}
 @item --chk_nan
 As of @acronym{NCO} version 4.8.0 (May, 2019), @command{ncks} can
-locate @code{NaN} of NaNf in double- and single-precision
+locate @code{NaN} or @code{NaNf} in double- and single-precision
 floating-point variables, respectively.
-If a NaN is encountered, NCO prints its location and then exits with
-an error code.
-Thanks to Matthew Thompson of NASA for this suggestion.
+If a @code{NaN} is encountered, @acronym{NCO} prints its location and
+then exits with an error code.
+When run with a higher debugging level, the output will include the
+location of the @code{NaN} in the array.
+Thanks to Matthew Thompson of @acronym{NASA} for this suggestion.
 @example
 @verbatim
 $ ncks --chk_nan ~/nco/data/in.nc
