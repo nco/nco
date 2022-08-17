@@ -262,7 +262,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo --dbg=1 --ypf=50 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split global mean
 # cd ${DATA}/ne30/raw;ls 2018*000[12]-??*.nc | ncclimo --split --dbg=1 --glb_avg -s 1 -e 2 --var=FSNT,AODVIS,TREFHT --drc_out=${DATA}/ne30/clm
-# Split hemispheric mean
+# Split regional mean
 # cd ${DATA}/ne30/raw;ls 2018*000[12]-??*.nc | ncclimo --split --dbg=1 --rgn_avg -s 1 -e 2 --var=FSNT,AODVIS,TREFHT --drc_out=${DATA}/ne30/clm
 # Split all:
 # cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
@@ -1555,7 +1555,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 else # !tms_flg
 
     if [ "${rgn_avg}" = 'Yes' ]; then 
-	echo "${spt_nm}: ERROR Regional and global average functionality are intended for time-series (splitting) mode only. If you would like ${spt_nm} to provide global and/or hemispheric mean output for other types of climatologies, please talk to Charlie."
+	echo "${spt_nm}: ERROR Regional and global average functionality are intended for time-series (splitting) mode only. If you would like ${spt_nm} to provide global and regional mean output for other types of climatologies, please talk to Charlie."
 	echo "${spt_nm}: HINT Create global means of climos with, e.g., \"ncwa -w ${area_nm} in.nc out.nc\""
 	echo "${spt_nm}: HINT See averaging documentation at http://nco.sf.net/nco.html#ncwa"
 	exit 1
@@ -2782,7 +2782,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 			if [ -z "${par_opt}" ]; then
 			    eval ${cmd_avg[${var_idx}]}
 			    if [ "$?" -ne 0 ]; then
-				printf "${spt_nm}: ERROR global and/or hemispheric average cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
+				printf "${spt_nm}: ERROR global and regional average cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
 				exit 1
 			    fi # !err
 			else # !par_opt
@@ -2797,9 +2797,9 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 			wait ${avg_pid[${var_idx}]}
 			if [ "$?" -eq 0 ]; then
-			    printf "`date`: Globally and/or hemispherically averaged ${cmd_avg[${var_idx}]##* }\n"
+			    printf "`date`: Globally and regionally averaged ${cmd_avg[${var_idx}]##* }\n"
 			else
-			    printf "${spt_nm}: ERROR Failed to globally and/or hemispherically average. cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
+			    printf "${spt_nm}: ERROR Failed to globally and regionally average. cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
 			    # 20190323: exiting parent here creates orphans, kill live children then exit
 			    for ((kid_idx=var_idx+1;kid_idx<=var_idx_end;kid_idx++)); do
 				kill -9 ${avg_pid[${kid_idx}]}
