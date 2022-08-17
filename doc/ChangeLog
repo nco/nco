@@ -1,5 +1,13 @@
 2022-08-17  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.1.1-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha06: Cheney';git push
+	git tag -a 5.1.1-alpha06 -m 'ncclimo region_name, cell_methods';git push --tags
+
+	* ncclimo add cell_methods="area: mean" attribute
+
+	* ncclimo add coordinates="region_name" attribute
+
 	* NCO 5.1.1-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha05: Round Ray';git push
 	git tag -a 5.1.1-alpha05 -m 'ncclimo rgn_avg';git push --tags
