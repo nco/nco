@@ -15839,7 +15839,7 @@ print(tNew);
 @end example
 
 @noindent strftime()
-The @code{var_str=strtime(var_time,fmt_sng)} method takes a time-based variable and a format string and returns an NC_STRING variable (of the same shape as var_time) of time-stamps in the form specified by 'fmt_sng'. In order to run this command output type must be netCDF-4.
+The @code{var_str=strtime(var_time,fmt_sng)} method takes a time-based variable and a format string and returns an @code{NC_STRING} variable (of the same shape as var_time) of time-stamps in the form specified by 'fmt_sng'. In order to run this command output type must be netCDF4.
 @example 
 @verbatim
 ncap2 -4  -v -O -s 'time_str=strftime(time,"%Y-%m-%d");' in.nc foo.nc
@@ -15847,7 +15847,6 @@ ncap2 -4  -v -O -s 'time_str=strftime(time,"%Y-%m-%d");' in.nc foo.nc
 time_str="1964-03-13", "1964-03-14", "1964-03-15", "1964-03-16", 
          "1964-03-17", "1964-03-18", "1964-03-19", "1964-03-20", 
          "1964-03-21", "1964-03-22" ;
-
 @end verbatim
 @end example
 

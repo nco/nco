@@ -1,8 +1,12 @@
-2022-08-11  Charlie Zender  <zender@uci.edu>
+2022-08-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha05: Round Ray';git push
-	git tag -a 5.1.1-alpha05 -m 'nco_fl_chmod, ncatted, ncrename with NCZarr;ncclimo hms_avg';git push --tags
+	git tag -a 5.1.1-alpha05 -m 'ncclimo rgn_avg';git push --tags
+
+	* ncclimo: Fold-in --glb_avg into --rgn_avg regional average timeseries capabilities
+
+2022-08-11  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo/ncremap: Add Cori build environment modules to NCO_OVERRIDE_PATH (required for Intel)
 
