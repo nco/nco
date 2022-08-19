@@ -1,8 +1,12 @@
-2022-08-17  Charlie Zender  <zender@uci.edu>
+2022-08-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha06: Cheney';git push
 	git tag -a 5.1.1-alpha06 -m 'ncclimo region_name, cell_methods';git push --tags
+
+	* Add in_zarr.cdl and in_zarr4.cdl to generate more complex NCZarr test files
+
+2022-08-17  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo add cell_methods="area: mean" attribute
 

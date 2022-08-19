@@ -1,6 +1,6 @@
 // -*-C++-*-
 
-// Purpose: CDL file to generate ncZarr test file for NCO
+// Purpose: CDL file to generate NCZarr test file for NCO
 
 // Usage:
 // ncgen -7 -b -o ${HOME}/nco/data/zarr.nc ${HOME}/nco/data/zarr.cdl

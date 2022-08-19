@@ -39,9 +39,9 @@
 # Insta-install:
 # scp ~/nco/data/ncclimo zender1@acme1.llnl.gov:bin
 # scp ~/nco/data/ncclimo andes.olcf.ornl.gov:bin_andes
-# scp ~/nco/data/ncclimo blues.lcrc.anl.gov:bin_blues
+# scp ~/nco/data/ncclimo ac.zender@blues.lcrc.anl.gov:bin_blues
 # scp ~/nco/data/ncclimo cheyenne.ucar.edu:bin
-# scp ~/nco/data/ncclimo chrysalis.lcrc.anl.gov:bin_chrysalis
+# scp ~/nco/data/ncclimo ac.zender@chrysalis.lcrc.anl.gov:bin_chrysalis
 # scp ~/nco/data/ncclimo compy.pnl.gov:bin
 # scp ~/nco/data/ncclimo cooley.alcf.anl.gov:bin
 # scp ~/nco/data/ncclimo cori.nersc.gov:bin_cori
@@ -1479,8 +1479,8 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    # 20210329 Automatically infer dpf from first input file
 	    # E3SM/CESM high-frequency timeseries (e.g., h4 files) are all equal # timesteps, not duration
 	    # First timestep in first file (often? always?) is of zero duration and contains the IC
-	    # Remaining timesteps in first file, and all timesteps in following files, is of normal duration
-	    # For example 3-hourly E3SM/CESM output files of 120 timesteps each are all 30 days duration except the first file which is only 29.875 days because its first timestep is of zero duration
+	    # Remaining timesteps in first file, and all timesteps in following files, are of normal duration
+	    # For example 3-hourly E3SM/CESM output files of 120 timesteps length are each 30 days duration except the first file which is only 29.875 days because its first timestep is of zero duration
 	    # Solution: Base dpf on second file, not first file, if it exists
 	    fl_idx=$((fl_nbr > 1 ? 1 : 0))
 	    tm_var='time'
@@ -1493,7 +1493,10 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		exit 1
 	    fi # !dpf_ntg
 	fi # !dpf
+	echo "begin funky math"
+	# 20220818
 	let fpy=${dpy}/${dpf}
+	#fpy=$(echo "${dpy}/${dpf}" | bc -l) # NB: dpy/dpf more accurate than fpy
 	flg_dct='No'
 	# !clm_md=hfs
     elif [ "${clm_md}" = 'mth' ]; then
@@ -1505,7 +1508,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	let yr_sbs=${fl_nbr}/${fpy}
 	let fl_rmd=${fl_nbr}%${fpy}
     fi # !clm_md
-    if [ ${flg_dct} = 'Yes' ]; then
+    if [ "${flg_dct}" = 'Yes' ]; then
 	if [ "${mth_flg}" = 'Yes' ]; then
 	    if [ ${mth_nbr} -ne ${fl_nbr} ]; then
 		printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} differs from number of months = ${mth_nbr} computed from calendar inputs\n"
@@ -2550,8 +2553,12 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    # Extraneous (more than one non-overlapping) files at beginning of list will cause failure
 	    # fxm: Omit extraneous files at start of list (extraneous at end are OK now)
 	    let fpyp1=${fpy}+1
+	    # 20220818: User Jinbo Xie has hfs files with dpf=36.5. Bash chokes on FP arithmetic
 	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${dpy}/${dpf} # NB: dpy/dpf more accurate than fpy
+	    #fl_idx_srt=$(echo "${sgm_idx}*${ypf_max}*${dpy}/${dpf}" | bc -l) # NB: dpy/dpf more accurate than fpy
+	    #echo "dbg: fl_idx_srt = ${fl_idx_srt}"
 	    let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: use fpyp1 to overestimate fl_idx_end
+	    #echo "dbg: fl_idx_end = ${fl_idx_end}"
 	    let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
 	    let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
 	    if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
@@ -2774,6 +2781,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		    # 20220817: Prior to today, --glb_avg used ncwa for global average
 		    # As of NCO 5.1.1, --glb_avg is a deprecated synonym for --rgn_avg
 		    # Both produce (currently three) regional timeseries
+		    # The original --glb_avg implementation is:
 		    # cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
 		    if [ ${dbg_lvl} -ge 1 ]; then
 			echo ${cmd_avg[${var_idx}]}
