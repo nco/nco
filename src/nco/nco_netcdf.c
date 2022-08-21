@@ -625,8 +625,8 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
 {
   /* Purpose: Convert netCDF extended file format enum to string */
   /* NB: nc_inq_format_extended() introduced in netCDF 4.3.1, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
-#if NC_LIB_VERSION < 440
     switch(fl_fmt_xtn){
+#if NC_LIB_VERSION < 440
       /* NB: netCDF < 4.3.1 unaware of NC_FORMATX_* tokens */
     case NC_FORMAT_NC3:
       return "NC_FORMATX_NC3";
@@ -642,10 +642,7 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
       return "NC_FORMATX_DAP4";
     case NC_FORMAT_UNDEFINED:
       return "NC_FORMATX_UNDEFINED";
-    default: nco_dfl_case_nc_type_err(); break;
-    } /* end switch */
 #else /* !NC_LIB_VERSION */
-    switch(fl_fmt_xtn){
     case NC_FORMATX_NC3:
       return "NC_FORMATX_NC3"; /* NB: CDF5 self-report NC_FORMATX_NC3 when files opened through netCDF serial API */
     case NC_FORMATX_NC_HDF5:
@@ -662,9 +659,9 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
       return "NC_FORMATX_NCZARR";
     case NC_FORMATX_UNDEFINED:
       return "NC_FORMATX_UNDEFINED";
-    default: nco_dfl_case_nc_type_err(); break;
-    } /* end switch */
 #endif /* !NC_LIB_VERSION */
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* !fl_fmt_xtn */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -1414,7 +1411,7 @@ nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
   int rcd=NC_NOERR;
   /* NB: 20131222: Function nc_inq_format_extended(int ncid,int *formatp,int *mode) appeared in netCDF 4.3.1-rc7
      Forward compatibility prototype required for systems with netCDF < 4.3.1 */
-  /* NUG: "netCDF API presents file as if it had the format specified by nc_inq_format(). The true file format, however, may not even be a netCDF file; it might be DAP, HDF4, or PNETCDF, for example. nc_inq_format_extended() returns that true file type. It also returns the effective mode for the file. */
+  /* NUG: "netCDF API presents a file as if it had the format specified by nc_inq_format(). The true file format, however, may not even be a netCDF file; it might be DAP, HDF4, or PNETCDF, for example. nc_inq_format_extended() returns that true file type. It also returns the effective mode for the file. */
   rcd=nc_inq_format_extended(nc_id,fl_fmt,mode);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_format_extended()");
   return rcd;

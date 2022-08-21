@@ -210,8 +210,11 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
      Yellowstong /glade     131072 524288
      Yellowstong /tmp         4096 524288 <-- probably hardcoded default not actual blocksize reported */
 
-  /* Discover blocksize if possible */
-  fl_sys_blk_sz=nco_fl_blocksize(in_id,fl_out);
+  /* Discover blocksize if possible
+     netCDF ID in_id points to input file, while fl_out to output file name (not ID)
+     Do not pass anything about the input file to nco_fl_blocksize()
+     We do need name (not ID) of output file in order to perform stat() on output directory */
+  fl_sys_blk_sz=nco_fl_blocksize(fl_out);
 
   if(cnk_sz_byt > 0ULL){
     /* Use user-specified chunk size if available */

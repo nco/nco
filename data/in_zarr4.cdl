@@ -13,7 +13,8 @@
 // "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
 // /usr/local/bin/ncgen -k netCDF-4 -b -o in_zarr4.nc in_zarr4.cdl
 // /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_zarr4.nc ${HOME}/nco/data/in_zarr4.cdl
-// /opt/netcdf/bin/ncgen -4 -lb -o "file://${HOME}/in_zarr4#mode=nczarr,file" ${HOME}/nco/data/in_zarr4.cdl
+// /opt/netcdf/bin/ncgen -lb -o "file://${HOME}/in_zarr4#mode=nczarr,file" ${HOME}/nco/data/in_zarr4.cdl
+// ncks -O -4 "file://${HOME}/in_zarr4#mode=nczarr,file" ~/in_zarr4.nc
 
 // URL:
 // http://dust.ess.uci.edu/nco/in_zarr4.nc

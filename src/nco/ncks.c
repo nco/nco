@@ -60,7 +60,9 @@
    ncks --jsn -C -m -v one_dmn_rec_var ~/nco/data/in_grp.nc
    ncks -O -4 --ppc ppc_dbl=1 --ppc ppc_flt,ppc_big=4 ~/nco/data/in.nc ~/foo.nc
    ncks -O --ppc ppc_dbl=1 --ppc '/g1/ppc.?',/g1/g1g1/ppc_dbl=4 ~/nco/data/in_grp.nc ~/foo.nc
-   ncks -O -m -M -v Snow_Cover_Monthly_CMG ${DATA}/hdf/MOD10CM.A2007001.005.2007108111758.hdf */
+   ncks -O -m -M -v Snow_Cover_Monthly_CMG ${DATA}/hdf/MOD10CM.A2007001.005.2007108111758.hdf
+   ncks -O ~/nco/data/in_zarr.nc "file://${HOME}/in_zarr#mode=nczarr,file"
+   ncks -O ~/nco/data/in_zarr4.nc "file://${HOME}/in_zarr4#mode=nczarr,file" */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */

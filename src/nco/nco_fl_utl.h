@@ -157,8 +157,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 
 size_t /* [B] Blocksize */
 nco_fl_blocksize /* [fnc] Find blocksize of filesystem will or does contain this file */
-(const int nc_id, /* I [id] netCDF group ID */
- const char * const fl_nm); /* I [sng] Filename */
+(const char * const fl_nm); /* I [sng] Filename */
 
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */
@@ -191,8 +190,8 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
  int * const nc_id); /* O [id] File ID */
 
-nco_bool /* O [flg] Variable is listed in a "coordinates" attribute */
-nco_fl_is_nczarr /* [fnc] Filename is valid NCZarr specification */
+nco_bool /* O [flg] Filename is valid NCZarr specification */
+nco_fl_nm_is_nczarr /* [fnc] Filename is valid NCZarr specification */
 (const char * const fl_nm); /* I [sng] Filename */
 
 int /* O [rcd] Return code */

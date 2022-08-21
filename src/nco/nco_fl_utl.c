@@ -329,11 +329,11 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
   /* 20220713 Allow for NCZarr storage */
   char *fl_src_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_src */
   char *fl_dst_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_dst */
-  if(nco_fl_is_nczarr(fl_src)) (void)nco_fl_ncz2psx(fl_src,&fl_src_psx,NULL,NULL);
-  if(nco_fl_is_nczarr(fl_dst)){
+  if(nco_fl_nm_is_nczarr(fl_src)) (void)nco_fl_ncz2psx(fl_src,&fl_src_psx,NULL,NULL);
+  if(nco_fl_nm_is_nczarr(fl_dst)){
     dst_is_drc=True;
     (void)nco_fl_ncz2psx(fl_dst,&fl_dst_psx,NULL,NULL);
-  } /* !nco_fl_is_nczarr() */
+  } /* !nco_fl_nm_is_nczarr() */
 
   /* 20131227 Allow for whitespace and naughty characters in fl_[src,dst]
      Assume CDL translation results in acceptable name for shell commands */
@@ -785,7 +785,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
-  }else if(nco_fl_is_nczarr(fl_nm_lcl)){
+  }else if(nco_fl_nm_is_nczarr(fl_nm_lcl)){
     /* Important to check for NCZarr before https_url_sng because https is a legal NCZarr scheme */
 #if NC_HAS_NCZARR
     url_sng_lng=strlen(nczarr_url_sng);
@@ -1421,11 +1421,11 @@ nco_fl_mv /* [fnc] Move first file to second */
   /* 20220713 Allow for NCZarr storage */
   char *fl_src_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_src */
   char *fl_dst_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_dst */
-  if(nco_fl_is_nczarr(fl_src)) (void)nco_fl_ncz2psx(fl_src,&fl_src_psx,NULL,NULL);
-  if(nco_fl_is_nczarr(fl_dst)){
+  if(nco_fl_nm_is_nczarr(fl_src)) (void)nco_fl_ncz2psx(fl_src,&fl_src_psx,NULL,NULL);
+  if(nco_fl_nm_is_nczarr(fl_dst)){
     dst_is_drc=True;
     (void)nco_fl_ncz2psx(fl_dst,&fl_dst_psx,NULL,NULL);
-  } /* !nco_fl_is_nczarr() */
+  } /* !nco_fl_nm_is_nczarr() */
 
   /* 20131227 Allow for whitespace and naughty characters in fl_[src,dst]
      Assume CDL translation results in acceptable name for shell commands */
@@ -1727,10 +1727,9 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 
 size_t /* [B] Blocksize */
 nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain this file */
-(const int nc_id, /* I [id] netCDF group ID */
- const char * const fl_nm) /* I [sng] Filename */
+(const char * const fl_nm) /* I [sng] Filename */
 {
-  /* Purpose: Find blocksize of filesystem will or does contain this file */
+  /* Purpose: Find blocksize of filesystem that will or does contain this file */
   const char fnc_nm[]="nco_fl_blocksize()"; /* [sng] Function name */
 #ifdef WIN32
   const char sls_chr='\\';   /* [chr] Slash character */
@@ -1741,15 +1740,15 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
   char *drc_out; /* [sng] Directory containing output file (use for stat()) */
   char *sls_ptr; /* [sng] Pointer to slash */
   
-  int fl_fmt_xtn=nco_fmt_xtn_nil; /* [enm] Extended file format */
   int rcd_stt=0; /* [rcd] Return code from stat() */
   
   size_t fl_sys_blk_sz=0UL; /* [nbr] File system blocksize for I/O */
 
   struct stat stat_sct;
 
-  (void)nco_inq_format_extended(nc_id,&fl_fmt_xtn,(int *)NULL);
-  if(fl_fmt_xtn == nco_fmt_xtn_nczarr){
+  /* 20220821: Use fl_out to determine directory and thus blocksize for output
+     Do not use nc_id here, since that refers to input file!!!*/
+  if(nco_fl_nm_is_nczarr(fl_nm)){
     (void)nco_fl_ncz2psx(fl_nm,NULL,&drc_out,NULL);
   }else{
   /* Use filename manipulation to truncate the end of the path,
@@ -1771,6 +1770,8 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
     } /* !sls_ptr */
   } /* !fl_fmt_xtn */
   
+  //if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s uses drc_out = %s\n",nco_prg_nm_get(),fnc_nm,drc_out);
+
   /* Blocksize information in stat structure:
      blksize_t st_blksize blocksize for file system I/O
      20140105: Although blksize_t defined in stat(), there is actually no Linux type named blksize_t 
@@ -1883,7 +1884,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* NB: Calling routine has responsibility to free() this memory */
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
 
-  if(nco_fl_is_nczarr(fl_out)) fl_fmt_xtn=nco_fmt_xtn_nczarr;
+  if(nco_fl_nm_is_nczarr(fl_out)) fl_fmt_xtn=nco_fmt_xtn_nczarr;
   if(fl_fmt_xtn == nco_fmt_xtn_nczarr){
     /* 20220715 fxm: Exploit nco_fl_ncz2psx() formalism when constructing temporary filename
        Currently this code only works for file:// scheme */
@@ -1971,6 +1972,13 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 #else /* !ENABLE_MPI */
     rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
 #endif /* !ENABLE_MPI */
+#if 0
+    if(nco_dbg_lvl_get() >= nco_dbg_fl){
+      int fl_fmt_xtn_out=nco_fmt_xtn_nil; /* [enm] Extended file format */
+      (void)nco_inq_format_extended(*out_id,&fl_fmt_xtn_out,(int *)NULL);
+      (void)fprintf(stderr,"%s: DEBUG %s created file %s of extended type %s\n",nco_prg_nm_get(),fnc_nm,fl_out_tmp,nco_fmt_xtn_sng(fl_fmt_xtn_out));
+    } /* !dbg */
+#endif /* !0 */
     return fl_out_tmp;
   } /* !FORCE_OVERWRITE */
 
@@ -2144,11 +2152,11 @@ nco_fl_rm /* [fnc] Remove file or directory */
   
   /* 20220713 Allow for NCZarr storage */
   char *fl_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_nm */
-  if(nco_fl_is_nczarr(fl_nm)){
+  if(nco_fl_nm_is_nczarr(fl_nm)){
     (void)nco_fl_ncz2psx(fl_nm,&fl_psx,NULL,NULL);
     obj_to_rm=fl_psx;
     obj_is_drc=True;
-  } /* !nco_fl_is_nczarr() */
+  } /* !nco_fl_nm_is_nczarr() */
   
   if(obj_is_drc) cmd_rm_typ=cmd_rm_drc; else cmd_rm_typ=cmd_rm_fl;
   /* Add one for the space and one for the terminating NUL character */
@@ -2191,11 +2199,11 @@ nco_fl_chmod2 /* [fnc] Ensure file is user/owner-writable */
   
   /* 20220713 Allow for NCZarr storage */
   char *fl_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_nm */
-  if(nco_fl_is_nczarr(fl_nm)){
+  if(nco_fl_nm_is_nczarr(fl_nm)){
     (void)nco_fl_ncz2psx(fl_nm,&fl_psx,NULL,NULL);
     obj_to_chmod=fl_psx;
     obj_is_drc=True;
-  } /* !nco_fl_is_nczarr() */
+  } /* !nco_fl_nm_is_nczarr() */
   
   if(obj_is_drc) cmd_chmod_typ=cmd_chmod_drc; else cmd_chmod_typ=cmd_chmod_fl;
   /* Add one for the space and one for the terminating NUL character */
@@ -2216,12 +2224,12 @@ nco_fl_chmod2 /* [fnc] Ensure file is user/owner-writable */
 } /* !nco_fl_chmod2() */
 #endif /* !_MSC_VER */
 
-nco_bool /* O [flg] Variable is listed in a "coordinates" attribute */
-nco_fl_is_nczarr /* [fnc] Filename is valid NCZarr specification */
+nco_bool /* O [flg] Filename is valid NCZarr specification */
+nco_fl_nm_is_nczarr /* [fnc] Filename is valid NCZarr specification */
 (const char * const fl_nm) /* I [sng] Filename */
 {
   /* Purpose: Determine whether NCZarr conventions apply to this filename */
-  const char fnc_nm[]="nco_fl_is_nczarr()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_fl_nm_is_nczarr()"; /* [sng] Function name */
   const char * ncz_scm_arr[]={
     "file://",
     "s3://",
@@ -2237,7 +2245,7 @@ nco_fl_is_nczarr /* [fnc] Filename is valid NCZarr specification */
   int scm_idx; /* [idx] Index for scheme array */
   int frg_idx; /* [idx] Index for fragment array */
   
-  nco_bool fl_is_nczarr=False; /* [flg] Filename is valid NCZarr syntax */
+  nco_bool fl_nm_is_nczarr=False; /* [flg] Filename is valid NCZarr syntax */
 
   /* Does filename begin with one of the three valid NCZarr schemes? */
   for(scm_idx=0;scm_idx<scm_nbr;scm_idx++)
@@ -2248,11 +2256,11 @@ nco_fl_is_nczarr /* [fnc] Filename is valid NCZarr specification */
     for(frg_idx=0;frg_idx<frg_nbr;frg_idx++)
       if(strstr(fl_nm,ncz_frg_arr[frg_idx]))
 	break;
-    if(frg_idx < frg_nbr) fl_is_nczarr=True; else (void)fprintf(stdout,"%s: WARNING %s reports file %s has NCZarr prefix without NCZarr fragment. This may throw code into Limbo...\n",nco_prg_nm_get(),fnc_nm,fl_nm);
+    if(frg_idx < frg_nbr) fl_nm_is_nczarr=True; else (void)fprintf(stdout,"%s: WARNING %s reports file %s has NCZarr prefix without NCZarr fragment. This may throw code into Limbo...\n",nco_prg_nm_get(),fnc_nm,fl_nm);
   } /* !scm_idx */
   
-  return fl_is_nczarr;
-} /* !nco_fl_is_nczarr() */
+  return fl_nm_is_nczarr;
+} /* !nco_fl_nm_is_nczarr() */
   
 int /* O [rcd] Return code */
 nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
@@ -2301,7 +2309,7 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
   int scm_idx; /* [idx] Index for scheme array */
   int frg_idx; /* [idx] Index for fragment array */
   
-  nco_bool fl_is_nczarr=False; /* [flg] Filename is valid NCZarr syntax */
+  nco_bool fl_nm_is_nczarr=False; /* [flg] Filename is valid NCZarr syntax */
 
   /* Does filename begin with one of the three valid NCZarr schemes? */
   for(scm_idx=0;scm_idx<scm_nbr;scm_idx++)
@@ -2312,13 +2320,13 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
     for(frg_idx=0;frg_idx<frg_nbr;frg_idx++)
       if(strstr(fl_ncz,ncz_frg_arr[frg_idx]))
 	break;
-    if(frg_idx < frg_nbr) fl_is_nczarr=True; else (void)fprintf(stdout,"%s: WARNING %s reports file %s has NCZarr prefix without NCZarr fragment. This may throw code into Limbo...\n",nco_prg_nm_get(),fnc_nm,fl_ncz);
+    if(frg_idx < frg_nbr) fl_nm_is_nczarr=True; else (void)fprintf(stdout,"%s: WARNING %s reports file %s has NCZarr prefix without NCZarr fragment. This may throw code into Limbo...\n",nco_prg_nm_get(),fnc_nm,fl_ncz);
   } /* !scm_idx */
   
   nco_bool flg_psx=False; /* [flg] At least one POSIX path/name was requested */
   if(psx_fll || psx_drc || psx_stb) flg_psx=True;
 
-  if(flg_psx && fl_is_nczarr){
+  if(flg_psx && fl_nm_is_nczarr){
     char *fl_ncz_dpl; /* [sng] Duplicate of fl_ncz */
     char *fl_frg_lcn; /* [sng] Location of fragment component (e.g., "#mode=") of fl_pth */
 
@@ -2418,6 +2426,6 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
 
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports psx_fll = %s, psx_drc = %s, psx_stb = %s\n",nco_prg_nm_get(),fnc_nm,psx_fll ? *psx_fll : "NULL",psx_drc ? *psx_drc : "NULL",psx_stb ? *psx_stb : "NULL");
 
-  return fl_is_nczarr;
+  return fl_nm_is_nczarr;
   
 } /* !nco_fl_ncz2psx() */
