@@ -1,8 +1,12 @@
-2022-08-21  Charlie Zender  <zender@uci.edu>
+2022-08-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha06: Cheney';git push
 	git tag -a 5.1.1-alpha06 -m 'all: nco_fl_blocksize() fix;ncclimo region_name, cell_methods';git push --tags
+
+	* Add scalar dimension to in_zarr4.cdl to workaround NCZarr scalar bug
+
+2022-08-21  Charlie Zender  <zender@uci.edu>
 
 	* nco_fl_blocksize() determine extended filetype via output file name not input file ID
 
