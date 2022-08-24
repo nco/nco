@@ -3,9 +3,10 @@
 // Purpose: CDL file to generate NCZarr-compatible test file with netCDF4 atomic types for NCO
 // Derived by removing NCZarr incompatibilities from in.cdl
 // Changes include:
-// Change time from NC_UNLIMITED to fixed size 10
-// Add netCDF4 types from in_4.cdl
-// Remove all variables/attributes of string type
+// 1. Change time from NC_UNLIMITED to fixed size 10
+// 2. Add netCDF4 types from in_4.cdl
+// 3. Remove all variables and attributes of string type
+// 4. Make all scalars use degenerate (size = 1) "scalar" dimension as (hopefully) temporary workaround to https://github.com/Unidata/netcdf-c/issues/2485
 
 // Usage:
 // netCDF4: ncgen arguments depend on version:

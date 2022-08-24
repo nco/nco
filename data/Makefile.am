@@ -6,6 +6,10 @@ test_symlink = 85.nc 86.nc 87.nc 88.nc 89.nc h0001.nc h0002.nc h0003.nc
 
 test_data_netCDF4 = in_4c.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc in_grp_7.nc in_grp_8.nc cmip5.nc obs.nc mdl_1.nc mdl_2.nc mdl_3.nc hdn.nc mrd.nc split.nc ref_utf8.nc
 
+test_zarr_data = in_zarr4
+
+test_zarr_symlink = h0001 h0002 h0003
+
 # netCDF build rules
 %.nc : %.cdl
 	-@PATH_TO_NCGEN@ -o $@ $< 
@@ -98,7 +102,18 @@ split.nc : split.cdl
 ref_utf8.nc : ref_utf8.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
-all: ${test_data} ${test_symlink} ${test_data_netCDF4}
+# NCZarr build rules
+% : %.cdl
+	-@PATH_TO_NCGEN@ -k netCDF-4 -lb -o "file://$@#mode=nczarr,file" $< 
+
+h0001 : in_zarr4
+	-ln -s -f $< $@
+h0002 : in_zarr4
+	-ln -s -f $< $@
+h0003 : in_zarr4
+	-ln -s -f $< $@
+
+all: ${test_data} ${test_symlink} ${test_data_netCDF4} ${test_zarr_data} ${test_zarr_symlink} 
 
 # Autoconf/automake instructions for scripts:
 # https://www.gnu.org/software/automake/manual/html_node/Scripts.html

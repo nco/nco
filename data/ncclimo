@@ -664,7 +664,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "perlmu: srun -A e3sm -C cpu --nodes=1 --time=00:30:00 --qos=debug --job-name=ncclimo --pty bash\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
     exit 1
-} # end fnc_usg_prn()
+} # !fnc_usg_prn()
 
 function trim_leading_zeros {
     # Purpose: Trim leading zeros from string representing an integer
@@ -680,8 +680,8 @@ function trim_leading_zeros {
     # If all zeros removed, replace with single zero
     if [ ${sng_trm} = '' ]; then 
 	sng_trm='0'
-    fi # endif
-} # end trim_leading_zeros()
+    fi # !sng_trm
+} # !trim_leading_zeros()
 
 get_spt_drc () {
 # SMB (20150814):
@@ -698,7 +698,7 @@ get_spt_drc () {
     done
     spt_drc="$(cd -P "$(dirname "${spt_src}")" && pwd)"
     echo ${spt_drc}
-} # end get_spt_drc()
+} # !get_spt_drc()
 
 # Check argument number and complain accordingly
 arg_nbr=$#

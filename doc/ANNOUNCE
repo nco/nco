@@ -18,6 +18,55 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. All NCO operators support NCZarr I/O. This support is currently
+limited to the "file://" scheme. Support for the S3 scheme is next.
+All NCO commands should work as expected independent of the back-end
+storage format of the I/O. Operators can ingest and output POSIX,
+Zarr, or a mixture of these two file formats.
+
+
+in_ncz="file://${HOME}/in_zarr4#mode=nczarr,file"
+in_psx="${HOME}/in_zarr4.nc"
+out_ncz="file://${HOME}/foo#mode=nczarr,file"
+out_psx="${HOME}/foo.nc"
+
+ncks ${in_ncz} # Print contents of Zarr file
+ncks -O -v var ${in_psx} ${out_psx} # POSIX input to POSIX output
+ncks -O -v var ${in_psx} ${out_ncz} # POSIX input to Zarr output
+ncks -O -v var ${in_ncz} ${out_psx} # Zarr input to  POSIX output
+ncks -O -v var ${in_ncz} ${out_ncz} # Zarr input to Zarr output
+ncks -O --cmp='gbr|shf|zst' ${in_psx} ${out_ncz} # Quantize/Compress
+ncks -O --cmp='gbr|shf|zst' ${in_ncz} ${out_ncz} # Quantize/Compress
+
+Commands with Zarr I/O behave mostly as expected. NCO treats
+Zarr and POSIX files identically once they are "opened" via the
+netCDF API. Hence the main difference between Zarr and POSIX,
+from the viewpoint of NCO, is in handling the filenames. By default
+NCO performs operations in temporary files that it moves to a final
+destination once the rest of the command succeeds. Supporting Zarr in
+NCO means applying the correct procedures to create, copy,
+move/rename, and delete files and directories correctly depending on 
+the backend format.
+
+Many NCO users rely on POSIX filename globbing for multi-file
+operations, e.g., 'ncra in*.nc out.nc'. POSIX globbing returns
+matches in POSIX format (e.g., 'in1.nc in2.nc in3.nc') which lacks the
+"scheme://" indicator and the "#mode=..." fragment that the netCDF API
+needs to open a Zarr store. There is no perfect solution to this.
+
+A partial solution is available by judiciously using NCO's stdin
+capabilities for multi-file operators. The procedure relies on using
+the 'ls' command (instead of globbing) to identify the desired Zarr
+stores, and piping the (POSIX-style) results of that through the
+newly supplied NCO filter-script that will prepend the desired scheme
+and append the desired fragment to the matched Zarr stores, and
+pipe those results to the NCO operator:
+
+ncra in*.nc out.nc      # POSIX input files via globbing
+ls in*.nc | ncra out.nc # POSIX input files via stdin
+ls in*.nc | psx2ncz | ncra out.nc # Zarr input via stdin
+ls in*.nc | psx2ncz --scheme=file --mode=nczarr,file | ncra out.nc
+
 A. All numeric NCO operators support new compression features
 when linked to a default installation of the latest netCDF, 4.9.0. 
 These features and how to access and tune them are extensively

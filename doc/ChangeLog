@@ -1,8 +1,12 @@
-2022-08-23  Charlie Zender  <zender@uci.edu>
+2022-08-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha06: Cheney';git push
-	git tag -a 5.1.1-alpha06 -m 'all: nco_fl_blocksize() fix;ncclimo region_name, cell_methods';git push --tags
+	git tag -a 5.1.1-alpha06 -m 'all: in_zarr4, nco_fl_blocksize() fix;ncclimo region_name, cell_methods';git push --tags
+
+	* Add build rules for NCZarr files to data/Makefile.am, build in_zarr4 and symlinks
+
+2022-08-23  Charlie Zender  <zender@uci.edu>
 
 	* Add scalar dimension to in_zarr4.cdl to workaround NCZarr scalar bug
 
