@@ -1,0 +1,324 @@
+#!/usr/bin/env bash
+
+# Purpose: Convert POSIX filenames to/from NCZarr store-names
+
+# Copyright (C) 2022--present Charlie Zender
+
+# This file is part of NCO, the netCDF Operators. NCO is free software.
+# You may redistribute and/or modify NCO under the terms of the 
+# 3-Clause BSD License.
+
+# You are permitted to link NCO with the HDF, netCDF, OPeNDAP, and UDUnits
+# libraries and to distribute the resulting executables under the terms 
+# of the BSD, but in addition obeying the extra stipulations of the 
+# HDF, netCDF, OPeNDAP, and UDUnits licenses.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+# See the 3-Clause BSD License for more details.
+
+# The original author of this software, Charlie Zender, seeks to improve
+# it with your suggestions, contributions, bug-reports, and patches.
+# Please contact the NCO project at http://nco.sf.net or write to
+# Charlie Zender
+# Department of Earth System Science
+# University of California, Irvine
+# Irvine, CA 92697-3100
+
+# Prerequisites: Bash, NCO
+# Script could use other shells, e.g., dash (Debian default) after rewriting function definitions and loops
+# Debug with 'bash -x ncz2psx --dbg=dbg_lvl' where 0 <= dbg_lvl <= 5
+
+# Insta-install:
+# scp ~/nco/data/ncz2psx zender1@acme1.llnl.gov:bin
+# scp ~/nco/data/ncz2psx andes.olcf.ornl.gov:bin_andes
+# scp ~/nco/data/ncz2psx ac.zender@blues.lcrc.anl.gov:bin_blues
+# scp ~/nco/data/ncz2psx cheyenne.ucar.edu:bin
+# scp ~/nco/data/ncz2psx ac.zender@chrysalis.lcrc.anl.gov:bin_chrysalis
+# scp ~/nco/data/ncz2psx compy.pnl.gov:bin
+# scp ~/nco/data/ncz2psx cooley.alcf.anl.gov:bin
+# scp ~/nco/data/ncz2psx cori.nersc.gov:bin_cori
+# scp ~/nco/data/ncz2psx dust.ess.uci.edu:bin
+# scp ~/nco/data/ncz2psx e3sm.ess.uci.edu:bin
+# scp ~/nco/data/ncz2psx frazil.ess.uci.edu:bin
+# scp ~/nco/data/ncz2psx perlmutter-p1.nersc.gov:bin_perlmutter
+# scp ~/nco/data/ncz2psx skyglow.ess.uci.edu:bin
+# scp ~/nco/data/ncz2psx theta.alcf.anl.gov:bin_theta
+# scp dust.ess.uci.edu:bin/ncz2psx ~/bin
+# scp dust.ess.uci.edu:bin/ncz2psx ${MY_BIN_DIR}
+# scp zender@dust.ess.uci.edu:bin/ncz2psx ${MY_BIN_DIR}
+
+# Set script name, directory, PID, run directory
+drc_pwd=${PWD}
+# Security: Explicitly unset IFS before wordsplitting, so Bash uses default IFS=<space><tab><newline>
+unset IFS
+# Set these before 'module' command which can overwrite ${BASH_SOURCE[0]}
+# NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
+# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+spt_src="${BASH_SOURCE[0]}"
+[[ -z "${spt_src}" ]] && spt_src="${0}" # Use ${0} when BASH_SOURCE is unavailable (e.g., dash)
+while [ -h "${spt_src}" ]; do # Recursively resolve ${spt_src} until file is no longer a symlink
+  drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
+  spt_src="$(readlink "${spt_src}")"
+  [[ ${spt_src} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
+done
+cmd_ln="${spt_src} ${@}"
+drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
+spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
+spt_pid=$$ # [nbr] Script PID (process ID)
+
+# Debugging and Benchmarking:
+# /bin/ls -d ${HOME}/nco/data/h000? | ncz2psx | ncra -O ~/out.nc
+
+# Production usage:
+# /bin/ls -d ${HOME}/nco/data/h000? | ncz2psx | ncra -O ~/out.nc
+
+# 20220131 ncclimo/ncremap commands within scripts that open E3SMU environment
+# (e.g., zppy-generated scripts) must be told where to find NCO binaries.
+# Only necessary on login nodes since Spack handles this fine on compute nodes
+if [ "${E3SMU_MPI}" = 'NOMPI' ] && [ -n "${E3SMU_SCRIPT}" ] && [ -n "${CONDA_PREFIX}" ]; then
+   export PATH="${CONDA_PREFIX}/bin"\:${PATH}
+fi # !E3SMU_MPI
+# Set NCO version and directory
+nco_exe=`which ncks`
+if [ -z "${nco_exe}" ]; then
+    echo "${spt_nm}: ERROR Unable to find NCO, \${nco_exe} = ${nco_exe}"
+    echo "${spt_nm}: HINT Carefully examine your environment setup (e.g., .bashrc) to avoid inadvertently overriding (with, e.g., conda-initialization) paths intended to be provided by an analysis-package environment (e.g., E3SM-Unified)"
+    exit 1
+fi # !nco_exe
+# StackOverflow method finds NCO directory
+while [ -h "${nco_exe}" ]; do
+  drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
+  nco_exe="$(readlink "${nco_exe}")"
+  [[ ${nco_exe} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
+done
+drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
+nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
+nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk -F '"' '{print $2}')
+
+# 20190218: Die quickly when NCO is found yet cannot run, e.g., due to linker errors
+if [ -z "${nco_vrs}" ]; then
+    echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
+    $(ncks --version)
+    exit 1
+fi # !nco_vrs
+lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
+
+# Detect and warn about mixed modules (for Qi Tang 20170531)
+if [ "${drc_spt}" != "${drc_nco}" ]; then
+    echo "INFO: Mixture of NCO scripts and binaries from different locations. Script ${spt_nm} is from directory ${drc_spt} while NCO binaries are from directory ${drc_nco}. Normally this script and the binaries are from the same executables directory. This INFO may be safely ignored for customized scripts and/or binaries that the user has intentionally split into different directories."
+    echo "HINT (All-users): Conflicting script and binary directories may result from 1) Hardcoding an NCO script and/or binary pathnames, 2) Incomplete NCO installations in one or more directories in the \$PATH environment variable, 3) (Re-)Installing or (re-)building NCO without issuing a \"hash -r\" command afterward to update the executable pathnames that the shell remembers from before."
+    echo "HINT (E3SM-only): In a Conda-based NCO environment, such as E3SM-Unified (which uses NCO in MPAS Analysis and E3SM-Diags), it is possible that some features may be unavailable because the upstream packages (e.g., UDUnits) were not properly linked by Conda. The ncclimo and ncremap scripts contain a mechanism to access the (presumably correctly linked) NCO binary executable and library paths in C. Zender's home directories on the major E3SM machines. Users may turn-on the machine-dependent, hard-coded path by invoking ncclimo and/or ncremap after altering their environment with: \"export NCO_PATH_OVERRIDE=Yes\"."
+fi # drc_spt
+
+# When running in a terminal window (not in an non-interactive batch queue)...
+if [ -n "${TERM}" ]; then
+    # Set fonts for legibility
+    if [ -x /usr/bin/tput ] && tput setaf 1 &> /dev/null; then
+	fnt_bld=`tput bold` # Bold
+	fnt_nrm=`tput sgr0` # Normal
+	fnt_rvr=`tput smso` # Reverse
+	fnt_tlc=`tput sitm` # Italic
+    else
+	fnt_bld="\e[1m" # Bold
+	fnt_nrm="\e[0m" # Normal
+	fnt_rvr="\e[07m" # Reverse
+	fnt_tlc="\e[3m" # Italic
+    fi # !tput
+fi # !TERM
+    
+# Pre-define enumerated types used in defaults
+scm_file='file' # [sng] File scheme
+scm_s3='s3' # [sng] S3 scheme
+scm_http='http' # [sng] HTTP scheme
+
+# Defaults for command-line options and some derived variables
+# Modify these defaults to save typing later
+dbg_lvl=0 # [nbr] Debugging level
+scm_typ="${scm_file}" # [sng] Scheme type
+vrs_prn='No' # [sng] Print version information
+
+function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
+    # Print usage
+    printf "${fnt_rvr}Basic usage:\n${fnt_nrm}${fnt_bld}ls *.nc | ${spt_nm} -s file:// -f '#mode=nczarr' | ncra ...${fnt_nrm} # Pipe filenames to NCO\n"
+    printf "${fnt_bld}ls *.nc | ${spt_nm} --scm=file:// --frg='#mode=nczarr' | ncra ...${fnt_nrm} # Long options\n\n"
+    echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
+    echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}scm_typ${fnt_nrm}  Scheme type (default ${fnt_bld}${scm_typ}${fnt_nrm}) [${fnt_tlc}scm_typ, scm, scheme, scheme_type${fnt_nrm}] [${fnt_tlc}file | http | s3${fnt_nrm}]"
+    printf "\n"
+    printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}ls *.nc | ${spt_nm} -s ${scm_typ} -f ${frg_typ} | ncra ...${fnt_nrm}# Pipe filenames to NCO\n"
+    printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
+    exit 1
+} # !fnc_usg_prn()
+
+# Check argument number and complain accordingly
+arg_nbr=$#
+#printf "\ndbg: Number of arguments: ${arg_nbr}"
+if [ ${arg_nbr} -eq 0 ]; then
+  fnc_usg_prn
+fi # !arg_nbr
+
+# Parse command-line options:
+# http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options (see method by Adam Katz)
+# http://tuxtweaks.com/2014/05/bash-getopts
+while getopts :d:f:s:-: OPT; do
+    case ${OPT} in
+	d) dbg_lvl="${OPTARG}" ;; # Debugging level
+	f) frg_nm_usr="${OPTARG}" ;; # Fragment name
+	s) scm_nm_usr="${OPTARG}" ;; # Scheme name
+	-) LONG_OPTARG="${OPTARG#*=}"
+	   case ${OPTARG} in
+	       # Hereafter ${OPTARG} is long argument key, and ${LONG_OPTARG}, if any, is long argument value
+	       # Long options with no argument, no short option counterpart
+	       # Long options with argument, no short option counterpart
+	       # Long options with short counterparts, ordered by short option key
+	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
+	       frg_typ=?* | frg=?* | fragment=?* | frag=?* ) frg_typ_usr="${LONG_OPTARG}" ;; # -f # Fragment type
+	       scm_typ=?* | scm=?* | scheme=?* ) scm_typ="${LONG_OPTARG}" ;; # # Scheme type
+	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
+	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Print version information
+               '' ) break ;; # "--" terminates argument processing
+               * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
+	   esac ;; # !OPTARG
+	\?) # Unrecognized option
+	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not recognized\n" >&2
+	    fnc_usg_prn ;;
+    esac # !OPT
+done # !getopts
+shift $((OPTIND-1)) # Advance one argument
+psn_nbr=$#
+if [ ${psn_nbr} -ge 1 ]; then
+    inp_psn='Yes'
+    # 20200430 Input files on command-line mean we need not check standard-input
+    std_chk='No'
+fi # !psn_nbr
+
+if [ ${vrs_prn} = 'Yes' ]; then
+    printf "${spt_nm}, the NCO POSIX to NCZarr intermediator, version ${nco_vrs} \"${nco_sng}\"\n"
+    printf "Copyright (C) 2022--present Charlie Zender\n"
+    printf "This program is part of NCO, the netCDF Operators\n"
+    printf "NCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\n"
+    printf "You may redistribute and/or modify NCO under the terms of the\n"
+    printf "3-Clause BSD License with exceptions described in the LICENSE file\n"
+    printf "BSD: https://opensource.org/licenses/BSD-3-Clause\n"
+    printf "LICENSE: https://github.com/nco/nco/tree/master/LICENSE\n"
+    printf "Config: ${spt_nm} script located in directory ${drc_spt}\n"
+    printf "Config: NCO binaries located in directory ${drc_nco}, linked to netCDF library version ${lbr_vrs}\n"
+    exit 0
+fi # !vrs_prn
+
+# Detect input on pipe to stdin:
+# http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
+# http://unix.stackexchange.com/questions/33049/check-if-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
+# 20170119 "if [ ! -t 0 ]" tests whether unit 0 (stdin) is connected to terminal, not whether pipe has data
+# Non-interactive batch mode (e.g., qsub, sbatch) disconnects stdin from terminal and triggers false-positives with ! -t 0
+# 20170123 "if [ -p foo ]" tests whether foo exists and is a pipe or named pipe
+# Non-interactive batch mode (i.e., sbatch) behaves as desired for -p /dev/stdin on SLURM
+# Non-interactive batch mode (e.g., qsub) always returns true for -p /dev/stdin on PBS, leads to FALSE POSITIVES!
+# This is because PBS uses stdin to set the job name
+# Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
+# Check stdin if user has not explicitly disallowed it with --no_stdin
+if [ "${std_chk}" = 'Yes' ]; then
+    if [ -n "${PBS_ENVIRONMENT}" ]; then
+	if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
+	    # PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
+	    bch_pbs='Yes'
+	fi # !PBS_ENVIRONMENT
+    fi # !PBS
+    if [ -n "${SLURM_JOBID}" ] && [ -z "${SLURM_PTY_PORT}" ]; then
+	# SLURM batch detection suggested by NERSC ticket INC0096873 on 20170127
+	bch_slr='Yes'
+    fi # !SLURM
+    if [ ${bch_pbs} = 'Yes' ] || [ ${bch_slr} = 'Yes' ]; then
+	# Batch environment
+	if [ ${bch_pbs} = 'Yes' ]; then
+	    if [ ! -p /dev/stdin ]; then
+		# PBS batch jobs cause -p to return true except for stdin redirection 
+		# When -p returns true we do not know whether stdin pipe contains any input
+		# User must explicitly indicate use of stdin pipes with --stdin option
+		# Redirection in PBS batch jobs unambiguously causes -p to return false
+		inp_std='Yes'
+	    fi # !stdin
+	fi # !bch_slr
+	if [ ${bch_slr} = 'Yes' ]; then
+	    if [ -p /dev/stdin ]; then
+		# SLURM batch jobs cause -p to return true for stdin pipes
+		# When -p returns false we do not know whether output was redirectd
+		# User must explicitly indicate use of redirection with --stdin option
+		# Stdin pipes in SLURM batch jobs unambiguously cause -p to return true
+		inp_std='Yes'
+	    fi # !stdin
+	fi # !bch_slr
+    else # !bch
+	# Interactive environment
+	if [ -p /dev/stdin ] || [ ! -t 0 ]; then
+	    # Interactive environments unambiguously cause -p to return true for stdin pipes
+	    # Interactive environments unambiguously cause -t 0 to return false for stdin redirection
+	    inp_std='Yes'
+	fi # !stdin
+    fi # !bch
+    if [ ${inp_std} = 'Yes' ] && [ ${inp_psn} = 'Yes' ]; then
+	echo "${spt_nm}: ERROR expecting input from both stdin and positional command-line arguments"
+	exit 1
+    fi # !inp_std
+fi # !std_chk
+
+# Read files from stdin pipe, positional arguments, or directory glob
+#printf "dbg: inp_aut  = ${inp_aut}\n"
+#printf "dbg: inp_glb  = ${inp_glb}\n"
+#printf "dbg: inp_psn  = ${inp_psn}\n"
+#printf "dbg: inp_std  = ${inp_std}\n"
+
+if [ "${scm_typ}" = ${scm_file} ] || [[ "${scm_typ}" =~ [fF]ile ]] || [[ "${scm_typ}" =~ [fF]l ]]; then 
+    scm_typ=${scm_file}
+    scm_opt=' &'
+elif [ "${scm_typ}" = ${scm_http} ] || [[ "${scm_typ}" =~ (http|HTTP) ]]; then 
+    scm_typ=${scm_http}
+    scm_opt=' &'
+    mpi_flg='Yes'
+elif [ "${scm_typ}" = ${scm_s3} ] || [ "${scm_typ}" = 's3' ] || [[ "${scm_typ}" =~ [sS]3 ]] || [[ "${scm_typ}" =~ (aws|AWS) ]] || [[ "${scm_typ}" =~ [aA]mazon ]]; then 
+    scm_typ=${scm_s3}
+else 
+    echo "ERROR: Invalid -s scm_typ option = ${scm_typ}"
+    echo "HINT: Valid scm_typ arguments include '${scm_file}' (or 'fl'), '${scm_http}' (or 'HTTP'), and '${scm_s3}' (or 'S3' or 'AWS' or 'amazon'). For testing, select '${scm_file}' which causes ${spt_nm} to do something useful."
+    exit 1
+fi # !scm_typ
+
+if [ ${inp_std} = 'Yes' ]; then
+    # Input awaits on unit 0, i.e., on stdin
+    while read -r line; do # NeR05 p. 179
+	fl_in[${fl_nbr}]=${line}
+	let fl_nbr=${fl_nbr}+1
+    done < /dev/stdin
+fi # !inp_std
+
+# Prepend drc_in to fl_in in MFOs (ncra, ncrcat)
+ppn_opt="-p ${drc_in}"
+# 20220111 If input files include absolute path, then use fl_in as-is later on
+# 20220130 fl_in is defined here only for inp_[std,cmd,glb], do not test iff inp_aut
+if [ "${fl_in[0]}" ] && [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ]; then
+    ppn_opt=''
+fi # !basename
+
+# Print initial state
+if [ ${dbg_lvl} -ge 2 ]; then
+    printf "dbg: dbg_lvl = ${dbg_lvl}\n"
+    printf "dbg: frg_typ = ${frg_typ}\n"
+    printf "dbg: scm_typ = ${scm_typ}\n"
+fi # !dbg
+if [ ${dbg_lvl} -ge 2 ]; then
+    psn_nbr=$#
+    printf "dbg: Found ${psn_nbr} positional parameters (besides \$0):\n"
+    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+	printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
+    done # !psn_idx
+fi # !dbg
+
+# Human-readable summary
+date_srt=$(date +"%s")
+if [ ${dbg_lvl} -ge 0 ]; then
+    printf "ncz2psx, NCO's NCZarr<->POSIX filter, invoked with command:\n"
+    echo "${cmd_ln}"
+fi # !dbg
+
+exit 0

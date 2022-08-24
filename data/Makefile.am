@@ -117,7 +117,7 @@ all: ${test_data} ${test_symlink} ${test_data_netCDF4} ${test_zarr_data} ${test_
 
 # Autoconf/automake instructions for scripts:
 # https://www.gnu.org/software/automake/manual/html_node/Scripts.html
-dist_bin_SCRIPTS = ncclimo ncremap
+dist_bin_SCRIPTS = ncclimo ncremap ncz2psx
 
 EXTRA_DIST = big.cdl dsm.cdl hdn.cdl mrd.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_grp_3.cdl in_grp_4.cdl in_grp_5.cdl in_grp_6.cdl in_grp_7.cdl in_grp_8.cdl in_1.cdl in_2.cdl cmip5.cdl obs.cdl mdl_1.cdl split.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
 
