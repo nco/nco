@@ -69,10 +69,10 @@ spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} 
 spt_pid=$$ # [nbr] Script PID (process ID)
 
 # Debugging and Benchmarking:
-# /bin/ls -d ${HOME}/nco/data/h000? | ncz2psx | ncra -O ~/out.nc
+# /bin/ls -d ${HOME}/nco/data/h000? | ncz2psx | ncea -O ~/out.nc
 
 # Production usage:
-# /bin/ls -d ${HOME}/nco/data/h000? | ncz2psx | ncra -O ~/out.nc
+# /bin/ls -d ${HOME}/nco/data/h000? | ncz2psx | ncea -O ~/out.nc
 
 # 20220131 ncclimo/ncremap commands within scripts that open E3SMU environment
 # (e.g., zppy-generated scripts) must be told where to find NCO binaries.
@@ -129,34 +129,57 @@ if [ -n "${TERM}" ]; then
 fi # !TERM
     
 # Pre-define enumerated types used in defaults
+fl_nbr=0 # [nbr] Number of input filenames
+frg_dfl='dfl' # [sng] Default fragment
+frg_ncz='ncz' # [sng] NCZarr fragment
+frg_s3='s3' # [sng] S3 fragment
+frg_xry='xry' # [sng] Xarray fragment
+frg_zip='zip' # [sng] Zip fragment
+frg_zrr='zrr' # [sng] Pure Zarr fragment
+scm_dfl='dfl' # [sng] Default scheme
 scm_file='file' # [sng] File scheme
 scm_s3='s3' # [sng] S3 scheme
 scm_http='http' # [sng] HTTP scheme
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
+bch_pbs='No' # [sng] PBS batch (non-interactive) job
+bch_slr='No' # [sng] SLURM batch (non-interactive) job
 dbg_lvl=0 # [nbr] Debugging level
-scm_typ="${scm_file}" # [sng] Scheme type
+frg_sng='' # [sng] Fragment string to prepend/remove to/from filenames
+frg_typ="${frg_dfl}" # [sng] Fragment type
+inp_aut='No' # [sng] Input file list automatically generated
+inp_glb='No' # [sng] Input file list from globbing directory 
+inp_psn='No' # [sng] Input file list from positional arguments
+inp_std='No' # [sng] Input file list from stdin
+scm_sng='' # [sng] Scheme string to prepend/remove to/from filenames
+scm_typ="${scm_dfl}" # [sng] Scheme type
+std_chk='Yes' # [sng] Check stdin for input file list
 vrs_prn='No' # [sng] Print version information
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
-    printf "${fnt_rvr}Basic usage:\n${fnt_nrm}${fnt_bld}ls *.nc | ${spt_nm} -s file:// -f '#mode=nczarr' | ncra ...${fnt_nrm} # Pipe filenames to NCO\n"
-    printf "${fnt_bld}ls *.nc | ${spt_nm} --scm=file:// --frg='#mode=nczarr' | ncra ...${fnt_nrm} # Long options\n\n"
+    printf "${fnt_rvr}Basic usage:\n${fnt_nrm}${fnt_bld}ls *.nc | ${spt_nm} | ncea ...${fnt_nrm} # Default settings\n"
+    printf "${fnt_bld}ls *.nc | ${spt_nm} -s scm_typ -f frg_typ | ncecat ...${fnt_nrm} # Short options with pre-defined types\n"
+    printf "${fnt_bld}ls *.nc | ${spt_nm} --scm=file --frg=ncz | ncecat ...${fnt_nrm} # Long options with pre-defined types\n"
+    printf "${fnt_bld}ls *.nc | ${spt_nm} --scm_sng=file:// --frg_sng='#mode=nczarr,file' | ncea ...${fnt_nrm} # User-defined scheme and fragment strings\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
-    echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}scm_typ${fnt_nrm}  Scheme type (default ${fnt_bld}${scm_typ}${fnt_nrm}) [${fnt_tlc}scm_typ, scm, scheme, scheme_type${fnt_nrm}] [${fnt_tlc}file | http | s3${fnt_nrm}]"
+    echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
+    echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}frg_typ${fnt_nrm}  Scheme type (default ${fnt_bld}${frg_typ}${fnt_nrm}) [${fnt_tlc}frg_typ, frg, fragment, fragment_type${fnt_nrm}] [${fnt_tlc}default | nczarr | s3 | xarray | zip | zarr${fnt_nrm}]"
+    echo " ${fnt_bld}--frg_sng${fnt_nrm}  User-defined fragment string (empty means none) (default \"${fnt_bld}${frg_sng}${fnt_nrm}\") [${fnt_tlc}frg_sng, fragment_string${fnt_nrm}]"
+    echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}scm_typ${fnt_nrm}  Scheme type (default ${fnt_bld}${scm_typ}${fnt_nrm}) [${fnt_tlc}scm_typ, scm, scheme, scheme_type${fnt_nrm}] [${fnt_tlc}default | file | http | s3${fnt_nrm}]"
+    echo " ${fnt_bld}--scm_sng${fnt_nrm}  User-defined scheme string (empty means none) (default \"${fnt_bld}${scm_sng}${fnt_nrm}\") [${fnt_tlc}scm_sng, scheme_string${fnt_nrm}]"
+    echo " ${fnt_bld}--version${fnt_nrm}  Version and configuration information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
     printf "\n"
-    printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}ls *.nc | ${spt_nm} -s ${scm_typ} -f ${frg_typ} | ncra ...${fnt_nrm}# Pipe filenames to NCO\n"
+    printf "${fnt_rvr}Examples:${fnt_nrm}\n"
+    printf "${fnt_bld}ls *.nc | ${spt_nm} | ncea out.nc${fnt_nrm} # Default settings\n"
+    printf "${fnt_bld}ls *.nc | ${spt_nm} -s file -f nczarr | ncea out.nc${fnt_nrm} # Explicit type defaults\n"
+    printf "${fnt_bld}/bin/ls -d ${HOME}/nco/data/h000? | ${spt_nm} --dbg=2${fnt_nrm} # Debug ${spt_nm}\n"
+    printf "${fnt_bld}/bin/ls -d ${HOME}/nco/data/h000? | ${spt_nm} | ncea -O ~/out.nc${fnt_nrm} # Simple test\n"
+    printf "${fnt_bld}/bin/ls -d ${HOME}/nco/data/h000? | ${spt_nm} --scm_sng=file:// --frg_sng='#mode=nczarr,file' | ncea -O ~/out.nc${fnt_nrm} # User-defined scheme, mode\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
     exit 1
 } # !fnc_usg_prn()
-
-# Check argument number and complain accordingly
-arg_nbr=$#
-#printf "\ndbg: Number of arguments: ${arg_nbr}"
-if [ ${arg_nbr} -eq 0 ]; then
-  fnc_usg_prn
-fi # !arg_nbr
 
 # Parse command-line options:
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options (see method by Adam Katz)
@@ -173,8 +196,10 @@ while getopts :d:f:s:-: OPT; do
 	       # Long options with argument, no short option counterpart
 	       # Long options with short counterparts, ordered by short option key
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
-	       frg_typ=?* | frg=?* | fragment=?* | frag=?* ) frg_typ_usr="${LONG_OPTARG}" ;; # -f # Fragment type
-	       scm_typ=?* | scm=?* | scheme=?* ) scm_typ="${LONG_OPTARG}" ;; # # Scheme type
+	       frg_typ=?* | frg=?* | fragment=?* | fragment_type=?* ) frg_typ="${LONG_OPTARG}" ;; # -f # Fragment type
+	       frg_sng=?* | fragment_string=?* ) frg_sng_usr="${LONG_OPTARG}" ;; # -f # Fragment string
+	       scm_typ=?* | scm=?* | scheme=?* | scheme_type=?* ) scm_typ="${LONG_OPTARG}" ;; # # Scheme type
+	       scm_sng=?* | scheme_string=?* ) scm_sng_usr="${LONG_OPTARG}" ;; # # Scheme string
 	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
 	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Print version information
                '' ) break ;; # "--" terminates argument processing
@@ -269,21 +294,85 @@ fi # !std_chk
 #printf "dbg: inp_psn  = ${inp_psn}\n"
 #printf "dbg: inp_std  = ${inp_std}\n"
 
-if [ "${scm_typ}" = ${scm_file} ] || [[ "${scm_typ}" =~ [fF]ile ]] || [[ "${scm_typ}" =~ [fF]l ]]; then 
-    scm_typ=${scm_file}
-    scm_opt=' &'
-elif [ "${scm_typ}" = ${scm_http} ] || [[ "${scm_typ}" =~ (http|HTTP) ]]; then 
-    scm_typ=${scm_http}
-    scm_opt=' &'
-    mpi_flg='Yes'
-elif [ "${scm_typ}" = ${scm_s3} ] || [ "${scm_typ}" = 's3' ] || [[ "${scm_typ}" =~ [sS]3 ]] || [[ "${scm_typ}" =~ (aws|AWS) ]] || [[ "${scm_typ}" =~ [aA]mazon ]]; then 
-    scm_typ=${scm_s3}
-else 
-    echo "ERROR: Invalid -s scm_typ option = ${scm_typ}"
-    echo "HINT: Valid scm_typ arguments include '${scm_file}' (or 'fl'), '${scm_http}' (or 'HTTP'), and '${scm_s3}' (or 'S3' or 'AWS' or 'amazon'). For testing, select '${scm_file}' which causes ${spt_nm} to do something useful."
-    exit 1
-fi # !scm_typ
+# Check argument number and complain accordingly
+arg_nbr=$#
+#printf "\ndbg: Number of arguments: ${arg_nbr}"
+if [ ${inp_std} != 'Yes' ]; then
+    if [ ${arg_nbr} -eq 0 ]; then
+	fnc_usg_prn
+    fi # !arg_nbr
+fi # !inp_std
 
+if [ -n "${frg_sng_usr}" ]; then
+    frg_typ='user-defined'
+    frg_sng="${frg_sng_usr}"
+fi # !frg_sng_usr    
+if [ -n "${scm_sng_usr}" ]; then
+    sng_typ='user-defined'
+    scm_sng="${scm_sng_usr}"
+fi # !scm_sng_usr    
+
+if [ -z "${frg_sng_usr}" ]; then
+    if [ "${frg_typ}" = ${frg_dfl} ] || [[ "${frg_typ}" =~ dfl ]] || [[ "${frg_typ}" =~ default ]]; then 
+	frg_typ=${frg_ncz}
+    fi # !frg_dfl
+    if [ "${frg_typ}" = ${frg_ncz} ] || [[ "${frg_typ}" =~ (ncz|[nN][cC][zZ]arr) ]]; then 
+	frg_typ=${frg_ncz}
+	frg_sng='#mode=nczarr,file'
+    elif [ "${frg_typ}" = ${frg_s3} ] || [ "${frg_typ}" = 's3' ] || [[ "${frg_typ}" =~ [sS]3 ]] || [[ "${frg_typ}" =~ (aws|AWS) ]] || [[ "${frg_typ}" =~ [aA]mazon ]]; then 
+	frg_typ=${frg_s3}
+	frg_sng='#mode=nczarr,s3'
+    elif [ "${frg_typ}" = ${frg_xry} ] || [[ "${frg_typ}" =~ (xry|xarray) ]]; then 
+	frg_typ=${frg_xry}
+	frg_sng='#mode=xarray,file'
+    elif [ "${frg_typ}" = ${frg_zip} ] || [[ "${frg_typ}" =~ [zZ]ip ]]; then 
+	frg_typ=${frg_zip}
+	frg_sng='#mode=nczarr,zip'
+    elif [ "${frg_typ}" = ${frg_zrr} ] || [[ "${frg_typ}" =~ (zrr|ZRR|Zarr|zarr) ]]; then 
+	frg_typ=${frg_zrr}
+	frg_sng='#mode=zarr,file'
+    else 
+	echo "ERROR: Invalid -f frg_typ option = ${frg_typ}"
+	echo "HINT: Valid frg_typ arguments include '${frg_dfl}' (or 'default'), '${frg_ncz}' (or 'nczarr' or 'NCZarr'), '${frg_s3}' (or 'S3'), '${frg_xry}' (or 'xarray'), '${frg_zip}' (or 'Zip'), and '${frg_zrr}' (or 'zarr' or 'Zarr'). For testing, select '${frg_dfl}' which causes ${spt_nm} to do something useful."
+	exit 1
+    fi # !frg_typ
+fi # !frg_sng_usr
+
+if [ -z "${scm_sng_usr}" ]; then
+    if [ "${scm_typ}" = ${scm_dfl} ] || [[ "${scm_typ}" =~ dfl ]] || [[ "${scm_typ}" =~ default ]]; then 
+	scm_typ=${scm_file}
+    fi # !scm_dfl
+    if [ "${scm_typ}" = ${scm_file} ] || [[ "${scm_typ}" =~ [fF]ile ]] || [[ "${scm_typ}" =~ [fF]l ]]; then 
+	scm_typ=${scm_file}
+	scm_sng='file://'
+    elif [ "${scm_typ}" = ${scm_http} ] || [[ "${scm_typ}" =~ (http|HTTP) ]]; then 
+	scm_typ=${scm_http}
+	scm_sng='https://'
+    elif [ "${scm_typ}" = ${scm_s3} ] || [ "${scm_typ}" = 's3' ] || [[ "${scm_typ}" =~ [sS]3 ]] || [[ "${scm_typ}" =~ (aws|AWS) ]] || [[ "${scm_typ}" =~ [aA]mazon ]]; then 
+	scm_typ=${scm_s3}
+	scm_sng='s3://'
+    else 
+	echo "ERROR: Invalid -s scm_typ option = ${scm_typ}"
+	echo "HINT: Valid scm_typ arguments include '${scm_file}' (or 'fl'), '${scm_http}' (or 'HTTP'), and '${scm_s3}' (or 'S3' or 'AWS' or 'amazon'). For testing, select '${scm_file}' which causes ${spt_nm} to do something useful."
+	exit 1
+    fi # !scm_typ
+fi # !scm_sng_usr
+
+if [ ${inp_glb} = 'Yes' ]; then 
+    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
+	if [ -f "${fl}" ]; then
+	    fl_in[${fl_nbr}]=${fl}
+	    let fl_nbr=${fl_nbr}+1
+	fi # !file
+    done
+fi # !inp_glb
+if [ ${inp_psn} = 'Yes' ]; then
+    # Read any positional arguments
+    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+	fl_in[(${psn_idx}-1)]=${!psn_idx}
+	fl_nbr=${psn_nbr}
+    done # !psn_idx
+fi # !inp_psn
 if [ ${inp_std} = 'Yes' ]; then
     # Input awaits on unit 0, i.e., on stdin
     while read -r line; do # NeR05 p. 179
@@ -292,7 +381,7 @@ if [ ${inp_std} = 'Yes' ]; then
     done < /dev/stdin
 fi # !inp_std
 
-# Prepend drc_in to fl_in in MFOs (ncra, ncrcat)
+# Prepend drc_in to fl_in in MFOs (ncea, ncecat, ncra, ncrcat)
 ppn_opt="-p ${drc_in}"
 # 20220111 If input files include absolute path, then use fl_in as-is later on
 # 20220130 fl_in is defined here only for inp_[std,cmd,glb], do not test iff inp_aut
@@ -303,22 +392,52 @@ fi # !basename
 # Print initial state
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: dbg_lvl = ${dbg_lvl}\n"
+    printf "dbg: frg_sng = ${frg_sng}\n"
     printf "dbg: frg_typ = ${frg_typ}\n"
+    printf "dbg: inp_aut = ${inp_aut}\n"
+    printf "dbg: inp_glb = ${inp_glb}\n"
+    printf "dbg: inp_psn = ${inp_psn}\n"
+    printf "dbg: inp_std = ${inp_std}\n"
+    printf "dbg: scm_sng = ${scm_sng}\n"
     printf "dbg: scm_typ = ${scm_typ}\n"
 fi # !dbg
 if [ ${dbg_lvl} -ge 2 ]; then
     psn_nbr=$#
-    printf "dbg: Found ${psn_nbr} positional parameters (besides \$0):\n"
-    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
-	printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
-    done # !psn_idx
+    if [ ${psn_nbr} -ge 1 ]; then
+	printf "dbg: Found ${psn_nbr} positional parameters (besides \$0):\n"
+	for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+	    printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
+	done # !psn_idx
+    fi # !psn_nbr
+    if [ "${fl_nbr}" -ge 1 ]; then
+	printf "dbg: Filtering ${fl_nbr} filenames from/to stdin:\n"
+	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+	    printf "dbg: fl_in[${fl_idx}] = ${fl_in[${fl_idx}]}\n"
+	done # !fl_idx
+    fi # !fl_nbr
 fi # !dbg
 
 # Human-readable summary
 date_srt=$(date +"%s")
-if [ ${dbg_lvl} -ge 0 ]; then
+if [ ${dbg_lvl} -ge 2 ]; then
     printf "ncz2psx, NCO's NCZarr<->POSIX filter, invoked with command:\n"
     echo "${cmd_ln}"
+fi # !dbg
+
+# Main Loop
+if [ "${fl_nbr}" -ge 1 ]; then
+    # Prepend scheme string to filename
+    for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+	fl_out[${fl_idx}]="${scm_sng}${fl_in[${fl_idx}]}${frg_sng}"
+	#printf "fl_out[${fl_idx}] = ${fl_out[${fl_idx}]}\n"
+	echo ${fl_out[${fl_idx}]}
+    done # !fl_idx
+fi # !fl_nbr
+
+if [ ${dbg_lvl} -ge 2 ]; then
+    date_end=$(date +"%s")
+    date_dff=$((date_end-date_srt))
+    echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 fi # !dbg
 
 exit 0
