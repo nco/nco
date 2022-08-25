@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Purpose: Convert POSIX filenames to/from NCZarr store-names
+# Purpose: Convert POSIX file/directory names to/from NCZarr store-names
 
 # Copyright (C) 2022--present Charlie Zender
 
@@ -219,7 +219,7 @@ if [ ${psn_nbr} -ge 1 ]; then
 fi # !psn_nbr
 
 if [ ${vrs_prn} = 'Yes' ]; then
-    printf "${spt_nm}, the NCO POSIX to NCZarr intermediator, version ${nco_vrs} \"${nco_sng}\"\n"
+    printf "${spt_nm}, the NCO POSIX<->NCZarr name filter, version ${nco_vrs} \"${nco_sng}\"\n"
     printf "Copyright (C) 2022--present Charlie Zender\n"
     printf "This program is part of NCO, the netCDF Operators\n"
     printf "NCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\n"

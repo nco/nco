@@ -2,7 +2,9 @@
 
 	* NCO 5.1.1-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha07: Oceanside Paopao';git push
-	git tag -a 5.1.1-alpha07 -m 'all: ';git push --tags
+	git tag -a 5.1.1-alpha07 -m 'all: ncz2psx works as intended';git push --tags
+
+	* MFOs like ncea correctly write Zarr output but not POSIX output given Zarr input
 
 	* ncz2psx properly transforms local NCZarr-store directory names to NCZarr file:// URLs
 
