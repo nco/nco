@@ -174,7 +174,7 @@ main(int argc,char **argv)
   extern int optind;
 
   /* Using naked stdin/stdout/stderr in parallel region generates warning
-  Copy appropriate filehandle to variable scoped shared in parallel clause */
+     Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 

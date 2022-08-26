@@ -1,8 +1,14 @@
-2022-08-25  Charlie Zender  <zender@uci.edu>
+2022-08-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha07: Oceanside Paopao';git push
 	git tag -a 5.1.1-alpha07 -m 'all: ncz2psx works as intended';git push --tags
+
+	* Tidy nco_fl_utl.c to prepare to allow stdin filename access for all operators
+
+	* Fix NCZarr->POSIX write issue by eliminating Lat/Lon dimensions from in_zarr4.cdl
+
+2022-08-25  Charlie Zender  <zender@uci.edu>
 
 	* MFOs like ncea correctly write Zarr output but not POSIX output given Zarr input
 

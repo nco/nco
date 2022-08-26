@@ -7,6 +7,7 @@
 // 2. Add netCDF4 types from in_4.cdl
 // 3. Remove all variables and attributes of string type
 // 4. Make all scalars use degenerate (size = 1) "scalar" dimension as (hopefully) temporary workaround to https://github.com/Unidata/netcdf-c/issues/2485
+// 5. Eliminate Lat/Lon dimensions
 
 // Usage:
 // netCDF4: ncgen arguments depend on version:
@@ -67,8 +68,10 @@
 
 netcdf in_zarr4 {
 dimensions:
-dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_int_udunits=1;time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,Lon=4,Lat=2,pck_crd=4,vrt_nbr=2,time=10,scalar=1;
-variables:
+//dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_int_udunits=1;time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,Lon=4,Lat=2,pck_crd=4,vrt_nbr=2,time=10,scalar=1;
+// 20220827: Eliminate Lat,Lon dimensions
+dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_int_udunits=1;time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,pck_crd=4,vrt_nbr=2,time=10,scalar=1;
+ variables:
   :Conventions = "CF-1.5";
   :history = "History global attribute.\nTextual attributes like history often have embedded newlines like this.\nSuch newlines should serve as linebreaks on the screen to enhance legibility like this.\nFriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings where each embedded delimiter marks a linebreak. This makes poetry embedded in CDL much nicer to read (except for the printed literal \\n\'s---those are an eyesore):\n\nA POET by Hafiz\n\nA poet is someone\nWho can pour light into a cup,\nThen raise it to nourish\nYour beautiful parched, holy mouth\n";
   :lorem_ipsum = "The Lorem Ipsum attribute demonstrates the legibility of text without embedded linebreaks:\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lady Gaga amat indueris vestimento laetus. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
@@ -214,18 +217,25 @@ variables:
 	lon:long_name = "Longitude (typically midpoints)";
 	lon:units = "degrees_east";
 
-	double Lon(Lon);
+	// 20220827: Lat and Lon dimensions break NCZarr->POSIX writes such as
+	// ncea -O -C -v lon,three_dmn_rec_var,time,time_bnds,climatology_bounds file:///Users/zender/nco/data/h0001#mode=nczarr,file ~/out.nc
+	// Case-insensitive matching of dimension IDs may be at play?
+	// Eliminating Lat/Lon dimensions fixes the issue
+	//double Lon(Lon);
+	double Lon(lon);
 	Lon:long_name = "Longitude";
 	Lon:units = "degrees";
 	Lon:purpose = "Longitude coordinate originally stored as -180 to 180";
 	Lon:notes = "Longitude = [-180.0,180.0) is not CF-compliant, yet is common";
 
-	double LatLon(Lat,Lon);
+	//double LatLon(Lat,Lon);
+	double LatLon(lat,lon);
 	LatLon:long_name = "2D variable originally stored on -180 to 180 longitude grid";
 	LatLon:units = "fraction";
 	LatLon:purpose = "Demonstrate remapping of [-180,180) to [0,360) longitude-grid data";
 
-	double Lat(Lat);
+	//double Lat(Lat);
+	double Lat(lat);
 	Lat:long_name = "Latitude";
 	Lat:units = "degrees_north";
 	Lat:purpose = "Latitude paired with Longitude coordinate originally stored as -180 to 180.";

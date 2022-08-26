@@ -611,11 +611,13 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	if(fl_in == NULL){
 	  fp_in=stdin; /* [enm] Input file handle */
 	}else{
+	  /* 20220827: This branch is apparently never executed
+	     However, its logic appears correct, i.e., NCO could allow specification of input files via a list in a supplied file named by fl_in */
 	  if((fp_in=fopen(fl_in,"r")) == NULL){
 	    (void)fprintf(stderr,"%s: ERROR opening file containing input filename list %s\n",nco_prg_nm_get(),fl_in);
 	    nco_exit(EXIT_FAILURE);
-	  } /* endif err */
-	} /* endelse */
+	  } /* !fp_in */
+	} /* !fl_in */
 
 	/* Allocate temporary space for input buffer */
 #define FL_NM_IN_MAX_LNG 256 /* [nbr] Maximum length of single input file name */
@@ -642,7 +644,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	  /* Increment file number */
 	  fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
 	  fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
-	} /* end while */
+	} /* !cnv_nbr */
 
 	/* Finished reading list. Close file resource if one was opened. */
 	if(fl_in != NULL && fp_in != NULL) (void)fclose(fp_in);
@@ -650,12 +652,12 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 #if 0
 	/* 20040621: Following flusher does no harm on Linux
 	   However, AIX gets caught in an infinite loop here */
-	/* Discard characters remainining in stdin */
+	/* Discard characters remaining in stdin */
 	char chr_foo;
 	while((chr_foo=getchar()) != '\n' && chr_foo != EOF){
 	  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read and discarded \'%c\'\n",nco_prg_nm_get(),chr_foo);
-	} /* end while */
-#endif /* endif 0 */
+	} /* !chr_foo */
+#endif /* !0 */
 
 	/* Free temporary buffer */
 	bfr_in=(char *)nco_free(bfr_in);
@@ -663,23 +665,23 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	if(fl_lst_in_lng >= FL_LST_IN_MAX_LNG){
 	  (void)fprintf(stdout,"%s: ERROR Total length of fl_lst_in from stdin exceeds %d characters. Possible misuse of feature. If your input file list is really this long, post request to developer's forum (http://sf.net/p/nco/discussion/9831) to expand FL_LST_IN_MAX_LNG\n",nco_prg_nm_get(),FL_LST_IN_MAX_LNG);
 	  nco_exit(EXIT_FAILURE);
-	} /* endif err */
+	} /* !fl_lst_in_lng */
 
-	if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",nco_prg_nm_get(),*fl_nbr,(long)fl_lst_in_lng);
+	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",nco_prg_nm_get(),*fl_nbr,(long)fl_lst_in_lng);
 	if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried and failed to get input filenames from stdin\n",nco_prg_nm_get());
 
-      } /* endif multi-file operator without positional arguments for fl_in */
+      } /* !nco_is_mfo() multi-file operator without positional arguments for fl_in */
 
       if(!*FL_LST_IN_FROM_STDIN){
-	if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least two\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need at least one (output file was specified with -o switch)\n",nco_prg_nm_get(),psn_arg_nbr);
+	if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received only %d filename(s); need at least two\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need at least one (output file was specified with -o switch)\n",nco_prg_nm_get(),psn_arg_nbr);
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
-      } /* FL_LST_IN_FROM_STDIN */
+      } /* !FL_LST_IN_FROM_STDIN */
 
-    } /* end Operators with multiple fl_in and required fl_out */
+    } /* !psn_arg_nbr, Operators with multiple fl_in and required fl_out */
     break;
   default: nco_dfl_case_prg_id_err(); break;
-  } /* end switch */
+  } /* !nco_prg_ig */
 
   /* If input files are required but have not been obtained yet from stdin */
   if(!*FL_LST_IN_FROM_STDIN){
@@ -690,7 +692,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   } /* FL_LST_IN_FROM_STDIN */
 
   if(*fl_nbr == 0){
-    (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Must specify input filename\n",nco_prg_nm_get());
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* end if */
@@ -706,7 +708,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
  
   return fl_lst_in;
 
-} /* end nco_fl_lst_mk() */
+} /* !nco_fl_lst_mk() */
 
 char * /* O [sng] Filename of locally available file */
 nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
@@ -921,7 +923,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if(fl_nm_lcl[0] == '/'){
       rcd_stt=stat(fl_nm_lcl+1UL,&stat_sct);
       if(rcd_stt == -1 && (nco_dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #2 failed: %s does not exist\n",nco_prg_nm_get(),fl_nm_lcl+1UL);
-    } /* end if */
+    } /* !fl_nm_lcl */
     if(rcd_stt == 0){
       /* NB: Adding one to filename pointer is like deleting initial slash on filename
 	 Then free(fl_nm_lcl) would miss this initial byte (memory is lost)
@@ -930,8 +932,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       fl_nm_lcl=(char *)nco_free(fl_nm_lcl);
       fl_nm_lcl=fl_nm_lcl_tmp;
       (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",nco_prg_nm_get(),fl_nm,fl_nm_lcl+1UL);
-    } /* end if */
-  } /* end if */
+    } /* !rcd_stt */
+  } /* !rcd_stt */
 
   /* Finally, check if file exists locally in directory for remotely retrieved files
      This occurs when previous program invocations have already retrieved some files */
@@ -943,20 +945,20 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* Construct local filename from user-supplied local file path and existing file stub */
     if(fl_pth_lcl){
       fl_nm_lcl_tmp=fl_nm_lcl;
-      /* Allocate enough room for the joining slash '/' and the terminating NUL */
+      /* Allocate enough room for joining slash '/' and terminating NUL */
       fl_nm_lcl=(char *)nco_malloc((strlen(fl_pth_lcl)+strlen(fl_nm_stub)+2)*sizeof(char));
       (void)strcpy(fl_nm_lcl,fl_pth_lcl);
       (void)strcat(fl_nm_lcl,"/");
       (void)strcat(fl_nm_lcl,fl_nm_stub);
       /* Free old filename space */
       fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
-    } /* end if */
+    } /* !fl_pth_lcl */
 
     /* At last, check for file in local storage directory */
     rcd_stt=stat(fl_nm_lcl,&stat_sct);
     if(rcd_stt != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",nco_prg_nm_get(),fl_nm,fl_nm_lcl);
     if(rcd_stt == -1 && (nco_dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #3 failed: %s does not exist\n",nco_prg_nm_get(),fl_nm_lcl);
-  } /* end if */
+  } /* !rcd_stt */
 
   /* File was not found locally and is not DAP-accessible, try to fetch file from remote filesystem */
   if(rcd_stt == -1){
@@ -1173,9 +1175,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
 	   ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.')){
 	  rmt_cmd=&scp;
-	} /* end if */
-      } /* end if colon */
-    } /* end if rmt_cmd */
+	} /* !cln_ptr */
+      } /* !cln_ptr */
+    } /* !rmt_cmd */
     
 #if 0
     /* NB: MSS commands deprecated 20110419 */
@@ -1353,9 +1355,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"\n%s Retrieval successful after %d sleeps of %d seconds each = %.1f minutes\n",nco_prg_nm_get(),tm_idx,tm_sleep_scn,tm_idx*tm_sleep_scn/60.0);
     } /* end else transfer mode is asynchronous */
     *FL_RTR_RMT_LCN=True;
-  }else{ /* end if input file did not exist locally */
+  }else{ /* !rcd_stt (input file did not exist locally) */
     *FL_RTR_RMT_LCN=False;
-  } /* end if file was already on the local system */
+  } /* !rcd_stt (file was already on local system) */
   
   if(nco_dbg_lvl_get() >= nco_dbg_fl)
     if(DAP_OR_NCZARR_URL && fl_pth_lcl)
@@ -1376,9 +1378,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       /* Determine canonical filename and properties */
       fl_nm_cnc=nco_fl_info_get(fl_nm_lcl);
       if(fl_nm_cnc) fl_nm_cnc=(char *)nco_free(fl_nm_cnc);
-    } /* endif dbg */
+    } /* !dbg */
 
-  } /* !file is truly local */
+  } /* !DAP_OR_NCZARR_URL, file is truly local */
 
   /* Free input filename space */
   fl_nm=(char *)nco_free(fl_nm);
