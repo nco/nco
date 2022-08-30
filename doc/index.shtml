@@ -1142,24 +1142,26 @@ For RPM-based systems like Fedora and CentOS (substitute <tt>yum</tt> for <tt>dn
 <dt>sudo dnf install bison cmake flex gcc gcc-c++ -y # GNU toolchain</dt>
 <dt>sudo dnf install ncl # ESMF_RegridWeightGen (for ncremap)</dt>
 <dt>sudo dnf install gsl gsl-devel -y # GSL</dt>
-<dt>sudo dnf install netcdf netcdf-devel -y # netCDF</dt>
 <dt>sudo dnf install zlib-devel -y # zlib</dt>
 <dt>sudo dnf install librx librx-devel -y # RX</dt>
 <dt>sudo dnf install udunits2 udunits2-devel -y # UDUnits</dt>
 <dt>sudo dnf install blosc # Blosc codecs</dt>
 <dt>sudo dnf install libzstd # Zstandard codec</dt>
+<dt>sudo dnf install netcdf netcdf-devel -y # netCDF (install after codecs)</dt>
 </tt>
 
 <dt><a name="brew"></a></dt> <!-- http://nco.sf.net#brew -->
 <dt><a name="homebrew"></a></dt> <!-- http://nco.sf.net#homebrew -->
 For Homebrew-based systems (MacOS or Linux):
 <tt>
-<dt>brew install antlr2 # ANTLR</dt>
+<dt>brew install antlr@2 # ANTLR (keg-only)</dt>
 <dt>brew install cmake # Alternate build-engine</dt>
 <dt>brew install curl # DAP-prereqs</dt>
 <dt>brew install gsl # GSL</dt>
-<dt>brew install libnetcdf # netCDF</dt>
 <dt>brew install udunits # UDUnits</dt>
+<dt>brew install c-blosc # Blosc codecs</dt>
+<dt>brew install zstd # Zstandard codec</dt>
+<dt>brew install libnetcdf # netCDF (install after codecs)</dt>
 </tt>
 
 <dt><a name="port"></a></dt> <!-- http://nco.sf.net#port -->
@@ -1171,9 +1173,10 @@ For MacOS with MacPorts:
 <dt>sudo port install esmf # ESMF_RegridWeightGen (for ncremap)</dt>
 <dt>sudo port install libdap # DAP</dt>
 <dt>sudo port install gsl # GSL</dt>
-<dt>sudo port install netcdf # netCDF</dt>
-<dt>sudo port install netcdf-fortran # netCDF for ESMF</dt>
 <dt>sudo port install udunits2 # UDUnits</dt>
+<dt>sudo port install zstd # Zstandard codec</dt>
+<dt>sudo port install netcdf # netCDF (install after codecs)</dt>
+<dt>sudo port install netcdf-fortran # netCDF for ESMF</dt>
 </tt>
 Without MacPorts, the system TeXInfo may be too old to build the
 documentation.
