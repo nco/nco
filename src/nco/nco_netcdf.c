@@ -2142,9 +2142,13 @@ int
 nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_typ,int * const dmn_nbr,int * const dmn_id,int * const att_nbr)
 {
   /* Purpose: Wrapper for nco_inq_var() */
+  const char fnc_nm[]="nco_inq_var()";
   int rcd;
   rcd=nc_inq_var(nc_id,var_id,var_nm,var_typ,dmn_nbr,dmn_id,att_nbr);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var()");
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"ERROR: %s fails for variable \"%s\"\n",fnc_nm,var_nm);
+    nco_err_exit(rcd,fnc_nm);
+  } /* !rcd */
   return rcd;
 } /* !nco_inq_var */
 
@@ -2253,7 +2257,7 @@ int nco_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt
     (void)nco_inq_varname(nc_id,var_id,var_nm);
     (void)fprintf(stdout,"ERROR: %s reports no filter defined for variable \"%s\"\n",fnc_nm,var_nm);
   } /* endif */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* !nco_inq_var_filter() */
 

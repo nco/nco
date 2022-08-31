@@ -8,6 +8,7 @@
 // 3. Remove all variables and attributes of string type
 // 4. Make all scalars use degenerate (size = 1) "scalar" dimension as (hopefully) temporary workaround to https://github.com/Unidata/netcdf-c/issues/2485
 // 5. Eliminate Lat/Lon dimensions
+// 6. Restore variables/attributes of string type after PR #2492 by D. Heimbigner added support for strings (20220830)
 
 // Usage:
 // netCDF4: ncgen arguments depend on version:
@@ -77,7 +78,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
   :lorem_ipsum = "The Lorem Ipsum attribute demonstrates the legibility of text without embedded linebreaks:\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lady Gaga amat indueris vestimento laetus. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
   :julian_day = 200000.04;
   :RCS_Header = "$Header$";
-  //	string :sng_att = "Test global string attribute"; // 20130723 This is how to specify global string attributes
+  string :sng_att = "Test global string attribute"; // 20130723 This is how to specify global string attributes
 
 //	netCDF4-only atomic types
 	int64 int64_var_max(scalar);
@@ -86,17 +87,17 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	int64 int64_var(scalar);
 	int64_var:long_name = "int64-type variable";
 
-	//	string string_var;
-	//	string_var:long_name = "string-type variable";
+	string string_var;
+	string_var:long_name = "string-type variable";
 
-	//        string string_var2;
-	//        string_var2:long_name = "string-type variable with default XML separator";
+	string string_var2;
+	string_var2:long_name = "string-type variable with default XML separator";
 
-	// string string_arr_var(lon);
-	// string_arr_var:long_name = "arrays of string-types";   
+	string string_arr_var(lon);
+	string_arr_var:long_name = "arrays of string-types";   
 
-	//	string string_greek(lat,lon);
-	//	string_greek:long_name = "2D arrayof string-types";   
+	string string_greek(lat,lon);
+	string_greek:long_name = "2D arrayof string-types";   
 
 	ubyte ubyte_var(scalar);
 	ubyte_var:long_name = "ubyte-type variable";
@@ -486,7 +487,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
         ppc_big:original_values="123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1";
 
 	float ppc_bgr(time);
-        ppc_bgr:long_name = "Precision-Preserving Compression, bigger numbers";
+	ppc_bgr:long_name = "Precision-Preserving Compression, bigger numbers";
         ppc_bgr:purpose = "test --ppc switches";
         ppc_bgr:original_values="1234567890e20,1234567890e19,1234567890e18,1234567890e17,1234567890e16,1234567890e15,1234567890e14,1234567890e13,1234567890e12,1234567890e11";
 
@@ -917,11 +918,11 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
         att_var:uint_att = 73ul; // 20161110: ncgen requires "ul" for uint (a simple "u" is interpretd as uint64)
 	att_var:int64_att = 9223372036854775807ll; // 20130712: ncgen 4.3.0--4.3.3.1 choke on ll, LL suffix for int64 attributes, and translates -l suffixed numbers to NC_UINT64. Bug reported (netCDF #HEX-795132) and fixed in snapshot 20131117
         att_var:uint64_att = 18446744073709551615ull; // 20130712: ncgen 4.3.0--4.3.3.1 chokes on ull, ULL suffix for uint64 attributes. 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maximum ubyte, ushort, and uint values)
-	// att_var:string_att1 = "20130723: ncgen -k netCDF-4 version 4.0.x converts quoted string to NC_STRING not NC_CHAR. Incompatible with classic behavior.";
-	// att_var:string_att2 = "20130712: ncgen -k netCDF-4 version 4.2.x+ converts quoted string to NC_CHAR not NC_STRING. Backwards compatible with classic behavior.";
-	//	string att_var:string_att3 = "20130723: Prefixing full attribute name with \"string\" causes CDL to produce NC_STRING.";
-	//	string att_var:string_att4 = "20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three elements. Each is a sentence or three long.";
-	//	string att_var:string_att5 = "20131121: This NC_STRING contains NCO's default XML string separator, *. And it contains multiple sequential copies of that separator, ***. Be sure ncks automatically switches to a different separator, aka the backup separator, the string obtained by removing the two spaces from this:\"* | *\".";
+	att_var:string_att1 = "20130723: ncgen -k netCDF-4 version 4.0.x converts quoted string to NC_STRING not NC_CHAR. Incompatible with classic behavior.";
+	att_var:string_att2 = "20130712: ncgen -k netCDF-4 version 4.2.x+ converts quoted string to NC_CHAR not NC_STRING. Backwards compatible with classic behavior.";
+	string att_var:string_att3 = "20130723: Prefixing full attribute name with \"string\" causes CDL to produce NC_STRING.";
+	string att_var:string_att4 = "20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three elements. Each is a sentence or three long.";
+	string att_var:string_att5 = "20131121: This NC_STRING contains NCO's default XML string separator, *. And it contains multiple sequential copies of that separator, ***. Be sure ncks automatically switches to a different separator, aka the backup separator, the string obtained by removing the two spaces from this:\"* | *\".";
 
 	int att_var_jsn(scalar);
         // 20210512: HDF4 ncgen fails on character attributes with whitespace
@@ -1516,12 +1517,12 @@ data:
 //	netCDF4-specific atomic types:
 	int64_var_max=9223372036854775807;
 	int64_var=73;
-	//	string_var="If you prick us, do we not bleed? If you tickle us, do we not laugh? If you poison us, do we not die? And if you wrong us, shall we not revenge?";
-	//	string_arr_var="20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three sentences.","Woops, I mean four.";
+	string_var="If you prick us, do we not bleed? If you tickle us, do we not laugh? If you poison us, do we not die? And if you wrong us, shall we not revenge?";
+	string_arr_var="20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three sentences.","Woops, I mean four.";
          
-	//        string_greek="alpha","beta","gamma","delta","epsilon","zeta","theta","iota"; 
+	string_greek="alpha","beta","gamma","delta","epsilon","zeta","theta","iota"; 
 
-	//	string_var2="20131121: This NC_STRING contains NCO's default XML string separator, *. And it contains multiple sequential copies of that separator, ***. Be sure ncks automatically switches to a different separator, aka the backup separator, the string obtained by removing the two spaces from this:\"* | *\". As of 20131121, ncks handles this correctly, yet toolsui breaks when trying to input the ncks-generated NcML. Appears to be a toolsui bug.";
+	string_var2="20131121: This NC_STRING contains NCO's default XML string separator, *. And it contains multiple sequential copies of that separator, ***. Be sure ncks automatically switches to a different separator, aka the backup separator, the string obtained by removing the two spaces from this:\"* | *\". As of 20131121, ncks handles this correctly, yet toolsui breaks when trying to input the ncks-generated NcML. Appears to be a toolsui bug.";
 
 	ubyte_var='z';
 	uint_var_max=4294967295;
