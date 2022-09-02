@@ -1,4 +1,4 @@
-#CMake build, Pedro Vicente
+# CMake build, Pedro Vicente
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #mininum library dependencies: netCDF, HDF5, HDF5_HL, ZLIB (SZIP)
@@ -101,7 +101,7 @@ if(NETCDF_INCLUDE)
     message("-- Using ${NETCDF_INCLUDE}/netcdf.h")
   else()
     if(netcdf_root)
-        set(NETCDF_INCLUDE "${netcdf_root}/include")
+      set(NETCDF_INCLUDE "${netcdf_root}/include")
     endif()
     if(EXISTS "${NETCDF_INCLUDE}/netcdf.h")
       message("-- Using ${NETCDF_INCLUDE}/netcdf.h")
@@ -127,9 +127,9 @@ if(NETCDF_LIBRARY)
     message("-- Using ${NETCDF_LIBRARY}")
   else()
     if(netcdf_root)
-        set(NETCDF_LIBRARY_PATH "${netcdf_root}/lib")
+      set(NETCDF_LIBRARY_PATH "${netcdf_root}/lib")
     else()
-        message(FATAL_ERROR "${color_red}Specified ${NETCDF_LIBRARY} does not exist${color_reset}")
+      message(FATAL_ERROR "${color_red}Specified ${NETCDF_LIBRARY} does not exist${color_reset}")
     endif()
   endif()
 endif()

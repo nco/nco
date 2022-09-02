@@ -125,19 +125,22 @@ The NCO toolkit manipulates and analyzes data stored in
 <a href="http://www.unidata.ucar.edu/netcdf">netCDF</a>-accessible
 formats, including 
 <a href="http://opendap.org">DAP</a>,
-<a href="http://hdfgroup.org/products/hdf4">HDF4</a>, and 
-<a href="http://hdfgroup.org/HDF5">HDF5</a>.
-It exploits the geophysical expressivity of many 
-<a href="http://cfconventions.org/1.6.html">CF</a> 
+<a href="http://hdfgroup.org/products/hdf4">HDF4</a>, 
+<a href="http://hdfgroup.org/HDF5">HDF5</a>, and, most recently,
+<a href="https://zarr.dev">Zarr</a>.
+It exploits the geophysical expressivity and logic of many 
+<a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.10/cf-conventions.html">CF</a> 
 (Climate &amp; Forecast) metadata conventions, 
 the flexible description of physical dimensions translated by
 <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>,
 the network transparency of
 <a href="http://opendap.org">OPeNDAP</a>, 
-the storage features (e.g., compression, chunking, groups) of
+the storage capabilities (e.g., compression, chunking, groups) of
 <a href="http://hdfgroup.org">HDF</a> (the Hierarchical Data Format),
-and many powerful mathematical and statistical algorithms of 
-<a href="http://www.gnu.org/software/gsl">GSL</a> (the GNU Scientific Library).
+many powerful mathematical and statistical algorithms of 
+<a href="http://www.gnu.org/software/gsl">GSL</a> (the GNU Scientific Library),
+and the lossy and lossless compression codecs provided by the 
+<a href="http://github.com/ccr/ccr">CCR</a> (Community Codec Repository).
 NCO is 
 <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf">fast</a>, 
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">powerful</a>,
