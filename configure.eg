@@ -425,6 +425,8 @@ make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # 20210104 Compy with Intel compilers: works except scripts do not find/load Intel libiomp5.so.0
+# Personal recipe last modified: 20210104
+# Personal recipe last used successfully: 20210104 
 source /share/apps/intel/2020/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64 # Compy
 module purge
 module load intel/20.0.0

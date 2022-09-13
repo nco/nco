@@ -7,8 +7,12 @@
 // 2. Add netCDF4 types from in_4.cdl
 // 3. Remove all variables and attributes of string type
 // 4. Make all scalars use degenerate (size = 1) "scalar" dimension as (hopefully) temporary workaround to https://github.com/Unidata/netcdf-c/issues/2485
-// 5. Eliminate Lat/Lon dimensions
-// 6. Restore variables/attributes of string type after PR #2492 by D. Heimbigner added support for strings (20220830)
+// 5. 20220827: Eliminate Lat,Lon dimensions 
+// 6. 20220830: Restore variables/attributes of string type after PR #2492 by D. Heimbigner added support for strings
+// 7. Report regressions in string handling to Unidata
+// 8. 20220906 Re-test variables/attributes of string type after PR #2497 by D. Heimbigner fixed support for strings. Strings now work as advertised
+// 9. 20220907 Report "Unmatched untrace: fcn=ncz_get_var_meta expected=NCZ_inq_var_filter_info" issue
+// 10. Remove degenerate "scalar" dimension
 
 // Usage:
 // netCDF4: ncgen arguments depend on version:
@@ -69,9 +73,9 @@
 
 netcdf in_zarr4 {
 dimensions:
-//dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_int_udunits=1;time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,Lon=4,Lat=2,pck_crd=4,vrt_nbr=2,time=10,scalar=1;
+//dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_int_udunits=1;time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,Lon=4,Lat=2,pck_crd=4,vrt_nbr=2,time=10;
 // 20220827: Eliminate Lat,Lon dimensions
-dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_int_udunits=1;time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,pck_crd=4,vrt_nbr=2,time=10,scalar=1;
+dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_int_udunits=1;time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,pck_crd=4,vrt_nbr=2,time=10;
  variables:
   :Conventions = "CF-1.5";
   :history = "History global attribute.\nTextual attributes like history often have embedded newlines like this.\nSuch newlines should serve as linebreaks on the screen to enhance legibility like this.\nFriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings where each embedded delimiter marks a linebreak. This makes poetry embedded in CDL much nicer to read (except for the printed literal \\n\'s---those are an eyesore):\n\nA POET by Hafiz\n\nA poet is someone\nWho can pour light into a cup,\nThen raise it to nourish\nYour beautiful parched, holy mouth\n";
@@ -81,10 +85,10 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
   string :sng_att = "Test global string attribute"; // 20130723 This is how to specify global string attributes
 
 //	netCDF4-only atomic types
-	int64 int64_var_max(scalar);
+	int64 int64_var_max;
 	int64_var_max:long_name = "int64-type variable";
 
-	int64 int64_var(scalar);
+	int64 int64_var;
 	int64_var:long_name = "int64-type variable";
 
 	string string_var;
@@ -99,19 +103,19 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	string string_greek(lat,lon);
 	string_greek:long_name = "2D arrayof string-types";   
 
-	ubyte ubyte_var(scalar);
+	ubyte ubyte_var;
 	ubyte_var:long_name = "ubyte-type variable";
 
-	uint uint_var_max(scalar);
+	uint uint_var_max;
 	uint_var_max:long_name = "uint-type variable";
 
-	uint uint_var(scalar);
+	uint uint_var;
 	uint_var:long_name = "uint-type variable";
 
-	uint64 uint64_var(scalar);
+	uint64 uint64_var;
 	uint64_var:long_name = "uint64-type variable";
 
-	ushort ushort_var(scalar);
+	ushort ushort_var;
 	ushort_var:long_name = "ushort-type variable";
 
 //	netCDF3 atomic types:
@@ -178,7 +182,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	lon_2D_rrg:long_name = "Longitude for 2D irregular grid stored as 2D array";
 	lon_2D_rrg:units = "degrees_east";
 
-	int lat_times_lon_nbr(scalar);
+	int lat_times_lon_nbr;
 	lat_times_lon_nbr:long_name = "Number of elements in 2D coordinate grids. Rectangular and irregular test grids have this many total elements. The coordinates and elements are stored as 1D or 2D arrays for grid types 1D and 2D respectively.";
 
 	float lev(lev);
@@ -280,29 +284,29 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	lat_cal:units = "days since 1964-2-28"; 
 	lat_cal:calendar = "360_day";
 
-	double tm_scn(scalar);
+	double tm_scn;
         tm_scn:units = "seconds since 2013-01-01";
 
-	double tm_std(scalar);
+	double tm_std;
         tm_std:units = "days since 2013-01-01";
 
-	double tm_grg(scalar);
+	double tm_grg;
         tm_grg:units = "days since 2013-01-01";
         tm_grg:calendar = "gregorian"; // Same as "standard"
 
-	double tm_jln(scalar);
+	double tm_jln;
         tm_jln:units = "days since 2013-01-01";
         tm_jln:calendar = "julian";
 
-	double tm_360(scalar);
+	double tm_360;
         tm_360:units = "days since 2013-01-01";
         tm_360:calendar = "360_day";
 
-	double tm_365(scalar);
+	double tm_365;
         tm_365:units = "days since 2013-01-01";
         tm_365:calendar = "365_day"; // Same as "noleap"
 
-	double tm_366(scalar);
+	double tm_366;
         tm_366:units = "days since 2013-01-01";
         tm_366:calendar = "366_day"; // Same as "all_leap"
 
@@ -347,7 +351,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	float hybi(ilev);
 	hybi:long_name = "hybrid B coefficient at layer interfaces";
 
-	float P0(scalar);
+	float P0;
 	P0:long_name = "reference pressure";
 	P0:units = "pascal";
 
@@ -356,7 +360,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
         cnv_CF_grd:grid_mapping = "albers_conical_equal_area";
         cnv_CF_grd:purpose = "Test whether grid_mapping is propagated with coordinate";
 
-        char mapping(scalar);
+        char mapping;
         mapping:geoid = "eigen-6c4" ;
 	mapping:grid_mapping_name = "polar_stereographic" ;
 	mapping:latitude_of_projection_origin = -90. ;
@@ -367,7 +371,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	mapping:false_easting = 0. ;
 	mapping:false_northing = 0. ;
 
-        char albers_conical_equal_area(scalar);
+        char albers_conical_equal_area;
         albers_conical_equal_area:long_name = "Albers Conical Equal Area Projection";
         albers_conical_equal_area:purpose = "Test that this grid_mapping is propagated with all associated variables (like cnv_CF_grd)";
         albers_conical_equal_area:grid_mapping_name = "albers_conical_equal_area";
@@ -456,7 +460,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	lon_gds_ncd:units="degree";
 	lon_gds_ncd:purpose = "1-D longitude coordinate referred to by \"non-coordinate\" (ncd) geodesic grid variables";
 
-	int nbdate(scalar);
+	int nbdate;
 	nbdate:long_name = "base date as 6- or 8-digit integer (YYMMDD or YYYYMMDD)";
 
 	int date(time);
@@ -491,7 +495,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
         ppc_bgr:purpose = "test --ppc switches";
         ppc_bgr:original_values="1234567890e20,1234567890e19,1234567890e18,1234567890e17,1234567890e16,1234567890e15,1234567890e14,1234567890e13,1234567890e12,1234567890e11";
 
-	float ppc_bgr_scl(scalar);
+	float ppc_bgr_scl;
         ppc_bgr_scl:long_name = "Precision-Preserving Compression, bigger numbers, scalar";
         ppc_bgr_scl:purpose = "test --ppc switches";
         ppc_bgr_scl:original_value="1234567890e11";
@@ -530,7 +534,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
         qnt_dbl_tst2:long_name = "Quantization test, double precision";
         qnt_dbl_tst2:original_values="1.1111111, 1.0, 9.999999999, 1234567890.12345, 123456789012345.0";
 
-	char md5_a(scalar);
+	char md5_a;
 	md5_a:long_name = "the letter a";
 	md5_a:purpose = "String with known MD5 digest"; 
 	md5_a:MD5_known_checksum = "0cc175b9c0f1b6a831c399e269772661"; 
@@ -548,11 +552,11 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	mss_val:long_name = "partial missing value example";
 	mss_val:_FillValue = 1.0e36f;
 
-	float mss_val_scl(scalar);
+	float mss_val_scl;
 	mss_val_scl:long_name = "scalar missing value";
 	mss_val_scl:_FillValue = 1.0e36f;
 
-	float mss_val_scl_sml(scalar);
+	float mss_val_scl_sml;
 	mss_val_scl_sml:long_name = "scalar missing value";
 	mss_val_scl_sml:purpose = "Unlike mss_val_scl, mss_val_scl_sml has a missing value that fits within any packed data type range";
 	mss_val_scl_sml:_FillValue = 1.0e4f;
@@ -581,7 +585,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	//	nan_arr:_FillValue = nan;
 		nan_arr:_FillValue = 1.0f;
 
-	float nan_scl(scalar);
+	float nan_scl;
 	nan_scl:long_name = "Intended for scalar representation of IEEE NaN";
 	nan_scl:note = "20120308 Apparently netCDF ncgen chokes on variable names of nan and NaN";
 	nan_scl:note2 = "20120330 netCDF ncgen on AIX/bluefire chokes on variable/attribute values of nan";
@@ -590,10 +594,10 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	// nan_scl:_FillValue = nan;
         nan_scl:_FillValue = 1.0f;
 
-	float nm_spc(scalar);
+	float nm_spc;
 	nm_spc:long_name = "Variable name with space (invalid)";
 
-	float nm_pnd(scalar);
+	float nm_pnd;
 	nm_pnd:long_name = "Variable name with pound symbol (invalid)";
 
 	float no_mss_val(lon);
@@ -608,25 +612,25 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	rec_var_pck_scale_factor_only:note = "Original packed value was 1s..10s with scale_factor = 10.0d no add_offset. Unpacked value should be 10.0 = 10.0d*1s + 0.0d through 100 = 10.0d*1s + 0.0d. Average value should be 55.";
 	rec_var_pck_scale_factor_only:scale_factor = 10.0d;
 
-	short pck(scalar);
+	short pck;
 	pck:long_name = "Scalar variable, double, packed as short";
 	pck:note = "Original packed value was 1s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value (netCDF convention) should be 3.0 = 2.0d*1s + 1.0d. Unpacked value (HDF convention) should be 0.0 = 2.0d*(1s-1.0d). NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 3.0d.";
 	pck:scale_factor = 2.0d;
 	pck:add_offset = 1.0d;
 
-	short pck_3(scalar);
+	short pck_3;
 	pck_3:long_name = "Scalar variable, double, packed as short";
 	pck_3:note = "Original packed value was 1s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value (netCDF convention) should be 3.0 = 2.0d*1s + 1.0d. Unpacked value (HDF convention) should be 0.0 = 2.0d*(1s-1.0d). NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 3.0d.";
 	pck_3:scale_factor = 2.0d;
 	pck_3:add_offset = 1.0d;
 
-	short pck_5(scalar);
+	short pck_5;
 	pck_5:long_name = "Scalar variable, double, packed as short";
 	pck_5:note = "Original packed value was 2s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value (netCDF convention) should be 5.0 = 2.0d*2s + 1.0d. Unpacked value (HDF convention) should be 2.0 = 2.0d*(2s-1.0d). NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 5.0d.";
 	pck_5:scale_factor = 2.0d;
 	pck_5:add_offset = 1.0d;
 
-	short pck_7(scalar);
+	short pck_7;
 	pck_7:long_name = "Scalar variable, double, packed as short";
 	pck_7:note = "Original packed value was 1s with scale_factor = 4.0d and add_offset = 3.0d. Unpacked value (netCDF convention) should be 7.0 = 4.0d*1s + 3.0d. Unpacked value (HDF convention) should be -8.0 = 4.0d*(1s-3.0d). NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 7.0d.";
 	pck_7:scale_factor = 4.0d;
@@ -644,7 +648,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	pck_crd:scale_factor = 10.0f;
 	pck_crd:add_offset = 73.0f;
 
-	double upk(scalar);
+	double upk;
 	upk:long_name = "Unpacked scalar variable";
 	upk:note = "Unpacked value is 3.0d0, upk=unpack(pck)= 2.0d0*1s + 1.0d0 = 3.0d0. Packing this variable should create an NC_SHORT scalar = 0s with packing attribute add_offset=3.0d and either no scale_factor (ncap) or scale_factor = 0.0d (ncpdq).";
 
@@ -652,11 +656,11 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	upk_arr:long_name = "Unpacked array";
 	upk_arr:note = "Unpacked value is -32767.d, 0.d, 1.d, 32767.d, packed is same in short. Packing algorithm should yield an NC_SHORT array = [] with packing attributes scale_factor=1.0d, add_offset=0.0d";
 
-	float val_eminusten(scalar);
+	float val_eminusten;
 	val_eminusten:long_name = "Floating point number with exponent ending in zero to test sng_trm_trl_zro()";
         val_eminusten:att_eminusten = 1.1e-10f;
 
-	int val_one_int(scalar);
+	int val_one_int;
 	val_one_int:long_name = "scalar integer equal to 1";
 	val_one_int:_FillValue = -99l;
 
@@ -672,7 +676,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	val_one_mss_int:long_name = "1, mss_val";
 	val_one_mss_int:_FillValue = -99l;
 
-	float val_half(scalar);
+	float val_half;
 	val_half:long_name = "Scalar with value 0.5";
 	val_half:_FillValue = 1.0e36f;
 
@@ -687,22 +691,22 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	mss_val_all:long_name = "all missing values example";
 	mss_val_all:_FillValue = 1.0e36f;
 
-	float scalar_var(scalar);
+	float scalar_var;
 	scalar_var:long_name = "scalar variable";
 	scalar_var:units = "fraction";
 	scalar_var:_FillValue = 1.0e36f;
 
-	float float_var(scalar);
+	float float_var;
 	float_var:long_name = "float";
 
-	double double_var(scalar);
+	double double_var;
 	double_var:long_name = "double";
 
-	double double_var2(scalar);
+	double double_var2;
 	double_var2:long_name = "double";
 	double_var2:_FillValue = 1.0e36;
 
-	double pi(scalar);
+	double pi;
 	pi:long_name = "Pi";
 	pi:units = "fraction";
 
@@ -744,33 +748,33 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	pi7:long_name = "Pi array single precision starting at pi incremented by 1.0e-6 each element";
         pi7:original_values = "3.1415927, 3.1415937, 3.1415946, 3.1415956, 3.1415966, 3.1415977, 3.1415987, 3.1415997, 3.1416006, 3.1416016";
 	
-	int int_var(scalar);
+	int int_var;
 	int_var:long_name = "int";
 
 	// 20210406: netCDF 4.8.0 no longer supports CDL type "long" as synonym for "int"
 	// Uncomment next line to demonstrate backwards-incompatibility of 4.8.0
 	//long long_var;
-	int long_var(scalar);
+	int long_var;
 	long_var:long_name = "long";
 	long_var:purpose = "Variable of CDL type=long, which is deprecated for int. Included to test back-compatibility";
 	long_var:notes = "This check will fail with netCDF 4.8.0 if CDL type of variable is long not int. This failure with 4.8.0 was fixed in netCDF master within a few weeks and the problem should not be present in subsequent  (or prior) netCDF versions.";
 
-	short short_var(scalar);
+	short short_var;
 	short_var:long_name = "short";
 
-	char char_var(scalar);
+	char char_var;
 	char_var:long_name = "char";
 
-	char char_var_space(scalar);
+	char char_var_space;
 	char_var_space:long_name = "Character variable with whitespace on ends";
 
-	char char_var_nul(scalar);
+	char char_var_nul;
 	char_var_nul:long_name = "Character variable containing one NUL specified as empty string: \"\"";
 
-	char char_var_nul_c_format(scalar);
+	char char_var_nul_c_format;
 	char_var_nul_c_format:long_name = "Character variable containing one NUL specified in C-format: \'\\0\'";
 
-	char char_var_zero(scalar);
+	char char_var_zero;
 	char_var_zero:long_name = "Character variable containing zero";
 
 	char char_var_1D_arr(time);
@@ -821,13 +825,13 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 
 	byte byt_bln_3D_rec(time,lat,lon);
 
-	byte byte_var(scalar);
+	byte byte_var;
 	byte_var:long_name = "byte";
 
-	byte byte_var_neg(scalar);
+	byte byte_var_neg;
 	byte_var_neg:long_name = "negative byte";
 
-	float zero(scalar);
+	float zero;
 	zero:long_name = "zero";
 
 	float ppc_zro_flt(time);
@@ -839,25 +843,25 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	int ppc_zro_int(time);
 	ppc_zro_int:long_name = "array of integer zeros";
 
-	float one(scalar);
+	float one;
 	one:long_name = "one";
 
-	float two(scalar);
+	float two;
 	two:long_name = "two";
 
-	double e_dbl(scalar);
+	double e_dbl;
 	e_dbl:long_name = "e, natural logarithm base";
 
-	float e_flt(scalar);
+	float e_flt;
 	e_flt:long_name = "e, natural logarithm base";
 
-	float three(scalar);
+	float three;
 	three:long_name = "three";
 
-	float four(scalar);
+	float four;
 	four:long_name = "four";
 
-	float negative_one(scalar);
+	float negative_one;
 	negative_one:long_name = "negative one";
 
 	float lev_var(lev);
@@ -866,28 +870,28 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	float lev_wgt(lev);
 	lev_wgt:long_name = "lev_wgt";
 
-	float g(scalar);
+	float g;
 	g:long_name = "g";
 
-	float grv_sfc(scalar);
+	float grv_sfc;
 	grv_sfc:long_name = "Surface gravity on Earth";
 	grv_sfc:units = "meter second-2";
 
-	float vmr_CO2(scalar);
+	float vmr_CO2;
 	vmr_CO2:long_name = "Volumetric mixing ratio of CO2";
 	vmr_CO2:units = "molecule molecule-1";
 
-	float mmr_CO2(scalar);
+	float mmr_CO2;
 	mmr_CO2:long_name = "Mass mixing ratio of CO2";
 	mmr_CO2:units = "kilogram kilogram-1";
 
-	float dps_dry(scalar);
+	float dps_dry;
 	dps_dry:long_name = "Dry Deposition";
 
-	float dps_wet(scalar);
+	float dps_wet;
 	dps_wet:long_name = "Wet Deposition";
 
-	float dps_ttl(scalar);
+	float dps_ttl;
 	dps_ttl:long_name = "Total Deposition";
 
 	float z(lev);
@@ -924,7 +928,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	string att_var:string_att4 = "20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three elements. Each is a sentence or three long.";
 	string att_var:string_att5 = "20131121: This NC_STRING contains NCO's default XML string separator, *. And it contains multiple sequential copies of that separator, ***. Be sure ncks automatically switches to a different separator, aka the backup separator, the string obtained by removing the two spaces from this:\"* | *\".";
 
-	int att_var_jsn(scalar);
+	int att_var_jsn;
         // 20210512: HDF4 ncgen fails on character attributes with whitespace
 	att_var_jsn:char\ att\ with\ whitespace = "cf-json.org <http://cf-json.org>";
         att_var_jsn:double\ att\ with\ whitespace = 3.14;
@@ -933,7 +937,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 
 	// Purpose: Test special characters in names
 	// Most special characters need backslash protection
-	int att_var_spc_chr(scalar);
+	int att_var_spc_chr;
 	att_var_spc_chr:space\ in\ name = "foo";
 	att_var_spc_chr:comma_in_name\, = "foo";
 	att_var_spc_chr:lt_in_name\< = "foo";
@@ -957,7 +961,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	att_var_spc_chr:at_in_name@ = "foo";
 
 	// Purpose test special chars in char atts 
-        int att_sng(scalar);
+        int att_sng;
         att_sng:nul_sng = '\0';
 	att_sng:empty_sng = "";
         att_sng:space_sng = " ";
@@ -994,117 +998,117 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	prs_sfc:long_name = "Surface pressure";
 	prs_sfc:units = "pascal";
 
-	float H2O(scalar);
-	float H2OH2O(scalar);
-	float H2SO4(scalar);
-	float H2O_lqd(scalar);
-	float H2O_ice(scalar);
-	float Q(scalar);
-	float Q1(scalar);
-	float AQ01(scalar);
-	float QQ01(scalar);
-	float QA01(scalar);
-	float Q01Q(scalar);
-	float Q01(scalar);
-	float Q02(scalar);
-	float Q03(scalar);
-	float Q04(scalar);
-	float Q05(scalar);
-	float Q06(scalar);
-	float Q07(scalar);
-	float Q08(scalar);
-	float Q09(scalar);
-	float Q10(scalar);
-	float Q11(scalar);
-	float Q12(scalar);
-	float Q13(scalar);
-	float Q14(scalar);
-	float Q15(scalar);
-	float Q16(scalar);
-	float Q17(scalar);
-	float Q18(scalar);
-	float Q19(scalar);
-	float Q20(scalar);
-	float Q21(scalar);
-	float Q22(scalar);
-	float Q23(scalar);
-	float Q24(scalar);
-	float Q25(scalar);
-	float Q26(scalar);
-	float Q27(scalar);
-	float Q28(scalar);
-	float Q29(scalar);
-	float Q30(scalar);
-	float Q31(scalar);
-	float Q32(scalar);
-	float Q33(scalar);
-	float Q34(scalar);
-	float Q35(scalar);
-	float Q36(scalar);
-	float Q37(scalar);
-	float Q38(scalar);
-	float Q39(scalar);
-	float Q40(scalar);
-	float Q41(scalar);
-	float Q42(scalar);
-	float Q43(scalar);
-	float Q44(scalar);
-	float Q45(scalar);
-	float Q46(scalar);
-	float Q47(scalar);
-	float Q48(scalar);
-	float Q49(scalar);
-	float Q50(scalar);
-	float Q51(scalar);
-	float Q52(scalar);
-	float Q53(scalar);
-	float Q54(scalar);
-	float Q55(scalar);
-	float Q56(scalar);
-	float Q57(scalar);
-	float Q58(scalar);
-	float Q59(scalar);
-	float Q60(scalar);
-	float Q61(scalar);
-	float Q62(scalar);
-	float Q63(scalar);
-	float Q64(scalar);
-	float Q65(scalar);
-	float Q66(scalar);
-	float Q67(scalar);
-	float Q68(scalar);
-	float Q69(scalar);
-	float Q70(scalar);
-	float Q71(scalar);
-	float Q72(scalar);
-	float Q73(scalar);
-	float Q74(scalar);
-	float Q75(scalar);
-	float Q76(scalar);
-	float Q77(scalar);
-	float Q78(scalar);
-	float Q79(scalar);
-	float Q80(scalar);
-	float Q81(scalar);
-	float Q82(scalar);
-	float Q83(scalar);
-	float Q84(scalar);
-	float Q85(scalar);
-	float Q86(scalar);
-	float Q87(scalar);
-	float Q88(scalar);
-	float Q89(scalar);
-	float Q90(scalar);
-	float Q91(scalar);
-	float Q92(scalar);
-	float Q93(scalar);
-	float Q94(scalar);
-	float Q95(scalar);
-	float Q96(scalar);
-	float Q97(scalar);
-	float Q98(scalar);
-	float Q99(scalar);
-	float Q100(scalar);
+	float H2O;
+	float H2OH2O;
+	float H2SO4;
+	float H2O_lqd;
+	float H2O_ice;
+	float Q;
+	float Q1;
+	float AQ01;
+	float QQ01;
+	float QA01;
+	float Q01Q;
+	float Q01;
+	float Q02;
+	float Q03;
+	float Q04;
+	float Q05;
+	float Q06;
+	float Q07;
+	float Q08;
+	float Q09;
+	float Q10;
+	float Q11;
+	float Q12;
+	float Q13;
+	float Q14;
+	float Q15;
+	float Q16;
+	float Q17;
+	float Q18;
+	float Q19;
+	float Q20;
+	float Q21;
+	float Q22;
+	float Q23;
+	float Q24;
+	float Q25;
+	float Q26;
+	float Q27;
+	float Q28;
+	float Q29;
+	float Q30;
+	float Q31;
+	float Q32;
+	float Q33;
+	float Q34;
+	float Q35;
+	float Q36;
+	float Q37;
+	float Q38;
+	float Q39;
+	float Q40;
+	float Q41;
+	float Q42;
+	float Q43;
+	float Q44;
+	float Q45;
+	float Q46;
+	float Q47;
+	float Q48;
+	float Q49;
+	float Q50;
+	float Q51;
+	float Q52;
+	float Q53;
+	float Q54;
+	float Q55;
+	float Q56;
+	float Q57;
+	float Q58;
+	float Q59;
+	float Q60;
+	float Q61;
+	float Q62;
+	float Q63;
+	float Q64;
+	float Q65;
+	float Q66;
+	float Q67;
+	float Q68;
+	float Q69;
+	float Q70;
+	float Q71;
+	float Q72;
+	float Q73;
+	float Q74;
+	float Q75;
+	float Q76;
+	float Q77;
+	float Q78;
+	float Q79;
+	float Q80;
+	float Q81;
+	float Q82;
+	float Q83;
+	float Q84;
+	float Q85;
+	float Q86;
+	float Q87;
+	float Q88;
+	float Q89;
+	float Q90;
+	float Q91;
+	float Q92;
+	float Q93;
+	float Q94;
+	float Q95;
+	float Q96;
+	float Q97;
+	float Q98;
+	float Q99;
+	float Q100;
 
 	float two_dmn_var(lat,lev);
 	two_dmn_var:long_name = "two dimensional variable";
@@ -1283,7 +1287,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
         rec_var_dbl_mss_val_sht_pck:scale_factor = -9.15541313801785e-05;
         rec_var_dbl_mss_val_sht_pck:add_offset = 5.;
 
-	short scl_dbl_pck(scalar);
+	short scl_dbl_pck;
 	scl_dbl_pck:long_name = "scalar variable, double, packed";
 	scl_dbl_pck:purpose = "Packed version of number with ncdiff subtraction bug";
         scl_dbl_pck:scale_factor = -9.15541313801785e-05;
@@ -1491,7 +1495,7 @@ dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=8
 	float var_2D_rrg(lat,lon);
 	var_2D_rrg:long_name = "Variable for 2D irregular grid stored as 2D array";
 
-	float var_nm-dash(scalar);
+	float var_nm-dash;
 	var_nm-dash:long_name = "Variable and attribute names include dash characters";
 	var_nm-dash:att_nm-dash = 1.0e36f;
 
