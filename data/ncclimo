@@ -936,6 +936,7 @@ if [ -n "${prc_typ}" ]; then
     mdl_nm="${prc_typ}"
     # Exceptions to rule that mdl_nm == prc_typ
     [[ "${prc_typ}" = 'clm' ]] && mdl_nm='clm2'
+    [[ "${prc_typ}" = 'sgs' ]] && mdl_nm='elm'
 fi # !prc_typ
 if [ -n "${mdl_nm_usr}" ]; then 
     mdl_nm="${mdl_nm_usr}"
@@ -2050,13 +2051,13 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	printf "Splitting climatology from list of ${fl_nbr} raw input files piped to stdin\n"
     fi # !stdin
     if [ ${clm_md} = 'ann' ]; then 
-	printf "Each input file assumed to contain statistic for one year\n"
+	printf "Each input file assumed to contain statistics for one year\n"
     elif [ ${clm_md} = 'dly' ]; then 
-	printf "Each input file assumed to contain statistic for one day\n"
+	printf "Each input file assumed to contain statistics for one day\n"
     elif [ ${clm_md} = 'hfs' ]; then 
 	printf "Each input file assumed to contain statistics for ${dpf} days each comprising ${tpd_out} timesteps\n"
     elif [ ${clm_md} = 'mth' ]; then 
-	printf "Each input file assumed to contain statistic for one month\n"
+	printf "Each input file assumed to contain statistics for one month\n"
     fi # !mth
     printf "Native-grid split files to directory ${drc_out}\n"
     if [ -n "${rgr_opt}" ]; then 

@@ -128,7 +128,7 @@ formats, including
 <a href="http://hdfgroup.org/products/hdf4">HDF4</a>, 
 <a href="http://hdfgroup.org/HDF5">HDF5</a>, and, most recently,
 <a href="https://zarr.dev">Zarr</a>.
-It exploits the geophysical expressivity and logic of many 
+NCO exploits the geophysical expressivity and logic of many 
 <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.10/cf-conventions.html">CF</a> 
 (Climate &amp; Forecast) metadata conventions, 
 the flexible description of physical dimensions translated by

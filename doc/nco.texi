@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.1-alpha06
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 17 August 2022
-@set update-month August 2022
+@set update-date 13 September 2022
+@set update-month September 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -9792,7 +9792,8 @@ However Bzip2 is much slower than Zstandard which yields a comparable
 @acronym{CR}.
 @float Figure,fgr:qnt_cr_bz2
 @image{fgr/qnt_cr_bz2,5.5in} 
-@caption{Quantization and then compression by Bzip2.}
+@caption{Quantization and then compression by Bzip2,
+including the contribution of Shuffle.}
 @end float
 
 The second step is to choose the quantization algorithm and
@@ -9854,7 +9855,8 @@ is significant faster than other codecs with comparable @acronym{CR}s,
 e.g., Bzip2. 
 @float Figure,fgr:qnt_cr_zst
 @image{fgr/qnt_cr_zst,5.5in} 
-@caption{Quantization and then compression by Zstandard.}
+@caption{Quantization and then compression by Zstandard,
+including the contribution of Shuffle.}
 @end float
 
 @unnumberedsubsec Older Compression @acronym{API}
@@ -12930,7 +12932,7 @@ metadata.
 Skip this section if you never work with @acronym{CF} metadata.
 
 The latest @acronym{CF} netCDF conventions are described 
-@uref{http://cfconventions.org/1.7.html, here}. 
+@uref{http://cfconventions.org/1.10.html, here}. 
 Most @acronym{CF} netCDF conventions are transparent to @acronym{NCO}.
 There are no known pitfalls associated with using any @acronym{NCO}
 operator on files adhering to these conventions.

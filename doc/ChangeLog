@@ -1,8 +1,12 @@
-2022-08-26  Charlie Zender  <zender@uci.edu>
+2022-09-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha07: Oceanside Paopao';git push
 	git tag -a 5.1.1-alpha07 -m 'all: ncz2psx works as intended';git push --tags
+
+	* ncclimo set mdl_nm to elm for prc_typ=sgs
+
+2022-08-26  Charlie Zender  <zender@uci.edu>
 
 	* Tidy nco_fl_utl.c to prepare to allow stdin filename access for all operators
 

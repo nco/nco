@@ -434,7 +434,7 @@ module load intelmpi/2020 # Required for ncclimo/ncremap in MPI-mode
 module load netcdf/4.6.3
 #module load mkl/2020 # Does not hurt but not necessary?
 cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # works
+ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # works except for ncap2 fails with link errors like "undefined reference to `_intel_fast_memcmp'" which can be fixed with '-limf -lirc' followed by 'mv ~/nco/src/nco++/.libs/ncap2 ~/bin'
 ANTLR_ROOT=${HOME} CC='icx -static-intel -qopenmp-link=static' CXX='icx -static-intel -qopenmp-link=static' LDFLAGS='-L/usr/lib64 -L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # fails with ld: cannot find -lm but -lm is not necessary and removing it fixes the issue
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
