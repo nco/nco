@@ -1,7 +1,7 @@
 environment:
-  CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
+  CONDA_INSTALL_LOCN: C:\\Miniconda37-x64
   TARGET_ARCH: x64
-  CONDA_PY: 36
+  CONDA_PY: 37
   SRC_DIR: C:\projects\nco
 
 platform:
