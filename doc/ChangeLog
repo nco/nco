@@ -1,8 +1,10 @@
-2022-09-18  Charlie Zender  <zender@uci.edu>
+2022-09-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha07 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha07: Oceanside Paopao';git push
-	git tag -a 5.1.1-alpha07 -m 'all: ncz2psx works as intended';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha07: Cantalina';git push
+	git tag -a 5.1.1-alpha07 -m 'all: ncz2psx works as intended; ncclimo sgs mdl_nm fix';git push --tags
+
+2022-09-18  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo set mdl_nm to elm for prc_typ=sgs
 
