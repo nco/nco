@@ -10313,7 +10313,10 @@ masks from R. Kouznetsov (2021), to what we call Granular BitRound
 Delaunay et al. (2019).
 @acronym{GBR} improves compression ratios by ~20% relative to BitGroom
 for @acronym{NSD}=3 on our benchmark @w{1 GB} climate model output
-dataset. 
+dataset.
+Since it quantizes a few more bits than BitGroom (and BitGroomBitRound)
+for a given @acronym{NSD}, @acronym{GBR} produces significantly larger
+quantization errors than those algorithms as well.
 @example
 @verbatim
 ncks -7 -L 1         --ppc default=3 in.nc out.nc # Granular BitRound (NSD)
@@ -10333,13 +10336,46 @@ e.g., @code{QuantizeGranularBitRoundNumberOfSignificantDigits} or
 @code{QuantizeDigitRoundNumberOfSignificantDigits}.
 Documentation on these algorithms is best found in the literature.
 While Bit-Groom/Shave/Set are described above, documentation on
-Bit-Adjustment-Algorithms (@acronym{BAA}) 3--8 will be improved in the  
+Bit-Adjustment-Algorithms (@acronym{BAA}) 3--8 will be improved in the
 future.  
+
+@c keepbits=number_significant_bits-1
+@c number_significant_bits=keepbits+1
+@c keepbits=number_stored_bits (NSB) = number_explicit_significant_bits (NESB)
 
 As of @w{version 5.0.5} (January 2022), @acronym{NCO} supports
 two quantization codecs (BitRound and HalfShave) that expect a
-user-specified number of significant bits (@acronym{NSB}, or
-``keepbits'') to retain. 
+user-specified number of explicit significant bits (@acronym{NSB},
+or ``keepbits'') to retain
+@footnote{
+The terminology of significant bits (not to mention digits) can be
+confusing.
+The @acronym{IEEE} standard devotes 24 and 53 bits, respectively,
+to the mantissas that determine the precision of single and double
+precision floating-point numbers. 
+However, the first (i.e., the most significant) of those bits is
+@emph{implicit}, and is not explicitly stored.
+Its value is one unless all of the exponent bits are zero.
+The implicit bit is @emph{significant} thought it is not explicitly stored
+and so cannot be quantized.
+Therefore single and double precision floats have only 23 and 52
+explicitly stored bits, respectively, that can be ``kept'' and
+therefore quantized. 
+Each explicit bit kept is as significant as the implicit bit.
+Thus the number of ``keepbits'' is one less than the number of
+significant bits, i.e., the bits that contribute to the precision of an
+@acronym{IEEE} value. 
+The BitRound quantization algorithm in @acronym{NCO} and in netCDF
+accept as an input parameter the number of keepbits, i.e., the number
+of explicit significant bits @acronym{NESB} to retain (i.e., not mask
+to zero). 
+Unfortunately the acronym @acronym{NSB} has been used instead of
+the more accurate acronym @acronym{NESB}, and at this point it is
+difficult to change. 
+Therefore the @acronym{NSB} acronym and parameter as used by
+@acronym{NCO} and netCDF should be interpreted as ``number of stored
+bits'' (i.e., keepbits) not the ``number of significant bits''.
+}.
 The @acronym{NSB} argument contrasts with the number of significant 
 digits (@acronym{NSD}) parameter expected by the other codecs
 (like BitGroom, DigitRound, and GranularBR).

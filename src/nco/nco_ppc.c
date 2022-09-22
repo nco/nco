@@ -665,7 +665,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   int bit_xpl_nbr_zro; /* [nbr] Number of explicit bits to zero */
   int prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
   int prc_bnr_xpl_rqr=int_CEWI; /* [nbr] Explicitly represented binary digits (i.e., keepbits) required to retain */
-  int nsb; /* I [nbr] Number of significant bits, i.e., "keepbits" */
+  int nesb; /* I [nbr] Number of explicit significant bits, i.e., "keepbits" */
 
   long idx;
 
@@ -687,7 +687,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 
   /* Step 1: Determine # keepbits for algorithms that use a uniform number 
      For NSD algorithms this involves using log2() math and some fine-tuning
-     For NSB algorithms this simply means sanity checking user input */
+     For NESB algorithms this simply means sanity checking user input */
   switch(nco_baa_cnv_typ){
     /* Methods that do granular pre-processing of NSD or masks */
   case nco_baa_dgr:
@@ -729,13 +729,13 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
        ncra -4 -O -C --ppc default=1 --ppc one=1 -p ~/nco/data in.nc in.nc ~/foo.nc 
        ncks -H -v Q.. --cdl ~/foo.nc | m */
     break;
-    /* Methods that expect user to provide NSB not NSD */
+    /* Methods that expect user to provide NESB not NSD */
   case nco_baa_sh2:
   case nco_baa_btr:
-    nsb=nsd;
+    nesb=nsd;
     /* Disallow unreasonable quantization */
-    assert(nsb > 0);
-    prc_bnr_xpl_rqr=nsb;
+    assert(nesb > 0);
+    prc_bnr_xpl_rqr=nesb;
     break;
   default: 
     nco_dfl_case_generic_err();
@@ -773,7 +773,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   case nco_baa_gbr:
     /* These methods create masks within the loop over values */
     break;
-    /* Methods that use uniform NSD or NSB and masks */
+    /* Methods that use uniform NSD or NESB and masks */
   case nco_baa_bgr:
   case nco_baa_shv:
   case nco_baa_set:
