@@ -2031,12 +2031,12 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(var_trv.ppc != NC_MAX_INT){
 	aed_sct aed_ppc;
 	char att_nm_dsd[]="least_significant_digit";
-	char att_nm_bgr[]="QuantizeBitGroomNumberOfSignificantDigits";
+	char att_nm_btg[]="QuantizeBitGroomNumberOfSignificantDigits";
 	char att_nm_shv[]="QuantizeBitShaveNumberOfSignificantDigits";
 	char att_nm_set[]="QuantizeBitSetNumberOfSignificantDigits";
 	char att_nm_dgr[]="QuantizeDigitRoundNumberOfSignificantDigits";
 	char att_nm_gbr[]="QuantizeGranularBitRoundNumberOfSignificantDigits";
-	char att_nm_bgb[]="QuantizeBitGroomBitRoundNumberOfSignificantDigits";
+	char att_nm_bgr[]="QuantizeBitGroomRoundNumberOfSignificantDigits";
 	char att_nm_sh2[]="QuantizeHalfShaveNumberOfSignificantDigits";
 	char att_nm_brt[]="QuantizeBruteForceNumberOfSignificantDigits";
 	char att_nm_btr[]="QuantizeBitRoundNumberOfSignificantBits";
@@ -2044,12 +2044,12 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 	int rcd;
 	if(var_trv.flg_nsd){
 	  switch(nco_baa_cnv_get()){
-	  case nco_baa_bgr: aed_ppc.att_nm=att_nm_bgr; break;
+	  case nco_baa_btg: aed_ppc.att_nm=att_nm_btg; break;
 	  case nco_baa_shv: aed_ppc.att_nm=att_nm_shv; break;
 	  case nco_baa_set: aed_ppc.att_nm=att_nm_set; break;
 	  case nco_baa_dgr: aed_ppc.att_nm=att_nm_dgr; break;
 	  case nco_baa_gbr: aed_ppc.att_nm=att_nm_gbr; break;
-	  case nco_baa_bgb: aed_ppc.att_nm=att_nm_bgb; break;
+	  case nco_baa_bgr: aed_ppc.att_nm=att_nm_bgr; break;
 	  case nco_baa_sh2: aed_ppc.att_nm=att_nm_sh2; break;
 	  case nco_baa_brt: aed_ppc.att_nm=att_nm_brt; break;
 	  case nco_baa_btr: aed_ppc.att_nm=att_nm_btr; break;

@@ -575,10 +575,10 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      "A common convention in science and engineering is to express accuracy and/or precision implicitly by means of significant figures. Here, when not explicitly stated, the margin of error is understood to be one-half the value of the last significant place. For instance, a recording of 843.6 m, or 843.0 m, or 800.0 m would imply a margin of 0.05 m (the last significant place is the tenths place), while a recording of 8,436 m would imply a margin of error of 0.5 m (the last significant digits are the units)." -- Wikipedia
      
      Test NSD:
-     nc3tonc4 -o --quantize=ppc_big=3,ppc_bgr=3,ppc_flt=3 --quiet=1 ~/nco/data/in.nc ~/foo_n34.nc
-     ncks -D 1 -4 -O -C -v ppc_big,ppc_bgr,ppc_flt --ppc .?=3 ~/nco/data/in.nc ~/foo.nc
-     ncks -C -v ppc_big,ppc_bgr ~/foo.nc
-     ncks -s '%16.12e\n' -C -H -v ppc_big,ppc_bgr ~/foo_n34.nc */
+     nc3tonc4 -o --quantize=ppc_big=3,ppc_btg=3,ppc_flt=3 --quiet=1 ~/nco/data/in.nc ~/foo_n34.nc
+     ncks -D 1 -4 -O -C -v ppc_big,ppc_btg,ppc_flt --ppc .?=3 ~/nco/data/in.nc ~/foo.nc
+     ncks -C -v ppc_big,ppc_btg ~/foo.nc
+     ncks -s '%16.12e\n' -C -H -v ppc_big,ppc_btg ~/foo_n34.nc */
   
   /* IEEE single- and double-precision significands have 24 and 53 bits of total precision (prc_bnr)
      Decimal digits of precision (prc_dcm) obtained via prc_dcm=prc_bnr*ln(2)/ln(10) = 7.22 and 15.95, respectively
@@ -698,10 +698,10 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     prc_bnr_xpl_rqr=5;
     break;
     /* Methods that pre-process NSD to obtain keepbits, masks */
-  case nco_baa_bgr:
+  case nco_baa_btg:
   case nco_baa_shv:
   case nco_baa_set:
-  case nco_baa_bgb:
+  case nco_baa_bgr:
   case nco_baa_brt:
     /* Most NCO lossy routines expect user to provide NSD */
     /* Disallow unreasonable quantization */
@@ -774,10 +774,10 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     /* These methods create masks within the loop over values */
     break;
     /* Methods that use uniform NSD or NESB and masks */
-  case nco_baa_bgr:
+  case nco_baa_btg:
   case nco_baa_shv:
   case nco_baa_set:
-  case nco_baa_bgb:
+  case nco_baa_bgr:
   case nco_baa_brt:
   case nco_baa_sh2:
   case nco_baa_btr:
@@ -810,7 +810,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   switch(type){
   case NC_FLOAT:
     switch(nco_baa_cnv_typ){
-    case nco_baa_bgr:
+    case nco_baa_btg:
       /* Bit-Groom: alternately shave and set LSBs */
       for(idx=0L;idx<sz;idx+=2L)
 	if(op1.fp[idx] != mss_val_cmp_flt) u32_ptr[idx]&=msk_f32_u32_zro;
@@ -818,7 +818,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	if(op1.fp[idx] != mss_val_cmp_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
 	  u32_ptr[idx]|=msk_f32_u32_one;
       break;
-      /* !BitGroom = BGR */
+      /* !BitGroom = BTG */
     case nco_baa_shv:
       /* Bit-Shave: always shave LSBs */
       for(idx=0L;idx<sz;idx++)
@@ -834,7 +834,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       /* Digit Rounding (DCG19)
 	 Test DGR:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
-	 ncks -O -C -D 1 --baa=3 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
+	 ncks -O -C -D 1 --baa=3 -v ppc_btg --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -C -D 1 --baa=3 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
 
       /* 20210927:
@@ -936,7 +936,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       /* Granular BitGroom
 	 Test GBG:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
-	 ncks -O -7 -C -D 1 --baa=4 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
+	 ncks -O -7 -C -D 1 --baa=4 -v ppc_btg --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -7 -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
       for(idx=0L;idx<sz;idx++){
 	if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
@@ -988,10 +988,10 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !GranularBitRound = GBG */
-    case nco_baa_bgb:
+    case nco_baa_bgr:
     case nco_baa_btr:
       /* BitRound and
-	 BitGroom with BitRound (instead of shave/set):
+	 BitGroomRound (instead of shave/set):
 	 Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using IEEE floating-point arithmetic, shave LSB using bit-mask */
       for(idx=0L;idx<sz;idx++){
@@ -1002,7 +1002,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !BitRound = BTR */
-      /* !BitGroomBitRound = BGB */
+      /* !BitGroomRound = BGR */
     case nco_baa_sh2:
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them
@@ -1072,7 +1072,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     break; /* !NC_FLOAT */
   case NC_DOUBLE:
     switch(nco_baa_cnv_typ){
-    case nco_baa_bgr:
+    case nco_baa_btg:
       /* Bit-Groom: alternately shave and set LSBs */
       for(idx=0L;idx<sz;idx+=2L)
 	if(op1.dp[idx] != mss_val_cmp_dbl)
@@ -1160,7 +1160,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !GranularBitRound = GBG */
-    case nco_baa_bgb:
+    case nco_baa_bgr:
     case nco_baa_btr:
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using software emulation of IEEE arithmetic, shave LSB using bit-mask
@@ -1173,7 +1173,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !idx */
       break;
       /* !BitRound = BTR */
-      /* !BitGroomBitRound = BGB */
+      /* !BitGroomRound = BGR */
     case nco_baa_sh2:
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them

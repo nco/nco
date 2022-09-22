@@ -108,7 +108,7 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_bz2=5, /* 5 [enm] Bzip2 */
   nco_flt_lz4=6, /* 6 [enm] LZ4 */
   nco_flt_zst=7, /* 7 [enm] Zstandard */
-  nco_flt_bgr=8, /* 8 [enm] BitGroom */
+  nco_flt_btg=8, /* 8 [enm] BitGroom */
   nco_flt_dgr=9, /* 9 [enm] DigitRound */
   nco_flt_gbr=10, /* 10 [enm] Granular BitRound */
   nco_flt_btr=11, /* 11 [enm] BitRound */

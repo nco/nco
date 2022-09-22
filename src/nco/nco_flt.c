@@ -72,7 +72,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
      Specify codecs in the desired order of their application
 
      Test:
-     ncks --dbg=2 --cdc=bgr,3|zstd,1 in.nc out.nc */
+     ncks --dbg=2 --cdc=btg,3|zstd,1 in.nc out.nc */
 
   const char fnc_nm[]="nco_cmp_prs()";
 
@@ -170,7 +170,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   const int lvl_dfl_shf=4; /* [enm] Default level for Shuffle */
   const int lvl_dfl_bz2=1; /* [enm] Default level for Bzip2 */
   const int lvl_dfl_zst=3; /* [enm] Default level for Zstandard */
-  const int lvl_dfl_bgr=3; /* [enm] Default level (NSD) for BitGroom */
+  const int lvl_dfl_btg=3; /* [enm] Default level (NSD) for BitGroom */
   const int lvl_dfl_gbr=3; /* [enm] Default level (NSD) for GranularBR */
   const int lvl_dfl_btr=9; /* [enm] Default level (NSB) for BitRound */
   const int lvl_dfl_bls=1; /* [enm] Default level Blosc LZ and Snappy filters */
@@ -210,9 +210,9 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 	flt_lvl[flt_idx]=flt_prm[flt_idx][0];
 	break;
 
-      case nco_flt_bgr:
+      case nco_flt_btg:
 	flt_prm_nbr[flt_idx]=1;
-	flt_prm[flt_idx][0]=lvl_dfl_bgr;
+	flt_prm[flt_idx][0]=lvl_dfl_btg;
 	flt_lvl[flt_idx]=flt_prm[flt_idx][0];
 	break;
 
@@ -464,7 +464,7 @@ nco_flt_enm2nmid /* [fnc] Convert compression filter enum to string */
   case nco_flt_szp: if(flt_idp) *flt_idp=H5Z_FILTER_SZIP; return "Szip"; break; /* 4 */
   case nco_flt_bz2: if(flt_idp) *flt_idp=H5Z_FILTER_BZIP2; return "Bzip2"; break; /* 307 */
   case nco_flt_lz4: if(flt_idp) *flt_idp=32004U; return "LZ4"; break; /* 32004 */
-  case nco_flt_bgr: if(flt_idp) *flt_idp=32022U; return "BitGroom"; break; /* 32022 */
+  case nco_flt_btg: if(flt_idp) *flt_idp=32022U; return "BitGroom"; break; /* 32022 */
   case nco_flt_gbr: if(flt_idp) *flt_idp=32023U; return "Granular BitRound"; break; /* 32023 */
   case nco_flt_dgr: return "DigitRound"; break;
   case nco_flt_btr: if(flt_idp) *flt_idp=37373U; return "BitRound"; break; /* 37373 */
@@ -549,7 +549,7 @@ nco_flt_id2enm /* [fnc] Convert HDF5 compression filter ID to enum */
   case 4 : flt_enm=nco_flt_szp; break;
   case 307 : flt_enm=nco_flt_bz2; break;
   case 32004 : flt_enm=nco_flt_lz4; break;
-  case 32022 : flt_enm=nco_flt_bgr; break;
+  case 32022 : flt_enm=nco_flt_btg; break;
   case 32023 : flt_enm=nco_flt_gbr; break;
     //  case : flt_enm=nco_flt_dgr; break;
   case 37373: flt_enm=nco_flt_btr; break;
@@ -637,12 +637,12 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     
     else if(!strcasecmp(flt_nm,"lz4")) flt_enm=nco_flt_lz4;
     
-    else if(!strcasecmp(flt_nm,"bgr")) flt_enm=nco_flt_bgr;
-    else if(!strcasecmp(flt_nm,"btg")) flt_enm=nco_flt_bgr;
-    else if(!strcasecmp(flt_nm,"bitgroom")) flt_enm=nco_flt_bgr;
-    else if(!strcasecmp(flt_nm,"bit-groom")) flt_enm=nco_flt_bgr;
-    else if(!strcasecmp(flt_nm,"bit groom")) flt_enm=nco_flt_bgr;
-    else if(!strcasecmp(flt_nm,"Zen16")) flt_enm=nco_flt_bgr;
+    else if(!strcasecmp(flt_nm,"btg")) flt_enm=nco_flt_btg;
+    else if(!strcasecmp(flt_nm,"btg")) flt_enm=nco_flt_btg;
+    else if(!strcasecmp(flt_nm,"bitgroom")) flt_enm=nco_flt_btg;
+    else if(!strcasecmp(flt_nm,"bit-groom")) flt_enm=nco_flt_btg;
+    else if(!strcasecmp(flt_nm,"bit groom")) flt_enm=nco_flt_btg;
+    else if(!strcasecmp(flt_nm,"Zen16")) flt_enm=nco_flt_btg;
     
     else if(!strcasecmp(flt_nm,"gbr")) flt_enm=nco_flt_gbr;
     else if(!strcasecmp(flt_nm,"granularbr")) flt_enm=nco_flt_gbr;
@@ -1140,7 +1140,7 @@ nco_flt_def_out /* [fnc]  */
 #endif /* !CCR_HAS_LZ4 */
       break;
 
-    case nco_flt_bgr: /* BitGroom */
+    case nco_flt_btg: /* BitGroom */
       if(lsy_flt_ok){
 #if NC_HAS_QUANTIZE 
 	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_quantize(nc_out_id,var_out_id,NC_QUANTIZE_BITGROOM,flt_lvl[flt_idx]);

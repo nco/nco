@@ -9308,9 +9308,9 @@ Algorithms (@acronym{BAA}s) that perform quantization.
 
 In 2020 we reduced the quantization error of BitGroom by implementing
 @acronym{IEEE}-rounding (aka BitRound), and newer quantization
-algorithms including BitGroomBitRound, HalfShave, and DigitRound
+algorithms including BitGroomRound, HalfShave, and DigitRound
 @footnote{R. Kouznetsov contributed the masking techinques used in
-BitRound, BitGroomBitRound, and HalfShave. Thanks Rostislav!}.
+BitRound, BitGroomRound, and HalfShave. Thanks Rostislav!}.
 These algorithms are all accessible via the @samp{--baa} option.
 In 2020 @acronym{NSF} awarded support for us to develop the Community 
 Codec Respository to put a friendlier @acronym{API} on the
@@ -9399,8 +9399,8 @@ when invoked with a higher debugging level:
 <a name="bz2"></a> <!-- http://nco.sf.net/nco.html#bz2 -->
 <a name="shf"></a> <!-- http://nco.sf.net/nco.html#shf -->
 <a name="gbr"></a> <!-- http://nco.sf.net/nco.html#gbr -->
+<a name="btg"></a> <!-- http://nco.sf.net/nco.html#btg -->
 <a name="bgr"></a> <!-- http://nco.sf.net/nco.html#bgr -->
-<a name="bgb"></a> <!-- http://nco.sf.net/nco.html#bgb -->
 <a name="btr"></a> <!-- http://nco.sf.net/nco.html#btr -->
 <a name="f32"></a> <!-- http://nco.sf.net/nco.html#f32 -->
 <a name="dns"></a> <!-- http://nco.sf.net/nco.html#dns -->
@@ -9410,8 +9410,8 @@ when invoked with a higher debugging level:
 @cindex @code{bz2}
 @cindex @code{shf}
 @cindex @code{gbr}
+@cindex @code{btg}
 @cindex @code{bgr}
-@cindex @code{bgb}
 @cindex @code{f32}
 @cindex @code{dns}
 @cindex Shuffle
@@ -10215,7 +10215,7 @@ examples.
 <a name="QuantizeBitShaveNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitShaveNumberOfSignificantDigits -->
 <a name="QuantizeBitSetNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitSetNumberOfSignificantDigits -->
 <a name="QuantizeDigitRoundNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeDigitRoundNumberOfSignificantDigits -->
-<a name="QuantizeBitGroomBitRoundNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitGroomBitRoundNumberOfSignificantDigits -->
+<a name="QuantizeBitGroomRoundNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitGroomRoundNumberOfSignificantDigits -->
 <a name="QuantizeHalfShaveNumberOfSignificantBits"></a> <!-- http://nco.sf.net/nco.html#QuantizeHalfShaveNumberOfSignificantBits -->
 <a name="QuantizeBruteForceNumberOfSignificantDigits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBruteForceNumberOfSignificantDigits -->
 <a name="QuantizeBitRoundNumberOfSignificantBits"></a> <!-- http://nco.sf.net/nco.html#QuantizeBitRoundNumberOfSignificantBits -->
@@ -10227,7 +10227,7 @@ examples.
 @cindex @code{QuantizeBitShaveNumberOfSignificantDigits}
 @cindex @code{QuantizeDigitRoundNumberOfSignificantDigits}
 @cindex @code{QuantizeGranularBitRoundNumberOfSignificantDigits}
-@cindex @code{QuantizeBitGroomBitRoundNumberOfSignificantDigits}
+@cindex @code{QuantizeBitGroomRoundNumberOfSignificantDigits}
 @cindex @code{QuantizeHalfShaveNumberOfSignificantBits}
 @cindex @code{QuantizeBruteForceNumberOfSignificantDigits}
 @cindex @code{QuantizeBitRoundNumberOfSignificantBits}
@@ -10287,7 +10287,7 @@ during statistical operations.}, respectively.
 <a name="BitShave"></a> <!-- http://nco.sf.net/nco.html#BitShave -->
 <a name="BitSet"></a> <!-- http://nco.sf.net/nco.html#BitSet -->
 <a name="DigitRound"></a> <!-- http://nco.sf.net/nco.html#DigitRound -->
-<a name="BitGroomBitRound"></a> <!-- http://nco.sf.net/nco.html#BitGroomBitRound -->
+<a name="BitGroomRound"></a> <!-- http://nco.sf.net/nco.html#BitGroomRound -->
 <a name="HalfShave"></a> <!-- http://nco.sf.net/nco.html#HalfShave -->
 <a name="BruteForce"></a> <!-- http://nco.sf.net/nco.html#BruteForce -->
 <a name="BitRound"></a> <!-- http://nco.sf.net/nco.html#BitRound -->
@@ -10299,7 +10299,7 @@ during statistical operations.}, respectively.
 @cindex BitShave
 @cindex BitSet
 @cindex DigitRound
-@cindex BitGroomBitRound
+@cindex BitGroomRound
 @cindex HalfShave
 @cindex BruteForce
 @cindex BitRound
@@ -10314,7 +10314,7 @@ Delaunay et al. (2019).
 @acronym{GBR} improves compression ratios by ~20% relative to BitGroom
 for @acronym{NSD}=3 on our benchmark @w{1 GB} climate model output
 dataset.
-Since it quantizes a few more bits than BitGroom (and BitGroomBitRound)
+Since it quantizes a few more bits than BitGroom (and BitGroomRound)
 for a given @acronym{NSD}, @acronym{GBR} produces significantly larger
 quantization errors than those algorithms as well.
 @example
@@ -10325,7 +10325,7 @@ ncks -7 -L 1 --baa=1 --ppc default=3 in.nc out.nc # BitShave (NSD)
 ncks -7 -L 1 --baa=2 --ppc default=3 in.nc out.nc # BitSet (NSD)
 ncks -7 -L 1 --baa=3 --ppc default=3 in.nc out.nc # DigitRound (NSD)
 ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # Granular BitRound (NSD)
-ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitGroomBitRound (NSD)
+ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitGroomRound (NSD)
 ncks -7 -L 1 --baa=6 --ppc default=9 in.nc out.nc # HalfShave (NSB)
 ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce (NSD)
 ncks -7 -L 1 --baa=8 --ppc default=9 in.nc out.nc # BitRound (NSB)

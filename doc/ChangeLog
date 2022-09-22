@@ -1,8 +1,12 @@
 2022-09-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha08 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha08: Cantalina';git push
-	git tag -a 5.1.1-alpha08 -m '';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha08: Backflow';git push
+	git tag -a 5.1.1-alpha08 -m 'all: NSB->NESB';git push --tags
+
+	* Change BitGroomBitRound and 'bgb' to BitGroomRound and 'bgr', respectively
+
+	* Abbreviate BitGroom as 'btg' not 'bgr'
 
 	* Shift NSB to NESB and/or "number of significant bits" to "number of stored bits"
 
