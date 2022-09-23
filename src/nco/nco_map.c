@@ -583,7 +583,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   else if(rgr->wgt_typ == nco_wgt_idw) rcd=nco_char_att_put(out_id,NULL,"map_method","Bilinear"); /* NB: map_method values are constrained by SCRIP/ESMF precedence. Values besides "Conservative" and "Bilinear" may be unsupported by other regridders. */
   /* ERWG stores actual weight generation in "ESMF_regrid_method" */
   if(rgr->wgt_typ == nco_wgt_con) rcd=nco_char_att_put(out_id,NULL,"NCO_regrid_method","Integrated piecewise-constant reconstruction of common intersection mesh. Conservative, monotone, suitable for downscaling, blocky results for upscaling. First order accurate. Similar to ESMF conserve method.");
-  else if(rgr->wgt_typ == nco_wgt_idw) rcd=nco_char_att_put(out_id,NULL,"NCO_regrid_method","Distance-Weighted Extrapolation");
+  else if(rgr->wgt_typ == nco_wgt_idw) rcd=nco_char_att_put(out_id,NULL,"NCO_regrid_method","Inverse-Distance-Weighted Extrapolation");
   rcd=nco_char_att_put(out_id,NULL,"weight_generator","NCO");
   char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version from C pre-processor */
   /* 20170417: vrs_cpp is typically something like "4.6.6-alpha10" (quotes included) 
@@ -1009,26 +1009,26 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     int nbr_tr;
     KDTree **tree;
 
-    tree=nco_map_kd(pl_lst_in, pl_cnt_in, grd_lon_typ_out,&nbr_tr);
+    tree=nco_map_kd(pl_lst_in,pl_cnt_in,grd_lon_typ_out,&nbr_tr);
     lst_typ=1;
 
     /* temporarily disable crt code */
-    /* if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl_crt(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
+    /* if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl_crt(pl_lst_in,pl_cnt_in,rtree,&pl_cnt_vrl); */
 
     if(pl_typ == poly_sph || pl_typ == poly_rll)
-      wgt_lst_vrl = nco_poly_lst_mk_idw_sph(map_rgr, pl_lst_out, grd_sz_out, grd_lon_typ_out, tree, nbr_tr, &pl_cnt_vrl);
+      wgt_lst_vrl=nco_poly_lst_mk_idw_sph(map_rgr,pl_lst_out,grd_sz_out,grd_lon_typ_out,tree,nbr_tr,&pl_cnt_vrl);
 
     pl_lst_vrl=(poly_sct**)NULL_CEWI;
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev)
-      fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap weights(nni)=%d\n", nco_prg_nm_get(), grd_sz_in, grd_sz_out, pl_cnt_vrl);
+      fprintf(stderr,"%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap weights(nni)=%d\n",nco_prg_nm_get(),grd_sz_in,grd_sz_out,pl_cnt_vrl);
 
     /* dont really like this - for weight of input cells maybe greater than 1 - some maybe 0.0  */
     for(idx=0;idx<pl_cnt_vrl;idx++)
-      pl_lst_in[ wgt_lst_vrl[idx]->src_id]->wgt+=wgt_lst_vrl[idx]->wgt;
+      pl_lst_in[wgt_lst_vrl[idx]->src_id]->wgt+=wgt_lst_vrl[idx]->wgt;
 
     for (idx = 0; idx < nbr_tr; idx++)
-      kd_destroy(tree[idx], NULL);
+      kd_destroy(tree[idx],NULL);
 
     tree = (KDTree **) nco_free(tree);
 
@@ -1105,10 +1105,10 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     wgt_lst_vrl=(wgt_sct**)nco_free(wgt_lst_vrl);
   }else if(lst_typ==2 && pl_lst_vrl)
-      pl_lst_vrl = nco_poly_lst_free(pl_lst_vrl, pl_cnt_vrl);
+      pl_lst_vrl = nco_poly_lst_free(pl_lst_vrl,pl_cnt_vrl);
 
-  if (grd_sz_in) pl_lst_in = nco_poly_lst_free(pl_lst_in, grd_sz_in);
-  if (grd_sz_out) pl_lst_out = nco_poly_lst_free(pl_lst_out, grd_sz_out);
+  if (grd_sz_in) pl_lst_in = nco_poly_lst_free(pl_lst_in,grd_sz_in);
+  if (grd_sz_out) pl_lst_out = nco_poly_lst_free(pl_lst_out,grd_sz_out);
 
   return rcd;
 } /* !nco_msh_mk() */
@@ -1141,15 +1141,15 @@ int *nbr_tr)
   quota = pl_cnt / *nbr_tr;
   nbr_xcs = pl_cnt % *nbr_tr;
 
-  tree = (KDTree **) nco_calloc(*nbr_tr, sizeof(KDTree *));
+  tree = (KDTree **) nco_calloc(*nbr_tr,sizeof(KDTree *));
 
   #if defined(__INTEL_COMPILER)
-  # pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr,  grd_lon_typ, nbr_tr, nbr_xcs, pl_lst, quota, tree)
+  # pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr, grd_lon_typ,nbr_tr,nbr_xcs,pl_lst,quota,tree)
   #else /* !__INTEL_COMPILER */
   # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-  #  pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr, grd_lon_typ, nbr_tr, nbr_xcs, pl_lst, quota, tree)
+  #  pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr,grd_lon_typ,nbr_tr,nbr_xcs,pl_lst,quota,tree)
   # else /* !old g++ */
-  #  pragma omp parallel for private(idx, thr_idx) shared(fp_stderr, grd_lon_typ, nbr_tr, nbr_xcs, pl_lst, quota, tree)
+  #  pragma omp parallel for private(idx,thr_idx) shared(fp_stderr,grd_lon_typ,nbr_tr,nbr_xcs,pl_lst,quota,tree)
   # endif /* !old g++ */
   #endif /* !__INTEL_COMPILER */
   for (idx = 0; idx < *nbr_tr; idx++)
@@ -1159,7 +1159,7 @@ int *nbr_tr)
     tree[idx] = nco_map_kd_init(pl_lst + quota * idx, quota + (idx == *nbr_tr - 1 ? nbr_xcs : 0), grd_lon_typ);
 
     if (nco_dbg_lvl_get() >= 3)
-      (void) fprintf(fp_stderr, "%s: thread %d created a kdtree of %d nodes\n", nco_prg_nm_get(), thr_idx,tree[idx]->item_count);
+      (void) fprintf(fp_stderr,"%s: thread %d created a kdtree of %d nodes\n",nco_prg_nm_get(),thr_idx,tree[idx]->item_count);
 
   } /* end for */
 
@@ -1167,7 +1167,7 @@ int *nbr_tr)
 } /* end tree scope */
 
 KDTree *
-nco_map_kd_init( poly_sct **pl_lst, int pl_cnt, nco_grd_lon_typ_enm grd_lon_typ   )
+nco_map_kd_init( poly_sct **pl_lst,int pl_cnt,nco_grd_lon_typ_enm grd_lon_typ   )
 {
   int idx;
   KDTree *rtree;
@@ -1187,16 +1187,16 @@ nco_map_kd_init( poly_sct **pl_lst, int pl_cnt, nco_grd_lon_typ_enm grd_lon_typ 
     if(!pl_lst[idx]->bmsk )
       continue;
 
-    my_elem1 = (KDElem *) nco_calloc((size_t) 1, sizeof(KDElem));
+    my_elem1 = (KDElem *) nco_calloc((size_t) 1,sizeof(KDElem));
 
     /* kd tree cannot handle wrapped coordinates so split minmax if needed*/
-    bSplit = nco_poly_minmax_split(pl_lst[idx], grd_lon_typ, size1, size2);
+    bSplit = nco_poly_minmax_split(pl_lst[idx],grd_lon_typ,size1,size2);
 
-    kd_insert(rtree, (kd_generic) pl_lst[idx], size1, (char *) my_elem1);
+    kd_insert(rtree,(kd_generic) pl_lst[idx],size1,(char *) my_elem1);
 
     if (bSplit) {
-      my_elem2 = (KDElem *) nco_calloc((size_t) 1, sizeof(KDElem));
-      kd_insert(rtree, (kd_generic) pl_lst[idx], size2, (char *) my_elem2);
+      my_elem2 = (KDElem *) nco_calloc((size_t) 1,sizeof(KDElem));
+      kd_insert(rtree,(kd_generic) pl_lst[idx],size2,(char *) my_elem2);
     }
 
   }

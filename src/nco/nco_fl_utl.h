@@ -132,7 +132,19 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
  char ** const fl_out, /* I/O [sng] Name of output file */
  nco_bool *FL_LST_IN_FROM_STDIN, /* O [flg] fl_lst_in comes from stdin */
  const nco_bool FORCE_OVERWRITE); /* I [flg] Overwrite existing file, if any */
-
+  /* !nco_fl_lst_mk() */
+  
+char ** /* O [sng] List of user-specified filenames */
+nco_fl_lst_stdin /* [fnc] Get input file list from stdin */
+(CST_X_PTR_CST_PTR_CST_Y(char,argv), /* I [sng] Argument list */
+ const int argc, /* I [nbr] Argument count */
+ int arg_crr, /* I [idx] Index of current argument */
+ int * const fl_nbr, /* O [nbr] Number of files in input file list */
+ char ** const fl_out, /* I/O [sng] Name of output file */
+ nco_bool *FL_LST_IN_FROM_STDIN, /* O [flg] fl_lst_in comes from stdin */
+ const nco_bool FORCE_OVERWRITE); /* I [flg] Overwrite existing file, if any */
+  /* !nco_fl_lst_stdin() */
+  
 char * /* O [sng] Filename of locally available file */
 nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 (char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
