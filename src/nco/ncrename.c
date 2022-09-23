@@ -372,8 +372,8 @@ main(int argc,char **argv)
     if(!FORCE_OVERWRITE) nco_fl_overwrite_prm(fl_out);
 
     /* Copy input file to output file and then search through output, 
-    changing names on the fly. This avoids possible XDR translation
-    performance penalty of copying each variable with netCDF. */
+       changing names on the fly. This avoids possible XDR translation
+       performance penalty of copying each variable with netCDF. */
     (void)nco_fl_cp(fl_in,fl_out);
 
     /* Ensure output file is user/owner-writable */

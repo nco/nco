@@ -4,6 +4,12 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha08: Backflow';git push
 	git tag -a 5.1.1-alpha08 -m 'all: NSB->NESB';git push --tags
 
+	* ncrename stdin search for input filenames works, though cannot copy from NCZarr to POSIX
+
+	* ncks stdin search for input filenames works
+
+	* ncremap replace general occurances of dwe with idw
+
 	* ncremap fix bug where alg_opt=nco_idw (though not nco_dwe) was interpreted as nco_con
 
 2022-09-22  Charlie Zender  <zender@uci.edu>

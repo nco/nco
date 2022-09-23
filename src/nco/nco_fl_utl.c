@@ -233,7 +233,7 @@ nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
 	 C FAQ Author Steve Summit explains why not to use fflush(stdin)
 	 and how best to manually clean stdin of unwanted residue */
 
-    } /* end while */
+    } /* !usr_rpl */
     
     if(usr_rpl == 'n') nco_exit(EXIT_SUCCESS);
 
@@ -318,6 +318,7 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
   int rcd_sys;
   const int fmt_chr_nbr=4;
 
+  nco_bool src_is_drc=False; /* [flg] Source is a directory */
   nco_bool dst_is_drc=False; /* [flg] Destination is a directory */
 
   /* Perform system() call iff files are not identical */
@@ -329,12 +330,19 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
   /* 20220713 Allow for NCZarr storage */
   char *fl_src_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_src */
   char *fl_dst_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_dst */
-  if(nco_fl_nm_is_nczarr(fl_src)) (void)nco_fl_ncz2psx(fl_src,&fl_src_psx,NULL,NULL);
+  if(nco_fl_nm_is_nczarr(fl_src)){
+    src_is_drc=True;
+    (void)nco_fl_ncz2psx(fl_src,&fl_src_psx,NULL,NULL);
+  } /* !nco_fl_nm_is_nczarr() */
   if(nco_fl_nm_is_nczarr(fl_dst)){
     dst_is_drc=True;
     (void)nco_fl_ncz2psx(fl_dst,&fl_dst_psx,NULL,NULL);
   } /* !nco_fl_nm_is_nczarr() */
 
+  /* Copying between file-store and directory-store requires thought */
+  if(src_is_drc && !dst_is_drc) (void)fprintf(stderr,"%s: WARNING %s reports attempt to copy source directory %s to destination file %s will not go well...\n",nco_prg_nm_get(),fnc_nm,fl_src_psx,fl_dst);
+  if(!src_is_drc && dst_is_drc) (void)fprintf(stderr,"%s: WARNING %s reports attempt to copy source file %s to destination directory %s will not go well...\n",nco_prg_nm_get(),fnc_nm,fl_src,fl_dst_psx);
+  
   /* 20131227 Allow for whitespace and naughty characters in fl_[src,dst]
      Assume CDL translation results in acceptable name for shell commands */
   fl_src_cdl= (fl_src_psx) ? nm2sng_fl(fl_src_psx) : nm2sng_fl(fl_src);
@@ -429,16 +437,16 @@ nco_fl_lst_stdin /* [fnc] Get input file list from stdin */
 {
   /* Purpose: Return filenames specified via stdin */
 
-  const char fnc_nm[]="nco_fl_lst_stdin()"; /* [sng] Function name */
+  // const char fnc_nm[]="nco_fl_lst_stdin()"; /* [sng] Function name */
   
   char **fl_lst_in=NULL_CEWI; /* [sng] List of user-specified filenames */
 
-  int idx;
+  //  int idx;
 
   return fl_lst_in;
 } /* !nco_fl_lst_stdin() */
 
- char ** /* O [sng] List of user-specified filenames */
+char ** /* O [sng] List of user-specified filenames */
 nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments */
 (CST_X_PTR_CST_PTR_CST_Y(char,argv), /* I [sng] Argument list */
  const int argc, /* I [nbr] Argument count */
@@ -588,8 +596,32 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     /* Allocate pointer to list */
     fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 
-    /* Does input filename await on stdin? */
-    if(0){
+    /* Does input filename await on stdin?
+       https://stackoverflow.com/questions/47320496/how-to-determine-if-stdin-is-empty
+       https://stackoverflow.com/questions/1312922/detect-if-stdin-is-a-terminal-or-pipe */
+    nco_bool STDIN_HAS_DATA=False; /* [flg] stdin contains data to read */
+    /* First must determine if stdin connects to a pipe or the terminal */
+    /* NB: getc() hangs until someone types if stdin is the terminal */
+    if(isatty(fileno(stdin))){
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that isatty() returns non-zer so stdin connects to a terminal. Will not check terminal for input filenames.\n",nco_prg_nm_get(),fnc_nm);
+    }else{
+      int chr_foo; /* [chr] Space to hold first character, if any, from stdin */
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that isatty() returns zero so stdin is not connected to a terminal. Will check for input filenames on pipe to stdin...\n",nco_prg_nm_get(),fnc_nm);
+      chr_foo=getc(stdin);
+      if(chr_foo == EOF){
+	if(feof(stdin)){
+	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns EOF and feof() emits non-zero return code so stdin is empty\n",nco_prg_nm_get(),fnc_nm);
+	}else{
+	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns EOF and feof() emits zero return code so stdin is screwy\n",nco_prg_nm_get(),fnc_nm);
+	} /* !feof() */
+      }{ /* !chr_foo */
+	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns '%c' (not EOF) so stdin connects to a pipe with input data. Replacing peek-ahead character and preparing to read input filenames from stdin.\n",nco_prg_nm_get(),fnc_nm,(unsigned char)chr_foo);
+	ungetc(chr_foo,stdin); // put back
+	STDIN_HAS_DATA=True;
+      } /* !chr_foo */
+    } /* !isatty() */
+    
+    if(STDIN_HAS_DATA){
       char *fl_in=NULL; /* [sng] Input file name */
       FILE *fp_in; /* [enm] Input file handle */
       char *bfr_in; /* [sng] Temporary buffer for stdin filenames */
@@ -628,10 +660,24 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
       } /* !cnv_nbr */
       
-    } /* !1 */
+      /* Finished reading list. Close file resource if one was opened. */
+      if(fl_in != NULL && fp_in != NULL) (void)fclose(fp_in);
+
+      /* Free temporary buffer */
+      bfr_in=(char *)nco_free(bfr_in);
+      
+      if(fl_lst_in_lng >= FL_LST_IN_MAX_LNG){
+	(void)fprintf(stdout,"%s: ERROR Total length of fl_lst_in from stdin exceeds %d characters. Possible misuse of feature. If your input file list is really this long, post request to developer's forum (http://sf.net/p/nco/discussion/9831) to expand FL_LST_IN_MAX_LNG\n",nco_prg_nm_get(),FL_LST_IN_MAX_LNG);
+	nco_exit(EXIT_FAILURE);
+      } /* !fl_lst_in_lng */
+
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s read %d filename%s in %li characters from stdin\n",nco_prg_nm_get(),fnc_nm,*fl_nbr,*fl_nbr > 1 ? "s" : "",(long)fl_lst_in_lng);
+      if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING %s reports tried and failed to get input filenames from stdin\n",nco_prg_nm_get(),fnc_nm);
+
+    } /* !STDIN_HAS_DATA */
     
     /* Read input filename from next positional argument */
-    fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+    if(!*FL_LST_IN_FROM_STDIN) fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
     
     /* Sanitize input list from stdin and from positional arguments */
     //    for(int fl_idx=0;fl_idx<*fl_nbr;fl_idx++) (void)nco_sng_sntz(fl_lst_in[fl_idx]);
@@ -642,6 +688,8 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       *fl_out=(char *)strdup(argv[arg_crr]);
       //*fl_out=nco_sng_sntz(*fl_out);
     } /* !arg_crr */
+
+    /* return() here otherwise post-switch clause below overwrites fl_lst_in, fl_out */
     return fl_lst_in;
     /* break; *//* NB: break after return in case statement causes SGI cc warning */
   case ncbo:
@@ -2256,10 +2304,12 @@ nco_fl_rm /* [fnc] Remove file or directory */
 void nco_fl_chmod2(const char * const fl_nm){}
 #else /* !_MSC_VER */
 void
-nco_fl_chmod2 /* [fnc] Ensure file is user/owner-writable */
+nco_fl_chmod2 /* [fnc] Ensure file or directory is user/owner-writable */
 (const char * const fl_nm) /* I [sng] Name of file or directory */
 {
-  /* Purpose: Remove specified file or directory from local system */
+  /* Purpose: Make file or directory is user/owner-writable
+     Uses chmod() C-library call rather than chmod shell program
+     Routine assumes that output file already exists, but is of unknown mode */
 
   const char fnc_nm[]="nco_fl_chmod2()"; /* [sng] Function name */
 
