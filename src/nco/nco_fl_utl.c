@@ -469,6 +469,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   const char fnc_nm[]="nco_fl_lst_mk()"; /* [sng] Function name */
 
   nco_bool FL_OUT_FROM_PSN_ARG=True; /* [flg] fl_out comes from positional argument */
+  nco_bool STDIN_HAS_DATA=False; /* [flg] stdin contains data to read */
 
   char **fl_lst_in=NULL_CEWI; /* [sng] List of user-specified filenames */
 
@@ -599,7 +600,6 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     /* Does input filename await on stdin?
        https://stackoverflow.com/questions/47320496/how-to-determine-if-stdin-is-empty
        https://stackoverflow.com/questions/1312922/detect-if-stdin-is-a-terminal-or-pipe */
-    nco_bool STDIN_HAS_DATA=False; /* [flg] stdin contains data to read */
     /* First must determine if stdin connects to a pipe or the terminal */
     /* NB: getc() hangs until someone types if stdin is the terminal */
     if(isatty(fileno(stdin))){
