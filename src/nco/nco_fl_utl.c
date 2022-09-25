@@ -432,17 +432,95 @@ nco_fl_lst_stdin /* [fnc] Get input file list from stdin */
  int arg_crr, /* I [idx] Index of current argument */
  int * const fl_nbr, /* O [nbr] Number of files in input file list */
  char ** const fl_out, /* I/O [sng] Name of output file */
- nco_bool *FL_LST_IN_FROM_STDIN, /* O [flg] fl_lst_in comes from stdin */
- const nco_bool FORCE_OVERWRITE) /* I [flg] Overwrite existing file, if any */
+ nco_bool *FL_LST_IN_FROM_STDIN) /* O [flg] fl_lst_in comes from stdin */
 {
   /* Purpose: Return filenames specified via stdin */
 
-  // const char fnc_nm[]="nco_fl_lst_stdin()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_fl_lst_stdin()"; /* [sng] Function name */
   
   char **fl_lst_in=NULL_CEWI; /* [sng] List of user-specified filenames */
 
-  //  int idx;
+  nco_bool STDIN_HAS_DATA=False; /* [flg] stdin contains data to read */
 
+  /* Does input filename await on stdin?
+     https://stackoverflow.com/questions/47320496/how-to-determine-if-stdin-is-empty
+     https://stackoverflow.com/questions/1312922/detect-if-stdin-is-a-terminal-or-pipe */
+  /* First must determine if stdin connects to a pipe or the terminal */
+  /* NB: getc() hangs until someone types if stdin is the terminal */
+  if(isatty(fileno(stdin))){
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that isatty() returns non-zer so stdin connects to a terminal. Will not check terminal for input filenames.\n",nco_prg_nm_get(),fnc_nm);
+  }else{
+    int chr_foo; /* [chr] Space to hold first character, if any, from stdin */
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that isatty() returns zero so stdin is not connected to a terminal. Will check for input filenames on pipe to stdin...\n",nco_prg_nm_get(),fnc_nm);
+    chr_foo=getc(stdin);
+    if(chr_foo == EOF){
+      if(feof(stdin)){
+	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns EOF and feof() emits non-zero return code so stdin is empty\n",nco_prg_nm_get(),fnc_nm);
+      }else{
+	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns EOF and feof() emits zero return code so stdin is screwy\n",nco_prg_nm_get(),fnc_nm);
+      } /* !feof() */
+    }{ /* !chr_foo */
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns '%c' (not EOF) so stdin connects to a pipe with input data. Replacing peek-ahead character and preparing to read input filenames from stdin.\n",nco_prg_nm_get(),fnc_nm,(unsigned char)chr_foo);
+      ungetc(chr_foo,stdin); // put back
+      STDIN_HAS_DATA=True;
+    } /* !chr_foo */
+  } /* !isatty() */
+    
+  if(STDIN_HAS_DATA){
+    char *fl_in=NULL; /* [sng] Input file name */
+    FILE *fp_in; /* [enm] Input file handle */
+    char *bfr_in; /* [sng] Temporary buffer for stdin filenames */
+    int cnv_nbr; /* [nbr] Number of scanf conversions performed this scan */
+    long fl_lst_in_lng; /* [nbr] Number of characters in input file name list */
+    char fmt_sng[10];
+    size_t fl_nm_lng; /* [nbr] Filename length */
+    
+    /* Initialize information to read stdin */
+    fl_lst_in_lng=0L;
+    
+    if(fl_in == NULL){
+      fp_in=stdin;
+    }else{
+      if((fp_in=fopen(fl_in,"r")) == NULL){
+	(void)fprintf(stderr,"%s: ERROR opening file intended to contain input filename list: %s\n",nco_prg_nm_get(),fl_in);
+	nco_exit(EXIT_FAILURE);
+      } /* !fp_in */
+    } /* !fl_in */
+
+      /* Allocate temporary space for input buffer */
+#define FL_NM_IN_MAX_LNG 256 /* [nbr] Maximum length of single input file name */
+#define FL_LST_IN_MAX_LNG 504576001 /* [nbr] Maximum length of input file list */
+    bfr_in=(char *)nco_malloc((FL_NM_IN_MAX_LNG+1L)*sizeof(char));
+    (void)sprintf(fmt_sng,"%%%ds\n",FL_NM_IN_MAX_LNG);
+    while(((cnv_nbr=fscanf(fp_in,fmt_sng,bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
+      if(cnv_nbr == 0){
+	(void)fprintf(stdout,"%s: INFO stdin contains no input or input not convertible to filename with fscanf(). HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",nco_prg_nm_get(),FL_NM_IN_MAX_LNG);
+      } /* !cnv_nbr */
+      fl_nm_lng=strlen(bfr_in);
+      fl_lst_in_lng+=fl_nm_lng;
+      (*fl_nbr)++;
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",nco_prg_nm_get(),*fl_nbr,bfr_in,(long int)fl_nm_lng);
+      /* Increment file number */
+      fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
+      fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
+    } /* !cnv_nbr */
+
+    /* Finished reading list. Close file resource if one was opened. */
+    if(fl_in != NULL && fp_in != NULL) (void)fclose(fp_in);
+
+    /* Free temporary buffer */
+    bfr_in=(char *)nco_free(bfr_in);
+      
+    if(fl_lst_in_lng >= FL_LST_IN_MAX_LNG){
+      (void)fprintf(stdout,"%s: ERROR Total length of fl_lst_in from stdin exceeds %d characters. Possible misuse of feature. If your input file list is really this long, post request to developer's forum (http://sf.net/p/nco/discussion/9831) to expand FL_LST_IN_MAX_LNG\n",nco_prg_nm_get(),FL_LST_IN_MAX_LNG);
+      nco_exit(EXIT_FAILURE);
+    } /* !fl_lst_in_lng */
+
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s read %d filename%s in %li characters from stdin\n",nco_prg_nm_get(),fnc_nm,*fl_nbr,*fl_nbr > 1 ? "s" : "",(long)fl_lst_in_lng);
+    if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING %s reports tried and failed to get input filenames from stdin\n",nco_prg_nm_get(),fnc_nm);
+
+  } /* !STDIN_HAS_DATA */
+  
   return fl_lst_in;
 } /* !nco_fl_lst_stdin() */
 
@@ -469,7 +547,6 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   const char fnc_nm[]="nco_fl_lst_mk()"; /* [sng] Function name */
 
   nco_bool FL_OUT_FROM_PSN_ARG=True; /* [flg] fl_out comes from positional argument */
-  nco_bool STDIN_HAS_DATA=False; /* [flg] stdin contains data to read */
 
   char **fl_lst_in=NULL_CEWI; /* [sng] List of user-specified filenames */
 
@@ -497,7 +574,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   if(!nco_is_mfo(nco_prg_id) && FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0){
     if(nco_prg_id == ncks || nco_prg_id == ncatted || nco_prg_id == ncrename){
       /* 20220923: Get stdin working for ncks first, then use this branch for all !MFO */
-      (void)fprintf(stdout,"%s: WARNING received %d positional input filenames; will search stdin for at least one input filename\n",nco_prg_nm_get(),psn_arg_nbr);
+      (void)fprintf(stdout,"%s: INFO received %d positional input filenames; will search stdin input filename\n",nco_prg_nm_get(),psn_arg_nbr);
     }else{
       /* Original code structure for !MFO */
       (void)fprintf(stdout,"%s: ERROR received %d positional input filenames; need at least one\n",nco_prg_nm_get(),psn_arg_nbr);
@@ -594,90 +671,14 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
-    /* Allocate pointer to list */
-    fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
-
-    /* Does input filename await on stdin?
-       https://stackoverflow.com/questions/47320496/how-to-determine-if-stdin-is-empty
-       https://stackoverflow.com/questions/1312922/detect-if-stdin-is-a-terminal-or-pipe */
-    /* First must determine if stdin connects to a pipe or the terminal */
-    /* NB: getc() hangs until someone types if stdin is the terminal */
-    if(isatty(fileno(stdin))){
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that isatty() returns non-zer so stdin connects to a terminal. Will not check terminal for input filenames.\n",nco_prg_nm_get(),fnc_nm);
-    }else{
-      int chr_foo; /* [chr] Space to hold first character, if any, from stdin */
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that isatty() returns zero so stdin is not connected to a terminal. Will check for input filenames on pipe to stdin...\n",nco_prg_nm_get(),fnc_nm);
-      chr_foo=getc(stdin);
-      if(chr_foo == EOF){
-	if(feof(stdin)){
-	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns EOF and feof() emits non-zero return code so stdin is empty\n",nco_prg_nm_get(),fnc_nm);
-	}else{
-	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns EOF and feof() emits zero return code so stdin is screwy\n",nco_prg_nm_get(),fnc_nm);
-	} /* !feof() */
-      }{ /* !chr_foo */
-	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns '%c' (not EOF) so stdin connects to a pipe with input data. Replacing peek-ahead character and preparing to read input filenames from stdin.\n",nco_prg_nm_get(),fnc_nm,(unsigned char)chr_foo);
-	ungetc(chr_foo,stdin); // put back
-	STDIN_HAS_DATA=True;
-      } /* !chr_foo */
-    } /* !isatty() */
+    /* Obtain input file list from stdin if it awaits there */
+    fl_lst_in=nco_fl_lst_stdin(argv,argc,arg_crr,fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
     
-    if(STDIN_HAS_DATA){
-      char *fl_in=NULL; /* [sng] Input file name */
-      FILE *fp_in; /* [enm] Input file handle */
-      char *bfr_in; /* [sng] Temporary buffer for stdin filenames */
-      int cnv_nbr; /* [nbr] Number of scanf conversions performed this scan */
-      long fl_lst_in_lng; /* [nbr] Number of characters in input file name list */
-      char fmt_sng[10];
-      size_t fl_nm_lng; /* [nbr] Filename length */
-      
-      /* Initialize information to read stdin */
-      fl_lst_in_lng=0L;
-      
-      if(fl_in == NULL){
-	fp_in=stdin;
-      }else{
-	if((fp_in=fopen(fl_in,"r")) == NULL){
-	  (void)fprintf(stderr,"%s: ERROR opening file intended to contain input filename list: %s\n",nco_prg_nm_get(),fl_in);
-	  nco_exit(EXIT_FAILURE);
-	} /* !fp_in */
-      } /* !fl_in */
-
-      /* Allocate temporary space for input buffer */
-#define FL_NM_IN_MAX_LNG 256 /* [nbr] Maximum length of single input file name */
-#define FL_LST_IN_MAX_LNG 504576001 /* [nbr] Maximum length of input file list */
-      bfr_in=(char *)nco_malloc((FL_NM_IN_MAX_LNG+1L)*sizeof(char));
-      (void)sprintf(fmt_sng,"%%%ds\n",FL_NM_IN_MAX_LNG);
-      while(((cnv_nbr=fscanf(fp_in,fmt_sng,bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
-	if(cnv_nbr == 0){
-	  (void)fprintf(stdout,"%s: INFO stdin contains no input or input not convertible to filename with fscanf(). HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",nco_prg_nm_get(),FL_NM_IN_MAX_LNG);
-	} /* !cnv_nbr */
-	fl_nm_lng=strlen(bfr_in);
-	fl_lst_in_lng+=fl_nm_lng;
-	(*fl_nbr)++;
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",nco_prg_nm_get(),*fl_nbr,bfr_in,(long int)fl_nm_lng);
-	/* Increment file number */
-	fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
-	fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
-      } /* !cnv_nbr */
-      
-      /* Finished reading list. Close file resource if one was opened. */
-      if(fl_in != NULL && fp_in != NULL) (void)fclose(fp_in);
-
-      /* Free temporary buffer */
-      bfr_in=(char *)nco_free(bfr_in);
-      
-      if(fl_lst_in_lng >= FL_LST_IN_MAX_LNG){
-	(void)fprintf(stdout,"%s: ERROR Total length of fl_lst_in from stdin exceeds %d characters. Possible misuse of feature. If your input file list is really this long, post request to developer's forum (http://sf.net/p/nco/discussion/9831) to expand FL_LST_IN_MAX_LNG\n",nco_prg_nm_get(),FL_LST_IN_MAX_LNG);
-	nco_exit(EXIT_FAILURE);
-      } /* !fl_lst_in_lng */
-
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s read %d filename%s in %li characters from stdin\n",nco_prg_nm_get(),fnc_nm,*fl_nbr,*fl_nbr > 1 ? "s" : "",(long)fl_lst_in_lng);
-      if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING %s reports tried and failed to get input filenames from stdin\n",nco_prg_nm_get(),fnc_nm);
-
-    } /* !STDIN_HAS_DATA */
-    
-    /* Read input filename from next positional argument */
-    if(!*FL_LST_IN_FROM_STDIN) fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+    if(!*FL_LST_IN_FROM_STDIN){
+      /* No input filename was found on stdin, so read input filename from next positional argument */
+      fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
+      fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+    } /* !FL_LST_IN_FROM_STDIN */
     
     /* Sanitize input list from stdin and from positional arguments */
     //    for(int fl_idx=0;fl_idx<*fl_nbr;fl_idx++) (void)nco_sng_sntz(fl_lst_in[fl_idx]);
@@ -821,7 +822,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     (void)fprintf(stdout,"%s: ERROR Must specify input filename\n",nco_prg_nm_get());
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
-  } /* end if */
+  } /* !fl_nbr */
 
   /* Sanitize input list from stdin and from positional arguments */
   //for(int fl_idx=0;fl_idx<*fl_nbr;fl_idx++) (void)nco_sng_sntz(fl_lst_in[fl_idx]);

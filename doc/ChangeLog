@@ -1,8 +1,10 @@
 2022-09-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha08 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha08: Backflow';git push
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha08: Sham Referendum';git push
 	git tag -a 5.1.1-alpha08 -m 'all: NSB->NESB; ncks bgr->btg, bgb->bgr, stdin, chk_map bln xcp; ncremap nco_idw fix';git push --tags
+
+	* Functionalize nco_fl_lst_stdin()
 
 	* ncremap replace ConvertSCRIPToExodus (no longer exists) by ConvertMeshoExodus
 

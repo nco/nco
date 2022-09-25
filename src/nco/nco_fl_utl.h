@@ -141,8 +141,7 @@ nco_fl_lst_stdin /* [fnc] Get input file list from stdin */
  int arg_crr, /* I [idx] Index of current argument */
  int * const fl_nbr, /* O [nbr] Number of files in input file list */
  char ** const fl_out, /* I/O [sng] Name of output file */
- nco_bool *FL_LST_IN_FROM_STDIN, /* O [flg] fl_lst_in comes from stdin */
- const nco_bool FORCE_OVERWRITE); /* I [flg] Overwrite existing file, if any */
+ nco_bool *FL_LST_IN_FROM_STDIN); /* O [flg] fl_lst_in comes from stdin */
   /* !nco_fl_lst_stdin() */
   
 char * /* O [sng] Filename of locally available file */
