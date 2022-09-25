@@ -2113,7 +2113,26 @@ nco_map_chk /* Map-file evaluation */
     if(strcasestr(att_val,"Bilinear")) nco_rgr_mth_typ=nco_rgr_mth_bilinear;
     if(strcasestr(att_val,"none")) nco_rgr_mth_typ=nco_rgr_mth_none;
   } /* !att_val */
-  if(nco_rgr_mth_typ == nco_rgr_mth_nil) (void)fprintf(stdout,"%s: INFO %s reports map global attribute %s = %s does not match SCRIP/ESMF conventions that support only values of \"Conservative\" and \"Bilinear\" for this attribute. Proceeding anyway...\n",nco_prg_nm_get(),fnc_nm,cnv_sng,att_val);
+  if(nco_rgr_mth_typ == nco_rgr_mth_nil){
+    /* Search for TR metadata, global attribute changed from no_conserve to noconserve in ~2022 */
+    if(att_val) att_val=(char *)nco_free(att_val);
+    if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
+    cnv_sng=strdup("no_conserve");
+    att_val=nco_char_att_get(in_id,NC_GLOBAL,cnv_sng);
+    if(att_val)
+      if(strcasestr(att_val,"true"))
+	nco_rgr_mth_typ=nco_rgr_mth_bilinear;
+  } /* !nco_rgr_mth_typ */
+  if(nco_rgr_mth_typ == nco_rgr_mth_nil){
+    /* Search for TR metadata, global attribute changed from no_conserve to noconserve in ~2022 */
+    if(att_val) att_val=(char *)nco_free(att_val);
+    if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
+    cnv_sng=strdup("noconserve");
+    att_val=nco_char_att_get(in_id,NC_GLOBAL,cnv_sng);
+    if(att_val)
+      if(strcasestr(att_val,"true"))
+	nco_rgr_mth_typ=nco_rgr_mth_bilinear;
+  } /* !nco_rgr_mth_typ */
   if(att_val) att_val=(char *)nco_free(att_val);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
   

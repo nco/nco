@@ -980,9 +980,9 @@ if [ ${vrs_prn} = 'Yes' ]; then
 	printf "Config: TempestRemap weight-generation command ${msh_exe_tps} not found\n"
     fi # !err
     if [ -n "${cmd_cnv_tps}" ]; then
-	printf "Config: TempestRemap SCRIP-to-Exodus conversion command ${cnv_exe_tps} found as ${cmd_cnv_tps}\n"
+	printf "Config: TempestRemap Mesh or SCRIP-to-Exodus conversion command ${cnv_exe_tps} found as ${cmd_cnv_tps}\n"
     else
-	printf "Config: TempestRemap SCRIP-to-Exodus conversion command ${cnv_exe_tps} not found\n"
+	printf "Config: TempestRemap Mesh SCRIP-to-Exodus conversion command ${cnv_exe_tps} not found\n"
     fi # !err
     exit 0
 fi # !vrs_prn
@@ -1141,7 +1141,7 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
 	printf "${spt_nm}: INFO Specifying the TempestRemap default algorithm '--alg_typ=tempest' without giving any additional options with -W (--wgt_opt) works only for the default TR configuration where both input and output grids are Finite Volume (FV) grids. The default TR algorithm is conservative and non-monotonic.\n"
     fi # !wgt_opt_usr    
 elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # alg_sng='mono'
-# NB: 20220922 TempestRemap began replacing the --mono* options with --method=mono*
+# NB: 20220922 TempestRemap began replacing the --mono* options with --method mono*
     cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     cnv_opt_dst="-B"
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --global_id GLOBAL_DOFS --method fv --monotonic 1 --global_id GLOBAL_ID"
