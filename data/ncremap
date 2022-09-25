@@ -444,7 +444,8 @@ cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
 clm_flg='No' # [flg] Invoked by ncclimo script
 cmp_sng='' # [sng] Compression string
 cnv_exe_mbt='mbconvert' # [sng] MOAB-Tempest SCRIP/Exodus conversion to H5M executable
-cnv_exe_tps='ConvertSCRIPToExodus' # [sng] TempestRemap SCRIP-to-Exodus conversion executable
+#cnv_exe_tps='ConvertSCRIPToExodus' # Command was deprecated in 2022
+cnv_exe_tps='ConvertMeshToExodus' # [sng] TempestRemap SCRIP and Mesh-to-Exodus conversion executable
 cnv_opt_e2m='-o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS' # [sng] Recommended options to mbconvert for (high-resolution) Exodus to MOAB grids https://acme-climate.atlassian.net/wiki/spaces/ED/pages/932380820/Offline+remapping+workflow+with+mbtempest
 d2f_flg='No' # [flg] Convert double-precision fields to single-precision
 d2f_opt='-M dbl_flt' # [sng] Option string to convert double-precision fields to single-precision

@@ -2102,6 +2102,21 @@ nco_map_chk /* Map-file evaluation */
   if(flg_frac_b_nrm) rcd=nco_fl_open(fl_in,NC_WRITE,&bfr_sz_hnt,&in_id); else rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
+  /* Read weight type, if it exists */
+  char *cnv_sng=NULL; /* [sng] Convention string (i.e., attribute name) */
+  char *att_val;
+  cnv_sng=strdup("map_method");
+  nco_rgr_mth_typ_enm nco_rgr_mth_typ=nco_rgr_mth_nil;
+  att_val=nco_char_att_get(in_id,NC_GLOBAL,cnv_sng);
+  if(att_val){
+    if(strcasestr(att_val,"Conservative")) nco_rgr_mth_typ=nco_rgr_mth_conservative;
+    if(strcasestr(att_val,"Bilinear")) nco_rgr_mth_typ=nco_rgr_mth_bilinear;
+    if(strcasestr(att_val,"none")) nco_rgr_mth_typ=nco_rgr_mth_none;
+  } /* !att_val */
+  if(nco_rgr_mth_typ == nco_rgr_mth_nil) (void)fprintf(stdout,"%s: INFO %s reports map global attribute %s = %s does not match SCRIP/ESMF conventions that support only values of \"Conservative\" and \"Bilinear\" for this attribute. Proceeding anyway...\n",nco_prg_nm_get(),fnc_nm,cnv_sng,att_val);
+  if(att_val) att_val=(char *)nco_free(att_val);
+  if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
+  
   /* Read all dimensions from file */
   (void)nco_inq(in_id,&dmn_in_nbr,(int *)NULL,(int *)NULL,(int *)NULL);
   dmn_in=(dmn_sct **)nco_malloc(dmn_in_nbr*sizeof(dmn_sct *));
@@ -2370,7 +2385,8 @@ nco_map_chk /* Map-file evaluation */
     nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,mask_a_val,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
     
     /* Ignore frac_a values when area_a or area_b are all invalid or zero */
-    if(!has_area_a || !has_area_b) fprintf(stdout,"HINT: The following frac_a metrics may be safely ignored because either or both area_a and area_b are everywhere undefined or zero\n");
+    if(!has_area_a || !has_area_b) fprintf(stdout,"INFO: The following frac_a metrics may be safely ignored because either or both area_a and area_b are everywhere undefined or zero\n");
+    if(nco_rgr_mth_typ == nco_rgr_mth_bilinear) fprintf(stdout,"INFO: Map-file metadata indicates these weights were produced by an intentionally non-conservative algorithm (e.g., bilinear). Scary-looking conservation metrics are therefore expected.\n");
     fprintf(stdout,"Conservation metrics (column-sums of area_b-weighted weights normalized by area_a) and errors\nPerfect metrics for global unmasked Grid B are avg = min = max = 1.0, mbs = rms = sdn = 0.0:\n");
     fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_a ? "Area-weighted m" : "M");
     fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Minimum in grid A cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
@@ -2395,7 +2411,7 @@ nco_map_chk /* Map-file evaluation */
     for(idx=0;idx<sz;idx++)
       if(var_area_a->val.dp[idx] == 0.0) cnt_zro++;
 
-    if(has_area_a && has_area_b)
+    if(has_area_a && has_area_b && nco_rgr_mth_typ != nco_rgr_mth_bilinear)
       if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_b_tiles_sphere && !mask_b_zro && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
     
     if(nco_dbg_lvl_get() >= nco_dbg_std){

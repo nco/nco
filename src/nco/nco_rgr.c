@@ -2470,7 +2470,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   char *att_cnv_val=NULL;
   char *att_gnr_val=NULL;
   char *att_ttl_val=NULL;
-  char *cnv_sng=NULL;
+  char *cnv_sng=NULL; /* [sng] Convention string (i.e., attribute name) */
   /* netCDF standard is uppercase Conventions, though some models user lowercase */
   char att_sng_Cnv[]="Conventions"; /* [sng] Unidata standard     string (uppercase) */
   char att_sng_cnv[]="conventions"; /* [sng] Unidata non-standard string (lowercase) */
@@ -2610,12 +2610,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(strcasestr(att_val,"Conservative")) nco_rgr_mth_typ=nco_rgr_mth_conservative;
     if(strcasestr(att_val,"Bilinear")) nco_rgr_mth_typ=nco_rgr_mth_bilinear;
     if(strcasestr(att_val,"none")) nco_rgr_mth_typ=nco_rgr_mth_none;
-    if(att_val) att_val=(char *)nco_free(att_val);
   }else{
     /* Tempest does not store a map_method attribute */
     if(nco_rgr_mpf_typ == nco_rgr_mpf_MBTR || nco_rgr_mpf_typ == nco_rgr_mpf_NCO || nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_unknown) nco_rgr_mth_typ=nco_rgr_mth_unknown;
-  } /* endif */
+  } /* !att_val */
   if(nco_rgr_mth_typ == nco_rgr_mth_nil) (void)fprintf(stdout,"%s: WARNING %s reports map global attribute %s = %s does not match SCRIP/ESMF conventions that support only values of \"Conservative\" and \"Bilinear\" for this attribute. Proceeding anyway...\n",nco_prg_nm_get(),fnc_nm,cnv_sng,att_val);
+  if(att_val) att_val=(char *)nco_free(att_val);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
 
   if(nco_dbg_lvl_get() >= nco_dbg_scl){

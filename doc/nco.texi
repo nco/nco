@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.1-alpha07
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 20 September 2022
+@set update-date 25 September 2022
 @set update-month September 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -25701,6 +25701,11 @@ We are working to make it geometrically exact for gridcells with
 small-circle edges, such as the latitude circles in @acronym{RLL}
 grids. 
 @end ignore
+@html
+<a name="moab"></a> <!-- http://nco.sf.net/nco.html#moab -->
+<a name="mbtr"></a> <!-- http://nco.sf.net/nco.html#mbtr -->
+<a name="MOAB"></a> <!-- http://nco.sf.net/nco.html#MOAB -->
+@end html
 @cindex @acronym{MOAB}
 @cindex TempestRemap
 @cindex Tempest2
