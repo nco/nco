@@ -2,13 +2,13 @@
 
 	* NCO 5.1.1-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha08: Backflow';git push
-	git tag -a 5.1.1-alpha08 -m 'all: NSB->NESB';git push --tags
+	git tag -a 5.1.1-alpha08 -m 'all: NSB->NESB; ncks bgr->btg, bgb->bgr, stdin, chk_map bln xcp; ncremap nco_idw fix';git push --tags
 
 	* ncremap replace ConvertSCRIPToExodus (no longer exists) by ConvertMeshoExodus
 
-	* map checker examins global attributes map_method, no_conserve, noconserve to determine whether weights are intentionally non-conservative
-
 	* ncks chk_map add INFO not scary WARNING when weights are intentionally non-conservative
+
+	* map checker examins global attributes map_method, no_conserve, noconserve to determine whether weights are intentionally non-conservative
 
 2022-09-23  Charlie Zender  <zender@uci.edu>
 
