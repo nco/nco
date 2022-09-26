@@ -1,3 +1,11 @@
+2022-09-26  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.1-alpha09 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha09: Turning 30';git push
+	git tag -a 5.1.1-alpha09 -m '';git push --tags
+
+	* Simplify nco_fl_lst_stdin() prototype
+
 2022-09-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha08 release procedure:

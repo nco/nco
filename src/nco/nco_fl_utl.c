@@ -427,10 +427,7 @@ nco_fl_info_get /* [fnc] Determine canonical filename and properties */
 
 char ** /* O [sng] List of user-specified filenames */
 nco_fl_lst_stdin /* [fnc] Get input file list from stdin */
-(CST_X_PTR_CST_PTR_CST_Y(char,argv), /* I [sng] Argument list */
- const int argc, /* I [nbr] Argument count */
- int arg_crr, /* I [idx] Index of current argument */
- int * const fl_nbr, /* O [nbr] Number of files in input file list */
+(int * const fl_nbr, /* O [nbr] Number of files in input file list */
  char ** const fl_out, /* I/O [sng] Name of output file */
  nco_bool *FL_LST_IN_FROM_STDIN) /* O [flg] fl_lst_in comes from stdin */
 {
@@ -570,7 +567,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
   /* Until 202209, all operators except multi-file operators had to have at least one positional argument
      In 202209, we shifted to accepting input filenames through stdin for all operators
-     This allows more flexible support for NCZarr and ncz2psx */
+     This allows more flexible support for NCZarr via ncz2psx */
   if(!nco_is_mfo(nco_prg_id) && FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0){
     if(nco_prg_id == ncks || nco_prg_id == ncatted || nco_prg_id == ncrename){
       /* 20220923: Get stdin working for ncks first, then use this branch for all !MFO */
@@ -672,10 +669,12 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     } /* end if */
 
     /* Obtain input file list from stdin if it awaits there */
-    fl_lst_in=nco_fl_lst_stdin(argv,argc,arg_crr,fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
+    fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
     
     if(!*FL_LST_IN_FROM_STDIN){
       /* No input filename was found on stdin, so read input filename from next positional argument */
+      assert(fl_lst_in == NULL);
+      assert(*fl_nbr == 0);
       fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
       fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
     } /* !FL_LST_IN_FROM_STDIN */
@@ -700,7 +699,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly three\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need exactly two (output file was specified with -o or --output option)\n",nco_prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
-    } /* end if */
+    } /* !psn_arg_nbr */
     break;
   case ncpdq:
   case ncwa:
@@ -709,7 +708,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly two\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need exactly one (output file was specified with -o or --output option)\n",nco_prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
-    } /* end if */
+    } /* !psn_arg_nbr */
     break;
   case ncra:
   case ncfe:
@@ -805,7 +804,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	nco_exit(EXIT_FAILURE);
       } /* !FL_LST_IN_FROM_STDIN */
 
-    } /* !psn_arg_nbr, Operators with multiple fl_in and required fl_out */
+    } /* !psn_arg_nbr */
     break;
   default: nco_dfl_case_prg_id_err(); break;
   } /* !nco_prg_id */
