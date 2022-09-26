@@ -441,11 +441,11 @@ nco_fl_lst_stdin /* [fnc] Get input file list from stdin */
 
   /* Does input filename await on stdin?
      https://stackoverflow.com/questions/47320496/how-to-determine-if-stdin-is-empty
-     https://stackoverflow.com/questions/1312922/detect-if-stdin-is-a-terminal-or-pipe */
-  /* First must determine if stdin connects to a pipe or the terminal */
-  /* NB: getc() hangs until someone types if stdin is the terminal */
+     https://stackoverflow.com/questions/1312922/detect-if-stdin-is-a-terminal-or-pipe
+     First must determine if stdin connects to a pipe or the terminal
+     NB: getc() hangs until someone types if stdin is the terminal */
   if(isatty(fileno(stdin))){
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that isatty() returns non-zer so stdin connects to a terminal. Will not check terminal for input filenames.\n",nco_prg_nm_get(),fnc_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that isatty() returns non-zero so stdin connects to a terminal. Will not check terminal for input filenames.\n",nco_prg_nm_get(),fnc_nm);
   }else{
     int chr_foo; /* [chr] Space to hold first character, if any, from stdin */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that isatty() returns zero so stdin is not connected to a terminal. Will check for input filenames on pipe to stdin...\n",nco_prg_nm_get(),fnc_nm);
@@ -457,7 +457,7 @@ nco_fl_lst_stdin /* [fnc] Get input file list from stdin */
 	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns EOF and feof() emits zero return code so stdin is screwy\n",nco_prg_nm_get(),fnc_nm);
       } /* !feof() */
     }{ /* !chr_foo */
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns '%c' (not EOF) so stdin connects to a pipe with input data. Replacing peek-ahead character and preparing to read input filenames from stdin.\n",nco_prg_nm_get(),fnc_nm,(unsigned char)chr_foo);
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports that getchar() returns '%c' (not EOF) so stdin connects to a pipe with input data just waiting to be gobbled-up. Replacing peek-ahead character and preparing to read input filenames from stdin...\n",nco_prg_nm_get(),fnc_nm,(unsigned char)chr_foo);
       ungetc(chr_foo,stdin); // put back
       STDIN_HAS_DATA=True;
     } /* !chr_foo */
@@ -514,7 +514,7 @@ nco_fl_lst_stdin /* [fnc] Get input file list from stdin */
     } /* !fl_lst_in_lng */
 
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s read %d filename%s in %li characters from stdin\n",nco_prg_nm_get(),fnc_nm,*fl_nbr,*fl_nbr > 1 ? "s" : "",(long)fl_lst_in_lng);
-    if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING %s reports tried and failed to get input filenames from stdin\n",nco_prg_nm_get(),fnc_nm);
+    if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING %s tried and failed to get input filenames from stdin\n",nco_prg_nm_get(),fnc_nm);
 
   } /* !STDIN_HAS_DATA */
   
@@ -567,18 +567,11 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
   /* Until 202209, all operators except multi-file operators had to have at least one positional argument
      In 202209, we shifted to accepting input filenames through stdin for all operators
-     This allows more flexible support for NCZarr via ncz2psx */
-  if(!nco_is_mfo(nco_prg_id) && FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0){
-    if(nco_prg_id == ncks || nco_prg_id == ncatted || nco_prg_id == ncrename){
-      /* 20220923: Get stdin working for ncks first, then use this branch for all !MFO */
-      (void)fprintf(stdout,"%s: INFO received %d positional input filenames; will search stdin input filename\n",nco_prg_nm_get(),psn_arg_nbr);
-    }else{
-      /* Original code structure for !MFO */
-      (void)fprintf(stdout,"%s: ERROR received %d positional input filenames; need at least one\n",nco_prg_nm_get(),psn_arg_nbr);
-      (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
-    } /* !ncks */
-  } /* !psn_arg_nbr */
+     This allows more flexible support for NCZarr via ncz2psx
+     And output filename can always be via the -o or --output option 
+     Thus having zero or one positional argument is legal so long as input filenames are on stdin */
+  if(nco_prg_id != ncap && ((FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1)))
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO received %d positional input filenames; will search stdin for input filenames\n",nco_prg_nm_get(),psn_arg_nbr);
 
   /* psn_arg_nbr can be 0 for ncap2 */
   if(nco_dbg_lvl_get() >= nco_dbg_std){
@@ -689,7 +682,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       //*fl_out=nco_sng_sntz(*fl_out);
     } /* !arg_crr */
 
-    /* return() here otherwise post-switch clause below overwrites fl_lst_in, fl_out */
+    /* return() here for ncks et al. otherwise post-switch clause below overwrites fl_lst_in, fl_out */
     return fl_lst_in;
     /* break; *//* NB: break after return in case statement causes SGI cc warning */
   case ncbo:
@@ -700,6 +693,11 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* !psn_arg_nbr */
+
+    /* Obtain input file list from stdin if it awaits there */
+    fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
+    if(*FL_LST_IN_FROM_STDIN) assert(*fl_nbr == 2);
+    
     break;
   case ncpdq:
   case ncwa:
@@ -709,6 +707,11 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* !psn_arg_nbr */
+
+    /* Obtain input file list from stdin if it awaits there */
+    fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
+    if(*FL_LST_IN_FROM_STDIN) assert(*fl_nbr == 1);
+
     break;
   case ncra:
   case ncfe:
@@ -720,82 +723,11 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
       /* If multi-file operator has no positional arguments for input files... */
       if(nco_is_mfo(nco_prg_id) && ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1))){
-	/* ...then try to obtain input files from stdin... */
-	char *fl_in=NULL; /* [sng] Input file name */
-	FILE *fp_in; /* [enm] Input file handle */
-	char *bfr_in; /* [sng] Temporary buffer for stdin filenames */
-	int cnv_nbr; /* [nbr] Number of scanf conversions performed this scan */
-	long fl_lst_in_lng; /* [nbr] Number of characters in input file name list */
-	char fmt_sng[10];
-	size_t fl_nm_lng; /* [nbr] Filename length */
 
-	if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG nco_fl_lst_mk() reports input files not specified as positional arguments. Attempting to read from stdin instead...\n",nco_prg_nm_get());
-
-	/* Initialize information to read stdin */
-	fl_lst_in_lng=0L; /* [nbr] Number of characters in input file name list */
-
-	if(fl_in == NULL){
-	  fp_in=stdin; /* [enm] Input file handle */
-	}else{
-	  /* 20220827: This branch is apparently never executed
-	     However, its logic appears correct, i.e., NCO could allow specification of input files via a list in a supplied file named by fl_in */
-	  if((fp_in=fopen(fl_in,"r")) == NULL){
-	    (void)fprintf(stderr,"%s: ERROR opening file containing input filename list %s\n",nco_prg_nm_get(),fl_in);
-	    nco_exit(EXIT_FAILURE);
-	  } /* !fp_in */
-	} /* !fl_in */
-
-	/* Allocate temporary space for input buffer */
-#define FL_NM_IN_MAX_LNG 256 /* [nbr] Maximum length of single input file name */
-#define FL_LST_IN_MAX_LNG 504576001 /* [nbr] Maximum length of input file list */
-	/* 20121207: 10 MB per request of S. McGinnis 20121130
-	   20140711: 50 MB per request of Christine Smit 20140711 for 30 years of hourly data files each 192 characters long */
-	bfr_in=(char *)nco_malloc((FL_NM_IN_MAX_LNG+1L)*sizeof(char));
-	(void)sprintf(fmt_sng,"%%%ds\n",FL_NM_IN_MAX_LNG);
-
-	/* Assume filenames are whitespace-separated
-	   Format string "%256s\n" tells scanf() to:
-	   1. Skip any initial whitespace
-	   2. Read first block of non-whitespace characters (up to 256 of them) into buffer
-	   3. \n allows entries to be separated by carriage returns */
-	while(((cnv_nbr=fscanf(fp_in,fmt_sng,bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
-	  if(cnv_nbr == 0){
-	    (void)fprintf(stdout,"%s: ERROR stdin input not convertible to filename. HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",nco_prg_nm_get(),FL_NM_IN_MAX_LNG);
-	    nco_exit(EXIT_FAILURE);
-	  } /* endif err */
-	  fl_nm_lng=strlen(bfr_in);
-	  fl_lst_in_lng+=fl_nm_lng;
-	  (*fl_nbr)++;
-	  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",nco_prg_nm_get(),*fl_nbr,bfr_in,(long int)fl_nm_lng);
-	  /* Increment file number */
-	  fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
-	  fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
-	} /* !cnv_nbr */
-
-	/* Finished reading list. Close file resource if one was opened. */
-	if(fl_in != NULL && fp_in != NULL) (void)fclose(fp_in);
-
-#if 0
-	/* 20040621: Following flusher does no harm on Linux
-	   However, AIX gets caught in an infinite loop here */
-	/* Discard characters remaining in stdin */
-	char chr_foo;
-	while((chr_foo=getchar()) != '\n' && chr_foo != EOF){
-	  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read and discarded \'%c\'\n",nco_prg_nm_get(),chr_foo);
-	} /* !chr_foo */
-#endif /* !0 */
-
-	/* Free temporary buffer */
-	bfr_in=(char *)nco_free(bfr_in);
-
-	if(fl_lst_in_lng >= FL_LST_IN_MAX_LNG){
-	  (void)fprintf(stdout,"%s: ERROR Total length of fl_lst_in from stdin exceeds %d characters. Possible misuse of feature. If your input file list is really this long, post request to developer's forum (http://sf.net/p/nco/discussion/9831) to expand FL_LST_IN_MAX_LNG\n",nco_prg_nm_get(),FL_LST_IN_MAX_LNG);
-	  nco_exit(EXIT_FAILURE);
-	} /* !fl_lst_in_lng */
-
-	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",nco_prg_nm_get(),*fl_nbr,(long)fl_lst_in_lng);
-	if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried and failed to get input filenames from stdin\n",nco_prg_nm_get());
-
+	/* Obtain input file list from stdin if it awaits there */
+	fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
+	if(*FL_LST_IN_FROM_STDIN) assert(*fl_nbr >= 1);
+	
       } /* !nco_is_mfo() multi-file operator without positional arguments for fl_in */
 
       if(!*FL_LST_IN_FROM_STDIN){

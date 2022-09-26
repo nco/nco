@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha09: Turning 30';git push
 	git tag -a 5.1.1-alpha09 -m '';git push --tags
 
+	* Adopt nco_fl_lst_stdin() for all operators except ncap2
+
 	* Simplify nco_fl_lst_stdin() prototype
 
 2022-09-25  Charlie Zender  <zender@uci.edu>
