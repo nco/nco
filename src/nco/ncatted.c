@@ -166,7 +166,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rrt-:";
+  const char * const opt_sht_lst="Aa:D:Hhl:Oo:p:Rrt-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -189,13 +189,14 @@ main(int argc,char **argv)
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
 
-  nco_bool FL_RTR_RMT_LCN;
+  nco_bool FL_LST_IN_APPEND=True; /* [flg] Option H */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FL_OUT_NEW=False;
+  nco_bool FL_RTR_RMT_LCN;
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
-  nco_bool FL_OUT_NEW=False;
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
@@ -250,6 +251,8 @@ main(int argc,char **argv)
     {"dbg_lvl",required_argument,0,'D'},
     {"debug",required_argument,0,'D'},
     {"nco_dbg_lvl",required_argument,0,'D'},
+    {"fl_lst_in",no_argument,0,'H'},
+    {"file_list",no_argument,0,'H'},
     {"history",no_argument,0,'h'},
     {"hst",no_argument,0,'h'},
     {"local",required_argument,0,'l'},
@@ -337,6 +340,9 @@ main(int argc,char **argv)
     case 'D': /* Debugging level. Default is 0. */
       nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      break;
+    case 'H': /* Toggle writing input file list attribute */
+      FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;

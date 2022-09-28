@@ -252,7 +252,7 @@ main(int argc,char **argv)
   nco_bool FLG_ILV=False; /* [flg] Interleave Output */
   nco_bool FLG_MRO=False; /* [flg] Multi-Record Output */
   nco_bool FLG_MSO=False; /* [flg] Multi-Subcycle Output */
-  nco_bool FL_LST_IN_APPEND=True; /* Option H */
+  nco_bool FL_LST_IN_APPEND=True; /* [flg] Option H */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FL_RTR_RMT_LCN;
   nco_bool FORCE_APPEND=False; /* Option A */

@@ -128,7 +128,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="34567Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
+  const char * const opt_sht_lst="34567Aa:B:bCcD:d:Fg:G:HhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -202,6 +202,7 @@ main(int argc,char **argv)
   nco_bool EXTRACT_CLL_MSR=True; /* [flg] Extract cell_measures variables */
   nco_bool EXTRACT_FRM_TRM=True; /* [flg] Extract formula_terms variables */
   nco_bool FL_RTR_RMT_LCN;
+  nco_bool FL_LST_IN_APPEND=True; /* [flg] Option H */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
@@ -368,6 +369,8 @@ main(int argc,char **argv)
     {"dmn",required_argument,0,'d'},
     {"fortran",no_argument,0,'F'},
     {"ftn",no_argument,0,'F'},
+    {"fl_lst_in",no_argument,0,'H'},
+    {"file_list",no_argument,0,'H'},
     {"history",no_argument,0,'h'},
     {"hst",no_argument,0,'h'},
     {"wgt_msk_crd_var",no_argument,0,'I'},
@@ -597,6 +600,9 @@ main(int argc,char **argv)
       (void)nco_rx_comma2hash(optarg_lcl);
       grp_lst_in=nco_lst_prs_2D(optarg_lcl,",",&grp_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
+      break;
+    case 'H': /* Toggle writing input file list attribute */
+      FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;

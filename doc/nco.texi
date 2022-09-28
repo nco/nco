@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.1-alpha08
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 25 September 2022
+@set update-date 28 September 2022
 @set update-month September 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -12842,7 +12842,7 @@ also overrides automatically appending the
 @cindex @code{--fl_lst_in}
 @cindex @code{--file_list}
 @cartouche
-Availability: @command{nces}, @command{ncecat}, @command{ncra}, @command{ncrcat}@*
+Availability: All binary executables@*
 Short options: @samp{-H}@*
 Long options: @samp{--fl_lst_in}, @samp{--file_list}@*
 @end cartouche
@@ -12852,14 +12852,14 @@ these names via pipes, encodings, or argument transfer programs
 When these methods are used, the input file list is not explicitly
 passed on the command line.
 This results in a loss of information since the @code{history}
-attribute no longer contains the exact command by which the file
-was created.
+attribute no longer contains the complete input information from which
+the file was created.
 
-@acronym{NCO} solves this dilemma by archiving input file list
-attributes.
-When the input file list to a multi-file operator is specified
-via @code{stdin}, the operator, by default, attaches two global
-attributes to any file they create or modify.
+@acronym{NCO} solves this dilemma by archiving an attribute that
+contains the input file list.
+When the input file list to an operator is specified via @code{stdin},
+the operator, by default, attaches two global attributes to any file(s)
+they create or modify. 
 The @code{nco_input_file_number} global attribute contains the number of
 input files, and @code{nco_input_file_list} contains the file names,
 specified as standard input to the multi-file operator. 
@@ -13621,7 +13621,7 @@ Prior to this, @command{ncap2} required users to specify a dummy
 @var{input-file} even if it was not used to construct
 @var{output-file}.
 Input files are always read by @command{ncap2}, and dummy input
-files were read though not used for anything nor modified.
+files are read though not used for anything nor modified.
 Now 
 @example
 @verbatim
@@ -25778,7 +25778,7 @@ ncremap -m map.nc in.nc out.nc
 @end example
 This causes @command{ncremap} to automatically invoke TempestRemap with
 the boutique options 
-@samp{--in_type fv --in_np 1 --out_type fv --out_np 1 --correct_areas}
+@samp{--in_type fv --in_np 1 --out_type fv --out_np 1}
 that are recommended by @acronym{E3SM} for conservative and monotone  
 remapping of fluxes.
 Invoke @acronym{MOAB} to compute these weights by adding the
@@ -25871,22 +25871,22 @@ Always use the map-checker to test maps before use, e.g., with
 
 @table @asis
 @item @code{se2fv_flx} (synonyms @code{mono_se2fv}, @code{conservative_monotone_se2fv})
-@acronym{TR} options: @samp{--in_type cgll --in_np 4 --out_type fv --mono --correct_areas}@*
+@acronym{TR} options: @samp{--in_type cgll --in_np 4 --out_type fv --mono}@*
 @acronym{MOAB} options: @samp{--method cgll --order 4 --global_id GLOBAL_DOFS --method fv --monotonic 1 --global_id GLOBAL_ID}
 @item @code{fv2se_flx} (synonyms @code{monotr_fv2se}, @code{conservative_monotone_fv2se}),
-@acronym{TR} options: @samp{--in_type cgll --in_np 4 --out_type fv --mono --correct_areas}.
+@acronym{TR} options: @samp{--in_type cgll --in_np 4 --out_type fv --mono}.
 For @code{fv2se_flx} the weights are generated with options identical to
 @code{se2fv_flx}, and then the transpose of the resulting weight matrix
 is employed.@*
 @acronym{MOAB} options: @samp{--method cgll --order 4 --method fv --monotonic 1}
 @item @code{se2fv_stt} (synonyms @code{highorder_se2fv}, @code{accurate_conservative_nonmonotone_se2fv}),
-@acronym{TR} options: @samp{--in_type cgll --in_np 4 --out_type fv --correct_areas}@*
+@acronym{TR} options: @samp{--in_type cgll --in_np 4 --out_type fv}@*
 @acronym{MOAB} options: @samp{--method cgll --order 4 --method fv}
 @item @code{fv2se_stt} (synonyms @code{highorder_fv2se}, @code{accurate_conservative_nonmonotone_fv2se}),
 @acronym{TR} options: @samp{--in_type fv --in_np 2 --out_type cgll --out_np 4}@*
 @acronym{MOAB} options: @samp{--method fv --order 2 --method cgll --order 4}
 @item @code{se2fv_alt} (synonyms @code{intbilin_se2fv}, @code{accurate_monotone_nonconservative_se2fv}),
-@acronym{TR} options: @samp{--in_type cgll --in_np 4 --out_type fv --mono3 --noconserve --correct_areas}@*
+@acronym{TR} options: @samp{--in_type cgll --in_np 4 --out_type fv --method mono3 --noconserve}@*
 @acronym{MOAB} options: @samp{--method cgll --order 4 --method fv --monotonic 3 --noconserve}
 @item @code{fv2se_alt} (synonyms @code{mono_fv2se}, @code{conservative_monotone_fv2se_alt}),
 @acronym{TR} options: @samp{--in_type fv --in_np 1 --out_type cgll --out_np 4 --mono}@*
@@ -25895,13 +25895,13 @@ is employed.@*
 @acronym{TR} options: @samp{--in_type cgll --in_np 4 --out_type cgll --out_np 4 --mono}@*
 @acronym{MOAB} options: @samp{--method cgll --order 4 --method cgll --order 4 --monotonic 1}
 @item @code{fv2fv} (synonyms @code{rll2rll}),
-@acronym{TR} options: @samp{--in_type fv --in_np 2 --out_type fv --correct_areas}@*
+@acronym{TR} options: @samp{--in_type fv --in_np 2 --out_type fv}@*
 @acronym{MOAB} options: @samp{--method fv --order 2 --method fv}
 @item @code{fv2fv_flx} (synonyms @code{fv2fv_mono}, @code{conservative_monotone_fv2fv}),
-@acronym{TR} options: @samp{--in_type fv --in_np 1 --out_type fv --out_np 1 --correct_areas}@*
+@acronym{TR} options: @samp{--in_type fv --in_np 1 --out_type fv --out_np 1}@*
 @acronym{MOAB} options: @samp{--method fv --order 1 --method fv --order 1}
 @item @code{fv2fv_stt} (synonyms @code{fv2fv_highorder}, @code{accurate_conservative_nonmonotone_fv2fv}),
-@acronym{TR} options: @samp{--in_type fv --in_np 2 --out_type fv --correct_areas}@*
+@acronym{TR} options: @samp{--in_type fv --in_np 2 --out_type fv}@*
 @acronym{MOAB} options: @samp{--method fv --order 2 --method fv}
 @end table
 Thus these boutique options are specialized for @acronym{SE} grids with

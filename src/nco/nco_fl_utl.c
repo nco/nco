@@ -606,27 +606,29 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     /* ncap2 always has one input file, whether dummy or real */
     fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 
-    /* Two regular file arguments */
     if(FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 2){
+      /* Two regular file arguments */
       fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
       *fl_out=(char *)strdup(argv[arg_crr]);
-    } /* !FL_OUT_FROM_PSN_ARG */
-
-    /* Two files, output file from --output option argument */
-    if(!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1){
+    }else if(!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1){
+      /* Two files, output file from --output option argument */
       fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+    }else{
+      /* One input filename could be awaiting on stdin */
+      /* Obtain input file list from stdin if it awaits there */
+      fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
     } /* !FL_OUT_FROM_PSN_ARG */
     
-    /* ncap2 was called with a single filename argument
-       If that file exists, treat it as both input and output file
-       Otherwise, treat it as output file and create dummy input file */
-    if((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1)){
+    if(!FL_LST_IN_FROM_STDIN && ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1))){
+      /* ncap2 was called with a single positional filename argument and no stdin arguments
+	 If that single file exists, treat it as both input and output file
+	 Otherwise, treat it as output file and a create dummy input file (that will be ignored) */
 
       rcd_stt=stat(argv[arg_crr],&stat_sct);
 
       if(rcd_stt == 0 && !FORCE_OVERWRITE){
 	/* Single file exists, use it as input file */
-	fl_lst_in[(*fl_nbr)++] = (char *) strdup(argv[arg_crr++]);
+	fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
       }else if((rcd_stt == -1) || (rcd_stt == 0 && FORCE_OVERWRITE)){
 	if((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == -1)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 failed: %s does not exist. Will assume %s will be brand-new output file and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
 	if((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == 0)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 succeeded: %s exists but FORCE_OVERWRITE is true so will overwrite existing %s and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
@@ -634,17 +636,17 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	/* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
 	fl_dmm_lng=strlen(nco_prg_nm_get())+strlen(tmp_sng_1)+8UL+1UL;
 	/* NB: Calling routine has responsibility to free() this memory */
-	fl_dmm=(char *) nco_malloc(fl_dmm_lng*sizeof(char));
+	fl_dmm=(char *)nco_malloc(fl_dmm_lng*sizeof(char));
 	(void)sprintf(fl_dmm,"%s%s%ld",nco_prg_nm_get(),tmp_sng_1,(long)pid);
 	(void) nco_fl_dmm_mk(fl_dmm);
-	fl_lst_in[(*fl_nbr)++] = fl_dmm;
+	fl_lst_in[(*fl_nbr)++]=fl_dmm;
       } /* !rcd_stt */
 
       if(FL_OUT_FROM_PSN_ARG && (rcd_stt != 0 || FORCE_OVERWRITE)){
-	*fl_out = (char *) strdup(argv[arg_crr]);
+	*fl_out=(char *)strdup(argv[arg_crr]);
 	//*fl_out=nco_sng_sntz(*fl_out);
       } /* !FL_OUT_FROM_PSN_ARG */
-    } /* !FL_OUT_FROM_PSN_ARG */
+    } /* !!FL_LST_IN_FROM_STDIN */
 
     if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s reports psn_arg_nbr = %d, psn_arg_fst = %d, arg_crr = %d,argc = %d, fl_lst_in[0]=%s, *fl_nbr=%d, *fl_out = %s\n",nco_prg_nm_get(),fnc_nm,psn_arg_nbr,psn_arg_fst,arg_crr,argc,fl_lst_in[0],*fl_nbr,*fl_out);
 

@@ -96,7 +96,7 @@ main(int argc,char **argv)
   nco_bool EXTRACT_CLL_MSR=True; /* [flg] Extract cell_measures variables */
   nco_bool EXTRACT_FRM_TRM=True; /* [flg] Extract formula_terms variables */
   nco_bool FL_RTR_RMT_LCN;
-  nco_bool FL_LST_IN_APPEND=True; /* Option H */
+  nco_bool FL_LST_IN_APPEND=True; /* [flg] Option H */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */

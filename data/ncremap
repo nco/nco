@@ -1130,6 +1130,8 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     # 20171108 'tempest' invokes TempestRemap with no automatic options, suitable for RLL re-mapping?
     # 20171108 TempestRemap boutique options based on particular remapping type
     # 20200221 Add --correct_areas to many TR maps as per Transition to TR page
+    # 20220928 Remove --correct_areas since TR 2.1.12 made this default and eliminated option
+    # 20220928 Replace --mono3 by --method mono3 since TR 2.1.14, 2.1.15 changed option name
     # https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids
     # alg_sng in comments is for E3SM naming convention map_src_to_dst_${alg_sng}.${dt_sng}.nc
     cnv_opt_src="-B"
@@ -1145,21 +1147,21 @@ elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_ty
     cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     cnv_opt_dst="-B"
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --global_id GLOBAL_DOFS --method fv --monotonic 1 --global_id GLOBAL_ID"
-    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono --correct_areas"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono"
     alg_opt='se2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2fv' ]; then # alg_sng='highorder'
     cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     cnv_opt_dst="-B"
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv"
-    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --correct_areas"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv"
     alg_opt='se2fv_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_se2fv' ]; then # alg_sng='intbilin'
     cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     cnv_opt_dst="-B"
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonic 3 --noconserve"
-    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono3 --noconserve --correct_areas"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --method mono3 --noconserve"
     alg_opt='se2fv_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'conservative_monotone_se2se' ]; then # alg_sng='se2se'
@@ -1175,7 +1177,7 @@ elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_
     cnv_opt_src="-B"
     cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonic 1"
-    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono --correct_areas"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono"
     alg_opt='fv2se_flx'
     wgt_typ='tempest'
     trn_map='Yes'
@@ -1211,7 +1213,7 @@ elif [ ${alg_typ} = 'fv2fv_flx' ] || [ ${alg_typ} = 'fv2fv_mono' ] || [ ${alg_ty
     # 20200221: Add --out_np 1 per (new?) settings in on Transition to TR page
     # Classic cell-integrated piecewise constant map similar to aave and nco_con
     wgt_opt_mbt='--method fv --order 1 --method fv --order 1'
-    wgt_opt_tps='--in_type fv --in_np 1 --out_type fv --out_np 1 --correct_areas'
+    wgt_opt_tps='--in_type fv --in_np 1 --out_type fv --out_np 1'
     alg_opt='fv2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2fv' ]; then # alg_sng='highorder'
@@ -1220,7 +1222,7 @@ elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${a
     # 20191115: Add per recommendation of Paul Ullrich
     # --in_np 2 means all nearest neighbor cells will be used for higher order reconstruction of source data, which is then integrated over target cell. Unlike SE case, no mass matrix is used for FV target grids, and thus --out_np is ignored (and will always be 1 internally).
     wgt_opt_mbt='--method fv --order 2 --method fv'
-    wgt_opt_tps='--in_type fv --in_np 2 --out_type fv --correct_areas'
+    wgt_opt_tps='--in_type fv --in_np 2 --out_type fv'
     alg_opt='fv2fv_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'nco_con' ] || [ ${alg_typ} = 'nco_cns' ] || [ ${alg_typ} = 'nco_conserve' ] || [ ${alg_typ} = 'nco' ]; then 

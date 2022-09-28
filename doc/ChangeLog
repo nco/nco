@@ -1,8 +1,20 @@
-2022-09-26  Charlie Zender  <zender@uci.edu>
+2022-09-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha09 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha09: Turning 30';git push
-	git tag -a 5.1.1-alpha09 -m '';git push --tags
+	git tag -a 5.1.1-alpha09 -m 'all: FL_LST_IN_APPEND';git push --tags
+
+	* All operators support FL_LST_IN_APPEND by default and -H to turn it off
+
+	* ncremap remove --correct_areas since TR 2.1.12 made this default and eliminated option
+
+	* ncremap replace --mono3 by --method mono3 since TR 2.1.14, 2.1.15 changed option name
+
+2022-09-27  Charlie Zender  <zender@uci.edu>
+
+	* ncks: append input files from stdin to output file
+
+2022-09-26  Charlie Zender  <zender@uci.edu>
 
 	* Adopt nco_fl_lst_stdin() for all operators except ncap2
 

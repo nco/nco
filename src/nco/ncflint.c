@@ -96,6 +96,7 @@ main(int argc,char **argv)
   nco_bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION;
   nco_bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
   nco_bool FIX_REC_CRD=False; /* [flg] Do not interpolate/multiply record coordinate variables */
+  nco_bool FL_LST_IN_APPEND=True; /* [flg] Option H */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
@@ -142,7 +143,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="34567ACcD:d:Fg:G:hi:L:l:NOo:p:rRt:v:X:xw:-:";
+  const char * const opt_sht_lst="34567ACcD:d:Fg:G:Hhi:L:l:NOo:p:rRt:v:X:xw:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -341,6 +342,8 @@ main(int argc,char **argv)
     {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
     {"grp",required_argument,0,'g'},
     {"group",required_argument,0,'g'},
+    {"fl_lst_in",no_argument,0,'H'},
+    {"file_list",no_argument,0,'H'},
     {"history",no_argument,0,'h'},
     {"hst",no_argument,0,'h'},
     {"interpolate",required_argument,0,'i'},
@@ -532,6 +535,9 @@ main(int argc,char **argv)
       (void)nco_rx_comma2hash(optarg_lcl);
       grp_lst_in=nco_lst_prs_2D(optarg_lcl,",",&grp_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
+      break;
+    case 'H': /* Toggle writing input file list attribute */
+      FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;

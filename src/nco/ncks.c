@@ -251,8 +251,9 @@ main(int argc,char **argv)
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   nco_bool EXTRACT_CLL_MSR=True; /* [flg] Extract cell_measures variables */
   nco_bool EXTRACT_FRM_TRM=True; /* [flg] Extract formula_terms variables */
-  nco_bool FL_RTR_RMT_LCN;
+  nco_bool FL_LST_IN_APPEND=True; /* [flg] Option H */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FL_RTR_RMT_LCN;
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_NOCLOBBER=False; /* Option no-clobber */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
@@ -559,6 +560,8 @@ main(int argc,char **argv)
     {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
     {"grp",required_argument,0,'g'},
     {"group",required_argument,0,'g'},
+    {"fl_lst_in",no_argument,0,'H'},
+    {"file_list",no_argument,0,'H'},
     {"history",no_argument,0,'h'},
     {"hst",no_argument,0,'h'},
     {"hieronymus",no_argument,0,'H'}, /* fxm: need better mnemonic for -H */
@@ -1318,6 +1321,9 @@ main(int argc,char **argv)
 	if(prc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,prc_nbr);
 #endif /* !ENABLE_MPI */
       
+      /* Add input file list global attribute */
+      if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
+
       /* Turn-off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
       

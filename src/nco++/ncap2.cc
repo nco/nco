@@ -130,7 +130,7 @@ main(int argc,char **argv)
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
-  const char * const opt_sht_lst="34567ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
+  const char * const opt_sht_lst="34567ACcD:FfHhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
   const char fnc_nm[]="main()";
 
@@ -198,14 +198,15 @@ main(int argc,char **argv)
   nco_bool ATT_PROPAGATE=True;        
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  nco_bool FL_RTR_RMT_LCN;
+  nco_bool FL_LST_IN_APPEND=True; /* [flg] Option H */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FL_OUT_NEW=False;
+  nco_bool FL_RTR_RMT_LCN;
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
-  nco_bool FL_OUT_NEW=False;
   nco_bool PRN_FNC_TBL=False; /* Option f */  
   nco_bool PROCESS_ALL_VARS=True; /* Option v */  
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
@@ -327,6 +328,8 @@ main(int argc,char **argv)
     {"fnc_tbl",no_argument,0,'f'},
     {"prn_fnc_tbl",no_argument,0,'f'},
     {"ftn",no_argument,0,'F'},
+    {"fl_lst_in",no_argument,0,'H'},
+    {"file_list",no_argument,0,'H'},
     {"history",no_argument,0,'h'},
     {"hst",no_argument,0,'h'},
     {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
@@ -493,6 +496,9 @@ main(int argc,char **argv)
       break;
     case 'f': /* Print function table */
       PRN_FNC_TBL=True;
+      break;
+    case 'H': /* Toggle writing input file list attribute */
+      FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
