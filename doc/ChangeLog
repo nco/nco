@@ -1,8 +1,10 @@
 2022-09-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha09 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha09: Turning 30';git push
-	git tag -a 5.1.1-alpha09 -m 'all: FL_LST_IN_APPEND';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha09: Taylor Hawkins Tribute';git push
+	git tag -a 5.1.1-alpha09 -m 'all: FL_LST_IN_APPEND; ncremap: correct_areas, mono3';git push --tags
+
+	* Exit gracefully instead of attempting to read empty positional arguments
 
 	* Document -H support
 
