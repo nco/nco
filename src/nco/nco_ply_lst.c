@@ -605,7 +605,6 @@ int *pl_cnt_vrl_ret){
   double lcl_dp_x[VP_MAX]={0};
   double lcl_dp_y[VP_MAX]={0};
 
-
   kd_box size;
 
   poly_sct ** pl_lst_vrl=NULL_CEWI;
@@ -616,10 +615,8 @@ int *pl_cnt_vrl_ret){
 
   printf("INFO - entered function nco_poly_mk_vrl\n");
 
-
-/* start main loop over input polygons */
-  for(idx=0 ; idx<pl_cnt_in ;idx++ )
-  {
+  /* start main loop over input polygons */
+  for(idx=0;idx < pl_cnt_in;idx++){
     int cnt_vrl=0;
     int cnt_vrl_on=0;
 
@@ -667,42 +664,27 @@ int *pl_cnt_vrl_ret){
         pl_cnt_vrl++;
         cnt_vrl_on++;
 
-        if(nco_poly_is_convex(pl_vrl) == False )
-        {
+        if(nco_poly_is_convex(pl_vrl) == False){
           fprintf(stderr,"%s: %s vrl polygon convex=0  vrl ,in convex=%d ,out convex=%d\n", nco_prg_nm_get(), fnc_nm, nco_poly_is_convex(pl_lst_in[idx]), nco_poly_is_convex(pl_out) );
           nco_poly_prn(pl_vrl, 2);
           nco_poly_prn(pl_lst_in[idx], 2);
           nco_poly_prn(pl_out, 2);
-
         }
 
         //fprintf(stderr,"Overlap polygon to follow\n");
         //nco_poly_prn(2, pl_vrl);
 
       }
-
-
     }
 
-    if( nco_dbg_lvl_get() >= nco_dbg_dev )
-      (void) fprintf(stderr, "%s: total overlaps=%d for polygon %lu - potential overlaps=%d actual overlaps=%d\n", nco_prg_nm_get(), pl_cnt_vrl,  idx, cnt_vrl, cnt_vrl_on);
-
-
+    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void) fprintf(stderr, "%s: total overlaps=%d for polygon %lu - potential overlaps=%d actual overlaps=%d\n", nco_prg_nm_get(), pl_cnt_vrl,  idx, cnt_vrl, cnt_vrl_on);
   }
-
-
-
-
   list = (KDPriority *)nco_free(list);
 
   /* return size of list */
   *pl_cnt_vrl_ret=pl_cnt_vrl;
-
-
   return pl_lst_vrl;
-
-}
-
+} /* !nco_poly_lst_mk_vrl_crt() */
 
 void **
 nco_poly_lst_mk_vrl(  /* create overlap mesh  for sph polygons */
@@ -1139,7 +1121,7 @@ int *pl_cnt_vrl_ret){
   /* REMEMBER the void type can be a wgt_sct** array or a poly_sct** array
    * wgt_sct is a subset of poly_sct - with simple members */
   return void_lst_vrl;
-}
+} /* !nco_poly_lst_mk_vrl() */
 
 /* check areas - nb WARNING modifies area in pl_lst_in and pl_lst_out */
 void nco_poly_lst_chk(
@@ -1194,7 +1176,7 @@ int pl_cnt_vrl)
       fprintf(stderr, "src_id=%d area=%.10f\n", pl_lst_out[idx]->src_id, pl_lst_out[idx]->area );
 
    return;
-}
+} /* !nco_poly_lst_chk() */
 
 poly_sct **
 nco_poly_lst_chk_dbg(
@@ -1270,13 +1252,10 @@ int *pl_cnt_dbg) /* size of output dbg grid */
   *pl_cnt_dbg=pl_nbr_dbg;
 
   return pl_lst_dbg;
-}
-
+} /* !nco_poly_lst_chk_dbg() */
 
 /* stub function */
 #ifdef TEMP
-
-
 wgt_sct **
 nco_poly_lst_mk_idw_sph(
 rgr_sct *const rgr_nfo,
@@ -1289,7 +1268,6 @@ int *wgt_cnt_bln_ret)
 {
 
 }
-
 #endif
 
 wgt_sct **
@@ -1544,8 +1522,6 @@ int *wgt_cnt_bln_ret) {
 
   return wgt_lst_idw;
 } /* !nco_poly_lst_mk_idw_sph() */
-
-
 
 void nco_poly_lst_ctr_add(
 poly_sct **pl_lst,

@@ -1316,14 +1316,13 @@ main(int argc,char **argv)
       if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in,in_id,out_id);
       if(gaa_nbr > 0) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
       if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
+      if(HISTORY_APPEND && FL_LST_IN_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
+
 #ifdef ENABLE_MPI
       if(prc_rnk == rnk_mgr)
 	if(prc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,prc_nbr);
 #endif /* !ENABLE_MPI */
       
-      /* Add input file list global attribute */
-      if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
-
       /* Turn-off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
       

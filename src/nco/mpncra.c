@@ -745,7 +745,7 @@ main(int argc,char **argv)
     if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
     
     /* Add input file list global attribute */
-    if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
+    if(HISTORY_APPEND && FL_LST_IN_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
     
 #ifdef ENABLE_MPI
     /* Initialize MPI task information */

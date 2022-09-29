@@ -1,10 +1,14 @@
-2022-09-28  Charlie Zender  <zender@uci.edu>
+2022-09-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha09 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha09: Turning 30';git push
 	git tag -a 5.1.1-alpha09 -m 'all: FL_LST_IN_APPEND';git push --tags
 
+	* Document -H support
+
 	* All operators support FL_LST_IN_APPEND by default and -H to turn it off
+
+2022-09-28  Charlie Zender  <zender@uci.edu>
 
 	* ncremap remove --correct_areas since TR 2.1.12 made this default and eliminated option
 

@@ -1164,7 +1164,7 @@ nco_usg_prn(void)
     if(prg_lcl == ncks) (void)fprintf(stdout,"-u, --units\t\tToggle printing units of variables, if any\n");
     if(prg_lcl == ncecat) (void)fprintf(stdout,"-u, --ulm_nm, rcd_nm\tNew unlimited (record) dimension name\n");
   } /* end if */
-  if(strstr(opt_sng,"--uio")) (void)fprintf(stdout,"    --uio, --share_all\tUnbuffered I/O to read/write netCDF3 file(s)\n");
+  if(strstr(opt_sng,"--uio")) (void)fprintf(stdout,"    --uio, share_all\tUnbuffered I/O to read/write netCDF3 file(s)\n");
   if(strstr(opt_sng,"--unn")) (void)fprintf(stdout,"    --unn, union\tSelect union of specified groups and variables\n");
   if(strstr(opt_sng,"[-V")) (void)fprintf(stdout,"-V, --var_val\t\tPrint variable values only\n");
   if(strstr(opt_sng,"[-v")){
@@ -1197,7 +1197,7 @@ nco_usg_prn(void)
   }else{
     if(nco_is_mfo(prg_lcl)) (void)fprintf(stdout,"in.nc [...]\t\tInput file names\n"); else (void)fprintf(stdout,"in.nc\t\t\tInput file name\n");
   } /* endif in.nc */
-  if(strstr(opt_sng,"[out.nc]")) (void)fprintf(stdout,"\t\t\tOutput file name (or use -o switch)\n");
+  if(strstr(opt_sng,"[out.nc]")) (void)fprintf(stdout,"\t\t\tOutput file name (or use -o option)\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
 
   /* Free the space holding option string */

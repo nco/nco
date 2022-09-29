@@ -648,7 +648,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       } /* !FL_OUT_FROM_PSN_ARG */
     } /* !!FL_LST_IN_FROM_STDIN */
 
-    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s reports psn_arg_nbr = %d, psn_arg_fst = %d, arg_crr = %d,argc = %d, fl_lst_in[0]=%s, *fl_nbr=%d, *fl_out = %s\n",nco_prg_nm_get(),fnc_nm,psn_arg_nbr,psn_arg_fst,arg_crr,argc,fl_lst_in[0],*fl_nbr,*fl_out);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s reports psn_arg_nbr = %d, psn_arg_fst = %d, arg_crr = %d, argc = %d, fl_lst_in[0]=%s, *fl_nbr=%d, *fl_out = %s\n",nco_prg_nm_get(),fnc_nm,psn_arg_nbr,psn_arg_fst,arg_crr,argc,fl_lst_in[0],*fl_nbr,*fl_out);
 
     return fl_lst_in;
     /* break; *//* NB: break after return in case statement causes SGI cc warning */
@@ -658,10 +658,10 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   case ncrename:
     /* Operators with single fl_in and optional fl_out */
     if(psn_arg_nbr > 2-psn_arg_fst){
-      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than two\nHINT: Eliminate extra whitespace, such as spaces in comma-separated lists, from command\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need no more than one (output file was specified with -o or --output option)\nHINT: Eliminate extra whitespace, such as spaces in comma-separated lists, from command\n",nco_prg_nm_get(),psn_arg_nbr);
+      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d input filenames; need no more than two\nHINT: Eliminate extra whitespace, such as spaces in comma-separated lists, from command\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need no more than one (output file was specified with -o or --output option)\nHINT: Eliminate extra whitespace, such as spaces in comma-separated lists, from command\n",nco_prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
-    } /* end if */
+    } /* !psn_arg_nbr */
 
     /* Obtain input file list from stdin if it awaits there */
     fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
@@ -671,7 +671,13 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       assert(fl_lst_in == NULL);
       assert(*fl_nbr == 0);
       fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
-      fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+      if(arg_crr < argc){
+	fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+      }else{
+	(void)fprintf(stdout,"%s: ERROR %s received no input filenames via command line positional arguments or stdin; need at least one input filename\nHINT: Ensure options and filename(s) are whitespace-separated. Will now print usage instructions then exit()...\n\n",nco_prg_nm_get(),fnc_nm);
+	(void)nco_usg_prn();
+	nco_exit(EXIT_FAILURE);
+      } /* !arg_crr */
     } /* !FL_LST_IN_FROM_STDIN */
     
     /* Sanitize input list from stdin and from positional arguments */
@@ -748,11 +754,17 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     /* Fill-in input file list from positional arguments */
     /* fxm: valgrind unfree'd memory in nco_fl_lst_mk() (nco_fl_utl.c:264) */
     fl_lst_in=(char **)nco_malloc((psn_arg_nbr-1+psn_arg_fst)*sizeof(char *));
-    while(arg_crr < argc-1+psn_arg_fst) fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+    if(arg_crr < argc){
+      while(arg_crr < argc-1+psn_arg_fst) fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+    }else{
+      (void)fprintf(stdout,"%s: ERROR %s need %s input filename%s via command-line positional argument%s or stdin; received none\nHINT: Ensure options and filename(s) are whitespace-separated. Will now print usage instructions then exit()...\n\n",nco_prg_nm_get(),fnc_nm,(nco_prg_id == ncbo || nco_prg_id == ncflint) ? "two" : "one",(nco_prg_id == ncbo || nco_prg_id == ncflint) ? "s" : "",(nco_prg_id == ncbo || nco_prg_id == ncflint) ? "s" : "");
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+    } /* !arg_crr */
   } /* FL_LST_IN_FROM_STDIN */
 
   if(*fl_nbr == 0){
-    (void)fprintf(stdout,"%s: ERROR Must specify input filename\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Must specify input filename(s)\n",nco_prg_nm_get());
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* !fl_nbr */
