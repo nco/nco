@@ -980,9 +980,9 @@ if [ ${vrs_prn} = 'Yes' ]; then
 	printf "Config: TempestRemap weight-generation command ${msh_exe_tps} not found\n"
     fi # !err
     if [ -n "${cmd_cnv_tps}" ]; then
-	printf "Config: TempestRemap Mesh or SCRIP-to-Exodus conversion command ${cnv_exe_tps} found as ${cmd_cnv_tps}\n"
+	printf "Config: TempestRemap Mesh or SCRIP to Exodus conversion command ${cnv_exe_tps} found as ${cmd_cnv_tps}\n"
     else
-	printf "Config: TempestRemap Mesh SCRIP-to-Exodus conversion command ${cnv_exe_tps} not found\n"
+	printf "Config: TempestRemap Mesh or SCRIP to Exodus conversion command ${cnv_exe_tps} not found\n"
     fi # !err
     exit 0
 fi # !vrs_prn

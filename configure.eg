@@ -386,21 +386,40 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Sysadmin upgrade request: support@lcrc.anl.gov
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
-# Personal recipe last modified: 20201221 (use gcc netCDF 4.7.4)
-# Personal recipe last used successfully: 20220712
+# Personal recipe last modified: 20221004 (use Anaconda)
+# Personal recipe last used successfully: 20221004
 cd ~/nco;/bin/rm -f *.foo;make distclean
 module load gcc/9.2.0-ugetvbp
 module load openmpi/4.0.4-hpcx-hghvhj5
+# Default as of 20210924 is to build with Anaconda
+ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+# Older method:
 # module load netcdf-c/4.7.4-a4uk6zy (only for non-anaconda builds)
 # ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy' UDUNITS2_PATH=${HOME} ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-# Default as of 20210924 is to build with Anaconda
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
+
+# 20210104 Compy with Intel compilers
+# Personal recipe last modified: 20220919
+# Personal recipe last used successfully: 20220919
+source /share/apps/intel/2020/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64 # Compy
+module purge
+module load intel/20.0.0
+module load intelmpi/2020 # Required for ncclimo/ncremap in MPI-mode
+module load netcdf/4.6.3
+#module load mkl/2020 # Does not hurt but not necessary?
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64 -limf -lirc' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # works
+ANTLR_ROOT=${HOME} CC='icx -static-intel -qopenmp-link=static' CXX='icx -static-intel -qopenmp-link=static' LDFLAGS='-L/usr/lib64 -L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # fails with ld: cannot find -lm but -lm is not necessary and removing it fixes the issue
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on compy
 # https://acme-climate.atlassian.net/wiki/spaces/ED/pages/928973795/CompyMcNodeFace+-+E3SM+RGMA+ESMD+dedicated+system+at+PNNL
@@ -423,24 +442,6 @@ make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-
-# 20210104 Compy with Intel compilers: works except scripts do not find/load Intel libiomp5.so.0
-# Personal recipe last modified: 20220919
-# Personal recipe last used successfully: 20220919
-source /share/apps/intel/2020/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64 # Compy
-module purge
-module load intel/20.0.0
-module load intelmpi/2020 # Required for ncclimo/ncremap in MPI-mode
-module load netcdf/4.6.3
-#module load mkl/2020 # Does not hurt but not necessary?
-cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64 -limf -lirc' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # works
-ANTLR_ROOT=${HOME} CC='icx -static-intel -qopenmp-link=static' CXX='icx -static-intel -qopenmp-link=static' LDFLAGS='-L/usr/lib64 -L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # fails with ld: cannot find -lm but -lm is not necessary and removing it fixes the issue
-/bin/cp -f config.log nco.config.log.foo
-/bin/cp -f libtool nco.libtool.foo
-make clean;make > nco.make.foo 2>&1
-make check >> nco.make.foo 2>&1
-make install >> nco.make.foo 2>&1
 
 # 20150901: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cooley:
 # Sysadmin upgrade request: support@alcf.anl.gov # ALCF Maintainer = 
@@ -467,6 +468,27 @@ unset NETCDF_LIB
 unset NETCDF_ROOT
 module load cray-netcdf/4.7.4.0
 ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man 
+
+# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori with Intel:
+# Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
+# Latest ticket to build NCO: INC0118469 on 20180413
+# Latest sysadmin-compiled module usage: module load nco/5.0.1 # 20220701
+# Personal recipe last modified: 20220701
+# Personal recipe last used successfully: 20220712
+module purge # After login, purge before load or risk this: "error while loading shared libraries: libiomp5.so: cannot open shared object file: No such file or directory"
+module load PrgEnv-intel
+module load cray-netcdf
+module load gsl/2.7
+module load antlr/2.7.7-intel
+module load udunits
+cd ~/nco;/bin/rm -f *.foo;make distclean
+ANTLR_ROOT='/global/common/software/nersc/cori-2022q1/spack/cray-cnl7-haswell/antlr-2.7.7-qqi5ofz' CC='icc' CXX='icpc' NETCDF_ROOT="${CRAY_NETCDF_PREFIX}" UDUNITS2_PATH="${UDUNITS_DIR}" ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori with GNU:
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
@@ -496,27 +518,6 @@ module swap PrgEnv-intel PrgEnv-gnu
 module load gcc # Activate GCC8
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_INC='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
-/bin/cp -f config.log nco.config.log.foo
-/bin/cp -f libtool nco.libtool.foo
-make clean;make > nco.make.foo 2>&1
-make check >> nco.make.foo 2>&1
-make install >> nco.make.foo 2>&1
-scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-
-# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori with Intel:
-# Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
-# Latest ticket to build NCO: INC0118469 on 20180413
-# Latest sysadmin-compiled module usage: module load nco/5.0.1 # 20220701
-# Personal recipe last modified: 20220701
-# Personal recipe last used successfully: 20220712
-module purge # After login, purge before load or risk this: "error while loading shared libraries: libiomp5.so: cannot open shared object file: No such file or directory"
-module load PrgEnv-intel
-module load cray-netcdf
-module load gsl/2.7
-module load antlr/2.7.7-intel
-module load udunits
-cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT='/global/common/software/nersc/cori-2022q1/spack/cray-cnl7-haswell/antlr-2.7.7-qqi5ofz' CC='icc' CXX='icpc' NETCDF_ROOT="${CRAY_NETCDF_PREFIX}" UDUNITS2_PATH="${UDUNITS_DIR}" ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1

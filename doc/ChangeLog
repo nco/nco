@@ -1,3 +1,11 @@
+2022-10-05  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.1-alpha10 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha10: Jinx Drives Solo';git push
+	git tag -a 5.1.1-alpha10 -m '';git push --tags
+
+	* Restrict available synonyms for MALI to mali, pending renaming of Land Ice model
+
 2022-09-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha09 release procedure:

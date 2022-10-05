@@ -20392,12 +20392,12 @@ data.
 
 @samp{-m mpasocean}, (or @samp{-m mpaso} for short),
 @samp{-m mpasseaice}, (or @samp{-m mpassi} for short), or
-@samp{-m mpaslandice} (or @samp{-m mpasli} for short), like this: 
+@samp{-m mali}, like this: 
 @example
 @verbatim
 ncclimo -m mpaso  -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
 ncclimo -m mpassi -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-SI
-ncclimo -m mpasli -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-LI
+ncclimo -m mali   -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-LI
 @end verbatim
 @end example
 
@@ -27062,8 +27062,8 @@ Valid procedure types include @samp{airs} for @acronym{NASA AIRS} satellite data
 @samp{elm} or @samp{clm} for @acronym{DOE ELM} and @acronym{NCAR CLM} model data,
 @samp{cice} for @acronym{CICE} ice model data (must be on 2D grids),
 @samp{cism} for @acronym{NCAR CISM} land ice model data,
-@samp{mpascice}, @samp{mpasseaice}, @samp{mpas-seaice}, or @samp{mpassi} for @acronym{MPAS} sea-ice model data,
-@samp{mpaso} or @samp{mpas-ocean} for @acronym{MPAS} ocean model data,
+@samp{mpascice}, @samp{mpasseaice}, or @samp{mpassi} for @acronym{MPAS} sea-ice model data,
+@samp{mpaso} or @samp{mpasocean} for @acronym{MPAS} ocean model data,
 @samp{mod04} for @w{Level 2} @acronym{MODIS} @acronym{MOD04} product,
 @samp{mwf} for making all weight-files for a pair of grids, 
 @samp{sgs} for datasets containing sub-gridscale (@acronym{SGS}) data
