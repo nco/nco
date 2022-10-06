@@ -1,8 +1,14 @@
-2022-10-05  Charlie Zender  <zender@uci.edu>
+2022-10-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha10 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha10: Jinx Drives Solo';git push
 	git tag -a 5.1.1-alpha10 -m '';git push --tags
+
+	* nco_grd_nfr() print names of missing MPAS mesh variables needed to create mesh
+
+	* Update Chrysalis paths for NCO_PATH_OVERRIDE
+
+2022-10-05  Charlie Zender  <zender@uci.edu>
 
 	* Restrict available synonyms for MALI to mali, pending renaming of Land Ice model
 

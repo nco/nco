@@ -8133,16 +8133,17 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !bnd_nbr */
     if(!strcmp(bnd_dmn_nm,"maxEdges")){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Unstructured grid has dimension \"%s\" which indicates an MPAS grid. Will attempt to locate other MPAS information (dimension nVertices and variables nEdgesOnCell, verticesOnCell, lonVertex, and latVertex) to construct SCRIP-compliant bounds variables...\n",nco_prg_nm_get(),bnd_dmn_nm);
-      if((rcd=nco_inq_varid_flg(in_id,"nEdgesOnCell",&edg_nbr_cll_id)) == NC_NOERR) edg_nbr_cll_nm=strdup("nEdgesOnCell");
-      if((rcd=nco_inq_varid_flg(in_id,"verticesOnCell",&vrt_cll_id)) == NC_NOERR) vrt_cll_nm=strdup("verticesOnCell");
-      if((rcd=nco_inq_varid_flg(in_id,"lonVertex",&vrt_lon_id)) == NC_NOERR) vrt_lon_nm=strdup("lonVertex");
-      if((rcd=nco_inq_varid_flg(in_id,"latVertex",&vrt_lat_id)) == NC_NOERR) vrt_lat_nm=strdup("latVertex");
+      if((rcd=nco_inq_varid_flg(in_id,"nEdgesOnCell",&edg_nbr_cll_id)) == NC_NOERR) edg_nbr_cll_nm=strdup("nEdgesOnCell"); else (void)fprintf(stdout,"%s: INFO Unable to find MPAS edges-on-cell variable (searched for \"nEdgesOnCell\").\n",nco_prg_nm_get());
+      if((rcd=nco_inq_varid_flg(in_id,"verticesOnCell",&vrt_cll_id)) == NC_NOERR) vrt_cll_nm=strdup("verticesOnCell"); else (void)fprintf(stdout,"%s: INFO Unable to find MPAS vertices-on-cell variable (searched for \"verticesOnCell\").\n",nco_prg_nm_get());
+      if((rcd=nco_inq_varid_flg(in_id,"lonVertex",&vrt_lon_id)) == NC_NOERR) vrt_lon_nm=strdup("lonVertex"); else (void)fprintf(stdout,"%s: INFO Unable to find MPAS vertices longitude variable (searched for \"lonVertex\").\n",nco_prg_nm_get());
+      if((rcd=nco_inq_varid_flg(in_id,"latVertex",&vrt_lat_id)) == NC_NOERR) vrt_lat_nm=strdup("latVertex"); else (void)fprintf(stdout,"%s: INFO Unable to find MPAS vertices latitude variable (searched for \"latVertex\").\n",nco_prg_nm_get());
 
       if(dmn_id_vrt != NC_MIN_INT) rcd+=nco_inq_dimlen(in_id,dmn_id_vrt,&vrt_nbr);
       if(vrt_dmn_nm && edg_nbr_cll_nm && vrt_cll_nm && vrt_lon_nm && vrt_lat_nm){
 	flg_1D_mpas_bnd=True;
 	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Found all MPAS information needed to construct SCRIP-compliant bounds variables.\n",nco_prg_nm_get());
       }else{
+	if(!vrt_dmn_nm) (void)fprintf(stdout,"%s: INFO Unable to find MPAS vertices dimension (searched for \"nVertices\").\n",nco_prg_nm_get());
 	(void)fprintf(stdout,"%s: INFO Unable to find all MPAS information needed to construct SCRIP-compliant bounds variables. Will not write bounds coordinates. This will degrade usefulness of SCRIP file for regridding schemes (e.g., conservative) that require cell boundaries.\n",nco_prg_nm_get());
 	(void)fprintf(stdout,"%s: HINT Often MPAS restart files contain the required bounds variables (nEdgesOnCell, verticesOnCell, lonVertex, latVertex) that normal MPAS data files lack. Try inferring the SCRIP grid from a restart or initial condition file instead of from a time-varying output dataset.\n",nco_prg_nm_get());
 	flg_wrt_crn=False;
