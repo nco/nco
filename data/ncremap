@@ -1613,7 +1613,7 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 #	pdq_opt='-a Time,nVertInterfaces,nCells' # 20210226: MALI
 #	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,ONE,TWO,nEdges,nCells' # MPAS LI,O,SI and depth
 #	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20190806: MPAS LI,O,SI,depth and BGC in one swell foop
-	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,maxEdges,nEdges,nCells' # 20210226: MPAS LI,O,SI,depth and new SI BGC in one swell foop
+	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,nSnowLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20210226: MPAS LI,O,SI,depth and new SI BGC in one swell foop
     fi # !pdq_opt && pdq_flg
     if [ -n "${rnr_thr}" ]; then 
 	# rnr_thr='off' in MPAS mode turns-off renormalization
@@ -1819,17 +1819,22 @@ if [ -n "${sgs_frc}" ] || [ -n "${sgs_frc_usr}" ] || [ "${prc_typ}" = 'sgs' ]; t
     prc_sgs='Yes'
 fi # !sgs
 if [ "${prc_sgs}" = 'Yes' ]; then
-    # 20190924: Back-compatibility with NCO 4.8.1-
-    if [ -n "${sgs_frc_usr}" ]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='landfrac'; fi
+    if [ -n "${sgs_frc_usr}" ]; then sgs_frc="${sgs_frc_usr}"; fi
     if [ -z "${sgs_msk}" ]; then 
 	sgs_msk='landmask' # 20190924: Back-compatibility with NCO 4.8.1-
     fi # !sgs_msk
-    if [ -n "${sgs_frc}" ]; then
-	rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
-	if [ -n "${sgs_msk}" ]; then
-	    rgr_opt="${rgr_opt}#sgs_msk_nm=${sgs_msk}"
-	fi # !sgs_msk
+    if [ -z "${sgs_frc}" ]; then
+	echo "ERROR: SGS processing invoked without specifying sgs_frc variable name"
+	echo "HINT: Specify sgs_frc variable name with --sgs_frc=var_name"
+	exit 1
     fi # !sgs_frc
+    rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
+    if [ -n "${sgs_msk}" ]; then
+	rgr_opt="${rgr_opt}#sgs_msk_nm=${sgs_msk}"
+    fi # !sgs_msk
+    if [ -n "${sgs_nrm}" ]; then
+	rgr_opt="${rgr_opt}#sgs_nrm=${sgs_nrm}"
+    fi # !sgs_nrm
 fi # !prc_sgs
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"

@@ -1,8 +1,16 @@
-2022-10-06  Charlie Zender  <zender@uci.edu>
+2022-10-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha10 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha10: Jinx Drives Solo';git push
 	git tag -a 5.1.1-alpha10 -m '';git push --tags
+
+	* ncremap add nSnowLayers dimension to pdq_opt for MPAS-SI
+
+	* ncremap fix sgs_frc option handling that 5.1.0 broke for MPAS-SI, CICE
+
+	* ncremap pass sgs_nrm for CICE and not others
+
+2022-10-06  Charlie Zender  <zender@uci.edu>
 
 	* nco_grd_nfr() print names of missing MPAS mesh variables needed to create mesh
 
