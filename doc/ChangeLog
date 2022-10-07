@@ -2,7 +2,7 @@
 
 	* NCO 5.1.1-alpha10 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha10: Jinx Drives Solo';git push
-	git tag -a 5.1.1-alpha10 -m '';git push --tags
+	git tag -a 5.1.1-alpha10 -m 'ncremap nSnowLayers, sgs_frc prs, sgs_nrm prs, Chrysalis paths';git push --tags
 
 	* ncremap add nSnowLayers dimension to pdq_opt for MPAS-SI
 
