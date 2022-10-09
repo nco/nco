@@ -617,7 +617,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
     } /* !FL_OUT_FROM_PSN_ARG */
 
-    if(*fl_nbr == 1 && !fl_out){
+    if(*fl_nbr == 1 && !*fl_out){
       /* ncap2 was called with a single positional or stdin filename and without and explicit -o output filename
 	 The input filename is already stored in the input file list
 	 If the input file exists, treat it as both input and output file
