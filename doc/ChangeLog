@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha11: Tangentially Speaking';git push
 	git tag -a 5.1.1-alpha11 -m '';git push --tags
 
+	* 
+
 	* Check stdin for input filenames as last resort not first resort
 
 	* ncks/ncrename/ncatted require -o for output file if stdin for	input (except for MFOs, for backward compatibility)
