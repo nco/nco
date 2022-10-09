@@ -2,9 +2,9 @@
 
 	* NCO 5.1.1-alpha11 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha11: Tangentially Speaking';git push
-	git tag -a 5.1.1-alpha11 -m '';git push --tags
+	git tag -a 5.1.1-alpha11 -m 'all: stdin requires -o for fl_out; ncap2: stdin reorg';git push --tags
 
-	* 
+	* Re-organize ncap2 filename handling to treat stdin equivalent to positional in all cases
 
 	* Check stdin for input filenames as last resort not first resort
 

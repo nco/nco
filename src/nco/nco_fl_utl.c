@@ -603,7 +603,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       nco_exit(EXIT_FAILURE);
     } /* !psn_arg_nbr */
     
-    (void)fprintf(stdout,"%s: DEBUG %s reports FL_OUT_FROM_PSN_ARG = %d, psn_arg_nbr = %d, arg_crr = %d, fl_nbr = %d\n",nco_prg_nm_get(),fnc_nm,FL_OUT_FROM_PSN_ARG,psn_arg_nbr,arg_crr,*fl_nbr);
+    //(void)fprintf(stdout,"%s: DEBUG %s reports FL_OUT_FROM_PSN_ARG = %d, psn_arg_nbr = %d, arg_crr = %d, fl_nbr = %d\n",nco_prg_nm_get(),fnc_nm,FL_OUT_FROM_PSN_ARG,psn_arg_nbr,arg_crr,*fl_nbr);
 
     /* ncap2 always has one input file, whether dummy or real */
     fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
