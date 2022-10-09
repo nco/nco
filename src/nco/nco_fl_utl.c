@@ -620,7 +620,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
     } /* !FL_OUT_FROM_PSN_ARG */
     
-    if(!FL_LST_IN_FROM_STDIN && ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1))){
+    if(!*FL_LST_IN_FROM_STDIN && ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1))){
       /* ncap2 was called with a single positional filename argument and no stdin arguments
 	 If that single file exists, treat it as both input and output file
 	 Otherwise, treat it as output file and a create dummy input file (that will be ignored) */

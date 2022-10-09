@@ -6,7 +6,7 @@
 
 	* Check stdin for input filenames as last resort not first resort
 
-	* ncks/ncrename/ncatted require -o for output file if stdin for input
+	* ncks/ncrename/ncatted require -o for output file if stdin for	input (except for MFOs, for backward compatibility)
 
 2022-10-07  Charlie Zender  <zender@uci.edu>
 
