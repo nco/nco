@@ -901,7 +901,7 @@ if [ "${std_chk}" = 'Yes' ]; then
 	if [ ${bch_slr} = 'Yes' ]; then
 	    if [ -p /dev/stdin ]; then
 		# SLURM batch jobs cause -p to return true for stdin pipes
-		# When -p returns false we do not know whether output was redirectd
+		# When -p returns false we do not know whether output was redirected
 		# User must explicitly indicate use of redirection with --stdin option
 		# Stdin pipes in SLURM batch jobs unambiguously cause -p to return true
 		inp_std='Yes'

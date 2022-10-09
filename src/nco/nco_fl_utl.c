@@ -514,7 +514,7 @@ nco_fl_lst_stdin /* [fnc] Get input file list from stdin */
     } /* !fl_lst_in_lng */
 
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s read %d filename%s in %li characters from stdin\n",nco_prg_nm_get(),fnc_nm,*fl_nbr,*fl_nbr > 1 ? "s" : "",(long)fl_lst_in_lng);
-    if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING %s tried and failed to get input filenames from stdin\n",nco_prg_nm_get(),fnc_nm);
+    if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING %s tried and failed to get input filename(s) from stdin\n",nco_prg_nm_get(),fnc_nm);
 
   } /* !STDIN_HAS_DATA */
   
@@ -614,7 +614,6 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       /* Two files, output file from --output option argument */
       fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
     }else{
-      /* One input filename could be awaiting on stdin */
       /* Obtain input file list from stdin if it awaits there */
       fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
     } /* !FL_OUT_FROM_PSN_ARG */
@@ -663,6 +662,24 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       nco_exit(EXIT_FAILURE);
     } /* !psn_arg_nbr */
 
+    //(void)fprintf(stdout,"%s: DEBUG %s reports FL_OUT_FROM_PSN_ARG = %d, psn_arg_nbr = %d, arg_crr = %d, fl_nbr = %d\n",nco_prg_nm_get(),fnc_nm,FL_OUT_FROM_PSN_ARG,psn_arg_nbr,arg_crr,*fl_nbr);
+
+    if(psn_arg_nbr >= 1){
+      /* Always treat first positional argument as input file */
+      fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
+      fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+      if(FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 2) *fl_out=(char *)strdup(argv[arg_crr]);
+    }else{
+      /* Obtain input file list from stdin if it awaits there */
+      fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
+    } /* !FL_OUT_FROM_PSN_ARG */
+    if(*fl_nbr == 0){
+      (void)fprintf(stdout,"%s: ERROR %s received no input filenames via command line positional argument or stdin; need at least one input filename\nHINT: Ensure options and filename(s) are whitespace-separated. Will now print usage instructions then exit()...\n\n",nco_prg_nm_get(),fnc_nm);
+	(void)nco_usg_prn();
+	nco_exit(EXIT_FAILURE);
+    } /* !fl_nbr */
+    
+#if 0    
     /* Obtain input file list from stdin if it awaits there */
     fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
     
@@ -689,7 +706,8 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       *fl_out=(char *)strdup(argv[arg_crr]);
       //*fl_out=nco_sng_sntz(*fl_out);
     } /* !arg_crr */
-
+#endif /* !0 */
+    
     /* return() here for ncks et al. otherwise post-switch clause below overwrites fl_lst_in, fl_out */
     return fl_lst_in;
     /* break; *//* NB: break after return in case statement causes SGI cc warning */
@@ -749,7 +767,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   default: nco_dfl_case_prg_id_err(); break;
   } /* !nco_prg_id */
 
-  /* If input files are required but have not been obtained yet from stdin */
+  /* If input files are required and have not been obtained yet from stdin */
   if(!*FL_LST_IN_FROM_STDIN){
     /* Fill-in input file list from positional arguments */
     /* fxm: valgrind unfree'd memory in nco_fl_lst_mk() (nco_fl_utl.c:264) */

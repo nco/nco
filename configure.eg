@@ -310,7 +310,7 @@ make install
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20210817 (search e3sm-u_latest)
-# Personal recipe last used successfully: 20220712
+# Personal recipe last used successfully: 20221007
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
 export PATH=${MY_BIN_DIR}:'/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
