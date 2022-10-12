@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha12: Deadpool2';git push
 	git tag -a 5.1.1-alpha12 -m '';git push --tags
 
+	* Vertically interpolate all variables whose names start with "tpt" with temperature method
+
 	* ncremap allow vertical interpolation on single dimensional (vertical) files
 
 2022-10-09  Charlie Zender  <zender@uci.edu>

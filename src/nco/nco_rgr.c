@@ -2008,7 +2008,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  xtr_RHS.typ_fll=xtr_mth;
 	  /* Special-case extrapolation methods allowed for all except missing-value extrapolation types */
 	  if(xtr_mth != nco_xtr_fll_msv){
-	    if(!strcmp(var_nm,"T") || !strcmp(var_nm,"ta")) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
+	    /* 20221012: CSZ uses tpt for temperature variables in column profiles. Assume all variables whose names start with "tpt" are temperature variables, so use the temperature method for them */
+	    if(!strcmp(var_nm,"T") || !strcmp(var_nm,"ta") || (strstr(var_nm,"tpt") == var_nm)) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
 	    else if(!strcmp(var_nm,"Z3") || !strcmp(var_nm,"zg")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
 	  } /* !xtr_mth */
 	  crd_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
