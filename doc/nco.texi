@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.1-alpha11
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 9 October 2022
+@set update-date 11 October 2022
 @set update-month October 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -26995,9 +26995,15 @@ See @ref{CF Conventions} for a detailed description.
 This switch (which takes no argument) controls whether
 regridded output will contain the staggered grid coordinates 
 @code{slat}, @code{slon}, and @code{w_stag} (@pxref{Regridding}). 
-By default the staggered grid is output for all files regridded from 
-a Cap (aka @acronym{FV}) grid, except when the regridding is performed
+Originally, the staggered grid was output for all files regridded from 
+a Cap (aka @acronym{FV}) grid, except when the regridding was performed
 as part of splitting (reshaping) into timeseries.
+As of (roughly, I forget) @acronym{NCO} @w{version 4.9.4}, released in
+July, 2020, outputging the staggered grid information is turned-off
+for all workflows and must be proactively turned-on (with
+@code{--stg_grd}).
+Thus the @code{--no_stg_grd} switch is obsolete and is intened
+only to preserve backward-compatibility of previous workflows.
 
 @html
 <a name="out_drc"></a> <!-- http://nco.sf.net/nco.html#out_drc -->

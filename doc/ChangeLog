@@ -1,3 +1,11 @@
+2022-10-12  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.1-alpha12 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha12: Deadpool2';git push
+	git tag -a 5.1.1-alpha12 -m '';git push --tags
+
+	* ncremap allow vertical interpolation on single dimensional (vertical) files
+
 2022-10-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha11 release procedure:

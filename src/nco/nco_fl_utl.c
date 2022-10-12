@@ -861,7 +861,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       if(!NCZARR_URL) (void)fprintf(stdout,"%s: INFO %s failed to nc_open() this Zarr-scheme file even though NCZarr is enabled. HINT: Check that filename adheres to this syntax: scheme://host:port/path?query#fragment and that filename exists. NB: s3 scheme requires that netCDF be configured with –enable-nczarr-s3 option.\n",nco_prg_nm_get(),fnc_nm);
     } /* !rcd */
 #else /* !NC_HAS_NCZARR */
-    (void)fprintf(stdout,"%s: ERROR %s interpreted %s as NCZarr file but NCZarr was not enabled in this netCDF library. HINT: Install a netCDF-library (4.8.0 or later) configured with --enable-nczarr (a default netCDF setting), and, for S3 support, with --enable-nczarr-s3 (not a default netCDF setting), then rebuild NCO with that library.\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s interpreted %s as NCZarr file but NCZarr was not enabled in this netCDF library. HINT: Install a netCDF-library (4.8.0 or later) configured with --enable-nczarr (a default netCDF setting), and, for S3 support, with --enable-nczarr-s3 (not a default netCDF setting), then rebuild NCO with that library.\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
     nco_exit(EXIT_FAILURE);
 #endif /* !NC_HAS_NCZARR */
   }else if((strstr(fl_nm_lcl,http_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,https_url_sng) == fl_nm_lcl) || (strstr(fl_nm_lcl,dap4_url_sng) == fl_nm_lcl)){

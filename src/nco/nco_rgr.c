@@ -1237,7 +1237,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  } /* !dmn_idx */
 	} /* !dmn_idx */
       } /* !var_idx */
-      assert(var_idx != var_nbr);
+      if(nco_dbg_lvl_get() >= nco_dbg_std)
+	if(var_idx == var_nbr)
+	  (void)fprintf(stdout,"%s: INFO %s reports input file has no variables with multiple dimensions, i.e., input appears to be vertical only, with no horizontal extent\n",nco_prg_nm_get(),fnc_nm);
       grd_sz_out=grd_sz_in;
     } /* !flg_grd_out_hyb */
   } /* !flg_grd_in_prs */

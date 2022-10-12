@@ -1084,7 +1084,7 @@ int nc_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int f
     } /* !chk_typ */
     break;
   default:
-    (void)fprintf(stdout,"WARNING: NCO was linked to and old version (%d) of netCDF that does not support %s functionality for filters other than Shuffle, DEFLATE, and Fletcher32. However, %s was asked about information for HDF5 filter ID = %u about which it cannot answer. To obtain a fully functioning NCO that can parse this dataset, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later...preferably much later!\n",NC_LIB_VERSION,fnc_nm,fnc_nm);
+    (void)fprintf(stdout,"WARNING: NCO was linked to and old version (%d) of netCDF that does not support %s functionality for filters other than Shuffle, DEFLATE, and Fletcher32. However, %s was asked about information for HDF5 filter ID = %u about which it cannot answer. To obtain a fully functioning NCO that can parse this dataset, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later...preferably much later!\n",NC_LIB_VERSION,fnc_nm,fnc_nm,flt_id);
     nco_err_exit(rcd,fnc_nm);    
     break;
   } /* !flt_id */
