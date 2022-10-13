@@ -732,6 +732,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 	rgr->xtr_mth=nco_xtr_fll_ngh;
       }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"mss_val") || !strcasecmp(rgr_lst[rgr_var_idx].val,"msv") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fll_val") || !strcasecmp(rgr_lst[rgr_var_idx].val,"missing_value")){
 	rgr->xtr_mth=nco_xtr_fll_msv;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"linear") || !strcasecmp(rgr_lst[rgr_var_idx].val,"lnr")){
+	rgr->xtr_mth=nco_xtr_fll_lnr;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"nil") || !strcasecmp(rgr_lst[rgr_var_idx].val,"zero")){
+	rgr->xtr_mth=nco_xtr_fll_nil;
       }else{
 	(void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
 	abort();

@@ -1,8 +1,12 @@
-2022-10-12  Charlie Zender  <zender@uci.edu>
+2022-10-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha12 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha12: Deadpool2';git push
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha12: Mesa Trail';git push
 	git tag -a 5.1.1-alpha12 -m '';git push --tags
+
+	* Add vertical extrapolation methods linear and zero
+
+2022-10-12  Charlie Zender  <zender@uci.edu>
 
 	* Vertically interpolate all variables whose names start with "tpt" with temperature method
 

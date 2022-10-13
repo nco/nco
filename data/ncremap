@@ -684,7 +684,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--vrt_fl${fnt_nrm}   Vertical coordinate file (empty means none) (default ${fnt_bld}${vrt_fl}${fnt_nrm}) [${fnt_tlc}vrt_fl, vrt, vrt_crd, vertical_coordinate${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_nm${fnt_nrm}   Vertical coordinate name (empty means \"plev\") (default ${fnt_bld}${vrt_nm}${fnt_nrm}) [${fnt_tlc}vrt_nm, plev_nm, vertical_coordinate_name${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_ntp${fnt_nrm}  Vertical interpolation type (empty means none) (default ${fnt_bld}${vrt_ntp}${fnt_nrm}) [${fnt_tlc}vrt_ntp, ntp_mth, interpolation_type, interpolation_method${fnt_nrm}] (lin|log)"
-    echo " ${fnt_bld}--vrt_xtr${fnt_nrm}  Vertical extrapolation type (empty means none) (default ${fnt_bld}${vrt_xtr}${fnt_nrm}) [${fnt_tlc}vrt_xtr, xtr_mth, extrapolation_type, extrapolation_method${fnt_nrm}] (mss_val|nrs_ngh)"
+    echo " ${fnt_bld}--vrt_xtr${fnt_nrm}  Vertical extrapolation type (empty means none) (default ${fnt_bld}${vrt_xtr}${fnt_nrm}) [${fnt_tlc}vrt_xtr, xtr_mth, extrapolation_type, extrapolation_method${fnt_nrm}] (linear|mss_val|nrs_ngh|zero)"
     echo "${fnt_rvr}-W${fnt_nrm} ${fnt_bld}wgt_opt${fnt_nrm}  Weight-generator options (default ${fnt_bld}${wgt_opt_esmf}${fnt_nrm}) [${fnt_tlc}wgt_opt, esmf_opt, esmf_options, tempest_opt, tps_opt${fnt_nrm}]"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_cmd${fnt_nrm}  Weight-generator command (default ${fnt_bld}${wgt_exe_esmf}${fnt_nrm}) [${fnt_tlc}wgt_cmd, wgt_gnr, weight_command, weight_generator${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
@@ -884,7 +884,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       vrt_fl=?* | vrt=?* | vrt_crd=?* | vertical_coordinate=?* ) vrt_fl="${LONG_OPTARG}" ;; # # Vertical coordinate file
 	       vrt_nm=?* | plev_nm=?* | vertical_coordinate_name=?* ) vrt_nm="${LONG_OPTARG}" ;; # # Vertical coordinate name
 	       vrt_ntp=?* | ntp_mth=?* | interpolation_type=?* | interpolation_method=?* ) vrt_ntp="${LONG_OPTARG}" ;; # # Vertical interpolation type (lin|log)
-	       vrt_xtr=?* | xtr_mth=?* | extrapolation_type=?* | extrapolation_method=?* ) vrt_xtr="${LONG_OPTARG}" ;; # # Vertical extrapolation type (mss_val|nrs_ngh)
+	       vrt_xtr=?* | xtr_mth=?* | extrapolation_type=?* | extrapolation_method=?* ) vrt_xtr="${LONG_OPTARG}" ;; # # Vertical extrapolation type (linear|mss_val|nrs_ngh|zero)
 	       wgt_opt=?* | esmf_opt=?* | esmf_options=?* | tps_opt=?* | tempest_opt=?* | tempest_options=?* ) wgt_opt_usr="${LONG_OPTARG}" ;; # -W # Weight-generator options
 	       wgt_cmd=?* | weight_command=?* | wgt_gnr=?* | weight_generator=?* ) wgt_usr="${LONG_OPTARG}" ;; # -w # Weight-generator command
 	       xcl_var | xcl | exclude | exclude_variables ) xcl_flg='Yes' ;; # # Exclude rather than extract variable list
@@ -1860,9 +1860,13 @@ if [ -n "${vrt_fl}" ]; then
 	    vrt_opt="${vrt_opt} --rgr xtr_mth=mss_val"
 	elif [ ${vrt_xtr} = 'nrs_ngh' ] || [ ${vrt_xtr} = 'nearest_neighbor' ] || [ ${vrt_xtr} = 'nn' ]; then 
 	    vrt_opt="${vrt_opt} --rgr xtr_mth=nrs_ngh"
+	elif [ ${vrt_xtr} = 'linear' ] || [ ${vrt_xtr} = 'lnr' ] || [ ${vrt_xtr} = 'lin' ]; then 
+	    vrt_opt="${vrt_opt} --rgr xtr_mth=linear"
+	elif [ ${vrt_xtr} = 'zero' ] || [ ${vrt_xtr} = 'nil' ]; then 
+	    vrt_opt="${vrt_opt} --rgr xtr_mth=zero"
 	else 
 	    echo "${spt_nm}: ERROR ${vrt_xtr} is not a valid extrapolation method"
-	    echo "${spt_nm}: HINT Valid vertical extrapolation methods and synonyms are mss_val,missing_value,msv | nrs_ngh,nearest_neighbor,nn"
+	    echo "${spt_nm}: HINT Valid vertical extrapolation methods and synonyms are: linear,lnr,lin | mss_val,missing_value,msv | nrs_ngh,nearest_neighbor,nn | zero,nil"
 	    exit 1
 	fi # !vrt_xtr
     fi # !vrt_xtr

@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.1-alpha11
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 11 October 2022
+@set update-date 13 October 2022
 @set update-month October 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -28116,10 +28116,12 @@ priorities for future development of vertical regridding are:
       inaccurate in cold regions.
       As of July 2019 and @acronym{NCO} @w{version 4.8.1}, one may
       instead set points outside the input domain to missing-values
-      with the @samp{--xtr_opt=mss_val} option.
-      Other extrapolation options, not yet exposed to user-access,
-      include: dying, setting @w{to 0.0}, and linear extrapolation.
-      Supporting these other methods, or improving the existing
+      with the @samp{--vrt_xtr=mss_val} option.
+      More extrapolation options, exposed to user-access as of
+      November 2022 in @acronym{NCO} @w{version 5.1.1}, are:
+      linear extrapolation (@samp{--vrt_xtr=linear}),
+      setting @w{to 0.0} (@samp{--vrt_xtr=zero}).
+      Supporting other methods, or improving the existing
       special-case approximations for temperature or geopotential,
       will remain low priority until we are lobbied with compelling
       use-cases for other algorithms.  
@@ -28400,8 +28402,10 @@ the @samp{ntp_mth=lin} option.
 Specifies the extrapolation method for destination points outside the
 vertical range of the input data during vertical interpolation.
 Valid values and their synonyms are
-@code{mss_val} (synonyms @code{msv} and @code{missing_value}), and
-@code{nrs_ngh} (synonyms @code{nn} and @code{nearest_neighbor}).
+@code{linear} (synonyms @code{lnr} and @code{lin}), 
+@code{mss_val} (synonyms @code{msv} and @code{missing_value}), 
+@code{nrs_ngh} (synonyms @code{nn} and @code{nearest_neighbor}), and
+@code{zero} (synonym @code{nil}).
 Default is @math{@var{vrt_xtr} = @code{nrs_ngh}}.
 @acronym{NCO} supports this feature as of version 4.8.1 (July, 2019).
 
