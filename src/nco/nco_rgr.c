@@ -5331,7 +5331,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	     In MPAS-Seaice output, for example, every ocean cell without sea ice is still 0.0 not _FillValue
 	     MPAS-Seaice output often contains a floating-point (not integer) ice presence mask timeMonthly_avg_icePresentIntMask
 	     msk_apl should help set to _FillValue any gridcells with timeMonthly_avg_icePresentIntMask == 0.0
-	     Following clause complements above clause by additionally setting to _FillValue any gridcells with zero SGS fraction */
+	     Following clause additionally sets to _FillValue all gridcells with zero SGS fraction */
 	  if(sgs_frc_out){
 	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 	      if(sgs_frc_out[dst_idx] == 0.0){
@@ -5344,21 +5344,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
 	} /* !flg_add_fll */
 
-	if(flg_add_fll && !has_mss_val && sgs_frc_out){
-	  /* 20221018: Initialize fields without _FillValue in input file to default missing value in unmapped destination cells
-	     Otherwise empty destination cells will be zero (not _FillValue) in output file
-	     Fields with input _FillValue are already _FillValue in output where tally is zero */
-	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-	    if(frc_out[dst_idx] == 0.0){
-	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-		/* 20220207: Inititalize to mss_val_cmp_dbl instead of NC_FILL_DOUBLE
-		   Fixes fields that had _FillValue attribute and no _FillValue values */
-		var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]=mss_val_cmp_dbl;
-	      } /* !lvl_idx */
-	    } /* !frc_out */
-	  } /* !dst_idx */
-	} /* !flg_add_fll */
-	
 	if(flg_msk_apl){
 	  /* 20210607: Overwrite output values with _FillValue where destination cell is masked
 	     Same procedure regardless of whether input variables already have _FillValue
@@ -5433,7 +5418,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(wgt_raw) wgt_raw=(double *)nco_free(wgt_raw);
   
   return rcd;
-} /* end nco_rgr_wgt() */
+} /* !nco_rgr_wgt() */
 
 void
 nco_bsl_zro /* Return Bessel function zeros */
