@@ -1,8 +1,12 @@
-2022-10-13  Charlie Zender  <zender@uci.edu>
+2022-10-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha12 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha12: Mesa Trail';git push
 	git tag -a 5.1.1-alpha12 -m '';git push --tags
+
+	* ncremap add clause to cause --add_fll to set cells with sgs_frc == 0.0 to _FillValue
+
+2022-10-13  Charlie Zender  <zender@uci.edu>
 
 	* Add vertical extrapolation methods linear and zero
 
