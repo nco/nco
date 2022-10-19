@@ -1,8 +1,14 @@
 2022-10-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha12 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha12: Mesa Trail';git push
-	git tag -a 5.1.1-alpha12 -m '';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha12: Seven Falls';git push
+	git tag -a 5.1.1-alpha12 -m 'ncremap undup mpas no_stg_grd rnr_thr switches, mpassi add_fll, vrt_ntp: tpt, 1D OK, vrt_xtr add mth=zero,lnr; ncks add_fll trigger where sgs_frc=0.0';git push --tags
+
+	* ncremap move/combine passing of --no_stagger to ncks to avoid double-setting it
+
+	* ncremap move/combine passing of --rnr_thr to ncks to avoid double-setting it
+
+	* ncremap set --add_fll to true for sea-ice models
 
 	* ncremap add clause to cause --add_fll to set cells with sgs_frc == 0.0 to _FillValue
 

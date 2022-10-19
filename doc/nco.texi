@@ -128,11 +128,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.1.1-alpha11
-@set doc-edition 5.1.1-alpha11
+@set nco-edition 5.1.1-alpha12
+@set doc-edition 5.1.1-alpha12
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 13 October 2022
+@set update-date 18 October 2022
 @set update-month October 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -26006,19 +26006,39 @@ Please let us know if these capabilities do not work for you.
 Introduced in @acronym{NCO} version 5.0.0 (released June, 2021),
 this switch (which takes no argument) causes the regridder to add a
 @code{_FillValue} attribute to fields with empty destination cells.
-Empty destination cells are those that have no non-zero weights from
-the source grids.
+
+There are two varieties of empty destination cells:
+First are those cells with no non-zero weights from the source grids.
+If all source grid contributions to the a particular cell are zero,
+then no field will ever be mapped into that cell.
+For example, if an ocean model source grid only contains ocean
+gridcells (e.g., like @acronym{MPAS}-Ocean), then all continental
+interior gridcells in a destination grid will be empty.
+The second type of empty gridcell can occur in conjunction with
+sub-gridscale (@acronym{SGS}) fractions.
+All destination gridcells with @acronym{SGS} fraction equal to zero
+will always be empty.
+For example, sea-ice models often employ time-varying @acronym{SGS}
+fractions which are zero everywhere except where/when sea ice is
+present.
+These gridcells are disjoint from continental interior gridcells
+whose locations can be determined mapping weights alone.
+
 When a contiguous geophysical field (e.g., air temperature) without a
 @code{_FillValue} is mapped to such a destination grid, the empty
 destination values are normally set to zero (because no source grid
 cells contribute).
 However, zero is a valid value for many geophysical fields.
-Use this switch to ensure that empty destination gridcells are always
+Use this switch to ensure that empty destination gridcells are always 
 set to @code{_FillValue}.
 The default @code{_FillValue} will be used in the output file for
-input fields that lack a @code{_FillValue}.
-This flag has no effect on input fields that already have a
-@code{_FillValue}.
+input fields that lack an explicit @code{_FillValue}.
+This flag has no effect on fields that have any input values equal
+to an explicitly or implicitly defined @code{_FillValue}.
+The flag does affect fields that have valid input values everywhere
+on the source grid, yet for some reason (e.g., disjoint grids or
+zero sub-gridscale fractions) there are unmapped destination
+gridcells. 
 @example
 @verbatim
 ncremap --add_fll -v FLNS -m map.nc in.nc out.nc

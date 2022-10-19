@@ -5329,9 +5329,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  /* 20221018: Above clause successfully sets continental gridpoints fo _FillValue in MPAS output
 	     However, it leaves cells with no local SGS contribution equal to zero instead of _FillValue
 	     In MPAS-Seaice output, for example, every ocean cell without sea ice is still 0.0 not _FillValue
-	     MPAS-Seaice output often contains a floating-point (not integer) ice presence mask timeMonthly_avg_icePresentIntMask
-	     msk_apl should help set to _FillValue any gridcells with timeMonthly_avg_icePresentIntMask == 0.0
-	     Following clause additionally sets to _FillValue all gridcells with zero SGS fraction */
+	     MPAS-Seaice datasets may contain the floating-point (not integer) ice-presence mask timeMonthly_avg_icePresentIntMask
+	     --msk_apl should help set to _FillValue any gridcells with timeMonthly_avg_icePresentIntMask == 0.0
+	     However, input SGS datasets that lack a mask variable cannot use --msk_apl to mask empty SGS cells
+	     Moreover, regridder still treats mask_b in map-file as msk_out, and never read-in sgs_msk_nm! Doh!
+	     Clearly, if regridder is called with sgs_msk_nm then regridder should set msk_out == sgs_msk for all variables
+	     This is a high-priority feature for a future release
+	     Following clause additionally sets to _FillValue all gridcells with zero SGS fraction
+	     Once sgs_msk if fully supported following clause will likely be redundant with --msk_apl in datasets with sgs_msk */
 	  if(sgs_frc_out){
 	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 	      if(sgs_frc_out[dst_idx] == 0.0){
