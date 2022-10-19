@@ -1422,7 +1422,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
       (void)nco_md5_chk(md5,var_nm,var_out.sz*nco_typ_lng_udt(out_id,var_typ_out),out_id,dmn_map_srt,dmn_map_cnt,var_out.val.vp);
 
   /* Write unformatted binary data */
-  if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_out.sz,var_typ_in,var_out.val.vp);
+  if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,(size_t)var_out.sz,var_typ_in,var_out.val.vp);
 
   /* Free */
   if(var_out.val.vp) var_out.val.vp=(void *)nco_free(var_out.val.vp);

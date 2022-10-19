@@ -137,7 +137,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   /* Perform MD5 digest of input and output data if requested */
   if(md5) (void)nco_md5_chk(md5,var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_srt,dmn_cnt,void_ptr);
   /* Write unformatted binary data */
-  if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+  if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,(size_t)var_sz,var_typ,void_ptr);
 
   /* 20111130 Fixes TODO nco1029: Warn on ncks -A when dim(old_record) != dim(new_record) */
   if(dmn_nbr > 0){
@@ -522,7 +522,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Perform MD5 digest of input and output data if requested */
       if(md5) (void)nco_md5_chk(md5,var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_typ),var_lst[var_idx]->grp_id_out,dmn_srt,dmn_cnt,void_ptr);
       /* Write unformatted binary data */
-      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_lst[var_idx]->nm,var_sz,var_typ,void_ptr);
+      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_lst[var_idx]->nm,(size_t)var_sz,var_typ,void_ptr);
       /* Free space that held dimension IDs */
       dmn_cnt=(long *)nco_free(dmn_cnt);
       dmn_id=(int *)nco_free(dmn_id);
@@ -645,11 +645,11 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   if(dmn_nbr == 0){ /* Copy scalar */
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
-    if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+    if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,(size_t)var_sz,var_typ,void_ptr);
   }else if(!WRP){ /* Copy contiguous array */
     if(!SRD) nco_get_vara(in_id,var_in_id,dmn_in_srt,dmn_cnt,void_ptr,var_typ); else nco_get_vars(in_id,var_in_id,dmn_in_srt,dmn_cnt,dmn_srd,void_ptr,var_typ);
     nco_put_vara(out_id,var_out_id,dmn_out_srt,dmn_cnt,void_ptr,var_typ);
-    if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+    if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,(size_t)var_sz,var_typ,void_ptr);
   }else if(WRP){ /* Copy wrapped array */
     /* For wrapped data */
     long *dmn_in_srt_1=NULL;
@@ -773,17 +773,17 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     if(!SRD){
       (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_typ);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_typ);
-      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,(size_t)var_sz,var_typ,void_ptr);
       (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,void_ptr,var_typ);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_typ);
-      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,(size_t)var_sz,var_typ,void_ptr);
     }else{ /* SRD */
       (void)nco_get_vars(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,dmn_srd,void_ptr,var_typ);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_typ);
-      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,(size_t)var_sz,var_typ,void_ptr);
       (void)nco_get_vars(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,dmn_srd,void_ptr,var_typ);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_typ);
-      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+      if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,(size_t)var_sz,var_typ,void_ptr);
     } /* end else SRD */
 
     dmn_in_srt_1=(long *)nco_free(dmn_in_srt_1);

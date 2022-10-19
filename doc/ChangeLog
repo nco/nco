@@ -1,3 +1,13 @@
+2022-10-19  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.1-alpha12 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha12: Garage Door';git push
+	git tag -a 5.1.1-alpha12 -m '';git push --tags
+
+	* ncremap do not set default mask for sgs to landmask for back-compatibility, leave it unset
+
+	* Change nco_bnr_wrt() prototype to accept size_t var_sz
+
 2022-10-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha12 release procedure:

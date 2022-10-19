@@ -49,7 +49,7 @@ size_t /* O [nbr] Number of elements successfully written */
 nco_bnr_wrt /* [fnc] Write unformatted binary data */
 (FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const char * const var_nm, /* I [sng] Variable name */
- const long var_sz, /* I [nbr] Variable size */
+ const size_t var_sz, /* I [nbr] Variable size */
  const nc_type var_typ, /* I [enm] Variable type */
  const void * const vp) /* I [ptr] Data to write */
 {
@@ -147,13 +147,13 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
       break;
     } /* end switch */
 
-    wrt_nbr=fwrite(vp_bs,wrd_sz,(size_t)var_sz,fp_bnr);
+    wrt_nbr=fwrite(vp_bs,wrd_sz,var_sz,fp_bnr);
 
     if(vp_bs) vp_bs=nco_free(vp_bs);
 
   }else{
     /* Write data in native machine ordering. Easy Peasy! */
-    wrt_nbr=fwrite(vp,wrd_sz,(size_t)var_sz,fp_bnr);
+    wrt_nbr=fwrite(vp,wrd_sz,var_sz,fp_bnr);
   } /* !flg_byt_swp */
   
   if(wrt_nbr != var_sz){
@@ -163,7 +163,7 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s (%s, %ld x %lu B), ",var_nm,c_typ_nm(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ));
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fflush(stderr);
   return wrt_nbr; /* O [nbr] Number of elements successfully written */
-} /* end nco_bnr_wrt() */
+} /* !nco_bnr_wrt() */
 
 size_t /* O [nbr] Number of elements successfully read */
 nco_bnr_rd /* [fnc] Read unformatted binary data */

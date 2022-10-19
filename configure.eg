@@ -329,7 +329,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket to build NCO: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/4.9.3 # 20201208
-# Personal recipe last modified: 20220712 (search andes gpfs not rhea)
+# Personal recipe last modified: 20221019 (link -lantlr from MY_LIB_DIR not HOME/lib)
 # Personal recipe last used successfully: 20220712
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
@@ -338,7 +338,7 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/gpfs/alpine/proj-shared/cli115/e3sm-u
 export NETCDF_ROOT=/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest
 export PATH=${PATH}:/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest/bin
 cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
 # LCRC uses Spack module written and tested by Adam Stewart: https://github.com/LLNL/spack/pull/4370/files
@@ -387,11 +387,12 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20221004 (use Anaconda)
-# Personal recipe last used successfully: 20221004
+# Personal recipe last used successfully: 20221019
 cd ~/nco;/bin/rm -f *.foo;make distclean
 module load gcc/9.2.0-ugetvbp
 module load openmpi/4.0.4-hpcx-hghvhj5
 # Default as of 20210924 is to build with Anaconda
+# This works until ncap2 fails to link to -lantlr because link path does not use MY_LIB_DIR for some reason
 ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Older method:
 # module load netcdf-c/4.7.4-a4uk6zy (only for non-anaconda builds)
@@ -405,7 +406,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 
 # 20210104 Compy with Intel compilers
 # Personal recipe last modified: 20220919
-# Personal recipe last used successfully: 20220919
+# Personal recipe last used successfully: 20221019
 source /share/apps/intel/2020/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64 # Compy
 module purge
 module load intel/20.0.0
@@ -464,7 +465,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: module load nco/5.0.1 # 20220701
 # Personal recipe last modified: 20220701
-# Personal recipe last used successfully: 20220712
+# Personal recipe last used successfully: 20221019
 module purge # After login, purge before load or risk this: "error while loading shared libraries: libiomp5.so: cannot open shared object file: No such file or directory"
 module load PrgEnv-intel
 module load cray-netcdf

@@ -259,14 +259,14 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --dbg=1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc
 # ncremap --dbg=1 --alg_typ=tempest --grd_src=${DATA}/grids/128x256_SCRIP.20160301.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc
 # Regression:
-# ncremap -P eam -7 -L 1 -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc
-# ncremap -P eam -7 -L 1 -m ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
-# ncremap -P elm -7 -L 1 -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/elmv1_ne30np4l15.nc ~/foo.nc
-# ncremap -P elm -7 -L 1 -m ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc ${DATA}/bm/elmv2_ne30pg2l15.nc ~/foo.nc
-# ncremap -P mpasseaice -7 -L 1 -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/msiv1_oEC60to30v3.nc ~/foo.nc
-# ncremap -P mpasseaice -7 -L 1 -m ${DATA}/maps/map_EC30to60E2r2_to_cmip6_180x360_aave.20220301.nc ${DATA}/bm/msiv2_EC30to60E2r2l5.nc ~/foo.nc
-# ncremap -P mpasocean -7 -L 1 -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/mpov1_oEC60to30v3l60.nc ~/foo.nc
-# ncremap -P mpasocean -7 -L 1 -m ${DATA}/maps/map_EC30to60E2r2_to_cmip6_180x360_aave.20220301.nc ${DATA}/bm/mpov2_EC30to60E2r2l60.nc ~/foo.nc
+# ncremap -P eam -7 -L 1 -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo_eamv1.nc
+# ncremap -P eam -7 -L 1 -m ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo_eamv2.nc
+# ncremap -P elm -7 -L 1 -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/elmv1_ne30np4l15.nc ~/foo_elmv1.nc
+# ncremap -P elm -7 -L 1 -m ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc ${DATA}/bm/elmv2_ne30pg2l15.nc ~/foo_elmv2.nc
+# ncremap -P mpasseaice -7 -L 1 -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/msiv1_oEC60to30v3.nc ~/foo_msiv1.nc
+# ncremap -P mpasseaice -7 -L 1 -m ${DATA}/maps/map_EC30to60E2r2_to_cmip6_180x360_aave.20220301.nc ${DATA}/bm/msiv2_EC30to60E2r2l5.nc ~/foo_msiv2.nc
+# ncremap -P mpasocean -7 -L 1 -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/mpov1_oEC60to30v3l60.nc ~/foo_mpov1.nc
+# ncremap -P mpasocean -7 -L 1 -m ${DATA}/maps/map_EC30to60E2r2_to_cmip6_180x360_aave.20220301.nc ${DATA}/bm/mpov2_EC30to60E2r2l60.nc ~/foo_mpov2.nc
 # Regrid:
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -j 3 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr # Batch-parallelism
@@ -1823,9 +1823,6 @@ if [ -n "${sgs_frc}" ] || [ -n "${sgs_frc_usr}" ] || [ "${prc_typ}" = 'sgs' ]; t
 fi # !sgs
 if [ "${prc_sgs}" = 'Yes' ]; then
     if [ -n "${sgs_frc_usr}" ]; then sgs_frc="${sgs_frc_usr}"; fi
-    if [ -z "${sgs_msk}" ]; then 
-	sgs_msk='landmask' # 20190924: Back-compatibility with NCO 4.8.1-
-    fi # !sgs_msk
     if [ -z "${sgs_frc}" ]; then
 	echo "ERROR: SGS processing invoked without specifying sgs_frc variable name"
 	echo "HINT: Specify sgs_frc variable name with --sgs_frc=var_name"

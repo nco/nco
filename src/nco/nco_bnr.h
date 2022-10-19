@@ -47,7 +47,7 @@ size_t /* O [nbr] Number of elements successfully written */
 nco_bnr_wrt /* [fnc] Write unformatted binary data */
 (FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const char * const var_nm, /* I [sng] Variable name */
- const long var_sz, /* I [nbr] Variable size */
+ const size_t var_sz, /* I [nbr] Variable size */
  const nc_type var_typ, /* I [enm] Variable type */
  const void * const vp); /* I [ptr] Data to write */
 
