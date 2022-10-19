@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha12: Garage Door';git push
 	git tag -a 5.1.1-alpha12 -m '';git push --tags
 
+	* ncremap set add_fll automatically for all MPAS datasets
+
 	* ncremap do not set default mask for sgs to landmask for back-compatibility, leave it unset
 
 	* Change nco_bnr_wrt() prototype to accept size_t var_sz

@@ -1588,7 +1588,16 @@ if [ "${prc_mpas}" = 'Yes' ]; then
     if [ "${prc_typ}" = 'mali' ]; then
 	mss_val='-1.0e36'
     fi # !prc_typ
-    
+
+    # MPAS components have historically not written _FillValue into fields
+    # Instead MPAS writes zero to most (all?) fields in masked regions
+    # Adding a _FillValue to the variable does not change this
+    # Therefore always use add_fll on MPAS datasets to clearly mask "uncomputed" regions
+    # For MPAS-Ocean, this masks continents/islands
+    # For MPAS-Seaice, this additionally masks open (non-sea-ice-covered) ocean
+    # For MPAS-Landice (MALI), this masks (I think) non-glacier gridcells
+    add_fll='Yes'
+
     # Add depth coordinate to MPAS file when requested to by specifying coordinate file, that file exists, and commmand is found
     if [ -n "${dpt_fl}" ] || [ "${dpt_flg}" = 'Yes' ]; then
 	if [ -n "${dpt_fl}" ]; then
@@ -1813,7 +1822,6 @@ if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_
     sgs_nrm='1.0'
     prc_mpas='Yes'
     prc_mpascice='Yes'
-    add_fll='Yes'
 fi # !mpascice
 if [ "${add_fll}" = 'Yes' ]; then 
     rgr_opt="${rgr_opt} --rgr add_fill_value"
