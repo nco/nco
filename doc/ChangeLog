@@ -1,8 +1,12 @@
-2022-10-19  Charlie Zender  <zender@uci.edu>
+2022-10-20  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.1.1-alpha12 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha12: Garage Door';git push
-	git tag -a 5.1.1-alpha12 -m '';git push --tags
+	* NCO 5.1.1-alpha13 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha13: Garage Door';git push
+	git tag -a 5.1.1-alpha13 -m 'ncremap: add_fll mpaso, landmask fix';git push --tags
+
+	* ncremap add --no_add_fll switch to override new MPAS default
+
+2022-10-19  Charlie Zender  <zender@uci.edu>
 
 	* ncremap set add_fll automatically for all MPAS datasets
 

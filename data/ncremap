@@ -638,6 +638,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco_options${fnt_nrm}]"
     echo " ${fnt_bld}--nm_dst${fnt_nrm}   Short name of destination grid (required for MWF, no default) [${fnt_tlc}nm_dst, name_dst, nm_sht_dst, short_name_destination${fnt_nrm}]"
     echo " ${fnt_bld}--nm_src${fnt_nrm}   Short name of source grid (required for MWF, no default) [${fnt_tlc}nm_src, name_src, nm_sht_src, short_name_source${fnt_nrm}]"
+    echo " ${fnt_bld}--no_add_fll${fnt_nrm}  Do not add _FillValue to fields with empty destination cells [${fnt_tlc}no_add_fll, no_add_fill_value, no_fll_mpt, no_fill_empty${fnt_nrm}]"
     echo " ${fnt_bld}--no_cll_msr${fnt_nrm}  Omit cell_measures variables (e.g., 'area') [${fnt_tlc}no_area, no_cll_msr, no_cell_measures${fnt_nrm}]"
     echo " ${fnt_bld}--no_frm_trm${fnt_nrm}  Omit formula_terms variables (e.g., 'hyba', 'PS') [${fnt_tlc}no_frm_trm, no_formula_terms${fnt_nrm}]"
     echo " ${fnt_bld}--no_permute${fnt_nrm}  Do not permute dimensions before regridding [${fnt_tlc}no_prm, no_pdq, no_ncpdq${fnt_nrm}]"
@@ -783,8 +784,10 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       # Long options with short counterparts, ordered by short option key
 	       a2o | atm2ocn | b2l | big2ltl | l2s | lrg2sml ) a2o_flg='Yes' ;; # # Atmosphere-to-ocean
 	       a2o=?* | atm2ocn=?* | b2l=?* | big2ltl=?* | l2s=?* | lrg2sml=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Atmosphere-to-ocean
-	       add_fll | add_fill_value | fll_mpt | fill_empty ) add_fll='Yes' ;; # # Add _FillValue to fields with empty destination cells
+	       add_fll | add_fill_value | fll_mpt | fill_empty ) add_fll_usr='Yes' ;; # # Add _FillValue to fields with empty destination cells
 	       add_fll=?* | add_fill_value=?* | fll_mpt=?* | fill_empty=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Add _FillValue to fields with empty destination cells
+	       no_add_fll | no_add_fill_value | no_fll_mpt | no_fill_empty ) add_fll_usr='No' ;; # # Do not add _FillValue to fields with empty destination cells
+	       no_add_fll=?* | no_add_fill_value=?* | no_fll_mpt=?* | fill_empty=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Do not add _FillValue to fields with empty destination cells
 	       alg_typ=?* | algorithm=?* | regrid_algorithm=?* ) alg_typ="${LONG_OPTARG}" ;; # -a # Algorithm
 	       area_dgn | dgn_area | area_diagnose | diagnose_area ) area_dgn='Yes' ;; # # Diagnose (rather than copy) grid_area to inferred grid-file
 	       area_dgn=?* | dgn_area=?* | area_diagnose=?* | diagnose_area=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Diagnose (rather than copy) grid_area in inferred grids
@@ -1590,12 +1593,15 @@ if [ "${prc_mpas}" = 'Yes' ]; then
     fi # !prc_typ
 
     # MPAS components have historically not written _FillValue into fields
-    # Instead MPAS writes zero to most (all?) fields in masked regions
-    # Adding a _FillValue to the variable does not change this
-    # Therefore always use add_fll on MPAS datasets to clearly mask "uncomputed" regions
+    # Instead MPAS writes zero to most (all?) fields in "non-computed" regions
+    # Non-computed regions include, e.g., open ocean in MPAS-Seaice
+    # Simply adding a _FillValue to the variable does not, by itself, change this
+    # The _FillValue needs to be written in appropriate gridcells
+    # The MPAS epic on improving CF-compliance will eventually do that
+    # Until then, need to automatically invoke add_fll on MPAS datasets to clearly mask "uncomputed" regions
     # For MPAS-Ocean, this masks continents/islands
     # For MPAS-Seaice, this additionally masks open (non-sea-ice-covered) ocean
-    # For MPAS-Landice (MALI), this masks (I think) non-glacier gridcells
+    # For MPAS-Landice (MALI), this masks (I think) non-glacier land and ocean gridcells
     add_fll='Yes'
 
     # Add depth coordinate to MPAS file when requested to by specifying coordinate file, that file exists, and commmand is found
@@ -1823,6 +1829,7 @@ if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_
     prc_mpas='Yes'
     prc_mpascice='Yes'
 fi # !mpascice
+if [ -n "${add_fll_usr}" ]; then add_fll="${add_fll_usr}"; fi
 if [ "${add_fll}" = 'Yes' ]; then 
     rgr_opt="${rgr_opt} --rgr add_fill_value"
 fi # !add_fll

@@ -5010,6 +5010,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	float tm_drn; /* [s] Seconds elapsed */
 	if(nco_dbg_lvl_get() >= nco_dbg_var) tm_srt=clock();
  
+	if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG renormalization configuration for %s: sgs_frc_out = %s, flg_frc_nrm = %d, has_mss_val = %d, flg_rnr = %d, wgt_vld_thr = %g\n",nco_prg_nm_get(),var_nm,sgs_frc_out ? "Yes" : "No",flg_frc_nrm,has_mss_val,flg_rnr,wgt_vld_thr);
+
 	/* This first block is for "normal" variables without sub-gridscale fractions */
 	if(!sgs_frc_out){
 	  /* Apply weights */
@@ -5082,33 +5084,33 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  } /* !has_mss_val */
 	  
 	  if(!has_mss_val){
-	      /* frc_dst = frc_out = dst_frac = frac_b contains non-unity elements and normalization type is "destarea" or "dstarea" or "none"
-		 When this occurs for conservative remapping, follow "destarea" normalization procedure
-		 See SCRIP manual p. 11 and http://www.earthsystemmodeling.org/esmf_releases/public/last, specifically
-		 http://www.earthsystemmodeling.org/esmf_releases/public/last/ESMF_refdoc/node3.html#SECTION03029000000000000000
-		 "frac_a: When a conservative regridding method is used, this contains the fraction of each source cell that participated in the regridding. When a non-conservative regridding method is used, this array is set to 0.0.
-		 frac_b: When a conservative regridding method is used, this contains the fraction of each destination cell that participated in the regridding. When a non-conservative regridding method is used, this array is set to 1.0 where the point participated in the regridding (i.e. was within the unmasked source grid), and 0.0 otherwise.
-		 If the first-order conservative interpolation method is specified ("-m conserve") then the destination field may need to be adjusted by the destination fraction (frac_b). This should be done if the normalization type is ``dstarea'' (sic, really "destarea") and if the destination grid extends outside the unmasked source grid. If it isn't known if the destination extends outside the source, then it doesn't hurt to apply the destination fraction. (If it doesn't extend outside, then the fraction will be 1.0 everywhere anyway.) The following code shows how to adjust an already interpolated destination field (dst_field) by the destination fraction. The variables n_b, and frac_b are from the weight file:
-		 ! Adjust destination field by fraction
-		 do i=1, n_b
-		   if (frac_b(i) .ne. 0.0) then
-		     dst_field(i)=dst_field(i)/frac_b(i)
-		   endif
-		 enddo"
-		 NB: Non-conservative interpolation methods (e.g., bilinear) should NOT apply this normalization (theoretically there is no danger in doing so because frc_out == 1 always for all gridcells that participate in bilinear remapping and frc_out == 0 otherwise)
+	    /* frc_dst = frc_out = dst_frac = frac_b contains non-unity elements and normalization type is "destarea" or "dstarea" or "none"
+	       When this occurs for conservative remapping, follow "destarea" normalization procedure
+	       See SCRIP manual p. 11 and http://www.earthsystemmodeling.org/esmf_releases/public/last, specifically
+	       http://www.earthsystemmodeling.org/esmf_releases/public/last/ESMF_refdoc/node3.html#SECTION03029000000000000000
+	       "frac_a: When a conservative regridding method is used, this contains the fraction of each source cell that participated in the regridding. When a non-conservative regridding method is used, this array is set to 0.0.
+	       frac_b: When a conservative regridding method is used, this contains the fraction of each destination cell that participated in the regridding. When a non-conservative regridding method is used, this array is set to 1.0 where the point participated in the regridding (i.e. was within the unmasked source grid), and 0.0 otherwise.
+	       If the first-order conservative interpolation method is specified ("-m conserve") then the destination field may need to be adjusted by the destination fraction (frac_b). This should be done if the normalization type is ``dstarea'' (sic, really "destarea") and if the destination grid extends outside the unmasked source grid. If it isn't known if the destination extends outside the source, then it doesn't hurt to apply the destination fraction. (If it doesn't extend outside, then the fraction will be 1.0 everywhere anyway.) The following code shows how to adjust an already interpolated destination field (dst_field) by the destination fraction. The variables n_b, and frac_b are from the weight file:
+	       ! Adjust destination field by fraction
+	       do i=1, n_b
+	         if (frac_b(i) .ne. 0.0) then
+	           dst_field(i)=dst_field(i)/frac_b(i)
+	         endif
+	       enddo"
+	       NB: Non-conservative interpolation methods (e.g., bilinear) should NOT apply this normalization (theoretically there is no danger in doing so because frc_out == 1 always for all gridcells that participate in bilinear remapping and frc_out == 0 otherwise)
 
-		 NCO's renormalization procedure below is similar to the ESMF-recommended procedure above. However, users can control NCO renormalization with, e.g., --rnr_thr=0.1, or override it completely with --rnr_thr=none. Moreover, frac_b == frc_dst is determined solely by solely by gridcell binary mask overlaps during weight generation. It is time-invariant and 2D. Missing values (e.g., AOD) can vary in time and can be 3D (or N-D) and so can wgt_vld_out. Hence NCO renormalization is more flexible. flg_frc_nrm (i.e., ESMF-recommended) normalization makes fields pretty for graphics, yet is non-conservative because e.g., MPAS Ocean gridcells projected onto global uniform grids would have their SSTs normalized for prettiness on coastal gridpoints, which is inherently non-conservative.
+	       NCO's renormalization procedure below is similar to the ESMF-recommended procedure above. However, users can control NCO renormalization with, e.g., --rnr_thr=0.1, or override it completely with --rnr_thr=none. Moreover, frac_b == frc_dst is determined solely by solely by gridcell binary mask overlaps during weight generation. It is time-invariant and 2D. Missing values (e.g., AOD) can vary in time and can be 3D (or N-D) and so can wgt_vld_out. Hence NCO renormalization is more flexible. flg_frc_nrm (i.e., ESMF-recommended) normalization makes fields pretty for graphics, yet is non-conservative because e.g., MPAS Ocean gridcells projected onto global uniform grids would have their SSTs normalized for prettiness on coastal gridpoints, which is inherently non-conservative.
 
-		 20190912: Make "ESMF renormalization" of fields without missing values (i.e., "destarea") opt-in rather than default
-		 "destarea" and frac_b = frc_dst together set flg_frc_nrm
-		 Formerly flg_frc_nrm triggered ESMF renormalization by default
-		 Now flg_frc_nrm and user-explicitly-set --rnr_thr to [0.0,1.0] must both be true to trigger it
-		 This keep conservative maps conservative by default
-		 NB: This "ESMF renormalization" normalizes by frac_b == frc_dst (not by wgt_vld_out) regardless of rnr_thr
+	       20190912: Make "ESMF renormalization" of fields without missing values (i.e., "destarea") opt-in rather than default
+	       "destarea" and frac_b = frc_dst together set flg_frc_nrm
+	       Formerly flg_frc_nrm triggered ESMF renormalization by default
+	       Now flg_frc_nrm and user-explicitly-set --rnr_thr to [0.0,1.0] must both be true to trigger it
+	       This keep conservative maps conservative by default
+	       NB: This "ESMF renormalization" normalizes by frac_b == frc_dst (not by wgt_vld_out) regardless of rnr_thr
 
-		 20151018: Avoid double-normalizing by only executing fractional normalization 
-		 (flg_frc_nrm) block when !has_mss_val, and valid area normalization when has_mss_val */
-
+	       20151018: Avoid double-normalizing by only executing fractional normalization 
+	       (flg_frc_nrm) block when !has_mss_val, and valid area normalization when has_mss_val */
+	    
 	    if(flg_frc_nrm){ /* Only renormalize when frac_b < 1.0 (because frac_b == 1.0 does nothing) */
 	      if(flg_rnr){ /* 20190912: Only renormalize when user explicitly requests it (because renormalization is non-conservative). Prior to today, renormalization was by default, henceforth it is opt-in. */
 		if(lvl_nbr == 1){
@@ -5147,13 +5149,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;
 	    
 	    if(flg_rnr){
-	      //	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG renormalization for %s uses flg_rnr block\n",nco_prg_nm_get(),var_nm);
+	      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO renormalization for %s uses flg_rnr block with wgt_vld_thr = %g\n",nco_prg_nm_get(),var_nm,wgt_vld_thr);
 	      if(wgt_vld_thr == 0.0){
 		/* Renormalize cells with no threshold by valid accumulated weight */
 		for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 		  if(tally[dst_idx]) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
 	      }else{
-		/* Renormalize cells with threshold by valid accumulated weight if weight exceeds threshold */
+		/* Renormalize cells with threshold by valid accumulated weight iff weight exceeds threshold */
 		for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 		  if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}
 	      } /* !wgt_vld_thr */
@@ -5179,7 +5181,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		/* SGS-regrid single-level fields without missing values */
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 		  var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx]*sgs_frc_in[col_src_adr[lnk_idx]];
-		/* NB: MPAS-Seaice dataset sgs_frc_out is usually zero in non-polar regions */
+		/* NB: MPAS-Seaice dataset sgs_frc_out is usually zero in open ocean and non-polar regions */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		  if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];
 	      }else{ /* lvl_nbr > 1 */

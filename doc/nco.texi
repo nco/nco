@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.1-alpha12
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 18 October 2022
+@set update-date 20 October 2022
 @set update-month October 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -25260,7 +25260,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-M] [-m @var{map_fl}] [--mpi_nbr=@var{mpi_nbr}] [--mpi_pfx=@var{mpi_pfx}] [--msh_fl=@var{msh_fl}]
 [--msk_apl] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
 [-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
-[--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stdin] [--no_stg_grd]
+[--no_add_fll] [--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stdin] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
 [--pdq=@var{pdq_opt}] [--ppc=@var{ppc_opt}] [--preserve=@var{prs_stt}]
 [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src] [--rnr_thr=@var{rnr_thr}] 
@@ -25997,15 +25997,22 @@ Please let us know if these capabilities do not work for you.
 @cindex missing value
 @cindex @code{_FillValue}
 @cindex @code{--add_fll}
+@cindex @code{--no_add_fll}
 @cindex @code{--add_fill_value}
 @cindex @code{--fll_mpt}
+@cindex @code{--no_fll_mpt}
 @cindex @code{--fill_empty}
+@cindex @code{--no_fill_empty}
 @cindex @code{--msk_apl}
 @cindex @code{--mask_apply}
 @item --add_fll (@code{--add_fll}, @code{--add_fill_value}, @code{--fll_mpt}, @code{--fill_empty})
 Introduced in @acronym{NCO} version 5.0.0 (released June, 2021),
 this switch (which takes no argument) causes the regridder to add a
 @code{_FillValue} attribute to fields with empty destination cells.
+The corresponding @code{--no_add_fll} switches, introduced in
+@acronym{NCO} version 5.1.1 (released November, 2022),
+do the opposite and prevent the regridder from adding a
+@code{_FillValue} attribute to fields with empty destination cells. 
 
 There are two varieties of empty destination cells:
 First are those cells with no non-zero weights from the source grids.
