@@ -5341,7 +5341,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	     Once sgs_msk if fully supported following clause will likely be redundant with --msk_apl in datasets with sgs_msk */
 	  if(sgs_frc_out){
 	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-	      if(sgs_frc_out[dst_idx] == 0.0){
+	      /* 20221020: Use wgt_vld_thr (specified by rnr_thr) criteria to mask by sgs_frc_out */
+	      if(sgs_frc_out[dst_idx] == 0.0 || sgs_frc_out[dst_idx] < wgt_vld_thr){
 		for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 		  var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]=mss_val_cmp_dbl;
 		} /* !lvl_idx */
