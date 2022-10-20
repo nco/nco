@@ -617,8 +617,27 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
     } /* !FL_OUT_FROM_PSN_ARG */
 
+    if(*fl_nbr == 0 && !*fl_out){
+      /* 20221020:
+	 ncap2 was called with no positional or stdin filenames and without an explicit -o output filename
+	 Create a dummy input filename (that will be ignored) and also use it as the output filename */
+
+      /* Create dummy input filename */
+      pid=getpid();
+      /* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
+      fl_dmm_lng=strlen(nco_prg_nm_get())+strlen(tmp_sng_1)+8UL+1UL;
+      /* NB: Calling routine has responsibility to free() this memory */
+      fl_dmm=(char *)nco_malloc(fl_dmm_lng*sizeof(char));
+      (void)sprintf(fl_dmm,"%s%s%ld",nco_prg_nm_get(),tmp_sng_1,(long)pid);
+      (void)nco_fl_dmm_mk(fl_dmm);
+      /* Reallocate fl_lst_in since it is now the NULL returned by nco_fl_lst_stdin() */
+      fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
+      fl_lst_in[(*fl_nbr)++]=fl_dmm;
+      if(!FORCE_OVERWRITE) (void)fprintf(stdout,"%s: WARNING %s reports no input or output file specified. Attempting to use dummy file %s as both input and output. As of 20221020, this only works without prompts if run with the FORCE_OVERWRITE (-O) option. If you answer 'o' to overwrite the temporary file it should also work. However, in both cases it leaves an annoying temporary file (that must be manually deleted) in the current directory.\nHINT: Re-run with -O or send Henry Butowsky a nice request written on the back of a $100 bill to get this working without -O and without littering files.\n",nco_prg_nm_get(),fnc_nm,fl_dmm);
+    } /* !fl_nbr */
+
     if(*fl_nbr == 1 && !*fl_out){
-      /* ncap2 was called with a single positional or stdin filename and without and explicit -o output filename
+      /* ncap2 was called with a single positional or stdin filename and without an explicit -o output filename
 	 The input filename is already stored in the input file list
 	 If the input file exists, treat it as both input and output file
 	 Otherwise, treat the input file as output file and a create dummy input file (that will be ignored) */
@@ -635,13 +654,13 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	*fl_out=fl_lst_in[0];	
 
 	/* Create dummy input filename */
-	pid = getpid();
+	pid=getpid();
 	/* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
 	fl_dmm_lng=strlen(nco_prg_nm_get())+strlen(tmp_sng_1)+8UL+1UL;
 	/* NB: Calling routine has responsibility to free() this memory */
 	fl_dmm=(char *)nco_malloc(fl_dmm_lng*sizeof(char));
 	(void)sprintf(fl_dmm,"%s%s%ld",nco_prg_nm_get(),tmp_sng_1,(long)pid);
-	(void) nco_fl_dmm_mk(fl_dmm);
+	(void)nco_fl_dmm_mk(fl_dmm);
 	fl_lst_in[0]=fl_dmm;
       } /* !rcd_stt */
     } /* !fl_nbr */

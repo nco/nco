@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha13: Garage Door';git push
 	git tag -a 5.1.1-alpha13 -m 'ncremap: add_fll mpaso, landmask fix';git push --tags
 
-	* ncremap add_fll places _FillValue in all cells where sgs_frc_out < rnr_thr = wgt_vld_thr
+	* ncap2 create dummy input and output files when no filenames provided
+
+	* ncremap add_fll place _FillValue in all cells where sgs_frc_out < rnr_thr = wgt_vld_thr
 
 	* ncremap add --no_add_fll switch to override new MPAS default
 
