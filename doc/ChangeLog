@@ -1,8 +1,10 @@
 2022-10-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.1-alpha13 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha13: Garage Door';git push
-	git tag -a 5.1.1-alpha13 -m 'ncremap: add_fll mpaso, landmask fix';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.1.1-alpha13: Faint';git push
+	git tag -a 5.1.1-alpha13 -m 'ncremap: add_fll mpaso, landmask fix, --no_add_fll, msk sgs < rnr_thr';git push --tags
+
+	* ncremap re-compute ELM/CICE area variable in model-native units iff no_cll_msr != Yes
 
 	* ncap2 create dummy input and output files when no filenames provided
 

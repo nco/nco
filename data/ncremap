@@ -3380,8 +3380,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	
     # Block 7: Parallel post-processing
     for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
-
-	if [ -n "${prc_elm}" ]; then
+	if [ -n "${prc_elm}" ] && [ "${no_cll_msr}" != 'Yes' ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		printf "SGS: Implement idiosyncratic CLM/CTSM/ELM characteristics in regridded file...\n"
 	    fi # !vrb_lvl
@@ -3404,7 +3403,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	fi # !prc_elm
 
-	if [ -n "${prc_cice}" ]; then
+	if [ -n "${prc_cice}" ] && [ "${no_cll_msr}" != 'Yes' ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		printf "SGS: Implement idiosyncratic CICE characteristics in regridded file...\n"
 	    fi # !vrb_lvl
