@@ -8,7 +8,7 @@
 
 	* ncap2 create dummy input and output files when no filenames provided
 
-	* ncremap add_fll place _FillValue in all cells where sgs_frc_out < rnr_thr = wgt_vld_thr
+	* ncremap add_fll place _FillValue where sgs_frc_out < rnr_thr = wgt_vld_thr (if provided)
 
 	* ncremap add --no_add_fll switch to override new MPAS default
 

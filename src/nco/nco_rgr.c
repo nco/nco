@@ -238,11 +238,11 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     /* NB: Weight thresholds of 0.0 or nearly zero can lead to underflow or divide-by-zero errors */
     // const double wgt_vld_thr_min=1.0e-10; /* [frc] Minimum weight threshold for valid destination value */
     rgr->flg_rnr=True;
-    rgr->wgt_vld_thr=wgt_vld_thr;
   }else{
     (void)fprintf(stderr,"%s: ERROR weight threshold must be in [0.0,1.0] and user supplied wgt_vld_thr = %g\n",nco_prg_nm_get(),wgt_vld_thr);
     nco_exit(EXIT_FAILURE);
-  } /* endif */
+  } /* !wgt_vld_thr */
+  rgr->wgt_vld_thr=wgt_vld_thr;
   
   /* Parse extended kvm options */
   char *sng_fnl=NULL;
@@ -5010,7 +5010,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	float tm_drn; /* [s] Seconds elapsed */
 	if(nco_dbg_lvl_get() >= nco_dbg_var) tm_srt=clock();
  
-	if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG renormalization configuration for %s: sgs_frc_out = %s, flg_frc_nrm = %d, has_mss_val = %d, flg_rnr = %d, wgt_vld_thr = %g\n",nco_prg_nm_get(),var_nm,sgs_frc_out ? "Yes" : "No",flg_frc_nrm,has_mss_val,flg_rnr,wgt_vld_thr);
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: DEBUG renormalization configuration for %s: sgs_frc_out = %s, flg_frc_nrm = %d, has_mss_val = %d, flg_rnr = %d, wgt_vld_thr = %g\n",nco_prg_nm_get(),var_nm,sgs_frc_out ? "Yes" : "No",flg_frc_nrm,has_mss_val,flg_rnr,wgt_vld_thr);
 
 	/* This first block is for "normal" variables without sub-gridscale fractions */
 	if(!sgs_frc_out){
@@ -5341,13 +5341,24 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	     Once sgs_msk if fully supported following clause will likely be redundant with --msk_apl in datasets with sgs_msk */
 	  if(sgs_frc_out){
 	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-	      /* 20221020: Use wgt_vld_thr (specified by rnr_thr) criteria to mask by sgs_frc_out */
-	      if(sgs_frc_out[dst_idx] == 0.0 || sgs_frc_out[dst_idx] < wgt_vld_thr){
+	      /* 20221018: Mask wherever sgs_frc_out is empty */
+	      if(sgs_frc_out[dst_idx] == 0.0){
 		for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 		  var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]=mss_val_cmp_dbl;
 		} /* !lvl_idx */
 	      } /* !frc_out */
 	    } /* !dst_idx */
+
+	    if(flg_rnr){
+	      /* 20221020: Also mask where sgs_frc_out < wgt_vld_thr */
+	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+		if(sgs_frc_out[dst_idx] < wgt_vld_thr){
+		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		    var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]=mss_val_cmp_dbl;
+		  } /* !lvl_idx */
+		} /* !frc_out */
+	      } /* !dst_idx */
+	    } /* !flg_rnr */
 	  } /* !sgs_frc_out */
 
 	} /* !flg_add_fll */
