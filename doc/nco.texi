@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.1-alpha13
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 20 October 2022
+@set update-date 21 October 2022
 @set update-month October 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2217,13 +2217,18 @@ This makes it difficult later to determine the data provenance.
 @cindex @code{nco_input_file_list}
 @cindex global attributes
 @cindex attributes, global
-To remedy this situation, multi-file operators store the number of
-input files in the @code{nco_input_file_number} global attribute and the
-input file list itself in the @code{nco_input_file_list} global attribute
-(@pxref{File List Attributes}).
+To remedy this situation, operators store the number of input files in
+the @code{nco_input_file_number} global attribute and the input file
+list itself in the @code{nco_input_file_list} global attribute
+(@pxref{File List Attributes}). 
 Although this does not preserve the exact command used to generate the
 file, it does retains all the information required to reconstruct the
 command and determine the data provenance.
+
+As of @acronym{NCO} @w{version 5.1.1}, released in November, 2022,
+all operators support specifying input files via @code{stdin}
+(@pxref{Specifying Input Files}), and also store such input filenames
+in the @ref{File List Attributes}).
 
 @cindex globbing
 @cindex shell
@@ -2694,6 +2699,7 @@ feature is automatic and cannot be controlled by the user.
 * Remote storage::
 * Retaining Retrieved Files::
 * File Formats and Conversion::
+* Zarr and NCZarr::
 * Large File Support::
 * Subsetting Files::
 * Subsetting Coordinate Variables::
@@ -3260,6 +3266,8 @@ Hence, the whitelist could be applied to other user-input in the future.
 @cindex @code{NINTAP}
 @cindex Processor, @acronym{CCM}
 @cindex @acronym{CCM} Processor
+@cindex standard input
+@cindex @code{stdin}
 @cindex @code{-n @var{loop}}
 @cindex @code{--nintap @var{loop}}
 @cindex @code{-p @var{input-path}}
@@ -3269,6 +3277,7 @@ Hence, the whitelist could be applied to other user-input in the future.
 @cartouche
 Availability (@code{-n}): @command{nces}, @command{ncecat}, @command{ncra}, @command{ncrcat}@*
 Availability (@code{-p}): All operators@*
+Availability (@code{stdin}): All operators@*
 Short options: @samp{-n}, @samp{-p}@*
 Long options: @samp{--nintap}, @samp{--pth}, @samp{--path}@*
 @end cartouche
@@ -3438,6 +3447,34 @@ maximum and then wrap.
 The first command does not have the indicator so it is always 1985.  
 The third command concatenates three files (@file{198512.nc},
 @file{198612.nc}, @file{198712.nc}).
+
+As of @acronym{NCO} @w{version 5.1.1}, released in November, 2022,
+all operators support specifying input files via @code{stdin}.
+This capability was implemented with NCZarr in mind, though it can
+also be used with traditional @acronym{POSIX} files.
+The @command{ncap2}, @command{ncks}, @command{ncrename}, and
+@command{ncatted} operators accept one or two filenames as positional
+arguments.
+If the input file for these operators is provided via @code{stdin},
+then the output file, if any, must be specified with @samp{-o out.nc}
+so the operators know whether to check @code{stdin}.
+Multi-file operators (@command{ncra}, @command{ncea},
+@command{ncrcat}, @command{ncecat}) will continue to identify the last
+positional argument as the output file unless the @samp{-o out.nc}
+form is used.
+The best best practice is to use @samp{-o out.nc} to specify output
+filenames when @code{stdin} is used for input filenames: 
+@example
+@verbatim
+echo in.nc | ncks            
+echo in.nc | ncks -o out.nc
+echo "in1.nc in2.nc" | ncbo -o out.nc
+echo "in1.nc in2.nc" | ncflint -o out.nc
+@end verbatim
+@end example
+For the provenance reasons dicussed above
+(@pxref{Large Numbers of Files}), all filenames input via @code{stdin}
+are stored as global attributes in the @ref{File List Attributes}).
 
 @html
 <a name="-o"></a> <!-- http://nco.sf.net/nco.html#-o -->
@@ -3995,7 +4032,7 @@ when your other preferred methods are not available locally.
 <a name="64bit-offset"></a> <!-- http://nco.sf.net/nco.html#64bit-offset -->
 <a name="netcdf4"></a> <!-- http://nco.sf.net/nco.html#netcdf4 -->
 @end html
-@node File Formats and Conversion, Large File Support, Retaining Retrieved Files, Shared features
+@node File Formats and Conversion, Zarr and NCZarr, Retaining Retrieved Files, Shared features
 @section File Formats and Conversion
 @cindex @acronym{HDF}
 @cindex CDF5
@@ -4063,7 +4100,10 @@ As of 2010, many netCDF datasets were in @code{64BIT_OFFSET} format.
 As of 2013, an increasing number of netCDF datasets were in
 @code{NETCDF4_CLASSIC} format.
 The @code{64BIT_DATA} (aka @code{CDF5} or @code{PNETCDF})
-format was added to netCDF in January, 2016. 
+format was added to netCDF in January, 2016 and immediately supported
+by @acronym{NCO}.
+Support for @ref{Zarr and NCZarr} backend storage formats was added to  
+netCDF in 2021 and supported by @acronym{NCO} in 2022.
 
 The @code{NETCDF4} format uses @acronym{HDF5} as the file storage layer. 
 The files are (usually) created, accessed, and manipulated using the 
@@ -4389,9 +4429,92 @@ dimension fixation and group flattening when converting to netCDF3
 If this feature would interest you, please let us know.
 
 @html
+<a name="Zarr"></a> <!-- http://nco.sf.net/nco.html#Zarr -->
+<a name="NCZarr"></a> <!-- http://nco.sf.net/nco.html#NCZarr -->
+<a name="zarr"></a> <!-- http://nco.sf.net/nco.html#zarr -->
+<a name="nczarr"></a> <!-- http://nco.sf.net/nco.html#nczarr -->
+<a name="conversion"></a> <!-- http://nco.sf.net/nco.html#conversion -->
+<a name="zarr"></a> <!-- http://nco.sf.net/nco.html#ncz -->
+<a name="zarr"></a> <!-- http://nco.sf.net/nco.html#ncz2psx -->
+<a name="fl_fmt"></a> <!-- http://nco.sf.net/nco.html#fl_fmt -->
+@end html
+@cindex Zarr
+@cindex NCZarr
+@cindex @command{ncz2psx}
+@cindex @acronym{POSIX}
+@cindex @acronym{S3}
+@cindex @code{stdin}
+@node Zarr and NCZarr, Large File Support, File Formats and Conversion, Shared features
+@section Zarr and NCZarr
+@cartouche
+Availability: All Operators@*
+@end cartouche
+As of @w{version 5.1.1} (November 2022), all @acronym{NCO} operators
+support NCZarr I/O.
+This support is currently limited to the @code{file://} scheme.
+Support for the @acronym{S3} scheme is next.
+All @acronym{NCO} commands should work as expected independent of the
+back-end storage format of the I/O.
+Operators can ingest and output @code{POSIX} or Zarr backend file
+formats:
+@example
+@verbatim
+in_ncz="file://${HOME}/in_zarr4#mode=nczarr,file"
+in_psx="${HOME}/in_zarr4.nc"
+out_ncz="file://${HOME}/foo#mode=nczarr,file"
+out_psx="${HOME}/foo.nc"
+
+ncks ${in_ncz} # Print contents of Zarr file
+ncks -O -v var ${in_psx} ${out_psx} # POSIX input to POSIX output
+ncks -O -v var ${in_psx} ${out_ncz} # POSIX input to Zarr output
+ncks -O -v var ${in_ncz} ${out_psx} # Zarr input to  POSIX output
+ncks -O -v var ${in_ncz} ${out_ncz} # Zarr input to Zarr output
+ncks -O --cmp='gbr|shf|zst' ${in_psx} ${out_ncz} # Quantize/Compress
+ncks -O --cmp='gbr|shf|zst' ${in_ncz} ${out_ncz} # Quantize/Compress
+@end verbatim
+@end example
+Commands with Zarr I/O behave mostly as expected.
+@acronym{NCO} treats Zarr and @acronym{POSIX} files identically once
+they are opened via the netCDF @acronym{API}.
+The main difference between Zarr and @acronym{POSIX}, from the
+viewpoint of @acronym{NCO}, is in handling the filenames.
+By default @acronym{NCO} performs operations in temporary files that
+it moves to a final destination once the rest of the command
+succeeds.
+Supporting Zarr in @acronym{NCO} requires applying the correct
+procedures to create, copy, move/rename, and delete files and
+directories correctly depending on the backend format.
+
+Many @acronym{NCO} users rely on @acronym{POSIX} filename globbing for
+multi-file operations, e.g., @samp{ncra in*.nc out.nc}.
+Globbing returns matches in @acronym{POSIX} format (e.g.,
+@code{in1.nc in2.nc in3.nc}) which lacks the @code{scheme://}
+indicator and the @code{#mode=...} fragment that the netCDF
+@acronym{API} needs to open a Zarr store.
+There is no perfect solution to this.
+
+A partial solution is available by judiciously using @acronym{NCO}'s
+new @code{stdin} capabilities for all operators
+(@pxref{Specifying Input Files}).
+The procedure uses the @command{ls} command (instead of globbing) to
+identify the desired Zarr stores, and pipes the
+(@acronym{POSIX}-style) results of that through the newly supplied 
+@acronym{NCO} filter-script @command{ncz2psx} that will prepend the
+desired scheme and append the desired fragment to the matched Zarr
+stores, and pipe those results onward to an @acronym{NCO} operator: 
+@example
+@verbatim
+ncra in*.nc out.nc      # POSIX input files via globbing
+ls in*.nc | ncra out.nc # POSIX input files via stdin
+ls in*.nc | ncz2psx | ncra out.nc # Zarr input via stdin
+ls in*.nc | ncz2psx --scheme=file --mode=nczarr,file | ncra out.nc
+@end verbatim
+@end example
+
+@html
 <a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->
 @end html
-@node Large File Support, Subsetting Files, File Formats and Conversion, Shared features
+@node Large File Support, Subsetting Files, Zarr and NCZarr, Shared features
 @section Large File Support
 @cindex @acronym{LFS}
 @cindex Large File Support
@@ -19809,16 +19932,37 @@ with the primary variable and other associated variables.
 See @ref{CF Conventions} for a detailed description.
 
 @html
+<a name="hms_avg"></a> <!-- http://nco.sf.net/nco.html#hms_avg -->
+<a name="rgn_avg"></a> <!-- http://nco.sf.net/nco.html#rgn_avg -->
 <a name="glb_avg"></a> <!-- http://nco.sf.net/nco.html#glb_avg -->
 <a name="global_average"></a> <!-- http://nco.sf.net/nco.html#global_average -->
+<a name="regional_average"></a> <!-- http://nco.sf.net/nco.html#regional_average -->
 @end html
 @cindex @code{--glb_avg}
 @cindex @code{--global_average}
-@item --glb_avg (@code{--glb_avg}, @code{--global_average})
-As of @acronym{NCO} version 4.9.1 (released December, 2019), this switch
-(which takes no argument) tells the splitter to output horizontally
-spatially averaged timeseries files instead of raw, native-grid
-timeseries.
+@cindex @code{--rgn_avg}
+@cindex @code{--regional_average}
+@cindex @code{--hms_avg}
+@cindex @code{--hemispheric_average}
+@cindex global average
+@cindex regional average
+@cindex hemispheric average
+@item --glb_avg (@code{--glb_avg}, @code{--global_average}) (deprecated) 
+@item --rgn_avg (@code{--rgn_avg}, @code{--region_average})
+When introduced in @acronym{NCO} version 4.9.1 (released December,
+2019), this switch (which takes no argument) caused the splitter to
+output global horizontally spatially averaged timeseries files instead of
+raw, native-grid timeseries.
+This switch changed behavior in @acronym{NCO} version 5.1.1
+(released November, 2022).
+It now causes the splitter to output three horizontally spatially
+averaged timeseries.
+First is the global average (as before), next is the northern
+hemisphere average, followed by the southern hemisphere average.
+The three timeseries are now saved in a two-dimensional (time
+by region) array with a ``region dimension'' named @code{rgn}.
+The region names are stored in the variable named @code{region_name}.
+
 This switch only has effect in timeseries splitting mode.
 This is useful, for example, to quickly diagnose the behavior of ongoing
 model simulations prior to a full-blown analysis. 
@@ -19826,6 +19970,10 @@ Thus the spatial mean files will be in the same location and have the same
 name as the native grid timeseries would have been and had, respectively.
 Note that this switch does not alter the capability of also outputting
 the full regridded timeseries, if requested, at the same time.
+
+Because the switch now outputs global and regional averages, the best
+practice is to invoke with @samp{--rgn_avg} instead of
+@samp{--glb_avg}. 
 
 @html
 <a name="no_ntv_tms"></a> <!-- http://nco.sf.net/nco.html#no_ntv_tms -->
@@ -22494,7 +22642,15 @@ gridcell, and for the mean of all input gridcells.
 The map-checker computes Conservation (@var{frac_a}) from the stored
 variables @code{S}, @code{row}, @code{column}, @code{area_a}, and
 @code{area_b} in the map-file, and then compares those values to the
-@code{frac_a} values (if any) on-disk, and warns of any disagreements.
+@code{frac_a} values (if any) on-disk, and warns of any disagreements
+@footnote{
+As of @w{version 5.1.1} (November 2022), the map checker diagnoses
+from the global attributes @code{map_method}, @code{no_conserve},
+or @code{noconserve} (in that order, if present) whether the mapping
+weights are intended to be conservative (as opposed to, e.g.,
+bilinear). 
+Weights deemed non-conservative by design are no longer flagged with
+dire @emph{WARNING} messages.}. 
 By definition, conservation is perfect to first order if the sum of
 the destination-gridcell-area-weighted weights (which is an area)
 equals the source gridcell area, and so their ratio (@var{frac_a}) is
@@ -26048,12 +26204,20 @@ zero sub-gridscale fractions) there are unmapped destination
 gridcells. 
 @example
 @verbatim
-ncremap --add_fll -v FLNS -m map.nc in.nc out.nc
+ncremap ...           # No renormalization/masking
+ncremap --sgs_frc=sgs --add_fll ... # Mask cells missing 100% 
+ncremap --rnr=0.1 ... # Mask cells missing > 10% 
+ncremap --rnr=0.1 --sgs_frc=sgs ... # Mask missing > 10%
+ncremap --rnr=0.1 --sgs_frc=sgs --add_fll ... # Mask missing > 90% or sgs < 10% 
+ncremap -P mpas... # --add_fll implicit, mask where sgs=0.0
+ncremap -P mpas... --no_add_fll # --add_fll explicitly turned-off, no masking
+ncremap -P mpas... --rnr=0.1 # Mask missing > 90% or sgs < 10% 
+ncremap -P elm...  # --add_fll not implicit, no masking
 @end verbatim
 @end example
 Note that @code{--add_fll} is automatically triggered by
 @code{--msk_apl} to ensure that masked fields regridded with
-TempestRemap-generated map-files have @code{_FillValue}s consistent
+TempestRemap-generated map-files have @code{_FillValue}s consistent 
 with map-files generated by @acronym{ESMF} and @acronym{NCO}. 
 
 @html
@@ -26088,10 +26252,6 @@ subsequently generated from the grid-file because most
 weight-generators base their weights on internally computed cell
 areas (although @acronym{ERWG} has an option, @code{--user_areas}, to
 override this behavior).
-
-@code{--msk_apl} to ensure that masked fields regridded with
-TempestRemap-generated map-files have @code{_FillValue}s consistent
-with map-files generated by @acronym{ESMF} and @acronym{NCO}. 
 
 @html
 <a name="config"></a> <!-- http://nco.sf.net/nco.html#config -->
@@ -26800,10 +26960,15 @@ ncremap --msk_apl           -v FLNS -m map.nc in.nc out.nc
 ncremap --msk_apl --add_fll -v FLNS -m map.nc in.nc out.nc # Equivalent
 @end verbatim
 @end example
-Note that @code{--msk_apl} automatically triggers @code{--add_fll} to
-ensure that masked fields regridded with TempestRemap-generated
-map-files have @code{_FillValue}s consistent with map-files generated
-by @acronym{ESMF} and @acronym{NCO}. 
+By itself, @code{--msk_apl} would only mask cells based on the
+@code{mask_b} field in the map-file.
+This is conceptually independent of the actual intersection mesh.
+However, @code{--msk_apl} automatically triggers @code{--add_fll},
+which also masks fields based on the computed intersection mesh
+(i.e., @code{--frac_b}).
+This combinations ensures that masked fields regridded with
+TempestRemap-generated map-files have @code{_FillValue}s consistent
+with map-files generated by @acronym{ESMF} and @acronym{NCO}. 
 
 @html
 <a name="msk_dst"></a> <!-- http://nco.sf.net/nco.html#msk_dst -->
@@ -28148,6 +28313,11 @@ priorities for future development of vertical regridding are:
       November 2022 in @acronym{NCO} @w{version 5.1.1}, are:
       linear extrapolation (@samp{--vrt_xtr=linear}),
       setting @w{to 0.0} (@samp{--vrt_xtr=zero}).
+      Linear extrapolation does exactly what you think: Values outside
+      the input domain are linearly extrapolated from the nearest two
+      values inside the input domain.
+      Zero extrapolation sets values outside the extrapoloation domain
+      to 0.0.  
       Supporting other methods, or improving the existing
       special-case approximations for temperature or geopotential,
       will remain low priority until we are lobbied with compelling

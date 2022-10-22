@@ -6,24 +6,43 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.1.1 instroduces support for NCZarr and refines support
-for the (relatively) new netCDF 4.9.X features for filters and
-quantization. The operators now support NCZarr I/O for most features.
+Version 5.1.1 add features for NCZarr, regridding, and interpolation. 
+All operators now support NCZarr I/O and input filenames via stdin.
+ncremap supports two new vertical extrapolation methods, 1D files, and
+allows flexible masking based on external fields such sub-gridscale
+extent. ncclimo outputs regional averages. 
+Numerous minor fixes improve codec support and regridding control.
+All users are encouraged to upgrade to this feature-rich release.
 
-Work on NCO 5.1.2 has commenced and will polish support for
-quantization/compression algorithms and add support for NCZarr I/O.
+Work on NCO 5.1.2 has commenced and aims to add support for Zarr S3
+stores and to polish support for new codecs.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. All operators now support specifying input files via stdin.
+This capability was implemented with NCZarr in mind, though it can
+also be used with traditional POSIX files. The ncap2, ncks, ncrename,
+and ncatted operators accept one or two filenames as positional
+arguments. If the input file is provided via stdin, then the output
+file, if any, must be specified with -o so the operators know whether
+to check stdin. Multi-file operators (ncra, ncrcat, ncecat) will
+continue to identify the last positional argument as the output
+file unless -o is used. The best best practice is to use -o fl_out to
+specify output filenames when stdin is used for input filenames:
+echo in.nc | ncks              
+echo in.nc | ncks -o out.nc
+echo "in1.nc in2.nc" | ncbo -o out.nc
+echo "in1.nc in2.nc" | ncflint -o out.nc
+http://nco.sf.net/nco.html#stdin
+
 A. All NCO operators support NCZarr I/O. This support is currently
 limited to the "file://" scheme. Support for the S3 scheme is next.
 All NCO commands should work as expected independent of the back-end
 storage format of the I/O. Operators can ingest and output POSIX,
 Zarr, or a mixture of these two file formats.
-
 
 in_ncz="file://${HOME}/in_zarr4#mode=nczarr,file"
 in_psx="${HOME}/in_zarr4.nc"
@@ -54,45 +73,99 @@ matches in POSIX format (e.g., 'in1.nc in2.nc in3.nc') which lacks the
 "scheme://" indicator and the "#mode=..." fragment that the netCDF API
 needs to open a Zarr store. There is no perfect solution to this.
 
-A partial solution is available by judiciously using NCO's stdin
-capabilities for multi-file operators. The procedure relies on using
-the 'ls' command (instead of globbing) to identify the desired Zarr
-stores, and piping the (POSIX-style) results of that through the
-newly supplied NCO filter-script that will prepend the desired scheme
-and append the desired fragment to the matched Zarr stores, and
-pipe those results to the NCO operator:
+A partial solution is available by judiciously using NCO's new stdin
+capabilities for all operators. The procedure relies on using the 'ls'
+command (instead of globbing) to identify the desired Zarr stores, and
+piping the (POSIX-style) results of that through the newly supplied
+NCO filter-script that will prepend the desired scheme and append the
+desired fragment to the matched Zarr stores, and pipe those results to
+the NCO operator: 
 
 ncra in*.nc out.nc      # POSIX input files via globbing
 ls in*.nc | ncra out.nc # POSIX input files via stdin
-ls in*.nc | psx2ncz | ncra out.nc # Zarr input via stdin
-ls in*.nc | psx2ncz --scheme=file --mode=nczarr,file | ncra out.nc
+ls in*.nc | ncz2psx | ncra out.nc # Zarr input via stdin
+ls in*.nc | ncz2psx --scheme=file --mode=nczarr,file | ncra out.nc
 
-A. All numeric NCO operators support new compression features
-when linked to a default installation of the latest netCDF, 4.9.0. 
-These features and how to access and tune them are extensively
-documented in the manual. Suffice it to say that all NCO users
-now have transparent access to modern lossless (Bzip2, Zstandard)
-and lossy (BitRound, Granular BitRound) compression algorithms.
-Codecs from the netCDF C-library, the Community Codec Repository
-(CCR), and from user-installed HDF5 filters may all be used.
-The commands will look something like this:
-ncks --cmp='granularbr,3|shuffle|zstandard,3' ... # Long-names
-ncks --cmp='gbr,3|shf|zst,3' ... # Abbreviations and levels
-ncks --cmp='gbr|shf|zst' ...     # Default levels
-ncks --cmp='f32|gbr|shf|bz2|dfl|zst' ... # Multiple codecs
-ncwa --cmp='gbr|shf|zst' ...     # Other operators...
-ncbo --cmp='gbr|shf|zst' ...     # All numeric operators, in fact
-ncclimo --cmp='btr\|shf\|zstd' ... # Climo generator
-ncremap --cmp='btr\|shf\|zstd' ... # Regridder
-Full documentation (including figures) is at
-http://nco.sf.net/nco.html#compression
-Thanks to Ed Hartnett (NOAA) and Dennis Heimbigner (Unidata) for
-guiding the addition of these features into the CCR and netCDF.
+Thanks to Dennis Heimbigner of Unidata for implementing NCZarr.
+http://nco.sf.net/nco.html#nczarr
+
+A. The --glb_avg switch causes the splitter to output global-mean
+timeseries files. That has been true since 2019. This switch now
+causes the splitter to output three horizontally spatially averaged
+timeseries. First is the global average (as before), next is the
+northern hemisphere average, followed by the southern hemisphere
+average. The three timeseries are now saved in a two-dimensional (time
+by region) array with a "region dimension" named rgn. Region names are
+stored in the variable named region_name: 
+ncclimo --split --rgn_avg # Produce regional and global averages
+ncclimo --split --glb_avg # Same (deprecated switch name)
+Thanks to Chris Golaz of LLNL for suggesting this feature.
+http://nco.sf.net/nco.html#rgn_avg
+
+A. The map checker diagnoses from the global attributes map_method,
+no_conserve, or noconserve (if present) whether the mapping weights
+are intended to be conservative (as opposed to, e.g., bilinear).
+Weights deemed non-conservative by design are no longer flagged
+with dire WARNING messages. Thanks to Mark Taylor of SNL for this
+suggestion. 
+ncks --chk_map map.nc
+http://nco.sf.net/nco.html#chk_map
+
+A. ncremap has long been able to re-normalize and/or mask-out fields
+in partially unmapped destination gridcells. The --rnr_thr option
+set the threshold value for valid cell coverage. However, the 
+implementation considered only the fraction of each gridcell left
+unmapped due to explicit missing values (i.e., _FillValue). Now the
+implementation can also mask by the value of a specified sub-gridscale
+(SGS) variable, e.g., landfrac. The --add_fll switch now sets to
+_FillValue any gridcell whose sgs_frc < rnr_thr. The --add_fll switch
+is currently opt-in, except for datasets produced by MPAS and
+identifed as such by the -P option. The new --no_add_fll overrides
+and turns off any automatic --add_fll behavior:
+ncremap ...           # No renormalization/masking
+ncremap --rnr=0.1 ... # Mask cells missing > 10% 
+ncremap --rnr=0.1 --sgs_frc=sgs ... # Mask missing > 10%
+ncremap --rnr=0.1 --sgs_frc=sgs --add_fll ... # Mask missing > 90% or sgs < 10% 
+ncremap -P mpas... # --add_fll implicit, mask where sgs=0.0
+ncremap -P mpas... --no_add_fll # --add_fll explicitly turned-off, no masking
+ncremap -P mpas... --rnr=0.1 # Mask missing > 90% or sgs < 10% 
+ncremap -P elm...  # --add_fll not implicit, no masking
+Thanks to Jill Zhang of LLNL for suggesting this capability.
+http://nco.sf.net/nco.html#add_fll
+
+A. ncremap vertical interpolation supports two new extrapolation
+methods: linear and zero. Linear extrapolation does exactly what 
+you think: Values outside the input domain are linearly extrapolated
+from the nearest two values inside the input domain. Invoke this with
+--vrt_xtr=lnr or --vrt_xtr=linear. Zero extrapolation sets values  
+outside the extrapoloation domain to 0.0. Invoke this with
+--vrt_xtr=zero. 
+ncremap --vrt_xtr=zero --vrt=vrt.nc in.nc out.nc
+ncremap --vrt_xtr=linear --vrt=vrt.nc in.nc out.nc
+ncks --rgr xtr_mth=linear --vrt=vrt.nc in.nc out.nc
+ncks --rgr xtr_mth=zero --vrt=vrt.nc in.nc out.nc
+http://nco.sf.net/nco.html#vrt_xtr
 
 BUG FIXES:
    
 A. NCO 5.1.0 could spew numerous and redundant diagnostic messages
 about missing codecs. 5.1.1 quiets these messages.
+
+B. If linked to netCDF 4.8.1 or earlier, NCO 5.1.0 could fail to find
+standard codecs and therefore die when compression was requested.
+The workarounds with 5.1.0 are to downgrade to 5.0.9 or to avoid
+compression. The fix is to upgrade.
+
+C. NCO 5.0.5 renamed distance-weighted-extrapolation (DWE) as
+inverse-distance-weighting (IDW). Unfortunately the switches to invoke
+this in ncremap were not updated. This means that maps intended to be
+IDW in 5.0.5-5.1.0 are probably the default monotonic conservative NCO
+weights. The workaround with 5.0.5-5.1.0 is to downgrade to 5.0.4.
+The fix is to upgrade.
+
+D. Previous versions of ncremap and ncks failed to vertically
+interpolate 1-D vertical files (!). Doh! The workaround is to
+artificially extend the 1-D file to 2-D. The fix is to upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
