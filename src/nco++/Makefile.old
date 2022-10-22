@@ -8,6 +8,7 @@
 # See https://opensource.org/licenses/BSD-3-Clause for full license text
 
 # Quickie test copies:
+# scp ~/nco/src/nco++/Makefile.old andes.olcf.ornl.gov:nco/src/nco++
 # scp ~/nco/src/nco++/Makefile.old dust.ess.uci.edu:nco/src/nco++
 # scp ~/nco/src/nco++/Makefile.old esmf.ess.uci.edu:nco/src/nco++
 # scp ~/nco/src/nco++/Makefile.old soot.ess.uci.edu:nco/src/nco++
@@ -107,15 +108,15 @@ ifndef ANTLR_ROOT
 endif
 ifdef ANTLR_INC
 # Directory containing AST.hpp
- ANTLR_INC := -I${ANTLR_INC}
+ ANTLR_INC_FLG := -I${ANTLR_INC}
 else
- ANTLR_INC := -I${ANTLR_ROOT}/include
+ ANTLR_INC_FLG := -I${ANTLR_ROOT}/include
 endif
 ifdef ANTLR_LIB
 # Directory containing libantlr.a
- ANTLR_LIB := -L${ANTLR_LIB} -lantlr
+ ANTLR_LIB_FLG := -L${ANTLR_LIB} -lantlr
 else
- ANTLR_LIB := -L${ANTLR_ROOT}/lib -lantlr
+ ANTLR_LIB_FLG := -L${ANTLR_ROOT}/lib -lantlr
 endif
 ifndef ${CCACHE}
  CCACHE := N
@@ -407,8 +408,8 @@ ifdef LIB_NCAR
  NC_LDFLAGS := ${LIB_NCAR} ${NC_LDFLAGS}
 endif
 
-OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC_FLG} ${UDUNITS_INC_FLG} ${ANTLR_INC}
-OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${SZ_LIB_FLG} ${UDUNITS_LIB_FLG} ${ANTLR_LIB}
+OTHER_CFLAGS := ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC_FLG} ${UDUNITS_INC_FLG} ${ANTLR_INC_FLG}
+OTHER_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${SZ_LIB_FLG} ${UDUNITS_LIB_FLG} ${ANTLR_LIB_FLG}
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=

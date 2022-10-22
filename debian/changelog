@@ -1,6 +1,6 @@
 nco (5.1.1-1) unstable; urgency=low
 
-  * new upstream version Tangentially Speaking: all: stdin, -o fl_out, ncz2psx, nsb->nesb, bgr->btg, bgb->bgr, cdc_lst_bld fix; ncclimo: rgn_avg; ncremap: chk_map bln xcp, fix idw, mpas add_fll, no_add_fll, msk sgs, vrt ntp 1D, vrt_xtr mth=zero,lnr
+  * new upstream version Tangentially Speaking: all: stdin, -o fl_out, ncz2psx, nsb->nesb, bgr->btg, bgb->bgr, cdc_lst_bld fix; ncclimo: rgn_avg; ncremap: chk_map bln xcp, fix idw, mpas add_fll, no_add_fll, msk sgs, vrt ntp 1D, vrt_xtr mth=zero,lnr, dpr correct_areas, mono3
 
  -- Charlie Zender <zender@uci.edu>  Fri, 28 Oct 2022 12:25:57 -0700
 

@@ -2,9 +2,11 @@
 
 	* NCO 5.1.1 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1: Tangentially Speaking';git push
-	git tag -a 5.1.1 -m 'all: stdin, -o fl_out, ncz2psx, nsb->nesb, bgr->btg, bgb->bgr, cdc_lst_bld fix; ncclimo: rgn_avg; ncremap: chk_map bln xcp, fix idw, mpas add_fll, no_add_fll, msk sgs, vrt ntp 1D, vrt_xtr mth=zero,lnr', dpr correct_areas, mono3;git push --tags
+	git tag -a 5.1.1 -m 'all: stdin, -o fl_out, ncz2psx, nsb->nesb, bgr->btg, bgb->bgr, cdc_lst_bld fix; ncclimo: rgn_avg; ncremap: chk_map bln xcp, fix idw, mpas add_fll, no_add_fll, msk sgs, vrt ntp 1D, vrt_xtr mth=zero,lnr, dpr correct_areas, mono3';git push --tags
 
 2022-10-21  Charlie Zender  <zender@uci.edu>
+
+	* Makefile.old fix ANTLR_LIB_FLG ANTLR_INC_FLG to fix Andes build
 
 	* NCO 5.1.1-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-beta01: Pancreatic';git push
