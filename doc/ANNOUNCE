@@ -38,7 +38,7 @@ echo "in1.nc in2.nc" | ncbo -o out.nc
 echo "in1.nc in2.nc" | ncflint -o out.nc
 http://nco.sf.net/nco.html#stdin
 
-A. All NCO operators support NCZarr I/O. This support is currently
+B. All NCO operators support NCZarr I/O. This support is currently
 limited to the "file://" scheme. Support for the S3 scheme is next.
 All NCO commands should work as expected independent of the back-end
 storage format of the I/O. Operators can ingest and output POSIX,
@@ -89,7 +89,7 @@ ls in*.nc | ncz2psx --scheme=file --mode=nczarr,file | ncra out.nc
 Thanks to Dennis Heimbigner of Unidata for implementing NCZarr.
 http://nco.sf.net/nco.html#nczarr
 
-A. The --glb_avg switch causes the splitter to output global-mean
+C. The --glb_avg switch causes the splitter to output global-mean
 timeseries files. That has been true since 2019. This switch now
 causes the splitter to output three horizontally spatially averaged
 timeseries. First is the global average (as before), next is the
@@ -102,16 +102,7 @@ ncclimo --split --glb_avg # Same (deprecated switch name)
 Thanks to Chris Golaz of LLNL for suggesting this feature.
 http://nco.sf.net/nco.html#rgn_avg
 
-A. The map checker diagnoses from the global attributes map_method,
-no_conserve, or noconserve (if present) whether the mapping weights
-are intended to be conservative (as opposed to, e.g., bilinear).
-Weights deemed non-conservative by design are no longer flagged
-with dire WARNING messages. Thanks to Mark Taylor of SNL for this
-suggestion. 
-ncks --chk_map map.nc
-http://nco.sf.net/nco.html#chk_map
-
-A. ncremap has long been able to re-normalize and/or mask-out fields
+D. ncremap has long been able to re-normalize and/or mask-out fields
 in partially unmapped destination gridcells. The --rnr_thr option
 set the threshold value for valid cell coverage. However, the 
 implementation considered only the fraction of each gridcell left
@@ -133,7 +124,16 @@ ncremap -P elm...  # --add_fll not implicit, no masking
 Thanks to Jill Zhang of LLNL for suggesting this capability.
 http://nco.sf.net/nco.html#add_fll
 
-A. ncremap vertical interpolation supports two new extrapolation
+E. The map checker diagnoses from the global attributes map_method,
+no_conserve, or noconserve (if present) whether the mapping weights
+are intended to be conservative (as opposed to, e.g., bilinear).
+Weights deemed non-conservative by design are no longer flagged
+with dire WARNING messages. Thanks to Mark Taylor of SNL for this
+suggestion. 
+ncks --chk_map map.nc
+http://nco.sf.net/nco.html#chk_map
+
+F. ncremap vertical interpolation supports two new extrapolation
 methods: linear and zero. Linear extrapolation does exactly what 
 you think: Values outside the input domain are linearly extrapolated
 from the nearest two values inside the input domain. Invoke this with
@@ -145,6 +145,10 @@ ncremap --vrt_xtr=linear --vrt=vrt.nc in.nc out.nc
 ncks --rgr xtr_mth=linear --vrt=vrt.nc in.nc out.nc
 ncks --rgr xtr_mth=zero --vrt=vrt.nc in.nc out.nc
 http://nco.sf.net/nco.html#vrt_xtr
+
+G. All numerical operators offer robust support for Blosc codecs
+when linked to netCDF 4.9.1+. This includes Blosc Zstandard, LZ, LZ4,  
+and Zlib. Thanks to Dennis Heimbigner of Unidata for upstream fixes.
 
 BUG FIXES:
    
