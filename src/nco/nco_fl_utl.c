@@ -474,10 +474,12 @@ nco_fl_lst_stdin /* [fnc] Get input file list from stdin */
     
     /* Initialize information to read stdin */
     fl_lst_in_lng=0L;
-    
+
     if(fl_in == NULL){
       fp_in=stdin;
     }else{
+      /* 20221021: Could provide an operator switch (e.g., --txt_fl) that indicates stdin contains 
+	 the name of a file that itself contains the list of input files. Kinda' meta. Nevermind. */
       if((fp_in=fopen(fl_in,"r")) == NULL){
 	(void)fprintf(stderr,"%s: ERROR opening file intended to contain input filename list: %s\n",nco_prg_nm_get(),fl_in);
 	nco_exit(EXIT_FAILURE);

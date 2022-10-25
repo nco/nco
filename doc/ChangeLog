@@ -6,7 +6,7 @@
 
 2022-10-21  Charlie Zender  <zender@uci.edu>
 
-	* Makefile.old fix ANTLR_LIB_FLG ANTLR_INC_FLG to fix Andes build
+	* Makefile.old implement ANTLR_LIB_FLG ANTLR_INC_FLG to fix Andes build
 
 	* NCO 5.1.1-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1-beta01: Pancreatic';git push
