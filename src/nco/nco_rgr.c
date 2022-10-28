@@ -1165,7 +1165,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(flg_grd_out_hyb && (ps_id_tpl != NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects variable PS (canonical name for spatially varying surface pressure field in hybrid grids) in both vertical-grid file and pure-pressure input data file. The vertical grid-file takes precedence. PS will be copied directly from vertical-grid file to, and used to construct the pressures of, the output hybrid-coordinate data file. PS in input pure-pressure file will be ignored.\n",nco_prg_nm_get(),fnc_nm);
     }else{
       if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)){
-	(void)fprintf(stderr,"%s: ERROR %s does not find variable PS (canonical name for spatially varying surface pressure field in hybrid grids) in pure-pressure input data file or in vertical grid-file for hybrid-pressure output. PS must be present in at least one of these files in order to construct the output hybrid-coordinate pressures.\nHINT: Append a valid PS to the inpud data file or vertical grid-file.\n",nco_prg_nm_get(),fnc_nm);
+	(void)fprintf(stderr,"%s: ERROR %s does not find variable PS (canonical name for spatially varying surface pressure field in hybrid grids) in pure-pressure input data file or in vertical grid-file for hybrid-pressure output. PS must be present in at least one of these files in order to construct the output hybrid-coordinate pressures.\nHINT: Append a valid PS to the input data file or vertical grid-file.\n",nco_prg_nm_get(),fnc_nm);
 	nco_exit(EXIT_FAILURE);
       } /* !ps_id_tpl */
     } /* !ps_id */
