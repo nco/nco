@@ -1,8 +1,18 @@
+2022-10-30  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.2-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha02: Huli Halloween';git push
+	git tag -a 5.1.2-alpha02 -m 'Functionally identical to 5.1.1';git push --tags
+
+	* Add man page ncz2psx.1
+
 2022-10-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.2-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha01: Twit';git push
 	git tag -a 5.1.2-alpha01 -m 'Functionally identical to 5.1.1';git push --tags
+
+	* nco_rgr.c add plev_nm_out, ps_nm_in, ps_nm_out as user-modifiable
 
 	* NCO 5.1.1 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.1: Tangentially Speaking';git push

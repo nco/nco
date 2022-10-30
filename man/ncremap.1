@@ -144,6 +144,10 @@ ncremap
 .IR xtr_nsp ]
 [\--xtr_xpn=
 .IR xtr_xpn ]
+.I input-file(s)
+[
+.IR output-file ]
+
 
 .SH DESCRIPTION
 .PP
@@ -154,10 +158,14 @@ file(s) to the grid specified by (in descending order of precedence)
 .I map_fl ,
 .I dst_fl, 
 .I grd_dst, or
-.I grd_sng,
-and stores the result(s) in the
-.I output-file
-file(s).
+.I grd_sng.
+If invoked with a single 
+.I input-file
+then the regridded file will be written to 
+.I output-file.
+If invoked with multiple input files, then the regridded version of
+each will be written with its original filename to 
+.I out_drc.
 
 .\" NB: Append man_end.txt here
 .\" $Header$ -*-nroff-*-
@@ -207,7 +215,6 @@ programs are properly installed at your site, the command
 should give you access to the complete manual, except for the
 TeX-intensive portions.
 
-.BR ncap (1), 
 .BR ncap2 (1), 
 .BR ncatted (1), 
 .BR ncbo (1), 
@@ -215,6 +222,7 @@ TeX-intensive portions.
 .BR nces (1), 
 .BR ncecat (1), 
 .BR ncflint (1), 
+.BR ncz2psx (1), 
 .BR ncks (1), 
 .BR nco (1), 
 .BR ncpdq (1), 

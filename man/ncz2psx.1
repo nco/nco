@@ -1,114 +1,39 @@
 .\" $Header$ -*-nroff-*-
-.\" Purpose: ROFF man page for ncclimo
+.\" Purpose: ROFF man page for ncz2psx
 .\" Usage:
-.\" nroff -man ~/nco/man/ncclimo.1 | less
-.TH NCCLIMO 1
+.\" nroff -man ~/nco/man/ncz2psx.1 | less
+.TH NCZ2PSX 1
 .SH NAME
-ncclimo \- netCDF Climatology Generator
+ncz2psx \- netCDF NCZarr and POSIX filename filter
 .SH SYNTAX
-ncclimo
-[\-3]
-[\-4]
-[\-5]
-[\-6]
-[\-7]
-[\-a
-.IR wnt_md ]
-[\-C
-.IR clm_md ]
-[\-c
-.IR caseid ]
+ncz2psx
 [\-d
 .IR dbg_lvl ] 
-[\--d2f ]
-[\--dpt_fl
-.IR dpt_fl ] 
-[\-E
-.IR yr_prv ] 
-[\-e
-.IR yr_end ] 
-[\-\-mth_end=
-.IR mth_end ]
-[\-f
-.IR fml_nm ]
-[\-\-fl_fmt=
-.IR fmt ]
-[\--glb_avg ]
-[\-h
-.IR hst_nm ] 
-[\-i
-.IR drc_in ] 
-[\-j
-.IR job_nbr ] 
-[\-L
-.IR dfl_lvl ] 
-[\-l
-.IR lnk_flg ] 
-[\-m
-.IR mdl_nm ] 
-[\-n
-.IR nco_usr ] 
-[\--no_cll_msr ]
-[\--no_frm_trm ]
-[\--no_ntv_tms ]
-[\--no_stg_grd ]
-[\--no_stdin ]
-[\-O
-.IR drc_rgr ] 
-[\-o
-.IR drc_out ] 
-[\-p
-.IR par_typ ]
-[\-\-ppc=
-.IR ppc_prc ]
-[\-R
-.IR rgr_opt ] 
-[\-r
-.IR rgr_map ]
-[\--rm_ntv=
-.IR rm_ntv ]
-[\-S
-.IR yr_prv ] 
-[\-s
-.IR yr_srt ] 
-[\-\-mth_srt=
-.IR mth_srt ]
-[\--seasons=
-.IR csn_lst ]
-[\--sgs_frc=
-.IR sgs_frc ]
-[\--split ]
-[\-t
-.IR thr_nbr ]
-[\--tpd_out=
-.IR tpd_out ]
-[\-\-uio]
-[\-v
-.IR var_lst ] 
-[\-\-var_xtr
-.IR var_xtr ]
+[\--frg_nm
+.IR frg_nm ]
+[\--frg_typ=
+.IR frg_typ ]
+[\--scm_typ
+.IR scm_typ ]
+[\--scm_nm
+.IR scm_nm ]
 [\--version ]
-[\-\-vrt
-.IR vrt_crd ]
-[\--vrt_xtr=
-.IR vrt_xtr ]
-[\-X
-.IR drc_xtn ] 
-[\-x
-.IR drc_prv ] 
-[\--xcl_var ]
-[\-Y
-.IR rgr_xtn ] 
-[\-y
-.IR rgr_prv ] 
-[\--ypf_max
-.IR ypf_max ] 
+.I input-files
 
 .SH DESCRIPTION
 .PP
-.B ncclimo
-produces climatological monthly means, seasonal means, annual mean,
-and optionally regrids all these files.
+.B ncz2psx
+filters a filename arguments between NCZarr and POSIX formats.
+It reads 
+.I input-files
+from
+.B stdin,
+performs the desired filename manipulation, and writes
+the results to
+.B stdout.
+Normally the results are piped to another
+.B NCO
+command.
 
 .\" NB: Append man_end.txt here
 .\" $Header$ -*-nroff-*-
@@ -158,6 +83,7 @@ programs are properly installed at your site, the command
 should give you access to the complete manual, except for the
 TeX-intensive portions.
 
+.BR ncap (1), 
 .BR ncap2 (1), 
 .BR ncatted (1), 
 .BR ncbo (1), 
