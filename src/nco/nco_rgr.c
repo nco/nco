@@ -2037,9 +2037,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  xtr_RHS.typ_fll=xtr_mth;
 	  /* Special-case extrapolation methods allowed for all except missing-value extrapolation types */
 	  if(xtr_mth != nco_xtr_fll_msv){
-	    /* 20221012: CSZ uses tpt for temperature variables in column profiles. Assume all variables whose names start with "tpt" are temperature variables, and use the temperature method for them */
-	    if(!strcmp(var_nm,"T") || !strcmp(var_nm,"ta") || (strstr(var_nm,"tpt") == var_nm)) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
-	    else if(!strcmp(var_nm,"Z3") || !strcmp(var_nm,"zg")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
+	    /* 2019: CAM/EAM use T and CMIP uses ta for temperature profiles
+	       2019: CAM/EAM use Z3 and CMIP uses zg for geopotential height profiles
+	       20221012: CSZ uses tpt for temperature profiles 
+	       20221031: SCREAM uses T_mid for temperature profiles
+	       20221031: SCREAM uses VerticalLayerMidpoint for geopotential height profiles
+	       Assume all variables whose names are "T", "T_mid", or "ta", or start with "tpt" are temperature variables
+	       Use the global lapse rate method to extrapolate them beyond the input domain */
+	    if(!strcmp(var_nm,"T") || !strcmp(var_nm,"T_mid") || !strcmp(var_nm,"ta") || (strstr(var_nm,"tpt") == var_nm)) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
+	    else if(!strcmp(var_nm,"Z3") || !strcmp(var_nm,"VerticalLayerMidpoint") || !strcmp(var_nm,"zg")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
 	  } /* !xtr_mth */
 	  crd_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
 	  crd_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));

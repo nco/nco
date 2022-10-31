@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha02: Huli Halloween';git push
 	git tag -a 5.1.2-alpha02 -m 'all: prn_usg() not OOM; ncz2psx: man; ';git push --tags
 
+	* ncremap treat T_mid as temperature and VerticalLayerMidpoint as geopotential height in vertical interpolation (for SCREAM)
+
 	* ncpdq ncbo ncwa ncflint print usage not die with OOM when called without arguments
 
 2022-10-30  Charlie Zender  <zender@uci.edu>
