@@ -703,14 +703,20 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   case ncbo:
   case ncflint:
     /* Operators with dual fl_in and required fl_out */
+    //(void)fprintf(stdout,"%s: DEBUG quark1 reached here\n",nco_prg_nm_get());
     if(psn_arg_nbr > 0 && psn_arg_nbr != 3-psn_arg_fst){
       if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d positional filenames; need exactly three\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d positional input filenames; need exactly two (output file was specified with -o or --output option)\n",nco_prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
-    }else if(psn_arg_nbr == 0 && !FL_OUT_FROM_PSN_ARG){
+    }else if(psn_arg_nbr == 0){
       /* Obtain input file list from stdin if it awaits there */
       fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
-      if(*FL_LST_IN_FROM_STDIN) assert(*fl_nbr == 2);
+      if(*FL_LST_IN_FROM_STDIN){
+	assert(*fl_nbr == 2); 
+      }else{
+	(void)nco_usg_prn();
+	nco_exit(EXIT_FAILURE);
+      } /* !FL_LST_IN_FROM_STDIN */
     } /* !psn_arg_nbr */
     break;
   case ncpdq:
@@ -720,10 +726,15 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d positional filenames; need exactly two\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d positional input filenames; need exactly one (output file was specified with -o or --output option)\n",nco_prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
-    }else if(psn_arg_nbr == 0 && !FL_OUT_FROM_PSN_ARG){
+    }else if(psn_arg_nbr == 0){
       /* Obtain input file list from stdin if it awaits there */
       fl_lst_in=nco_fl_lst_stdin(fl_nbr,fl_out,FL_LST_IN_FROM_STDIN);
-      if(*FL_LST_IN_FROM_STDIN) assert(*fl_nbr == 1);
+      if(*FL_LST_IN_FROM_STDIN){
+	assert(*fl_nbr == 1); 
+      }else{
+	(void)nco_usg_prn();
+	nco_exit(EXIT_FAILURE);
+      } /* !FL_LST_IN_FROM_STDIN */
     } /* !psn_arg_nbr */
     break;
   case ncra:
