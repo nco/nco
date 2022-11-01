@@ -141,7 +141,9 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->msk_nm) rgr->msk_nm=(char *)nco_free(rgr->msk_nm);
   if(rgr->plev_nm_in) rgr->plev_nm_in=(char *)nco_free(rgr->plev_nm_in);
   if(rgr->plev_nm_out) rgr->plev_nm_out=(char *)nco_free(rgr->plev_nm_out);
+  if(rgr->plev_nm_tpl) rgr->plev_nm_tpl=(char *)nco_free(rgr->plev_nm_tpl);
   if(rgr->ps_nm_in) rgr->ps_nm_in=(char *)nco_free(rgr->ps_nm_in);
+  if(rgr->ps_nm_out) rgr->ps_nm_out=(char *)nco_free(rgr->ps_nm_out);
   if(rgr->ps_nm_out) rgr->ps_nm_out=(char *)nco_free(rgr->ps_nm_out);
   if(rgr->vrt_nm) rgr->vrt_nm=(char *)nco_free(rgr->vrt_nm);
 
@@ -289,8 +291,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->msk_nm=NULL; /* [sng] Name of variable containing destination mask */
   rgr->plev_nm_in=NULL; /* [sng] Name of input variable to recognize as pure-pressure coordinate */
   rgr->plev_nm_out=NULL; /* [sng] Name of variable to output as vertical coordinate for pure pressure grids */
+  rgr->plev_nm_tpl=NULL; /* [sng] Name of template variable to recognize as vertical coordinate for pure pressure grids */
   rgr->ps_nm_in=NULL; /* [sng] Name of input variable to recognize as surface pressure for hybrid/sigma pressure grids */
   rgr->ps_nm_out=NULL; /* [sng] Name of variable to output as surface pressure for hybrid/sigma pressure grids */
+  rgr->ps_nm_tpl=NULL; /* [sng] Name of template variable to recognize as surface pressure for hybrid/sigma pressure grids */
   rgr->sgs_frc_nm=NULL; /* [sng] Name of variable sub-gridscale fraction */
   rgr->sgs_msk_nm=NULL; /* [sng] Name of variable sub-gridscale mask */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
@@ -688,6 +692,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->plev_nm_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !plev_nm_out */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"plev_nm_tpl") || !strcmp(rgr_lst[rgr_var_idx].key,"plev_nm_vrt")){
+      rgr->plev_nm_tpl=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !plev_nm_tpl */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"ps_nm_in") || !strcmp(rgr_lst[rgr_var_idx].key,"ps_nm")){
       rgr->ps_nm_in=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -696,6 +704,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->ps_nm_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !ps_nm_out */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"ps_nm_tpl") || !strcmp(rgr_lst[rgr_var_idx].key,"ps_nm_vrt")){
+      rgr->ps_nm_tpl=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !ps_nm_tpl */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"ply_tri")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"csz")){
 	rgr->ply_tri_mth=nco_ply_tri_mth_csz;
@@ -807,13 +819,23 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   if(!rgr->lon_nm_in) rgr->lon_nm_in=(char *)strdup("lon"); /* [sng] Name of dimension to recognize as longitude */
   if(!rgr->lon_vrt_nm) rgr->lon_vrt_nm=(char *)strdup("lon_vertices"); /* [sng] Name of non-rectangular boundary variable for longitude */
   if(!rgr->msk_nm) rgr->msk_nm=(char *)strdup("mask_b"); /* [sng] Name of variable containing destination mask */
-  if(!rgr->plev_nm_in) rgr->plev_nm_in=(char *)strdup("plev"); /* [sng] Name of variable to recognize as pure pressure coordinate */
-  if(!rgr->plev_nm_out) rgr->plev_nm_out=(char *)strdup("plev"); /* [sng] Name of variable to output as vertical coordinate for pure pressure grids */
-  if(!rgr->ps_nm_in) rgr->ps_nm_in=(char *)strdup("PS"); /* [sng] Name of input variable to recognize as surface pressure for hybrid/sigma pressure grids */
-  if(!rgr->ps_nm_out) rgr->ps_nm_out=(char *)strdup("PS"); /* [sng] Name of variable to output as surface pressure for hybrid/sigma pressure grids */
   if(!rgr->vrt_nm) rgr->vrt_nm=(char *)strdup("nv"); /* [sng] Name of dimension to employ for vertices */
 
-  /* Derived from defaults and command-line arguments */
+  /* Order is important in these derived names:
+     Copy user-specified input name to output name if output name is unspecified...otherwise adopt default output name
+     Template vertical coordinate name is either user-specified or default */
+  if(!rgr->plev_nm_out){
+    if(rgr->plev_nm_in) rgr->plev_nm_out=(char *)strdup(rgr->plev_nm_in); else rgr->plev_nm_out=(char *)strdup("plev"); /* [sng] Name of variable to output as vertical coordinate for pure pressure grids */
+  } /* !rgr->plev_nm_out */
+  if(!rgr->plev_nm_in) rgr->plev_nm_in=(char *)strdup("plev"); /* [sng] Name of variable to recognize as pure pressure coordinate */
+  if(!rgr->plev_nm_tpl) rgr->plev_nm_tpl=(char *)strdup("plev"); /* [sng] Name of template variable to recognize as vertical coordinate for pure pressure grids */
+  if(!rgr->ps_nm_out){
+    if(rgr->ps_nm_in) rgr->ps_nm_out=(char *)strdup(rgr->ps_nm_in); else rgr->ps_nm_out=(char *)strdup("PS"); /* [sng] Name of variable to output as surface pressure for hybrid/sigma pressure grids */
+  } /* !rgr->ps_nm_out */
+  if(!rgr->ps_nm_in) rgr->ps_nm_in=(char *)strdup("PS"); /* [sng] Name of input variable to recognize as surface pressure for hybrid/sigma pressure grids */
+  if(!rgr->ps_nm_tpl) rgr->ps_nm_tpl=(char *)strdup("PS"); /* [sng] Name of template variable to recognize as surface pressure for hybrid/sigma pressure grids */
+
+    /* Derived from defaults and command-line arguments */
   // On second thought, do not strdup() these here. This way, NULL means user never specified lon/lat-out names
   //  if(!rgr->col_nm_out) rgr->col_nm_out=(char *)strdup("ncol"); /* [sng] Name of dimension to output as horizontal spatial dimension on unstructured grid */
   //  if(!rgr->lat_nm_out) rgr->lat_nm_out=(char *)strdup("lat"); /* [sng] Name of dimension to output as latitude */
@@ -922,6 +944,20 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     return NCO_ERR;
   } /* !hyai */
     
+  /* Adjust searches to user-specified coordinate names */
+  char *plev_nm_in; /* [sng] Pure-pressure coordinate name in input file */
+  char *plev_nm_out; /* [sng] Pure-pressure coordinate name in output file */
+  //  char *plev_nm_tpl; /* [sng] Pure-pressure coordinate name in template file */
+  char *ps_nm_in; /* [sng] Surface pressure field name in input file */
+  char *ps_nm_out; /* [sng] Surface pressure field name in output file */
+  char *ps_nm_tpl; /* [sng] Surface pressure field name in template file */
+  if(rgr->plev_nm_in) plev_nm_in=rgr->plev_nm_in;
+  if(rgr->plev_nm_out) plev_nm_out=rgr->plev_nm_out;
+  //if(rgr->plev_nm_tpl) plev_nm_tpl=rgr->plev_nm_tpl;
+  if(rgr->ps_nm_in) ps_nm_in=rgr->ps_nm_in;
+  if(rgr->ps_nm_out) ps_nm_out=rgr->ps_nm_out;
+  if(rgr->ps_nm_tpl) ps_nm_tpl=rgr->ps_nm_tpl;
+
   if(flg_grd_out_hyb){
     rcd=nco_inq_varid(tpl_id,"hyai",&hyai_id);
     rcd=nco_inq_varid(tpl_id,"hyam",&hyam_id);
@@ -930,7 +966,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_varid(tpl_id,"P0",&p0_id);
     rcd=nco_inq_varid_flg(tpl_id,"ilev",&ilev_id);
     rcd=nco_inq_varid_flg(tpl_id,"lev",&lev_id);
-    rcd=nco_inq_varid_flg(tpl_id,"PS",&ps_id);
+    rcd=nco_inq_varid_flg(tpl_id,ps_nm_tpl,&ps_id);
   } /* !flg_grd_out_hyb */
   
   if(flg_grd_out_prs){
@@ -954,9 +990,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   char *lev_nm_in;
   char *ilev_nm_out;
   char *lev_nm_out;
-  char *plev_nm_in; /* [sng] Pure-pressure coordinate name */
-  char *ps_nm_in; /* [sng] Surface pressure field name in input file */
-  char *ps_nm_out; /* [sng] Surface pressure field name in output file */
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
   int *dmn_ids_in=NULL; /* [nbr] Input file dimension IDs */
   int *dmn_ids_out=NULL; /* [nbr] Output file dimension IDs */
@@ -1111,9 +1144,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   out_id=rgr->out_id;
 
   /* Determine input grid type */
-  if(rgr->plev_nm_in) plev_nm_in=rgr->plev_nm_in;
-  if(rgr->ps_nm_in) ps_nm_in=rgr->ps_nm_in;
-  if(rgr->ps_nm_out) ps_nm_out=rgr->ps_nm_out;
   if((rcd=nco_inq_varid_flg(in_id,"hyai",&hyai_id)) == NC_NOERR){
     nco_vrt_grd_in=nco_vrt_grd_hyb; /* EAM */
     flg_grd_in_hyb=True;
@@ -1186,11 +1216,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if((rcd=nco_inq_varid_flg(in_id,ps_nm_in,&ps_id)) == NC_NOERR){
       /* Output file creation procedure discriminates between input surface pressure dimensioned as CAM/EAM vs. ECMWF */
       flg_grd_hyb_cameam=True;
-      if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects variable %s (name for spatially varying surface pressure field in hybrid grids) in pure-pressure input data file. %s will be copied directly from pure-pressure grid input dataset to, and used to construct the pressures of, the output hybrid-coordinate data file.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_in);
-      if(flg_grd_out_hyb && (ps_id_tpl != NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects variable PS (canonical name for spatially varying surface pressure field in hybrid grids) in both vertical-grid file and pure-pressure input data file. The vertical grid-file takes precedence. PS will be copied directly from vertical-grid file to, and used to construct the pressures of, the output hybrid-coordinate data file. PS in input pure-pressure file will be ignored.\n",nco_prg_nm_get(),fnc_nm);
+      if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field %s in pure-pressure input data file. %s will be copied directly from pure-pressure grid input dataset to, and used to construct the pressures of, the output hybrid-coordinate data file, where it will be named %s.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_in,ps_nm_out);
+      if(flg_grd_out_hyb && (ps_id_tpl != NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field in both vertical-grid file as %s, and in pure-pressure input data file as %s. The vertical grid-file takes precedence. %s will be copied directly from vertical-grid file to, and used to construct the pressures of, the output hybrid-coordinate data file, where it will be named %s. %s in input pure-pressure file will be ignored.\n",nco_prg_nm_get(),fnc_nm,ps_nm_tpl,ps_nm_in,ps_nm_tpl,ps_nm_out,ps_nm_in);
     }else{
       if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)){
-	(void)fprintf(stderr,"%s: ERROR %s does not find variable PS (canonical name for spatially varying surface pressure field in hybrid grids) in pure-pressure input data file or in vertical grid-file for hybrid-pressure output. PS must be present in at least one of these files in order to construct the output hybrid-coordinate pressures.\nHINT: Append a valid PS to the input data file or vertical grid-file.\n",nco_prg_nm_get(),fnc_nm);
+	(void)fprintf(stderr,"%s: ERROR %s does not find spatially varying surface pressure field %s in pure-pressure input data file or as %s in vertical grid-file for hybrid-pressure output. A surface pressure field must be present in at least one of these files in order to construct the output hybrid-coordinate pressures.\nHINT: Append a valid surface pressure field to the input data file or to the vertical grid-file.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_tpl);
 	nco_exit(EXIT_FAILURE);
       } /* !ps_id_tpl */
     } /* !ps_id */
@@ -1523,17 +1553,34 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   
   /* Do not extract grid variables (that are also extensive variables) like ilev, lev, hyai, hyam, hybi, hybm */ 
   /* Exception list source:
-     CAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
-     EAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
+     CAM/EAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
      ECMWF: hyai, hyam, hybi, hybm, lev, lnsp
-     NCEP: plev */
-  const int var_xcl_lst_nbr=10; /* [nbr] Number of objects on exclusion list */
-  const char *var_xcl_lst[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/plev","/PS","/lnsp"};
+     NCEP: plev
+     SCREAM: hyai, hyam, hybi, hybm, ilev, lev, P0, ps
+     Run-time: ps_nm_in, ps_nm_tpl, plev_nm_in, plev_nm_out */
+  const char *var_xcl_lst_fix[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/plev","/PS","/lnsp"};
+  int var_xcl_fix_nbr=sizeof(var_xcl_lst_fix)/sizeof(char *); /* [nbr] Number of variables in fixed (compile-time) exclusion list */
+  /* Create list to hold both compile- and run-time exclusion variables */
+  char **var_xcl_lst=NULL; /* [sng] List of variables to exclude */
+  int var_xcl_run_nbr=4; /* [nbr] Number of variables in run-time exclusion list */
+  int var_xcl_lst_nbr=var_xcl_fix_nbr; /* [nbr] Number of variables in exclusion list */
+  long idx; /* [idx] Generic index */
+  var_xcl_lst=(char **)nco_malloc((var_xcl_fix_nbr+var_xcl_run_nbr)*sizeof(char *));
+  /* Copy compile-time exclusion list names */
+  for(idx=0;idx<var_xcl_fix_nbr;idx++){
+    var_xcl_lst[idx]=(char *)strdup(var_xcl_lst_fix[idx]);
+  } /* !idx */
+  /* Add run-time variables to exclusion list */
+  var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(plev_nm_in);
+  var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(plev_nm_out);
+  var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(ps_nm_in);
+  var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(ps_nm_out);
+
+  /* Exclude forbidden fruit */
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
   int var_crt_nbr=0; /* [nbr] Number of created variables */
-  long idx; /* [idx] Generic index */
   unsigned int idx_tbl; /* [idx] Counter for traversal table */
   const unsigned int trv_nbr=trv_tbl->nbr; /* [idx] Number of traversal table entries */
   for(idx=0;idx<var_xcl_lst_nbr;idx++){
@@ -1561,6 +1608,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       trv_tbl->lst[idx_tbl].flg_xtr=False;
     } /* !idx_tbl */
   } /* !idx */
+
+  /* Free dynamically allocated exclusion list names */
+  for(idx=0;idx<var_xcl_lst_nbr;idx++){
+    if(var_xcl_lst[idx]) var_xcl_lst[idx]=(char *)nco_free(var_xcl_lst[idx]);
+  } /* !idx */
+  if(var_xcl_lst) var_xcl_lst=(char **)nco_free(var_xcl_lst);
 
   char *var_nm; /* [sng] Variable name */
   int *dmn_id_in=NULL; /* [id] Dimension IDs */
@@ -1602,7 +1655,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     //      rcd=nco_inq_dimname(out_id,dmn_ids_out[dmn_idx],dmn_nm);
     //      (void)fprintf(stdout,"%s: DEBUG quark5 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_out[%d] = %d, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_out[dmn_idx],dmn_nm);
     //    } /* !dmn_idx */
-    if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
+    if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,ps_nm_out,crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
     if(flg_grd_hyb_ecmwf){
       /* Remove degenerate ECMWF vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions */
       int dmn_nbr_out_ecmwf=0;
@@ -1611,7 +1664,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	if(strcmp(dmn_nm,ilev_nm_out) && strcmp(dmn_nm,lev_nm_out) && strcmp(dmn_nm,"lev_2"))
 	  rcd=nco_inq_dimid(out_id,dmn_nm,dmn_ids_out+dmn_nbr_out_ecmwf++);
       } /* !dmn_idx */
-      rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_out_ecmwf,dmn_ids_out,&ps_id);
+      rcd+=nco_def_var(out_id,ps_nm_out,crd_typ_out,dmn_nbr_out_ecmwf,dmn_ids_out,&ps_id);
     } /* !flg_grd_hyb_ecmwf */
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,ps_id,NULL,nco_flt_flg_prc_fll);
     var_crt_nbr++;
@@ -2040,8 +2093,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    /* 2019: CAM/EAM use T and CMIP uses ta for temperature profiles
 	       2019: CAM/EAM use Z3 and CMIP uses zg for geopotential height profiles
 	       20221012: CSZ uses tpt for temperature profiles 
-	       20221031: SCREAM uses T_mid for temperature profiles
-	       20221031: SCREAM uses VerticalLayerMidpoint for geopotential height profiles
+	       20221031: SCREAM uses T_mid for temperature profiles, VerticalLayerMidpoint for geopotential height profiles
 	       Assume all variables whose names are "T", "T_mid", or "ta", or start with "tpt" are temperature variables
 	       Use the global lapse rate method to extrapolate them beyond the input domain */
 	    if(!strcmp(var_nm,"T") || !strcmp(var_nm,"T_mid") || !strcmp(var_nm,"ta") || (strstr(var_nm,"tpt") == var_nm)) xtr_RHS.typ_fll=nco_xtr_fll_tpt;

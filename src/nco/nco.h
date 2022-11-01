@@ -1205,8 +1205,10 @@ typedef enum nco_xtr_typ_enm
     char *msk_nm; /* [sng] Name of variable containing destination mask */
     char *plev_nm_in; /* [sng] Name of input variable to recognize as vertical coordinate for pure pressure grids */
     char *plev_nm_out; /* [sng] Name of variable to output as vertical coordinate for pure pressure grids */
+    char *plev_nm_tpl; /* [sng] Name of template variable to recognize as vertical coordinate for pure pressure grids */
     char *ps_nm_in; /* [sng] Name of input variable to recognize as surface pressure for hybrid/sigma pressure grids */
     char *ps_nm_out; /* [sng] Name of variable to output as surface pressure for hybrid/sigma pressure grids */
+    char *ps_nm_tpl; /* [sng] Name of template variable to recognize as surface pressure for hybrid/sigma pressure grids */
     char *sgs_frc_nm; /* [sng] Name of variable containing sub-gridscale fraction */
     char *sgs_msk_nm; /* [sng] Name of variable containing sub-gridscale mask */
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */

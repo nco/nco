@@ -1,8 +1,12 @@
-2022-10-31  Charlie Zender  <zender@uci.edu>
+2022-11-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha02: Huli Halloween';git push
-	git tag -a 5.1.2-alpha02 -m 'all: prn_usg() not OOM; ncz2psx: man; ';git push --tags
+	git tag -a 5.1.2-alpha02 -m 'all: prn_usg() not OOM; ncremap: recognize T_mid, ps/plev_nm_in/out/tpl; ncz2psx: man';git push --tags
+
+	* ncremap add ps_nm_in, ps_nm_out, plev_nm_in, plev_nm_out to excluded variables list
+
+2022-10-31  Charlie Zender  <zender@uci.edu>
 
 	* ncremap treat T_mid as temperature and VerticalLayerMidpoint as geopotential height in vertical interpolation (for SCREAM)
 
