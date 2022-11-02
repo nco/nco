@@ -321,7 +321,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_msk_out=False; /* [flg] Add mask to output */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
   rgr->flg_s1d=False; /* [flg] Unpack sparse-1D CLM/ELM variables */
-  rgr->flg_stg=True; /* [flg] Write staggered grid with FV output */
+  rgr->flg_stg=False; /* [flg] Write staggered grid with FV output */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
   rgr->grd_typ=nco_grd_2D_eqa; /* [enm] Grid type */
   rgr->idx_dbg=0; /* [idx] Index of gridcell for debugging */
@@ -471,7 +471,11 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"no_stagger") || !strcmp(rgr_lst[rgr_var_idx].key,"no_stg")){
       rgr->flg_stg=False;
       continue;
-    } /* !stagger */
+    } /* !no_stagger */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"stagger") || !strcmp(rgr_lst[rgr_var_idx].key,"stg_grd")){
+      rgr->flg_stg=True;
+      continue;
+    } /* !no_stagger */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"grd_ttl") || !strcmp(rgr_lst[rgr_var_idx].key,"ttl")){
       if(rgr->grd_ttl) rgr->grd_ttl=(char *)nco_free(rgr->grd_ttl);
       rgr->grd_ttl=(char *)strdup(rgr_lst[rgr_var_idx].val);
@@ -2127,7 +2131,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  } /* !out_ncr */
 	  
 	  /* Constants and parameters for extrapolation */
-	  const double gamma_moist=6.5/10000.0; /* [K/Pa] Temperature extrapolation assumes constant moist adiabatic lower atmosphere lapse rate dT/dp=constant=(6.5 K)/(100 mb) = (6.5 K)/(10000 Pa) */
+	  const double gamma_moist=6.5/10000.0; /* [K/Pa] Temperature extrapolation assumes constant moist adiabatic lower atmosphere lapse rate dT/dp=constant=(6.5 K)/(100 hPa) = (6.5 K)/(10000 Pa) */
 	  const double Rd_rcp_g0=287.0/9.81; /* [K/Pa] Geopotential height extrapolation uses hypsometric equation Z2-Z1=(Rd*Tv_avg/g0)*ln(p1/p2)=(Rd*Tv_avg/g0)*(ln(p1)-ln(p2)) */
 	  const double tpt_vrt_avg=288.0; /* [K] Mean virtual temperature assumed for geopotential height extrapolation */
 	  nco_bool FIRST_WARNING_LHS; /* [flg] First warning for LHS extrapolation */
@@ -2283,7 +2287,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  else /* Coordinates are already linear in pressure */
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
 		      (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*gamma_moist;
-		  if(FIRST_WARNING_RHS) (void)fprintf(fp_stdout,"%s: INFO %s temperature extrapolated toward/into surface assuming constant moist adiabatic lapse rate = %g K/(100 mb) for variable %s\n",nco_prg_nm_get(),fnc_nm,gamma_moist*10000.0,var_nm);
+		  if(FIRST_WARNING_RHS) (void)fprintf(fp_stdout,"%s: INFO %s temperature extrapolated toward/into surface assuming constant moist adiabatic lapse rate = %g K/(100 hPa) for variable %s\n",nco_prg_nm_get(),fnc_nm,gamma_moist*10000.0,var_nm);
 		  FIRST_WARNING_RHS=False;
 		  break;
 		case nco_xtr_fll_gph:

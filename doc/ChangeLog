@@ -1,8 +1,12 @@
-2022-11-01  Charlie Zender  <zender@uci.edu>
+2022-11-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha02: Huli Halloween';git push
-	git tag -a 5.1.2-alpha02 -m 'all: prn_usg() not OOM; ncremap: recognize T_mid, ps/plev_nm_in/out/tpl; ncz2psx: man';git push --tags
+	git tag -a 5.1.2-alpha02 -m 'all: prn_usg() not OOM; ncremap: recognize T_mid, ps/plev_nm_in/out/tpl, stg_grd dfl False; ncz2psx: man';git push --tags
+
+	* ncremap turn-off staggered grid by default in nco_rgr.c to avoid --no_stg_grd
+
+2022-11-01  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add ps_nm_in, ps_nm_out, plev_nm_in, plev_nm_out to excluded variables list
 

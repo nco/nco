@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.2-alpha01
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 28 October 2022
-@set update-month October 2022
+@set update-date 2 November 2022
+@set update-month November 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -28412,7 +28412,7 @@ prs_ntf[time,ilev,lat,lon]=hyai*P0+hybi*PS # Interface
 @end verbatim
 @end example
 The scalar reference pressure @code{P0} is typically @w{100000 Pa}
-(or @w{1000 mb}) while the surface pressure @code{PS} is a (possibly
+(or @w{1000 hPa}) while the surface pressure @code{PS} is a (possibly
 time-varying) array with one or two spatial dimensions, and its values 
 are in the same dimensional units (e.g., Pa or hPa) as @code{P0}.
 
@@ -28450,8 +28450,8 @@ ncap2 -s 'prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm' \
 Hybrid-coordinate grids define a pure-sigma or pure-pressure grid when
 either their @var{A} or @var{B} coefficients are zero, respectively.
 For example, the following creates the hybrid-coordinate
-representation of a pure-pressure grid with midpoints every @w{100 mb}
-from @w{100 mb} to @w{1000 mb}:
+representation of a pure-pressure grid with midpoints every @w{100 hPa}
+from @w{100 hPa} to @w{1000 hPa}:
 @example
 @verbatim
 ncap2 -O -v -s 'defdim("ilev",11);defdim("lev",10);P0=100000.0; \
