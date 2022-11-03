@@ -4,11 +4,11 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha03: fxm';git push
 	git tag -a 5.1.2-alpha03 -m '';git push --tags
 
-	* ncremap --vrt_in to specify optional input vertical grid filename
+	* ncremap accept --vrt_in to specify optional input vertical grid filename (borken)
 
 	* ncremap shift from vrt_fl to vrt_out for canonical vertical interpolation
 
-	* ncremap --ps_nm_in=ps_nm with optional embedded filename works
+	* ncremap --ps_nm_in=ps_nm with optional embedded filename (vetted)
 
 	* NCO 5.1.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha02: Gould Median';git push

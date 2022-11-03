@@ -868,15 +868,17 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   const char fnc_nm[]="nco_ntp_vrt()"; /* [sng] Function name */
 
-  char *fl_tpl; /* [sng] Template file (vertical grid file) */
+  char *fl_tpl; /* [sng] Template file (output vertical grid file) */
+  char *fl_vrt_in=NULL; /* [sng] Input vertical grid file */
   char *fl_pth_lcl=NULL;
 
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int in_id; /* I [id] Input netCDF file ID */
-  int tpl_id; /* [id] Input netCDF file ID (for vertical grid template) */
+  int tpl_id; /* [id] netCDF file ID for output vertical grid template */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int out_id; /* I [id] Output netCDF file ID */
+  int vrt_in_id; /* I [id] netCDF file ID for input vertical grid */
   int rcd=NC_NOERR;
 
   int dmn_idx; /* [idx] Dimension index */
@@ -1153,14 +1155,26 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   in_id=rgr->in_id;
   out_id=rgr->out_id;
 
+  /* Assume input vertical grid is in input data file unless separate input vertical grid file specified */
+  vrt_in_id=in_id;
+  if(rgr->fl_vrt_in) fl_vrt_in=(char *)strdup(rgr->fl_vrt_in);
+  if(fl_vrt_in){
+    /* Make sure file is on local system and is readable or die trying */
+    fl_vrt_in=nco_fl_mk_lcl(fl_vrt_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
+    /* Open file using appropriate buffer size hints and verbosity */
+    if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+    if(SHARE_OPEN) md_open=md_open|NC_SHARE;
+    rcd+=nco_fl_open(fl_vrt_in,md_open,&bfr_sz_hnt,&vrt_in_id);
+  } /* !fl_vrt_in */
+  
   /* Determine input grid type */
-  if((rcd=nco_inq_varid_flg(in_id,"hyai",&hyai_id)) == NC_NOERR){
+  if((rcd=nco_inq_varid_flg(vrt_in_id,"hyai",&hyai_id)) == NC_NOERR){
     nco_vrt_grd_in=nco_vrt_grd_hyb; /* EAM */
     flg_grd_in_hyb=True;
-  }else if((rcd=nco_inq_varid_flg(in_id,plev_nm_in,&plev_id)) == NC_NOERR){
+  }else if((rcd=nco_inq_varid_flg(vrt_in_id,plev_nm_in,&plev_id)) == NC_NOERR){
     nco_vrt_grd_in=nco_vrt_grd_prs; /* NCEP */
     flg_grd_in_prs=True;
-  }else if((rcd=nco_inq_varid_flg(in_id,"depth",&dpt_id)) == NC_NOERR){
+  }else if((rcd=nco_inq_varid_flg(vrt_in_id,"depth",&dpt_id)) == NC_NOERR){
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* NCEP */
     flg_grd_in_dpt=True;
   }else{ /* !hyai */
@@ -1193,7 +1207,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   char *var_nm; /* [sng] Variable name */
   int fl_ps_id; /* [id] netCDF file ID for external surface pressure file */
   var_nm=ps_nm_in;
-  fl_ps_id=in_id;
+  fl_ps_id=vrt_in_id;
   if(flg_grd_in_hyb){
     char *fl_ps=NULL; /* [sng] External surface pressure file name */
     if((rcd=nco_inq_varid_flg(fl_ps_id,var_nm,&ps_id)) != NC_NOERR){
@@ -1221,10 +1235,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s obtaining ps_in = %s from file %s\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,fl_ps);
     } /* !rcd */ 
 
-    rcd=nco_inq_varid(in_id,"hyai",&hyai_id);
-    rcd=nco_inq_varid(in_id,"hyam",&hyam_id);
-    rcd=nco_inq_varid(in_id,"hybi",&hybi_id);
-    rcd=nco_inq_varid(in_id,"hybm",&hybm_id);
+    rcd=nco_inq_varid(vrt_in_id,"hyai",&hyai_id);
+    rcd=nco_inq_varid(vrt_in_id,"hyam",&hyam_id);
+    rcd=nco_inq_varid(vrt_in_id,"hybi",&hybi_id);
+    rcd=nco_inq_varid(vrt_in_id,"hybm",&hybm_id);
 
     /* Assume ECMWF files use "lnsp" for (log) surface pressure, otherwise CAM/EAM style */
     if(!strcmp(ps_nm_in,"lnsp")) flg_grd_hyb_ecmwf=True; else flg_grd_hyb_cameam=True;
@@ -1237,21 +1251,21 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
        ECMWF uses hya? instead of reference pressure whereas CAM/EAM provides "P0" in hPa */
 
     if(flg_grd_hyb_cameam){
-      rcd=nco_inq_varid(in_id,"P0",&p0_id);
+      rcd=nco_inq_varid(vrt_in_id,"P0",&p0_id);
       ilev_id=NC_MIN_INT;
       lev_id=NC_MIN_INT;
-      if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"ilev",&ilev_id);
-      if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"lev",&lev_id);
+      if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(vrt_in_id,"ilev",&ilev_id);
+      if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(vrt_in_id,"lev",&lev_id);
     } /* !flg_grd_hyb_cameam */
 
     /* 20190603: Require ECMWF IFS input to have a "lev" coordinate so we can use "lev" dimension not "nhyb" */
     if(flg_grd_hyb_ecmwf)
-      rcd=nco_inq_varid(in_id,"lev",&lev_id);
+      rcd=nco_inq_varid(vrt_in_id,"lev",&lev_id);
   } /* !flg_grd_in_hyb */
 
   if(flg_grd_in_prs){
-    rcd=nco_inq_varid(in_id,plev_nm_in,&lev_id);
-    if((rcd=nco_inq_varid_flg(in_id,ps_nm_in,&ps_id)) == NC_NOERR){
+    rcd=nco_inq_varid(vrt_in_id,plev_nm_in,&lev_id);
+    if((rcd=nco_inq_varid_flg(in_id,ps_nm_in,&ps_id)) == NC_NOERR){ /* NB: Use in_id not vrt_in_id to search for PS in pure-pressure files since the surface pressure field is likely to be in the data file */
       /* Output file creation procedure discriminates between input surface pressure dimensioned as CAM/EAM vs. ECMWF */
       flg_grd_hyb_cameam=True;
       if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field %s in pure-pressure input data file. %s will be copied directly from pure-pressure grid input dataset to, and used to construct the pressures of, the output hybrid-coordinate data file, where it will be named %s.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_in,ps_nm_out);
@@ -1265,7 +1279,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_in_prs */
 
   if(flg_grd_in_dpt){
-    rcd=nco_inq_varid(in_id,"depth",&lev_id);
+    rcd=nco_inq_varid(vrt_in_id,"depth",&lev_id);
   } /* !flg_grd_in_dpt */
 
   const int ilev_id_in=ilev_id; /* [id] Interface pressure ID */
@@ -1279,34 +1293,25 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd+=nco_inq_unlimdims(fl_ps_id,&dmn_nbr_rec,dmn_ids_rec);
   } /* !dmn_nbr_rec */
 
-#if 0  
-  /* Identify all record-dimensions in input file */
-  rcd=nco_inq_unlimdims(in_id,&dmn_nbr_rec,(int *)NULL);
-  if(dmn_nbr_rec > 0){
-    dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
-    rcd+=nco_inq_unlimdims(in_id,&dmn_nbr_rec,dmn_ids_rec);
-  } /* !dmn_nbr_rec */
-#endif /* 0 */
-  
   if(flg_grd_in_hyb){
     /* Get hybrid vertical information first */
     rcd=nco_inq_varndims(fl_ps_id,ps_id,&dmn_nbr_in);
-    rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev_in);
-    if(flg_grd_hyb_cameam) rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev_in);
-    if(flg_grd_hyb_ecmwf) rcd=nco_inq_vardimid(in_id,lev_id,&dmn_id_lev_in);
-    rcd=nco_inq_dimlen(in_id,dmn_id_ilev_in,&ilev_nbr_in);
-    rcd=nco_inq_dimlen(in_id,dmn_id_lev_in,&lev_nbr_in);
-    rcd=nco_inq_dimname(in_id,dmn_id_ilev_in,dmn_nm);
+    rcd=nco_inq_vardimid(vrt_in_id,hyai_id,&dmn_id_ilev_in);
+    if(flg_grd_hyb_cameam) rcd=nco_inq_vardimid(vrt_in_id,hyam_id,&dmn_id_lev_in);
+    if(flg_grd_hyb_ecmwf) rcd=nco_inq_vardimid(vrt_in_id,lev_id,&dmn_id_lev_in);
+    rcd=nco_inq_dimlen(vrt_in_id,dmn_id_ilev_in,&ilev_nbr_in);
+    rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
+    rcd=nco_inq_dimname(vrt_in_id,dmn_id_ilev_in,dmn_nm);
     ilev_nm_in=strdup(dmn_nm);
-    rcd=nco_inq_dimname(in_id,dmn_id_lev_in,dmn_nm);
+    rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
     lev_nm_in=strdup(dmn_nm);
   } /* !flg_grd_in_hyb */
 
   if(flg_grd_in_prs){
     /* Interrogate plev to obtain plev dimensions */
-    rcd=nco_inq_vardimid(in_id,lev_id,&dmn_id_lev_in);
-    rcd=nco_inq_dimlen(in_id,dmn_id_lev_in,&lev_nbr_in);
-    rcd=nco_inq_dimname(in_id,dmn_id_lev_in,dmn_nm);
+    rcd=nco_inq_vardimid(vrt_in_id,lev_id,&dmn_id_lev_in);
+    rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
+    rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
     lev_nm_in=strdup(dmn_nm);
 
     /* Define horizontal grid if no PS is provided (i.e., pure-pressure to pure-pressure interpolation) */
@@ -1366,11 +1371,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     hybi_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
     hybm_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
     
-    rcd=nco_get_var(in_id,hyai_id,hyai_in,crd_typ_out);
-    rcd=nco_get_var(in_id,hyam_id,hyam_in,crd_typ_out);
-    rcd=nco_get_var(in_id,hybi_id,hybi_in,crd_typ_out);
-    rcd=nco_get_var(in_id,hybm_id,hybm_in,crd_typ_out);
-    if(flg_grd_hyb_cameam) rcd=nco_get_var(in_id,p0_id,&p0_in,crd_typ_out);
+    rcd=nco_get_var(vrt_in_id,hyai_id,hyai_in,crd_typ_out);
+    rcd=nco_get_var(vrt_in_id,hyam_id,hyam_in,crd_typ_out);
+    rcd=nco_get_var(vrt_in_id,hybi_id,hybi_in,crd_typ_out);
+    rcd=nco_get_var(vrt_in_id,hybm_id,hybm_in,crd_typ_out);
+    if(flg_grd_hyb_cameam) rcd=nco_get_var(vrt_in_id,p0_id,&p0_in,crd_typ_out);
     /* ECMWF distributes IFS forecasts with lnsp = log(surface pressure) */
     if(flg_grd_hyb_ecmwf){
       /* Decompose ECMWF hya? convention into CAM/EAM-like product of P0 and hya? */
@@ -1385,7 +1390,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   if(flg_grd_in_prs){
     lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
-    rcd=nco_get_var(in_id,lev_id,lev_in,crd_typ_out);
+    rcd=nco_get_var(vrt_in_id,lev_id,lev_in,crd_typ_out);
   } /* !flg_grd_in_prs */
   
   /* Always obtain surface pressure if input or output grid is hybrid */
@@ -1724,14 +1729,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     (void)nco_att_cpy(tpl_id,out_id,hybm_id_tpl,hybm_id,PCK_ATT_CPY);
 
     if(p0_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY); /* p0 not expected to be in ECMWF grids */
-    if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
-    if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
+    if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
+    if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(fl_ps_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
   } /* !flg_grd_out_hyb */
 
   /* No further access to external surface pressure file, close it */
   if(fl_ps_id != in_id) nco_close(fl_ps_id);
-  /* fxm 20221102 got to here with fl_ps_id */
 
   if(flg_grd_out_prs){
     rcd+=nco_def_var(out_id,lev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&lev_id);
