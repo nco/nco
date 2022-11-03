@@ -90,14 +90,15 @@ fi # HOSTNAME
 # Default input and output directory is ${DATA}
 if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
+	acme1* ) DATA="/home/${USER}" ; ;; # LLNL acme1 
 	andes* | titan* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC blues compute nodes named bNNN, 36|64 cores|GB/node 
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
-	compy* ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
+	compy* | n[0123456789][0123456789][0123456789][0123456789] ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
-	cori* ) DATA="${SCRATCH}" ; ;; # NERSC cori compute nodes named nidNNNNN (Haswell/KNL) or cmemNN (AMD) with (32/68/64)|(96/128/1024) cores|GB/node (knl/haswell/amd) (login nodes 512 GB)
+	cori* | nid* | cmem* ) DATA="${SCRATCH}" ; ;; # NERSC cori compute nodes named nidNNNNN (Haswell/KNL) or cmemNN (AMD) with (32/68/64)|(96/128/1024) cores|GB/node (knl/haswell/amd) (login nodes 512 GB)
 	perlmutter* | login[0123456789][0123456789] ) DATA="${SCRATCH}" ; ;; # NERSC perlmutter compute nodes named nidNNNNNN (CPU) with (64)|(512) cores|GB/node (cpu) (login nodes 512 GB)
 	theta* ) DATA="/projects/ClimateEnergy_3/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
@@ -154,7 +155,12 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    fi # !NCARG_ROOT
             export PATH='/glade/u/home/zender/bin'\:${PATH}
             export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0/lib:/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib:/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
-	compy* )
+	compy* | n[0123456789][0123456789][0123456789][0123456789] )
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# 20210519: This script takes significant time (5-10 seconds) to load
+		source /compyfs/software/mbtempest.envs.sh
+		E3SMU_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest'
+	    fi # !ncremap
 	    export PATH='/qfs/people/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	cooley* | cc[0123456789][0123456789][0123456789] )
@@ -164,7 +170,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
             export PBS_NUM_PPN=12 # Spoof PBS on Soft (which knows nothing about node capabilities)
 	    export PATH='/home/zender/bin_cooley'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
-	cori* )
+	cori* | nid* | cmem* )
 	    # 20220811 Add build environment modules
 	    module purge
 	    module load PrgEnv-intel
@@ -175,21 +181,34 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
 		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
+		E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 	    fi # !NCARG_ROOT
-	    if [ -n "${MOAB_ROOT}" ]; then
-		export PATH="${PATH}:${MOAB_ROOT}/bin"
-	    fi # !MOAB_ROOT
-	    if [ -n "${TEMPESTREMAP_ROOT}" ]; then
-		export PATH="${PATH}:${TEMPESTREMAP_ROOT}/bin"
-	    fi # !TEMPESTREMAP_ROOT
 	    export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
             export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
 	mira* )
 	    export PATH='/home/zender/bin_mira'\:${PATH}
 	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
+	perlmutter* | login[0123456789][0123456789] )
+	    # 20221103 Add build environment modules
+	    module load PrgEnv-gnu
+	    module load gcc/11.2.0
+	    module load cray-hdf5/1.12.1.1
+	    module load cray-netcdf/4.8.1.1
+	    module load gsl/2.7
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
+		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
+		E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
+	    fi # !ncremap
+	    if [ -n "${NCARG_ROOT}" ]; then
+		export PATH="${PATH}:${NCARG_ROOT}/bin"
+		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
+	    fi # !NCARG_ROOT
+	    export PATH='/global/homes/z/zender/bin_perlmutter'\:${PATH}
+            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_perlmutter'\:${LD_LIBRARY_PATH} ; ;;
 	theta* )
 	    export PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib'\:${LD_LIBRARY_PATH} ; ;;

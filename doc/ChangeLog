@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha03: Love, Death, & Robots';git push
 	git tag -a 5.1.2-alpha03 -m 'ncremap ps_nm_in, vrt_in, vrt_out';git push --tags
 
+	* ncclimo/ncremap consistent node-names, paths for machine-specific environments, NCO_PATH_OVERRIDE
+
 	* ncremap new functionality appears to work for SCREAM!
 
 	* ncremap accept --vrt_in to specify optional input vertical grid filename (vetted)
