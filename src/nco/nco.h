@@ -1174,6 +1174,7 @@ typedef enum nco_xtr_typ_enm
     char *fl_out; /* [sng] File containing regridded fields */
     char *fl_out_tmp; /* [sng] Temporary file containing regridded fields */
     char *fl_map; /* [sng] File containing mapping weights from source to destination grid */
+    char *fl_vrt_in; /* [sng] File containing input vertical coordinate grid */
     char *fl_vrt_out; /* [sng] File containing output vertical coordinate grid */
     char *fl_msh;  /* [sng] File that contains SCRIP formatted overlap mesh */
     char *var_nm; /* [sng] Variable for special regridding treatment */

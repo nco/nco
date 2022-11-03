@@ -352,8 +352,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # Extrapolation results in missing values
 # Simultaneous horizontal/vertical regridding L72->L30
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --vrt_out=${DATA}/grids/vrt_hyb_L30.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
-# SCREAM external surface pressure (202211):
-# ncremap -v T_mid --ps_nm=${DATA}/bm/screamv1_ne1024pg2l128_QvT.nc/ps --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/bm/screamv1_ne1024pg2l128_QvT.nc ~/foo.nc
+# SCREAM external surface pressure and input vertical grid (202211):
+# ncremap -v T_mid --ps_nm=${DATA}/bm/screamv1_ne1024pg2l128_QrPsPsl.nc/ps --vrt_in=${DATA}/grids/vrt_hyb_L128.nc --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/bm/screamv1_ne1024pg2l128_QvT.nc ~/foo.nc
 # Time-varying hybrid input
 # ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --drc_out=${DATA}/ne30/rgr ${DATA}/ne30/raw/v2.LR.historical_0101.eam.h0.2013-0[123].nc
 # ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.2013-0[12].nc ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.201301_201302.nc
@@ -559,9 +559,10 @@ var_rgr='' # [sng] CF template variable
 var_xmp='FSNT' # [sng] Variable list for examples
 vrb_lvl=${vrb_2} # [enm] Verbosity level
 vrs_prn='No' # [sng] Print version information
-vrt_out='' # [sng] Vertical grid file for output
+vrt_in='' # [sng] Vertical grid file for input
 vrt_nm='' # [sng] Vertical coordinate name
 vrt_opt='' # [sng] Vertical options (e.g., '--rgr xtr_mth=mss_val')
+vrt_out='' # [sng] Vertical grid file for output
 vrt_ntp='' # [sng] Vertical interpolation type (lin|log)
 vrt_xtr='' # [sng] Vertical extrapolation type (mss_val|nrs_ngh)
 wgt_exe_cdo='cdo' # [sng] ESMF executable (weight generation only)
@@ -687,9 +688,10 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
     echo " ${fnt_bld}--version${fnt_nrm}  Version and configuration information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
     echo " ${fnt_bld}--vrb_lvl${fnt_nrm}  Verbosity level (default ${fnt_bld}${vrb_lvl}${fnt_nrm}) [${fnt_tlc}vrb_lvl, vrb, verbosity, print_verbosity${fnt_nrm}]"
-    echo " ${fnt_bld}--vrt_out${fnt_nrm}   Vertical grid file for output (empty means none) (default ${fnt_bld}${vrt_out}${fnt_nrm}) [${fnt_tlc}vrt_out, vrt_fl, vrt, vrt_crd, vrt_grd_out${fnt_nrm}]"
+    echo " ${fnt_bld}--vrt_in${fnt_nrm}   Vertical grid file for input (empty means none) (default ${fnt_bld}${vrt_in}${fnt_nrm}) [${fnt_tlc}vrt_in, vrt_grd_in${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_nm${fnt_nrm}   Vertical coordinate name (empty means \"plev\") (default ${fnt_bld}${vrt_nm}${fnt_nrm}) [${fnt_tlc}vrt_nm, plev_nm, vertical_coordinate_name${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_ntp${fnt_nrm}  Vertical interpolation type (empty means none) (default ${fnt_bld}${vrt_ntp}${fnt_nrm}) [${fnt_tlc}vrt_ntp, ntp_mth, interpolation_type, interpolation_method${fnt_nrm}] (lin|log)"
+    echo " ${fnt_bld}--vrt_out${fnt_nrm}   Vertical grid file for output (empty means none) (default ${fnt_bld}${vrt_out}${fnt_nrm}) [${fnt_tlc}vrt_out, vrt_fl, vrt, vrt_crd, vrt_grd_out${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_xtr${fnt_nrm}  Vertical extrapolation type (empty means none) (default ${fnt_bld}${vrt_xtr}${fnt_nrm}) [${fnt_tlc}vrt_xtr, xtr_mth, extrapolation_type, extrapolation_method${fnt_nrm}] (linear|mss_val|nrs_ngh|zero)"
     echo "${fnt_rvr}-W${fnt_nrm} ${fnt_bld}wgt_opt${fnt_nrm}  Weight-generator options (default ${fnt_bld}${wgt_opt_esmf}${fnt_nrm}) [${fnt_tlc}wgt_opt, esmf_opt, esmf_options, tempest_opt, tps_opt${fnt_nrm}]"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_cmd${fnt_nrm}  Weight-generator command (default ${fnt_bld}${wgt_exe_esmf}${fnt_nrm}) [${fnt_tlc}wgt_cmd, wgt_gnr, weight_command, weight_generator${fnt_nrm}]"
@@ -890,9 +892,10 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
 	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Print version information
 	       vrb_lvl=?* | vrb=?* | verbosity=?* | print_verbosity=?* ) vrb_lvl="${LONG_OPTARG}" ;; # # Print verbosity
-	       vrt_out=?* | vrt_fl=?* | vrt=?* | vrt_crd=?* | vrt_grd_out=?* ) vrt_out="${LONG_OPTARG}" ;; # # Vertical grid file for output
+	       vrt_in=?* | vrt_grd_in=?* ) vrt_in="${LONG_OPTARG}" ;; # # Vertical grid file for input
 	       vrt_nm=?* | plev_nm=?* | vertical_coordinate_name=?* ) vrt_nm="${LONG_OPTARG}" ;; # # Vertical coordinate name
 	       vrt_ntp=?* | ntp_mth=?* | interpolation_type=?* | interpolation_method=?* ) vrt_ntp="${LONG_OPTARG}" ;; # # Vertical interpolation type (lin|log)
+	       vrt_out=?* | vrt_fl=?* | vrt=?* | vrt_crd=?* | vrt_grd_out=?* ) vrt_out="${LONG_OPTARG}" ;; # # Vertical grid file for output
 	       vrt_xtr=?* | xtr_mth=?* | extrapolation_type=?* | extrapolation_method=?* ) vrt_xtr="${LONG_OPTARG}" ;; # # Vertical extrapolation type (linear|mss_val|nrs_ngh|zero)
 	       wgt_opt=?* | esmf_opt=?* | esmf_options=?* | tps_opt=?* | tempest_opt=?* | tempest_options=?* ) wgt_opt_usr="${LONG_OPTARG}" ;; # -W # Weight-generator options
 	       wgt_cmd=?* | weight_command=?* | wgt_gnr=?* | weight_generator=?* ) wgt_usr="${LONG_OPTARG}" ;; # -w # Weight-generator command
@@ -1869,6 +1872,13 @@ if [ -n "${vrt_out}" ]; then
     if [ -n "${ps_nm}" ]; then
 	vrt_opt="${vrt_opt} --rgr ps_nm_in=${ps_nm}"
     fi # !ps_nm
+    if [ -n "${vrt_in}" ]; then
+	if [ ! -f "${vrt_in}" ]; then
+	    echo "ERROR: Unable to find specified vertical input grid file ${vrt_in}"
+	    exit 1
+	fi # ! -f
+	vrt_opt="${vrt_opt} --rgr vrt_in=${vrt_in}"
+    fi # !vrt_in
     if [ -n "${vrt_nm}" ]; then
 	vrt_opt="${vrt_opt} --rgr plev_nm_in=${vrt_nm}"
     fi # !vrt_nm
@@ -2269,9 +2279,10 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: unq_sfx  = ${unq_sfx}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: var_rgr  = ${var_rgr}\n"
-    printf "dbg: vrt_out  = ${vrt_out}\n"
+    printf "dbg: vrt_in   = ${vrt_in}\n"
     printf "dbg: vrt_nm   = ${vrt_nm}\n"
     printf "dbg: vrt_opt  = ${vrt_opt}\n"
+    printf "dbg: vrt_out  = ${vrt_out}\n"
     printf "dbg: vrt_ntp  = ${vrt_ntp}\n"
     printf "dbg: vrt_xtr  = ${vrt_xtr}\n"
     printf "dbg: wgt_cmd  = ${wgt_cmd}\n"

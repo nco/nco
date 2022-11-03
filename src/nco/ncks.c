@@ -160,7 +160,7 @@ main(int argc,char **argv)
   char *rgr_map=NULL; /* [sng] File containing mapping weights from source to destination grid */
   char *rgr_out=NULL; /* [sng] File containing regridded fields */
   char *rgr_var=NULL; /* [sng] Variable for special regridding treatment */
-  char *rgr_vrt=NULL; /* [sng] File containing vertical coordinate grid */
+  char *rgr_vrt=NULL; /* [sng] File containing output vertical coordinate grid */
   char *smr_fl_sz_sng=NULL; /* [sng] String describing estimated file size */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *smr_xtn_sng=NULL; /* [sng] File extended summary string */
@@ -510,9 +510,10 @@ main(int argc,char **argv)
     {"hrz_crd",required_argument,0,0}, /* [sng] File containing horizontal coordinate grid */
     {"rgr_rnr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"rgr_var",required_argument,0,0}, /* I [sng] Variable for special regridding treatment */
-    {"rgr_vrt",required_argument,0,0}, /* [sng] File containing vertical coordinate grid */
-    {"vrt_fl",required_argument,0,0}, /* [sng] File containing vertical coordinate grid */
-    {"vrt_crd",required_argument,0,0}, /* [sng] File containing vertical coordinate grid */
+    {"rgr_vrt",required_argument,0,0}, /* [sng] File containing output vertical coordinate grid */
+    {"vrt_fl",required_argument,0,0}, /* [sng] File containing output vertical coordinate grid */
+    {"vrt_grd_out",required_argument,0,0}, /* [sng] File containing output vertical coordinate grid */
+    {"vrt_out",required_argument,0,0}, /* [sng] File containing output vertical coordinate grid */
     {"rnr_thr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"renormalize",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"renormalization_threshold",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
@@ -819,11 +820,11 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"hrz_fl") || !strcmp(opt_crr,"hrz_crd") || !strcmp(opt_crr,"rgr_hrz")){
 	flg_s1d=flg_rgr=True;
 	rgr_hrz=(char *)strdup(optarg);
-      } /* !vrt_fl */
-      if(!strcmp(opt_crr,"vrt_fl") || !strcmp(opt_crr,"vrt_crd") || !strcmp(opt_crr,"rgr_vrt")){
+      } /* !hrz_fl */
+      if(!strcmp(opt_crr,"vrt_out") || !strcmp(opt_crr,"vrt_fl") || !strcmp(opt_crr,"vrt_grd_out") || !strcmp(opt_crr,"rgr_vrt")){
         flg_rgr=True;
 	rgr_vrt=(char *)strdup(optarg);
-      } /* !vrt_fl */
+      } /* !vrt_out */
       if(!strcmp(opt_crr,"rnr_thr") || !strcmp(opt_crr,"rgr_rnr") || !strcmp(opt_crr,"renormalize") || !strcmp(opt_crr,"renormalization_threshold")){
         wgt_vld_thr=strtod(optarg,&sng_cnv_rcd);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtod",sng_cnv_rcd);

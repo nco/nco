@@ -111,6 +111,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_hnt_src) rgr->fl_hnt_src=(char *)nco_free(rgr->fl_hnt_src);
   if(rgr->fl_skl) rgr->fl_skl=(char *)nco_free(rgr->fl_skl);
   if(rgr->fl_ugrid) rgr->fl_ugrid=(char *)nco_free(rgr->fl_ugrid);
+  if(rgr->fl_vrt_in) rgr->fl_vrt_in=(char *)nco_free(rgr->fl_vrt_in);
 
   /* Tempest */
   if(rgr->drc_tps) rgr->drc_tps=(char *)nco_free(rgr->drc_tps);
@@ -206,7 +207,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_map=rgr_map; /* [sng] File containing mapping weights from source to destination grid */
 
   rgr->fl_hrz=rgr_hrz; /* [sng] [sng] File containing horizontal coordinate grid (for S1D) */
-  rgr->fl_vrt_out=rgr_vrt; /* [sng] [sng] File containing vertical coordinate grid */
+  rgr->fl_vrt_out=rgr_vrt; /* [sng] [sng] File containing output vertical coordinate grid */
 
   rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
   
@@ -308,6 +309,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_msh=NULL; /* [sng] Name of SCRIP intersection mesh file to create */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
   rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
+  rgr->fl_vrt_in=NULL; /* [sng] File containing input vertical coordinate grid */
   rgr->flg_add_fll=False; /* [flg] Add _FillValue to fields with empty destination cells */
   rgr->flg_area_out=True; /* [flg] Add area to output */
   rgr->flg_cf_units=False; /* [flg] Generate CF-compliant (breaks ERWG 7.1.0r-) units fields in SCRIP-format grid files */
@@ -385,10 +387,14 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->fl_hrz=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !hrz */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"fl_vrt_in") || !strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_in") || !strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_grd_in")){
+      rgr->fl_vrt_in=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !vrt_in */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"fl_vrt") || !strcasecmp(rgr_lst[rgr_var_idx].key,"vrt") || !strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_out") || !strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_grd_out")){
       rgr->fl_vrt_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
-    } /* !vrt */
+    } /* !vrt_out */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"no_area") || !strcmp(rgr_lst[rgr_var_idx].key,"no_area_out")){
       rgr->flg_area_out=False;
       continue;
@@ -884,7 +890,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining vertical grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_vrt_out);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining output vertical grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_vrt_out);
 
   /* Duplicate (because nco_fl_mk_lcl() free()'s its fl_in) */
   fl_tpl=(char *)strdup(rgr->fl_vrt_out);
