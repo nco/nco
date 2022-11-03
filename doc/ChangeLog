@@ -1,7 +1,7 @@
 2022-11-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.2-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha03: fxm';git push
+	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha03: Love, Death, & Robots';git push
 	git tag -a 5.1.2-alpha03 -m 'ncremap ps_nm_in, vrt_in, vrt_out';git push --tags
 
 	* ncremap new functionality appears to work for SCREAM!
