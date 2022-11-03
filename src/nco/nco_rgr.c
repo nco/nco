@@ -39,7 +39,7 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   if(rgr->flg_nfr) flg_nfr=True;
   if(rgr->flg_wgt && !(rgr->flg_grd_src && rgr->flg_grd_dst)) flg_wgt=True;
   if(rgr->flg_s1d) flg_s1d=True;
-  if(rgr->fl_vrt) flg_vrt=True;
+  if(rgr->fl_vrt_out) flg_vrt=True;
   assert(!flg_smf);
   assert(!flg_tps);
   
@@ -100,7 +100,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_msh) rgr->fl_msh=(char *)nco_free(rgr->fl_msh);
   if(rgr->fl_out) rgr->fl_out=(char *)nco_free(rgr->fl_out);
   if(rgr->fl_out_tmp) rgr->fl_out_tmp=(char *)nco_free(rgr->fl_out_tmp);
-  if(rgr->fl_vrt) rgr->fl_vrt=(char *)nco_free(rgr->fl_vrt);
+  if(rgr->fl_vrt_out) rgr->fl_vrt_out=(char *)nco_free(rgr->fl_vrt_out);
 
   if(rgr->var_nm) rgr->var_nm=(char *)nco_free(rgr->var_nm);
   if(rgr->xtn_var) rgr->xtn_var=(char **)nco_sng_lst_free(rgr->xtn_var,rgr->xtn_nbr);
@@ -206,7 +206,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_map=rgr_map; /* [sng] File containing mapping weights from source to destination grid */
 
   rgr->fl_hrz=rgr_hrz; /* [sng] [sng] File containing horizontal coordinate grid (for S1D) */
-  rgr->fl_vrt=rgr_vrt; /* [sng] [sng] File containing vertical coordinate grid */
+  rgr->fl_vrt_out=rgr_vrt; /* [sng] [sng] File containing vertical coordinate grid */
 
   rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
   
@@ -232,7 +232,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"fl_out = %s, ",rgr->fl_out ? rgr->fl_out : "NULL");
     (void)fprintf(stderr,"fl_out_tmp = %s, ",rgr->fl_out_tmp ? rgr->fl_out_tmp : "NULL");
     (void)fprintf(stderr,"fl_map = %s, ",rgr->fl_map ? rgr->fl_map : "NULL");
-    (void)fprintf(stderr,"fl_vrt = %s, ",rgr->fl_vrt ? rgr->fl_vrt : "NULL");
+    (void)fprintf(stderr,"fl_vrt_out = %s, ",rgr->fl_vrt_out ? rgr->fl_vrt_out : "NULL");
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
   
@@ -385,8 +385,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->fl_hrz=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !hrz */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"fl_vrt") || !strcasecmp(rgr_lst[rgr_var_idx].key,"vrt")){
-      rgr->fl_vrt=(char *)strdup(rgr_lst[rgr_var_idx].val);
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"fl_vrt") || !strcasecmp(rgr_lst[rgr_var_idx].key,"vrt") || !strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_out") || !strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_grd_out")){
+      rgr->fl_vrt_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !vrt */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"no_area") || !strcmp(rgr_lst[rgr_var_idx].key,"no_area_out")){
@@ -468,7 +468,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_nfr=True;
       continue;
     } /* !infer */
-    if(!strcmp(rgr_lst[rgr_var_idx].key,"no_stagger") || !strcmp(rgr_lst[rgr_var_idx].key,"no_stg")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"no_stagger") || (strstr(rgr_lst[rgr_var_idx].key,"no_stg") == rgr_lst[rgr_var_idx].key)){
       rgr->flg_stg=False;
       continue;
     } /* !no_stagger */
@@ -884,10 +884,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining vertical grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_vrt);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining vertical grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_vrt_out);
 
   /* Duplicate (because nco_fl_mk_lcl() free()'s its fl_in) */
-  fl_tpl=(char *)strdup(rgr->fl_vrt);
+  fl_tpl=(char *)strdup(rgr->fl_vrt_out);
   /* Make sure file is on local system and is readable or die trying */
   fl_tpl=nco_fl_mk_lcl(fl_tpl,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
@@ -1184,11 +1184,44 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   assert(nco_vrt_ntp_typ != nco_ntp_nil);
 
   /* Variables on input grid, i.e., on grid in data file to be interpolated */
+  char *var_nm; /* [sng] Variable name */
+  int fl_ps_id; /* [id] netCDF file ID for external surface pressure file */
+  var_nm=ps_nm_in;
+  fl_ps_id=in_id;
   if(flg_grd_in_hyb){
+    char *fl_ps=NULL; /* [sng] External surface pressure file name */
+    if((rcd=nco_inq_varid_flg(fl_ps_id,var_nm,&ps_id)) != NC_NOERR){
+      /* If ps_in_nm is not in input file then search for it in external surface pressure file */
+#ifdef WIN32
+      const char sls_chr='\\'; /* [chr] Slash character */
+#else /* !WIN32 */
+      const char sls_chr='/'; /* [chr] Slash character */
+#endif /* !WIN32 */
+      char *sls_ptr; /* [sng] Pointer to last slash character (' ') */
+      sls_ptr=strrchr(var_nm,sls_chr);
+      if(!sls_ptr){
+	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unable to find surface pressure variable ps_in_nm = %s required for hybrid grid in input file, and unable to identify filename (ending with slash '/' or backslash '\\', depending on the operating system) portion of that string to serve as local external file for ps_in input, exiting\n",nco_prg_nm_get(),fnc_nm,ps_nm_in);
+	nco_exit(EXIT_FAILURE);
+      } /* !sls_ptr */
+      ps_nm_in=(char *)strdup(sls_ptr+1L); /* Copy variable-name portion of string */
+      *sls_ptr='\0'; /* NULL-terminate filename */
+      fl_ps=(char *)strdup(var_nm);
+      var_nm=ps_nm_in; /* NB: too tricky? */
+      rcd=nco_open(fl_ps,NC_NOWRITE,&fl_ps_id);
+      if((rcd=nco_inq_varid_flg(fl_ps_id,var_nm,&ps_id)) != NC_NOERR){
+	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unable to find ps_in_nm = \"%s\" in local external file %s, exiting\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,fl_ps);
+	nco_exit(EXIT_FAILURE);
+      } /* !rcd */
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s obtaining ps_in = %s from file %s\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,fl_ps);
+    } /* !rcd */ 
+
     rcd=nco_inq_varid(in_id,"hyai",&hyai_id);
     rcd=nco_inq_varid(in_id,"hyam",&hyam_id);
     rcd=nco_inq_varid(in_id,"hybi",&hybi_id);
     rcd=nco_inq_varid(in_id,"hybm",&hybm_id);
+
+    /* Assume ECMWF files use "lnsp" for (log) surface pressure, otherwise CAM/EAM style */
+    if(!strcmp(ps_nm_in,"lnsp")) flg_grd_hyb_ecmwf=True; else flg_grd_hyb_cameam=True;
     /* 20190602: ECMWF hybrid vertical grid parameters and dimensions differ from CAM/EAM:
        ECMWF defines vertical dimensions "nhym" and "nhyi" specifically for hy[ab][im] and uses "lev" and "lev_2" for all other variables, whereas CAM/EAM uses same dimensions "lev" and "ilev" for all vertical variables including hybrid coefficients
        ECMWF provides "hya?" as a constant in Pa and "hyb?" as a dimensionless coefficient of PS, whereas CAM/EAM provides "hya?" and "hyb?" both as dimensionless coefficients of P0 and PS
@@ -1196,12 +1229,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
        ECMWF provides dimensionless "lnsp" for log(surface pressure) whereas CAM/EAM provide "PS" for surface pressure in Pa
        ECMWF "lnsp" has degenerate level dimension "lev_2" whereas CAM/EAM "PS" has no "ilev" dimension
        ECMWF uses hya? instead of reference pressure whereas CAM/EAM provides "P0" in hPa */
-    if((rcd=nco_inq_varid_flg(in_id,"lnsp",&ps_id)) == NC_NOERR) flg_grd_hyb_ecmwf=True;
-    else if((rcd=nco_inq_varid_flg(in_id,ps_nm_in,&ps_id)) == NC_NOERR) flg_grd_hyb_cameam=True;
-    else{
-      (void)fprintf(stderr,"%s: ERROR %s Unable to find surface pressure variable %s (or lnsp) required for hybrid grid in input file\n",nco_prg_nm_get(),fnc_nm,ps_nm_in);
-      abort();
-    } /* !rcd */
 
     if(flg_grd_hyb_cameam){
       rcd=nco_inq_varid(in_id,"P0",&p0_id);
@@ -1210,7 +1237,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"ilev",&ilev_id);
       if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"lev",&lev_id);
     } /* !flg_grd_hyb_cameam */
-    /* 20190603: We require ECMWF IFS input to have a "lev" coordinate so we can use "lev" dimension not "nhyb" */
+
+    /* 20190603: Require ECMWF IFS input to have a "lev" coordinate so we can use "lev" dimension not "nhyb" */
     if(flg_grd_hyb_ecmwf)
       rcd=nco_inq_varid(in_id,"lev",&lev_id);
   } /* !flg_grd_in_hyb */
@@ -1238,16 +1266,25 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int lev_id_in=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_in=ps_id; /* [id] Surface pressure ID */
 
+  /* Identify all record-dimensions in surface pressure file */
+  rcd=nco_inq_unlimdims(fl_ps_id,&dmn_nbr_rec,(int *)NULL);
+  if(dmn_nbr_rec > 0){
+    dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
+    rcd+=nco_inq_unlimdims(fl_ps_id,&dmn_nbr_rec,dmn_ids_rec);
+  } /* !dmn_nbr_rec */
+
+#if 0  
   /* Identify all record-dimensions in input file */
   rcd=nco_inq_unlimdims(in_id,&dmn_nbr_rec,(int *)NULL);
   if(dmn_nbr_rec > 0){
     dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
     rcd+=nco_inq_unlimdims(in_id,&dmn_nbr_rec,dmn_ids_rec);
   } /* !dmn_nbr_rec */
-
+#endif /* 0 */
+  
   if(flg_grd_in_hyb){
     /* Get hybrid vertical information first */
-    rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_in);
+    rcd=nco_inq_varndims(fl_ps_id,ps_id,&dmn_nbr_in);
     rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev_in);
     if(flg_grd_hyb_cameam) rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev_in);
     if(flg_grd_hyb_ecmwf) rcd=nco_inq_vardimid(in_id,lev_id,&dmn_id_lev_in);
@@ -1289,7 +1326,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	if(dmn_idx < dmn_nbr_in){
 	  /* Yes. Do any dimensions vary more rapidly than lev? */
 	  if(dmn_idx < dmn_nbr_in-1){
-	    /* Yes. Assume remaining dimension are horizontal spatial dimensions */
+	    /* Yes. Assume remaining dimensions are horizontal spatial dimensions */
 	    char var_nm[NC_MAX_NAME+1L];
 	    (void)nc_inq_varname(in_id,var_idx,var_nm);
 	    for(int dmn_idx_hrz=dmn_idx+1;dmn_idx_hrz<dmn_nbr_in;dmn_idx_hrz++){
@@ -1336,7 +1373,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	hyai_in[idx]/=p0_in;
 	hyam_in[idx]/=p0_in;
       } /* !idx */
-    } /* flg_grd_hyb_ecmwf */
+    } /* !flg_grd_hyb_ecmwf */
     
   } /* !flg_grd_in_hyb */
 
@@ -1353,14 +1390,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(ps_id_tpl == NC_MIN_INT){
 
       /* NB: dmn_nbr_in/out in this block refer only to horizontal dimensions necessary to define PS */
-      rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_in); /* This is harmlessly repeated for hybrid input files */
+      rcd=nco_inq_varndims(fl_ps_id,ps_id,&dmn_nbr_in); /* This is harmlessly repeated for hybrid input files */
       dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
       dmn_cnt_in=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
       if(!dmn_srt) dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long)); /* NB: Only allocate dmn_srt once  */
 
-      rcd=nco_inq_vardimid(in_id,ps_id,dmn_ids_in);
+      rcd=nco_inq_vardimid(fl_ps_id,ps_id,dmn_ids_in);
       for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
-	rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
+	rcd=nco_inq_dimlen(fl_ps_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
 	/* 20190330: Allow possibility that PS has time dimension > 1 
 	   We want horizontal not temporal dimensions to contribute to grd_sz 
 	   Temporal dimension is usually unlimited 
@@ -1384,6 +1421,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       dmn_ids_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
       dmn_cnt_out=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
       /* fxm: next line works for hyb_in and is buggy for prs_in */
+      /* fxm: 20221102: Why copy input IDs to output arrays, you ask? Because output arrays are only used to define PS in output */
       memcpy(dmn_ids_out,dmn_ids_in,dmn_nbr_in*sizeof(int));
       memcpy(dmn_cnt_out,dmn_cnt_in,dmn_nbr_in*sizeof(long));
       grd_sz_out=grd_sz_in;
@@ -1423,14 +1461,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     ps_in=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
 
     /* Surface pressure comes from either hybrid vertical grid-files, hybrid data files, or pressure data files that provide surface pressure */
-    if(flg_grd_in_hyb || (flg_grd_in_prs && ps_id_tpl == NC_MIN_INT)) rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
+    if(flg_grd_in_hyb || (flg_grd_in_prs && ps_id_tpl == NC_MIN_INT)) rcd=nco_get_var(fl_ps_id,ps_id,ps_in,crd_typ_out);
 
     /* ECMWF distributes IFS forecasts with lnsp = log(surface pressure) */
     if(flg_grd_hyb_ecmwf){
       /* Convert ECMWF-provided log(surface_pressure) to surface_pressure */
       const size_t ps_sz_in=tm_nbr_in*grd_sz_in; /* [nbr] Number of elements in ps_in */
       for(size_t idx=0;idx<ps_sz_in;idx++) ps_in[idx]=exp(ps_in[idx]); 
-    } /* flg_grd_hyb_ecmwf */
+    } /* !flg_grd_hyb_ecmwf */
 
     /* Finally have enough information to allocate output pressure grid */
     ps_out=(double *)nco_malloc_dbg(tm_nbr_out*grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_out value buffer");
@@ -1506,7 +1544,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     for(idx=0;idx<ps_sz;idx++)
       if(prs_min_out[idx] < prs_min_in[idx]) break;
     if(idx < ps_sz) flg_add_msv_att=True;
-    if(flg_add_msv_att && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one point in at least one output level requires extrapolation (not interpolation). Will ensure that all interpolated fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm);
+    if(flg_add_msv_att && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one point in at least one output level requires extrapolation (not interpolation). Must and will ensure that all interpolated fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm);
     if(prs_max_in) prs_max_in=(double *)nco_free(prs_max_in);
     if(prs_max_out) prs_max_out=(double *)nco_free(prs_max_out);
     if(prs_min_in) prs_min_in=(double *)nco_free(prs_min_in);
@@ -1539,8 +1577,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(ps_id_tpl != NC_MIN_INT){
 	rcd=nco_inq_dimname(tpl_id,dmn_ids_out[dmn_idx],dmn_nm);
       }else{
-	rcd=nco_inq_dimname(in_id,dmn_ids_in[dmn_idx],dmn_nm);
-	rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_out+dmn_idx);
+	/* 20221102: dmn_ids_in is from fl_ps_id so output horizontal dimension names come from fl_ps_id not in_id
+	   To output horizontal dimension name from in_id, obtain dmn_ids_in from in_id not fl_ps_id 
+	   Horizontal dimension names are probably, though not necessarily, the same in in_id and fl_ps_id */
+	rcd=nco_inq_dimname(fl_ps_id,dmn_ids_in[dmn_idx],dmn_nm);
+	rcd=nco_inq_dimlen(fl_ps_id,dmn_ids_in[dmn_idx],dmn_cnt_out+dmn_idx);
       } /* !ps_id_tpl */
       if(flg_grd_hyb_cameam) rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
       /* 20190602: ECMWF IFS PS variable has degenerate vertical dimension (lev_2). Avoid re-definition */
@@ -1571,9 +1612,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   long idx; /* [idx] Generic index */
   var_xcl_lst=(char **)nco_malloc((var_xcl_fix_nbr+var_xcl_run_nbr)*sizeof(char *));
   /* Copy compile-time exclusion list names */
-  for(idx=0;idx<var_xcl_fix_nbr;idx++){
+  for(idx=0;idx<var_xcl_fix_nbr;idx++)
     var_xcl_lst[idx]=(char *)strdup(var_xcl_lst_fix[idx]);
-  } /* !idx */
+
   /* Add run-time variables to exclusion list */
   var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(plev_nm_in);
   var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(plev_nm_out);
@@ -1619,7 +1660,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !idx */
   if(var_xcl_lst) var_xcl_lst=(char **)nco_free(var_xcl_lst);
 
-  char *var_nm; /* [sng] Variable name */
   int *dmn_id_in=NULL; /* [id] Dimension IDs */
   int *dmn_id_out=NULL; /* [id] Dimension IDs */
   int var_id_in; /* [id] Variable ID */
@@ -1664,7 +1704,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       /* Remove degenerate ECMWF vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions */
       int dmn_nbr_out_ecmwf=0;
       for(dmn_idx=0;dmn_idx<dmn_nbr_ps;dmn_idx++){
-	rcd=nco_inq_dimname(in_id,dmn_ids_in[dmn_idx],dmn_nm);
+	rcd=nco_inq_dimname(fl_ps_id,dmn_ids_in[dmn_idx],dmn_nm);
 	if(strcmp(dmn_nm,ilev_nm_out) && strcmp(dmn_nm,lev_nm_out) && strcmp(dmn_nm,"lev_2"))
 	  rcd=nco_inq_dimid(out_id,dmn_nm,dmn_ids_out+dmn_nbr_out_ecmwf++);
       } /* !dmn_idx */
@@ -1680,8 +1720,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(p0_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY); /* p0 not expected to be in ECMWF grids */
     if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
     if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
-    if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(in_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
+    if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(fl_ps_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
   } /* !flg_grd_out_hyb */
+
+  /* No further access to external surface pressure file, close it */
+  if(fl_ps_id != in_id) nco_close(fl_ps_id);
+  /* fxm 20221102 got to here with fl_ps_id */
 
   if(flg_grd_out_prs){
     rcd+=nco_def_var(out_id,lev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&lev_id);
@@ -1717,26 +1761,26 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	/* fxm: Generalize to include any variable containing coordinates with "standard_name" = "atmosphere_hybrid_sigma_pressure_coordinate" */
 	if(!has_ilev && ilev_nm_in) has_ilev=!strcmp(dmn_nm_cp,ilev_nm_in);
 	if(!has_lev) has_lev=!strcmp(dmn_nm_cp,lev_nm_in);
-      } /* end loop over dimensions */
+      } /* !dmn_idx */
       /* Regrid variables that contain either vertical dimension */
       if(has_ilev || has_lev){
 	trv_tbl->lst[idx_tbl].flg_rgr=True;
 	var_rgr_nbr++;
 	if(has_ilev) need_prs_ntf=True;
 	if(has_lev) need_prs_mdp=True;
-      } /* endif */
+      } /* !has_ilev */
       assert(!(has_ilev && has_lev));
       /* Copy all variables that are not regridded or omitted */
       if(!trv_tbl->lst[idx_tbl].flg_rgr) var_cpy_nbr++;
-    } /* end nco_obj_typ_var */
-  } /* end idx_tbl */
+    } /* !nco_obj_typ_var */
+  } /* !idx_tbl */
   if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit interpolation criteria. The vertical interpolator expects something to interpolate, and variables not interpolated are copied straight to output. HINT: If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\", \"lev\", and/or \"plev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid. For hybrid-pressure coordinate grids, ensure that the \"ilev\" and \"lev\" variable names are known with, e.g., \"ncks --rgr ilev_nm=interface_level --rgr lev_nm=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\". For pure pressure grids, ensure the \"plev\" coordinate name is defined with, e.g., \"ncks --rgr plev_nm=pressure_level\" or \"ncremap -R '--rgr plev=pressure_level'\".\n",nco_prg_nm_get(),fnc_nm);
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
       trv=trv_tbl->lst[idx_tbl];
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)fprintf(stderr,"Interpolate %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");
-    } /* end idx_tbl */
-  } /* end dbg */
+    } /* !idx_tbl */
+  } /* !dbg */
 
   /* Pre-allocate dimension ID and cnt/srt space */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
@@ -1824,8 +1868,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	} /* !flg_rgr */
 	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
 	/* Duplicate netCDF4 compression settings when possible */
-	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)
-	  if(dmn_nbr_out > 0)
+	if(dmn_nbr_out > 0)
+	  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)
 	    rcd=nco_flt_def_wrp(in_id,var_id_in,(char *)NULL,out_id,var_id_out);
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
 	/* Variables with subterranean levels and missing-value extrapolation must have _FillValue attribute */
@@ -1909,7 +1953,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     idx_fst=tm_idx*grd_sz_in;
     
     if(need_prs_mdp){
-      /* Allocated and define midpoint pressures */
+      /* Allocate and define midpoint pressures */
       if(tm_idx == 0) prs_mdp_in=(double *)nco_malloc_dbg(grd_sz_in*lev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_in value buffer");
       if(tm_idx == 0) prs_mdp_out=(double *)nco_malloc_dbg(grd_sz_out*lev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_out value buffer");
       if(flg_grd_in_hyb)
@@ -4464,8 +4508,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	} /* !flg_rgr */
 	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
 	/* Duplicate netCDF4 compression settings when possible */
-	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)
-	  if(dmn_nbr_out > 0)
+	if(dmn_nbr_out > 0)
+	  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)
 	    rcd=nco_flt_def_wrp(in_id,var_id_in,(char *)NULL,out_id,var_id_out);
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
 	if(trv.flg_rgr){
@@ -4809,9 +4853,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if((rcd=nco_inq_varid_flg(sgs_id,var_nm,&var_id_in)) != NC_NOERR){
       /* If sgs_frc_nm is not in input file then search for it in external area file */
 #ifdef WIN32
-  const char sls_chr='\\';   /* [chr] Slash character */
+  const char sls_chr='\\'; /* [chr] Slash character */
 #else /* !WIN32 */
-  const char sls_chr='/';   /* [chr] Slash character */
+  const char sls_chr='/'; /* [chr] Slash character */
 #endif /* !WIN32 */
       char *sls_ptr; /* [sng] Pointer to last slash character (' ') */
       sls_ptr=strrchr(var_nm,sls_chr);

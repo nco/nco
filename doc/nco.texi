@@ -28262,7 +28262,7 @@ passed to the regridder (@command{ncks}) for additional diagnostics.
 @cindex @code{vrt}
 @cindex @code{--vrt}
 @cindex @code{--vrt_crd}
-@cindex @code{--vertical_file}
+@cindex @code{--vrt_fl_out}
 @cindex @code{--vrt_fl=@var{vrt_fl}}
 @cindex @var{vrt_fl}
 @cindex Vertical coordinate

@@ -1,5 +1,13 @@
 2022-11-02  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.1.2-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha03: fxm';git push
+	git tag -a 5.1.2-alpha03 -m '';git push --tags
+
+	* ncremap shift from vrt_fl to vrt_out for canonical vertical interpolation
+
+	* ncremap accept --ps_nm_in=ps_nm with optional embedded filename
+
 	* NCO 5.1.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha02: Gould Median';git push
 	git tag -a 5.1.2-alpha02 -m 'all: prn_usg() not OOM; ncremap: recognize T_mid, ps/plev_nm_in/out/tpl, stg_grd dfl False; ncz2psx: man';git push --tags

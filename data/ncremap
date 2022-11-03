@@ -346,16 +346,18 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Add depth (201901):
 # ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
 # Vertical interpolation (201903):
-# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_hyb_L72_ps.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc # PS in "fat" template file
-# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # skinny template file
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_L72_ps.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc # PS in "fat" template file
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # skinny template file
 # Missing-value extrapolation (mss_val|nrs_ngh)
-# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # Extrapolation results in missing values
-# Simultaneous horizontal/vertical regridding
-# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --vrt_fl=${DATA}/grids/vrt_hyb_L30.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # Extrapolation results in missing values
+# Simultaneous horizontal/vertical regridding L72->L30
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --vrt_out=${DATA}/grids/vrt_hyb_L30.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
+# SCREAM external surface pressure (202211):
+# ncremap -v T_mid --ps_nm=${DATA}/bm/screamv1_ne1024pg2l128_QvT.nc/ps --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/bm/screamv1_ne1024pg2l128_QvT.nc ~/foo.nc
 # Time-varying hybrid input
 # ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --drc_out=${DATA}/ne30/rgr ${DATA}/ne30/raw/v2.LR.historical_0101.eam.h0.2013-0[123].nc
 # ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.2013-0[12].nc ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.201301_201302.nc
-# ncremap --dbg=3 -v FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.201301_201302.nc ~/foo.nc
+# ncremap --dbg=3 -v FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.201301_201302.nc ~/foo.nc
 # MOAB
 # ncremap --mpi_nbr=8 -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=fv2fv_flx --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
 # CDO
@@ -557,7 +559,7 @@ var_rgr='' # [sng] CF template variable
 var_xmp='FSNT' # [sng] Variable list for examples
 vrb_lvl=${vrb_2} # [enm] Verbosity level
 vrs_prn='No' # [sng] Print version information
-vrt_fl='' # [sng] Vertical coordinate file
+vrt_out='' # [sng] Vertical grid file for output
 vrt_nm='' # [sng] Vertical coordinate name
 vrt_opt='' # [sng] Vertical options (e.g., '--rgr xtr_mth=mss_val')
 vrt_ntp='' # [sng] Vertical interpolation type (lin|log)
@@ -593,6 +595,7 @@ fi # !gpfs
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
     printf "${fnt_rvr}Basic usage:\n${fnt_nrm} ${fnt_bld}${spt_nm} -d dst_fl in_fl out_fl${fnt_nrm}\n"
+    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --map=map.nc in_fl out_fl${fnt_nrm}\n"
     printf "${fnt_nrm} ${fnt_bld}${spt_nm} --destination=dst_fl --input_file=in_fl --output_file=out_fl${fnt_nrm}\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
     echo "${fnt_rvr}-3${fnt_nrm}          Output file format ${fmt_sng_nc3} [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
@@ -684,7 +687,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
     echo " ${fnt_bld}--version${fnt_nrm}  Version and configuration information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
     echo " ${fnt_bld}--vrb_lvl${fnt_nrm}  Verbosity level (default ${fnt_bld}${vrb_lvl}${fnt_nrm}) [${fnt_tlc}vrb_lvl, vrb, verbosity, print_verbosity${fnt_nrm}]"
-    echo " ${fnt_bld}--vrt_fl${fnt_nrm}   Vertical coordinate file (empty means none) (default ${fnt_bld}${vrt_fl}${fnt_nrm}) [${fnt_tlc}vrt_fl, vrt, vrt_crd, vertical_coordinate${fnt_nrm}]"
+    echo " ${fnt_bld}--vrt_out${fnt_nrm}   Vertical grid file for output (empty means none) (default ${fnt_bld}${vrt_out}${fnt_nrm}) [${fnt_tlc}vrt_out, vrt_fl, vrt, vrt_crd, vrt_grd_out${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_nm${fnt_nrm}   Vertical coordinate name (empty means \"plev\") (default ${fnt_bld}${vrt_nm}${fnt_nrm}) [${fnt_tlc}vrt_nm, plev_nm, vertical_coordinate_name${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_ntp${fnt_nrm}  Vertical interpolation type (empty means none) (default ${fnt_bld}${vrt_ntp}${fnt_nrm}) [${fnt_tlc}vrt_ntp, ntp_mth, interpolation_type, interpolation_method${fnt_nrm}] (lin|log)"
     echo " ${fnt_bld}--vrt_xtr${fnt_nrm}  Vertical extrapolation type (empty means none) (default ${fnt_bld}${vrt_xtr}${fnt_nrm}) [${fnt_tlc}vrt_xtr, xtr_mth, extrapolation_type, extrapolation_method${fnt_nrm}] (linear|mss_val|nrs_ngh|zero)"
@@ -887,7 +890,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
 	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Print version information
 	       vrb_lvl=?* | vrb=?* | verbosity=?* | print_verbosity=?* ) vrb_lvl="${LONG_OPTARG}" ;; # # Print verbosity
-	       vrt_fl=?* | vrt=?* | vrt_crd=?* | vertical_coordinate=?* ) vrt_fl="${LONG_OPTARG}" ;; # # Vertical coordinate file
+	       vrt_out=?* | vrt_fl=?* | vrt=?* | vrt_crd=?* | vrt_grd_out=?* ) vrt_out="${LONG_OPTARG}" ;; # # Vertical grid file for output
 	       vrt_nm=?* | plev_nm=?* | vertical_coordinate_name=?* ) vrt_nm="${LONG_OPTARG}" ;; # # Vertical coordinate name
 	       vrt_ntp=?* | ntp_mth=?* | interpolation_type=?* | interpolation_method=?* ) vrt_ntp="${LONG_OPTARG}" ;; # # Vertical interpolation type (lin|log)
 	       vrt_xtr=?* | xtr_mth=?* | extrapolation_type=?* | extrapolation_method=?* ) vrt_xtr="${LONG_OPTARG}" ;; # # Vertical extrapolation type (linear|mss_val|nrs_ngh|zero)
@@ -1857,17 +1860,17 @@ fi # !prc_sgs
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"
 fi # !thr_usr
-if [ -n "${vrt_fl}" ]; then
-    if [ ! -f "${vrt_fl}" ]; then
-	echo "ERROR: Unable to find specified vertical coordinate file ${vrt_fl}"
+if [ -n "${vrt_out}" ]; then
+    if [ ! -f "${vrt_out}" ]; then
+	echo "ERROR: Unable to find specified vertical output grid file ${vrt_out}"
 	exit 1
     fi # ! -f
     vrt_usr_flg='Yes'
-    if [ "${flg_hrz}" != 'Yes' ]; then
-	vrt_opt="${vrt_opt} ${rgr_opt}"
-    fi # !flg_hrz
+    if [ -n "${ps_nm}" ]; then
+	vrt_opt="${vrt_opt} --rgr ps_nm_in=${ps_nm}"
+    fi # !ps_nm
     if [ -n "${vrt_nm}" ]; then
-	vrt_opt="${vrt_opt} --rgr plev_nm=${vrt_nm}"
+	vrt_opt="${vrt_opt} --rgr plev_nm_in=${vrt_nm}"
     fi # !vrt_nm
     if [ -n "${vrt_xtr}" ]; then
 	if [ ${vrt_xtr} = 'mss_val' ] || [ ${vrt_xtr} = 'missing_value' ] || [ ${vrt_xtr} = 'msv' ]; then 
@@ -1895,7 +1898,7 @@ if [ -n "${vrt_fl}" ]; then
 	    exit 1
 	fi # !vrt_ntp
     fi # !vrt_ntp
-fi # !vrt_fl
+fi # !vrt_out
 
 if [ -n "${dst_fl}" ]; then 
     if [ ! -f "${dst_fl}" ]; then
@@ -2242,6 +2245,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: prc_typ  = ${prc_typ}\n"
     printf "dbg: prs_stt  = ${prs_stt}\n"
     printf "dbg: prt_nbr  = ${prt_nbr}\n"
+    printf "dbg: ps_nm    = ${ps_nm}\n"
 #    printf "dbg: qea_flg  = ${qea_flg}\n"
     printf "dbg: rgr_opt  = ${rgr_opt}\n"
     printf "dbg: rnr_thr  = ${rnr_thr}\n"
@@ -2265,7 +2269,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: unq_sfx  = ${unq_sfx}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: var_rgr  = ${var_rgr}\n"
-    printf "dbg: vrt_fl   = ${vrt_fl}\n"
+    printf "dbg: vrt_out  = ${vrt_out}\n"
     printf "dbg: vrt_nm   = ${vrt_nm}\n"
     printf "dbg: vrt_opt  = ${vrt_opt}\n"
     printf "dbg: vrt_ntp  = ${vrt_ntp}\n"
@@ -2357,7 +2361,7 @@ if [ "${dst_usr_flg}" = 'Yes' ]; then
     fi # !grd_dst_usr_flg
 fi # !dst_usr_flg
 if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ] && [ "${vrt_usr_flg}" != 'Yes' ]; then 
-    printf "${spt_nm}: ERROR Unable to determine remapping procedure\nHINT: Specify the type of remapping to perform with at least one of the following options: 1) A data/template file, '-d dst_fl'; 2) A destination grid-file, '-g grd_dst'; 3) A grid-construction command, '-G grd_sng'; 4) A map-file with weights to apply, '-m map_fl'; 5) A vertical grid to interpolate to, --vrt_fl=vrt_fl\n"
+    printf "${spt_nm}: ERROR Unable to determine remapping procedure\nHINT: Specify the type of remapping to perform with at least one of the following options: 1) A data/template file, '-d dst_fl'; 2) A destination grid-file, '-g grd_dst'; 3) A grid-construction command, '-G grd_sng'; 4) A map-file with weights to apply, '-m map_fl'; 5) A vertical grid to interpolate to, --vrt_out=vrt_out\n"
     exit 1
 fi # !dst_usr_flg
 if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" = 'Yes' ] && [ "${vrt_usr_flg}" != 'Yes' ]; then
@@ -3298,18 +3302,18 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	fi # !par_opt
     fi # !rrg
 
-    if [ -n "${vrt_fl}" ]; then
+    if [ -n "${vrt_out}" ]; then
 	# Block 5a: Vertical interpolation
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 
 	    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
-		printf "Vertical : ${vrt_fl}\n"
+		printf "Vertical : ${vrt_out}\n"
 	    fi # !vrb_lvl
 	    out_fl=${fl_out[${fl_idx}]}
 	    if [ "${flg_hrz}" = 'Yes' ]; then
 		out_fl="${drc_tmp}/ncremap_tmp_out_vrt.${fl_idx}.nc"
 	    fi # !flg_hrz
-	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${vrt_opt} --vrt=\"${vrt_fl}\" \"${fl_in[${fl_idx}]}\" \"${out_fl}\""
+	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${vrt_opt} --vrt=\"${vrt_out}\" \"${fl_in[${fl_idx}]}\" \"${out_fl}\""
 	    fl_in[${fl_idx}]=${out_fl}
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${fl_idx}]}
@@ -3337,7 +3341,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		fi # !err
 	    done # !fl_idx
 	fi # !par_opt
-    fi # !vrt_fl
+    fi # !vrt_out
     
     if [ "${flg_hrz}" = 'Yes' ]; then
 	# Block 5b: Horizontal regridding
@@ -3378,10 +3382,10 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
     if [ "${cln_flg}" = 'Yes' ]; then
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    /bin/rm -f ${att_fl[${fl_idx}]} ${d2f_fl[${fl_idx}]} ${dpt_tmp_fl[${fl_idx}]} ${pdq_fl[${fl_idx}]} ${rnm_fl[${fl_idx}]} 
-	    if [ -n "${vrt_fl}" ] && [ "${flg_hrz}" = 'Yes' ]; then
+	    if [ -n "${vrt_out}" ] && [ "${flg_hrz}" = 'Yes' ]; then
 		# Remove vertically regridded intermediate output
 		/bin/rm -f "${drc_tmp}/ncremap_tmp_out_vrt.${fl_idx}.nc"
-	    fi # !vrt_fl
+	    fi # !vrt_out
 	done # !fl_idx
     fi # !cln_flg
 	
