@@ -117,7 +117,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
     (void)fprintf(stdout,"ERROR NC_UNLIMIT NC_UNLIMITED size already in use\nHINT: NC_EUNLIMIT errors can occur when attempting to convert netCDF4 classic files that contain multiple record dimensions into a netCDF3 file that allows only one record dimension. In this case, try first fixing the excess record dimension(s) (with, e.g., ncks --fix_rec_dmn) and then convert to netCDF3. For more details, see http://nco.sf.net/nco.html#fix_rec_dmn\n"); break;
   case NC_EVARSIZE: /* (-62) */
     (void)fprintf(stdout,"ERROR NC_EVARSIZE One or more variable sizes violate format constraints\nHINT: NC_EVARSIZE errors occur when attempting to copy or aggregate input files together into an output file that exceeds the per-file capacity of the output file format, and when trying to copy, aggregate, or define individual variables that exceed the per-variable constraints of the output file format. The per-file limit of all netCDF formats is not less than 8 EiB on modern computers, so any NC_EVARSIZE error is almost certainly due to violating a per-variable limit. Relevant limits: netCDF3 NETCDF_CLASSIC format limits fixed variables to sizes smaller than 2^31 B = 2 GiB ~ 2.1 GB, and record variables to that size per record. A single variable may exceed this limit if and only if it is the last defined variable. netCDF3 NETCDF_64BIT_OFFSET format limits fixed variables to sizes smaller than 2^32 B = 4 GiB ~ 4.2 GB, and record variables to that size per record. Any number of variables may reach, though not exceed, this size for fixed variables, or this size per record for record variables. The netCDF3 NETCDF_64BIT_DATA and netCDF4 NETCDF4 formats have no variable size limitations of real-world import. If any variable in your dataset exceeds these limits, alter the output file to a format capacious enough, either netCDF3 classic with 64-bit offsets (with -6 or --64), to PnetCDF/CDF5 with 64-bit data (with -5), or to netCDF4 (with -4 or -7). For more details, see http://nco.sf.net/nco.html#fl_fmt\n"); break;
-  } /* end switch */
+  } /* !rcd */
 
   /* Print NCO-generated error message, if any */
   if(msg) (void)fprintf(stderr,"%s: ERROR Short NCO-generated message (usually name of function that triggered error): %s\n",fnc_nm,msg);
@@ -183,7 +183,7 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
   case NC_STRING:
     return sizeof(nco_string);
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !nco_type */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return 0;
@@ -226,7 +226,7 @@ nco_typ_lng_udt /* [fnc] Convert netCDF type enum to native type size */
     case NC_STRING:
       return sizeof(nco_string);
     default: nco_dfl_case_nc_type_err(); break;
-    } /* end switch */
+    } /* !nco_typ */
   }else{
     size_t typ_sz;
     (void)nco_inq_user_type(nc_id,nco_typ,NULL,&typ_sz,NULL,NULL,NULL);
@@ -277,7 +277,7 @@ nco_typ_sng /* [fnc] Convert netCDF type enum to string */
   case NC_COMPOUND:
     return "NC_COMPOUND";
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !type */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -314,7 +314,7 @@ cdl_typ_nm /* [fnc] Return string describing native CDL type */
   case NC_STRING:
     return "string";
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !type */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -357,7 +357,7 @@ cdl_typ_nm_udt /* [fnc] Return string describing native CDL type */
     case NC_STRING:
       return "string";
     default: nco_dfl_case_nc_type_err(); break;
-    } /* end switch */
+    } /* !type */
   }else{
     (void)nco_inq_user_type(nc_id,type,typ_nm,NULL,NULL,NULL,NULL);
     //(void)fprintf(stdout,"DEBUG cdl_typ_nm_udt() reports non-atomic type name is %s\n",typ_nm);
@@ -401,7 +401,7 @@ xml_typ_nm /* [fnc] Return string describing native XML type */
   case NC_STRING:
     return "String";
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !type */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -438,7 +438,7 @@ jsn_typ_nm /* [fnc] Return string describing native JSON type */
   case NC_STRING:
     return "string";
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !type */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -475,7 +475,7 @@ cdl_typ_sfx /* [fnc] Return suffix string for CDL type */
   case NC_STRING:
     return "";
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !type */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -515,7 +515,7 @@ c_typ_nm /* [fnc] Return string describing native C type */
   case NC_STRING:
     return NCO_STRING_SNG;
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !type */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -552,7 +552,7 @@ f77_typ_nm /* [fnc] Return string describing native Fortran77 type */
   case NC_STRING:
     return "character fxm";
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !type */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -590,11 +590,11 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
   case NC_STRING:
     return "character(1) fxm";
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !type */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end f90_typ_nm() */
+} /* !f90_typ_nm() */
 
 const char * /* O [sng] String describing file format */
 nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
@@ -613,7 +613,7 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
   case NC_FORMAT_CDF5:
     return "NC_FORMAT_CDF5";
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !fl_fmt */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -685,7 +685,7 @@ nco_fmt_hdn_sng /* [fnc] Convert netCDF file format enum to string for hidden at
   case NC_FORMAT_CDF5:
     return "64-bit data";
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !fl_fmt */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -704,7 +704,7 @@ nco_ndn_sng /* [fnc] Convert netCDF endianness enum to string for hidden attribu
   case NC_ENDIAN_BIG:
     return "big";
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !flg_ndn */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -813,7 +813,7 @@ nco__create(const char * const fl_nm,const int cmode,const size_t sz_ntl,size_t 
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* !nco__create */
+} /* !nco__create() */
 
 int
 nco_open(const char * const fl_nm,const int mode,int * const nc_id)
@@ -827,7 +827,7 @@ nco_open(const char * const fl_nm,const int mode,int * const nc_id)
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* !nco_open */
+} /* !nco_open() */
 
 int
 nco__open(const char * const fl_nm,const int mode,size_t * const bfr_sz_hnt,int * const nc_id)
@@ -841,7 +841,7 @@ nco__open(const char * const fl_nm,const int mode,size_t * const bfr_sz_hnt,int 
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* !nco__open */
+} /* !nco__open() */
 
 int
 nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)
@@ -851,7 +851,7 @@ nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)
   int rcd;
   rcd=nc_open(fl_nm,mode,nc_id);
   return rcd;
-} /* !nco_open */
+} /* !nco_open_flg() */
 
 /* #if NC_LIB_VERSION < 440 */
 #ifndef HAVE_NETCDF_MEM_H
@@ -867,7 +867,7 @@ nc_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const
   nco_err_exit(rcd,fnc_nm);
   *nc_id=*((int *)void_ptr);
   return rcd;
-} /* end nc_open_mem() */
+} /* !nc_open_mem() */
 #endif /* !HAVE_NETCDF_MEM_H */
 
 #if NC_LIB_VERSION < 462 
@@ -897,7 +897,7 @@ nc_open_memio(const char * const fl_nm,const int mode,NC_memio * const info,int 
   nco_err_exit(rcd,fnc_nm);
   *nc_id+=mode*0;
   return rcd;
-} /* end nc_open_memio() */
+} /* !nc_open_memio() */
 
 int
 nc_close_memio(const int nc_id,NC_memio * const info)
@@ -910,7 +910,7 @@ nc_close_memio(const int nc_id,NC_memio * const info)
   nco_err_exit(rcd,fnc_nm);
   info->size+=0L;
   return rcd;
-} /* end nc_close_memio() */
+} /* !nc_close_memio() */
 #endif /* 4.6.2 */
 
 int
@@ -1378,7 +1378,7 @@ int nc_inq_format(int nc_id,int * const fl_fmt)
      20070901 Current OPeNDAP does not have nc_inq_format() and thus requires this stub */
   *fl_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   return NC_NOERR+0*nc_id; /* CEWI */
-} /* end nc_inq_format() */
+} /* !nc_inq_format() */
 #endif /* !HAVE_NC_INQ_FORMAT */
 int
 nco_inq_format(const int nc_id,int * const fl_fmt)
@@ -1402,7 +1402,7 @@ int nc_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
   if(fl_fmt) *fl_fmt=NC_FORMAT_UNDEFINED; /* [enm] Output file format */
   if(mode) *mode=0; /* [enm] Output file format */
   return NC_NOERR+0*nc_id+0*rcd; /* CEWI */
-} /* end nc_inq_format_extended() */
+} /* !nc_inq_format_extended() */
 #endif /* !NC_HAVE_INQ_FORMAT_EXTENDED */
 int
 nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
@@ -1570,7 +1570,7 @@ nc_rename_grp(int grp_id,const char * const grp_nm)
   (void)fprintf(stdout,"INFO: %s reports attempt to rename group \"%s\" to \"%s\" was foiled because libnetcdf.a does not contain nc_rename_grp(). To obtain this functionality, please rebuild NCO against netCDF library version 4.3.1-pre1 (released ~201309) or later.\nContinuing as though nothing untoward happened...\n",fnc_nm,grp_nm_old,grp_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nc_rename_grp() */
+} /* !nc_rename_grp() */
 #endif /* NC_HAVE_RENAME_GRP */
 
 int

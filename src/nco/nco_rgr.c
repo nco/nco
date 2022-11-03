@@ -145,7 +145,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->plev_nm_tpl) rgr->plev_nm_tpl=(char *)nco_free(rgr->plev_nm_tpl);
   if(rgr->ps_nm_in) rgr->ps_nm_in=(char *)nco_free(rgr->ps_nm_in);
   if(rgr->ps_nm_out) rgr->ps_nm_out=(char *)nco_free(rgr->ps_nm_out);
-  if(rgr->ps_nm_out) rgr->ps_nm_out=(char *)nco_free(rgr->ps_nm_out);
+  if(rgr->ps_nm_tpl) rgr->ps_nm_tpl=(char *)nco_free(rgr->ps_nm_tpl);
   if(rgr->vrt_nm) rgr->vrt_nm=(char *)nco_free(rgr->vrt_nm);
 
   /* Lastly, free() regrid structure itself */
@@ -1224,6 +1224,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	nco_exit(EXIT_FAILURE);
       } /* !sls_ptr */
       ps_nm_in=(char *)strdup(sls_ptr+1L); /* Copy variable-name portion of string */
+      /* Change ps_nm_out accordingly */
+      if(ps_nm_out){
+	ps_nm_out=(char *)nco_free(ps_nm_out);
+	ps_nm_out=rgr->ps_nm_out=(char *)strdup(ps_nm_in);
+      } /* !ps_nm_out */
       *sls_ptr='\0'; /* NULL-terminate filename */
       fl_ps=(char *)strdup(var_nm);
       var_nm=ps_nm_in; /* NB: too tricky? */
@@ -1305,6 +1310,24 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     ilev_nm_in=strdup(dmn_nm);
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
     lev_nm_in=strdup(dmn_nm);
+    /* 20221103:
+       Interface and midpoint dimension names are only guaranteed to both exist in vrt_in_id, not in_id
+       Use vrt_in_id to get their names and sizes, then be sure to leave this block with IDs from in_id
+       Following blocks only use those IDs to determine vertical grid of input variables from in_id
+       Either one (but not both) of the midpoint and interface level IDs may be undefined in in_id
+       Moreover, determining which dimension, if any, is midpoint and interface in in_id is non-trivial
+       Assume that these dimensions have same names (and sizes, of course) between vrt_in_id and in_id */
+    if(vrt_in_id != in_id){
+      dmn_id_ilev_in=NC_MIN_INT;
+      dmn_id_lev_in=NC_MIN_INT;
+      rcd=nco_inq_dimid_flg(in_id,ilev_nm_in,&dmn_id_ilev_in);
+      rcd=nco_inq_dimid_flg(in_id,lev_nm_in,&dmn_id_lev_in);
+      if(dmn_id_ilev_in == NC_MIN_INT && dmn_id_lev_in == NC_MIN_INT){
+	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") unable to find at least one hybrid vertical dimension (searched for %s and %s) in input data file. Possible that external vertical grid file uses different dimension names than input data file.\n",nco_prg_nm_get(),fnc_nm,ilev_nm_in,lev_nm_in);
+	nco_exit(EXIT_FAILURE);
+      } /* !dmn_id_ilev_in */
+    } /* !vrt_in_id */
+    
   } /* !flg_grd_in_hyb */
 
   if(flg_grd_in_prs){
@@ -1404,7 +1427,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       rcd=nco_inq_varndims(fl_ps_id,ps_id,&dmn_nbr_in); /* This is harmlessly repeated for hybrid input files */
       dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
       dmn_cnt_in=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
-      if(!dmn_srt) dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long)); /* NB: Only allocate dmn_srt once  */
+      if(!dmn_srt) dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long)); /* NB: Allocate dmn_srt only once */
 
       rcd=nco_inq_vardimid(fl_ps_id,ps_id,dmn_ids_in);
       for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){

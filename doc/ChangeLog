@@ -1,10 +1,14 @@
-2022-11-02  Charlie Zender  <zender@uci.edu>
+2022-11-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha03: fxm';git push
-	git tag -a 5.1.2-alpha03 -m '';git push --tags
+	git tag -a 5.1.2-alpha03 -m 'ncremap ps_nm_in, vrt_in, vrt_out';git push --tags
 
-	* ncremap accept --vrt_in to specify optional input vertical grid filename (borken)
+	* ncremap new functionality appears to work for SCREAM!
+
+	* ncremap accept --vrt_in to specify optional input vertical grid filename (vetted)
+
+2022-11-02  Charlie Zender  <zender@uci.edu>
 
 	* ncremap shift from vrt_fl to vrt_out for canonical vertical interpolation
 
