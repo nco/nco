@@ -613,9 +613,10 @@ fi # !gpfs
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
-    printf "${fnt_rvr}Basic usage:\n${fnt_nrm} ${fnt_bld}${spt_nm} -d dst_fl in_fl out_fl${fnt_nrm}\n"
-    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --map=map.nc in_fl out_fl${fnt_nrm}\n"
-    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --destination=dst_fl --input_file=in_fl --output_file=out_fl${fnt_nrm}\n\n"
+    printf "${fnt_rvr}Basic usage:\n"
+    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --map=map.nc in_fl out_fl${fnt_nrm} # Apply existing map from in->out\n"
+    printf "${fnt_nrm} ${fnt_bld}${spt_nm} -d dst_fl in_fl out_fl${fnt_nrm} # Construct map in->dst, regrid to out\n"
+    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --destination=dst_fl --input_file=in_fl --output_file=out_fl${fnt_nrm} # As above, with long options\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
     echo "${fnt_rvr}-3${fnt_nrm}          Output file format ${fmt_sng_nc3} [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
     echo "${fnt_rvr}-4${fnt_nrm}          Output file format ${fmt_sng_nc4} [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
@@ -733,8 +734,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "          ${fnt_bld}$spt_nm -s ${grd_src_xmp} -d ${dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -d ${dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -g ${grd_dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm --vrt=${grd_vrt_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm --vrt=${grd_vrt_xmp} -m ${map_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm --vrt_out=${grd_vrt_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm --vrt_out=${grd_vrt_xmp} -m ${map_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}ls mdl*2005*nc | $spt_nm -m ${map_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}ls mdl*2005*nc | $spt_nm -d ${dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
@@ -3342,7 +3343,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    if [ "${flg_hrz}" = 'Yes' ]; then
 		out_fl="${drc_tmp}/ncremap_tmp_out_vrt.${fl_idx}.nc"
 	    fi # !flg_hrz
-	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${vrt_opt} --vrt=\"${vrt_out}\" \"${fl_in[${fl_idx}]}\" \"${out_fl}\""
+	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${vrt_opt} --vrt_out=\"${vrt_out}\" \"${fl_in[${fl_idx}]}\" \"${out_fl}\""
 	    fl_in[${fl_idx}]=${out_fl}
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${fl_idx}]}

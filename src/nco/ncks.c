@@ -160,7 +160,8 @@ main(int argc,char **argv)
   char *rgr_map=NULL; /* [sng] File containing mapping weights from source to destination grid */
   char *rgr_out=NULL; /* [sng] File containing regridded fields */
   char *rgr_var=NULL; /* [sng] Variable for special regridding treatment */
-  char *rgr_vrt=NULL; /* [sng] File containing output vertical coordinate grid */
+  char *rgr_vrt_in=NULL; /* [sng] File containing input vertical coordinate grid */
+  char *rgr_vrt_out=NULL; /* [sng] File containing output vertical coordinate grid */
   char *smr_fl_sz_sng=NULL; /* [sng] String describing estimated file size */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *smr_xtn_sng=NULL; /* [sng] File extended summary string */
@@ -510,7 +511,10 @@ main(int argc,char **argv)
     {"hrz_crd",required_argument,0,0}, /* [sng] File containing horizontal coordinate grid */
     {"rgr_rnr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"rgr_var",required_argument,0,0}, /* I [sng] Variable for special regridding treatment */
-    {"rgr_vrt",required_argument,0,0}, /* [sng] File containing output vertical coordinate grid */
+    {"rgr_vrt_in",required_argument,0,0}, /* [sng] File containing input vertical coordinate grid */
+    {"vrt_grd_in",required_argument,0,0}, /* [sng] File containing input vertical coordinate grid */
+    {"vrt_in",required_argument,0,0}, /* [sng] File containing input vertical coordinate grid */
+    {"rgr_vrt_out",required_argument,0,0}, /* [sng] File containing output vertical coordinate grid */
     {"vrt_fl",required_argument,0,0}, /* [sng] File containing output vertical coordinate grid */
     {"vrt_grd_out",required_argument,0,0}, /* [sng] File containing output vertical coordinate grid */
     {"vrt_out",required_argument,0,0}, /* [sng] File containing output vertical coordinate grid */
@@ -821,9 +825,12 @@ main(int argc,char **argv)
 	flg_s1d=flg_rgr=True;
 	rgr_hrz=(char *)strdup(optarg);
       } /* !hrz_fl */
-      if(!strcmp(opt_crr,"vrt_out") || !strcmp(opt_crr,"vrt_fl") || !strcmp(opt_crr,"vrt_grd_out") || !strcmp(opt_crr,"rgr_vrt")){
+      if(!strcmp(opt_crr,"vrt_in") || !strcmp(opt_crr,"vrt_grd_in") || !strcmp(opt_crr,"rgr_vrt_in")){
+	rgr_vrt_in=(char *)strdup(optarg);
+      } /* !vrt_in */
+      if(!strcmp(opt_crr,"vrt_out") || !strcmp(opt_crr,"vrt_fl") || !strcmp(opt_crr,"vrt_grd_out") || !strcmp(opt_crr,"rgr_vrt_out")){
         flg_rgr=True;
-	rgr_vrt=(char *)strdup(optarg);
+	rgr_vrt_out=(char *)strdup(optarg);
       } /* !vrt_out */
       if(!strcmp(opt_crr,"rnr_thr") || !strcmp(opt_crr,"rgr_rnr") || !strcmp(opt_crr,"renormalize") || !strcmp(opt_crr,"renormalization_threshold")){
         wgt_vld_thr=strtod(optarg,&sng_cnv_rcd);
@@ -1245,7 +1252,7 @@ main(int argc,char **argv)
       /* Initialize regridding structure */
       rgr_in=(char *)strdup(fl_in);
       rgr_out=(char *)strdup(fl_out);
-      rgr_nfo=nco_rgr_ini(cmd_ln,in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_hrz,rgr_map,rgr_var,rgr_vrt,wgt_vld_thr,xtn_lst_in,xtn_nbr);
+      rgr_nfo=nco_rgr_ini(cmd_ln,in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_hrz,rgr_map,rgr_var,rgr_vrt_in,rgr_vrt_out,wgt_vld_thr,xtn_lst_in,xtn_nbr);
       rgr_nfo->fl_out_fmt=fl_out_fmt;
       rgr_nfo->dfl_lvl=dfl_lvl;
       rgr_nfo->hdr_pad=hdr_pad;

@@ -100,6 +100,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_msh) rgr->fl_msh=(char *)nco_free(rgr->fl_msh);
   if(rgr->fl_out) rgr->fl_out=(char *)nco_free(rgr->fl_out);
   if(rgr->fl_out_tmp) rgr->fl_out_tmp=(char *)nco_free(rgr->fl_out_tmp);
+  if(rgr->fl_vrt_in) rgr->fl_vrt_in=(char *)nco_free(rgr->fl_vrt_in);
   if(rgr->fl_vrt_out) rgr->fl_vrt_out=(char *)nco_free(rgr->fl_vrt_out);
 
   if(rgr->var_nm) rgr->var_nm=(char *)nco_free(rgr->var_nm);
@@ -111,7 +112,6 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_hnt_src) rgr->fl_hnt_src=(char *)nco_free(rgr->fl_hnt_src);
   if(rgr->fl_skl) rgr->fl_skl=(char *)nco_free(rgr->fl_skl);
   if(rgr->fl_ugrid) rgr->fl_ugrid=(char *)nco_free(rgr->fl_ugrid);
-  if(rgr->fl_vrt_in) rgr->fl_vrt_in=(char *)nco_free(rgr->fl_vrt_in);
 
   /* Tempest */
   if(rgr->drc_tps) rgr->drc_tps=(char *)nco_free(rgr->drc_tps);
@@ -167,7 +167,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
  char * const rgr_hrz, /* I [sng] File containing horizontal coordinate grid */
  char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
  char * const rgr_var, /* I [sng] Variable for special regridding treatment */
- char * const rgr_vrt, /* I [sng] File containing vertical coordinate grid */
+ char * const rgr_vrt_in, /* I [sng] File containing input vertical coordinate grid */
+ char * const rgr_vrt_out, /* I [sng] File containing output vertical coordinate grid */
  const double wgt_vld_thr, /* I [frc] Weight threshold for valid destination value */
  char **xtn_var, /* [sng] I Extensive variables */
  const int xtn_nbr) /* [nbr] I Number of extensive variables */
@@ -207,7 +208,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_map=rgr_map; /* [sng] File containing mapping weights from source to destination grid */
 
   rgr->fl_hrz=rgr_hrz; /* [sng] [sng] File containing horizontal coordinate grid (for S1D) */
-  rgr->fl_vrt_out=rgr_vrt; /* [sng] [sng] File containing output vertical coordinate grid */
+  rgr->fl_vrt_in=rgr_vrt_in; /* [sng] [sng] File containing input vertical coordinate grid */
+  rgr->fl_vrt_out=rgr_vrt_out; /* [sng] [sng] File containing output vertical coordinate grid */
 
   rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
   
@@ -215,7 +217,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->xtn_nbr=xtn_nbr; /* [nbr] Number of extensive variables */
 
   /* Did user explicitly request regridding? */
-  if(rgr_arg_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL || rgr_vrt != NULL) rgr->flg_usr_rqs=True;
+  if(rgr_arg_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL || rgr_vrt_out != NULL) rgr->flg_usr_rqs=True;
 
   /* Initialize arguments after copying */
   if(!rgr->fl_out) rgr->fl_out=(char *)strdup("/data/zender/rgr/rgr_out.nc");
@@ -233,6 +235,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"fl_out = %s, ",rgr->fl_out ? rgr->fl_out : "NULL");
     (void)fprintf(stderr,"fl_out_tmp = %s, ",rgr->fl_out_tmp ? rgr->fl_out_tmp : "NULL");
     (void)fprintf(stderr,"fl_map = %s, ",rgr->fl_map ? rgr->fl_map : "NULL");
+    (void)fprintf(stderr,"fl_vrt_in = %s, ",rgr->fl_vrt_in ? rgr->fl_vrt_in : "NULL");
     (void)fprintf(stderr,"fl_vrt_out = %s, ",rgr->fl_vrt_out ? rgr->fl_vrt_out : "NULL");
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
@@ -309,7 +312,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_msh=NULL; /* [sng] Name of SCRIP intersection mesh file to create */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
   rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
-  rgr->fl_vrt_in=NULL; /* [sng] File containing input vertical coordinate grid */
   rgr->flg_add_fll=False; /* [flg] Add _FillValue to fields with empty destination cells */
   rgr->flg_area_out=True; /* [flg] Add area to output */
   rgr->flg_cf_units=False; /* [flg] Generate CF-compliant (breaks ERWG 7.1.0r-) units fields in SCRIP-format grid files */

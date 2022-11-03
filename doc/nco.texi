@@ -7848,7 +7848,7 @@ These annotations include
     respectively.
     Variables that contain a @var{lev_dmn_nm}-dimension or an
     @var{ilev_dmn_nm}-dimension will be vertically interpolated to the 
-    specified (with @samp{vrt_fl=@var{vrt_fl}}) vertical output grid,
+    specified (with @samp{vrt_out=@var{vrt_fl}}) vertical output grid,
     and will all contain the @var{lev_dmn_nm}- and, for
     hybrid-sigma/pressure interface variables,
     @var{ilev_dmn_nm}-dimensions.
@@ -19294,7 +19294,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}] [--split]
 [-t @var{thr_nbr}] [--tpd=@var{tpd}] [--uio] [-v @var{var_lst}] [--var_xtr=@var{var_xtr}] [--version] 
-[--vrt_fl=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}]
+[--vrt_out=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}]
 [-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
 @end example
@@ -25426,7 +25426,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}] [--uio]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
-[--vrt_fl=@var{vrt_fl}] [--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
+[--vrt_out=@var{vrt_fl}] [--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
 [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] [--xcl_var]
 [--xtr_nsp=@var{xtr_nsp}] [--xtr_xpn=@var{xtr_xpn}]
 [@var{input-files}] [@var{output-file}]
@@ -28263,12 +28263,12 @@ passed to the regridder (@command{ncks}) for additional diagnostics.
 @cindex @code{--vrt}
 @cindex @code{--vrt_crd}
 @cindex @code{--vrt_fl_out}
-@cindex @code{--vrt_fl=@var{vrt_fl}}
+@cindex @code{--vrt_out=@var{vrt_fl}}
 @cindex @var{vrt_fl}
 @cindex Vertical coordinate
 @cindex @acronym{MPAS}
-@item --vrt_fl=@var{vrt_fl} (@code{--vrt_fl}, @code{--vrt}, @code{--vrt_crd}, @code{--vertical_file})
-The @samp{--vrt_fl=@var{vrt_fl}} option instructs @command{ncremap}
+@item --vrt_out=@var{vrt_fl} (@code{--vrt_out}, @code{--vrt_fl}, @code{--vrt}, @code{--vrt_crd}, @code{--vrt_grd_out})
+The @samp{--vrt_out=@var{vrt_fl}} option instructs @command{ncremap}
 to vertically interpolate the input file to the vertical coordinate
 grid contained in the file @var{vrt_fl}.
 This option first appeared in @acronym{NCO} @w{version 4.8.0},
