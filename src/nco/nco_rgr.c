@@ -1432,7 +1432,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       dmn_ids_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
       dmn_cnt_out=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
       /* fxm: next line works for hyb_in and is buggy for prs_in */
-      /* fxm: 20221102: Why copy input IDs to output arrays, you ask? Because output arrays are only used to define PS in output */
+      /* 20221102: Why copy input IDs to output arrays, you ask? Because these output arrays are only used to define PS in output */
       memcpy(dmn_ids_out,dmn_ids_in,dmn_nbr_in*sizeof(int));
       memcpy(dmn_cnt_out,dmn_cnt_in,dmn_nbr_in*sizeof(long));
       grd_sz_out=grd_sz_in;
