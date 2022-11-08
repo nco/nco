@@ -1,3 +1,21 @@
+2022-11-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.2-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha04: Ladybug';git push
+	git tag -a 5.1.2-alpha04 -m 'ncclimo/ncremap: -P eamxx';git push --tags
+
+	* ncclimo/ncremap: --hrd_pth or --npo as first argument sets NCO_PATH_OVERRIDE='Yes'
+
+2022-11-07  Charlie Zender  <zender@uci.edu>
+
+	* ncremap: -P eamxx set pdq_opt=ilev,lev,col and ps_nm=ps
+
+2022-11-04  Charlie Zender  <zender@uci.edu>
+
+	* ncremap: Require pdq_flg=Yes to enable pdq_opt for all prc_typ
+
+	* ncclimo/ncremap: Shift slurm mail options to use --mail-type and --mail-user
+
 2022-11-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.2-alpha03 release procedure:

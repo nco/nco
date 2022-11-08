@@ -79,6 +79,20 @@ if [ -z "${HDF5_USE_FILE_LOCKING}" ]; then
     export HDF5_USE_FILE_LOCKING='FALSE'
 fi # HDF5_USE_FILE_LOCKING
 
+# 20221108: Passing environment variable NCO_PATH_OVERRIDE (NPO) to ncremap in batch queues fails on Cori
+# Approaches that fail include: 1. export NPO='Yes';ncremap ... 2. export NPO='Yes' ncremap ...
+# Direct approach that works is to pass NPO flag to ncremap via command-line switch
+# Require that path-override switch to be first command-line option (i.e., $1) found with shell syntax
+# ncremap/ncclimo implement NPO (though not getopt) logic prior to invoking NCO
+# This switch is a no-op in main getopt() block below (since it has already been parsed here)
+hrd_pth='No' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
+if [ -n "${1}" ]; then
+    if [ "${1}" = '--hrd_pth' ] || [ "${1}" = '--npo' ] || [ "${1}" = '--nco_path_override' ] || [ "${1}" = '--NCO_PATH_OVERRIDE' ]; then
+	hrd_pth='Yes'
+	NCO_PATH_OVERRIDE='Yes'
+    fi # !hrd_pth
+fi # !$1
+
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
 if [ -z "${HOSTNAME}" ]; then
     if [ -f /bin/hostname ] && [ -x /bin/hostname ]; then
@@ -111,12 +125,11 @@ OMP_PROC_BIND=false
 
 # Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library
 # 20170914 Entire block is identical between ncclimo and ncremap---keep it that way!
-# hrd_pth could be a command-line option to control environment if this block placed below getopt() block (not trivial)
 # 20190421 Change override default from opt-out to opt-in
+# 20221108 Implement hrd_pth in block above prior to getopt()
 # Leave NCO_PATH_OVERRIDE unset or set to 'No' to prevent NCO from executing next block that overrides PATH
 # Set NCO_PATH_OVERRIDE to 'Yes' in environment to cause NCO to execute next block and to override PATH:
 # export NCO_PATH_OVERRIDE='Yes'
-hrd_pth='Yes' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
 if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
@@ -315,7 +328,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo --jobs=3 -c 20180410.A_WCYCL1950_HR.ne120_oRRS18v3_ICG.theta -s 1 -e 5 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_cmip6_720x1440_aave.20181001.nc # ne120 climo on 1 node in background mode with 3-jobs (to stay under 192 GB RAM limit)
 # echo '#!/bin/bash' > ~/ncclimo.slurm
 # echo "ncclimo -p mpi -c 20180410.A_WCYCL1950_HR.ne120_oRRS18v3_ICG.theta -s 1 -e 5 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -O ${DATA}/ne120/rgr -r ${DATA}/maps/map_ne120np4_to_cmip6_720x1440_aave.20181001.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm # ne120 climo on 4 nodes, MPI mode:
-# sbatch -A e3sm --nodes=4 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
+# sbatch -A e3sm --nodes=4 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (andes,compy,cori), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (other) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -372,14 +385,14 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #              echo "ncclimo -d 1 -p mpi -c b1850c5_m2a -s 55 -e 58 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/ncclimo.cobalt;chmod a+x ~/ncclimo.cobalt
 #   Cori a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #                   echo "ncclimo -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
-#   Andes b): sbatch -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
+#   Andes b): sbatch -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Blues b):  qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cheyenne b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
-#   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
+#   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Cooley b): qsub -A ClimateEnergy_4 --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
-#   Cori b): sbatch -A e3sm --constraint=haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
+#   Cori b): sbatch -A e3sm --constraint=haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Oldrhea b):qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
-#   Perl b): sbatch -A e3sm --constraint=cpu --nodes=12 --time=00:30:00 --qos=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
+#   Perlm b): sbatch -A e3sm --constraint=cpu --nodes=12 --time=00:30:00 --qos=debug --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 # NB: stdout/stderr files returned from batch jobs are read-protected, need 'chmod 644 ~/ncclimo.out' afterwards
 
 # Normal use: Set five "mandatory" inputs (caseid, yr_srt, yr_end, drc_in, drc_out), and possibly rgr_map, on command line
@@ -573,7 +586,7 @@ no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
 par_typ="${par_bck}" # [sng] Parallelism type
 ppc_prc='' # [nbr] Precision-preserving compression precision
-prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mpas', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi')
+prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'eamxx', 'elm', 'mali', 'mpas', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi')
 rgn_avg='No' # [sng] Regional and global average timeseries
 rgr_map='' # [sng] Regridding (horizontal) map
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
@@ -625,6 +638,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is inherited from input) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm}) [${fnt_tlc}hst_nm, history_name, history${fnt_nrm}]"
     echo " ${fnt_bld}--hrz_dmn${fnt_nrm}  Horizontal dimension name(s) (default ${fnt_bld}${hrz_dmn}${fnt_nrm}) [${fnt_tlc}hrz_dmn, dmn_hrz, hrz_dmn_nm, horizontal_dimension${fnt_nrm}]"
+#    echo " ${fnt_bld}--hrd_pth${fnt_nrm}  Use hard-coded paths on known machines (e.g., chrysalis, compy, cori) NB: Must be first option! [${fnt_tlc}hrd_pth, hard_path, npo, nco_path_override${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
     echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
@@ -794,6 +808,8 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       hst_nm=?* | history_name=?* | history=?* ) hst_nm="${LONG_OPTARG}" ;; # -h # History tape name
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
+	       hrd_pth | hard_path | npo | nco_path_override ) hrd_pth='Yes' ;; # # Use hard-coded paths on known machines (intentional no-op because already handled prior to getopt())
+	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
 	       hrz_dmn=?* | hrz_dmn_nm=?* | dmn_hrz=?* | horizontal_dimension=?* ) hrz_dmn="${LONG_OPTARG}" ;; # # Horizontal dimension name(s)
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       lnk_flg=?* | link_flag=?* ) lnk_flg="${LONG_OPTARG}" ;; # -l # Link E3SM to AMWG name

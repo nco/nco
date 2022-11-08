@@ -93,6 +93,20 @@ if [ -z "${HDF5_USE_FILE_LOCKING}" ]; then
     export HDF5_USE_FILE_LOCKING='FALSE'
 fi # HDF5_USE_FILE_LOCKING
 
+# 20221108: Passing environment variable NCO_PATH_OVERRIDE (NPO) to ncremap in batch queues fails on Cori
+# Approaches that fail include: 1. export NPO='Yes';ncremap ... 2. export NPO='Yes' ncremap ...
+# Direct approach that works is to pass NPO flag to ncremap via command-line switch
+# Require that path-override switch to be first command-line option (i.e., $1) found with shell syntax
+# ncremap/ncclimo implement NPO (though not getopt) logic prior to invoking NCO
+# This switch is a no-op in main getopt() block below (since it has already been parsed here)
+hrd_pth='No' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
+if [ -n "${1}" ]; then
+    if [ "${1}" = '--hrd_pth' ] || [ "${1}" = '--npo' ] || [ "${1}" = '--nco_path_override' ] || [ "${1}" = '--NCO_PATH_OVERRIDE' ]; then
+	hrd_pth='Yes'
+	NCO_PATH_OVERRIDE='Yes'
+    fi # !hrd_pth
+fi # !$1
+
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
 if [ -z "${HOSTNAME}" ]; then
     if [ -f /bin/hostname ] && [ -x /bin/hostname ]; then
@@ -126,12 +140,11 @@ OMP_PROC_BIND=false
 
 # Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library
 # 20170914 Entire block is identical between ncclimo and ncremap---keep it that way!
-# hrd_pth could be a command-line option to control environment if this block placed below getopt() block (not trivial)
 # 20190421 Change override default from opt-out to opt-in
+# 20221108 Implement hrd_pth in block above prior to getopt()
 # Leave NCO_PATH_OVERRIDE unset or set to 'No' to prevent NCO from executing next block that overrides PATH
 # Set NCO_PATH_OVERRIDE to 'Yes' in environment to cause NCO to execute next block and to override PATH:
 # export NCO_PATH_OVERRIDE='Yes'
-hrd_pth='Yes' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
 if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
@@ -644,7 +657,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation arguments (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means none, i.e., infer from dst_fl or use map_fl) (default ${fnt_bld}${grd_dst}${fnt_nrm}) [${fnt_tlc}grd_dst, grid_dest, dst_grd, dest_grid, destination_grid${fnt_nrm}]"
-#    echo " ${fnt_bld}--hrd_pth${fnt_nrm}  Use hard-coded paths on known machines (e.g., cheyenne, cori) [${fnt_tlc}hrd_pth, hard_path, csz_exe, csz_bin_lib${fnt_nrm}]"
+#    echo " ${fnt_bld}--hrd_pth${fnt_nrm}  Use hard-coded paths on known machines (e.g., chrysalis, compy, cori) NB: Must be first option! [${fnt_tlc}hrd_pth, hard_path, npo, nco_path_override${fnt_nrm}]"
     echo "${fnt_rvr}-I${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}in_fl${fnt_nrm}    Input file (empty means pipe to stdin or drc_in) (default ${fnt_bld}${in_fl}${fnt_nrm}) [${fnt_tlc}in_fl, in_file, input_file${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
@@ -835,7 +848,8 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       dt_sng=?* | date_string=?* ) dt_sng="${LONG_OPTARG}" ;; # # Date string for MWF map names
 	       esmf_typ=?* | esmf_mth=?* | esmf_extrap_type=?* | esmf_extrap_method=?* ) esmf_typ="${LONG_OPTARG}" ;; # # ESMF extrapolation type (nearestidavg|neareststod|none)
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
-	       hrd_pth=?* | hard_path=?* | csz_exe=?* | csz_bin_lib=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
+	       hrd_pth | hard_path | npo | nco_path_override ) hrd_pth='Yes' ;; # # Use hard-coded paths on known machines (intentional no-op because already handled prior to getopt())
+	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
 	       in_fl=?* | in_file=?* | input_file=?* ) in_fl="${LONG_OPTARG}" ;; # -i # Input file
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       map_fl=?* | map=?* | map_file=?* | rgr_map=?* | regrid_map=?* ) map_fl="${LONG_OPTARG}" ;; # -m # Map-file
@@ -1577,29 +1591,29 @@ else
     exit 1
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'cam' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'eam' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mali' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpaso' ] && [ "${prc_typ}" != 'mpasocean' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mpasseaice' ] && [ "${prc_typ}" != 'mpassi' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ]; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'cam' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'eam' ] && [ "${prc_typ}" != 'eamxx' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mali' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpaso' ] && [ "${prc_typ}" != 'mpasocean' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mpasseaice' ] && [ "${prc_typ}" != 'mpassi' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ]; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'cam', 'clm', 'cice', 'ctsm', 'eam', 'elm', 'hirdls', 'mali', 'mls', 'mod04', 'mpas', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi', 'mwf', 'nil', 'rrg', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'cam', 'clm', 'cice', 'ctsm', 'eam', 'eamxx', 'elm', 'hirdls', 'mali', 'mls', 'mod04', 'mpas', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi', 'mwf', 'nil', 'rrg', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
 if [ "${prc_typ}" = 'airs' ]; then 
-    if [ -z "${pdq_opt}" ]; then 
+    if [ -z "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then 
 	pdq_opt='-a StdPressureLev,GeoTrack,GeoXTrack'
     fi # !pdq_opt
 fi # !airs
 if [ "${prc_typ}" = 'hirdls' ]; then 
-    if [ -z "${pdq_opt}" ]; then 
+    if [ -z "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then 
 	pdq_opt='-a Pressure,Latitude,lon'
     fi # !pdq_opt
 fi # !hirdls
 if [ "${prc_typ}" = 'mls' ]; then 
-    if [ -z "${pdq_opt}" ]; then 
+    if [ -z "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then 
 	pdq_opt='-a CO_Pressure,CO_Latitude,lon'
     fi # !pdq_opt
 fi # !mls
 if [ "${prc_typ}" = 'mod04' ]; then 
-    if [ -z "${pdq_opt}" ]; then 
+    if [ -z "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then 
 	pdq_opt='-U'
     fi # !pdq_opt
     hnt_dst='--dst_regional'
@@ -1653,7 +1667,7 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 #	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,ONE,TWO,nEdges,nCells' # MPAS LI,O,SI and depth
 #	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20190806: MPAS LI,O,SI,depth and BGC in one swell foop
 	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,nSnowLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20210226: MPAS LI,O,SI,depth and new SI BGC in one swell foop
-    fi # !pdq_opt && pdq_flg
+    fi # !pdq_opt && !pdq_flg
     # 20181130 No known reason to include staggered grid with regridded MPAS data
     stg_grd='No'
 fi # !mpas
@@ -1823,6 +1837,14 @@ if [ "${prc_typ}" = 'rrg' ]; then
     grd_dst_usr_flg='Yes'
     hnt_dst='--dst_regional'
 fi # !rrg
+if [ "${prc_typ}" = 'eamxx' ]; then 
+    if [ -z "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then
+	pdq_opt='-a ilev,lev,ncol'
+    fi # !pdq_opt && !pdq_flg
+    if [ -z "${ps_nm}" ]; then
+	ps_nm='ps'
+    fi # !ps_nm
+fi # !eamxx
 if [ "${prc_typ}" = 'clm' ] || [ "${prc_typ}" = 'ctsm' ] || [ "${prc_typ}" = 'elm' ]; then 
     # Set CLM/ELM-specific options first, then change prc_typ to sgs
     # 20220129 sgs_frc is special since ncclimo may supply it (terminating a filename, even)
