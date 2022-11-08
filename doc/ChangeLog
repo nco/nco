@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha04: Ladybug';git push
 	git tag -a 5.1.2-alpha04 -m 'ncclimo/ncremap: -P eamxx';git push --tags
 
+	* ncremap: Turn permutation off (pdq_flg=No, pdq_opt='') unless horizontal regridding is invoked
+
 	* ncclimo/ncremap: --hrd_pth or --npo as first argument sets NCO_PATH_OVERRIDE='Yes'
 
 2022-11-07  Charlie Zender  <zender@uci.edu>

@@ -1839,6 +1839,8 @@ if [ "${prc_typ}" = 'rrg' ]; then
 fi # !rrg
 if [ "${prc_typ}" = 'eamxx' ]; then 
     if [ -z "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then
+	# Permute horizontal dimensions to MRV
+	# NB: ncpdq is invoked iff performing horizontal regridding (vertical interpolation works fine either way)
 	pdq_opt='-a ilev,lev,ncol'
     fi # !pdq_opt && !pdq_flg
     if [ -z "${ps_nm}" ]; then
@@ -2421,6 +2423,11 @@ if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${map
 fi # !flg_grd_only
 if [ "${map_mk}" = 'Yes' ] || [ "${map_usr_flg}" = 'Yes' ]; then
     flg_hrz='Yes'
+fi # !map_mk, !map_usr_flg
+if [ "${flg_hrz}" != 'Yes' ]; then
+    # Turn-off dimension permutation if file will not be horizontally regridded
+    pdq_opt=''
+    pdq_flg='No'
 fi # !flg_hrz
 
 # Generate destination grid, if necessary, once (only) before loop over input files
@@ -2433,18 +2440,18 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Map/grid-only run: no input data detected therefore will exit after generating map and/or grid\n"
     fi # !fl_nbr
     if [ -n "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then 
-	printf "Input data shaped in \"${prc_typ}\"-order, will first permute with \"ncpdq ${pdq_opt}\"\n"
+	printf "Input data shaped in native \"${prc_typ}\"-order, will permute with \"ncpdq ${pdq_opt}\" prior to horizontal regridding\n"
     fi # !pdq_opt
     if [ "${d2f_flg}" = 'Yes' ]; then
 	printf "Will convert all non-coordinate double precision input fields to single precision with \"ncpdq ${d2f_opt}\"\n"
     fi # !d2f_flg
     if [ "${prc_mpas}" = 'Yes' ]; then
-	printf "MPAS input specified: will automatically renormalize (with --rnr=0.0) regridding\n"
+	printf "MPAS input specified: will automatically renormalize (with --rnr=0.0) horizontally regridded fields\n"
 	if [ "${clm_flg}" = 'No' ]; then
- 	    printf "MPAS input specified: will automatically annotate NC_FLOAT and NC_DOUBLE variables with _FillValue = ${mss_val} prior to regridding\n"
+ 	    printf "MPAS input specified: will automatically annotate NC_FLOAT and NC_DOUBLE variables with _FillValue = ${mss_val} prior to horizontal regridding\n"
 	fi # !clm_flg
 	if [ "${dpt_flg}" = 'Yes' ]; then
- 	    printf "MPAS input specified: will add depth coordinate to all 3D variables prior to regridding\n"
+ 	    printf "MPAS input specified: will add depth coordinate to all 3D variables prior to horizontal regridding\n"
 	fi # !dpt_flg
     fi # !mpas
     if [ "${prc_sgs}" = 'Yes' ]; then 
