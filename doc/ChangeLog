@@ -2,7 +2,7 @@
 
 	* NCO 5.1.2-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha04: Ladybug';git push
-	git tag -a 5.1.2-alpha04 -m 'ncclimo/ncremap: -P eamxx';git push --tags
+	git tag -a 5.1.2-alpha04 -m 'ncclimo/ncremap: -P eamxx, hrd_pth';git push --tags
 
 	* ncremap: Turn permutation off (pdq_flg=No, pdq_opt='') unless horizontal regridding is invoked
 
@@ -10,7 +10,7 @@
 
 2022-11-07  Charlie Zender  <zender@uci.edu>
 
-	* ncremap: -P eamxx set pdq_opt=ilev,lev,col and ps_nm=ps
+	* ncremap: -P eamxx set pdq_opt=ilev,lev,dim2,col and ps_nm=ps
 
 2022-11-04  Charlie Zender  <zender@uci.edu>
 

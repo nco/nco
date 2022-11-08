@@ -385,6 +385,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --vrt_out=${DATA}/grids/vrt_hyb_L30.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
 # SCREAM external surface pressure and input vertical grid (202211):
 # ncremap -v T_mid --ps_nm=${DATA}/bm/screamv1_ne1024pg2l128_QrPsPsl.nc/ps --vrt_in=${DATA}/grids/vrt_hyb_L128.nc --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/bm/screamv1_ne1024pg2l128_QvT.nc ~/foo.nc
+# ncremap -6 -P eamxx --map=${DATA}/maps/map_ne1024pg2_to_fv256x512_mono.20201201.nc ${DATA}/bm/screamv1_ne1024pg2l128_SurfVars.nc ~/foo.nc # Panoply breaks on CDF5 input
 # Time-varying hybrid input
 # ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --drc_out=${DATA}/ne30/rgr ${DATA}/ne30/raw/v2.LR.historical_0101.eam.h0.2013-0[123].nc
 # ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.2013-0[12].nc ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.201301_201302.nc
@@ -1840,8 +1841,9 @@ fi # !rrg
 if [ "${prc_typ}" = 'eamxx' ]; then 
     if [ -z "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then
 	# Permute horizontal dimensions to MRV
+	# dim2 is used in SurfVars to store U,V components in horiz_winds, surf_mom_flux variables
 	# NB: ncpdq is invoked iff performing horizontal regridding (vertical interpolation works fine either way)
-	pdq_opt='-a ilev,lev,ncol'
+	pdq_opt='-a ilev,lev,dim2,ncol'
     fi # !pdq_opt && !pdq_flg
     if [ -z "${ps_nm}" ]; then
 	ps_nm='ps'
