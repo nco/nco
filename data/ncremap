@@ -613,7 +613,7 @@ msh_opt_tps='--allow_no_overlap' # [sng] TempestRemap mesh-generation options (2
 xcl_flg='No' # [sng] Exclude rather than extract variable list
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
 xtr_nsp=8 # [nbr] Extrapolation number of source points (for ESMF & NCO only)
-xtr_xpn=2.0 # [frc] Extrapolation exponent (absolute value) (for ESMF & NCO only)
+xtr_xpn=2.0 # [frc] Extrapolation inverse-distance exponent (absolute value) (for ESMF & NCO only)
 
 # Set temporary-file directory (must be writable by user)
 if [ -d "${TMPDIR}" ]; then
@@ -731,7 +731,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
     echo " ${fnt_bld}--xcl_var${fnt_nrm}  Exclude rather than extract var_lst [${fnt_tlc}xcl_var, xcl, exclude, exclude_variables${fnt_nrm}]"
     echo " ${fnt_bld}--xtr_nsp${fnt_nrm}  Extrapolation number of source points (for ESMF & NCO only) (default ${fnt_bld}${xtr_nsp}${fnt_nrm}) [${fnt_tlc}xtr_nsp, xtr_pnt_src_nbr, extrap_num_src_pnts${fnt_nrm}]"
-    echo " ${fnt_bld}--xtr_xpn${fnt_nrm}  Extrapolation distance exponent (for ESMF & NCO only) (default ${fnt_bld}${xtr_xpn}${fnt_nrm}) [${fnt_tlc}xtr_xpn, xtr_dst_xpn, extrap_dist_exponent${fnt_nrm}]"
+    echo " ${fnt_bld}--xtr_xpn${fnt_nrm}  Extrapolation inverse-distance exponent (for ESMF & NCO only) (default ${fnt_bld}${xtr_xpn}${fnt_nrm}) [${fnt_tlc}xtr_xpn, xtr_dst_xpn, extrap_dist_exponent${fnt_nrm}]"
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -m ${map_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
@@ -937,7 +937,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       xcl_var=?* | xcl=?* | exclude=?* | exclude_variables=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Exclude rather than extract variable list
 	       xtn_var=?* | extensive=?* | var_xtn=?* | extensive_variables=?* ) xtn_var="${LONG_OPTARG}" ;; # -x # Extensive variables
 	       xtr_nsp=?* | xtr_pnt_src_nbr=?* | extrap_num_src_pts=?* ) xtr_nsp_usr="${LONG_OPTARG}" ;; # # Extrapolation number of source points (for ESMF & NCO only)
-	       xtr_xpn=?* | xtr_dst_xpn=?* | extrap_dist_exponent=?* ) xtr_xpn_usr="${LONG_OPTARG}" ;; # # Extrapolation exponent (for ESMF & NCO only)
+	       xtr_xpn=?* | xtr_dst_xpn=?* | extrap_dist_exponent=?* ) xtr_xpn_usr="${LONG_OPTARG}" ;; # # Extrapolation inverse-distance exponent (for ESMF & NCO only)
                '' ) break ;; # "--" terminates argument processing
                * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;; # !OPTARG

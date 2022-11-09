@@ -1,3 +1,15 @@
+2022-11-09  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.2-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.2-beta01: Blue Table';git push
+	git tag -a 5.1.2-beta01 -m 'ncclimo/ncremap: -P eamxx, hrd_pth; ncremap ps_nm_in, vrt_in, vrt_out';git push --tags
+
+	* NCO 5.1.2-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha05: Adam\'s Apple';git push
+	git tag -a 5.1.2-alpha05 -m '';git push --tags
+
+	* ncz2psx: Add --hrd_pth/--npo support for consistency with ncremap/ncclimo
+
 2022-11-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.2-alpha04 release procedure:
@@ -22,7 +34,7 @@
 
 	* NCO 5.1.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.2-alpha03: Love, Death, & Robots';git push
-	git tag -a 5.1.2-alpha03 -m 'ncremap ps_nm_in, vrt_in, vrt_out';git push --tags
+	git tag -a 5.1.2-alpha03 -m 'ncremap ps_nm_in, vrt_in, vrt_out,	stg_grd, T_mid, ';git push --tags
 
 	* ncks: add --vrt_in, shift to --vrt_out
 

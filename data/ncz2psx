@@ -74,6 +74,168 @@ spt_pid=$$ # [nbr] Script PID (process ID)
 # Production usage:
 # /bin/ls -d ${HOME}/nco/data/h000? | ncz2psx | ncea -O ~/out.nc
 
+# 20221108: Passing environment variable NCO_PATH_OVERRIDE (NPO) to ncremap in batch queues fails on Cori
+# Approaches that fail include: 1. export NPO='Yes';ncremap ... 2. export NPO='Yes' ncremap ...
+# Direct approach that works is to pass NPO flag to ncremap via command-line switch
+# Require that path-override switch to be first command-line option (i.e., $1) found with shell syntax
+# ncremap/ncclimo implement NPO (though not getopt) logic prior to invoking NCO
+# This switch is a no-op in main getopt() block below (since it has already been parsed here)
+hrd_pth='No' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
+if [ -n "${1}" ]; then
+    if [ "${1}" = '--hrd_pth' ] || [ "${1}" = '--npo' ] || [ "${1}" = '--nco_path_override' ] || [ "${1}" = '--NCO_PATH_OVERRIDE' ]; then
+	hrd_pth='Yes'
+	NCO_PATH_OVERRIDE='Yes'
+    fi # !hrd_pth
+fi # !$1
+
+# Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
+if [ -z "${HOSTNAME}" ]; then
+    if [ -f /bin/hostname ] && [ -x /bin/hostname ]; then
+	export HOSTNAME=`/bin/hostname`
+    elif [ -f /usr/bin/hostname ] && [ -x /usr/bin/hostname ]; then
+	export HOSTNAME=`/usr/bin/hostname`
+    fi # !hostname
+fi # HOSTNAME
+
+# Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library
+# 20170914 Entire block is identical between ncclimo and ncremap---keep it that way!
+# 20190421 Change override default from opt-out to opt-in
+# 20221108 Implement hrd_pth in block above prior to getopt()
+# Leave NCO_PATH_OVERRIDE unset or set to 'No' to prevent NCO from executing next block that overrides PATH
+# Set NCO_PATH_OVERRIDE to 'Yes' in environment to cause NCO to execute next block and to override PATH:
+# export NCO_PATH_OVERRIDE='Yes'
+if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
+    # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
+    hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
+    case "${HOSTNAME}" in 
+	acme1* )
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		E3SMU_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest'
+	    fi # !ncremap
+	    export PATH='/home/zender1/bin'\:${PATH}
+            export LD_LIBRARY_PATH='/home/zender1/lib'\:${LD_LIBRARY_PATH} ; ;;
+	andes* )
+	    # 20190827: Must guarantee finding mpirun
+	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		E3SMU_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_latest'
+	    fi # !ncremap
+            export PATH='/ccs/home/zender/bin_andes'\:${PATH}
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes'\:${LD_LIBRARY_PATH} ; ;;
+	blues* | blogin* | b[0123456789][0123456789][0123456789] )
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
+	    fi # !ncremap
+	    export PATH='/home/zender/bin_blues'\:${PATH}
+	    export LD_LIBRARY_PATH='/home/zender/lib_blues'\:${LD_LIBRARY_PATH} ; ;;
+	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
+	    # 20221006 Add build environment modules
+	    module load gcc/9.2.0-ugetvbp
+	    module load openmpi/4.0.4-hpcx-hghvhj5
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
+	    fi # !ncremap
+	    export PATH='/home/ac.zender/bin_chrysalis:/home/ac.zender/anaconda/bin'\:${PATH}
+	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis:/home/ac.zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
+	*cheyenne* )
+	    # 20180112: Cheyenne support not yet tested in batch mode
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
+		module load ncl
+	    fi # !ncremap
+	    if [ -n "${NCARG_ROOT}" ]; then
+		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.6.2/gnu/8.3.0/bin"
+	    fi # !NCARG_ROOT
+            export PATH='/glade/u/home/zender/bin'\:${PATH}
+            export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0/lib:/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib:/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+	compy* | n[0123456789][0123456789][0123456789][0123456789] )
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# 20210519: This script takes significant time (5-10 seconds) to load
+		source /compyfs/software/mbtempest.envs.sh
+		E3SMU_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest'
+	    fi # !ncremap
+	    export PATH='/qfs/people/zender/bin'\:${PATH}
+	    export LD_LIBRARY_PATH='/qfs/people/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+	cooley* | cc[0123456789][0123456789][0123456789] )
+	    # 20160421: Split cooley from mira binary locations to allow for different system libraries
+	    # http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
+	    soft add +mvapich2 
+            export PBS_NUM_PPN=12 # Spoof PBS on Soft (which knows nothing about node capabilities)
+	    export PATH='/home/zender/bin_cooley'\:${PATH}
+	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
+	cori* | cmem* | nid[0123456789][0123456789][0123456789][0123456789][0123456789] )
+	    # 20220811 Add build environment modules
+	    module purge
+	    module load PrgEnv-intel
+	    module load cray-netcdf
+	    module load gsl/2.7
+	    module load antlr/2.7.7-intel
+	    module load udunits
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
+		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
+		E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
+	    fi # !ncremap
+	    if [ -n "${NCARG_ROOT}" ]; then
+		export PATH="${PATH}:${NCARG_ROOT}/bin"
+		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
+	    fi # !NCARG_ROOT
+	    export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
+            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
+	mira* )
+	    export PATH='/home/zender/bin_mira'\:${PATH}
+	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
+	perlmutter* | login[0123456789][0123456789] )
+	    # 20221103 Add build environment modules
+	    module load PrgEnv-gnu
+	    module load gcc/11.2.0
+	    module load cray-hdf5/1.12.1.1
+	    module load cray-netcdf/4.8.1.1
+	    module load gsl/2.7
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
+		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
+		E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
+	    fi # !ncremap
+	    if [ -n "${NCARG_ROOT}" ]; then
+		export PATH="${PATH}:${NCARG_ROOT}/bin"
+		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
+	    fi # !NCARG_ROOT
+	    export PATH='/global/homes/z/zender/bin_perlmutter'\:${PATH}
+            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_perlmutter'\:${LD_LIBRARY_PATH} ; ;;
+	theta* )
+	    export PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/bin'\:${PATH}
+	    export LD_LIBRARY_PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib'\:${LD_LIBRARY_PATH} ; ;;
+	titan* )
+	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
+	    module load gcc
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# 20170831: Use module load ncl (6.3.0 lacks ERWG)
+		module load ncl # 20170916 OK
+	    fi # !ncremap
+	    if [ -n "${NCARG_ROOT}" ]; then
+		export PATH="${PATH}:${NCARG_ROOT}/bin"
+	    fi # !NCARG_ROOT
+            export PATH='/ccs/home/zender/bin_titan'\:${PATH}
+	    export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
+	* ) # Default fall-through
+	    hrd_pth_fnd='No' ; ;;
+    esac # !HOSTNAME
+    if [ -n "${MOAB_ROOT}" ]; then
+	export PATH="${PATH}:${MOAB_ROOT}/bin"
+	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MOAB_ROOT}/lib"
+    fi # !MOAB_ROOT
+    if [ -n "${TEMPESTREMAP_ROOT}" ]; then
+	export PATH="${PATH}:${TEMPESTREMAP_ROOT}/bin"
+	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${TEMPESTREMAP_ROOT}/lib"
+    fi # !TEMPESTREMAP_ROOT
+    # 20210519: E3SM-U supplies many uncommon executables, e.g., ESMF_RegridWeightGen
+    # Append E3SM-U to end of PATH so NCO binaries not redirected, e.g., from CSZ's development directory to E3SM-U
+    if [ -n "${E3SMU_ROOT}" ]; then
+	export PATH="${PATH}:${E3SMU_ROOT}/bin"
+    fi # !MOAB_ROOT
+fi # !hrd_pth && !NCO_PATH_OVERRIDE
+
 # 20220131 ncclimo/ncremap commands within scripts that open E3SMU environment
 # (e.g., zppy-generated scripts) must be told where to find NCO binaries.
 # Only necessary on login nodes since Spack handles this fine on compute nodes
@@ -167,6 +329,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}frg_typ${fnt_nrm}  Scheme type (default ${fnt_bld}${frg_typ}${fnt_nrm}) [${fnt_tlc}frg_typ, frg, fragment, fragment_type${fnt_nrm}] [${fnt_tlc}default | nczarr | s3 | xarray | zip | zarr${fnt_nrm}]"
     echo " ${fnt_bld}--frg_sng${fnt_nrm}  User-defined fragment string (empty means none) (default \"${fnt_bld}${frg_sng}${fnt_nrm}\") [${fnt_tlc}frg_sng, fragment_string${fnt_nrm}]"
+#    echo " ${fnt_bld}--hrd_pth${fnt_nrm}  Use hard-coded paths on known machines (e.g., chrysalis, compy, cori) NB: Must be first option! [${fnt_tlc}hrd_pth, hard_path, npo, nco_path_override${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}scm_typ${fnt_nrm}  Scheme type (default ${fnt_bld}${scm_typ}${fnt_nrm}) [${fnt_tlc}scm_typ, scm, scheme, scheme_type${fnt_nrm}] [${fnt_tlc}default | file | http | s3${fnt_nrm}]"
     echo " ${fnt_bld}--scm_sng${fnt_nrm}  User-defined scheme string (empty means none) (default \"${fnt_bld}${scm_sng}${fnt_nrm}\") [${fnt_tlc}scm_sng, scheme_string${fnt_nrm}]"
     echo " ${fnt_bld}--version${fnt_nrm}  Version and configuration information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
@@ -198,6 +361,8 @@ while getopts :d:f:s:-: OPT; do
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
 	       frg_typ=?* | frg=?* | fragment=?* | fragment_type=?* ) frg_typ="${LONG_OPTARG}" ;; # -f # Fragment type
 	       frg_sng=?* | fragment_string=?* ) frg_sng_usr="${LONG_OPTARG}" ;; # -f # Fragment string
+	       hrd_pth | hard_path | npo | nco_path_override ) hrd_pth='Yes' ;; # # Use hard-coded paths on known machines (intentional no-op because already handled prior to getopt())
+	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
 	       scm_typ=?* | scm=?* | scheme=?* | scheme_type=?* ) scm_typ="${LONG_OPTARG}" ;; # # Scheme type
 	       scm_sng=?* | scheme_string=?* ) scm_sng_usr="${LONG_OPTARG}" ;; # # Scheme string
 	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
@@ -229,6 +394,11 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "LICENSE: https://github.com/nco/nco/tree/master/LICENSE\n"
     printf "Config: ${spt_nm} script located in directory ${drc_spt}\n"
     printf "Config: NCO binaries located in directory ${drc_nco}, linked to netCDF library version ${lbr_vrs}\n"
+    if [ "${hrd_pth_fnd}" = 'Yes' ]; then
+	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
+    else
+	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
+    fi # !hrd_pth_fnd
     exit 0
 fi # !vrs_prn
 
@@ -394,6 +564,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: dbg_lvl = ${dbg_lvl}\n"
     printf "dbg: frg_sng = ${frg_sng}\n"
     printf "dbg: frg_typ = ${frg_typ}\n"
+    printf "dbg: hrd_pth = ${hrd_pth}\n"
     printf "dbg: inp_aut = ${inp_aut}\n"
     printf "dbg: inp_glb = ${inp_glb}\n"
     printf "dbg: inp_psn = ${inp_psn}\n"
