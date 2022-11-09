@@ -2587,6 +2587,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array	
 
 #ncks #81
+# First noticed this fails on MacOS M1 on 20221109
 # There are two 'two_dmn_var' beneath /g19/g19g1, chunk the deeper and check that the shallower was not chunked
 #ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var ~/nco/data/in_grp_7.nc ~/foo.nc
 #ncks -m --trd -C -v /g19/g19g1/two_dmn_var --hdn ~/foo.nc | grep chunked | cut -d ' ' -f 10-11

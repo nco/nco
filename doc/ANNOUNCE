@@ -6,8 +6,8 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 5.1.2 improves support ultra high-resolution model output
-that requires horizontal regridding, vertical interpolation, or both.
+Version 5.1.2 improves support for horizontal regridding, vertical
+interpolation, or both, on ultra high-resolution model output.
 Users of such functionality may benefit from upgrading, otherwise
 this release can be skipped.
 
@@ -33,8 +33,14 @@ identify the file containing the output vertical grid. The best
 practice is now to use --vrt_out (instead of --vrt or --vrt_fl,
 which still work) to specify the output vertical grid and clearly
 distinguish it from the input vertical grid, if any.
+ncremap --vrt_out=vrt2.nc # Output vertical grid option new name
+ncremap --vrt_in=vrt1.nc --vrt_out=vrt2.nc ... # Specify both grids
+Thanks to Paul Ullrich (UCD) for suggesting these options.
+http://nco.sf.net/nco.html#ncremap
+http://nco.sf.net/nco.html#vrt_in
+http://nco.sf.net/nco.html#vrt_out
 
-Previously the vertical interpolation feature required that the
+A. Previously the vertical interpolation feature required that the
 surface pressure field for hybrid coordinates be named PS.
 Now the name of the surface pressure field can be changed using the
 convenient ps_nm option. Moreover, if the argument of --ps_nm 
@@ -42,14 +48,9 @@ includes a filepath separator (slash or backslash), then the
 portion preceding the final separator will be treated as a filename 
 path, and the final portion will be treated as the surface pressure
 variable name:
-ncremap --vrt_out=vrt2.nc # Output vertical grid option new name
-ncremap --vrt_in=vrt1.nc --vrt_out=vrt2.nc ... # Specify both grids
 ncremap --ps_nm=ps ... # Surface pressure is ps not PS 
 ncremap --ps_nm=/path/to/vrt.nc/ps ... # Use ps from vrt.nc
-Thanks to Paul Ullrich UCD for suggesting these options.
 http://nco.sf.net/nco.html#ncremap
-http://nco.sf.net/nco.html#vrt_in
-http://nco.sf.net/nco.html#vrt_out
 http://nco.sf.net/nco.html#ps_nm
 
 A. ncclimo and ncremap support a new procedure type option, -P eamxx.
@@ -64,7 +65,7 @@ of PS prior to vertical interpolation of hybrid-pressure grids.
 ncremap --pdq_opt=ilev,lev,dim2,col # Manual dimension permutation
 ncremap --ps_nm=ps # Manual surface pressure renaming from PS to ps
 ncremap --P eamxx # Both options automatically
-Thanks to Paul Ullrich UCD for suggesting these options.
+Thanks to Paul Ullrich (UCD) for suggesting these options.
 http://nco.sf.net/nco.html#ncremap
 http://nco.sf.net/nco.html#prc_typ
 
@@ -87,7 +88,10 @@ behaves the same as T and Z3 for EAM/CAM datasets.
 http://nco.sf.net/nco.html#vrt_ntp
 http://nco.sf.net/nco.html#vrt_xtr
 
-A. There is now a man page for ncz2psx.
+A. ncz2psx now has a man page.
+Full documentation for ncz2psx is expected to become available
+once NCO fully supports the Amazon S3 scheme for NCZarr in 2023.
+http://nco.sf.net/nco.html#ncz2psx
 
 BUG FIXES:
    
