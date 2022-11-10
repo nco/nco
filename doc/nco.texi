@@ -7911,6 +7911,20 @@ These annotations include
     vertical coordinates in output files.
     Now the vertical variable and dimension names in output files
     may be separately specified.
+@cindex @var{ps_nm}
+@cindex @samp{--rgr ps_nm=@var{ps_nm}}
+@item Surface Pressure Names: @var{ps}, @var{PS}
+    The name of the surface pressure field necessary to reconstruct
+    the layer pressures in the hybrid-sigma/pressure coordinate system 
+    is @var{ps_nm} which defaults to @code{PS}.
+    As of @acronym{NCO} @w{version 5.1.2}, released in November, 2022,
+    one may change this with the @samp{--rgr ps_nm=@var{ps_nm}} option.
+    There are, in fact, three similar options, one each for the
+    surface pressure variable in the input data file, the vertical
+    grid file, and in the output (interpolated file).
+    The full option key names are @code{ps_nm} (equivalent to
+    @code{ps_nm_in}), @code{ps_nm_tpl}, and @code{ps_nm_out},
+    respectively.
 @cindex @code{area}
 @cindex @code{cell_methods}
 @cindex @code{cell_area}
@@ -25418,7 +25432,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
 [--no_add_fll] [--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stdin] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
-[--pdq=@var{pdq_opt}] [--ppc=@var{ppc_opt}] [--preserve=@var{prs_stt}]
+[--pdq=@var{pdq_opt}] [--ppc=@var{ppc_opt}] [--preserve=@var{prs_stt}] [--ps_nm=@var{ps_nm}]
 [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src] [--rnr_thr=@var{rnr_thr}] 
 [--rrg_bb_wesn=@var{bb_wesn}] [--rrg_dat_glb=@var{dat_glb}] [--rrg_grd_glb=@var{grd_glb}]
 [--rrg_grd_rgn=@var{grd_rgn}] [--rrg_rnm_sng=@var{rnm_sng}]
@@ -25426,7 +25440,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}] [--uio]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
-[--vrt_out=@var{vrt_fl}] [--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
+[--vrt_in=@var{vrt_fl}] [--vrt_out=@var{vrt_fl}] [--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
 [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] [--xcl_var]
 [--xtr_nsp=@var{xtr_nsp}] [--xtr_xpn=@var{xtr_xpn}]
 [@var{input-files}] [@var{output-file}]
@@ -28559,6 +28573,30 @@ grids applies to fields with, or places output of fields on, a
 All other fields pass through the interpolation procedure unscathed.
 Input can be rectangular (aka @acronym{RLL}), curvilinear, or
 unstructured.  
+
+@html
+<a name="ps_nm"></a> <!-- http://nco.sf.net/nco.html#ps_nm -->
+<a name="ps"></a> <!-- http://nco.sf.net/nco.html#ps -->
+@end html
+@cindex @code{--ps_nm=@var{ps_nm}}
+@cindex @var{ps_nm}
+@cindex @code{--ps_nm}
+@cindex @code{PS}
+@cindex surface pressure
+@item --ps_nm=@var{ps_nm} (@code{--ps_nm}, @code{--ps_name}, @code{--vrt_ps}, @code{--ps})
+It is sometimes convenient to store the @var{ps_nm} field in
+an external file from the field(s) to be regridded.
+For example, @acronym{CMIP}-style timeseries are often written
+with only one variable per file.
+@acronym{NCO} supports this organization by accepting @var{ps_nm}
+arguments in the form of a filename followed by a slash and then a
+variable name: 
+@example
+ncremap --vrt_in=vrt.nc --ps_nm=ps in.nc out.nc # Use ps not PS
+ncremap --vrt_in=vrt.nc --ps_nm=/external/file.nc/ps in.nc out.nc
+@end example
+This same functionality (of optionally embedding a filename into
+the variable name) is also implemented for the @var{sgs_frc} variable.
 
 @html
 <a name="vrt_ntp"></a> <!-- http://nco.sf.net/nco.html#vrt_ntp -->

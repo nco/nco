@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.2: Guerilla Poetry';git push
 	git tag -a 5.1.2 -m 'ncclimo/ncremap: -P eamxx, hrd_pth; ncremap ps_nm_in, vrt_in, vrt_out';git push --tags
 
+	* Document --ps_nm, --vrt_in in nco.texi
+
+	* Add new options to usage and man pages
+
 	* NCO 5.1.2-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.2-beta01: Nashville';git push
 	git tag -a 5.1.2-beta01 -m 'ncclimo/ncremap: -P eamxx, hrd_pth; ncremap ps_nm_in, vrt_in, vrt_out';git push --tags
