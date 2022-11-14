@@ -98,7 +98,9 @@ BUG FIXES:
 A. Some operators in NCO 5.1.1 would segfault instead of printing
 usage information when called without any arguments. 5.1.2 fixes this.
 
-B. 
+B. Previous versions of ncks accidentally printed the ncgen command
+to generate binary from CDL files assuming the input file was
+NC_FORMAT_64BIT_OFFSET instead of its actual type. 5.1.2 fixes this.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
