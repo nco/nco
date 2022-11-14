@@ -27254,6 +27254,8 @@ and its corresponding @var{output-file}.
 <a name="mpas"></a> <!-- http://nco.sf.net/nco.html#mpas -->
 <a name="prc_typ"></a> <!-- http://nco.sf.net/nco.html#prc_typ -->
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
+<a name="eamxx"></a> <!-- http://nco.sf.net/nco.html#eamxx -->
+<a name="scream"></a> <!-- http://nco.sf.net/nco.html#scream -->
 @end html
 @cindex @code{-P @var{prc_typ}}
 @cindex @var{prc_typ}
@@ -27271,6 +27273,7 @@ types that encounter the @command{ncremap} limitation concerning
 dimension ordering. 
 Valid procedure types include @samp{airs} for @acronym{NASA AIRS} satellite data, 
 @samp{eam} or @samp{cam} for @acronym{DOE EAM} and @acronym{NCAR CAM} model data,
+@samp{eamxx} for @acronym{DOE EAMxx} (aka, @acronym{SCREAM}) model data,
 @samp{elm} or @samp{clm} for @acronym{DOE ELM} and @acronym{NCAR CLM} model data,
 @samp{cice} for @acronym{CICE} ice model data (must be on 2D grids),
 @samp{cism} for @acronym{NCAR CISM} land ice model data,
@@ -27291,6 +27294,11 @@ The @acronym{ELM}, @acronym{CLM}, and @acronym{CICE} procedures set
 idiosyncratic model values and then invoke the Sub-gridscale
 (@acronym{SGS}) procedure (see below). 
 The @acronym{MOD04} procedure unpacks input data.
+The @acronym{EAMxx} procedures permute input data dimensions into this
+order prior to horizontal regridding:
+@code{ilev,lev,dim2,ncol}, and cause the vertical interpolation
+routine to look for surface pressure under the name @code{ps} instead
+of @code{PS}.
 The @acronym{MPAS} procedures permute input data dimensions into this
 order: 
 @code{Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells},

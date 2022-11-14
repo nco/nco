@@ -1412,7 +1412,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     }else{
       /* Override was not performed due to policy, so continue to next dimension */
       continue;
-    } /* endif */
+    } /* !cnk_plc */
 
     /* Sanity checks for dimensions that were over-ridden by user-specified chunksizes */
 
@@ -1425,12 +1425,12 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	   cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
 	  if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize %lu which exceeds current output file record dimension size = %lu. May fail if output file is not concatenated from multiple inputs. Will only print this WARNING once.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
 	  FIRST_WARNING=False;
-	} /* endif too big */
+	} /* !dmn_cmn, too big */
       }else{ /* !NON_HYP_DMN */
 	if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].dmn_cnt){
 	  if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize = %lu which exceeds user-specified record dimension input hyperslab size = %lu. May fail if output file is not concatenated from multiple inputs. Will only print this WARNING once.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].dmn_cnt);
 	  FIRST_WARNING=False;
-	} /* endif too big */
+	} /* !cnk_sz, too big */
       } /* !NON_HYP_DMN */
     }else{ /* !rcd_dmn_id */
       if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
@@ -1438,10 +1438,10 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	(void)fprintf(stderr,"%s: WARNING %s trimming user-specified fixed dimension %s chunksize from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
 	/* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
 	cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
-      } /* endif */
+      } /* !cnk_sz */
     } /* !rcd_dmn_id */
 
-  } /* end loop over dmn_idx */
+  } /* !dmn_idx */
 
   /* Final Safety Check */
  cnk_sft_chk: /* end goto */
@@ -1462,20 +1462,20 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
         if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s final check trimming chunksize of \"%s\" dimension from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_sz[dmn_idx],(unsigned long)dmn_cmn[dmn_idx].sz);
         /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
         cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
-      } /* rcd_dmn_id */
-    } /* end if */
+      } /* !dmn_cmn.is_rec_dmn */
+    } /* !cnk_sz */
     /* 20170610: TODO nco1137 bug ncwa chunking fails with --rdd reported by Joy 20170605 because dmn_cmn[] contains zero for some dimensions */
     if(cnk_sz[dmn_idx] == 0L){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s final check manually overriding chunksize of \"%s\" dimension from 0L to 1L as workaround to TODO nco1137: bad interaction of chunking with --rdd\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm);
       cnk_sz[dmn_idx]=1L;
-    } /* end cnk_sz */
-  } /* end loop over dmn */
+    } /* !cnk_sz */
+  } /* !dmn_idx */
 
   if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev){
     /* Dimensions and chunksizes used by variable in output file */
     (void)fprintf(stdout,"idx dmn_nm\tdmn_sz\tcnk_sz:\n");
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s \t%lu\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm_fll,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)cnk_sz[dmn_idx]);
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Set storage (chunked or contiguous) for this variable */
   (void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);

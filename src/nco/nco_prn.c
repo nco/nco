@@ -3557,7 +3557,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA) (void)fprintf(fp_out,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
   if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA && nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(fp_out,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_fl_sz_sng);
   nco_bool qte_fmt_sng; /* [flg] Quote _Format string to protect whitespace */
-  if((prn_flg->fl_out_fmt = NC_FORMAT_64BIT_OFFSET) || (prn_flg->fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) || (prn_flg->fl_out_fmt == NC_FORMAT_CDF5)) qte_fmt_sng=True; else qte_fmt_sng=False;
+  if((prn_flg->fl_out_fmt == NC_FORMAT_64BIT_OFFSET) || (prn_flg->fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) || (prn_flg->fl_out_fmt == NC_FORMAT_CDF5)) qte_fmt_sng=True; else qte_fmt_sng=False;
   if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s// %sncgen -k %s%s%s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->PRN_GLB_METADATA ? "Generate binary file with this CDL: " : "",qte_fmt_sng ? "\"" : "",nco_fmt_hdn_sng(prn_flg->fl_out_fmt),qte_fmt_sng ? "\"" : "",prn_flg->fl_stb,prn_flg->fl_stb);
   
   /* Print type information for group */
