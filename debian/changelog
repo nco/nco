@@ -1,8 +1,8 @@
 nco (5.1.2-1) unstable; urgency=low
 
-  * new upstream version Guerilla Poetry: ncclimo/ncremap: -P eamxx, hrd_pth; ncremap ps_nm_in, vrt_in, vrt_out
+  * new upstream version Guerilla Poetry: ncclimo/ncremap: -P eamxx, --npo, hrd_pth; ncremap ps_nm_in, vrt_in, vrt_out
 
- -- Charlie Zender <zender@uci.edu>  Fri, 2 Dec 2022 12:25:58 -0700
+ -- Charlie Zender <zender@uci.edu>  Fri, 18 Nov 2022 12:25:58 -0700
 
 nco (5.1.1-1) unstable; urgency=low
 

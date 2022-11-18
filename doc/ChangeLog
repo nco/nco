@@ -1,10 +1,16 @@
-2022-11-16  Charlie Zender  <zender@uci.edu>
+2022-11-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.2 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.2: Guerilla Poetry';git push
-	git tag -a 5.1.2 -m 'ncclimo/ncremap: -P eamxx, hrd_pth; ncremap ps_nm_in, vrt_in, vrt_out';git push --tags
+	git tag -a 5.1.2 -m 'ncclimo/ncremap: -P eamxx, --npo, hrd_pth; ncremap ps_nm_in, vrt_in, vrt_out';git push --tags
 
-	* ncremap pdq_opt includes CMOR dimensions time, olevhalf, olev for MPAS output
+	* Remove unnecessary assert() in nco_cnk_sz_set_trv() that prevents SCREAM regrid
+
+	* Update package availability on homepage index.shtml
+
+2022-11-16  Charlie Zender  <zender@uci.edu>
+
+	* ncremap pdq_opt includes CMOR dimensions time, olevhalf for MPAS output
 
 2022-11-13  Charlie Zender  <zender@uci.edu>
 

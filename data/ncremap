@@ -298,6 +298,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -P mpasseaice -7 -L 1 -m ${DATA}/maps/map_EC30to60E2r2_to_cmip6_180x360_aave.20220301.nc ${DATA}/bm/msiv2_EC30to60E2r2l5.nc ~/foo_msiv2.nc
 # ncremap -P mpasocean -7 -L 1 -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/mpov1_oEC60to30v3l60.nc ~/foo_mpov1.nc
 # ncremap -P mpasocean -7 -L 1 -m ${DATA}/maps/map_EC30to60E2r2_to_cmip6_180x360_aave.20220301.nc ${DATA}/bm/mpov2_EC30to60E2r2l60.nc ~/foo_mpov2.nc
+# ncremap -P eamxx -7 -L 1 -m ${DATA}/maps/map_ne1024pg2_to_fv256x512_mono.20201201.nc ${DATA}/bm/screamv1_ne1024pg2l128.nc ~/foo_eamxx.nc
 # Regrid:
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -j 3 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr # Batch-parallelism
@@ -385,7 +386,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --vrt_out=${DATA}/grids/vrt_hyb_L30.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
 # SCREAM external surface pressure and input vertical grid (202211):
 # ncremap -v T_mid --ps_nm=${DATA}/bm/screamv1_ne1024pg2l128_QrPsPsl.nc/ps --vrt_in=${DATA}/grids/vrt_hyb_L128.nc --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/bm/screamv1_ne1024pg2l128_QvT.nc ~/foo.nc
-# ncremap -6 -P eamxx --map=${DATA}/maps/map_ne1024pg2_to_fv256x512_mono.20201201.nc ${DATA}/bm/screamv1_ne1024pg2l128_SurfVars.nc ~/foo.nc # Panoply breaks on CDF5 input
+# ncremap -6 -P eamxx --map=${DATA}/maps/map_ne1024pg2_to_fv256x512_mono.20201201.nc ${DATA}/bm/screamv1_ne1024pg2l128.nc ~/foo.nc # Panoply breaks on CDF5 input
 # Time-varying hybrid input
 # ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --drc_out=${DATA}/ne30/rgr ${DATA}/ne30/raw/v2.LR.historical_0101.eam.h0.2013-0[123].nc
 # ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.2013-0[12].nc ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.201301_201302.nc
@@ -1668,7 +1669,7 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 #	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,ONE,TWO,nEdges,nCells' # MPAS LI,O,SI and depth
 #	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20190806: MPAS LI,O,SI,depth and BGC in one swell foop
 #	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,nSnowLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20210226: MPAS LI,O,SI,depth and new SI BGC in one swell foop
-        pdq_opt='-a Time,time,depth,nVertInterfaces,nVertLevelsP1,olevhalf,olev,nVertLevels,nZBGCTracers,nBioLayers,P1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,nSnowLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20221115: MPAS LI, O, SI, depth, BGC, and CMOR
+        pdq_opt='-a Time,time,depth,nVertInterfaces,nVertLevelsP1,olevhalf,nVertLevels,nZBGCTracers,nBioLayers,P1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,nSnowLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20221115: MPAS LI, O, SI, depth, BGC, and CMOR
     fi # !pdq_opt && !pdq_flg
     # 20181130 No known reason to include staggered grid with regridded MPAS data
     stg_grd='No'
@@ -1842,7 +1843,7 @@ fi # !rrg
 if [ "${prc_typ}" = 'eamxx' ]; then 
     if [ -z "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then
 	# Permute horizontal dimensions to MRV
-	# dim2 is used in SurfVars to store U,V components in horiz_winds, surf_mom_flux variables
+	# dim2 is used in SCREAM SurfVars to store U,V components in horiz_winds, surf_mom_flux variables
 	# NB: ncpdq is invoked iff performing horizontal regridding (vertical interpolation works fine either way)
 	pdq_opt='-a ilev,lev,dim2,ncol'
     fi # !pdq_opt && !pdq_flg

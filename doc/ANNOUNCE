@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.2 accede to the silicon throne
+netCDF Operators NCO version 5.1.2 accede to the Silicon Throne
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
@@ -40,7 +40,7 @@ http://nco.sf.net/nco.html#ncremap
 http://nco.sf.net/nco.html#vrt_in
 http://nco.sf.net/nco.html#vrt_out
 
-A. Previously the vertical interpolation feature required that the
+B. Previously the vertical interpolation feature required that the
 surface pressure field for hybrid coordinates be named PS.
 Now the name of the surface pressure field can be changed using the
 convenient ps_nm option. Moreover, if the argument of --ps_nm 
@@ -53,7 +53,7 @@ ncremap --ps_nm=/path/to/vrt.nc/ps ... # Use ps from vrt.nc
 http://nco.sf.net/nco.html#ncremap
 http://nco.sf.net/nco.html#ps_nm
 
-A. ncclimo and ncremap support a new procedure type option, -P eamxx.
+C. ncclimo and ncremap support a new procedure type option, -P eamxx.
 This option automatically generates ncremap flags useful for E3SM
 EAMxx datasets. In addition to their typically ginormous size, these
 datasets have different dimension and variable names than EAM/CAM.
@@ -64,12 +64,12 @@ regridding. (2) Search for surface pressure under the name ps instead
 of PS prior to vertical interpolation of hybrid-pressure grids.
 ncremap --pdq_opt=ilev,lev,dim2,col # Manual dimension permutation
 ncremap --ps_nm=ps # Manual surface pressure renaming from PS to ps
-ncremap --P eamxx # Both options automatically
+ncremap -P eamxx # Both options automagically
 Thanks to Paul Ullrich (UCD) for suggesting these options.
 http://nco.sf.net/nco.html#ncremap
 http://nco.sf.net/nco.html#prc_typ
 
-A. ncremap has changed the default behavoir of outputting the
+D. ncremap has changed the default behavoir of outputting the
 staggered grid to finite volume (FV) destination grids from opt-out
 to opt-in. This means that it is no longer necessary to specify
 --no_stg_grd when regridding. Instead, it is necessary to specify
@@ -80,7 +80,7 @@ ncremap ...              # New default behavior
 ncremap --stg_grd ...    # Recovers old default behavior
 http://nco.sf.net/nco.html#stg_grd
 
-A. ncremap vertical interpolation routines now recognize variables
+E. ncremap vertical interpolation routines now recognize variables
 with names T_mid and VerticalLayerMidpoint as containing temperature
 and geopotential height, respectively. These variable names are used
 in SCREAM/EAMxx. The default extrapolation for these variables now
@@ -88,7 +88,7 @@ behaves the same as T and Z3 for EAM/CAM datasets.
 http://nco.sf.net/nco.html#vrt_ntp
 http://nco.sf.net/nco.html#vrt_xtr
 
-A. ncz2psx now has a man page.
+F. ncz2psx now has a man page.
 Full documentation for ncz2psx is expected to become available
 once NCO fully supports the Amazon S3 scheme for NCZarr in 2023.
 http://nco.sf.net/nco.html#ncz2psx
@@ -109,7 +109,7 @@ KNOWN PROBLEMS DUE TO NCO:
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
 These problems occur with NCO 5.1.1 built/tested under
-MacOS 12.6 with netCDF 4.9.1 on HDF5 1.12.2 and with
+MacOS 13.0.1 with netCDF 4.9.1-RC2 on HDF5 1.12.2 and with
 Linux with netCDF 4.8.1 on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)

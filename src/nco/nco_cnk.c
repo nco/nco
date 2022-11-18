@@ -1287,7 +1287,11 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     /* First-guess estimate of chunk size */
     size_t cnk_sz_prd=1L;
     for(dmn_idx=0;dmn_idx<=dmn_nbr-1;dmn_idx++) cnk_sz_prd*=cnk_sz_rgn[dmn_idx];
-    assert(cnk_sz_prd*typ_sz <= cnk_sz_byt);
+    /* 20221118: This assert() was present in the code until today
+       Benchmark SCREAM data fails this assert() yet successfully regrids if it is removed
+       This is because the original guesstimates, cnk_sz_rgn, can violate the assert() though
+       the final chunk sizes (that netCDF eventually sees) do not */
+    //assert(cnk_sz_prd*typ_sz <= cnk_sz_byt);
 
     /* prm_idx = prm_cff[0]*2^0 + prm_cff[1]*2^1 + prm_cff[2]*2^2 + ... + prm_cff[dmn_nbr-1]*2^(dmn_nbr-1) */
     two_pwr_idx[0]=1L;
@@ -1484,4 +1488,4 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   if(cnk_sz) cnk_sz=(size_t *)nco_free(cnk_sz);
 
   return;
-} /* nco_cnk_sz_set_trv() */
+} /* !nco_cnk_sz_set_trv() */
