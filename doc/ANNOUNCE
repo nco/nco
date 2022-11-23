@@ -3,7 +3,7 @@ $Header$ -*-text-*-
 netCDF Operators NCO version 5.1.2 accede to the Silicon Throne
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
-http://github.com/nco (Source Code, Issues, Releases, Developers)
+http://github.com/nc/ncoo (Source Code, Issues, Releases)
 
 What's new?
 Version 5.1.2 improves support for horizontal regridding, vertical

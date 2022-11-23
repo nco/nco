@@ -326,6 +326,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
   rgr->flg_s1d=False; /* [flg] Unpack sparse-1D CLM/ELM variables */
   rgr->flg_stg=False; /* [flg] Write staggered grid with FV output */
+  rgr->flg_vrt_mrv=False; /* [flg] Vertical dimension is Most-Rapidly-Varying */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
   rgr->grd_typ=nco_grd_2D_eqa; /* [enm] Grid type */
   rgr->idx_dbg=0; /* [idx] Index of gridcell for debugging */
@@ -754,6 +755,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_msk_out=True;
       continue;
     } /* !msk_nm */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"vrt_mrv") || !strcmp(rgr_lst[rgr_var_idx].key,"vrt_lst")){
+      rgr->flg_vrt_mrv=True;
+      continue;
+    } /* !vrt_mrv */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"vrt_nm")){
       rgr->vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -936,6 +941,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_grd_out_dpt=False; /* [flg] Output depth coordinate vertical grid */
   nco_bool flg_grd_out_hyb=False; /* [flg] Output hybrid coordinate vertical grid */
   nco_bool flg_grd_out_prs=False; /* [flg] Output pressure coordinate vertical grid */
+  nco_bool flg_hrz_mrv=!rgr->flg_vrt_mrv; /* [flg] Horizontal dimension is Most-Rapidly-Varying */
   nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_in=nco_vrt_grd_nil; /* [enm] Vertical grid type for input grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_out=nco_vrt_grd_nil; /* [enm] Vertical grid type for output grid */
@@ -1436,7 +1442,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	rcd=nco_inq_dimlen(fl_ps_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
 	/* 20190330: Allow possibility that PS has time dimension > 1 
 	   We want horizontal not temporal dimensions to contribute to grd_sz 
-	   Temporal dimension is usually unlimited 
+	   Temporal dimension is usually unlimited
 	   Only multiply grd_sz by fixed (non-unlimited) dimension sizes
 	   Corner-case exception when PS spatial dimension on unstructured grid is unlimited */
 	for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
@@ -2060,15 +2066,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 # endif /* 900 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_cmp_dbl,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_cmp_dbl,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_cmp_dbl,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_cmp_dbl,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 # else /* !old g++ */
 #  if defined(GXX_WITH_OPENMP5_GPU_SUPPORT) && 0
 #   pragma omp target teams distribute parallel for
 #  else
-#   pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_cmp_dbl,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
+#   pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_cmp_dbl,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 #  endif /* !GCC > 9.0 */
 # endif /* !GCC < 4.9 */
 #endif /* !__INTEL_COMPILER */
@@ -2226,16 +2232,29 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  for(grd_idx=0;grd_idx<grd_nbr;grd_idx++){
 	    
 	    /* Initialize pseudo-1D variables with consecutive memory addresses to avoid indirection */
-	    for(lvl_idx_in=0;lvl_idx_in<lvl_nbr_in;lvl_idx_in++){
-	      idx_in=grd_idx+lvl_idx_in*grd_nbr;
-	      crd_in[lvl_idx_in]=prs_ntp_in[idx_in];
-	      dat_in[lvl_idx_in]=var_val_dbl_in[idx_in];
-	    } /* !lvl_idx_in */
-	    for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
-	      idx_out=grd_idx+lvl_idx_out*grd_nbr;
-	      crd_out[lvl_idx_out]=prs_ntp_out[idx_out];
-	    } /* !lvl_idx_out */
-	    
+	    if(flg_hrz_mrv){
+	      for(lvl_idx_in=0;lvl_idx_in<lvl_nbr_in;lvl_idx_in++){
+		idx_in=grd_idx+lvl_idx_in*grd_nbr;
+		crd_in[lvl_idx_in]=prs_ntp_in[idx_in];
+		dat_in[lvl_idx_in]=var_val_dbl_in[idx_in];
+	      } /* !lvl_idx_in */
+	      for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
+		idx_out=grd_idx+lvl_idx_out*grd_nbr;
+		crd_out[lvl_idx_out]=prs_ntp_out[idx_out];
+	      } /* !lvl_idx_out */
+	    }else{
+	      /* 20221123: Untested! Columns are MRV */
+	      for(lvl_idx_in=0;lvl_idx_in<lvl_nbr_in;lvl_idx_in++){
+		idx_in=grd_idx*lvl_nbr_in+lvl_idx_in;
+		crd_in[lvl_idx_in]=prs_ntp_in[idx_in];
+		dat_in[lvl_idx_in]=var_val_dbl_in[idx_in];
+	      } /* !lvl_idx_in */
+	      for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
+		idx_out=grd_idx+lvl_nbr_out+lvl_idx_out;
+		crd_out[lvl_idx_out]=prs_ntp_out[idx_out];
+	      } /* !lvl_idx_out */
+	    } /* !flg_hrz_mrv */
+	      
 	    /* Interpolation code easier to write/debug if crd_in and crd_out both monotonically increase
 	       However, monotonically decreasing coordinates useful in many cases, such as depth coordinate, 
 	       and pressure levels arranged largest to smallest (favored by CMIP)

@@ -366,17 +366,17 @@ extern "C" {
 # define NCO_VERSION_MINOR 1
 #endif /* !NCO_VERSION_MINOR */
 #ifndef NCO_VERSION_PATCH
-# define NCO_VERSION_PATCH 2
+# define NCO_VERSION_PATCH 3
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE "" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
+# define NCO_VERSION_NOTE "-alpha01" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "5.1.2"
+# define NCO_VERSION "5.1.3-alpha01"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -1273,6 +1273,7 @@ typedef enum nco_xtr_typ_enm
     nco_bool flg_stg; /* [flg] Write staggered grid with FV output */
     nco_bool flg_uio; /* [flg] Unbuffered I/O (NC_SHARE) for netCDF3 files */
     nco_bool flg_usr_rqs; /* [flg] User-requested regridding */
+    nco_bool flg_vrt_mrv; /* [flg] Vertical dimension is Most-Rapidly-Varying */
     nco_bool flg_wgt; /* [flg] User-specified mapping weights */
     size_t hdr_pad; /* [B] Pad at end of header section (for map-file only) */
   } rgr_sct; /* end Regrid structure */
