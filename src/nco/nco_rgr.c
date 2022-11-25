@@ -2278,11 +2278,20 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  nco_bool out_ncr; /* [flg] Output coordinate monotonically increases */
 	  
 	  /* Determine monotonicity direction only once, based on first vertical column */
-	  if(prs_ntp_in[grd_nbr]-prs_ntp_in[0] > 0.0) in_ncr=True; else in_ncr=False;
-	  out_ncr=True;
-	  if(out_nbr > 1)
-	    if(prs_ntp_out[grd_nbr]-prs_ntp_out[0] < 0.0)
-	      out_ncr=False;
+	  if(flg_hrz_mrv){
+	    if(prs_ntp_in[grd_nbr]-prs_ntp_in[0] > 0.0) in_ncr=True; else in_ncr=False;
+	    out_ncr=True;
+	    if(out_nbr > 1)
+	      if(prs_ntp_out[grd_nbr]-prs_ntp_out[0] < 0.0)
+		out_ncr=False;
+	  }else{ /* !flg_hrz_mrv */
+	    /* 20221125: Untested! Columns are MRV */
+	    if(prs_ntp_in[1]-prs_ntp_in[0] > 0.0) in_ncr=True; else in_ncr=False;
+	    out_ncr=True;
+	    if(out_nbr > 1)
+	      if(prs_ntp_out[1]-prs_ntp_out[0] < 0.0)
+		out_ncr=False;
+	  } /* !flg_hrz_mrv */
 	  
 	  /* If necessary, allocate (once, and re-use it) additional memory to hold reversed arrays */
 	  if(!in_ncr){

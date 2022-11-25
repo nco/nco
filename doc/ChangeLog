@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.3-alpha02: Thai Massage';git push
 	git tag -a 5.1.3-alpha02 -m '';git push --tags
 
-	* nco_ntp_vrt() add stubs to automatigically determine flg_hrz_mrv/flr_vrt_mrv
+	* nco_ntp_vrt() use flg_hrz_mrv, appears to work
+
+	* nco_ntp_vrt() add stubs to automagically determine flg_hrz_mrv/flr_vrt_mrv
 
 	* nco_map_rgr() assign col_nm_in to ncol_p not ncol_d
 
