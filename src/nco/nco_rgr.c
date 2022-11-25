@@ -914,6 +914,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      prs_mdp[time,lev,col]=P0*hyam[lev] +PS[time,col]*hybm[lev]
      prs_ntf[time,lev,col]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
 
+  /* Formula-terms for hybrid pressure vertical grid on unstructured SCREAM/EAMxx horizontal grid:
+     prs_mdp[time,col,lev]=P0*hyam[lev] +PS[time,col]*hybm[lev]
+     prs_ntf[time,col,lev]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
+
   /* Formula-terms for hybrid pressure vertical grid on ECMWF RLL horizontal grid:
      prs_mdp[time,lev,lat,lon]=hyam[lev] +exp(lnsp[time,lat,lon])*hybm[lev]
      prs_ntf[time,lev,lat,lon]=hyai[ilev]+exp(lnsp[time,lat,lon])*hybi[ilev] */
@@ -1079,26 +1083,20 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  if(dmn_ids_out[dmn_idx] == dmn_ids_rec[rec_idx])
 	    break; 
 	if(rec_idx == dmn_nbr_rec || dmn_nbr_out == 1){
-	  /* ps has no record dimension or this is only ps dimension */
+	  /* This PS dimension is not record dimension, or is sole PS dimension */
 	  grd_sz_out*=dmn_cnt_out[dmn_idx];
 	  dmn_hrz_nbr++;
 	} /* !rec_idx, !dmn_nbr_out */
 	if(rec_idx != dmn_nbr_rec && dmn_nbr_out > 1 && dmn_cnt_out[dmn_idx] > 1L){
-	  /* multi-dimensional ps contains this record dimension of size > 1, assume this is time (not space) */
+	  /* Multi-dimensional PS contains this multi-element record dimension, which we assume is time (not space) */
 	  tm_nbr_out=dmn_cnt_out[dmn_idx];
 	  if(tm_nbr_out > 1L) flg_vrt_tm=True;
-	} /* tm_nbr_out > 1 */
+	} /* !rec_idx, !dmn_nbr_out, !dmn_cnt_out */
 	dmn_srt[dmn_idx]=0L;
       } /* !dmn_idx */
       if(dmn_ids_rec) dmn_ids_rec=(int *)nco_free(dmn_ids_rec);
     } /* !ps_id_tpl */
   } /* !flg_grd_out_hyb */
-  
-  if(dmn_hrz_nbr == 0 || grd_sz_in == 1L){flg_grd_hrz_0D=True;}
-  else if(dmn_hrz_nbr == 1){flg_grd_hrz_1D=True;}
-  else if(dmn_hrz_nbr == 2){flg_grd_hrz_2D=True;}
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports flg_hrz_mrv = %d, dmn_hrz_nbr = %d, grd_sz_in = %ld, flg_grd_hrz_0D = %d, flg_grd_hrz_1D = %d, flg_grd_hrz_2D = %d\n",nco_prg_nm_get(),fnc_nm,flg_hrz_mrv,dmn_hrz_nbr,grd_sz_in,flg_grd_hrz_0D,flg_grd_hrz_1D,flg_grd_hrz_2D);
-  assert(dmn_hrz_nbr <= 2);
   
   if(flg_grd_out_prs){
     /* Interrogate plev to obtain plev dimensions */
@@ -1334,8 +1332,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
     lev_nm_in=strdup(dmn_nm);
     /* 20221103:
-       Interface and midpoint dimension names are only guaranteed to both exist in vrt_in_id, not in_id
-       Use vrt_in_id to get their names and sizes, and exit this block with those IDs from in_id
+       Interface and midpoint dimension names are only guaranteed to both exist together in vrt_in_id, not in_id
+       Use vrt_in_id to get their names and sizes, then gather and exit this block with their IDs from in_id
        Following blocks only use those IDs to determine vertical grid of input variables from in_id
        Either one (but not both) of the midpoint and interface level IDs may be undefined in in_id
        Moreover, determining which dimension, if any, is midpoint and interface in in_id is non-trivial
@@ -1472,17 +1470,17 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
 	    break; 
 	if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 1){
-	  /* ps has no record dimension or this is only ps dimension */
+	  /* This PS dimension is not record dimension, or is sole PS dimension */
 	  grd_sz_in*=dmn_cnt_in[dmn_idx];
 	  dmn_hrz_nbr++;
 	} /* !rec_idx, !dmn_nbr_in */
 	if(rec_idx != dmn_nbr_rec && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L){
-	  /* multi-dimensional ps contains this record dimension of size > 1, assume this is time (not space) */
+	  /* Multi-dimensional PS contains this multi-element record dimension, which we assume is time (not space) */
 	  dmn_id_tm_in=dmn_ids_in[dmn_idx];
 	  dmn_idx_tm_in=dmn_idx;
 	  tm_nbr_in=dmn_cnt_in[dmn_idx_tm_in];
 	  if(tm_nbr_in > 1L) flg_vrt_tm=True;
-	} /* tm_nbr_in > 1 */
+	} /* !rec_idx, !dmn_nbr_out, !dmn_cnt_out */
 	dmn_srt[dmn_idx]=0L;
       } /* !dmn_idx */
 
@@ -1549,7 +1547,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     }else{
       memcpy(ps_out,ps_in,tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr));
     } /* !ps_id_tpl */
-  } /* ! */
+  } /* !flg_grd_in_hyb, !flg_grd_out_hyb */
 
   /* Compare input and output surface pressure fields to determine whether subterranean extrapolation required */
   nco_bool flg_add_msv_att; /* [flg] Extrapolation requires _FillValue */
@@ -1892,7 +1890,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       /* If variable has not been defined, define it */
       if(rcd != NC_NOERR){
 	if(trv.flg_rgr){
-	  /* Interpolate */
+	  /* Muck with interpolated-variable metadata */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  rcd=nco_inq_var_packing(in_id,var_id_in,&flg_pck);
 	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
@@ -1902,15 +1900,18 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	      /* Change ilev dimension */
 	      dmn_id_out[dmn_idx]=dmn_id_ilev_out;
 	      dmn_cnt_out[dmn_idx]=ilev_nbr_out;
+	      if(dmn_nbr_in > 1 && dmn_idx == dmn_nbr_in-1) flg_hrz_mrv=False;
 	    }else if(!strcmp(dmn_nm,lev_nm_in)){
 	      /* Change lev dimension */
 	      dmn_id_out[dmn_idx]=dmn_id_lev_out;
 	      dmn_cnt_out[dmn_idx]=lev_nbr_out;
+	      if(dmn_nbr_in > 1 && dmn_idx == dmn_nbr_in-1) flg_hrz_mrv=False;
 	    }else{
-	      /* Dimensions ilev/lev_nm_in have already been defined as ilev/lev_nm_out, replicate all other dimensions */
+	      /* For non-vertical dimensions, obtain output dimension ID associated with input dimension name */
 	      rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
 	    } /* !ilev */
 	    if(rcd != NC_NOERR){
+	      /* Dimensions ilev/lev_nm_in have already been defined as ilev/lev_nm_out, replicate all non-vertical dimensions */ 
 	      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt_out+dmn_idx);
 	      /* Check-for and, if found, retain record dimension property */
 	      for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
@@ -1920,7 +1921,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    } /* !rcd */
 	  } /* !dmn_idx */
 	}else{ /* !flg_rgr */
-	  /* Replicate non-interpolated variables */
+	  /* Replicate non-interpolated variable metadata */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
@@ -2009,6 +2010,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   size_t grd_nbr=grd_sz_in; /* [nbr] Horizonal grid size */
   size_t idx_dbg=rgr->idx_dbg;
   
+  if(dmn_hrz_nbr == 0 || grd_sz_in == 1L){flg_grd_hrz_0D=True;}
+  else if(dmn_hrz_nbr == 1){flg_grd_hrz_1D=True;}
+  else if(dmn_hrz_nbr == 2){flg_grd_hrz_2D=True;}
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports flg_hrz_mrv = %d, dmn_hrz_nbr = %d, grd_sz_in = %ld, flg_grd_hrz_0D = %d, flg_grd_hrz_1D = %d, flg_grd_hrz_2D = %d\n",nco_prg_nm_get(),fnc_nm,flg_hrz_mrv,dmn_hrz_nbr,grd_sz_in,flg_grd_hrz_0D,flg_grd_hrz_1D,flg_grd_hrz_2D);
+  assert(dmn_hrz_nbr <= 2);
+  
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped as shared in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
@@ -2022,25 +2029,48 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     idx_fst=tm_idx*grd_sz_in;
     
     if(need_prs_mdp){
-      /* Allocate and define midpoint pressures */
+      /* Allocate midpoint pressures first timestep only */
       if(tm_idx == 0) prs_mdp_in=(double *)nco_malloc_dbg(grd_sz_in*lev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_in value buffer");
       if(tm_idx == 0) prs_mdp_out=(double *)nco_malloc_dbg(grd_sz_out*lev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_out value buffer");
-      if(flg_grd_in_hyb)
-	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
-	  for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
-	    prs_mdp_in[grd_idx+lev_idx*grd_sz_in]=p0_in*hyam_in[lev_idx]+ps_in[idx_fst+grd_idx]*hybm_in[lev_idx];
-      if(flg_grd_out_hyb)
-	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
-	  for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
-	    prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=p0_out*hyam_out[lev_idx]+ps_out[idx_fst+grd_idx]*hybm_out[lev_idx];
-      if(flg_grd_in_prs)
-	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
-	  for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
-	    prs_mdp_in[grd_idx+lev_idx*grd_sz_in]=lev_in[lev_idx];
-      if(flg_grd_out_prs)
-	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
-	  for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
-	    prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=lev_out[lev_idx];
+      /* Update midpoint pressures every timestep */
+      if(flg_hrz_mrv){
+	/* 3D pressure arrays ordered [vrt,hrz] */
+	if(flg_grd_in_hyb)
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	    for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
+	      prs_mdp_in[grd_idx+lev_idx*grd_sz_in]=p0_in*hyam_in[lev_idx]+ps_in[idx_fst+grd_idx]*hybm_in[lev_idx];
+	if(flg_grd_out_hyb)
+	  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	    for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
+	      prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=p0_out*hyam_out[lev_idx]+ps_out[idx_fst+grd_idx]*hybm_out[lev_idx];
+	if(flg_grd_in_prs)
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	    for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
+	      prs_mdp_in[grd_idx+lev_idx*grd_sz_in]=lev_in[lev_idx];
+	if(flg_grd_out_prs)
+	  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	    for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
+	      prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=lev_out[lev_idx];
+      }else{ /* !flg_hrz_mrv */
+	/* 20221125: Untested! Columns are MRV */
+	/* 3D pressure arrays ordered [hrz,vrt] */
+	if(flg_grd_in_hyb)
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	    for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
+	      prs_mdp_in[lev_idx+grd_idx*lev_nbr_in]=p0_in*hyam_in[lev_idx]+ps_in[idx_fst+grd_idx]*hybm_in[lev_idx];
+	if(flg_grd_out_hyb)
+	  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	    for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
+	      prs_mdp_out[lev_idx+grd_idx*lev_nbr_out]=p0_out*hyam_out[lev_idx]+ps_out[idx_fst+grd_idx]*hybm_out[lev_idx];
+	if(flg_grd_in_prs)
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	    for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
+	      prs_mdp_in[lev_idx+grd_idx*lev_nbr_in]=lev_in[lev_idx];
+	if(flg_grd_out_prs)
+	  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	    for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
+	      prs_mdp_out[lev_idx+grd_idx*lev_nbr_out]=lev_out[lev_idx];
+      } /* !flg_hrz_mrv */
       if(flg_ntp_log){
 	var_sz_in=grd_sz_in*lev_nbr_in;
 	for(idx_in=0;idx_in<var_sz_in;idx_in++) prs_mdp_in[idx_in]=log(prs_mdp_in[idx_in]);
@@ -2050,25 +2080,46 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !need_prs_mdp */
 
     if(need_prs_ntf){
-      /* Allocate and define interface pressures */
+      /* Allocate interface pressures first timestep only */
       if(tm_idx == 0) prs_ntf_in=(double *)nco_malloc_dbg(grd_sz_in*ilev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_in value buffer");
       if(tm_idx == 0) prs_ntf_out=(double *)nco_malloc_dbg(grd_sz_out*ilev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_out value buffer");
-      if(flg_grd_in_hyb)
-	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
-	  for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
-	    prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=p0_in*hyai_in[ilev_idx]+ps_in[idx_fst+grd_idx]*hybi_in[ilev_idx];
-      if(flg_grd_out_hyb)
-	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
-	  for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
-	    prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[idx_fst+grd_idx]*hybi_out[ilev_idx];
-      if(flg_grd_in_prs)
-	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
-	  for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
-	    prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=lev_in[ilev_idx];
-      if(flg_grd_out_prs)
-	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
-	  for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
-	    prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=lev_out[ilev_idx];
+      /* Update interface pressures every timestep */
+      if(flg_hrz_mrv){
+	if(flg_grd_in_hyb)
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
+	      prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=p0_in*hyai_in[ilev_idx]+ps_in[idx_fst+grd_idx]*hybi_in[ilev_idx];
+	if(flg_grd_out_hyb)
+	  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
+	      prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[idx_fst+grd_idx]*hybi_out[ilev_idx];
+	if(flg_grd_in_prs)
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
+	      prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=lev_in[ilev_idx];
+	if(flg_grd_out_prs)
+	  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
+	      prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=lev_out[ilev_idx];
+      }else{ /* !flg_hrz_mrv */
+	/* 20221125: Untested! Columns are MRV */
+	if(flg_grd_in_hyb)
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
+	      prs_ntf_in[ilev_idx+grd_idx*ilev_nbr_in]=p0_in*hyai_in[ilev_idx]+ps_in[idx_fst+grd_idx]*hybi_in[ilev_idx];
+	if(flg_grd_out_hyb)
+	  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
+	      prs_ntf_out[ilev_idx+grd_idx*ilev_nbr_out]=p0_out*hyai_out[ilev_idx]+ps_out[idx_fst+grd_idx]*hybi_out[ilev_idx];
+	if(flg_grd_in_prs)
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
+	      prs_ntf_in[ilev_idx+grd_idx*ilev_nbr_in]=lev_in[ilev_idx];
+	if(flg_grd_out_prs)
+	  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
+	      prs_ntf_out[ilev_idx+grd_idx*ilev_nbr_out]=lev_out[ilev_idx];
+      } /* !flg_hrz_mrv */
       if(flg_ntp_log){
 	var_sz_in=grd_sz_in*ilev_nbr_in;
 	for(idx_in=0;idx_in<var_sz_in;idx_in++) prs_ntf_in[idx_in]=log(prs_ntf_in[idx_in]);
