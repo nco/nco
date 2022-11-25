@@ -1022,8 +1022,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int dmn_id_ilev_in=NC_MIN_INT; /* [id] Dimension ID for interface level in file to be interpolated */
   int dmn_id_lev_in=NC_MIN_INT; /* [id] Dimension ID for midpoint level in file to be interpolated */
   int dmn_id_tm_in=NC_MIN_INT; /* [id] Dimension ID for time in file to be interpolated */
-  int dmn_nbr_rec; /* [nbr] Number of unlimited dimensions */
   int dmn_idx_tm_in=NC_MIN_INT; /* [idx] Index of record coordinate in input hybrid coordinate PS field */
+  int dmn_hrz_nbr=0; /* [nbr] Number of horizontal dimensions in vertical MRV files */
+  int dmn_nbr_rec; /* [nbr] Number of unlimited dimensions */
   long *dmn_cnt_in=NULL;
   long *dmn_cnt_out=NULL;
   long *dmn_srt=NULL;
@@ -1035,6 +1036,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   long tm_nbr=1L; /* [idx] Number of timesteps in vertical grid */
   long tm_nbr_in=1L; /* [nbr] Number of timesteps in input vertical grid definition */
   long tm_nbr_out=1L; /* [nbr] Number of timesetps in output vertical grid definition */
+  nco_bool flg_grd_hrz_0D=False; /* [flg] Input data is single vertical column */
+  nco_bool flg_grd_hrz_1D=False; /* [flg] Input data is 1D (unstructured) array of vertical columns */
+  nco_bool flg_grd_hrz_2D=False; /* [flg] Input data is 2D (structured) array of vertical columns */
   size_t grd_idx; /* [idx] Gridcell index */
   size_t grd_sz_in=1L; /* [nbr] Number of elements in single layer of input grid */
   size_t grd_sz_out=1L; /* [nbr] Number of elements in single layer of output grid */
@@ -1074,8 +1078,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
 	  if(dmn_ids_out[dmn_idx] == dmn_ids_rec[rec_idx])
 	    break; 
-	if(rec_idx == dmn_nbr_rec || dmn_nbr_out == 1) grd_sz_out*=dmn_cnt_out[dmn_idx];
+	if(rec_idx == dmn_nbr_rec || dmn_nbr_out == 1){
+	  /* ps has no record dimension or this is only ps dimension */
+	  grd_sz_out*=dmn_cnt_out[dmn_idx];
+	  dmn_hrz_nbr++;
+	} /* !rec_idx, !dmn_nbr_out */
 	if(rec_idx != dmn_nbr_rec && dmn_nbr_out > 1 && dmn_cnt_out[dmn_idx] > 1L){
+	  /* multi-dimensional ps contains this record dimension of size > 1, assume this is time (not space) */
 	  tm_nbr_out=dmn_cnt_out[dmn_idx];
 	  if(tm_nbr_out > 1L) flg_vrt_tm=True;
 	} /* tm_nbr_out > 1 */
@@ -1084,6 +1093,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(dmn_ids_rec) dmn_ids_rec=(int *)nco_free(dmn_ids_rec);
     } /* !ps_id_tpl */
   } /* !flg_grd_out_hyb */
+  
+  if(dmn_hrz_nbr == 0 || grd_sz_in == 1L){flg_grd_hrz_0D=True;}
+  else if(dmn_hrz_nbr == 1){flg_grd_hrz_1D=True;}
+  else if(dmn_hrz_nbr == 2){flg_grd_hrz_2D=True;}
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports flg_hrz_mrv = %d, dmn_hrz_nbr = %d, grd_sz_in = %ld, flg_grd_hrz_0D = %d, flg_grd_hrz_1D = %d, flg_grd_hrz_2D = %d\n",nco_prg_nm_get(),fnc_nm,flg_hrz_mrv,dmn_hrz_nbr,grd_sz_in,flg_grd_hrz_0D,flg_grd_hrz_1D,flg_grd_hrz_2D);
+  assert(dmn_hrz_nbr <= 2);
   
   if(flg_grd_out_prs){
     /* Interrogate plev to obtain plev dimensions */
@@ -1320,7 +1335,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     lev_nm_in=strdup(dmn_nm);
     /* 20221103:
        Interface and midpoint dimension names are only guaranteed to both exist in vrt_in_id, not in_id
-       Use vrt_in_id to get their names and sizes, then be sure to leave this block with IDs from in_id
+       Use vrt_in_id to get their names and sizes, and exit this block with those IDs from in_id
        Following blocks only use those IDs to determine vertical grid of input variables from in_id
        Either one (but not both) of the midpoint and interface level IDs may be undefined in in_id
        Moreover, determining which dimension, if any, is midpoint and interface in in_id is non-trivial
@@ -1369,19 +1384,27 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  /* Yes. Do any dimensions vary more rapidly than lev? */
 	  if(dmn_idx < dmn_nbr_in-1){
 	    /* Yes. Assume remaining dimensions are horizontal spatial dimensions */
-	    char var_nm[NC_MAX_NAME+1L];
-	    (void)nc_inq_varname(in_id,var_idx,var_nm);
 	    for(int dmn_idx_hrz=dmn_idx+1;dmn_idx_hrz<dmn_nbr_in;dmn_idx_hrz++){
 	      rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx_hrz],dmn_cnt_in+dmn_idx_hrz);
 	      grd_sz_in*=dmn_cnt_in[dmn_idx_hrz];
 	    } /* !dmn_idx_hrz */
+	    break;
+	  }else{ /* !dmn_idx */
+	    /* 20221125: vrt_mrv not yet supported for pure pressure output
+	       Assume dmn_hrz_nbr holds number of horizontal dimensions for vertical MRV files */
+	    flg_hrz_mrv=False;
+	    //int dmn_hrz_nbr=2; /* [nbr] Number of horizontal dimensions in vertical MRV files */
+	    //for(int dmn_idx_hrz=dmn_idx-dmn_hrz_nbr;dmn_idx_hrz<dmn_idx;dmn_idx_hrz++){
+	    //rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx_hrz],dmn_cnt_in+dmn_idx_hrz);
+	    //grd_sz_in*=dmn_cnt_in[dmn_idx_hrz]; /* NB: this breaks for single-column files */
+	    //} /* !dmn_idx_hrz */
 	    break;
 	  } /* !dmn_idx */
 	} /* !dmn_idx */
       } /* !var_idx */
       if(nco_dbg_lvl_get() >= nco_dbg_std)
 	if(var_idx == var_nbr)
-	  (void)fprintf(stdout,"%s: INFO %s reports input file has no variables with multiple dimensions, i.e., input appears to be vertical only, with no horizontal extent\n",nco_prg_nm_get(),fnc_nm);
+	  (void)fprintf(stdout,"%s: INFO %s reports input file has no variables with multiple dimensions, i.e., input could be vertical only, with no horizontal extent\n",nco_prg_nm_get(),fnc_nm);
       grd_sz_out=grd_sz_in;
     } /* !flg_grd_out_hyb */
   } /* !flg_grd_in_prs */
@@ -1448,8 +1471,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
 	  if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
 	    break; 
-	if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 1) grd_sz_in*=dmn_cnt_in[dmn_idx];
+	if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 1){
+	  /* ps has no record dimension or this is only ps dimension */
+	  grd_sz_in*=dmn_cnt_in[dmn_idx];
+	  dmn_hrz_nbr++;
+	} /* !rec_idx, !dmn_nbr_in */
 	if(rec_idx != dmn_nbr_rec && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L){
+	  /* multi-dimensional ps contains this record dimension of size > 1, assume this is time (not space) */
 	  dmn_id_tm_in=dmn_ids_in[dmn_idx];
 	  dmn_idx_tm_in=dmn_idx;
 	  tm_nbr_in=dmn_cnt_in[dmn_idx_tm_in];
@@ -1462,7 +1490,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       dmn_nbr_ps=dmn_nbr_out=dmn_nbr_in;
       dmn_ids_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
       dmn_cnt_out=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
-      /* fxm: next line works for hyb_in and is buggy for prs_in */
+      /* fxm: next line works for hyb_in and is buggy for prs_in? */
       /* 20221102: Why copy input IDs to output arrays, you ask? Because these output arrays are only used to define PS in output */
       memcpy(dmn_ids_out,dmn_ids_in,dmn_nbr_in*sizeof(int));
       memcpy(dmn_cnt_out,dmn_cnt_in,dmn_nbr_in*sizeof(long));
@@ -2242,7 +2270,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		idx_out=grd_idx+lvl_idx_out*grd_nbr;
 		crd_out[lvl_idx_out]=prs_ntp_out[idx_out];
 	      } /* !lvl_idx_out */
-	    }else{
+	    }else{ /* !flg_hrz_mrv */
 	      /* 20221123: Untested! Columns are MRV */
 	      for(lvl_idx_in=0;lvl_idx_in<lvl_nbr_in;lvl_idx_in++){
 		idx_in=grd_idx*lvl_nbr_in+lvl_idx_in;
@@ -2250,7 +2278,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		dat_in[lvl_idx_in]=var_val_dbl_in[idx_in];
 	      } /* !lvl_idx_in */
 	      for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
-		idx_out=grd_idx+lvl_nbr_out+lvl_idx_out;
+		idx_out=grd_idx*lvl_nbr_out+lvl_idx_out;
 		crd_out[lvl_idx_out]=prs_ntp_out[idx_out];
 	      } /* !lvl_idx_out */
 	    } /* !flg_hrz_mrv */
@@ -2417,10 +2445,17 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    // End of vec.hh code
 	    
 	    /* Copy answers into output array */
-	    for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
-	      idx_out=grd_idx+lvl_idx_out*grd_nbr;
-	      var_val_dbl_out[idx_out]=dat_out[lvl_idx_out];
-	    } /* !lvl_idx_out */
+	    if(flg_hrz_mrv){
+	      for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
+		idx_out=grd_idx+lvl_idx_out*grd_nbr;
+		var_val_dbl_out[idx_out]=dat_out[lvl_idx_out];
+	      } /* !lvl_idx_out */
+	    }else{ /* !flg_hrz_mrv */
+	      for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
+		idx_out=grd_idx*lvl_nbr_out+lvl_idx_out;
+		var_val_dbl_out[idx_out]=dat_out[lvl_idx_out];
+	      } /* !lvl_idx_out */
+	    } /* !flg_hrz_mrv */
 	    
 	    if(nco_dbg_lvl_get() >= nco_dbg_io && grd_idx == idx_dbg){
 	      (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s at idx_dbg = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,idx_dbg);
@@ -3019,7 +3054,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* Check-for and workaround faulty Tempest and MPAS-O/I grid sizes */
   if(flg_grd_in_1D && (mpf.src_grid_size != dmn_sz_in_int[0])){
     (void)fprintf(stdout,"%s: INFO %s reports input grid dimension sizes disagree: mpf.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable. This is a known issue with some TempestRemap mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.src_grid_size,dmn_sz_in_int[0]);
-      dmn_sz_in_int[0]=mpf.src_grid_size;
+    dmn_sz_in_int[0]=mpf.src_grid_size;
   } /* !bug */
   if(flg_grd_out_1D && (mpf.dst_grid_size != dmn_sz_out_int[0])){
     (void)fprintf(stdout,"%s: INFO %s reports output grid dimension sizes disagree: mpf.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable. This is a known issue with some TempestRemap mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.dst_grid_size,dmn_sz_out_int[0]);
@@ -3829,7 +3864,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"nCells",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nCells"); /* MPAS-O/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"nEdges",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nEdges"); /* MPAS-O/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"ncol_d",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("ncol_d"); /* EAM dynamics grid */
-    else if((rcd=nco_inq_dimid_flg(in_id,"ncol_p",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("ncol_d"); /* EAM physics grid */
+    else if((rcd=nco_inq_dimid_flg(in_id,"ncol_p",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("ncol_p"); /* EAM physics grid */
     else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("sounding_id"); /* OCO2 */
     /* 20180605: Database matches to above names may be false-positives
        ALM/CLM/CTSM/ELM store all possible dimension names that archived variables could use
