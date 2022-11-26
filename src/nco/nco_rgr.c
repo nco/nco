@@ -2002,7 +2002,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(dmn_hrz_nbr == 0 || grd_sz_in == 1L){flg_grd_hrz_0D=True;}
   else if(dmn_hrz_nbr == 1){flg_grd_hrz_1D=True;}
   else if(dmn_hrz_nbr == 2){flg_grd_hrz_2D=True;}
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s reports flg_hrz_mrv = %d, dmn_hrz_nbr = %d, grd_sz_in = %ld, flg_grd_hrz_0D = %d, flg_grd_hrz_1D = %d, flg_grd_hrz_2D = %d\n",nco_prg_nm_get(),fnc_nm,flg_hrz_mrv,dmn_hrz_nbr,grd_sz_in,flg_grd_hrz_0D,flg_grd_hrz_1D,flg_grd_hrz_2D);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports flg_hrz_mrv = %d, dmn_hrz_nbr = %d, grd_sz_in = %ld, flg_grd_hrz_0D = %d, flg_grd_hrz_1D = %d, flg_grd_hrz_2D = %d\n",nco_prg_nm_get(),fnc_nm,flg_hrz_mrv,dmn_hrz_nbr,grd_sz_in,flg_grd_hrz_0D,flg_grd_hrz_1D,flg_grd_hrz_2D);
   assert(dmn_hrz_nbr <= 2);
   
   /* Using naked stdin/stdout/stderr in parallel region generates warning
