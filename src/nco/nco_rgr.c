@@ -326,7 +326,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
   rgr->flg_s1d=False; /* [flg] Unpack sparse-1D CLM/ELM variables */
   rgr->flg_stg=False; /* [flg] Write staggered grid with FV output */
-  rgr->flg_vrt_mrv=False; /* [flg] Vertical dimension is Most-Rapidly-Varying */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
   rgr->grd_typ=nco_grd_2D_eqa; /* [enm] Grid type */
   rgr->idx_dbg=0; /* [idx] Index of gridcell for debugging */
@@ -755,10 +754,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_msk_out=True;
       continue;
     } /* !msk_nm */
-    if(!strcmp(rgr_lst[rgr_var_idx].key,"vrt_mrv") || !strcmp(rgr_lst[rgr_var_idx].key,"vrt_lst")){
-      rgr->flg_vrt_mrv=True;
-      continue;
-    } /* !vrt_mrv */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"vrt_nm")){
       rgr->vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -945,7 +940,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_grd_out_dpt=False; /* [flg] Output depth coordinate vertical grid */
   nco_bool flg_grd_out_hyb=False; /* [flg] Output hybrid coordinate vertical grid */
   nco_bool flg_grd_out_prs=False; /* [flg] Output pressure coordinate vertical grid */
-  nco_bool flg_hrz_mrv=!rgr->flg_vrt_mrv; /* [flg] Horizontal dimension is Most-Rapidly-Varying */
+  nco_bool flg_hrz_mrv=True; /* [flg] Horizontal dimension is Most-Rapidly-Varying */
   nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_in=nco_vrt_grd_nil; /* [enm] Vertical grid type for input grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_out=nco_vrt_grd_nil; /* [enm] Vertical grid type for output grid */
@@ -1388,14 +1383,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    } /* !dmn_idx_hrz */
 	    break;
 	  }else{ /* !dmn_idx */
-	    /* 20221125: vrt_mrv not yet supported for pure pressure output
-	       Assume dmn_hrz_nbr holds number of horizontal dimensions for vertical MRV files */
 	    flg_hrz_mrv=False;
-	    //int dmn_hrz_nbr=2; /* [nbr] Number of horizontal dimensions in vertical MRV files */
-	    //for(int dmn_idx_hrz=dmn_idx-dmn_hrz_nbr;dmn_idx_hrz<dmn_idx;dmn_idx_hrz++){
-	    //rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx_hrz],dmn_cnt_in+dmn_idx_hrz);
-	    //grd_sz_in*=dmn_cnt_in[dmn_idx_hrz]; /* NB: this breaks for single-column files */
-	    //} /* !dmn_idx_hrz */
 	    break;
 	  } /* !dmn_idx */
 	} /* !dmn_idx */

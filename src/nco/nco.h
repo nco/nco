@@ -1273,7 +1273,6 @@ typedef enum nco_xtr_typ_enm
     nco_bool flg_stg; /* [flg] Write staggered grid with FV output */
     nco_bool flg_uio; /* [flg] Unbuffered I/O (NC_SHARE) for netCDF3 files */
     nco_bool flg_usr_rqs; /* [flg] User-requested regridding */
-    nco_bool flg_vrt_mrv; /* [flg] Vertical dimension is Most-Rapidly-Varying */
     nco_bool flg_wgt; /* [flg] User-specified mapping weights */
     size_t hdr_pad; /* [B] Pad at end of header section (for map-file only) */
   } rgr_sct; /* end Regrid structure */
