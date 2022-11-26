@@ -2009,11 +2009,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int thr_idx; /* [idx] Thread index */
   size_t grd_nbr=grd_sz_in; /* [nbr] Horizonal grid size */
   size_t idx_dbg=rgr->idx_dbg;
-  
+
+  /* Results of heuristic method of determining whether vertical or horizontal MRV dimension */
   if(dmn_hrz_nbr == 0 || grd_sz_in == 1L){flg_grd_hrz_0D=True;}
   else if(dmn_hrz_nbr == 1){flg_grd_hrz_1D=True;}
   else if(dmn_hrz_nbr == 2){flg_grd_hrz_2D=True;}
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports flg_hrz_mrv = %d, dmn_hrz_nbr = %d, grd_sz_in = %ld, flg_grd_hrz_0D = %d, flg_grd_hrz_1D = %d, flg_grd_hrz_2D = %d\n",nco_prg_nm_get(),fnc_nm,flg_hrz_mrv,dmn_hrz_nbr,grd_sz_in,flg_grd_hrz_0D,flg_grd_hrz_1D,flg_grd_hrz_2D);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s reports flg_hrz_mrv = %d, dmn_hrz_nbr = %d, grd_sz_in = %ld, flg_grd_hrz_0D = %d, flg_grd_hrz_1D = %d, flg_grd_hrz_2D = %d\n",nco_prg_nm_get(),fnc_nm,flg_hrz_mrv,dmn_hrz_nbr,grd_sz_in,flg_grd_hrz_0D,flg_grd_hrz_1D,flg_grd_hrz_2D);
   assert(dmn_hrz_nbr <= 2);
   
   /* Using naked stdin/stdout/stderr in parallel region generates warning
@@ -2052,7 +2053,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
 	      prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=lev_out[lev_idx];
       }else{ /* !flg_hrz_mrv */
-	/* 20221125: Untested! Columns are MRV */
 	/* 3D pressure arrays ordered [hrz,vrt] */
 	if(flg_grd_in_hyb)
 	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
@@ -2102,7 +2102,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
 	      prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=lev_out[ilev_idx];
       }else{ /* !flg_hrz_mrv */
-	/* 20221125: Untested! Columns are MRV */
 	if(flg_grd_in_hyb)
 	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
 	    for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
@@ -2285,7 +2284,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	      if(prs_ntp_out[grd_nbr]-prs_ntp_out[0] < 0.0)
 		out_ncr=False;
 	  }else{ /* !flg_hrz_mrv */
-	    /* 20221125: Untested! Columns are MRV */
 	    if(prs_ntp_in[1]-prs_ntp_in[0] > 0.0) in_ncr=True; else in_ncr=False;
 	    out_ncr=True;
 	    if(out_nbr > 1)
@@ -2331,7 +2329,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		crd_out[lvl_idx_out]=prs_ntp_out[idx_out];
 	      } /* !lvl_idx_out */
 	    }else{ /* !flg_hrz_mrv */
-	      /* 20221123: Untested! Columns are MRV */
 	      for(lvl_idx_in=0;lvl_idx_in<lvl_nbr_in;lvl_idx_in++){
 		idx_in=grd_idx*lvl_nbr_in+lvl_idx_in;
 		crd_in[lvl_idx_in]=prs_ntp_in[idx_in];
