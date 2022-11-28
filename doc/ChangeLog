@@ -1,8 +1,14 @@
-2022-11-25  Charlie Zender  <zender@uci.edu>
+2022-11-28  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.3 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.3: Zyrtec';git push
+	git tag -a 5.1.3 -m 'ncremap automagical hrz_mrv determination/usage';git push --tags
 
 	* NCO 5.1.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.3-alpha02: Thai Massage';git push
 	git tag -a 5.1.3-alpha02 -m 'ncremap automagical hrz_mrv determination/usage';git push --tags
+
+2022-11-25  Charlie Zender  <zender@uci.edu>
 
 	* Realize that 20221108 change in 5.1.2 broke nco_ntp_vrt() for vrt_mrv data like eamxx
 	because datasets were no longer permuted to hrz_mrv that nco_ntp_vrt() assumed
