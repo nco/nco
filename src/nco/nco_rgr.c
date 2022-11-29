@@ -8396,6 +8396,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if((rcd=nco_inq_dimid_flg(in_id,"nv",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nv"); /* fxm */
   else if((rcd=nco_inq_dimid_flg(in_id,"nvertices",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nvertices"); /* CICE */
   else if((rcd=nco_inq_dimid_flg(in_id,"maxEdges",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("maxEdges"); /* MPAS */
+  /* NB: dmn_id_bnd is distinct from dmn_id_vrt
+     MPAS nVertices is _total_ number of vertices in grid, not maximum number of vertices in cell */
   if((rcd=nco_inq_dimid_flg(in_id,"nVertices",&dmn_id_vrt)) == NC_NOERR) vrt_dmn_nm=strdup("nVertices"); /* MPAS */
   
   /* Use dimension IDs to get dimension sizes and grid size */
@@ -8419,7 +8421,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lon_typ=nco_grd_lon_unk;
     /* 1D grids without their own boundaries are at the mercy of the weight generator */
     if(dmn_id_bnd == NC_MIN_INT){
-      (void)fprintf(stdout,"%s: WARNING %s reports an unstructured grid without spatial boundary information. NCO can copy but not infer spatial boundaries from unstructured grids. Thus NCO will not write spatial bounds to the gridfile inferred from this input file. Instead, the weight generator that ingests this gridfile must generate weights for gridcells with unknown spatial extent. This is feasible for grids and mappings where weights masquerade as areas and are determined by underlying grid and interpolation type (e.g., bilinear remapping of spectral element grid). Unfortunately, the ESMF_RegridWeightGen (ERWG) program requires cell interfaces in both grid files, so ERWG will break on this gridfile. Other weight generators such as TempestRemap may be more successful with this SCRIP file.\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: WARNING %s reports an unstructured grid without spatial boundary information. NCO can copy but not infer spatial boundaries from unstructured grids given only cell-center information (the geometry is under-determined). Thus NCO will not write spatial bounds to the gridfile inferred from this input file. Instead, the weight generator that ingests this gridfile must generate weights for gridcells with unknown spatial extent. This is feasible for grids and mappings where weights masquerade as areas and are determined by underlying grid and interpolation type (e.g., bilinear remapping of spectral element grid). Unfortunately, one popular weight-generator, the ESMF_RegridWeightGen (ERWG) program, requires cell interfaces in both grid files, so ERWG will likely break on this gridfile. Other weight generators such as TempestRemap may be more successful with this SCRIP file.\n",nco_prg_nm_get(),fnc_nm);
       (void)fprintf(stdout,"%s: HINT Re-run the regridder, this time adding the \"-s src_grd\" option to specify the source grid file in SCRIP format. That SCRIP file will have the spatial bounds information required by the ESMF_RegridWeightGen (ERWG) program, so that the regridder will circumvent inferring the underlying grid through its black but fragile magic.\n",nco_prg_nm_get());
       flg_wrt_crn=False;
       /* Input could actually be from grid with no polygonal definition, e.g., CAM-SE 
@@ -8439,7 +8441,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       grd_crn_nbr=4;
       flg_1D_psd_rct_bnd=True;
     } /* !bnd_nbr */
-    if(!strcmp(bnd_dmn_nm,"maxEdges")){
+    if(bnd_dmn_nm && !strcmp(bnd_dmn_nm,"maxEdges")){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Unstructured grid has dimension \"%s\" which indicates an MPAS grid. Will attempt to locate other MPAS information (dimension nVertices and variables nEdgesOnCell, verticesOnCell, lonVertex, and latVertex) to construct SCRIP-compliant bounds variables...\n",nco_prg_nm_get(),bnd_dmn_nm);
       if((rcd=nco_inq_varid_flg(in_id,"nEdgesOnCell",&edg_nbr_cll_id)) == NC_NOERR) edg_nbr_cll_nm=strdup("nEdgesOnCell"); else (void)fprintf(stdout,"%s: INFO Unable to find MPAS edges-on-cell variable (searched for \"nEdgesOnCell\").\n",nco_prg_nm_get());
       if((rcd=nco_inq_varid_flg(in_id,"verticesOnCell",&vrt_cll_id)) == NC_NOERR) vrt_cll_nm=strdup("verticesOnCell"); else (void)fprintf(stdout,"%s: INFO Unable to find MPAS vertices-on-cell variable (searched for \"verticesOnCell\").\n",nco_prg_nm_get());
