@@ -119,11 +119,12 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_fl_open(fl_in_src,md_open,&bfr_sz_hnt,&in_id_src);
   rcd+=nco_fl_open(fl_in_dst,md_open,&bfr_sz_hnt,&in_id_dst);
 
-  rcd+=nco_inq_dimid(in_id_src,"grid_corners",&src_grid_corners_id);
+  //  rcd+=nco_inq_dimid(in_id_src,"grid_corners",&src_grid_corners_id);
+  if(nco_inq_dimid_flg(in_id_src,"grid_corners",&src_grid_corners_id)) NCO_ERR_FL_LN;
   rcd+=nco_inq_dimid(in_id_src,"grid_rank",&src_grid_rank_id);
   rcd+=nco_inq_dimid(in_id_src,"grid_size",&src_grid_size_id);
 
-  rcd+=nco_inq_dimid(in_id_dst,"grid_corners",&dst_grid_corners_id);
+  if(nco_inq_dimid_flg(in_id_dst,"grid_corners",&dst_grid_corners_id)) NCO_ERR_FL_LN;
   rcd+=nco_inq_dimid(in_id_dst,"grid_rank",&dst_grid_rank_id);
   rcd+=nco_inq_dimid(in_id_dst,"grid_size",&dst_grid_size_id);
 
