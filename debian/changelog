@@ -1,8 +1,8 @@
 nco (5.1.3-1) unstable; urgency=low
 
-  * new upstream version fxm:
+  * new upstream version Mauna Loa: ncremap automagical hrz_mrv determination/usage
 
- -- Charlie Zender <zender@uci.edu>  Fri, 27 Jan 2023 12:25:59 -0700
+ -- Charlie Zender <zender@uci.edu>  Mon, 28 Nov 2022 12:25:59 -0700
 
 nco (5.1.2-1) unstable; urgency=low
 

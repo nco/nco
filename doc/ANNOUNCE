@@ -1,17 +1,19 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.2 accede to the Silicon Throne
+netCDF Operators NCO version 5.1.3 erupt
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nc/ncoo (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.2 improves support for horizontal regridding, vertical
-interpolation, or both, on ultra high-resolution model output.
-Users of such functionality may benefit from upgrading, otherwise
-this release can be skipped.
+Version 5.1.3 improves the speed of vertical interpolation for
+fields whose most-rapidly-varying dimension is the vertical (not
+horizontal). This dramatically improves interpolation speed for
+EAMxx/SCREAM files. This release also fixes and issue in using
+ncremap to invoke the interpolation. Other than that, this release can
+be skipped. 
 
-Work on NCO 5.1.3 has commenced and aims to add support for Zarr S3
+Work on NCO 5.1.4 has commenced and aims to add support for Zarr S3 
 stores and to polish support for new codecs.
 
 Enjoy,
@@ -19,88 +21,23 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap supports new options --vrt_in=vrt.nc and --ps_nm=ps_nm.
-The argument to --vrt_in is a vertical coordinate file that contains
-the pure or hybrid pressure information for the input data to be
-vertically interpolated. Previously, this information was required
-to be present in the input data file. However, SCREAM/EAMxx and
-other ultra-high resolution models may choose to output the grid
-information in separate files from the geophysical fields. This
-can save considerable space, especially for hybrid sigma-pressure
-coordinates with time-varying surface pressure. To complement the
---vrt_in option, there is now a --vrt_out option to explicitly
-identify the file containing the output vertical grid. The best
-practice is now to use --vrt_out (instead of --vrt or --vrt_fl,
-which still work) to specify the output vertical grid and clearly
-distinguish it from the input vertical grid, if any.
-ncremap --vrt_out=vrt2.nc # Output vertical grid option new name
-ncremap --vrt_in=vrt1.nc --vrt_out=vrt2.nc ... # Specify both grids
-Thanks to Paul Ullrich (UCD) for suggesting these options.
+A. ncremap can now vertically interpolate files/fields whose most
+rapidly varying dimension is the vertical without having to first
+permute the dimensions to be most rapidly varying in the horizontal
+dimension(s). This speeds up vertical interpolation of EAMxx/SCREAM
+fields dramatically (a factor of about three).
+ncremap --vrt_out=vrt.nc in.nc out.nc
+ncremap -P eamxx --vrt_out=vrt.nc in.nc out.nc
 http://nco.sf.net/nco.html#ncremap
-http://nco.sf.net/nco.html#vrt_in
 http://nco.sf.net/nco.html#vrt_out
-
-B. Previously the vertical interpolation feature required that the
-surface pressure field for hybrid coordinates be named PS.
-Now the name of the surface pressure field can be changed using the
-convenient ps_nm option. Moreover, if the argument of --ps_nm 
-includes a filepath separator (slash or backslash), then the
-portion preceding the final separator will be treated as a filename 
-path, and the final portion will be treated as the surface pressure
-variable name:
-ncremap --ps_nm=ps ... # Surface pressure is ps not PS 
-ncremap --ps_nm=/path/to/vrt.nc/ps ... # Use ps from vrt.nc
-http://nco.sf.net/nco.html#ncremap
-http://nco.sf.net/nco.html#ps_nm
-
-C. ncclimo and ncremap support a new procedure type option, -P eamxx.
-This option automatically generates ncremap flags useful for E3SM
-EAMxx datasets. In addition to their typically ginormous size, these
-datasets have different dimension and variable names than EAM/CAM.
-Current -P eamxx causes ncremap to do two actions automatically:
-(1) Permute the horizontal dimensions to be most rapidly varying by 
-generating the option --pdq_opt=ilev,lev,dim2,col prior to horizontal
-regridding. (2) Search for surface pressure under the name ps instead
-of PS prior to vertical interpolation of hybrid-pressure grids.
-ncremap --pdq_opt=ilev,lev,dim2,col # Manual dimension permutation
-ncremap --ps_nm=ps # Manual surface pressure renaming from PS to ps
-ncremap -P eamxx # Both options automagically
-Thanks to Paul Ullrich (UCD) for suggesting these options.
-http://nco.sf.net/nco.html#ncremap
-http://nco.sf.net/nco.html#prc_typ
-
-D. ncremap has changed the default behavoir of outputting the
-staggered grid to finite volume (FV) destination grids from opt-out
-to opt-in. This means that it is no longer necessary to specify
---no_stg_grd when regridding. Instead, it is necessary to specify
---stg_grd when the staggered grid (including variables slat and slon) 
-is desired as additional information in the regridded file. 
-ncremap --no_stg_grd ... # Old method of opting out
-ncremap ...              # New default behavior
-ncremap --stg_grd ...    # Recovers old default behavior
-http://nco.sf.net/nco.html#stg_grd
-
-E. ncremap vertical interpolation routines now recognize variables
-with names T_mid and VerticalLayerMidpoint as containing temperature
-and geopotential height, respectively. These variable names are used
-in SCREAM/EAMxx. The default extrapolation for these variables now
-behaves the same as T and Z3 for EAM/CAM datasets.
-http://nco.sf.net/nco.html#vrt_ntp
-http://nco.sf.net/nco.html#vrt_xtr
-
-F. ncz2psx now has a man page.
-Full documentation for ncz2psx is expected to become available
-once NCO fully supports the Amazon S3 scheme for NCZarr in 2023.
-http://nco.sf.net/nco.html#ncz2psx
 
 BUG FIXES:
    
-A. Some operators in NCO 5.1.1 would segfault instead of printing
-usage information when called without any arguments. 5.1.2 fixes this.
-
-B. Previous versions of ncks accidentally printed the ncgen command
-to generate binary from CDL files assuming the input file was
-NC_FORMAT_64BIT_OFFSET instead of its actual type. 5.1.2 fixes this.
+A. ncremap in version 5.1.2 (but not 5.1.1 or earlier) by default
+does the wrong thing when trying to vertically interpolate raw
+EAMxx/SCREAM files. The workaround is to manually permute the
+data vary most rapidly in the  horizontal dimension. The fix is to
+upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
