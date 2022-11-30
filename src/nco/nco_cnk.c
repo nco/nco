@@ -254,7 +254,7 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
       if(nco_dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports input file format %s does not support chunking and no chunking policy or map specified so output chunking format will use NCO (not netCDF) defaults\n",nco_prg_nm_get(),fnc_nm,nco_fmt_sng(fl_in_fmt));
       cnk->cnk_map=nco_cnk_map_nco;
       cnk->cnk_plc=nco_cnk_plc_nco;
-    } /* endif dbg */
+    } /* !dbg */
   } /* endif */
 
   if(cnk->cnk_map == nco_cnk_map_nil && cnk->cnk_plc != nco_cnk_plc_nil) cnk->cnk_map=nco_cnk_map_rd1;
@@ -632,7 +632,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   if(fl_fmt != NC_FORMAT_NETCDF4 && fl_fmt != NC_FORMAT_NETCDF4_CLASSIC){
     (void)fprintf(stderr,"%s: WARNING Output file format is %s so chunking request will be ignored\n",nco_prg_nm_get(),nco_fmt_sng(fl_fmt));
     return;
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Vet input */
   if(cnk_map == nco_cnk_map_scl && cnk_sz_scl <= 0){
@@ -649,7 +649,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
       (void)fprintf(stderr,"idx dmn_nm\tcnk_sz:\n");
       for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stderr,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm,(unsigned long)cnk_dmn[cnk_idx]->sz);
     } /* cnk_nbr == 0 */
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Get record dimension ID */
   (void)nco_inq(nc_id,(int *)NULL,&var_nbr,(int *)NULL,&rcd_dmn_id);
@@ -839,7 +839,7 @@ cnk_xpl_override: /* end goto */
         (void)nco_inq_dimname(nc_id,dmn_id[dmn_idx],dmn_nm);
         (void)fprintf(stderr,"%2d %s\t%lu\t%lu\n",dmn_idx,dmn_nm,dmn_sz,(unsigned long)cnk_sz[dmn_idx]);
       } /* end loop over dmn */
-    } /* endif dbg */
+    } /* !dbg */
 
     /* Turn-on chunking for this variable */
     (void)nco_def_var_chunking(nc_id,var_idx,srg_typ,cnk_sz);
@@ -942,7 +942,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   if(fl_fmt != NC_FORMAT_NETCDF4 && fl_fmt != NC_FORMAT_NETCDF4_CLASSIC){
     (void)fprintf(stderr,"%s: WARNING Output file format is %s so chunking request will be ignored\n",nco_prg_nm_get(),nco_fmt_sng(fl_fmt));
     return;
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Vet input */
   if(cnk_map == nco_cnk_map_scl && cnk_sz_scl <= 0UL){
@@ -959,8 +959,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
         (void)fprintf(stdout,"idx cnk_nm\tcnk_sz:\n");
         for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm ? cnk_dmn[cnk_idx]->nm : cnk_dmn[cnk_idx]->nm_fll,(unsigned long)cnk_dmn[cnk_idx]->sz);
       } /* cnk_nbr == 0 */
-    } /* endif dbg */
-  } /* endif dbg */
+    } /* !dbg */
+  } /* !dbg */
   FIRST_CALL=False;
 
   /* Initialize storage type for this variable */
@@ -1330,7 +1330,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	(void)fprintf(stdout,"prm_idx = %lu, cnk_gap = %ld, cnk_sz_prd = %lu, cnk_gap_prt = %ld, prt_sum = %lu\n",(unsigned long)prm_idx,cnk_gap,(unsigned long)cnk_sz_prd,cnk_gap_prt,(unsigned long)prt_sum);
 	(void)fprintf(stdout,"idx dmn_nm\tdmn_sz\tvar_shp\tsz_rgn\tsz_prt\tprt_cff\ttwo_pwr:\n");
 	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t\t%lu\t%lu\t%lu\t%lu\t%lu\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)var_shp[dmn_idx],(unsigned long)cnk_sz_rgn[dmn_idx],(unsigned long)cnk_sz_prt[dmn_idx],(unsigned long)prt_cff[dmn_idx],(unsigned long)two_pwr_idx[dmn_idx]);
-      } /* endif dbg */
+      } /* !dbg */
 
       if(cnk_gap_prt >= 0L && cnk_gap_prt < cnk_gap){
 	/* Candidate improves best previous guess */
@@ -1346,7 +1346,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       (void)fprintf(stdout,"cnk_nbr_xct = %g, cnk_val_nbr = %g, dmn_sz_prd = %g, cnk_sz_prd = %lu\n",cnk_nbr_xct,cnk_val_nbr,dmn_sz_prd,(unsigned long)cnk_sz_prd);
       (void)fprintf(stdout,"idx dmn_nm\tdmn_sz\tvar_shp\tcnk_sz:\n");
       for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t\t%lu\t%lu\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)var_shp[dmn_idx],(unsigned long)cnk_sz[dmn_idx]);
-    } /* endif dbg */
+    } /* !dbg */
 
     /* Free shape space */
     if(cnk_sz_prt) cnk_sz_prt=(size_t *)nco_free(cnk_sz_prt);

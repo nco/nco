@@ -282,7 +282,7 @@ nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specifi
     } /* end loop over dmn */
     if(rcd == NC_NOERR) (void)fprintf(stdout,"%s: %s nco_inq_dimid() reports group %s sees dimension %s with ID = %d:\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm,*dmn_id); else (void)fprintf(stdout,"%s: %s reports group %s does not see dimension %s\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm);
     if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
-  } /* endif dbg */
+  } /* !dbg */
 
   /* If dimension is visible to output group, find exactly where it is defined
      Search ancestors until group of definition is found ... */
@@ -301,7 +301,7 @@ nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specifi
       (void)nco_inq_grpname_full(*grp_id_dmn,(size_t *)NULL,grp_nm_fll);
       (void)fprintf(stdout,"%s: %s reports dimension %s was%s defined in group %s\n",nco_prg_nm_get(),fnc_nm,dmn_nm,(dmn_idx < dmn_nbr) ? "" : " not",grp_nm_fll);
       if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
-    } /* endif dbg */
+    } /* !dbg */
     
     if(dmn_idx < dmn_nbr){
       grp_dfn_fnd=True;

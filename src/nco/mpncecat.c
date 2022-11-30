@@ -505,7 +505,7 @@ main(int argc,char **argv)
       break;
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
-  } /* end while loop */
+  } /* !while(1) */
   
   /* Process positional arguments and fill-in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN,FORCE_OVERWRITE);
@@ -888,7 +888,7 @@ main(int argc,char **argv)
 	      tkn_wrt_rsp=msg_bfr[0];
 	      /* Wait then re-send request */
 	      if(tkn_wrt_rsp == tkn_wrt_rqs_dny) sleep(tkn_wrt_rqs_ntv); else break;
-	    } /* end while loop waiting for write token */
+	    } /* !while(1) waiting for write token */
 	    
 	    /* Worker has token---prepare to write */
 	    if(tkn_wrt_rsp == tkn_wrt_rqs_xcp){

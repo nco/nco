@@ -1078,7 +1078,7 @@ main(int argc,char **argv)
       break;
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
-  } /* end while loop */
+  } /* !while(1) */
 
   /* Parse compression options */
   if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,&dfl_lvl,(int *)NULL,(nco_flt_typ_enm **)NULL,(unsigned int **)NULL,(int **)NULL,(int **)NULL,(int ***)NULL);
@@ -1357,7 +1357,7 @@ main(int argc,char **argv)
       if(nco_dbg_lvl_get() == 14){
 	(void)nco_wrt_trv_tbl(in_id,trv_tbl,True);
 	(void)nco_wrt_trv_tbl(out_id,trv_tbl,True);
-      } /* endif dbg */
+      } /* !dbg */
 
       /* Close output file and move it from temporary to permanent location */
       (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);

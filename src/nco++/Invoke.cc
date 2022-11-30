@@ -191,7 +191,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
 	t=t->getNextSibling();
       }
       dbg_prn(fnc_nm,"Parser tree printed");
-    } // endif dbg
+    } // !dbg
   }  
   
   catch (RecognitionException& pe) {

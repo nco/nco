@@ -890,6 +890,16 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
   /* Use copies so var_in_id, dfl_lvl can remain const in prototype */
   var_in_id_cpy=var_in_id;
 
+  /* 20221130: Explicitly disallow compression of variable-length types so as not to run afoul of
+     https://github.com/Unidata/netcdf-c/pull/2231 */
+  nc_type var_typ; /* [enm] netCDF type of output variable (usually same as input) */
+  rcd=nco_inq_vartype(nc_out_id,var_out_id,&var_typ);
+  if(var_typ == NC_STRING || var_typ == NC_VLEN){
+    rcd=nco_inq_varname(nc_out_id,var_out_id,var_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s ignoring attempt to compress variable %s which is of variable-length type %s\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_typ_sng(var_typ));
+    return rcd;
+  } /* !var_typ */
+
   /* Write (or overwrite) var_in_id when var_nm_in is supplied */
   if(var_nm_in && nc_in_id >= 0){
     /* Output variable may not exist in input file (e.g., when ncap2 defines new variable) */
@@ -983,8 +993,6 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
 
   /* Prevent quantization of non-floating-point variables */
   nco_flt_flg_enm flt_flg=nco_flt_flg_all_ok; /* [enm] Enumerated flag for fine-grained compression control */
-  nc_type var_typ; /* [enm] netCDF type of output variable (usually same as input) */
-  rcd=nco_inq_vartype(nc_out_id,var_out_id,&var_typ);
   if(var_typ != NC_FLOAT && var_typ != NC_DOUBLE) flt_flg=nco_flt_flg_qnt_no;
   if(nco_is_crd_var(nc_out_id,var_out_id) || nco_is_spc_in_cf_att(nc_out_id,"bounds",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"climatology",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"coordinates",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"grid_mapping",var_out_id,NULL)) flt_flg=nco_flt_flg_prc_fll;
 

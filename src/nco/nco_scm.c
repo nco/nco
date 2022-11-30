@@ -134,7 +134,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
     (void)fprintf(stderr,"cvs_mjr_vrs %li\n",cvs_mjr_vrs);
     (void)fprintf(stderr,"cvs_mnr_vrs %li\n",cvs_mnr_vrs);
     (void)fprintf(stderr,"cvs_pch_vrs %li\n",cvs_pch_vrs);
-  } /* endif dbg */
+  } /* !dbg */
 
   cvs_mjr_vrs_sng=(char *)nco_free(cvs_mjr_vrs_sng);
   cvs_mnr_vrs_sng=(char *)nco_free(cvs_mnr_vrs_sng);
@@ -208,7 +208,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
   /* Purpose: Return mnemonic describing current NCO version
      20191221: ncremap/ncclimo print left quote and first word of this string, so one-word strings look best 
      20200117: fixed this limitation, multi-word versions work fine */
-  return "Seal Bottling";
+  return "USA 1, Iran 0";
 } /* !nco_nmn_get() */
 
 void

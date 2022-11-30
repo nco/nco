@@ -538,7 +538,7 @@ main(int argc,char **argv)
       break;
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
-  } /* end while loop */
+  } /* !while(1) */
   
   if(CMD_LN_NTP_VAR && CMD_LN_NTP_WGT){
     (void)fprintf(stdout,"%s: ERROR interpolating variable (-i) and fixed weight(s) (-w) both set\n",nco_prg_nm_get());

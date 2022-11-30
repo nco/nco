@@ -238,7 +238,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"fl_vrt_in = %s, ",rgr->fl_vrt_in ? rgr->fl_vrt_in : "NULL");
     (void)fprintf(stderr,"fl_vrt_out = %s, ",rgr->fl_vrt_out ? rgr->fl_vrt_out : "NULL");
     (void)fprintf(stderr,"\n");
-  } /* endif dbg */
+  } /* !dbg */
   
   /* Flags */
   if(wgt_vld_thr == NC_MIN_DOUBLE){
@@ -1191,7 +1191,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     nco_vrt_grd_in=nco_vrt_grd_prs; /* NCEP */
     flg_grd_in_prs=True;
   }else if((rcd=nco_inq_varid_flg(vrt_in_id,"depth",&dpt_id)) == NC_NOERR){
-    nco_vrt_grd_in=nco_vrt_grd_dpt; /* NCEP */
+    nco_vrt_grd_in=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_in_dpt=True;
   }else{ /* !hyai */
     (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
@@ -1303,6 +1303,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_varid(vrt_in_id,"depth",&lev_id);
   } /* !flg_grd_in_dpt */
 
+  /* 20221130: Got to here with MPAS depth coordinate */
+  
   const int ilev_id_in=ilev_id; /* [id] Interface pressure ID */
   const int lev_id_in=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_in=ps_id; /* [id] Surface pressure ID */
@@ -2893,7 +2895,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
     (void)fprintf(stderr,"%s: INFO %s regridding input metadata and grid sizes: ",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stderr,"mapfile_generator = %s, map_method = %s, normalization = %s, src_grid_size = n_a = %li, dst_grid_size = n_b = %li, src_grid_corners = nv_a = %li, dst_grid_corners = nv_b = %li, src_grid_rank = %li, dst_grid_rank = %li, num_links = n_s = %li, num_wgts = %li\n",nco_rgr_mpf_sng(nco_rgr_mpf_typ),nco_rgr_mth_sng(nco_rgr_mth_typ),nco_rgr_nrm_sng(nco_rgr_nrm_typ),mpf.src_grid_size,mpf.dst_grid_size,mpf.src_grid_corners,mpf.dst_grid_corners,mpf.src_grid_rank,mpf.dst_grid_rank,mpf.num_links,mpf.num_wgts);
-  } /* endif dbg */
+  } /* !dbg */
   /* 20190726: Allow normalization type to be "none" for bilinear regridding which UKMO SCRIP files set to "none"*/
   if(nco_rgr_mth_typ == nco_rgr_mth_conservative && nco_rgr_nrm_typ == nco_rgr_nrm_none){
     (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports requested normalization type = %s is not yet supported. Specifically, masks specified by a mask variable (dst_grid_imask,mask_b) are ignored. More specifically, any destination mask information is assumed to be built into the weight array so that no source points will contribute to masked locations. Talk to Charlie if you want this changed.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
@@ -3200,7 +3202,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
     (void)fprintf(stderr,"%s: INFO %s grid conversion type = %s with expected input and prescribed output grid sizes: ",nco_prg_nm_get(),fnc_nm,nco_rgr_grd_sng(nco_rgr_typ));
     (void)fprintf(stderr,"lat_in = %li, lon_in = %li, col_in = %li, lat_out = %li, lon_out = %li, col_out = %li\n",lat_nbr_in,lon_nbr_in,col_nbr_in,lat_nbr_out,lon_nbr_out,col_nbr_out);
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Allocate space for and obtain coordinates */
   if(flg_grd_out_1D){
@@ -3278,7 +3280,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	for(bnd_idx=0;bnd_idx<bnd_nbr_out;bnd_idx++)
 	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lon_bnd_out[bnd_nbr_out*idx+bnd_idx],bnd_idx == bnd_nbr_out-1 ? "]\n" : ", ");
       } /* end loop over lon */
-    } /* endif dbg */
+    } /* !dbg */
   } /* !flg_grd_out_1D */
 
   if(flg_grd_out_rct){
@@ -3399,7 +3401,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_crr){
       for(idx=0L;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2L*idx],lon_ctr_out[idx],lon_bnd_out[2L*idx+1L]);
       for(idx=0L;idx<lat_nbr_out;idx++) (void)fprintf(stdout,"lat[%li] = [%g, %g, %g]\n",idx,lat_bnd_out[2L*idx],lat_ctr_out[idx],lat_bnd_out[2L*idx+1L]);
-    } /* endif dbg */
+    } /* !dbg */
 
     /* Global or regional grid? */
     nco_grd_xtn_enm nco_grd_xtn; /* [enm] Extent of grid */
@@ -3680,7 +3682,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(nco_dbg_lvl_get() >= nco_dbg_io){
     (void)fprintf(stdout,"idx row_dst col_src wgt_raw\n");
     for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) (void)fprintf(stdout,"%li %d %d %g\n",lnk_idx,row_dst_adr[lnk_idx],col_src_adr[lnk_idx],wgt_raw[lnk_idx]);
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Free memory associated with input file */
   if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
@@ -5756,7 +5758,7 @@ nco_bsl_zro /* Return Bessel function zeros */
     (void)fprintf(stdout,"idx\tbsl_zro\n");
     for(bsl_idx=1;bsl_idx<=bsl_zro_nbr;bsl_idx++)
       (void)fprintf(stdout,"%d\t%g\n",bsl_idx,bsl_zro[bsl_idx]);
-  } /* endif dbg */
+  } /* !dbg */
 
   return;
 } /* end nco_bsl_zro() */
@@ -5892,7 +5894,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     (void)fprintf(stdout,"idx\tasin\tngl_rad\tngl_dgr\tgw\n");
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
       (void)fprintf(stdout,"%d\t%g\t%g\t%g%g\n",lat_idx,lat_sin[lat_idx],asin(lat_sin[lat_idx]),180.0*asin(lat_sin[lat_idx])/pi,wgt_Gss[lat_idx]);
-  } /* endif dbg */
+  } /* !dbg */
   
   if(wgt_Gss_p1) wgt_Gss_p1=(double *)nco_free(wgt_Gss_p1);
   if(lat_sin_p1) lat_sin_p1=(double *)nco_free(lat_sin_p1);
@@ -6623,7 +6625,7 @@ nco_rgr_tps /* [fnc] Regrid using TempestRemap library */
     (void)fprintf(stderr,"%s: INFO %s reports\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stderr,"drc_tps = %s, ",rgr->drc_tps ? rgr->drc_tps : "NULL");
     (void)fprintf(stderr,"\n");
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Allow for whitespace characters in fl_grd_dst
      Assume CDL translation results in acceptable name for shell commands */
@@ -7331,7 +7333,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     for(int bnd_idx=0L;bnd_idx<bnd_nbr;bnd_idx++)
       (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lat_bnd[bnd_nbr*idx+bnd_idx],bnd_idx == bnd_nbr-1 ? "]\n" : ", ");
     } /* end loop over lat */
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Use centers and boundaries to diagnose latitude weights */
   switch(lat_typ){
@@ -7513,7 +7515,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, frc_lat_wgt = %20.15f, area_ttl = %20.15f, frc_area = %20.15f\n",lat_wgt_ttl,lat_wgt_ttl/2.0,area_ttl,area_ttl/(4.0*M_PI));
     assert(area_ttl > 0.0);
     assert(area_ttl <= 4.0*M_PI);
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Open grid file */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
@@ -9583,7 +9585,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	for(bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++)
 	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lon_bnd[bnd_nbr*idx+bnd_idx],bnd_idx == bnd_nbr-1 ? "]\n" : ", ");
       } /* end loop over lon */
-    } /* endif dbg */
+    } /* !dbg */
     
     /* Fuzzy test of latitude weight normalization */
     //const double eps_rlt_max=1.0e-14; /* [frc] Round-off error tolerance: Used 1.0e-14 until 20180904 */

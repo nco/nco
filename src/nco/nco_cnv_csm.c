@@ -156,7 +156,7 @@ nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating
       if(cnv_sng == cnv_sng_LC) (void)fprintf(stderr,"%s: WARNING: This file uses a non-standard attribute (\"%s\") to indicate the netCDF convention. The correct attribute is \"%s\".\n",nco_prg_nm_get(),cnv_sng_LC,cnv_sng_UC);
       /* Only warn in arithmetic operators where conventions change behavior */
       if(nco_dbg_lvl_get() >= nco_dbg_fl && nco_dbg_lvl_get() != nco_dbg_dev && nco_is_rth_opr(nco_prg_id_get())) (void)fprintf(stderr,"%s: INFO NCO attempts to abide by many official and unofficial metadata conventions including ARM, CCM, CCSM, CF, and MPAS. To adhere to these conventions, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\" (for CCM/CCSM files) or \"areaCell\" or \"edgesOnCell\" (for MPAS files), and many operators will always leave coordinate variables unchanged. The full list of exceptions is in the manual http://nco.sf.net/nco.html#CF\n",nco_prg_nm_get());
-    } /* endif dbg */
+    } /* !dbg */
     att_val=(char *)nco_free(att_val);
   } /* endif */
 
@@ -211,7 +211,7 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
       if(cnv_sng == cnv_sng_LC) (void)fprintf(stderr,"%s: WARNING: This file uses a non-standard attribute (\"%s\") to indicate the netCDF convention. The correct attribute is \"%s\".\n",nco_prg_nm_get(),cnv_sng_LC,cnv_sng_UC);
       /* Only warn in arithmetic operators where conventions change behavior */
       if(nco_dbg_lvl_get() >= nco_dbg_fl && nco_dbg_lvl_get() != nco_dbg_dev && nco_is_rth_opr(nco_prg_id_get())) (void)fprintf(stderr,"%s: INFO NCO attempts to abide by many official and unofficial metadata conventions including ARM, CCM, CCSM, and CF. To adhere to these conventions, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\", and many operators will always leave coordinate variables unchanged. The full list of exceptions is in the manual http://nco.sf.net/nco.html#CF\n",nco_prg_nm_get());
-    } /* endif dbg */
+    } /* !dbg */
     att_val=(char *)nco_free(att_val);
   } /* endif */
 

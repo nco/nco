@@ -497,7 +497,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     (void)trv_tbl_prn(trv_tbl_1);
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 2\n",nco_prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_2);
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Get number of objects in each table */
   nbr_tbl_1=trv_tbl_1->nbr;

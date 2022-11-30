@@ -1222,7 +1222,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
           (void)fprintf(stdout,"%s (%d,%s)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,"unknown",(dmn_idx < dmn_nbr-1) ? ", " : "");
         } /* end loop over dmn */
         (void)fprintf(stdout,"\n");
-      } /* endif dbg */
+      } /* !dbg */
 
       /* The all-important variable definition call itself... */
       (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
@@ -1243,7 +1243,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
           (void)fprintf(stdout,"%s (%d,%d)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,dmn_id_vec[dmn_idx],(dmn_idx < dmn_nbr-1) ? ", " : "");
         } /* end loop over dmn */
         (void)fprintf(stdout,"\n");
-      } /* endif dbg */
+      } /* !dbg */
 
       /* endif variable has not yet been defined in output file */
     }else{

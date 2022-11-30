@@ -51,7 +51,7 @@ nco_trr_ini /* [fnc] Initialize Terraref structure */
     (void)fprintf(stderr,"fl_out = %s, ",trr->fl_out ? trr->fl_out : "NULL");
     (void)fprintf(stderr,"fl_out_tmp = %s, ",trr->fl_out_tmp ? trr->fl_out_tmp : "NULL");
     (void)fprintf(stderr,"\n");
-  } /* endif dbg */
+  } /* !dbg */
   
   /* Parse extended kvm options */
   int trr_var_idx; /* [idx] Index over trr_lst (i.e., all names explicitly specified in all "--trr var1[,var2]=val" options) */
@@ -300,7 +300,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   if(nco_dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stderr,"%s: INFO %s Terraref metadata: ",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stderr,"wvl_nbr = %li, xdm_nbr = %li, ydm_nbr = %li, ntl_typ_in = %s, ntl_typ_out = %s, var_typ_in = %s, var_typ_out = %s\n",wvl_nbr,xdm_nbr,ydm_nbr,nco_trr_ntl_sng(ntl_typ_in),nco_trr_ntl_sng(ntl_typ_out),nco_typ_sng(var_typ_in),nco_typ_sng(var_typ_out));
-  } /* endif dbg */
+  } /* !dbg */
 
   var_sz=wvl_nbr*xdm_nbr*ydm_nbr;
   var_val.vp=(void *)nco_malloc(var_sz*nctypelen(var_typ_in));
@@ -912,7 +912,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
     (void)fprintf(stderr,"ESMC_GridAddCoord(): stg_lcn_src = %s,  stg_lcn_dst = %s\n",nco_esmf_stg_lcn_sng(stg_lcn_src),nco_esmf_stg_lcn_sng(stg_lcn_dst));
     (void)fprintf(stderr,"ESMC_GridGetCoord(): bnd_lwr_src[0..1] = %d, %d; bnd_upr_src[0..1] = %d, %d;\n",bnd_lwr_src[0],bnd_lwr_src[1],bnd_upr_src[0],bnd_upr_src[1]);
     //    (void)fprintf(stderr,"ESMC_InterfaceIntCreate(): max_idx_src[0..1] = %d, %d\n",max_idx_src[0],max_idx_src[1]);
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Type-conversion and cell-center coordinates */
   for(idx=0;idx<bnd_upr_src[crd_idx_f_0bs_lat_src];idx++) lat_src[idx]=lat_in[idx];
@@ -1341,7 +1341,7 @@ nco_rgr_esmf2 /* [fnc] Regrid using ESMF library */
     (void)fprintf(stderr,"ESMC_GridAddCoord(): stg_lcn_src = %s,  stg_lcn_dst = %s\n",nco_esmf_stg_lcn_sng(stg_lcn_src),nco_esmf_stg_lcn_sng(stg_lcn_dst));
     (void)fprintf(stderr,"ESMC_GridGetCoord(): bnd_lwr_src[0..1] = %d, %d; bnd_upr_src[0..1] = %d, %d;\n",bnd_lwr_src[0],bnd_lwr_src[1],bnd_upr_src[0],bnd_upr_src[1]);
     //    (void)fprintf(stderr,"ESMC_InterfaceIntCreate(): max_idx_src[0..1] = %d, %d\n",max_idx_src[0],max_idx_src[1]);
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Type-conversion and cell-center coordinates */
   for(idx=0;idx<bnd_upr_src[crd_idx_f_0bs_lat_src];idx++) lat_src[idx]=lat_in[idx];

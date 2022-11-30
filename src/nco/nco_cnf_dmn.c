@@ -630,7 +630,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   if(nco_dbg_lvl_get() > nco_dbg_var){
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
       (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,unknown)\n",nco_prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx]);
-  } /* endif dbg */
+  } /* !dbg */
 
   return rec_dmn_nm_out;
 } /* end nco_var_dmn_rdr_mtd() */ 
@@ -721,7 +721,7 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
       (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",nco_prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
-  } /* endif dbg */
+  } /* !dbg */
   
   /* Is identity re-ordering requested? */
   for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)

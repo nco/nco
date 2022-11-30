@@ -47,8 +47,8 @@
 #endif /* !__cplusplus */
 
 #define NCO_ERR_FL_LN do {						\
-    (void)fflush(stdout); /* Sync stdout with stderr */			\
-    (void)fprintf(stderr, "Failure in function call at NCO source file %s line %d\n",__FILE__,__LINE__); \
+    (void)fflush(stdout); /* Synchronize stdout with stderr */		\
+    (void)fprintf(stderr, "Failure in NCO funcion in file %s at line %d\n",__FILE__,__LINE__); \
     (void)fflush(stderr);						\
     return 2;								\
   } while (0)

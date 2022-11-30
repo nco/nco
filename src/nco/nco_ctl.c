@@ -33,7 +33,7 @@ nco_cpl_get(void) /* [fnc] Return compiler and version */
   if(nco_dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stderr,"%s: INFO icc version defined as __INTEL_COMPILER is %s\n",nco_prg_nm_get(),itl_vrs);
     (void)fprintf(stderr,"%s: INFO icc version defined as __INTEL_COMPILER_BUILD_DATE is %d\n",nco_prg_nm_get(),__INTEL_COMPILER_BUILD_DATE);
-  } /* endif dbg */
+  } /* !dbg */
 #endif /* !__INTEL_COMPILER */
 #if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__NVCC__) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Testing for GCC macros early is dangerous because some compilers, 
@@ -57,11 +57,11 @@ nco_cpl_get(void) /* [fnc] Return compiler and version */
     (void)fprintf(stderr,"%s: INFO GCC major version is %s\n",nco_prg_nm_get(),cpl_vrs_mjr);
     (void)fprintf(stderr,"%s: INFO GCC minor version is %s\n",nco_prg_nm_get(),cpl_vrs_mnr);
     (void)fprintf(stderr,"%s: INFO GCC patch version is %s\n",nco_prg_nm_get(),cpl_vrs_pch);
-  } /* endif dbg */
+  } /* !dbg */
   if(nco_dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stderr,"%s: INFO GCC version defined as __VERSION__ is %s\n",nco_prg_nm_get(),cpl_vrs);
     (void)fprintf(stderr,"%s: INFO GCC version constructed as integer is %d\n",nco_prg_nm_get(),GCC_LIB_VERSION);
-  } /* endif dbg */
+  } /* !dbg */
 #endif /* !__GNUC__ */
 #if defined(__clang__) && !defined(__INTEL_COMPILER)
   /* Some compilers, including clang, also define __GNUC__ by default */
@@ -77,13 +77,13 @@ nco_cpl_get(void) /* [fnc] Return compiler and version */
     (void)fprintf(stderr,"%s: INFO clang major version is %s\n",nco_prg_nm_get(),clg_vrs_mjr);
     (void)fprintf(stderr,"%s: INFO clang minor version is %s\n",nco_prg_nm_get(),clg_vrs_mnr);
     (void)fprintf(stderr,"%s: INFO clang patch version is %s\n",nco_prg_nm_get(),clg_vrs_pch);
-  } /* endif dbg */
+  } /* !dbg */
   /* 20200519: Construct numeric library version */
 # define CLANG_LIB_VERSION ( __clang_major__ * 100 + __clang_minor__ * 10 + __clang_patchlevel__ )
   if(nco_dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stderr,"%s: INFO clang version defined as __clang_version__ is %s\n",nco_prg_nm_get(),clg_vrs);
     (void)fprintf(stderr,"%s: INFO clang version constructed as integer is %d\n",nco_prg_nm_get(),CLANG_LIB_VERSION);
-  } /* endif dbg */
+  } /* !dbg */
 #endif /* !__clang__ */
 #ifdef __NVCC__
   /* https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html */
@@ -95,13 +95,13 @@ nco_cpl_get(void) /* [fnc] Return compiler and version */
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     (void)fprintf(stderr,"%s: INFO nvc major version is %s\n",nco_prg_nm_get(),nvd_vrs_mjr);
     (void)fprintf(stderr,"%s: INFO nvc minor version is %s\n",nco_prg_nm_get(),nvd_vrs_mnr);
-  } /* endif dbg */
+  } /* !dbg */
   /* 20201210: Construct numeric library version */
 # define NVC_LIB_VERSION ( __CUDACC_VER_MAJOR__ * 100 + __CUDACC_VER_MINOR__ * 10 )
   if(nco_dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stderr,"%s: INFO nvc version defined as __CUDACC_VER_BUILD__ is %s\n",nco_prg_nm_get(),nvd_vrs);
     (void)fprintf(stderr,"%s: INFO nvc version constructed as integer is %d\n",nco_prg_nm_get(),NVC_LIB_VERSION);
-  } /* endif dbg */
+  } /* !dbg */
 #endif /* !__NVCC__ */
 #ifdef __PATHCC__
   /* Some compilers, including pathcc, also define __GNUC__ by default */

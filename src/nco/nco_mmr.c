@@ -98,7 +98,7 @@ nco_malloc /* [fnc] Wrapper for malloc() */
   /* Only poll memory if debug level set otherwise getenv() would be called on every nco_malloc() reading  */
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
     if((nvr_NCO_MMR_DBG=getenv("NCO_MMR_DBG"))) ntg_NCO_MMR_DBG=(int)strtol(nvr_NCO_MMR_DBG,&sng_cnv_rcd,NCO_SNG_CNV_BASE10); /* [sng] Environment variable NCO_MMR_DBG */
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Casting from "size_t" to "unsigned long" necessary since %zu format only available in C99 */
   if(ntg_NCO_MMR_DBG && sz > sz_thr) (void)fprintf(stdout,"%s: INFO %s received request to allocate %lu B = %lu kB = %lu MB = %lu GB\n",nco_prg_nm_get(),fnc_nm,(unsigned long)sz,(unsigned long)sz/NCO_BYT_PER_KB,(unsigned long)sz/NCO_BYT_PER_MB,(unsigned long)sz/NCO_BYT_PER_GB);
@@ -421,7 +421,7 @@ nco_prc_stt_get /* [fnc] Read /proc/PID/stat */
     sprintf(prc_stt_sng,prc_stt_fmt_out,prc_stt->pid,prc_stt->comm,prc_stt->state,prc_stt->ppid,prc_stt->pgrp,prc_stt->session,prc_stt->tty_nr,prc_stt->tpgid,prc_stt->flags,prc_stt->minflt,prc_stt->cminflt,prc_stt->majflt,prc_stt->cmajflt,prc_stt->utime,prc_stt->stime,prc_stt->cutime,prc_stt->cstime,prc_stt->priority,prc_stt->nice,prc_stt->num_threads,prc_stt->itrealvalue,prc_stt->starttime,prc_stt->vsize,prc_stt->rss,prc_stt->rlim,prc_stt->startcode,prc_stt->endcode,prc_stt->startstack,prc_stt->kstkesp,prc_stt->kstkeip,prc_stt->signal,prc_stt->blocked,prc_stt->sigignore,prc_stt->sigcatch,prc_stt->wchan,prc_stt->nswap,prc_stt->cnswap,prc_stt->exit_signal,prc_stt->processor,prc_stt->rt_priority,prc_stt->policy,prc_stt->delayacct_blkio_ticks);
     (void)fprintf(stdout,"%s: INFO %s polled %s and found: %s\n",nco_prg_nm_get(),fnc_nm,fl_prc,prc_stt_sng);
     if(prc_stt_sng) prc_stt_sng=(char *)nco_free(prc_stt_sng);
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Were expected number of fields read? */
   if(rcd_sys == PRC_STT_SCT_NBR) return NCO_NOERR; else return NCO_ERR;
@@ -479,7 +479,7 @@ nco_prc_stm_get /* [fnc] Read /proc/PID/statm */
     sprintf(prc_stm_sng,prc_stm_fmt_out,prc_stm->size,prc_stm->resident,prc_stm->share,prc_stm->text,prc_stm->lib,prc_stm->data,prc_stm->dt);
     (void)fprintf(stdout,"%s: INFO %s polled %s and found: %s\n",nco_prg_nm_get(),fnc_nm,fl_prc,prc_stm_sng);
     if(prc_stm_sng) prc_stm_sng=(char *)nco_free(prc_stm_sng);
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Were expected number of fields read? */
   if(rcd_sys == PRC_STM_SCT_NBR) return NCO_NOERR; else return NCO_ERR;

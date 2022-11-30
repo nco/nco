@@ -830,7 +830,7 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
 	} /* end if orphan */
       } /* end loop over idx_2 */ 
       (void)fprintf(stderr," If %s in file one then this notice may be safely ignored. Otherwise, %s will do no harm and will not appear in the output file.\n",(orphan_nbr > 1) ? "these variables are all scalar averages of the coordinate variables with the same names" : "this variable is a scalar-average of the coordinate variable with the same name",(orphan_nbr > 1) ? "these variables appear to be orphans. They" : "this variable appears to be an orphan. It");
-    } /* endif dbg */
+    } /* !dbg */
     *var_nbr_2=*var_nbr_1;
   } /* end if asymmetric and debug */
 

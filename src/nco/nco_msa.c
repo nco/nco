@@ -249,7 +249,7 @@ read_lbl:
 	      (void)fprintf(stderr,"%s: INFO %s USE_NC4_SRD_WORKAROUND reports variable %s has dmn_nbr = %d, dpt_crr_max = %d, idx_srd = %d, srd_nbr = %d, srd_sz = %ld\n",nco_prg_nm_get(),fnc_nm,vara->nm,vara->nbr_dim,dpt_crr_max,idx_srd,srd_nbr,srd_sz);
 	      (void)fprintf(stdout,"%s: %s hyperslabbing variable %s, var_sz=%ld\n",nco_prg_nm_get(),fnc_nm,vara->nm,var_sz);
 	      for(idx=0;idx<dpt_crr_max;idx++) (void)fprintf(stdout,"dmn_idx=%d srt=%ld, cnt=%ld, srd=%ld\n",idx,dmn_srt[idx],dmn_cnt[idx],dmn_srd[idx]);
-	    } /* endif dbg */
+	    } /* !dbg */
 
 	    cp_srd=(char *)vp;
 	    /* Replace multiple strides by loop over single strides */
@@ -1610,7 +1610,7 @@ nco_msa_var_get_trv                 /* [fnc] Define a 'var_sct' hyperslab fields
   for(int idx_lmt=0;idx_lmt<lmt_msa[idx_dmn]->lmt_dmn_nbr;idx_lmt++) (void)fprintf(stdout," : %ld (%ld->%ld)",lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->cnt,lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->srt,lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->end);
       (void)fprintf(stdout,"\n");
     } /* end loop over dimensions */
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Call super-dooper recursive routine
      nco_msa_rcr_clc requires that var_in->type be on-disk type
@@ -1702,7 +1702,7 @@ nco_msa_var_get_sct                 /* [fnc] Define a 'var_sct' hyperslab fields
       for (int idx_lmt = 0; idx_lmt < lmt_msa[idx_dmn]->lmt_dmn_nbr; idx_lmt++) (void)fprintf(stdout, " : %ld (%ld->%ld)", lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->cnt, lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->srt, lmt_msa[idx_dmn]->lmt_dmn[idx_lmt]->end);
       (void)fprintf(stdout, "\n");
     } /* end loop over dimensions */
-  } /* endif dbg */
+  } /* !dbg */
 
     /* Call super-dooper recursive routine
     nco_msa_rcr_clc requires that var_in->type be on-disk type

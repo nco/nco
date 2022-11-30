@@ -98,7 +98,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     if(ntg_OMP_NUM_THREADS > 0) (void)fprintf(fp_stderr,"= %d\n",ntg_OMP_NUM_THREADS); else (void)fprintf(fp_stderr,"does not exist\n");
     (void)fprintf(fp_stderr,"%s: INFO omp_get_num_procs() reports number of processors available is %d\n",nco_prg_nm_get(),prc_nbr_max);
     (void)fprintf(fp_stderr,"%s: INFO omp_get_max_threads() reports maximum number of threads system allows is %d\n",nco_prg_nm_get(),thr_nbr_max);
-  } /* endif dbg */
+  } /* !dbg */
 
   if(USR_SPC_THR_RQS){
     /* Try to honor user-specified thread request... */

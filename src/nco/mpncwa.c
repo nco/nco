@@ -605,7 +605,7 @@ main(int argc,char **argv)
       break;
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
-  } /* end while loop */
+  } /* !while(1) */
   
   /* Parse mask string */
   if(msk_cnd_sng){

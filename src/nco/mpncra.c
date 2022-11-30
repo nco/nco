@@ -573,7 +573,7 @@ main(int argc,char **argv)
       break;
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
-  } /* end while loop */
+  } /* !while(1) */
   
   /* Process positional arguments and fill-in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN,FORCE_OVERWRITE);

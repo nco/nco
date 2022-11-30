@@ -575,7 +575,7 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
     var_out->type=var_in->typ_upk;
     if(nco_dbg_lvl_get() >= nco_dbg_sbr){
       if(var_in->pck_ram) (void)fprintf(stdout,"%s: DEBUG %s will unpack variable %s from %s to %s\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type)); else (void)fprintf(stdout,"%s: DEBUG %s variable %s is already unpacked and of type %s\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type)); 
-    } /* endif dbg */
+    } /* !dbg */
     break;
   case nco_pck_plc_nil:
   default: nco_dfl_case_pck_plc_err(); break;

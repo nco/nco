@@ -699,7 +699,7 @@ main(int argc,char **argv)
       break;
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
-  } /* end while loop */
+  } /* !while(1) */
 
   /* Parse compression options */
   if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,&dfl_lvl,(int *)NULL,(nco_flt_typ_enm **)NULL,(unsigned int **)NULL,(int **)NULL,(int **)NULL,(int ***)NULL);

@@ -5212,9 +5212,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
         if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s Inserted dimension #%d to output list\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[idx_dmn].id);
 
-      } /* endif */
-    } /* end loop over dimensions */
-  } /* endif dmn_cmn_out */
+      } /* !idx_dmn_out */
+    } /* !idx_dmn_out */
+  } /* !dmn_cmn_out */
 
   /* Duplicate netCDF4 settings when possible */
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -5889,7 +5889,7 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 
         for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
           (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",nco_prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
-      } /* endif dbg */
+      } /* !dbg */
 
       /* Is identity re-ordering requested? */
       for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
@@ -6506,7 +6506,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
     (void)fprintf(stdout,"%s: INFO dimensions to average: ",nco_prg_nm_get());        
     for(int idx_dmn=0;idx_dmn<nbr_avg_dmn;idx_dmn++) (void)fprintf(stdout,"<%s>",(*dmn_avg)[idx_dmn]->nm);
     (void)fprintf(stdout,"\n");    
-  } /* endif dbg */
+  } /* !dbg */
   
   return;
   
@@ -6592,7 +6592,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
     (void)fprintf(stdout,"%s: DEBUG %s dimensions to keep on output: ",nco_prg_nm_get(),fnc_nm);        
     for(int idx_dmn=0;idx_dmn<nbr_out_dmn;idx_dmn++) (void)fprintf(stdout,"#%d<%s> : ",(*dmn_out)[idx_dmn]->id,(*dmn_out)[idx_dmn]->nm);
     (void)fprintf(stdout,"\n");       
-  } /* endif dbg */
+  } /* !dbg */
 
   return;
 
@@ -6779,7 +6779,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
     for(int idx_rec=0;idx_rec<rec_nbr;idx_rec++)
       (void)fprintf(stdout,"#%d<%s/%s> : ",(*lmt_rec)[idx_rec]->id,(*lmt_rec)[idx_rec]->grp_nm_fll,(*lmt_rec)[idx_rec]->nm);        
     (void)fprintf(stdout,"\n");       
-  } /* endif dbg */
+  } /* !dbg */
 
   /* Export */
   *nbr_rec=rec_nbr;
@@ -8391,7 +8391,7 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
 
       if(nco_dbg_lvl_get() >= nco_dbg_fl){
 	if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",nco_prg_nm_get(),ncd->nm); else (void)fprintf(stdout,"%s: coordinate \"%s\" has distinct hyperslabs\n",nco_prg_nm_get(),ncd->nm);
-      } /* endif dbg */
+      } /* !dbg */
 
     } /* Loop limits */
 
@@ -8455,7 +8455,7 @@ nco_bld_crd_aux /* [fnc] Build auxiliary coordinates information into table */
           if(nco_dbg_lvl_get() >= nco_dbg_dev){ 
             if(has_lat_lcl) (void)fprintf(stdout,"%s: DEBUG %s \t AVOID 'standard_name' attribute 'latitude' for variable %s with dimension ID = %d\n",nco_prg_nm_get(),fnc_nm,var_nm_fll_lcl,dmn_id_lcl);
             if(has_lon_lcl) (void)fprintf(stdout,"%s: DEBUG %s \t AVOID 'standard_name' attribute 'longitude' for variable %s with dimension ID = %d\n",nco_prg_nm_get(),fnc_nm,var_nm_fll_lcl,dmn_id_lcl);
-	  } /* endif dbg */
+	  } /* !dbg */
 
           if(trv_tbl->lst[idx_crd].nco_typ == nco_obj_typ_var &&
 	     (!has_lat_lcl && !has_lon_lcl) && /* Avoid inserting 'lat_gds' or 'lon_gds' */
@@ -8948,7 +8948,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++) (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
-  } /* endif dbg */
+  } /* !dbg */
 
   if(trv_tbl->nsm_nbr == 0) return;
 
@@ -9552,7 +9552,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 1\n",nco_prg_nm_get(),fnc_nm);
         nco_prn_nsm(trv_tbl_1);             
-      } /* endif dbg */
+      } /* !dbg */
 
       /* File 2 has ensembles */
       if(flg_nsm_fl_2 == True){
@@ -9560,7 +9560,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
         if(nco_dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: DEBUG %s ensembles from file 2\n",nco_prg_nm_get(),fnc_nm);
           nco_prn_nsm(trv_tbl_2);             
-        } /* endif dbg */
+        } /* !dbg */
 
         /* File 2 has ensembles in "special" places, defined in attributes */
         if(flg_nsm_att_2){
@@ -9568,7 +9568,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           if(nco_dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: DEBUG %s ensemble names read from attributes from file 2\n",nco_prg_nm_get(),fnc_nm);
             for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_2->nbr;idx_nm++) (void)fprintf(stdout,"%s: DEBUG %s %s\n",nco_prg_nm_get(),fnc_nm,nsm_grp_nm_fll_prn_2->lst[idx_nm].nm);          
-          } /* endif dbg */
+          } /* !dbg */
 
           /* Use table 1 as template for group creation */
           flg_grp_1=True;
@@ -10789,13 +10789,11 @@ void
 nco_var_xtr_trv                       /* [fnc] Print all variables to extract (debug) */
 (const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
-  int nbr_xtr=0;
   /* Loop table */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     /* Filter variables to extract  */
     if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr){
       (void)fprintf(stdout, "%s\n",trv_tbl->lst[tbl_idx].nm_fll);
-      nbr_xtr++;
     } /* Filter variables  */
   } /* Loop table */
 } /* nco_var_xtr_trv() */
@@ -10855,7 +10853,7 @@ nco_srt_aux /* [fnc] Sort auxiliary coordinates */
         if(nco_dbg_lvl_get() >= nco_dbg_dev && nbr_lat_crd ){ 
           (void)fprintf(stdout,"%s: DEBUG %s 'latitude' auxiliary coordinates %s: %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,lcl_dmn->dmn_nm_fll); 
           for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++) (void)fprintf(stdout,"%s: DEBUG %s %s dpt=%d\n",nco_prg_nm_get(),fnc_nm,lcl_dmn->lat_crd[idx_crd].nm_fll,lcl_dmn->lat_crd[idx_crd].grp_dpt);
-        } /* endif dbg */
+        } /* !dbg */
 
         /* Sort them by group depth */
         if(nbr_lon_crd >1 ) qsort(lcl_dmn->lon_crd,(size_t)nbr_lon_crd,sizeof(lcl_dmn->lon_crd[0]),nco_cmp_aux_crd_dpt);
@@ -10863,7 +10861,7 @@ nco_srt_aux /* [fnc] Sort auxiliary coordinates */
         if(nco_dbg_lvl_get() >= nco_dbg_dev && nbr_lon_crd){ 
           (void)fprintf(stdout,"%s: DEBUG %s 'longitude' auxiliary coordinates %s: %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,lcl_dmn->dmn_nm_fll); 
           for(int idx_crd=0;idx_crd<nbr_lon_crd;idx_crd++) (void)fprintf(stdout,"%s: DEBUG %s %s dpt=%d\n",nco_prg_nm_get(),fnc_nm,lcl_dmn->lon_crd[idx_crd].nm_fll,lcl_dmn->lon_crd[idx_crd].grp_dpt);
-        } /* endif dbg */
+        } /* !dbg */
 
       } /* !idx_dmn */
     } /* !flg_aux */ 
