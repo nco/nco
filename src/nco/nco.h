@@ -1192,11 +1192,15 @@ typedef enum nco_xtr_typ_enm
     char *bnd_tm_nm; /* [sng] Name of dimension to employ for temporal bounds */
     char *col_nm_in; /* [sng] Name to recognize as input horizontal spatial dimension on unstructured grid */
     char *col_nm_out; /* [sng] Name of horizontal spatial output dimension on unstructured grid */
+    char *dpt_nm_in; /* [sng] Name of input variable to recognize as depth for depth/height grids */
+    char *dpt_nm_out; /* [sng] Name of variable to output as depth for depth/height grids */
+    char *dpt_nm_tpl; /* [sng] Name of template variable to recognize as depth for depth/height grids */
     char *fl_hnt_dst; /* [sng] ERWG hint destination */
     char *fl_hnt_src; /* [sng] ERWG hint source */
     char *frc_nm; /* [sng] Name of variable containing gridcell fraction */
     char *ilev_nm_in; /* [sng] Name of input dimension to recognize as vertical dimension at layer interfaces */
     char *ilev_nm_out; /* [sng] Name of output vertical dimension at layer interfaces */
+    char *ilev_nm_tpl; /* [sng] Name of template vertical dimension at layer interfaces */
     char *lat_bnd_nm; /* [sng] Name of rectangular boundary variable for latitude */
     char *lat_dmn_nm; /* [sng] Name of latitude dimension in inferred grid */
     char *lat_nm_in; /* [sng] Name of input dimension to recognize as latitude */
@@ -1205,6 +1209,7 @@ typedef enum nco_xtr_typ_enm
     char *lat_wgt_nm; /* [sng] Name of variable containing latitude weights */
     char *lev_nm_in; /* [sng] Name of input dimension to recognize as vertical dimension at layer midpoints */
     char *lev_nm_out; /* [sng] Name of output vertical dimension at layer midpoints */
+    char *lev_nm_tpl; /* [sng] Name of template vertical dimension at layer midpoints */
     char *lon_bnd_nm; /* [sng] Name of rectangular boundary variable for longitude */
     char *lon_dmn_nm; /* [sng] Name of longitude dimension in inferred grid */
     char *lon_nm_in; /* [sng] Name of dimension to recognize as longitude */

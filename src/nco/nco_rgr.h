@@ -45,6 +45,7 @@ extern "C" {
     nco_ntp_hyb_to_prs,
     nco_ntp_prs_to_hyb,
     nco_ntp_prs_to_prs,
+    nco_ntp_dpt_to_dpt,
   } nco_vrt_ntp_typ_enm;
   
   typedef enum nco_grd_vrt_typ_enm{ /* [enm] Vertical grid-type enum */

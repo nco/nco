@@ -125,9 +125,13 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->bnd_tm_nm) rgr->bnd_tm_nm=(char *)nco_free(rgr->bnd_tm_nm);
   if(rgr->col_nm_in) rgr->col_nm_in=(char *)nco_free(rgr->col_nm_in);
   if(rgr->col_nm_out) rgr->col_nm_out=(char *)nco_free(rgr->col_nm_out);
+  if(rgr->dpt_nm_in) rgr->dpt_nm_in=(char *)nco_free(rgr->dpt_nm_in);
+  if(rgr->dpt_nm_out) rgr->dpt_nm_out=(char *)nco_free(rgr->dpt_nm_out);
+  if(rgr->dpt_nm_tpl) rgr->dpt_nm_tpl=(char *)nco_free(rgr->dpt_nm_tpl);
   if(rgr->frc_nm) rgr->frc_nm=(char *)nco_free(rgr->frc_nm);
   if(rgr->ilev_nm_in) rgr->ilev_nm_in=(char *)nco_free(rgr->ilev_nm_in);
   if(rgr->ilev_nm_out) rgr->ilev_nm_out=(char *)nco_free(rgr->ilev_nm_out);
+  if(rgr->ilev_nm_tpl) rgr->ilev_nm_tpl=(char *)nco_free(rgr->ilev_nm_tpl);
   if(rgr->lat_bnd_nm) rgr->lat_bnd_nm=(char *)nco_free(rgr->lat_bnd_nm);
   if(rgr->lat_nm_in) rgr->lat_nm_in=(char *)nco_free(rgr->lat_nm_in);
   if(rgr->lat_nm_out) rgr->lat_nm_out=(char *)nco_free(rgr->lat_nm_out);
@@ -135,6 +139,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->lat_wgt_nm) rgr->lat_wgt_nm=(char *)nco_free(rgr->lat_wgt_nm);
   if(rgr->lev_nm_in) rgr->lev_nm_in=(char *)nco_free(rgr->lev_nm_in);
   if(rgr->lev_nm_out) rgr->lev_nm_out=(char *)nco_free(rgr->lev_nm_out);
+  if(rgr->lev_nm_tpl) rgr->lev_nm_tpl=(char *)nco_free(rgr->lev_nm_tpl);
   if(rgr->lon_bnd_nm) rgr->lon_bnd_nm=(char *)nco_free(rgr->lon_bnd_nm);
   if(rgr->lon_nm_in) rgr->lon_nm_in=(char *)nco_free(rgr->lon_nm_in);
   if(rgr->lon_nm_out) rgr->lon_nm_out=(char *)nco_free(rgr->lon_nm_out);
@@ -276,9 +281,13 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->bnd_tm_nm=NULL; /* [sng] Name of dimension to employ for temporal bounds */
   rgr->col_nm_in=NULL; /* [sng] Name to recognize as input horizontal spatial dimension on unstructured grid */
   rgr->col_nm_out=NULL; /* [sng] Name of horizontal spatial output dimension on unstructured grid */
+  rgr->dpt_nm_in=NULL; /* [sng] Name of input variable to recognize as depth for depth/height grids */
+  rgr->dpt_nm_out=NULL; /* [sng] Name of variable to output as depth for depth/height grids */
+  rgr->dpt_nm_tpl=NULL; /* [sng] Name of template variable to recognize as depth for depth/height grids */
   rgr->frc_nm=NULL; /* [sng] Name of variable containing gridcell fraction */
   rgr->ilev_nm_in=NULL; /* [sng] Name of input dimension to recognize as vertical dimension at layer interfaces */
   rgr->ilev_nm_out=NULL; /* [sng] Name of output vertical dimension at layer interfaces */
+  rgr->ilev_nm_tpl=NULL; /* [sng] Name of template vertical dimension at layer interfaces */
   rgr->lat_bnd_nm=NULL; /* [sng] Name of rectangular boundary variable for latitude */
   rgr->lat_dmn_nm=NULL; /* [sng] Name of latitude dimension in inferred grid */
   rgr->lat_nm_in=NULL; /* [sng] Name of input dimension to recognize as latitude */
@@ -287,6 +296,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lat_wgt_nm=NULL; /* [sng] Name of variable containing latitude weights */
   rgr->lev_nm_in=NULL; /* [sng] Name of input dimension to recognize as vertical dimension at layer midpoints */
   rgr->lev_nm_out=NULL; /* [sng] Name of output vertical dimension at layer midpoints */
+  rgr->lev_nm_tpl=NULL; /* [sng] Name of template vertical dimension at layer midpoints */
   rgr->lon_bnd_nm=NULL; /* [sng] Name of rectangular boundary variable for longitude */
   rgr->lon_dmn_nm=NULL; /* [sng] Name of longitude dimension in inferred grid */
   rgr->lon_nm_in=NULL; /* [sng] Name of dimension to recognize as longitude */
@@ -636,6 +646,18 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->frc_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !frc_nm */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"dpt_nm_in") || !strcmp(rgr_lst[rgr_var_idx].key,"dpt_nm")){
+      rgr->dpt_nm_in=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !dpt_nm_in */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"dpt_nm_out")){
+      rgr->dpt_nm_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !dpt_nm_out */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"dpt_nm_tpl") || !strcmp(rgr_lst[rgr_var_idx].key,"dpt_nm_vrt")){
+      rgr->dpt_nm_tpl=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !dpt_nm_tpl */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"ilev_nm_in") || !strcmp(rgr_lst[rgr_var_idx].key,"ilev_nm")){
       rgr->ilev_nm_in=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -644,6 +666,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->ilev_nm_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !ilev_nm_out */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"ilev_nm_tpl") || !strcmp(rgr_lst[rgr_var_idx].key,"ilev_nm_vrt")){
+      rgr->ilev_nm_tpl=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !ilev_nm_tpl */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_bnd_nm")){
       rgr->lat_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -676,6 +702,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->lev_nm_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lev_nm_out */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lev_nm_tpl") || !strcmp(rgr_lst[rgr_var_idx].key,"lev_nm_vrt")){
+      rgr->lev_nm_tpl=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !lev_nm_tpl */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_bnd_nm")){
       rgr->lon_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -820,11 +850,24 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* NB: CESM uses nbnd and ilev for temporal and vertical bounds, respectively (CESM outputs no horizontal spatial bounds). NCO defaults to nbnd for all bounds with two endpoints. */
   if(!rgr->bnd_tm_nm) rgr->bnd_tm_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for temporal bounds */
   if(!rgr->col_nm_in) rgr->col_nm_in=(char *)strdup("ncol"); /* [sng] Name to recognize as input horizontal spatial dimension on unstructured grid */
+  if(!rgr->dpt_nm_out){
+    if(rgr->dpt_nm_in) rgr->dpt_nm_out=(char *)strdup(rgr->dpt_nm_in); else rgr->dpt_nm_out=(char *)strdup("timeMonthly_avg_zMid"); /* [sng] Name of variable to output as depth for depth/height grids */
+  } /* !rgr->dpt_nm_out */
+  if(!rgr->dpt_nm_in) rgr->dpt_nm_in=(char *)strdup("timeMonthly_avg_zMid"); /* [sng] Name of input variable to recognize as depth for depth/height grids */
+  if(!rgr->dpt_nm_tpl) rgr->dpt_nm_tpl=(char *)strdup("timeMonthly_avg_zMid"); /* [sng] Name of template variable to recognize as depth for depth/height grids */
   if(!rgr->frc_nm) rgr->frc_nm=(char *)strdup("frac_b"); /* [sng] Name of variable containing gridcell fraction */
+  if(!rgr->ilev_nm_out){
+    if(rgr->ilev_nm_in) rgr->ilev_nm_out=(char *)strdup(rgr->ilev_nm_in); else rgr->ilev_nm_out=(char *)strdup("ilev"); /* [sng] Name of dimension to output as vertical dimension at layer interfaces */
+  } /* !rgr->lev_nm_out */
   if(!rgr->ilev_nm_in) rgr->ilev_nm_in=(char *)strdup("ilev"); /* [sng] Name of input dimension to recognize as vertical dimension at layer interfaces */
+  if(!rgr->ilev_nm_tpl) rgr->ilev_nm_tpl=(char *)strdup("ilev"); /* [sng] Name of template dimension to recognize as vertical dimension at layer interfaces */
   if(!rgr->lat_bnd_nm) rgr->lat_bnd_nm=(char *)strdup("lat_bnds"); /* [sng] Name of rectangular boundary variable for latitude */
   if(!rgr->lat_nm_in) rgr->lat_nm_in=(char *)strdup("lat"); /* [sng] Name of input dimension to recognize as latitude */
+  if(!rgr->lev_nm_out){
+    if(rgr->lev_nm_in) rgr->lev_nm_out=(char *)strdup(rgr->lev_nm_in); else rgr->lev_nm_out=(char *)strdup("lev"); /* [sng] Name of dimension to output as vertical dimension at layer midpoints */
+  } /* !rgr->lev_nm_out */
   if(!rgr->lev_nm_in) rgr->lev_nm_in=(char *)strdup("lev"); /* [sng] Name of input dimension to recognize as vertical dimension at layer midpoints */
+  if(!rgr->lev_nm_tpl) rgr->lev_nm_tpl=(char *)strdup("lev"); /* [sng] Name of template dimension to recognize as vertical dimension at layer midpoints */
   if(!rgr->lat_vrt_nm) rgr->lat_vrt_nm=(char *)strdup("lat_vertices"); /* [sng] Name of non-rectangular boundary variable for latitude */
   if(!rgr->lat_wgt_nm) rgr->lat_wgt_nm=(char *)strdup("gw"); /* [sng] Name of variable containing latitude weights */
   if(!rgr->lon_bnd_nm) rgr->lon_bnd_nm=(char *)strdup("lon_bnds"); /* [sng] Name of rectangular boundary variable for longitude */
@@ -846,7 +889,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   } /* !rgr->ps_nm_out */
   if(!rgr->ps_nm_in) rgr->ps_nm_in=(char *)strdup("PS"); /* [sng] Name of input variable to recognize as surface pressure for hybrid/sigma pressure grids */
   if(!rgr->ps_nm_tpl) rgr->ps_nm_tpl=(char *)strdup("PS"); /* [sng] Name of template variable to recognize as surface pressure for hybrid/sigma pressure grids */
-
+  
     /* Derived from defaults and command-line arguments */
   // On second thought, do not strdup() these here. This way, NULL means user never specified lon/lat-out names
   //  if(!rgr->col_nm_out) rgr->col_nm_out=(char *)strdup("ncol"); /* [sng] Name of dimension to output as horizontal spatial dimension on unstructured grid */
@@ -923,6 +966,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      All single coordinate systems will refer to "lev" levels and indices */
 
   int dpt_id; /* [id] Ocean depth ID */
+  int mlc_id; /* [id] Index to last active cell in each column ID */
   int hyai_id=NC_MIN_INT; /* [id] Hybrid A coefficient at layer interfaces ID */
   int hyam_id=NC_MIN_INT; /* [id] Hybrid A coefficient at layer midpoints ID */
   int hybi_id=NC_MIN_INT; /* [id] Hybrid B coefficient at layer interfaces ID */
@@ -947,32 +991,61 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_ntp_typ_enm ntp_mth=rgr->ntp_mth; /* [enm] Interpolation method */
   nco_xtr_typ_enm xtr_mth=rgr->xtr_mth; /* [enm] Extrapolation method */
 
+  char *ilev_nm_in=NULL; /* [sng] Name of input dimension to recognize as vertical dimension at layer interfaces name */
+  char *ilev_nm_out=NULL; /* [sng] Name of output vertical dimension at layer interfaces */
+  //char *ilev_nm_tpl=NULL; /* [sng] Name of template vertical dimension at layer interfaces */
+  char *lev_nm_in=NULL; /* [sng] Name of input dimension to recognize as vertical dimension at layer midpoints */
+  char *lev_nm_out=NULL; /* [sng] Name of output vertical dimension at layer midpoints */
+  char *lev_nm_tpl=NULL; /* [sng] Name of template vertical dimension at layer midpoints */
+  char *plev_nm_in=NULL; /* [sng] Pure-pressure coordinate name in input file */
+  char *plev_nm_out=NULL; /* [sng] Pure-pressure coordinate name in output file */
+  char *plev_nm_tpl=NULL; /* [sng] Pure-pressure coordinate name in template file */
+  if(rgr->ilev_nm_in) ilev_nm_in=rgr->ilev_nm_in;
+  if(rgr->ilev_nm_out) ilev_nm_out=rgr->ilev_nm_out;
+  //if(rgr->ilev_nm_tpl) ilev_nm_tpl=rgr->ilev_nm_tpl;
+  if(rgr->lev_nm_in) lev_nm_in=rgr->lev_nm_in;
+  if(rgr->lev_nm_out) lev_nm_out=rgr->lev_nm_out;
+  if(rgr->lev_nm_tpl) lev_nm_tpl=rgr->lev_nm_tpl;
+  if(rgr->plev_nm_in) plev_nm_in=rgr->plev_nm_in;
+  if(rgr->plev_nm_out) plev_nm_out=rgr->plev_nm_out;
+  if(rgr->plev_nm_tpl) plev_nm_tpl=rgr->plev_nm_tpl;
+
   /* Determine output grid type */
   if((rcd=nco_inq_varid_flg(tpl_id,"hyai",&hyai_id)) == NC_NOERR){
     nco_vrt_grd_out=nco_vrt_grd_hyb; /* EAM */
     flg_grd_out_hyb=True;
-  }else if((rcd=nco_inq_varid_flg(tpl_id,"plev",&plev_id)) == NC_NOERR){
+  }else if((rcd=nco_inq_varid_flg(tpl_id,plev_nm_tpl,&plev_id)) == NC_NOERR){
     nco_vrt_grd_out=nco_vrt_grd_prs; /* NCEP */
     flg_grd_out_prs=True;
-  }else if((rcd=nco_inq_varid_flg(tpl_id,"depth",&dpt_id)) == NC_NOERR){
+  }else if((rcd=nco_inq_dimid_flg(tpl_id,"nVertLevels",&lev_id)) == NC_NOERR){
+    /* Automatically detect MPAS-O/I depth files so users can be lazy */
+    if(lev_nm_tpl) lev_nm_tpl=(char *)nco_free(lev_nm_tpl);
+    lev_nm_tpl=(char *)strdup("nVertLevels");
+    nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
+    flg_grd_out_dpt=True;
+  }else if((rcd=nco_inq_dimid_flg(tpl_id,lev_nm_tpl,&lev_id)) == NC_NOERR){
+    /* User may have manually altered lev dimension name to be a depth dimension */
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_out_dpt=True;
   }else{ /* !hyai */
-    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure vertical grid coordinate information in vertical grid file\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure vertical grid coordinate information, or depth dimension, in vertical grid file\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT ensure vertical grid coordinate file contains a valid vertical grid coordinate\n",nco_prg_nm_get());
     return NCO_ERR;
   } /* !hyai */
     
   /* Adjust searches to user-specified coordinate names */
-  char *plev_nm_in; /* [sng] Pure-pressure coordinate name in input file */
-  char *plev_nm_out; /* [sng] Pure-pressure coordinate name in output file */
-  //  char *plev_nm_tpl; /* [sng] Pure-pressure coordinate name in template file */
+  //char *dpt_nm_in; /* [sng] Depth field name in input file */
+  //char *dpt_nm_out; /* [sng] Depth field name in output file */
+  //char *dpt_nm_tpl; /* [sng] Depth field name in template file */
   char *ps_nm_in; /* [sng] Surface pressure field name in input file */
   char *ps_nm_out; /* [sng] Surface pressure field name in output file */
   char *ps_nm_tpl; /* [sng] Surface pressure field name in template file */
+  //if(rgr->dpt_nm_in) dpt_nm_in=rgr->dpt_nm_in;
+  //if(rgr->dpt_nm_out) dpt_nm_out=rgr->dpt_nm_out;
+  //if(rgr->dpt_nm_tpl) dpt_nm_tpl=rgr->dpt_nm_tpl;
   if(rgr->plev_nm_in) plev_nm_in=rgr->plev_nm_in;
   if(rgr->plev_nm_out) plev_nm_out=rgr->plev_nm_out;
-  //if(rgr->plev_nm_tpl) plev_nm_tpl=rgr->plev_nm_tpl;
+  if(rgr->plev_nm_tpl) plev_nm_tpl=rgr->plev_nm_tpl;
   if(rgr->ps_nm_in) ps_nm_in=rgr->ps_nm_in;
   if(rgr->ps_nm_out) ps_nm_out=rgr->ps_nm_out;
   if(rgr->ps_nm_tpl) ps_nm_tpl=rgr->ps_nm_tpl;
@@ -989,7 +1062,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_out_hyb */
   
   if(flg_grd_out_prs){
-    rcd=nco_inq_varid(tpl_id,"plev",&lev_id);
+    rcd=nco_inq_varid(tpl_id,plev_nm_tpl,&lev_id);
   } /* !flg_grd_out_prs */
 
   if(flg_grd_out_dpt){
@@ -1005,10 +1078,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int lev_id_tpl=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_tpl=ps_id; /* [id] Surface pressure ID */
 
-  char *ilev_nm_in=NULL; /* [sng] Interface level name */
-  char *lev_nm_in;
-  char *ilev_nm_out;
-  char *lev_nm_out;
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
   int *dmn_ids_in=NULL; /* [nbr] Input file dimension IDs */
   int *dmn_ids_out=NULL; /* [nbr] Output file dimension IDs */
@@ -1190,12 +1259,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   }else if((rcd=nco_inq_varid_flg(vrt_in_id,plev_nm_in,&plev_id)) == NC_NOERR){
     nco_vrt_grd_in=nco_vrt_grd_prs; /* NCEP */
     flg_grd_in_prs=True;
-  }else if((rcd=nco_inq_varid_flg(vrt_in_id,"depth",&dpt_id)) == NC_NOERR){
+  }else if((rcd=nco_inq_dimid_flg(vrt_in_id,"nVertLevels",&lev_id)) == NC_NOERR){
+    /* Automatically detect MPAS-O/I depth files so users can be lazy */
+    if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in);
+    lev_nm_in=(char *)strdup("nVertLevels");
+    nco_vrt_grd_in=nco_vrt_grd_dpt; /* MPAS */
+    flg_grd_in_dpt=True;
+  }else if((rcd=nco_inq_dimid_flg(vrt_in_id,lev_nm_in,&lev_id)) == NC_NOERR){
+    /* User may have manually altered lev dimension name to be a depth dimension */
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_in_dpt=True;
   }else{ /* !hyai */
-    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. These default to \"hyai\" for hybrid, \"plev\" for pressure, \"depth\" for depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure or depth vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. The signal variables default to \"hyai\" for hybrid, \"plev\" for pressure, and the signature dimension defaults to \"nVertLevels\" for height/depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
     return NCO_ERR;
   } /* !hyai */
 
@@ -1217,8 +1293,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(nco_vrt_grd_in == nco_vrt_grd_hyb && nco_vrt_grd_out == nco_vrt_grd_prs) nco_vrt_ntp_typ=nco_ntp_hyb_to_prs;
   if(nco_vrt_grd_in == nco_vrt_grd_prs && nco_vrt_grd_out == nco_vrt_grd_hyb) nco_vrt_ntp_typ=nco_ntp_prs_to_hyb;
   if(nco_vrt_grd_in == nco_vrt_grd_prs && nco_vrt_grd_out == nco_vrt_grd_prs) nco_vrt_ntp_typ=nco_ntp_prs_to_prs;
+  if(nco_vrt_grd_in == nco_vrt_grd_dpt && nco_vrt_grd_out == nco_vrt_grd_dpt) nco_vrt_ntp_typ=nco_ntp_dpt_to_dpt;
   assert(nco_vrt_ntp_typ != nco_ntp_nil);
 
+  /* 20221202: Got to here with MPAS depth coordinate */
+  
   /* Variables on input grid, i.e., on grid in data file to be interpolated */
   char *var_nm; /* [sng] Variable name */
   int fl_ps_id; /* [id] netCDF file ID for external surface pressure file */
@@ -1303,8 +1382,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_varid(vrt_in_id,"depth",&lev_id);
   } /* !flg_grd_in_dpt */
 
-  /* 20221130: Got to here with MPAS depth coordinate */
-  
   const int ilev_id_in=ilev_id; /* [id] Interface pressure ID */
   const int lev_id_in=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_in=ps_id; /* [id] Surface pressure ID */
@@ -1325,8 +1402,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_dimlen(vrt_in_id,dmn_id_ilev_in,&ilev_nbr_in);
     rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_ilev_in,dmn_nm);
+    /* Copy hybrid coordinate names from dimension names since ilev and lev are 1D coordinates */
+    if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in);
     ilev_nm_in=strdup(dmn_nm);
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
+    if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in);
     lev_nm_in=strdup(dmn_nm);
     /* 20221103:
        Interface and midpoint dimension names are only guaranteed to both exist together in vrt_in_id, not in_id
