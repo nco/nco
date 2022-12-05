@@ -1382,8 +1382,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd+=nco_inq_unlimdims(fl_xtr_id,&dmn_nbr_rec,dmn_ids_rec);
   } /* !dmn_nbr_rec */
 
-  /* 20221202: Got to here with MPAS depth coordinate */
-
   if(flg_grd_in_dpt){
     /* Get input depth vertical information */
     rcd=nco_inq_varndims(fl_xtr_id,dpt_id,&dmn_nbr_in);
@@ -1395,10 +1393,32 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(dmn_nbr_in == 1) dmn_id_lev_in=dpt_ids_in[0]; else dmn_id_lev_in=dpt_ids_in[dmn_nbr_in-1];
     rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
+    rcd=nco_inq_dimid_flg(vrt_in_id,ilev_nm_in,&dmn_id_ilev_in);
+    if(dmn_id_ilev_in != NC_MIN_INT) rcd=nco_inq_dimlen(vrt_in_id,dmn_id_ilev_in,&ilev_nbr_in);
+    if(dmn_id_ilev_in != NC_MIN_INT) assert(ilev_nbr_in == lev_nbr_in+1);
+    /* 20221204:
+       Midpoint dimension name is guaranteed to exist in both vrt_in_id and in_id
+       Interface dimension name is not guaranteed to exist in either vrt_in_id or in_id
+       Use vrt_in_id to get their names and sizes, then gather and exit this block with their IDs from in_id
+       Following blocks only use those IDs to determine vertical grid of input variables from in_id
+       Either one (but not both) of the midpoint and interface level IDs may be undefined in in_id
+       Moreover, determining which dimension, if any, is midpoint and interface in in_id is non-trivial
+       Assume that these dimensions have same names (and sizes, of course) between vrt_in_id and in_id */
+    if(vrt_in_id != in_id){
+      dmn_id_ilev_in=NC_MIN_INT;
+      dmn_id_lev_in=NC_MIN_INT;
+      rcd=nco_inq_dimid_flg(in_id,ilev_nm_in,&dmn_id_ilev_in);
+      rcd=nco_inq_dimid_flg(in_id,lev_nm_in,&dmn_id_lev_in);
+      if(dmn_id_ilev_in == NC_MIN_INT && dmn_id_lev_in == NC_MIN_INT){
+	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") unable to find at least one depth/height vertical dimension (searched for %s and %s) in input data file. Possible that external vertical grid file uses different dimension names than input data file.\n",nco_prg_nm_get(),fnc_nm,ilev_nm_in,lev_nm_in);
+	nco_exit(EXIT_FAILURE);
+      } /* !dmn_id_ilev_in */
+    } /* !vrt_in_id */
+
   } /* flg_grd_in_dpt */
 
   if(flg_grd_in_hyb){
-    /* Get input hybrid vertical information */
+    /* Get input hybrid grid vertical information */
     rcd=nco_inq_varndims(fl_xtr_id,ps_id,&dmn_nbr_in);
     rcd=nco_inq_vardimid(vrt_in_id,hyai_id,&dmn_id_ilev_in);
     if(flg_grd_hyb_cameam) rcd=nco_inq_vardimid(vrt_in_id,hyam_id,&dmn_id_lev_in);
@@ -1407,10 +1427,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_ilev_in,dmn_nm);
     /* Copy hybrid coordinate names from dimension names since ilev and lev are 1D coordinates */
-    if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in);
+    //if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in);
     ilev_nm_in=strdup(dmn_nm);
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
-    if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in);
+    //if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in);
     lev_nm_in=strdup(dmn_nm);
     /* 20221103:
        Interface and midpoint dimension names are only guaranteed to both exist together in vrt_in_id, not in_id
@@ -1431,6 +1451,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !vrt_in_id */
     
   } /* !flg_grd_in_hyb */
+
+  /* 20221204: Got to here with MPAS depth coordinate */
 
   if(flg_grd_in_prs){
     /* Interrogate plev to obtain plev dimensions */
