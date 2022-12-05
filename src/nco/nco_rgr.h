@@ -286,6 +286,14 @@ extern "C" {
    int idx_ccw, /* [idx] Index of starting vertice for CCW check (Point A = tail side AB) */
    const int rcr_lvl); /* [nbr] Recursion level */
 
+  int /* O [enm] Return code */
+  nco_xtr_var_get /* [fnc] Obtain variable specified by [path]/var_nm */
+  (int *fl_xtr_id, /* I/O [id] External netCDF file ID */
+   char **var_nm_in, /* I/O [sng] Variable name in input/external file */
+   char **var_nm_out, /* I/O [sng] Variable name in output file */
+   char **rgr_var_nm_out, /* I/O [sng] Variable name in output file in regrid structure */
+   int *var_id); /* O [id] Variable ID in input/external file */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

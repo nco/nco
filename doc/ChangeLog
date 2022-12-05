@@ -1,8 +1,12 @@
-2022-12-02  Charlie Zender  <zender@uci.edu>
+2022-12-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha02: USA 1, Iran 0';git push
 	git tag -a 5.1.4-alpha02 -m 'all: no cmp NC_STRING, NC_VLEN';git push --tags
+
+	* Read dpt_in from external, functionalize nco_xtr_var_get()
+
+2022-12-02  Charlie Zender  <zender@uci.edu>
 
 	* Add stubs to handle (MPAS) depth-coordinate grids
 
