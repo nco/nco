@@ -978,11 +978,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_grd_hyb_cameam=False; /* [flg] Hybrid coordinate vertical grid uses CAM/EAM conventions */
   nco_bool flg_grd_hyb_ecmwf=False; /* [flg] Hybrid coordinate vertical grid uses ECMWF conventions */
   nco_bool flg_grd_in_dpt=False; /* [flg] Input depth coordinate vertical grid */
+  nco_bool flg_grd_in_dpt_1D=False; /* [flg] Input 1D depth coordinate vertical grid */
+  nco_bool flg_grd_in_dpt_3D=False; /* [flg] Input 3D depth coordinate vertical grid */
   nco_bool flg_grd_in_hyb=False; /* [flg] Input hybrid coordinate vertical grid */
   nco_bool flg_grd_in_prs=False; /* [flg] Input pressure coordinate vertical grid */
   nco_bool flg_grd_out_dpt=False; /* [flg] Output depth coordinate vertical grid */
   nco_bool flg_grd_out_hyb=False; /* [flg] Output hybrid coordinate vertical grid */
   nco_bool flg_grd_out_prs=False; /* [flg] Output pressure coordinate vertical grid */
+  nco_bool flg_grd_out_dpt_1D=False; /* [flg] Output 1D depth coordinate vertical grid */
+  nco_bool flg_grd_out_dpt_3D=False; /* [flg] Output 3D depth coordinate vertical grid */
   nco_bool flg_hrz_mrv=True; /* [flg] Horizontal dimension is Most-Rapidly-Varying */
   nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_in=nco_vrt_grd_nil; /* [enm] Vertical grid type for input grid */
@@ -1049,6 +1053,27 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(rgr->ps_nm_out) ps_nm_out=rgr->ps_nm_out;
   if(rgr->ps_nm_tpl) ps_nm_tpl=rgr->ps_nm_tpl;
 
+  int bd_id=NC_MIN_INT; /* [id] Depth of ocean bottom (positive) ID */
+  int lt_id=NC_MIN_INT; /* [id] Layer thickness (possibly time-dependent) ID */
+  int mlc_id=NC_MIN_INT; /* [id] Index (1-based) to last active cell in each column ID */
+  nco_bool flg_dpt_has_bd=False; /* [flg] Depth/height grid has bottom depth variable */
+  nco_bool flg_dpt_has_lt=False; /* [flg] Depth/height grid has layer thickness variable */
+  nco_bool flg_dpt_has_mlc=False; /* [flg] Depth/height grid has maximum number of cells variable */
+  if(flg_grd_out_dpt){
+    int dmn_nbr_dpt_out; /* [nbr] Number of dimensions in depth variable in output file */
+    rcd=nco_inq_varid_flg(tpl_id,dpt_nm_tpl,&dpt_id);
+    if(dpt_id != NC_MIN_INT) rcd=nco_inq_varndims(tpl_id,dpt_id,&dmn_nbr_dpt_out); else dmn_nbr_dpt_out=73;
+    if(dmn_nbr_dpt_out == 1) flg_grd_out_dpt_1D=True; else flg_grd_out_dpt_3D=True;
+
+    /* Optionally retrieve bottomDepth, maxLevelCell, layerThickness IDs */
+    if(flg_grd_out_dpt_3D){
+      if((rcd=nco_inq_varid_flg(tpl_id,"bottomDepth",&bd_id)) == NC_NOERR) flg_dpt_has_bd=True;
+      if((rcd=nco_inq_varid_flg(tpl_id,"layerThickness",&lt_id)) == NC_NOERR) flg_dpt_has_lt=True;
+      if((rcd=nco_inq_varid_flg(tpl_id,"maxLevelCell",&mlc_id)) == NC_NOERR) flg_dpt_has_mlc=True;
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG Depth output grid flags : flg_dpt_has_bd = %d, flg_dpt_has_lt = %d, flg_dpt_has_mlc = %d\n",nco_prg_nm_get(),flg_dpt_has_bd,flg_dpt_has_lt,flg_dpt_has_mlc);
+    } /* !flg_grd_out_dpt_3D */
+  } /* !flg_grd_out_dpt */
+
   if(flg_grd_out_hyb){
     rcd=nco_inq_varid(tpl_id,"hyai",&hyai_id);
     rcd=nco_inq_varid(tpl_id,"hyam",&hyam_id);
@@ -1064,9 +1089,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_varid(tpl_id,plev_nm_tpl,&lev_id);
   } /* !flg_grd_out_prs */
 
-  if(flg_grd_out_dpt){
-    rcd=nco_inq_varid(tpl_id,dpt_nm_tpl,&dpt_id);
-  } /* !flg_grd_out_dpt */
+  const int bd_id_tpl=bd_id; /* [id] Depth of ocean bottom (positive) ID */
+  const int dpt_id_tpl=dpt_id; /* [id] Ocean depth ID */
+  const int lt_id_tpl=lt_id; /* [id] Layer thickness ID */
+  const int mlc_id_tpl=mlc_id; /* [id] Index (1-based) to last active cell in each column ID */
 
   const int hyai_id_tpl=hyai_id; /* [id] Hybrid A coefficient at layer interfaces ID */
   const int hyam_id_tpl=hyam_id; /* [id] Hybrid A coefficient at layer midpoints ID */
@@ -1082,6 +1108,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int *dmn_ids_out=NULL; /* [nbr] Output file dimension IDs */
   int *dmn_ids_rec=NULL; /* [id] Unlimited dimension IDs */
   int dmn_nbr_ps; /* [nbr] Number of dimensions in PS variable */
+  int dmn_nbr_dpt; /* [nbr] Number of dimensions in Zmid variable */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input file */
   int dmn_nbr_out; /* [nbr] Number of dimensions in output file */
   int dmn_id_ilev_out=NC_MIN_INT; /* [id] Dimension ID for interface level in output file */
@@ -1111,8 +1138,50 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   size_t grd_sz_out=1L; /* [nbr] Number of elements in single layer of output grid */
   size_t idx_fst; /* [idx] Index-offset to current surface pressure timeslice */
 
+  if(flg_grd_out_dpt){
+    rcd=nco_inq_dimid(tpl_id,lev_nm_tpl,&dmn_id_lev_out);
+    rcd=nco_inq_dimlen(tpl_id,dmn_id_lev_out,&lev_nbr_out);
+    /* Interrogate Zmid, if any, for horizontal dimensions */ 
+    if(flg_grd_out_dpt_3D && dpt_id_tpl != NC_MIN_INT){
+      rcd=nco_inq_varndims(tpl_id,dpt_id,&dmn_nbr_dpt);
+      dmn_nbr_out=dmn_nbr_dpt;
+      dmn_ids_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
+      dmn_cnt_out=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
+      dmn_srt=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
+      rcd=nco_inq_vardimid(tpl_id,dpt_id,dmn_ids_out);
+      rcd=nco_inq_unlimdims(tpl_id,&dmn_nbr_rec,(int *)NULL);
+      if(dmn_nbr_rec > 0){
+	dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
+	rcd=nco_inq_unlimdims(tpl_id,&dmn_nbr_rec,dmn_ids_rec);
+      } /* !dmn_nbr_rec */
+      for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+	rcd=nco_inq_dimlen(tpl_id,dmn_ids_out[dmn_idx],dmn_cnt_out+dmn_idx);
+	/* 20190330: Allow possibility that Zmid has time dimension > 1 
+	   We want horizontal not temporal dimensions to contribute to grd_sz 
+	   Temporal dimension is usually unlimited 
+	   Only multiply grd_sz by fixed (non-unlimited) dimension sizes
+	   Corner-case exception when Zmid spatial dimension on unstructured grid is unlimited */
+	for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
+	  if(dmn_ids_out[dmn_idx] == dmn_ids_rec[rec_idx])
+	    break; 
+	if(rec_idx == dmn_nbr_rec || dmn_nbr_out == 1){
+	  /* This Zmid dimension is not record dimension, or is sole Zmid dimension */
+	  grd_sz_out*=dmn_cnt_out[dmn_idx];
+	  dmn_hrz_nbr++;
+	} /* !rec_idx, !dmn_nbr_out */
+	if(rec_idx != dmn_nbr_rec && dmn_nbr_out > 1 && dmn_cnt_out[dmn_idx] > 1L){
+	  /* Multi-dimensional Zmid contains this multi-element record dimension, which we assume is time (not space) */
+	  tm_nbr_out=dmn_cnt_out[dmn_idx];
+	  if(tm_nbr_out > 1L) flg_vrt_tm=True;
+	} /* !rec_idx, !dmn_nbr_out, !dmn_cnt_out */
+	dmn_srt[dmn_idx]=0L;
+      } /* !dmn_idx */
+      if(dmn_ids_rec) dmn_ids_rec=(int *)nco_free(dmn_ids_rec);
+    } /* !dpt_id_tpl */
+  } /* !flg_grd_out_dpt_3D */
+
   if(flg_grd_out_hyb){
-    /* Interrogate hyai/hyam to obtain ilev/lev dimensions */
+    /* Interrogate hyai/hyam to obtain output ilev/lev dimensions */
     rcd=nco_inq_vardimid(tpl_id,hyai_id,&dmn_id_ilev_out);
     rcd=nco_inq_vardimid(tpl_id,hyam_id,&dmn_id_lev_out);
     rcd=nco_inq_dimlen(tpl_id,dmn_id_ilev_out,&ilev_nbr_out);
@@ -1310,12 +1379,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_in_hyb */
   /* 20221203: Allow plev_nm_in to be path/name too? */
   
-  int bd_id=NC_MIN_INT; /* [id] Bottom depth ID */
-  int lt_id=NC_MIN_INT; /* [id] Layer thickness ID */
-  int mlc_id=NC_MIN_INT; /* [id] Index to last active cell in each column ID */
-  nco_bool flg_dpt_has_bd=False; /* [flg] Depth/height grid has bottom depth variable */
-  nco_bool flg_dpt_has_lt=False; /* [flg] Depth/height grid has layer thickness variable */
-  nco_bool flg_dpt_has_mlc=False; /* [flg] Depth/height grid has maximum number of cells variable */
   if(flg_grd_in_dpt){
     /* Obtain ancillary depth/height grid variables from in_id or vrt_in_id
        Depth grids already have defined lev_id from in_id or vrt_in_id */
@@ -1380,12 +1443,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(dmn_nbr_rec > 0){
     dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
     rcd+=nco_inq_unlimdims(fl_xtr_id,&dmn_nbr_rec,dmn_ids_rec);
-  } /* !dmn_nbr_rec */
+ } /* !dmn_nbr_rec */
 
   if(flg_grd_in_dpt){
     /* Get input depth vertical information */
+    int dmn_nbr_dpt_in; /* [nbr] Number of dimensions in depth variable in input file */
     rcd=nco_inq_varndims(fl_xtr_id,dpt_id,&dmn_nbr_in);
+    dmn_nbr_dpt_in=dmn_nbr_in;
     assert(dmn_nbr_in >= 1);
+    if(dmn_nbr_dpt_in == 1) flg_grd_in_dpt_1D=True; else flg_grd_in_dpt_3D=True;
 
     int *dpt_ids_in; /* [nbr] Input depth/height dimension IDs */
     dpt_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
@@ -1410,11 +1476,56 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       rcd=nco_inq_dimid_flg(in_id,ilev_nm_in,&dmn_id_ilev_in);
       rcd=nco_inq_dimid_flg(in_id,lev_nm_in,&dmn_id_lev_in);
       if(dmn_id_ilev_in == NC_MIN_INT && dmn_id_lev_in == NC_MIN_INT){
-	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") unable to find at least one depth/height vertical dimension (searched for %s and %s) in input data file. Possible that external vertical grid file uses different dimension names than input data file.\n",nco_prg_nm_get(),fnc_nm,ilev_nm_in,lev_nm_in);
+	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") unable to find any depth/height vertical dimension (searched for %s and %s) in input data file. Possible that external vertical grid file uses different dimension names than input data file.\n",nco_prg_nm_get(),fnc_nm,ilev_nm_in,lev_nm_in);
 	nco_exit(EXIT_FAILURE);
       } /* !dmn_id_ilev_in */
     } /* !vrt_in_id */
 
+    /* Define horizontal grid if only 1D depth/height provided */
+    if(flg_grd_in_dpt_1D && flg_grd_out_dpt_1D){
+      /* Problem: What is horizontal grid size of 1D depth/height data file?
+	 Algorithm: 
+	 Examine first multi-dimensional variable that includes lev dimension 
+	 Assume all non-record dimensions larger than lev are horizontal spatial dimensions 
+	 Compute horizontal grid size accordingly
+	 Set output horizontal size to input horizontal size */
+      int var_nbr; /* [nbr] Number of variables in file */
+      int var_idx; /* [idx] Index over variables in file */
+      rcd=nco_inq(in_id,&dmn_nbr_in,&var_nbr,(int *)NULL,(int *)NULL);
+      dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
+      dmn_cnt_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
+      for(var_idx=0;var_idx<var_nbr;var_idx++){
+	rcd=nco_inq_varndims(in_id,var_idx,&dmn_nbr_in);
+	/* Only consider multi-dimensional variables */
+	if(dmn_nbr_in <= 1) continue;
+	rcd=nco_inq_vardimid(in_id,var_idx,dmn_ids_in);
+	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++)
+	  if(dmn_ids_in[dmn_idx] == dmn_id_lev_in)
+	    break;
+	/* Does current variable have lev dimension? */
+	if(dmn_idx < dmn_nbr_in){
+	  /* Assume all non-record dimensions larger than lev are horizontal spatial dimensions */
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	    /* Only consider non-lev dimensions */
+	    if(dmn_ids_in[dmn_idx] == dmn_id_lev_in) continue; 
+	    for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
+	      if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
+		break; 
+	    if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 2){
+	      /* This dimension is not record dimension, or is sole non-vertical dimension */
+	      if(dmn_cnt_in[dmn_idx] > lev_nbr_in){
+		grd_sz_in*=dmn_cnt_in[dmn_idx];
+		dmn_hrz_nbr++;
+	      } /* !dmn_cnt_in */
+	    } /* !rec_idx, !dmn_nbr_in */
+	  } /* !dmn_idx */
+	} /* !dmn_idx */
+      } /* !var_idx */
+      if(nco_dbg_lvl_get() >= nco_dbg_std)
+	if(var_idx == var_nbr)
+	  (void)fprintf(stdout,"%s: INFO %s reports input file has no variables with multiple dimensions, i.e., input could be vertical only, with no horizontal extent\n",nco_prg_nm_get(),fnc_nm);
+      grd_sz_out=grd_sz_in;
+    } /* !flg_grd_out_dpt_1D, !flg_grd_out_dpt_3D */
   } /* flg_grd_in_dpt */
 
   if(flg_grd_in_hyb){
@@ -1427,11 +1538,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_ilev_in,dmn_nm);
     /* Copy hybrid coordinate names from dimension names since ilev and lev are 1D coordinates */
-    //if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in);
-    ilev_nm_in=strdup(dmn_nm);
+    //if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in); // 20221204: Ccauses double free() in nco_rgr_free()
+    ilev_nm_in=strdup(dmn_nm); // 20221204: Never free()'d
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
-    //if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in);
-    lev_nm_in=strdup(dmn_nm);
+    //if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in); // 20221204: Ccauses double free() in nco_rgr_free()
+    lev_nm_in=strdup(dmn_nm); // 20221204: Never free()'d
     /* 20221103:
        Interface and midpoint dimension names are only guaranteed to both exist together in vrt_in_id, not in_id
        Use vrt_in_id to get their names and sizes, then gather and exit this block with their IDs from in_id
@@ -1452,8 +1563,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     
   } /* !flg_grd_in_hyb */
 
-  /* 20221204: Got to here with MPAS depth coordinate */
-
   if(flg_grd_in_prs){
     /* Interrogate plev to obtain plev dimensions */
     rcd=nco_inq_vardimid(vrt_in_id,lev_id,&dmn_id_lev_in);
@@ -1463,7 +1572,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
     /* Define horizontal grid if no PS is provided (i.e., pure-pressure to pure-pressure interpolation) */
     if(flg_grd_out_prs){
-      /* Problem: What is horizontal grid size of pressure grid file?
+      /* Problem: What is horizontal grid size of pressure grid data file?
 	 Algorithm: 
 	 Examine first multi-dimensional variable that includes plev dimension 
 	 Assume horizontal dimensions vary more rapidly than (i.e., follow) plev
@@ -1503,6 +1612,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !flg_grd_out_hyb */
   } /* !flg_grd_in_prs */
 
+  double *bd_in=NULL; /* [m] Depth of ocean bottom (positive) on input grid */
+  double *dpt_in=NULL; /* [idx] Ocean depth (possibly time-dependent) on input grid */
+  double *dpt_out=NULL; /* [idx] Ocean depth (possibly time-dependent) on output grid */
+  double *lt_in=NULL; /* [m] Layer thickness (possibly time-dependent) on input grid */
+  int *mlc_in=NULL; /* [idx] Index (1-based) to last active cell in each column on input grid */
+
   double *hyai_in=NULL; /* [frc] Hybrid A coefficient at layer interfaces on input grid */
   double *hyam_in=NULL; /* [frc] Hybrid A coefficient at layer midpoints on input grid */
   double *hybi_in=NULL; /* [frc] Hybrid B coefficient at layer interfaces on input grid */
@@ -1512,6 +1627,120 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   double *prs_ntf_in=NULL; /* [Pa] Interface pressure on input grid */
   double *ps_in=NULL; /* [Pa] Surface pressure on input grid */
   double p0_in; /* [Pa] Reference pressure on input grid */
+  
+  /* 20221204: Got to here with MPAS depth coordinate */
+
+  /* Obtain horizontal grid size if input or output grid is 3D depth/height */
+  if(flg_grd_in_dpt_3D || flg_grd_out_dpt_3D){
+
+    /* Copy horizontal grid information from input file
+       LHS variables were set above if Zmid is in template file */
+    if(!(flg_grd_out_dpt_3D && dpt_id_tpl != NC_MIN_INT)){
+
+      if(flg_grd_in_dpt_3D && dpt_id != NC_MIN_INT){
+
+	/* NB: dmn_nbr_in/out in this block refer only to horizontal dimensions necessary to define Zmid */
+	rcd=nco_inq_varndims(fl_xtr_id,dpt_id,&dmn_nbr_in); /* This is harmlessly repeated for depth/height input files */
+	dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
+	dmn_cnt_in=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
+	if(!dmn_srt) dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long)); /* NB: Allocate dmn_srt only once */
+	
+	rcd=nco_inq_vardimid(fl_xtr_id,dpt_id,dmn_ids_in);
+	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	  rcd=nco_inq_dimlen(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
+	  /* 20190330: Allow possibility that Zmid has time dimension > 1 
+	     We want horizontal not vertical or temporal dimensions to contribute to grd_sz 
+	     Temporal dimension is usually unlimited
+	     Only multiply grd_sz by fixed (non-unlimited) dimension sizes
+	     Corner-case exception when Zmid spatial dimension on unstructured grid is unlimited */
+	  for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
+	    if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
+	      break; 
+	  if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 1){
+	    /* This Zmid dimension is not record dimension, or is sole Zmid dimension */
+	    if(dmn_ids_in[dmn_idx] != dmn_id_lev_in){
+	      grd_sz_in*=dmn_cnt_in[dmn_idx];
+	      dmn_hrz_nbr++;
+	    } /* !dmn_id_lev_in */
+	  } /* !rec_idx, !dmn_nbr_in */
+	  if(rec_idx != dmn_nbr_rec && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L){
+	    /* Multi-dimensional Zmid contains this multi-element record dimension, which we assume is time (not space) */
+	    dmn_id_tm_in=dmn_ids_in[dmn_idx];
+	    dmn_idx_tm_in=dmn_idx;
+	    tm_nbr_in=dmn_cnt_in[dmn_idx_tm_in];
+	    if(tm_nbr_in > 1L) flg_vrt_tm=True;
+	  } /* !rec_idx, !dmn_nbr_out, !dmn_cnt_out */
+	  dmn_srt[dmn_idx]=0L;
+	} /* !dmn_idx */
+
+	/* Given all input Zmid information, define output Zmid information */
+	dmn_nbr_ps=dmn_nbr_out=dmn_nbr_in;
+	dmn_ids_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
+	dmn_cnt_out=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
+	/* fxm: next line works for hyb_in and is buggy for prs_in? */
+	/* 20221102: Why copy input IDs to output arrays, you ask? Because these output arrays are only used to define Zmid in output */
+	memcpy(dmn_ids_out,dmn_ids_in,dmn_nbr_in*sizeof(int));
+	memcpy(dmn_cnt_out,dmn_cnt_in,dmn_nbr_in*sizeof(long));
+	grd_sz_out=grd_sz_in;
+	tm_nbr_out=tm_nbr_in;	
+      } /* !dpt_id */
+    }else{ /* !dpt_id_tpl */
+      grd_sz_in=grd_sz_out;
+    } /* !dpt_id_tpl */
+
+    /* Timestep sequencing */
+    if(tm_nbr_in > 1L || tm_nbr_out > 1L){
+      if(tm_nbr_in > tm_nbr_out) assert((float)tm_nbr_in/(float)tm_nbr_out == tm_nbr_in/tm_nbr_out); else assert((float)tm_nbr_out/(float)tm_nbr_in == tm_nbr_out/tm_nbr_in);
+    } /* !tm_nbr_in */
+    tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
+
+    /* Sanity checks */
+    if(grd_sz_in != grd_sz_out || tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: ERROR %s reports that temporal or horizontal spatial dimensions differ: grd_sz_in = %ld != %ld = grd_sz_out, and/or tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,grd_sz_in,grd_sz_out,tm_nbr_in,tm_nbr_out);
+    assert(grd_sz_in == grd_sz_out);
+    assert(tm_nbr_in == tm_nbr_out);
+
+    dpt_in=(double *)nco_malloc_dbg(tm_nbr_in*lev_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() dpt_in value buffer");
+
+    /* Depth/height comes from either depth/height vertical grid-files, depth/height data files, or depth/height data files that provide depth/height */
+    if(flg_grd_in_dpt_3D) rcd=nco_get_var(fl_xtr_id,dpt_id,dpt_in,crd_typ_out);
+
+    /* Finally have enough information to allocate output depth/height grid */
+    dpt_out=(double *)nco_malloc_dbg(tm_nbr_out*lev_nbr_out*grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() dpt_out value buffer");
+    
+    /* Get Zmid from output horizontal grid, if available, otherwise copy from input horizontal grid */
+    if(dpt_id_tpl != NC_MIN_INT){
+      rcd=nco_get_var(tpl_id,dpt_id_tpl,dpt_out,crd_typ_out); /* NB: Here we read from tpl_id one last time */
+    }else{
+      memcpy(dpt_out,dpt_in,tm_nbr_in*lev_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr));
+    } /* !ps_id_tpl */
+  } /* !flg_grd_in_dpt_3D, !flg_grd_out_dpt_3D */
+  
+  if(flg_grd_in_dpt){
+    if(flg_grd_in_dpt_1D){
+      lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
+      rcd=nco_get_var(vrt_in_id,lev_id,lev_in,crd_typ_out);
+    } /* !flg_grd_in_dpt_1D */
+    if(flg_grd_in_dpt_3D){
+      /* 20221205 fxm borken grd_sz_in */
+      dpt_in=(double *)nco_malloc(lev_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr));
+      mlc_in=(int *)nco_malloc(lev_nbr_in*grd_sz_in*nco_typ_lng(NC_INT));
+      if(dpt_id != NC_MIN_INT){
+	rcd=nco_get_var(fl_xtr_id,dpt_id,dpt_in,crd_typ_out);
+      }else{
+	/* If depth is unavailable, construct it from bottomDepth and layerThickness */
+	if(bd_id == NC_MIN_INT || lt_id == NC_MIN_INT){
+	  (void)fprintf(stderr,"%s: ERROR %s Input three-dimensional depth/height grid lacks depth/height variable %s and both variables (%s and %s)needed to construct it. Exiting...\n",nco_prg_nm_get(),fnc_nm,dpt_nm_in,"layerThickness","bottomDepth");
+	  nco_exit(EXIT_FAILURE);
+	} /* !bd_id, !lt_id */
+      } /* !dpt_id */
+      if(mlc_id != NC_MIN_INT){
+	rcd=nco_get_var(vrt_in_id,lev_id,lev_in,NC_INT);
+      }else{
+	(void)fprintf(stderr,"%s: ERROR %s Input three-dimensional depth grid lacks %s, constructing it from %s\n",nco_prg_nm_get(),fnc_nm,"maxLevelCell",dpt_nm_in);
+	assert(0 == 1);
+      } /* !mlc_id */
+    } /* !flg_grd_in_dpt_3D */
+  } /* !flg_grd_in_dpt */
   
   if(flg_grd_in_hyb){
     hyai_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
@@ -1540,7 +1769,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
     rcd=nco_get_var(vrt_in_id,lev_id,lev_in,crd_typ_out);
   } /* !flg_grd_in_prs */
-  
+    
   /* Always obtain surface pressure if input or output grid is hybrid */
   if(flg_grd_in_hyb || flg_grd_out_hyb){
 
