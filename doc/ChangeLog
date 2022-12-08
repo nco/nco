@@ -1,8 +1,14 @@
-2022-12-04  Charlie Zender  <zender@uci.edu>
+2022-12-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha02: USA 1, Iran 0';git push
-	git tag -a 5.1.4-alpha02 -m 'all: no cmp NC_STRING, NC_VLEN';git push --tags
+	git tag -a 5.1.4-alpha02 -m 'all: no cmp NC_STRING, NC_VLEN; ncremap: dpt/mlc_in/out';git push --tags
+
+	* Include depth in min/max vertical coordinate search
+
+	* Construct maxLevelCell if necessary
+
+2022-12-04  Charlie Zender  <zender@uci.edu>
 
 	* Read dpt_in from external, functionalize nco_xtr_var_get()
 
