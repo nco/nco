@@ -1141,6 +1141,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(flg_grd_out_dpt){
     rcd=nco_inq_dimid(tpl_id,lev_nm_tpl,&dmn_id_lev_out);
     rcd=nco_inq_dimlen(tpl_id,dmn_id_lev_out,&lev_nbr_out);
+    /* Retrieve (possibly non-coordinate) 1D depth dimension + variable name to use for output */
+    if(flg_grd_out_dpt_1D){
+      rcd=nco_inq_dimname(tpl_id,dmn_id_lev_out,lev_nm_tpl);
+      rcd=nco_inq_varname(tpl_id,dpt_id,dpt_nm_out);
+    } /* !flg_grd_out_dpt_1D */
 
     /* Interrogate Zmid, if any, for horizontal dimensions */ 
     if(flg_grd_out_dpt_3D){
@@ -1377,7 +1382,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     flg_grd_in_prs=True;
   }else if((rcd=nco_inq_dimid_flg(vrt_in_id,"nVertLevels",&lev_id)) == NC_NOERR){
     /* Automatically detect MPAS-O/I depth files so users can be lazy */
-    if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in);
     lev_nm_in=(char *)strdup("nVertLevels");
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_in_dpt=True;
@@ -1437,6 +1441,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if((rcd=nco_inq_varid_flg(vrt_in_id,"maxLevelCell",&mlc_id)) == NC_NOERR) flg_dpt_has_mlc=True;
     if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG Depth grid flags : flg_dpt_has_bd = %d, flg_dpt_has_lt = %d, flg_dpt_has_mlc = %d\n",nco_prg_nm_get(),flg_dpt_has_bd,flg_dpt_has_lt,flg_dpt_has_mlc);
   } /* !flg_grd_in_dpt */
+
+  const int dpt_id_in=dpt_id; /* [id] Ocean depth ID */
 
   if(flg_grd_in_hyb){
     rcd=nco_inq_varid(vrt_in_id,"hyai",&hyai_id);
@@ -1586,10 +1592,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_ilev_in,dmn_nm);
     /* Copy hybrid coordinate names from dimension names since ilev and lev are 1D coordinates */
-    //if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in); // 20221204: Ccauses double free() in nco_rgr_free()
+    //if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in); // 20221204: Causes double free() in nco_rgr_free()
     ilev_nm_in=strdup(dmn_nm); // 20221204: Never free()'d
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
-    //if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in); // 20221204: Ccauses double free() in nco_rgr_free()
+    //if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in); // 20221204: Causes double free() in nco_rgr_free()
     lev_nm_in=strdup(dmn_nm); // 20221204: Never free()'d
     /* 20221103:
        Interface and midpoint dimension names are only guaranteed to both exist together in vrt_in_id, not in_id
@@ -1777,7 +1783,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	//	/* Convert C 0-based to Fortran 1-based indices */
 	//for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++) mlc_in[grd_idx]++;
       }else{
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Input three-dimensional depth grid file lacks bathymetry/orography-masking variable %s. Will instead construct %s from %s\n",nco_prg_nm_get(),fnc_nm,"maxLevelCell","maxLevelCell",dpt_nm_in);
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Input three-dimensional depth grid file lacks bathymetry/orography-masking variable %s. Will instead construct %s from %s...\n",nco_prg_nm_get(),fnc_nm,"maxLevelCell","maxLevelCell",dpt_nm_in);
 	long idx_lev_max; // [idx] Index of midpoint level with greatest depth/least height
 	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
 	  idx_lev_max=lev_nbr_in-1;
@@ -2028,8 +2034,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(prs_min_in) prs_min_in=(double *)nco_free(prs_min_in);
     if(prs_min_out) prs_min_out=(double *)nco_free(prs_min_out);
   } /* !xtr_mth */
-
-  /* 20221206: Got to here with MPAS depth coordinate */
   
   /* Lay-out regridded file */
 
@@ -2038,7 +2042,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Use explicitly specified output names, if any, otherwise use template names (either explicitly specified or discovered by fuzzing) */
   if(rgr->lev_nm_out) lev_nm_out=rgr->lev_nm_out;
   if(rgr->ilev_nm_out){
-    if(flg_grd_out_hyb) ilev_nm_out=rgr->ilev_nm_out;
+    if(flg_grd_out_dpt_3D || flg_grd_out_hyb) ilev_nm_out=rgr->ilev_nm_out;
     if(flg_grd_out_prs) lev_nm_out=rgr->ilev_nm_out;
   } /* !ilev_nm_out */
   if(flg_grd_out_prs){
@@ -2049,6 +2053,24 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_out_prs */
 
   /* Define new vertical dimensions before all else */
+  if(flg_grd_out_dpt_3D){
+    rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
+    if(dmn_id_ilev_in != NC_MIN_INT) rcd=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev_out);
+    /* Horizontal dimensions necessary to define Zmid variable */
+    for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+      if(dpt_id_tpl != NC_MIN_INT){
+	rcd=nco_inq_dimname(tpl_id,dmn_ids_out[dmn_idx],dmn_nm);
+      }else{
+	/* 20221102: dmn_ids_in is from fl_xtr_id so output horizontal dimension names come from fl_xtr_id not in_id
+	   To output horizontal dimension name from in_id, obtain dmn_ids_in from in_id not fl_xtr_id 
+	   Horizontal dimension names are probably, though not necessarily, the same in in_id and fl_xtr_id */
+	rcd=nco_inq_dimname(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_nm);
+	rcd=nco_inq_dimlen(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_cnt_out+dmn_idx);
+      } /* !ps_id_tpl */
+      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
+    } /* !dmn_idx */
+  } /* !flg_grd_out_dpt_3D */
+
   if(flg_grd_out_hyb){
     rcd=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev_out);
     rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
@@ -2072,7 +2094,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !dmn_idx */
   } /* !flg_grd_out_hyb */
 
-  if(flg_grd_out_prs){
+  if(flg_grd_out_dpt_1D || flg_grd_out_prs){
     rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
   } /* !flg_grd_out_prs */
   
@@ -2080,26 +2102,29 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Exception list source:
      CAM/EAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
      ECMWF: hyai, hyam, hybi, hybm, lev, lnsp
+     MPAS O/I: layerThickness, maxLevelCell, timeMonthly_avg_zMid, zMid
      NCEP: plev
      SCREAM: hyai, hyam, hybi, hybm, ilev, lev, P0, ps
-     Run-time: ps_nm_in, ps_nm_tpl, plev_nm_in, plev_nm_out */
-  const char *var_xcl_lst_fix[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/plev","/PS","/lnsp"};
+     Run-time: dpt_nm_in, dpt_nm_out, plev_nm_in, plev_nm_out, ps_nm_in, ps_nm_tpl */
+  const char *var_xcl_lst_fix[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PS","/timeMonthly_avg_zMid","/zMid"};
   int var_xcl_fix_nbr=sizeof(var_xcl_lst_fix)/sizeof(char *); /* [nbr] Number of variables in fixed (compile-time) exclusion list */
   /* Create list to hold both compile- and run-time exclusion variables */
   char **var_xcl_lst=NULL; /* [sng] List of variables to exclude */
-  int var_xcl_run_nbr=4; /* [nbr] Number of variables in run-time exclusion list */
+  const int var_xcl_run_nbr_max=6; /* [nbr] Mamimum number of variables in run-time exclusion list */
   int var_xcl_lst_nbr=var_xcl_fix_nbr; /* [nbr] Number of variables in exclusion list */
   long idx; /* [idx] Generic index */
-  var_xcl_lst=(char **)nco_malloc((var_xcl_fix_nbr+var_xcl_run_nbr)*sizeof(char *));
+  var_xcl_lst=(char **)nco_malloc((var_xcl_fix_nbr+var_xcl_run_nbr_max)*sizeof(char *));
   /* Copy compile-time exclusion list names */
   for(idx=0;idx<var_xcl_fix_nbr;idx++)
     var_xcl_lst[idx]=(char *)strdup(var_xcl_lst_fix[idx]);
 
   /* Add run-time variables to exclusion list */
-  var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(plev_nm_in);
-  var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(plev_nm_out);
-  var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(ps_nm_in);
-  var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(ps_nm_out);
+  if(dpt_nm_in) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(dpt_nm_in);
+  if(dpt_nm_out) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(dpt_nm_out);
+  if(plev_nm_in) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(plev_nm_in);
+  if(plev_nm_out) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(plev_nm_out);
+  if(ps_nm_in) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(ps_nm_in);
+  if(ps_nm_out) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(ps_nm_out);
 
   /* Exclude forbidden fruit */
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
@@ -2122,9 +2147,23 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* 20191001: Do not automatically define plev_nm_in in pressure-grid output files 
      The variable named lev_nm_out in the input data file is always defined in the output file
      So if plev_nm_in == lev_nm_out it will be defined anyway */
-  if(flg_grd_in_prs && flg_grd_out_prs && strcmp(plev_nm_in,lev_nm_out)){
+  if(flg_grd_in_prs && flg_grd_out_prs && !strcmp(plev_nm_in,lev_nm_out)){
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++)
       if(!strcmp(trv_tbl->lst[idx_tbl].nm,plev_nm_in)) break;
+    if(idx_tbl < trv_nbr){
+      if(trv_tbl->lst[idx_tbl].flg_xtr){
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) pre-defined exclusion-list variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
+	var_xcl_nbr++;
+      } /* endif */
+      trv_tbl->lst[idx_tbl].flg_xtr=False;
+    } /* !idx_tbl */
+  } /* !idx */
+  /* 20221210: Do not automatically define lev_nm_in in depth/height 1D output files 
+     The variable named lev_nm_out in the input data file is always defined in the output file
+     So if lev_nm_in == lev_nm_out it will be defined anyway */
+  if(flg_grd_in_dpt_1D && flg_grd_out_dpt_1D && !strcmp(lev_nm_in,lev_nm_out)){
+    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++)
+      if(!strcmp(trv_tbl->lst[idx_tbl].nm,lev_nm_in)) break;
     if(idx_tbl < trv_nbr){
       if(trv_tbl->lst[idx_tbl].flg_xtr){
 	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) pre-defined exclusion-list variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
@@ -2153,6 +2192,23 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int dmn_nbr_0D=0; /* [nbr] Rank of 0-D grid variables (scalars) */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
   
+  /* 20221206: Got to here with MPAS depth coordinate */
+
+  if(flg_grd_out_dpt_1D){
+    rcd+=nco_def_var(out_id,dpt_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&lev_id);
+    if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,lev_id,NULL,nco_flt_flg_prc_fll);
+    var_crt_nbr++;
+    (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY);
+    dmn_id_ilev_out=dmn_id_lev_out;
+  } /* !flg_grd_out_dpt_1D */
+
+  if(flg_grd_out_dpt_3D){
+    rcd+=nco_def_var(out_id,dpt_nm_out,crd_typ_out,dmn_nbr_dpt,dmn_ids_out,&dpt_id);
+    if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,dpt_id,NULL,nco_flt_flg_prc_fll);
+    var_crt_nbr++;
+    if(dpt_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,dpt_id_tpl,dpt_id,PCK_ATT_CPY); else (void)nco_att_cpy(fl_xtr_id,out_id,dpt_id_in,dpt_id,PCK_ATT_CPY);
+  } /* !flg_grd_out_dpt_3D */
+
   if(flg_grd_out_hyb){
     rcd+=nco_def_var(out_id,"hyai",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&hyai_id);
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,hyai_id,NULL,nco_flt_flg_prc_fll);
@@ -2994,8 +3050,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
   if(dmn_ids_out) dmn_ids_out=(int *)nco_free(dmn_ids_out);
 
-  if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in);
-  if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in);
+  //  if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in);
+  //if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in);
 
   if(hyai_in) hyai_in=(double *)nco_free(hyai_in);
   if(hyam_in) hyam_in=(double *)nco_free(hyam_in);
