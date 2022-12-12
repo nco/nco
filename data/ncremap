@@ -226,7 +226,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	mira* )
 	    export PATH='/home/zender/bin_mira'\:${PATH}
 	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
-	perlmutter* | login[0123456789][0123456789] )
+	perlmutter* | login[0123456789][0123456789] | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] )
 	    # 20221103 Add build environment modules
 	    module load PrgEnv-gnu
 	    module load gcc/11.2.0

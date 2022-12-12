@@ -1022,7 +1022,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     flg_grd_out_prs=True;
   }else if((rcd=nco_inq_dimid_flg(tpl_id,"nVertLevels",&lev_id)) == NC_NOERR){
     /* Automatically detect MPAS-O/I depth files so users can be lazy */
-    if(lev_nm_tpl) lev_nm_tpl=(char *)nco_free(lev_nm_tpl);
     lev_nm_tpl=(char *)strdup("nVertLevels");
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_out_dpt=True;
@@ -1144,10 +1143,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_dimid(tpl_id,lev_nm_tpl,&dmn_id_lev_out);
     rcd=nco_inq_dimlen(tpl_id,dmn_id_lev_out,&lev_nbr_out);
     ilev_nbr_out=lev_nbr_out+1;
-    /* Retrieve (possibly non-coordinate) 1D depth dimension + variable name to use for output */
+   /* Retrieve (possibly non-coordinate) 1D depth dimension + variable name to use for output */
     if(flg_grd_out_dpt_1D){
       rcd=nco_inq_dimname(tpl_id,dmn_id_lev_out,lev_nm_tpl);
       rcd=nco_inq_varname(tpl_id,dpt_id,dpt_nm_out);
+      ilev_nbr_out=lev_nbr_out;
     } /* !flg_grd_out_dpt_1D */
 
     /* Interrogate Zmid, if any, for horizontal dimensions */ 
@@ -1171,6 +1171,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	     Temporal dimension is usually unlimited 
 	     Only multiply grd_sz by fixed (non-unlimited) dimension sizes
 	     Corner-case exception when Zmid spatial dimension on unstructured grid is unlimited */
+	  if(dmn_ids_out[dmn_idx] == dmn_id_lev_out) continue;
 	  for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
 	    if(dmn_ids_out[dmn_idx] == dmn_ids_rec[rec_idx])
 	      break; 
@@ -1705,6 +1706,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	     Temporal dimension is usually unlimited
 	     Only multiply grd_sz by fixed (non-unlimited) dimension sizes
 	     Corner-case exception when Zmid spatial dimension on unstructured grid is unlimited */
+	  if(dmn_ids_in[dmn_idx] == dmn_id_lev_in) continue;	  
 	  for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
 	    if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
 	      break; 
@@ -2104,10 +2106,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      CAM/EAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
      ECMWF: hyai, hyam, hybi, hybm, lev, lnsp
      MPAS O/I: layerThickness, maxLevelCell, timeMonthly_avg_zMid, zMid
+     MPAS-O: timeMonthly_avg_avgValueWithinOceanLayerRegion_avgLayerArea
      NCEP: plev
      SCREAM: hyai, hyam, hybi, hybm, ilev, lev, P0, ps
      Run-time: dpt_nm_in, dpt_nm_out, plev_nm_in, plev_nm_out, ps_nm_in, ps_nm_tpl */
-  const char *var_xcl_lst_fix[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PS","/timeMonthly_avg_zMid","/zMid"};
+  const char *var_xcl_lst_fix[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PS","/timeMonthly_avg_zMid","/zMid","/timeMonthly_avg_avgValueWithinOceanLayerRegion_avgLayerArea"};
   int var_xcl_fix_nbr=sizeof(var_xcl_lst_fix)/sizeof(char *); /* [nbr] Number of variables in fixed (compile-time) exclusion list */
   /* Create list to hold both compile- and run-time exclusion variables */
   char **var_xcl_lst=NULL; /* [sng] List of variables to exclude */

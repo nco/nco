@@ -1,3 +1,13 @@
+2022-12-12  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.4-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha03: FOMO';git push
+	git tag -a 5.1.4-alpha03 -m '';git push --tags
+
+	* Exclude vertical dimensions from allowed horizontal dimensions
+
+	* Interpolate interface and midpoint depth fields to same 1D output grid
+
 2022-12-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4-alpha02 release procedure:
