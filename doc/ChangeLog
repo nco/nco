@@ -4,6 +4,12 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha03: FOMO';git push
 	git tag -a 5.1.4-alpha03 -m '';git push --tags
 
+	* Output 3D depth/height variable
+
+	* Account for memory ordering when consructing mlc_in
+
+	* Die if memory ordering of depth/height field differs between input and output
+
 	* Exclude vertical dimensions from allowed horizontal dimensions
 
 	* Interpolate interface and midpoint depth fields to same 1D output grid
