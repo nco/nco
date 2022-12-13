@@ -1,8 +1,14 @@
-2022-12-12  Charlie Zender  <zender@uci.edu>
+2022-12-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha03: FOMO';git push
 	git tag -a 5.1.4-alpha03 -m '';git push --tags
+
+	* Omit all MPAS profiles derived for spatiallly aggregated horizontal regions
+
+2022-12-12  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo add buid enviroment variables on Compy
 
 	* Output 3D depth/height variable
 

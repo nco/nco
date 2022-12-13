@@ -1693,7 +1693,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
     /* Copy horizontal grid information from input file
        LHS variables were set above if Zmid is in template file */
-    if(!(flg_grd_out_dpt_3D && dpt_id_tpl != NC_MIN_INT)){
+    //    if(!(flg_grd_out_dpt_3D && dpt_id_tpl != NC_MIN_INT)){
 
       if(flg_grd_in_dpt_3D && dpt_id != NC_MIN_INT){
 
@@ -1736,19 +1736,21 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	} /* !dmn_idx */
 
 	/* Given all input Zmid information, define output Zmid information */
-	dmn_nbr_ps=dmn_nbr_out=dmn_nbr_in;
+	dmn_nbr_dpt=dmn_nbr_out=dmn_nbr_in;
+	if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
+	if(dmn_ids_out) dmn_ids_out=(int *)nco_free(dmn_ids_out);
 	dmn_ids_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
 	dmn_cnt_out=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
 	/* fxm: next line works for hyb_in and is buggy for prs_in? */
 	/* 20221102: Why copy input IDs to output arrays, you ask? Because these output arrays are only used to define Zmid in output */
 	memcpy(dmn_ids_out,dmn_ids_in,dmn_nbr_in*sizeof(int));
 	memcpy(dmn_cnt_out,dmn_cnt_in,dmn_nbr_in*sizeof(long));
-	grd_sz_out=grd_sz_in;
+	if(grd_sz_out == 1) grd_sz_out=grd_sz_in;
 	tm_nbr_out=tm_nbr_in;	
       } /* !dpt_id */
-    }else{ /* !dpt_id_tpl */
-      grd_sz_in=grd_sz_out;
-    } /* !dpt_id_tpl */
+      //    }else{ /* !dpt_id_tpl */
+      //if(grd_sz_in == 1) grd_sz_in=grd_sz_out;
+      //} /* !dpt_id_tpl */
 
     /* Timestep sequencing */
     if(tm_nbr_in > 1L || tm_nbr_out > 1L){
@@ -2191,6 +2193,42 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       trv_tbl->lst[idx_tbl].flg_xtr=False;
     } /* !idx_tbl */
   } /* !idx */
+  /* 20221214: Omit all MPAS profiles derived for spatiallly aggregated horizontal regions */
+  char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
+  nco_bool has_ilev; /* [flg] Contains interface level dimension */
+  nco_bool has_lev; /* [flg] Contains midpoint level dimension */
+  nco_bool has_moc; /* [flg] Contains nMocStreamfunctionBinsP1 dimension */
+  nco_bool has_mrd; /* [flg] Contains nMerHeatTransBinsP1 dimension */
+  nco_bool has_rgn; /* [flg] Contains "derived" region dimension */
+  trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
+  if(flg_grd_in_dpt_3D || flg_grd_out_dpt_3D){
+    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+      trv=trv_tbl->lst[idx_tbl];
+      if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+	has_ilev=False;
+	has_lev=False;
+	has_moc=False;
+	has_mrd=False;
+	has_rgn=False;
+	for(dmn_idx=0;dmn_idx<trv.nbr_dmn;dmn_idx++){
+	  dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
+	  if(!has_ilev && ilev_nm_in) has_ilev=!strcmp(dmn_nm_cp,ilev_nm_in);
+	  if(!has_lev) has_lev=!strcmp(dmn_nm_cp,lev_nm_in);
+	  if(!has_moc) has_moc=!strcmp(dmn_nm_cp,"nMocStreamfunctionBinsP1");
+	  if(!has_mrd) has_mrd=!strcmp(dmn_nm_cp,"nMerHeatTransBinsP1");
+	  if(!has_rgn) 
+	    if(strstr(dmn_nm_cp,"Regions"))
+	      has_rgn=True;
+	} /* !dmn_idx */
+	if((has_ilev || has_lev) && /* If variable contains midpoint or interface vertical dimension ... */
+	   (has_moc || has_mrd || has_rgn)){ /* ...and variable contains spatially aggregated dimension */
+	  trv_tbl->lst[idx_tbl].flg_xtr=False;
+	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) pre-spatially-aggregated exclusion-list variable %s\n",nco_prg_nm_get(),trv.nm_fll);
+	  var_xcl_nbr++;
+	} /* !has_... */
+      } /* !flg_xtr */
+    } /* !idx_tbl */
+  } /* !idx */
 
   /* Free dynamically allocated exclusion list names */
   for(idx=0;idx<var_xcl_lst_nbr;idx++){
@@ -2293,13 +2331,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Remove local copy of file */
   if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_tpl);
 
-  char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
-  nco_bool has_ilev; /* [flg] Contains interface level dimension */
-  nco_bool has_lev; /* [flg] Contains midpoint level dimension */
   nco_bool has_tm; /* [flg] Contains time dimension */
   nco_bool need_prs_ntf=False; /* [flg] At least one variable to regrid is on interface levels */
   nco_bool need_prs_mdp=False; /* [flg] At least one variable to regrid is on midpoint levels */
-  trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
   /* Define regridding flag for each variable */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
