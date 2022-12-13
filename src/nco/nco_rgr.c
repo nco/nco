@@ -1438,6 +1438,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !rcd */
   }else if(flg_grd_in_dpt){
     rcd=nco_xtr_var_get(&fl_xtr_id,&dpt_nm_in,&dpt_nm_out,&rgr->dpt_nm_out,&dpt_id);
+    if(rcd != NC_NOERR){
+      dpt_id=NC_MIN_INT;
+      (void)fprintf(stdout,"%s: ERROR %s reports unable to find ready-made depth variable variable %s, need to construct from bd, lt, exiting...\n",nco_prg_nm_get(),fnc_nm,dpt_nm_in);
+      nco_exit(EXIT_FAILURE);
+    } /* !rcd */
   } /* !flg_grd_in_hyb */
   /* 20221203: Allow plev_nm_in to be path/name too? */
   
@@ -1507,7 +1512,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(dmn_nbr_rec > 0){
     dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
     rcd+=nco_inq_unlimdims(fl_xtr_id,&dmn_nbr_rec,dmn_ids_rec);
- } /* !dmn_nbr_rec */
+  } /* !dmn_nbr_rec */
 
   if(flg_grd_in_dpt){
     /* Get input depth vertical information */
@@ -2123,11 +2128,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      CAM/EAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
      ECMWF: hyai, hyam, hybi, hybm, lev, lnsp
      MPAS O/I: layerThickness, maxLevelCell, timeMonthly_avg_zMid, zMid
-     MPAS-O: timeMonthly_avg_avgValueWithinOceanLayerRegion_avgLayerArea
+     MPAS-O: timeMonthly_avg_layerThickness
      NCEP: plev
      SCREAM: hyai, hyam, hybi, hybm, ilev, lev, P0, ps
      Run-time: dpt_nm_in, dpt_nm_out, plev_nm_in, plev_nm_out, ps_nm_in, ps_nm_tpl */
-  const char *var_xcl_lst_fix[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PS","/timeMonthly_avg_zMid","/zMid","/timeMonthly_avg_avgValueWithinOceanLayerRegion_avgLayerArea"};
+  const char *var_xcl_lst_fix[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PS","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/zMid"};
   int var_xcl_fix_nbr=sizeof(var_xcl_lst_fix)/sizeof(char *); /* [nbr] Number of variables in fixed (compile-time) exclusion list */
   /* Create list to hold both compile- and run-time exclusion variables */
   char **var_xcl_lst=NULL; /* [sng] List of variables to exclude */
