@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha03: FOMO';git push
 	git tag -a 5.1.4-alpha03 -m '';git push --tags
 
+	* Default MPAS-O monthly output interpolates correctly, restarts need to construct zMid
+
 	* Omit all MPAS profiles derived for spatiallly aggregated horizontal regions
 
 2022-12-12  Charlie Zender  <zender@uci.edu>

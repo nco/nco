@@ -1022,17 +1022,22 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   }else if((rcd=nco_inq_varid_flg(tpl_id,plev_nm_tpl,&plev_id)) == NC_NOERR){
     nco_vrt_grd_out=nco_vrt_grd_prs; /* NCEP */
     flg_grd_out_prs=True;
+  }else if((rcd=nco_inq_dimid_flg(tpl_id,lev_nm_tpl,&lev_id)) == NC_NOERR){
+    /* User may have manually altered lev dimension name to be a depth dimension */
+    nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
+    flg_grd_out_dpt=True;
   }else if((rcd=nco_inq_dimid_flg(tpl_id,"nVertLevels",&lev_id)) == NC_NOERR){
     /* Automatically detect MPAS-O/I depth files so users can be lazy */
     lev_nm_tpl=(char *)strdup("nVertLevels");
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_out_dpt=True;
-  }else if((rcd=nco_inq_dimid_flg(tpl_id,lev_nm_tpl,&lev_id)) == NC_NOERR){
-    /* User may have manually altered lev dimension name to be a depth dimension */
+  }else if((rcd=nco_inq_dimid_flg(tpl_id,"depth",&lev_id)) == NC_NOERR){
+    /* Automatically detect standard depth files so users can be lazy */
+    lev_nm_tpl=(char *)strdup("depth");
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_out_dpt=True;
   }else{ /* !hyai */
-    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure vertical grid coordinate information, or depth dimension, in vertical grid file\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure vertical grid coordinate information, or depth dimension, in vertical grid file for output data\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT ensure vertical grid coordinate file contains a valid vertical grid coordinate\n",nco_prg_nm_get());
     return NCO_ERR;
   } /* !hyai */
@@ -1390,13 +1395,18 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   }else if((rcd=nco_inq_varid_flg(vrt_in_id,plev_nm_in,&plev_id)) == NC_NOERR){
     nco_vrt_grd_in=nco_vrt_grd_prs; /* NCEP */
     flg_grd_in_prs=True;
+  }else if((rcd=nco_inq_dimid_flg(vrt_in_id,lev_nm_in,&lev_id)) == NC_NOERR){
+    /* User may have manually altered lev dimension name to be a depth dimension */
+    nco_vrt_grd_in=nco_vrt_grd_dpt; /* MPAS */
+    flg_grd_in_dpt=True;
   }else if((rcd=nco_inq_dimid_flg(vrt_in_id,"nVertLevels",&lev_id)) == NC_NOERR){
     /* Automatically detect MPAS-O/I depth files so users can be lazy */
     lev_nm_in=(char *)strdup("nVertLevels");
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_in_dpt=True;
-  }else if((rcd=nco_inq_dimid_flg(vrt_in_id,lev_nm_in,&lev_id)) == NC_NOERR){
-    /* User may have manually altered lev dimension name to be a depth dimension */
+  }else if((rcd=nco_inq_dimid_flg(vrt_in_id,"depth",&lev_id)) == NC_NOERR){
+    /* Automatically detect standard depth files so users can be lazy */
+    lev_nm_in=(char *)strdup("depth");
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_in_dpt=True;
   }else{ /* !hyai */
@@ -1431,16 +1441,17 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int fl_xtr_id; /* [id] netCDF file ID for external surface pressure or depth/height-variable file */
   fl_xtr_id=vrt_in_id;
   if(flg_grd_in_hyb){
+    ps_id=NC_MIN_INT;
     rcd=nco_xtr_var_get(&fl_xtr_id,&ps_nm_in,&ps_nm_out,&rgr->ps_nm_out,&ps_id);
     if(rcd != NC_NOERR){
-      (void)fprintf(stdout,"%s: ERROR %s reports unable to find required surface pressure variable %s, exiting...\n",nco_prg_nm_get(),fnc_nm,ps_nm_in);
+      (void)fprintf(stdout,"%s: ERROR %s reports unable to find required surface pressure variable %s for input data, exiting...\n",nco_prg_nm_get(),fnc_nm,ps_nm_in);
       nco_exit(EXIT_FAILURE);
     } /* !rcd */
   }else if(flg_grd_in_dpt){
+    dpt_id=NC_MIN_INT;
     rcd=nco_xtr_var_get(&fl_xtr_id,&dpt_nm_in,&dpt_nm_out,&rgr->dpt_nm_out,&dpt_id);
     if(rcd != NC_NOERR){
-      dpt_id=NC_MIN_INT;
-      (void)fprintf(stdout,"%s: ERROR %s reports unable to find ready-made depth variable variable %s, need to construct from bd, lt, exiting...\n",nco_prg_nm_get(),fnc_nm,dpt_nm_in);
+      (void)fprintf(stdout,"%s: ERROR %s reports unable to find ready-made 3D depth variable %s for input data, need to construct from bd, lt, exiting...\n",nco_prg_nm_get(),fnc_nm,dpt_nm_in);
       nco_exit(EXIT_FAILURE);
     } /* !rcd */
   } /* !flg_grd_in_hyb */
@@ -1524,7 +1535,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
     int *dpt_ids_in; /* [nbr] Input depth/height dimension IDs */
     dpt_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
-    rcd=nco_inq_vardimid(vrt_in_id,dpt_id,dpt_ids_in);
+    rcd=nco_inq_vardimid(fl_xtr_id,dpt_id,dpt_ids_in);
     rcd=nco_inq_dimid(vrt_in_id,lev_nm_in,&dmn_id_lev_in);
     rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
     rcd=nco_inq_dimid_flg(vrt_in_id,ilev_nm_in,&dmn_id_ilev_in);
