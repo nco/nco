@@ -1821,7 +1821,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	rcd=nco_get_var(fl_xtr_id,lt_id,lt_in,crd_typ_out);
 	rcd=nco_get_var(vrt_in_id,mlc_id,mlc_in,NC_INT);
 	/* Convert Fortran 1-based to C 0-based indices */
-	//for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++) mlc_in[grd_idx]--;
+	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++) mlc_in[grd_idx]--;
 	//	/* Convert C 0-based to Fortran 1-based indices */
 	//for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++) mlc_in[grd_idx]++;
 
@@ -1846,7 +1846,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  idx_fst_lev=tm_idx*grd_sz_in*lev_nbr_in;
 	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
 	    lev_idx_max=mlc_in[grd_idx];
-	    for(lev_idx=0;lev_idx<lev_idx_max;lev_idx++){
+	    for(lev_idx=0;lev_idx<=lev_idx_max;lev_idx++){
 	      lt_sum[idx_fst+grd_idx]+=lt_in[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx];
 	    } /* !lev_idx */
 	  } /* !grd_idx */
@@ -1856,8 +1856,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  idx_fst_lev=tm_idx*grd_sz_in*lev_nbr_in;
 	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
 	    lev_idx_max=mlc_in[grd_idx];
-	    for(lev_idx=1;lev_idx<lev_idx_max;lev_idx++){ // NB: Starts at 1
-	      lt_cum_sum[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx]+=lt_cum_sum[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx-1];
+	    for(lev_idx=1;lev_idx<=lev_idx_max;lev_idx++){ // NB: Starts at 1
+	      idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
+	      lt_cum_sum[idx_ttl]+=lt_cum_sum[idx_ttl-1];
 	    } /* !lev_idx */
 	  } /* !grd_idx */
 	} /* !tm_idx */	
@@ -1874,8 +1875,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  idx_fst=tm_idx*grd_sz_in;
 	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
 	    lev_idx_max=mlc_in[grd_idx];
-	    for(lev_idx=0;lev_idx<lev_idx_max;lev_idx++){
-	      z_ntf[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx]=z_sfc[idx_fst+grd_idx]-lt_cum_sum[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx];
+	    for(lev_idx=0;lev_idx<=lev_idx_max;lev_idx++){
+	      idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
+	      z_ntf[idx_ttl]=z_sfc[idx_fst+grd_idx]-lt_cum_sum[idx_ttl];
 	    } /* !lev_idx */
 	  } /* !grd_idx */
 	} /* !tm_idx */		
@@ -1884,14 +1886,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  idx_fst_lev=tm_idx*grd_sz_in*lev_nbr_in;
 	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
 	    lev_idx_max=mlc_in[grd_idx];
-	    for(lev_idx=0;lev_idx<lev_idx_max;lev_idx++){
+	    for(lev_idx=0;lev_idx<=lev_idx_max;lev_idx++){
 	      idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
 	      dpt_mdp_in[idx_ttl]=z_ntf[idx_ttl]+0.5*lt_in[idx_ttl];
 	    } /* !lev_idx */
 	    /* Repeat deepest valid depth beneath bathymetry */
-	    for(lev_idx=lev_idx_max;lev_idx<lev_nbr_in;lev_idx++){
+	    for(lev_idx=lev_idx_max+1;lev_idx<lev_nbr_in;lev_idx++){
 	      idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
-	      dpt_mdp_in[idx_ttl]=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx_max-1;
+	      dpt_mdp_in[idx_ttl]=dpt_mdp_in[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx_max];
 	    } /* !lev_idx */
 	  } /* !grd_idx */
 	} /* !tm_idx */
@@ -2226,12 +2228,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Exception list source:
      CAM/EAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
      ECMWF: hyai, hyam, hybi, hybm, lev, lnsp
-     MPAS O/I: layerThickness, maxLevelCell, timeMonthly_avg_zMid, zMid
-     MPAS-O: timeMonthly_avg_layerThickness
+     MPAS-O: layerThickness, maxLevelCell, refBottomDepth, timeMonthly_avg_layerThickness, timeMonthly_avg_zMid, vertCoordMovementWeights, zMid
      NCEP: plev
      SCREAM: hyai, hyam, hybi, hybm, ilev, lev, P0, ps
      Run-time: dpt_nm_in, dpt_nm_out, plev_nm_in, plev_nm_out, ps_nm_in, ps_nm_tpl */
-  const char *var_xcl_lst_fix[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PS","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/zMid"};
+  const char *var_xcl_lst_fix[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PS","/refBottomDepth","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/vertCoordMovementWeights","/zMid"};
   int var_xcl_fix_nbr=sizeof(var_xcl_lst_fix)/sizeof(char *); /* [nbr] Number of variables in fixed (compile-time) exclusion list */
   /* Create list to hold both compile- and run-time exclusion variables */
   char **var_xcl_lst=NULL; /* [sng] List of variables to exclude */

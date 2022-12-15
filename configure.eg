@@ -315,7 +315,7 @@ make install
 cd ~/nco;/bin/rm -f *.foo;make distclean
 export PATH=${MY_BIN_DIR}:'/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
 #export LD_LIBRARY_PATH=${MY_LIB_DIR}:'/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
-T# NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
+# NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
 # 20220104 NB: ANTLR_ROOT in ${HOME} is only used at compile-time, not run-time
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' UDUNITS2_PATH='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -433,10 +433,14 @@ make install >> nco.make.foo 2>&1
 # 20190806: Must load modules prior to (re-)building otherwise system GCC 4.8.5 C++ compiler will not link to g++ 8.1.0 Antlr library
 module purge
 module load gcc/8.1.0
-module load mvapich2/2.3.1 # Required for ncclimo/ncremap in MPI-mode
+module load mvapich2/2.3.7 # Required for ncclimo/ncremap in MPI-mode
 module load netcdf/4.6.3
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/gcc/8.1.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/gcc/8.1.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+# Conda 20221215: fails to link to -lnetcdf due to missing HDF5
+export PATH=${MY_BIN_DIR}:'/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest/bin':${PATH}
+#export LD_LIBRARY_PATH=${MY_LIB_DIR}:'/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest/lib' NETCDF_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest' UDUNITS2_PATH='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1

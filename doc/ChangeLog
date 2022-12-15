@@ -1,8 +1,18 @@
-2022-12-13  Charlie Zender  <zender@uci.edu>
+2022-12-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha03: FOMO';git push
-	git tag -a 5.1.4-alpha03 -m '';git push --tags
+	git tag -a 5.1.4-alpha03 -m 'ncremap: rgr rst, dpt_mdp drv';git push --tags
+
+	* Interpolating MPAS-O (depth-MRV) restart files appears to work
+
+2022-12-14  Charlie Zender  <zender@uci.edu>
+
+	* Construct dpt_mdp from depth-MRV layerThickness, bottomDepth
+
+2022-12-13  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add --dpt_nm option
 
 	* Default MPAS-O monthly output interpolates correctly, restarts need to construct zMid
 
