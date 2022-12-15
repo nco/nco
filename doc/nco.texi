@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.4-alpha02
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 28 November 2022
-@set update-month November 2022
+@set update-date 14 December 2022
+@set update-month December 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -18664,7 +18664,7 @@ This makes supporting NaN arithmetic costly and inefficient.
 Hence @acronym{NCO} supports NaN only to the extent necessary to
 replace it with a normal number.
 Although using NaN for the missing value (or any value) in datasets is 
-legal in netCDF, we strongly discourage it.
+legal in netCDF, we discourage it.
 We recommend avoiding NaN entirely.}. 
 One way to work-around this problem is to change @acronym{IEEE} NaNs
 to normal missing values. 

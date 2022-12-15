@@ -1444,15 +1444,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     ps_id=NC_MIN_INT;
     rcd=nco_xtr_var_get(&fl_xtr_id,&ps_nm_in,&ps_nm_out,&rgr->ps_nm_out,&ps_id);
     if(rcd != NC_NOERR){
-      (void)fprintf(stdout,"%s: ERROR %s reports unable to find required surface pressure variable %s for input data, exiting...\n",nco_prg_nm_get(),fnc_nm,ps_nm_in);
+      (void)fprintf(stdout,"%s: ERROR %s did not find required surface pressure variable %s for input data, exiting...\n",nco_prg_nm_get(),fnc_nm,ps_nm_in);
       nco_exit(EXIT_FAILURE);
     } /* !rcd */
   }else if(flg_grd_in_dpt){
     dpt_id=NC_MIN_INT;
     rcd=nco_xtr_var_get(&fl_xtr_id,&dpt_nm_in,&dpt_nm_out,&rgr->dpt_nm_out,&dpt_id);
     if(rcd != NC_NOERR){
-      (void)fprintf(stdout,"%s: ERROR %s reports unable to find ready-made 3D depth variable %s for input data, need to construct from bd, lt, exiting...\n",nco_prg_nm_get(),fnc_nm,dpt_nm_in);
-      nco_exit(EXIT_FAILURE);
+      (void)fprintf(stdout,"%s: WARNING %s did not find ready-made depth variable %s for input data\n",nco_prg_nm_get(),fnc_nm,dpt_nm_in);
     } /* !rcd */
   } /* !flg_grd_in_hyb */
   /* 20221203: Allow plev_nm_in to be path/name too? */
@@ -1465,10 +1464,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if((rcd=nco_inq_varid_flg(vrt_in_id,"bottomDepth",&bd_id)) == NC_NOERR) flg_dpt_has_bd=True;
     if((rcd=nco_inq_varid_flg(vrt_in_id,"layerThickness",&lt_id)) == NC_NOERR) flg_dpt_has_lt=True;
     if((rcd=nco_inq_varid_flg(vrt_in_id,"maxLevelCell",&mlc_id)) == NC_NOERR) flg_dpt_has_mlc=True;
-    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG Depth grid flags : flg_dpt_has_bd = %d, flg_dpt_has_lt = %d, flg_dpt_has_mlc = %d\n",nco_prg_nm_get(),flg_dpt_has_bd,flg_dpt_has_lt,flg_dpt_has_mlc);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG Depth input grid flags : flg_dpt_has_bd = %d, flg_dpt_has_lt = %d, flg_dpt_has_mlc = %d\n",nco_prg_nm_get(),flg_dpt_has_bd,flg_dpt_has_lt,flg_dpt_has_mlc);
   } /* !flg_grd_in_dpt */
 
-  const int dpt_id_in=dpt_id; /* [id] Ocean depth ID */
+  const int dpt_id_in=dpt_id; /* [id] Ocean depth ID for input grid */
 
   if(flg_grd_in_hyb){
     rcd=nco_inq_varid(vrt_in_id,"hyai",&hyai_id);
@@ -1528,7 +1527,22 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(flg_grd_in_dpt){
     /* Get input depth vertical information */
     int dmn_nbr_dpt_in; /* [nbr] Number of dimensions in depth variable in input file */
-    rcd=nco_inq_varndims(fl_xtr_id,dpt_id,&dmn_nbr_in);
+    dmn_nbr_in=NC_MIN_INT;
+    if(dpt_id_in != NC_MIN_INT){
+      rcd=nco_inq_varndims(fl_xtr_id,dpt_id,&dmn_nbr_in);
+    }else{
+      /* Use layerThickness instead of depth to perform depth heuristics. From now on, this code branch has 
+	 1. flg_grd_in_dpt_3D == True
+	 2. dpt_id_in != NC_MIN_INT (because input file lacks depth)
+	 3. dpt_id == lt_id so we can determine grd_sz_in, etc from layerThickness */
+      dpt_id=lt_id;
+      if((bd_id !=  NC_MIN_INT) && (lt_id !=  NC_MIN_INT)){
+	rcd=nco_inq_varndims(fl_xtr_id,lt_id,&dmn_nbr_in);
+      }else{
+	(void)fprintf(stdout,"%s: ERROR %s did not find both variables %s and %s needed to construct 3D depth field from input data. Exiting...\n",nco_prg_nm_get(),fnc_nm,"bottomDepth","layerThickness");
+	nco_exit(EXIT_FAILURE);
+      } /* !bd_id  */
+    } /* !dpt_id */
     dmn_nbr_dpt_in=dmn_nbr_in;
     assert(dmn_nbr_in >= 1);
     if(dmn_nbr_dpt_in == 1) flg_grd_in_dpt_1D=True; else flg_grd_in_dpt_3D=True;
@@ -1688,10 +1702,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !flg_grd_out_hyb */
   } /* !flg_grd_in_prs */
 
-  //  double *bd_in=NULL; /* [m] Depth of ocean bottom (positive) on input grid */
+  double *bd_in=NULL; /* [m] Depth of ocean bottom (positive) on input grid */
   double *dpt_mdp_in=NULL; /* [idx] Midpoint depth/height (possibly time-dependent) on input grid */
   double *dpt_ntf_in=NULL; /* [idx] Interface depth/height (possibly time-dependent) on input grid */
-  //double *lt_in=NULL; /* [m] Layer thickness (possibly time-dependent) on input grid */
+  double *lt_in=NULL; /* [m] Layer thickness (possibly time-dependent) on input grid */
   int *mlc_in=NULL; /* [idx] Index (1-based) to last active cell in each column on input grid */
 
   double *hyai_in=NULL; /* [frc] Hybrid A coefficient at layer interfaces on input grid */
@@ -1795,24 +1809,98 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !flg_grd_in_dpt_1D */
     if(flg_grd_in_dpt_3D){
       mlc_in=(int *)nco_malloc(lev_nbr_in*grd_sz_in*nco_typ_lng(NC_INT));
-      if(dpt_id != NC_MIN_INT){
+      if(dpt_id_in != NC_MIN_INT){
 	rcd=nco_get_var(fl_xtr_id,dpt_id,dpt_mdp_in,crd_typ_out);
       }else{
-	/* If depth is unavailable, construct it from bottomDepth and layerThickness */
-	if(bd_id == NC_MIN_INT || lt_id == NC_MIN_INT){
-	  (void)fprintf(stderr,"%s: ERROR %s Input three-dimensional depth/height grid lacks depth/height variable %s and both variables (%s and %s) needed to construct it. Exiting...\n",nco_prg_nm_get(),fnc_nm,dpt_nm_in,"layerThickness","bottomDepth");
-	  nco_exit(EXIT_FAILURE);
-	} /* !bd_id, !lt_id */
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Constructing %s from %s and %s\n",nco_prg_nm_get(),fnc_nm,dpt_nm_in,"layerThickness","bottomDepth");
-	assert(0 == 1);
-      } /* !dpt_id */
-      if(mlc_id != NC_MIN_INT){
+	/* If ready-made depth is unavailable, construct it from bottomDepth and layerThickness */
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Constructing %s from %s and %s\n",nco_prg_nm_get(),fnc_nm,dpt_nm_in,"layerThickness","bottomDepth");	
+
+	bd_in=(double *)nco_malloc(grd_sz_in*nco_typ_lng(var_typ_rgr));
+	lt_in=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*lev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() lt_in value buffer");
+	rcd=nco_get_var(fl_xtr_id,bd_id,bd_in,crd_typ_out);
+	rcd=nco_get_var(fl_xtr_id,lt_id,lt_in,crd_typ_out);
 	rcd=nco_get_var(vrt_in_id,mlc_id,mlc_in,NC_INT);
 	/* Convert Fortran 1-based to C 0-based indices */
-	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++) mlc_in[grd_idx]--;
+	//for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++) mlc_in[grd_idx]--;
 	//	/* Convert C 0-based to Fortran 1-based indices */
 	//for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++) mlc_in[grd_idx]++;
-      }else{
+
+	double *lt_sum=NULL; /* [m] Column thickness */
+	double *lt_cum_sum=NULL; /* [m] Column cumulative thickness profile */
+	double *z_ntf=NULL; /* [m] Depth of layer interfaces */
+	double *z_sfc=NULL; /* [m] Ocean surface height */
+	lt_sum=(double *)nco_malloc(tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr));
+	lt_cum_sum=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*lev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() lt_cum_sum value buffer");
+	z_ntf=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*lev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() z_ntf value buffer");
+	z_sfc=(double *)nco_malloc(tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr));
+
+	/* Initialization */
+	const size_t tm_hrz_sz=tm_nbr*grd_sz_in; /* [nbr] Size of time-varying surface field */
+	long lev_idx_max; /* [idx] Fortran 1-based index of midpoint level with greatest depth/least height */
+	long idx_ttl; /* [idx] Total index */
+	memcpy(lt_cum_sum,lt_in,tm_nbr*grd_sz_in*lev_nbr_in*nco_typ_lng(var_typ_rgr));
+	for(size_t idx_in=0;idx_in<tm_hrz_sz;idx_in++) lt_sum[idx_in]=0.0;
+	/* Column thickness */
+	for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
+	  idx_fst=tm_idx*grd_sz_in;
+	  idx_fst_lev=tm_idx*grd_sz_in*lev_nbr_in;
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
+	    lev_idx_max=mlc_in[grd_idx];
+	    for(lev_idx=0;lev_idx<lev_idx_max;lev_idx++){
+	      lt_sum[idx_fst+grd_idx]+=lt_in[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx];
+	    } /* !lev_idx */
+	  } /* !grd_idx */
+	} /* !tm_idx */	
+	/* Column cumulative thickness */
+	for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
+	  idx_fst_lev=tm_idx*grd_sz_in*lev_nbr_in;
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
+	    lev_idx_max=mlc_in[grd_idx];
+	    for(lev_idx=1;lev_idx<lev_idx_max;lev_idx++){ // NB: Starts at 1
+	      lt_cum_sum[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx]+=lt_cum_sum[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx-1];
+	    } /* !lev_idx */
+	  } /* !grd_idx */
+	} /* !tm_idx */	
+	/* Surface height */
+	for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
+	  idx_fst=tm_idx*grd_sz_in;
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
+	    z_sfc[idx_fst+grd_idx]=lt_sum[idx_fst+grd_idx]-bd_in[grd_idx];
+	  } /* !grd_idx */
+	} /* !tm_idx */	
+	/* Interface depths */
+	for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
+	  idx_fst_lev=tm_idx*grd_sz_in*lev_nbr_in;
+	  idx_fst=tm_idx*grd_sz_in;
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
+	    lev_idx_max=mlc_in[grd_idx];
+	    for(lev_idx=0;lev_idx<lev_idx_max;lev_idx++){
+	      z_ntf[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx]=z_sfc[idx_fst+grd_idx]-lt_cum_sum[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx];
+	    } /* !lev_idx */
+	  } /* !grd_idx */
+	} /* !tm_idx */		
+	/* Construction... */
+	for(tm_idx=0;tm_idx<tm_nbr_in;tm_idx++){
+	  idx_fst_lev=tm_idx*grd_sz_in*lev_nbr_in;
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
+	    lev_idx_max=mlc_in[grd_idx];
+	    for(lev_idx=0;lev_idx<lev_idx_max;lev_idx++){
+	      idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
+	      dpt_mdp_in[idx_ttl]=z_ntf[idx_ttl]+0.5*lt_in[idx_ttl];
+	    } /* !lev_idx */
+	    /* Repeat deepest valid depth beneath bathymetry */
+	    for(lev_idx=lev_idx_max;lev_idx<lev_nbr_in;lev_idx++){
+	      idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
+	      dpt_mdp_in[idx_ttl]=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx_max-1;
+	    } /* !lev_idx */
+	  } /* !grd_idx */
+	} /* !tm_idx */
+	if(lt_sum) lt_sum=(double *)nco_free(lt_sum);
+	if(lt_cum_sum) lt_cum_sum=(double *)nco_free(lt_cum_sum);
+	if(z_ntf) z_ntf=(double *)nco_free(z_ntf);
+	if(z_sfc) z_sfc=(double *)nco_free(z_sfc);
+      } /* !dpt_id_in */
+      if(mlc_id == NC_MIN_INT){
 	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Input three-dimensional depth grid file lacks bathymetry/orography-masking variable %s. Will instead construct %s from %s...\n",nco_prg_nm_get(),fnc_nm,"maxLevelCell","maxLevelCell",dpt_nm_in);
 	long idx_lev_max; // [idx] C 0-based index of midpoint level with greatest depth/least height
 	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
@@ -1968,9 +2056,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Compare input and output surface pressure fields to determine whether subterranean extrapolation required */
   nco_bool flg_add_msv_att; /* [flg] Extrapolation requires _FillValue */
   flg_add_msv_att=False;
+  const size_t tm_hrz_sz=tm_nbr*grd_sz_in; /* [nbr] Size of time-varying surface field */
   /* Extrapolation type xtr_fll_msv may cause need to create _FillValue attributes */
   if(xtr_mth == nco_xtr_fll_msv){
-    const size_t ps_sz=tm_nbr*grd_sz_in; // [nbr] Size of surface-pressure field
     double *prs_max_in=NULL; /* [Pa] Maximum midpoint pressure on input grid */
     double *prs_max_out=NULL; /* [Pa] Maximum midpoint pressure on output grid */
     double *prs_min_in=NULL; /* [Pa] Minimum midpoint pressure on input grid */
@@ -1978,10 +2066,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     long idx_lev_max; // [idx] Index of midpoint level with greatest pressure
     long idx_lev_min; // [idx] Index of midpoint level with lowest pressure
     size_t idx; // [idx] Counting index
-    prs_max_in=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_max_in value buffer");
-    prs_max_out=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_max_out value buffer");
-    prs_min_in=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_in value buffer");
-    prs_min_out=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_out value buffer");
+    prs_max_in=(double *)nco_malloc_dbg(tm_hrz_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_max_in value buffer");
+    prs_max_out=(double *)nco_malloc_dbg(tm_hrz_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_max_out value buffer");
+    prs_min_in=(double *)nco_malloc_dbg(tm_hrz_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_in value buffer");
+    prs_min_out=(double *)nco_malloc_dbg(tm_hrz_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_out value buffer");
     if(flg_grd_in_dpt_3D){
       // fxm: assumes depth/height grid has least/greatest depth/height at bottom/top level
       for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
@@ -2007,16 +2095,16 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       double lev_in_min;
       if(lev_in[0] < lev_in[1]) lev_in_max=lev_in[lev_nbr_in-1]; else lev_in_max=lev_in[0];
       if(lev_in[0] < lev_in[1]) lev_in_min=lev_in[0]; else lev_in_max=lev_in[lev_nbr_in-1];
-      for(size_t idx_in=0;idx_in<ps_sz;idx_in++) prs_max_in[idx_in]=lev_in_max;
-      for(size_t idx_in=0;idx_in<ps_sz;idx_in++) prs_min_in[idx_in]=lev_in_min;
+      for(size_t idx_in=0;idx_in<tm_hrz_sz;idx_in++) prs_max_in[idx_in]=lev_in_max;
+      for(size_t idx_in=0;idx_in<tm_hrz_sz;idx_in++) prs_min_in[idx_in]=lev_in_min;
     } /* !flg_grd_in_dpt_1D */
     if(flg_grd_out_dpt_1D){
       double lev_out_max;
       double lev_out_min;
       if(lev_out[0] < lev_out[1]) lev_out_max=lev_out[lev_nbr_out-1]; else lev_out_max=lev_out[0];
       if(lev_out[0] < lev_out[1]) lev_out_min=lev_out[0]; else lev_out_max=lev_out[lev_nbr_out-1];
-      for(size_t idx_out=0;idx_out<ps_sz;idx_out++) prs_max_out[idx_out]=lev_out_max;
-      for(size_t idx_out=0;idx_out<ps_sz;idx_out++) prs_min_out[idx_out]=lev_out_min;
+      for(size_t idx_out=0;idx_out<tm_hrz_sz;idx_out++) prs_max_out[idx_out]=lev_out_max;
+      for(size_t idx_out=0;idx_out<tm_hrz_sz;idx_out++) prs_min_out[idx_out]=lev_out_min;
     } /* !flg_grd_out_dpt_1D */
     if(flg_grd_in_hyb){
       // fxm: assumes hybrid grid has least/greatest pressure at top/bottom level
@@ -2047,23 +2135,23 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       double lev_in_min;
       if(lev_in[0] < lev_in[1]) lev_in_max=lev_in[lev_nbr_in-1]; else lev_in_max=lev_in[0];
       if(lev_in[0] < lev_in[1]) lev_in_min=lev_in[0]; else lev_in_max=lev_in[lev_nbr_in-1];
-      for(size_t idx_in=0;idx_in<ps_sz;idx_in++) prs_max_in[idx_in]=lev_in_max;
-      for(size_t idx_in=0;idx_in<ps_sz;idx_in++) prs_min_in[idx_in]=lev_in_min;
+      for(size_t idx_in=0;idx_in<tm_hrz_sz;idx_in++) prs_max_in[idx_in]=lev_in_max;
+      for(size_t idx_in=0;idx_in<tm_hrz_sz;idx_in++) prs_min_in[idx_in]=lev_in_min;
     } /* !flg_grd_in_prs */
     if(flg_grd_out_prs){
       double lev_out_max;
       double lev_out_min;
       if(lev_out[0] < lev_out[1]) lev_out_max=lev_out[lev_nbr_out-1]; else lev_out_max=lev_out[0];
       if(lev_out[0] < lev_out[1]) lev_out_min=lev_out[0]; else lev_out_min=lev_out[lev_nbr_out-1];
-      for(size_t idx_out=0;idx_out<ps_sz;idx_out++) prs_max_out[idx_out]=lev_out_max;
-      for(size_t idx_out=0;idx_out<ps_sz;idx_out++) prs_min_out[idx_out]=lev_out_min;
+      for(size_t idx_out=0;idx_out<tm_hrz_sz;idx_out++) prs_max_out[idx_out]=lev_out_max;
+      for(size_t idx_out=0;idx_out<tm_hrz_sz;idx_out++) prs_min_out[idx_out]=lev_out_min;
     } /* !flg_grd_out_prs */
-    for(idx=0;idx<ps_sz;idx++)
+    for(idx=0;idx<tm_hrz_sz;idx++)
       if(prs_max_out[idx] > prs_max_in[idx]) break;
-    if(idx < ps_sz) flg_add_msv_att=True;
-    for(idx=0;idx<ps_sz;idx++)
+    if(idx < tm_hrz_sz) flg_add_msv_att=True;
+    for(idx=0;idx<tm_hrz_sz;idx++)
       if(prs_min_out[idx] < prs_min_in[idx]) break;
-    if(idx < ps_sz) flg_add_msv_att=True;
+    if(idx < tm_hrz_sz) flg_add_msv_att=True;
     if(flg_add_msv_att && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one point in at least one output level requires extrapolation (not interpolation). Must and will ensure that all interpolated fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm);
     if(prs_max_in) prs_max_in=(double *)nco_free(prs_max_in);
     if(prs_max_out) prs_max_out=(double *)nco_free(prs_max_out);
@@ -3222,8 +3310,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(dpt_mdp_in) dpt_mdp_in=(double *)nco_free(dpt_mdp_in);
   if(dpt_ntf_in) dpt_ntf_in=(double *)nco_free(dpt_ntf_in);
   if(mlc_in) mlc_in=(int *)nco_free(mlc_in);
-  //  if(bd_in) bd_in=(double *)nco_free(bd_in);
-  //if(lt_in) lt_in=(double *)nco_free(lt_in);
+  if(bd_in) bd_in=(double *)nco_free(bd_in);
+  if(lt_in) lt_in=(double *)nco_free(lt_in);
 
   if(hyai_in) hyai_in=(double *)nco_free(hyai_in);
   if(hyam_in) hyam_in=(double *)nco_free(hyam_in);
