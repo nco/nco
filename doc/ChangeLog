@@ -4,6 +4,12 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha03: FOMO';git push
 	git tag -a 5.1.4-alpha03 -m 'ncremap: rgr rst, dpt_mdp drv';git push --tags
 
+	* Revamp cnv->MPAS determination for v2, add maxLevelCell to horizontal exclusion list
+
+	* Construct maxLevelCell from layerThickness if necessary
+
+	* Allow zMid construction from horizontal or vertical MRV inputs
+
 	* Interpolating MPAS-O (depth-MRV) restart files appears to work
 
 2022-12-14  Charlie Zender  <zender@uci.edu>

@@ -1811,7 +1811,25 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       mlc_in=(int *)nco_malloc(lev_nbr_in*grd_sz_in*nco_typ_lng(NC_INT));
       if(dpt_id_in != NC_MIN_INT){
 	rcd=nco_get_var(fl_xtr_id,dpt_id,dpt_mdp_in,crd_typ_out);
-      }else{
+	if(mlc_id == NC_MIN_INT){
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Input three-dimensional depth grid file lacks bathymetry/orography-masking variable %s. Will instead construct %s from %s...\n",nco_prg_nm_get(),fnc_nm,"maxLevelCell","maxLevelCell",dpt_nm_in);
+	  long idx_lev_max; // [idx] C 0-based index of midpoint level with greatest depth/least height
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
+	    idx_lev_max=lev_nbr_in-1;
+	    for(lev_idx=lev_nbr_in-2;lev_idx >= 0;lev_idx--){
+	      if(flg_hrz_mrv){
+		if(dpt_mdp_in[lev_idx*grd_sz_in+grd_idx] != dpt_mdp_in[idx_lev_max*grd_sz_in+grd_idx])
+		  break;
+	      }else{
+		if(dpt_mdp_in[grd_idx*lev_nbr_in+lev_idx] != dpt_mdp_in[grd_idx*lev_nbr_in+idx_lev_max])
+		  break;
+	      } /* !flg_hrz_mrv */
+	    } /* !lev_idx */
+	    idx_lev_max=lev_idx+1;
+	    mlc_in[grd_idx]=idx_lev_max;
+	  } /* !grd_idx */	
+	} /* !mlc_id */
+      }else{ /* !dpt_id_in */
 	/* If ready-made depth is unavailable, construct it from bottomDepth and layerThickness */
 	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Constructing %s from %s and %s\n",nco_prg_nm_get(),fnc_nm,dpt_nm_in,"layerThickness","bottomDepth");	
 
@@ -1819,11 +1837,28 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	lt_in=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*lev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() lt_in value buffer");
 	rcd=nco_get_var(fl_xtr_id,bd_id,bd_in,crd_typ_out);
 	rcd=nco_get_var(fl_xtr_id,lt_id,lt_in,crd_typ_out);
-	rcd=nco_get_var(vrt_in_id,mlc_id,mlc_in,NC_INT);
-	/* Convert Fortran 1-based to C 0-based indices */
-	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++) mlc_in[grd_idx]--;
+	/* 20221215: Horizontal regridding omits extensive variable maxLevelCell */
+	if(mlc_id != NC_MIN_INT){
+	  rcd=nco_get_var(vrt_in_id,mlc_id,mlc_in,NC_INT);
+	  /* Convert Fortran 1-based to C 0-based indices */
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++) mlc_in[grd_idx]--;
 	//	/* Convert C 0-based to Fortran 1-based indices */
 	//for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++) mlc_in[grd_idx]++;
+	}else{ /* !mlc_id */
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Input three-dimensional depth grid file lacks bathymetry/orography-masking variable %s. Will instead construct %s from %s...\n",nco_prg_nm_get(),fnc_nm,"maxLevelCell","maxLevelCell","layerThickness");
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
+	    for(lev_idx=lev_nbr_in-1;lev_idx >= 0;lev_idx--){
+	      if(flg_hrz_mrv){
+		if(lt_in[lev_idx*grd_sz_in+grd_idx] != 0.0)
+		  break;
+	      }else{
+		if(lt_in[grd_idx*lev_nbr_in+lev_idx] != 0.0)
+		  break;
+	      } /* !flg_hrz_mrv */
+	    } /* !lev_idx */
+	    mlc_in[grd_idx]=lev_idx;
+	  } /* !grd_idx */	
+	} /* !mlc_id */
 
 	double *lt_sum=NULL; /* [m] Column thickness */
 	double *lt_cum_sum=NULL; /* [m] Column cumulative thickness profile */
@@ -1847,7 +1882,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
 	    lev_idx_max=mlc_in[grd_idx];
 	    for(lev_idx=0;lev_idx<=lev_idx_max;lev_idx++){
-	      lt_sum[idx_fst+grd_idx]+=lt_in[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx];
+	      if(flg_hrz_mrv) lt_sum[idx_fst+grd_idx]+=lt_in[idx_fst_lev+lev_idx*grd_sz_in+grd_idx]; else lt_sum[idx_fst+grd_idx]+=lt_in[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx];
 	    } /* !lev_idx */
 	  } /* !grd_idx */
 	} /* !tm_idx */	
@@ -1857,8 +1892,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
 	    lev_idx_max=mlc_in[grd_idx];
 	    for(lev_idx=1;lev_idx<=lev_idx_max;lev_idx++){ // NB: Starts at 1
-	      idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
-	      lt_cum_sum[idx_ttl]+=lt_cum_sum[idx_ttl-1];
+	      if(flg_hrz_mrv){
+		idx_ttl=idx_fst_lev+lev_idx*grd_sz_in+grd_idx;
+		lt_cum_sum[idx_ttl]+=lt_cum_sum[idx_fst_lev+(lev_idx-1)*grd_sz_in+grd_idx];
+	      }else{
+		idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
+		lt_cum_sum[idx_ttl]+=lt_cum_sum[idx_ttl-1];
+	      } /* !flg_hrz_mrv */
 	    } /* !lev_idx */
 	  } /* !grd_idx */
 	} /* !tm_idx */	
@@ -1876,7 +1916,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
 	    lev_idx_max=mlc_in[grd_idx];
 	    for(lev_idx=0;lev_idx<=lev_idx_max;lev_idx++){
-	      idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
+	      if(flg_hrz_mrv) idx_ttl=idx_fst_lev+lev_idx*grd_sz_in+grd_idx; else idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
 	      z_ntf[idx_ttl]=z_sfc[idx_fst+grd_idx]-lt_cum_sum[idx_ttl];
 	    } /* !lev_idx */
 	  } /* !grd_idx */
@@ -1887,13 +1927,18 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
 	    lev_idx_max=mlc_in[grd_idx];
 	    for(lev_idx=0;lev_idx<=lev_idx_max;lev_idx++){
-	      idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
+	      if(flg_hrz_mrv) idx_ttl=idx_fst_lev+lev_idx*grd_sz_in+grd_idx; else idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
 	      dpt_mdp_in[idx_ttl]=z_ntf[idx_ttl]+0.5*lt_in[idx_ttl];
 	    } /* !lev_idx */
 	    /* Repeat deepest valid depth beneath bathymetry */
 	    for(lev_idx=lev_idx_max+1;lev_idx<lev_nbr_in;lev_idx++){
-	      idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
-	      dpt_mdp_in[idx_ttl]=dpt_mdp_in[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx_max];
+	      if(flg_hrz_mrv){
+		idx_ttl=idx_fst_lev+lev_idx*grd_sz_in+grd_idx;
+		dpt_mdp_in[idx_ttl]=dpt_mdp_in[idx_fst_lev+lev_idx_max*grd_sz_in+grd_idx];
+	      }else{
+		idx_ttl=idx_fst_lev+grd_idx*lev_nbr_in+lev_idx;
+		dpt_mdp_in[idx_ttl]=dpt_mdp_in[idx_fst_lev+grd_idx*lev_nbr_in+lev_idx_max];
+	      } /* !flg_hrz_mrv */
 	    } /* !lev_idx */
 	  } /* !grd_idx */
 	} /* !tm_idx */
@@ -1902,24 +1947,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	if(z_ntf) z_ntf=(double *)nco_free(z_ntf);
 	if(z_sfc) z_sfc=(double *)nco_free(z_sfc);
       } /* !dpt_id_in */
-      if(mlc_id == NC_MIN_INT){
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Input three-dimensional depth grid file lacks bathymetry/orography-masking variable %s. Will instead construct %s from %s...\n",nco_prg_nm_get(),fnc_nm,"maxLevelCell","maxLevelCell",dpt_nm_in);
-	long idx_lev_max; // [idx] C 0-based index of midpoint level with greatest depth/least height
-	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
-	  idx_lev_max=lev_nbr_in-1;
-	  for(lev_idx=lev_nbr_in-2;lev_idx >= 0;lev_idx--){
-	    if(flg_hrz_mrv){
-	      if(dpt_mdp_in[lev_idx*grd_sz_in+grd_idx] != dpt_mdp_in[idx_lev_max*grd_sz_in+grd_idx])
-		break;
-	    }else{
-	      if(dpt_mdp_in[grd_idx*lev_nbr_in+lev_idx] != dpt_mdp_in[grd_idx*lev_nbr_in+idx_lev_max])
-		break;
-	    } /* !flg_hrz_mrv */
-	  } /* !lev_idx */
-	  idx_lev_max=lev_idx+1;
-	  mlc_in[grd_idx]=idx_lev_max;
-	} /* !grd_idx */	
-      } /* !mlc_id */
     } /* !flg_grd_in_dpt_3D */
   } /* !flg_grd_in_dpt */
   
@@ -2228,7 +2255,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Exception list source:
      CAM/EAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
      ECMWF: hyai, hyam, hybi, hybm, lev, lnsp
-     MPAS-O: layerThickness, maxLevelCell, refBottomDepth, timeMonthly_avg_layerThickness, timeMonthly_avg_zMid, vertCoordMovementWeights, zMid
+     MPAS-O: layerThickness, maxLevelCell, timeMonthly_avg_layerThickness, timeMonthly_avg_zMid, zMid
+     MPAS-O: refBottomDepth, vertCoordMovementWeights (derived 1D-profiles, no horizontal dimensions) 
      NCEP: plev
      SCREAM: hyai, hyam, hybi, hybm, ilev, lev, P0, ps
      Run-time: dpt_nm_in, dpt_nm_out, plev_nm_in, plev_nm_out, ps_nm_in, ps_nm_tpl */
@@ -4866,9 +4894,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
                  MPAS geophysical variables on vertex-based (not cell-based) coordinates include:
                  avg_airStressVertexUGeo_1, avg_airStressVertexVGeo_1, uOceanVelocityVertexGeo_1, uVelocityGeo_1, vOceanVelocityVertexGeo_1, vVelocityGeo_1
 		 MPAS geophysical variables on edge-based (not cell-based) coordinates include:
-		 principalStress1Var_1, principalStress2Var_1 */
-    const int mpas_xcl_lst_nbr=35;
-    const char *mpas_xcl_lst[]={"/angleEdge","/areaTriangle","/cellsOnCell","/cellsOnEdge","/cellsOnVertex","/dcEdge","/dvEdge","/edgeMask","/edgesOnCell","/edgesOnEdge","/edgesOnVertex","/indexToCellID","/indexToEdgeID","/indexToVertexID","/kiteAreasOnVertex","/latCell","/latEdge","/latVertex","/lonCell","/lonEdge","/lonVertex","/maxLevelEdgeTop","/meshDensity","/nEdgesOnCell","/nEdgesOnEdge","/vertexMask","/verticesOnCell","/verticesOnEdge","/weightsOnEdge","/xEdge","/yEdge","/zEdge","/xVertex","/yVertex","/zVertex"};
+		 principalStress1Var_1, principalStress2Var_1
+       20221215: Add maxLevelCell to regridder exclusion list, since it can/should be recomputed from zMid
+                 This is necessary in order to vertically interpolate horizontally regridded MPAS-O restarts */
+    const int mpas_xcl_lst_nbr=36;
+    const char *mpas_xcl_lst[]={"/angleEdge","/areaTriangle","/cellsOnCell","/cellsOnEdge","/cellsOnVertex","/dcEdge","/dvEdge","/edgeMask","/edgesOnCell","/edgesOnEdge","/edgesOnVertex","/indexToCellID","/indexToEdgeID","/indexToVertexID","/kiteAreasOnVertex","/latCell","/latEdge","/latVertex","/lonCell","/lonEdge","/lonVertex","/maxLevelCell","/maxLevelEdgeTop","/meshDensity","/nEdgesOnCell","/nEdgesOnEdge","/vertexMask","/verticesOnCell","/verticesOnEdge","/weightsOnEdge","/xEdge","/yEdge","/zEdge","/xVertex","/yVertex","/zVertex"};
     for(idx=0;idx<mpas_xcl_lst_nbr;idx++){
       for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++)
 	if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,mpas_xcl_lst[idx])) break;

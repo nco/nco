@@ -148,7 +148,14 @@ nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating
     if(strstr(att_val,"CF-1.")) cnv->CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
     /* As of 20060514, CLM 3.0 uses CF1.0 not CF-1.0 (CAM gets it right) */
     if(strstr(att_val,"CF1.")) cnv->CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
-    if(strstr(att_val,"MPAS")) cnv->MPAS=True; /* This works for all known MPAS versions */
+    if(strstr(att_val,"MPAS")) cnv->MPAS=True; /* This works for MPAS v1 data */
+    /* 20221215 For MPAS v2 data, use model_name attribute */
+    char *att_cnv_val=NULL;
+    char att_sng_cnv[]="model_name"; /* [sng] Global attribute in MPAS v1, v2 datasets */
+    att_cnv_val=nco_char_att_get(nc_id,NC_GLOBAL,att_sng_cnv);
+    if(att_cnv_val && strstr(att_cnv_val,"mpas")) cnv->MPAS=True;
+    if(att_cnv_val) att_cnv_val=(char *)nco_free(att_cnv_val);
+   
     if(strstr(att_val,"Group")) cnv->Group=True; /* Untested */
     cnv->cf_vrs=1.0; /* Untested */
     if(nco_dbg_lvl_get() >= nco_dbg_scl && (cnv->CCM_CCSM_CF || cnv->MPAS)){
@@ -162,7 +169,7 @@ nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating
 
   return cnv;
   
-} /* end nco_cnv_ini() */
+} /* !nco_cnv_ini() */
 
 nco_bool /* O [flg] File obeys CCM/CCSM/CF conventions */
 nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions */
