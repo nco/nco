@@ -1,8 +1,14 @@
-2022-12-15  Charlie Zender  <zender@uci.edu>
+2022-12-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha03: FOMO';git push
-	git tag -a 5.1.4-alpha03 -m 'ncremap: rgr rst, dpt_mdp drv';git push --tags
+	git tag -a 5.1.4-alpha03 -m 'ncremap: rgr rst, nfr mlc_in, dpt_mdp';git push --tags
+
+	* Interpolation appears to work on regridded restarts
+
+	* Add missing value logic to inferral of dpt_mdp, mlc_in
+
+2022-12-15  Charlie Zender  <zender@uci.edu>
 
 	* Revamp cnv->MPAS determination for v2, add maxLevelCell to horizontal exclusion list
 
