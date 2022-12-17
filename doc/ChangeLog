@@ -1,5 +1,13 @@
 2022-12-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.1.4-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha04: Messi';git push
+	git tag -a 5.1.4-alpha04 -m '';git push --tags
+
+	* Refine defaults for ease-of-use
+
+	* Verify simultaneous hrz + vrt with WOA18 r025 destination grid
+
 	* NCO 5.1.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha03: FOMO';git push
 	git tag -a 5.1.4-alpha03 -m 'ncremap: rgr rst, nfr mlc_in, dpt_mdp';git push --tags

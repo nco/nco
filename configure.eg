@@ -422,25 +422,17 @@ make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 
-# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on compy
+# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on compy using GCC
 # https://acme-climate.atlassian.net/wiki/spaces/ED/pages/928973795/CompyMcNodeFace+-+E3SM+RGMA+ESMD+dedicated+system+at+PNNL
 # Sysadmin upgrade request: rc-support@pnnl.gov # PNNL Maintainer = Tim Carlson ?
 # Latest ticket to build NCO: 20190525 ICS-40n99 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
-# Personal recipe last modified: 20200114
-# Personal recipe last used successfully: 20220202
-# 20190526: DAP functionality is present in libnetcdf but missing in my NCO because configure does not find libcurl although it is definitely in /lib64/libcurl.so.*
-# 20190806: Must load modules prior to (re-)building otherwise system GCC 4.8.5 C++ compiler will not link to g++ 8.1.0 Antlr library
+# Personal recipe last modified: 20221216
+# Personal recipe last used successfully: 20221216
 module purge
-module load gcc/8.1.0
-module load mvapich2/2.3.7 # Required for ncclimo/ncremap in MPI-mode
-module load netcdf/4.6.3
-cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/gcc/8.1.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/gcc/8.1.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-# Conda 20221215: fails to link to -lnetcdf due to missing HDF5
-export PATH=${MY_BIN_DIR}:'/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest/bin':${PATH}
-#export LD_LIBRARY_PATH=${MY_LIB_DIR}:'/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest/lib' NETCDF_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest' UDUNITS2_PATH='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+module load gcc/10.2.0
+#module load mvapich2/2.3.7 # Required for ncclimo/ncremap in MPI-mode
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1

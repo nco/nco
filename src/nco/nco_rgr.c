@@ -996,6 +996,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_ntp_typ_enm ntp_mth=rgr->ntp_mth; /* [enm] Interpolation method */
   nco_xtr_typ_enm xtr_mth=rgr->xtr_mth; /* [enm] Extrapolation method */
 
+  char *dpt_nm_in; /* [sng] Depth field name in input file */
+  char *dpt_nm_out; /* [sng] Depth field name in output file */
+  char *dpt_nm_tpl; /* [sng] Depth field name in template file */
   char *ilev_nm_in=NULL; /* [sng] Name of input dimension to recognize as vertical dimension at layer interfaces name */
   char *ilev_nm_out=NULL; /* [sng] Name of output vertical dimension at layer interfaces */
   //char *ilev_nm_tpl=NULL; /* [sng] Name of template vertical dimension at layer interfaces */
@@ -1005,6 +1008,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   char *plev_nm_in=NULL; /* [sng] Pure-pressure coordinate name in input file */
   char *plev_nm_out=NULL; /* [sng] Pure-pressure coordinate name in output file */
   char *plev_nm_tpl=NULL; /* [sng] Pure-pressure coordinate name in template file */
+  if(rgr->dpt_nm_in) dpt_nm_in=rgr->dpt_nm_in;
+  if(rgr->dpt_nm_out) dpt_nm_out=rgr->dpt_nm_out;
+  if(rgr->dpt_nm_tpl) dpt_nm_tpl=rgr->dpt_nm_tpl;
   if(rgr->ilev_nm_in) ilev_nm_in=rgr->ilev_nm_in;
   if(rgr->ilev_nm_out) ilev_nm_out=rgr->ilev_nm_out;
   //if(rgr->ilev_nm_tpl) ilev_nm_tpl=rgr->ilev_nm_tpl;
@@ -1029,11 +1035,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   }else if((rcd=nco_inq_dimid_flg(tpl_id,"nVertLevels",&lev_id)) == NC_NOERR){
     /* Automatically detect MPAS-O/I depth files so users can be lazy */
     lev_nm_tpl=(char *)strdup("nVertLevels");
+    dpt_nm_tpl=(char *)strdup("timeMonthly_avg_zMid");
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_out_dpt=True;
   }else if((rcd=nco_inq_dimid_flg(tpl_id,"depth",&lev_id)) == NC_NOERR){
     /* Automatically detect standard depth files so users can be lazy */
     lev_nm_tpl=(char *)strdup("depth");
+    lev_nm_out=(char *)strdup("depth");
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_out_dpt=True;
   }else{ /* !hyai */
@@ -1043,18 +1051,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !hyai */
     
   /* Adjust searches to user-specified coordinate names */
-  char *dpt_nm_in; /* [sng] Depth field name in input file */
-  char *dpt_nm_out; /* [sng] Depth field name in output file */
-  char *dpt_nm_tpl; /* [sng] Depth field name in template file */
   char *ps_nm_in; /* [sng] Surface pressure field name in input file */
   char *ps_nm_out; /* [sng] Surface pressure field name in output file */
   char *ps_nm_tpl; /* [sng] Surface pressure field name in template file */
-  if(rgr->dpt_nm_in) dpt_nm_in=rgr->dpt_nm_in;
-  if(rgr->dpt_nm_out) dpt_nm_out=rgr->dpt_nm_out;
-  if(rgr->dpt_nm_tpl) dpt_nm_tpl=rgr->dpt_nm_tpl;
-  if(rgr->plev_nm_in) plev_nm_in=rgr->plev_nm_in;
-  if(rgr->plev_nm_out) plev_nm_out=rgr->plev_nm_out;
-  if(rgr->plev_nm_tpl) plev_nm_tpl=rgr->plev_nm_tpl;
   if(rgr->ps_nm_in) ps_nm_in=rgr->ps_nm_in;
   if(rgr->ps_nm_out) ps_nm_out=rgr->ps_nm_out;
   if(rgr->ps_nm_tpl) ps_nm_tpl=rgr->ps_nm_tpl;
@@ -1205,7 +1204,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       }else{ /* !dpt_id_tpl */
 	/* If depth is unavailable, get horizontal sizes from bottomDepth and layerThickness */
 	if(bd_id_tpl == NC_MIN_INT || lt_id_tpl == NC_MIN_INT){
-	  (void)fprintf(stderr,"%s: ERROR %s Output three-dimensional depth/height grid file lacks depth/height variable %s and both variables (%s and %s) needed to construct it. Exiting...\n",nco_prg_nm_get(),fnc_nm,dpt_nm_out,"layerThickness","bottomDepth");
+	  (void)fprintf(stderr,"%s: ERROR %s Template three-dimensional depth/height grid file for output lacks depth/height variable %s and both variables (%s and %s) needed to construct it. Exiting...\n",nco_prg_nm_get(),fnc_nm,dpt_nm_tpl,"layerThickness","bottomDepth");
 	  nco_exit(EXIT_FAILURE);
 	} /* !bd_id, !lt_id */
 	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Determining horizontal and temporal gridsizes from %s and %s\n",nco_prg_nm_get(),fnc_nm,"bottomDepth","layerThickness");
@@ -2415,6 +2414,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,dpt_id,NULL,nco_flt_flg_prc_fll);
     var_crt_nbr++;
     if(dpt_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,dpt_id_tpl,dpt_id,PCK_ATT_CPY); else if(dpt_id_in != NC_MIN_INT) (void)nco_att_cpy(fl_xtr_id,out_id,dpt_id_in,dpt_id,PCK_ATT_CPY);
+
+    if(nco_dbg_lvl_get() >= nco_dbg_std){
+      for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+	rcd=nco_inq_dimname(out_id,dmn_ids_out[dmn_idx],dmn_nm);
+	(void)fprintf(stdout,"%s: DEBUG quark5 dmn_nbr_out = %d, dmn_nbr_dpt = %d, dmn_idx = %d, dmn_ids_out[%d] = %d, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_dpt,dmn_idx,dmn_idx,dmn_ids_out[dmn_idx],dmn_nm);
+      } /* !dmn_idx */
+    } /* !dbg */
+
   } /* !flg_grd_out_dpt_3D */
 
   if(flg_grd_out_dpt_3D){
@@ -2450,10 +2457,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd+=nco_def_var(out_id,"P0",crd_typ_out,dmn_nbr_0D,(int *)NULL,&p0_id);
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,p0_id,NULL,nco_flt_flg_prc_fll);
     var_crt_nbr++;
-    //    for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-    //      rcd=nco_inq_dimname(out_id,dmn_ids_out[dmn_idx],dmn_nm);
-    //      (void)fprintf(stdout,"%s: DEBUG quark5 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_out[%d] = %d, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_out[dmn_idx],dmn_nm);
-    //    } /* !dmn_idx */
     if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,ps_nm_out,crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
     if(flg_grd_hyb_ecmwf){
       /* Remove degenerate ECMWF vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions */
