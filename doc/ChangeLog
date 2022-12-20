@@ -1,8 +1,16 @@
-2022-12-16  Charlie Zender  <zender@uci.edu>
+2022-12-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha04: Messi';git push
 	git tag -a 5.1.4-alpha04 -m '';git push --tags
+
+	* Fix mlc_out dimensions, increase flexibility with mlc_nm and flg_mlc_out
+
+	* Successfully test 3D->1D and 1D->3D
+
+	* Revamp determination of horizontal bounds for flg_grd_in_dpt_1D
+
+2022-12-16  Charlie Zender  <zender@uci.edu>
 
 	* Refine defaults for ease-of-use
 

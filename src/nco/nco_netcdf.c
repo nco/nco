@@ -2039,17 +2039,33 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
     }else if(rcd == NC_EBADNAME){
       (void)fprintf(stdout,"Presumptively netCDF-safe name (created by nm2sng_nc()) \"%s\" also contains illegal characters. Exiting.",nm_nc);
       nco_err_exit(rcd,fnc_nm);
-    } /* endif */
+    } /* !rcd */
     assert(rcd == NC_NOERR || rcd == NC_EBADNAME);
     rcd=NCO_PUT_ATT_CHAR(nc_id,*var_id,att_nm,NC_CHAR,(size_t)strlen(var_nm),(const nco_char *)var_nm);
     if(nm_nc) free(nm_nc);
     if(rcd == NC_NOERR) (void)fprintf(stdout,"Original variable name is preserved in \"%s\" attribute.\n",att_nm);
-  } /* endif */
+  } /* !rcd */
+
+  if(0){
+    char var_nm[NC_MAX_NAME+1L];
+    char dmn_nm[NC_MAX_NAME+1L];
+    int dmn_idx; /* [idx] Dimension index */
+    long dmn_cnt;
+    size_t var_sz=1ULL; /* [nbr] Number of elements in variable (will be self-multiplied) */
+    (void)fprintf(stderr,"%s: INFO %s defining %s with %d dimensions\n","libnco",fnc_nm,var_nm,dmn_nbr);
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      rcd=nco_inq_dim(nc_id,dmn_id[dmn_idx],dmn_nm,&dmn_cnt);
+      (void)fprintf(stdout,"%s: DEBUG quark73 dmn_idx = %d, dmn_id[%d] = %d, dmn_cnt[%d] = %ld, dmn_nm = %s\n",fnc_nm,dmn_idx,dmn_idx,dmn_id[dmn_idx],dmn_idx,dmn_cnt,dmn_nm);
+      var_sz*=dmn_cnt;
+      if(dmn_idx == dmn_nbr-1) (void)fprintf(stderr,"%s: Total variable size = %ld\n",fnc_nm,var_sz);
+    } /* !dmn_idx */
+  } /* !dbg */
+
   if(rcd != NC_NOERR){
     (void)fprintf(stdout,"ERROR: %s failed to nc_def_var() variable \"%s\"\n",fnc_nm,var_nm);
-  } /* endif */
+    nco_err_exit(rcd,"nco_def_var()");
+  } /* !rcd */
 
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var()");
   return rcd;
 } /* !nco_def_var() */
 

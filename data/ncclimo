@@ -169,19 +169,15 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
             export PATH='/glade/u/home/zender/bin'\:${PATH}
             export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0/lib:/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib:/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	compy* | n[0123456789][0123456789][0123456789][0123456789] )
-	    # 20221212 Add build environment modules
-	    source /share/apps/intel/2020/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64 # Compy
 	    module purge
-	    module load intel/20.0.0
-	    module load intelmpi/2020 # Required for ncclimo/ncremap in MPI-mode
-	    module load netcdf/4.6.3
+	    module load gcc/10.2.0
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		# 20210519: This script takes significant time (5-10 seconds) to load
 		source /compyfs/software/mbtempest.envs.sh
 		E3SMU_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
-	    export PATH='/qfs/people/zender/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/qfs/people/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/qfs/people/zender/bin:/qfs/people/zender/anaconda/bin'\:${PATH}
+	    export LD_LIBRARY_PATH='/qfs/people/zender/lib:/qfs/people/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	cooley* | cc[0123456789][0123456789][0123456789] )
 	    # 20160421: Split cooley from mira binary locations to allow for different system libraries
 	    # http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
