@@ -2,9 +2,13 @@
 
 	* NCO 5.1.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha04: Messi';git push
-	git tag -a 5.1.4-alpha04 -m '';git push --tags
+	git tag -a 5.1.4-alpha04 -m 'ncremap: vrt 1D->3D;';git push --tags
 
-	* Fix mlc_out dimensions, increase flexibility with mlc_nm and flg_mlc_out
+	* Add "depth" and "depth_bnds" to nco_var_is_fix()
+
+	* Increase flexibility with mlc_nm, bd_nm, lt_nm, and flg_mlc_out
+
+	* Fix mlc_out dimensions and missing values
 
 	* Successfully test 3D->1D and 1D->3D
 

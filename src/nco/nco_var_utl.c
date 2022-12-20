@@ -1641,9 +1641,8 @@ nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
  const int var_trg_id) /* I [id] Variable ID */
 {
   /* Purpose: Is variable specified in a "bounds" attribute?
-     Typical variables that appear in a "bounds" attribute include "lat_bnds", "lon_bnds", "time_bnds", etc.
-     Such variables may be "multi-dimensional coordinates" that should
-     undergo special treatment by arithmetic operators.
+     Typical variables that appear in a "bounds" attribute include "lat_bnds", "lon_bnds", "time_bnds", "depth_bnds", etc.
+     Such variables may be "multi-dimensional coordinates" that should undergo special treatment by arithmetic operators.
      Routine based on nco_is_spc_in_crd_att() */
   nco_bool IS_SPC_IN_BND_ATT=False; /* [flg] Variable is listed in a "bounds" attribute  */
 

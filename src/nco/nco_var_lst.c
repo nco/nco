@@ -910,7 +910,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
        Otherwise, a new dummy dimension would be required to store the uncollapsed output */
     if((var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
 
-    /* Many operators should not process coordinate variables, or auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...)
+    /* Many operators should not process coordinate variables, or auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, depth_bnds...)
        20130112: As of today set is_crd_var true in nco_var_fll() when any of these conditions are true so no longer need to specify these conditions separately. 
        20150519: Add nco_is_spc_in_clm_att() to this list
        20160420: Add nco_is_spc_in_grd_att() to this list
@@ -918,7 +918,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
        is_spc_in_grd_att=nco_is_spc_in_grd_att(var[idx]->nc_id,var[idx]->id);
        is_spc_in_clm_att=nco_is_spc_in_clm_att(var[idx]->nc_id,var[idx]->id);
        is_spc_in_crd_att=nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id);
-       is_spc_in_bnd_att=nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id); */
+       is_spc_in_bnd_att=nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id);
+       20221220: Add "depth" and "depth_bnds" to nco_var_is_fix() */
 
     /* Override operation type depending on variable properties and program */
     switch(nco_prg_id){
@@ -1286,7 +1287,7 @@ nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
   if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports %s %s use stored lists of fixed variables for size- and rank-preserving operators\n",nco_prg_nm_get(),fnc_nm,nco_prg_nm_get(),is_sz_rnk_prv_rth_opr ? "will" : "will not");
 
   /* NB: all !strcmp()'s except "msk_" and "wgt_" which use strstr() */
-  if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm) || (strstr(var_nm,"wgt_") == var_nm))) var_is_fix=True;
+  if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"depth_bnds") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm) || (strstr(var_nm,"wgt_") == var_nm))) var_is_fix=True;
   /* Known "multi-dimensional coordinates" in CCSM-like model output:
      lat, lon, lev are normally 1-D coordinates
      Known exceptions:
@@ -1316,7 +1317,7 @@ nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
   
   /* Conditions #1 and #2 are already implemented above in the case() statement */
   /* Check condition #4 above: */
-  if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") || !strcmp(var_nm,"latitude") || !strcmp(var_nm,"longitude") )) var_is_fix=True;
+  if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"depth") || !strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") || !strcmp(var_nm,"latitude") || !strcmp(var_nm,"longitude") )) var_is_fix=True;
 
   if(is_sz_rnk_prv_rth_opr && cnv->MPAS){
     

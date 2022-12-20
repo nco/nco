@@ -1320,7 +1320,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    } /* !flg_hrz_mrv */
 	  } /* !lev_idx */
 	  idx_lev_max=lev_idx+1;
-	  if(idx_lev_max >= 0) mlc_out[grd_idx]=idx_lev_max;
+	  if(lev_idx >= 0) mlc_out[grd_idx]=idx_lev_max;
 	} /* !grd_idx */	
       } /* !mlc_id_tpl */      
     }else{ /* !dpt_id_tpl */      
@@ -1997,7 +1997,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	      } /* !flg_hrz_mrv */
 	    } /* !lev_idx */
 	    idx_lev_max=lev_idx+1;
-	    if(idx_lev_max >= 0) mlc_in[grd_idx]=idx_lev_max;
+	    if(lev_idx >= 0) mlc_in[grd_idx]=idx_lev_max;
 	  } /* !grd_idx */	
 	} /* !mlc_id_in */
       }else{ /* !dpt_id_in */
@@ -2902,7 +2902,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
     if(flg_mlc_out){
       /* Convert C 0-based to Fortran 1-based indices before output */
-      for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++) mlc_out[grd_idx]++;
+      for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	if(mlc_out[grd_idx] != NC_FILL_INT)
+	  mlc_out[grd_idx]++;
       (void)nco_put_var(out_id,mlc_id,mlc_out,NC_INT);
     } /* !flg_mlc_out */
   } /* !flg_grd_out_dpt_3D */
