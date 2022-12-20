@@ -128,11 +128,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.1.4-alpha03
-@set doc-edition 5.1.4-alpha03
+@set nco-edition 5.1.4-alpha04
+@set doc-edition 5.1.4-alpha04
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 14 December 2022
+@set update-date 20 December 2022
 @set update-month December 2022
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1682,7 +1682,7 @@ differences between these files and your own.
 * Temporary Output Files::
 * Appending Variables::
 * Simple Arithmetic and Interpolation::
-* Statistics vs. Concatenation::
+* Statistics vs Concatenation::
 * Large Numbers of Files::
 * Large Datasets::
 * Memory Requirements::
@@ -1955,7 +1955,7 @@ same name but different sizes.
 @html
 <a name="bnr"></a> <!-- http://nco.sf.net/nco.html#bnr -->
 @end html
-@node Simple Arithmetic and Interpolation, Statistics vs. Concatenation, Appending Variables, Strategies
+@node Simple Arithmetic and Interpolation, Statistics vs Concatenation, Appending Variables, Strategies
 @section Simple Arithmetic and Interpolation
 
 Users comfortable with @acronym{NCO} semantics may find it easier to
@@ -1973,8 +1973,8 @@ operations from the command line.
 <a name="statisticians"></a> <!-- http://nco.sf.net/nco.html#statisticians -->
 <a name="averagers"></a> <!-- http://nco.sf.net/nco.html#averagers -->
 @end html
-@node Statistics vs. Concatenation, Large Numbers of Files, Simple Arithmetic and Interpolation, Strategies
-@section Statistics vs.@: Concatenation
+@node Statistics vs Concatenation, Large Numbers of Files, Simple Arithmetic and Interpolation, Strategies
+@section Statistics vs Concatenation
 
 @html
 <a name="sym_ncea"></a> <!-- http://nco.sf.net/nco.html#sym_ncea -->
@@ -2019,7 +2019,7 @@ First, let's describe the concatenators, then the statistics tools.
 @html
 <a name="cnc"></a> <!-- http://nco.sf.net/nco.html#cnc -->
 @end html
-@node Concatenation, Averaging, Statistics vs. Concatenation, Statistics vs. Concatenation
+@node Concatenation, Averaging, Statistics vs Concatenation, Statistics vs Concatenation
 @subsection Concatenators @command{ncrcat} and @command{ncecat}
 @cindex @command{ncecat}
 @cindex @command{ncrcat}
@@ -2104,7 +2104,7 @@ To conserve system memory, use @command{ncrcat} where possible.
 @html
 <a name="avg"></a> <!-- http://nco.sf.net/nco.html#avg -->
 @end html
-@node Averaging, Interpolating, Concatenation, Statistics vs. Concatenation
+@node Averaging, Interpolating, Concatenation, Statistics vs Concatenation
 @subsection Averagers @command{nces}, @command{ncra}, and @command{ncwa} 
 @cindex @command{nces}
 @cindex @command{ncra}
@@ -2137,7 +2137,7 @@ description of @command{ncra}).
 @html
 <a name="ntp"></a> <!-- http://nco.sf.net/nco.html#ntp -->
 @end html
-@node Interpolating,  , Averaging, Statistics vs. Concatenation
+@node Interpolating,  , Averaging, Statistics vs Concatenation
 @subsection Interpolator @command{ncflint}
 @cindex @command{ncflint}
 
@@ -2153,7 +2153,7 @@ units.
 <a name="lrg"></a> <!-- http://nco.sf.net/nco.html#lrg -->
 <a name="input_files"></a> <!-- http://nco.sf.net/nco.html#input_files -->
 @end html
-@node Large Numbers of Files, Large Datasets, Statistics vs. Concatenation, Strategies
+@node Large Numbers of Files, Large Datasets, Statistics vs Concatenation, Strategies
 @section Large Numbers of Files
 @cindex files, numerous input
 @cindex @code{-n @var{loop}}
@@ -9812,14 +9812,14 @@ Datasets produced with netCDF or @acronym{CCR}-supported codecs
 who upgrade to netCDF 4.9.0 or later or who install the
 @acronym{CCR}.
 There is no difference between a losslessly compressed dataset
-produced with a @acronym{CCR}-supplied vs. a netCDF-supplied
+produced with a @acronym{CCR}-supplied vs.@: a netCDF-supplied
 filter.
 However, reading a dataset quantized by a @acronym{CCR} filter (e.g.,
 BitGroom or GranularBG) requires access to the @acronym{CCR} filter,
 which forces users to take an extra step to install the
 @acronym{CCR}. 
 This is an unfortunate artifact of implementing quantization as a
-codec (which the @acronym{CCR} must do) vs. an internal numerical
+codec (which the @acronym{CCR} must do) vs.@: an internal numerical
 function (which netCDF and @acronym{NCO} do).
 Where possible, people should encode datasets with netCDF-supported 
 algorithms and codecs in preference to @acronym{CCR} or raw
@@ -21494,7 +21494,7 @@ ncecat -G 85/ a.nc b.nc c.nc 8589.nc # Output groups 85/00, 85/01, 85/02
 
 With both @acronym{RAG} and @acronym{GAG} the @var{output-file} size is
 the sum of the sizes of the extracted variables in the input files. 
-@xref{Statistics vs. Concatenation}, for a description of the
+@xref{Statistics vs Concatenation}, for a description of the
 distinctions between the various statistics tools and concatenators. 
 @cindex multi-file operators
 @cindex standard input
@@ -21776,7 +21776,7 @@ nces --nsm_grp                  mdl1.nc mdl2.nc mdl3.nc out.nc
 nces --nsm_grp --nsm_sfx='_avg' mdl1.nc mdl2.nc mdl3.nc out.nc
 @end example
 
-@xref{Statistics vs. Concatenation}, for a description of the
+@xref{Statistics vs Concatenation}, for a description of the
 distinctions between the statistics tools and concatenators. 
 @cindex multi-file operators
 @cindex standard input
@@ -24989,7 +24989,7 @@ averages) of record variables across an arbitrary number of
 @cindex record dimension
 The record dimension is, by default, retained as a degenerate 
 @w{(size 1)} dimension in the output variables.
-@xref{Statistics vs. Concatenation}, for a description of the
+@xref{Statistics vs Concatenation}, for a description of the
 distinctions between the various statistics tools and concatenators. 
 @cindex multi-file operators
 @cindex standard input
@@ -25305,7 +25305,7 @@ number of @var{input-files}.
 @cindex record dimension
 The final record dimension is by default the sum of the lengths of the 
 record dimensions in the input files.
-@xref{Statistics vs. Concatenation}, for a description of the
+@xref{Statistics vs Concatenation}, for a description of the
 distinctions between the various statistics tools and concatenators. 
 @cindex multi-file operators
 @cindex standard input
@@ -29501,7 +29501,7 @@ DESCRIPTION
 @command{ncwa} performs statistics (including, but not limited to,
 averages) on variables in a single file over arbitrary dimensions, with
 options to specify weights, masks, and normalization.
-@xref{Statistics vs. Concatenation}, for a description of the
+@xref{Statistics vs Concatenation}, for a description of the
 distinctions between the various statistics tools and concatenators. 
 The default behavior of @command{ncwa} is to arithmetically average
 every numerical variable over all dimensions and to produce a scalar 
