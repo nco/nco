@@ -699,7 +699,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
      Otherwise copy only indicated variable's attributes
      When PCK_ATT_CPY is false, copy all attributes except "scale_factor", "add_offset" */
 
-  char att_nm[NC_MAX_NAME+1L];
+  char att_nm[NC_MAX_NAME+1L]={0};
   char var_nm[NC_MAX_NAME+1L];
 
   int fl_fmt; /* [enm] Output file format */
