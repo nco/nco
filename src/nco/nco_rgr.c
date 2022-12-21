@@ -1115,7 +1115,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int lev_id_tpl=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_tpl=ps_id; /* [id] Surface pressure ID */
 
-  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
+  char dmn_nm[NC_MAX_NAME+1L]; /* [sng] Dimension name */
   int *dmn_ids_in=NULL; /* [id] Input file dimension IDs */
   int *dmn_ids_out=NULL; /* [id] Output file dimension IDs */
   int *dmn_ids_rec=NULL; /* [id] Unlimited dimension IDs */
@@ -4822,8 +4822,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       goto skp_cf;
     } /* !crd_rnk */
     rcd=nco_inq_vardimid(in_id,cf->crd_id[0],cf->dmn_id);
-    cf->dmn_nm[0]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
-    cf->dmn_nm[1]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
+    cf->dmn_nm[0]=(char *)nco_malloc((NC_MAX_NAME+1L)*sizeof(NC_CHAR));
+    cf->dmn_nm[1]=(char *)nco_malloc((NC_MAX_NAME+1L)*sizeof(NC_CHAR));
     rcd=nco_inq_dimname(in_id,cf->dmn_id[0],cf->dmn_nm[0]);
     rcd=nco_inq_dimname(in_id,cf->dmn_id[1],cf->dmn_nm[1]);
     
@@ -5336,7 +5336,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   rcd=nco_inq_dimid_flg(out_id,bnd_nm_out,&dmn_id_bnd);
   if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,bnd_nm_out,bnd_nbr_out,&dmn_id_bnd);
 
-  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
+  char dmn_nm[NC_MAX_NAME+1L]; /* [sng] Dimension name */
   char *var_nm; /* [sng] Variable name */
   int *dmn_id_in=NULL; /* [id] Dimension IDs */
   int *dmn_id_out=NULL; /* [id] Dimension IDs */
@@ -6173,7 +6173,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt_out+dmn_idx);
 	  if(dmn_cnt_out[dmn_idx] == 0L){
 	    /* No records have been written, so overwrite zero output record size with input record size */
-	    char dmn_rec_nm[NC_MAX_NAME]; /* [sng] Record dimension name */
+	    char dmn_rec_nm[NC_MAX_NAME+1L]; /* [sng] Record dimension name */
 	    int dmn_rec_id_in;
 	    rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_rec_nm);
 	    rcd=nco_inq_dimid(in_id,dmn_rec_nm,&dmn_rec_id_in);
@@ -8889,7 +8889,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth_lcl=NULL;
   char *msk_nm_in=NULL;
-  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
+  char dmn_nm[NC_MAX_NAME+1L]; /* [sng] Dimension name */
 
   /* SCRIP-format grid names are non-negotiable and thus fixed not dynamic */
   char area_nm[]="grid_area"; /* 20150830: NB ESMF_RegridWeightGen --user_areas looks for variable named "grid_area" */
@@ -9197,8 +9197,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       goto skp_cf;
     } /* !crd_rnk */
     rcd=nco_inq_vardimid(in_id,cf->crd_id[0],cf->dmn_id);
-    cf->dmn_nm[0]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
-    cf->dmn_nm[1]=(char *)nco_malloc(NC_MAX_NAME*sizeof(NC_CHAR));
+    cf->dmn_nm[0]=(char *)nco_malloc((NC_MAX_NAME+1L)*sizeof(NC_CHAR));
+    cf->dmn_nm[1]=(char *)nco_malloc((NC_MAX_NAME+1L)*sizeof(NC_CHAR));
     rcd=nco_inq_dimname(in_id,cf->dmn_id[0],cf->dmn_nm[0]);
     rcd=nco_inq_dimname(in_id,cf->dmn_id[1],cf->dmn_nm[1]);
     

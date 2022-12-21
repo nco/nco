@@ -1,5 +1,11 @@
 2022-12-20  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.1.4-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha05: Antlr';git push
+	git tag -a 5.1.4-alpha05 -m '';git push --tags
+
+	* Use NC_MAX_NAME+1 instead of NC_MAX_NAME
+
 	* NCO 5.1.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha04: Messi';git push
 	git tag -a 5.1.4-alpha04 -m 'ncremap: vrt 3D->1D, 3D->3D, 1D->3D, 1D->1D work;';git push --tags

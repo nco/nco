@@ -175,8 +175,8 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   nco_bool flg_netCDF4_rename_trick=False; /* [flg] Re-name _FillValue in order to create/modify/overwrite it */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */
   
-  char att_nm[NC_MAX_NAME];
-  char var_nm[NC_MAX_NAME];
+  char att_nm[NC_MAX_NAME+1L];
+  char var_nm[NC_MAX_NAME+1L];
   
   /* NB: netCDF2 specifies att_sz is type int, netCDF3 and netCDF4 use size_t */
   int nbr_att; /* [nbr] Number of attributes */
@@ -699,8 +699,8 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
      Otherwise copy only indicated variable's attributes
      When PCK_ATT_CPY is false, copy all attributes except "scale_factor", "add_offset" */
 
-  char att_nm[NC_MAX_NAME];
-  char var_nm[NC_MAX_NAME];
+  char att_nm[NC_MAX_NAME+1L];
+  char var_nm[NC_MAX_NAME+1L];
 
   int fl_fmt; /* [enm] Output file format */
   int idx;
@@ -868,7 +868,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     } /* endif copying _FillValue */
 
   } /* end loop over attributes */
-} /* end nco_att_cpy() */
+} /* !nco_att_cpy() */
 
 void 
 nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
@@ -955,7 +955,7 @@ nco_prv_att_cat /* [fnc] Add provenance (history contents) of appended file to p
   char *prv_crr=NULL;
   char *prv_new;
 
-  char att_nm[NC_MAX_NAME];
+  char att_nm[NC_MAX_NAME+1L];
   char time_stamp_sng[TIME_STAMP_SNG_LNG];
   
   const char att_nm_prv[]="history_of_appended_files"; /* [sng] Lowercase name of provenance attribute */
@@ -1081,7 +1081,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   /* Length of string + NUL required to hold output of ctime() */
 #define TIME_STAMP_SNG_LNG 25 
   
-  char att_nm[NC_MAX_NAME];
+  char att_nm[NC_MAX_NAME+1L];
   char *ctime_sng;
   char *hst_crr=NULL;
   char *hst_new;

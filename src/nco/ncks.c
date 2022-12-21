@@ -1477,7 +1477,7 @@ main(int argc,char **argv)
         /* Get unlimited dimension information from input file/group */
         rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
         if(nbr_rec_lcl > 0){
-          char dmn_nm[NC_MAX_NAME]; 
+          char dmn_nm[NC_MAX_NAME+1L]; 
           long rec_dmn_sz;
           for(int rec_idx=0;rec_idx<nbr_rec_lcl;rec_idx++){
             (void)nco_inq_dim(in_id,dmn_ids_rec[rec_idx],dmn_nm,&rec_dmn_sz);

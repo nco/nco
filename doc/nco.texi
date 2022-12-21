@@ -30171,13 +30171,15 @@ Large work-load testing
 @cindex Remik Ziemlinski
 @item Xylar Asay-Davis, Sterling Baldwin, Dave Blodgett, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Chris Golaz, Barron Henderson, Aleksandar Jelenak, Markus Liebig, Keith Lindsay, Daniel Macks, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Mark Taylor, Matthew Thompson, Qi Tang, Adrian Tompkins, Paul Ullrich, George White, Andrew Wittenberg, Min Xu, Remik Ziemlinski
 Excellent bug reports and feature requests.
+@cindex Xylar Asay-Davis
 @cindex Filipe Fernandes
 @cindex Isuru Fernando
 @cindex Craig MacLachlan
 @cindex Hugo Oliveira
 @cindex Rich Signell
 @cindex Kyle Wilcox
-@item Filipe Fernandes, Isuru Fernando, Craig MacLachlan, Hugo Oliveira, Rich Signell, Kyle Wilcox
+@cindex Klaus Zimmermann
+@item Filipe Fernandes, Isuru Fernando, Craig MacLachlan, Hugo Oliveira, Rich Signell, Kyle Wilcox, Klaus Zimmermann
 Anaconda packaging
 @cindex Xylar Asay-Davis
 @cindex Daniel Baumann
