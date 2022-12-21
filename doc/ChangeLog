@@ -2,9 +2,9 @@
 
 	* NCO 5.1.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha05: Antlr';git push
-	git tag -a 5.1.4-alpha05 -m '';git push --tags
+	git tag -a 5.1.4-alpha05 -m 'all: Simplify UDUnits cnf';git push --tags
 
-	* configure.ac: De-cruft, revamp, simplify UDUnits support
+	* configure.ac: De-cruft, revamp, simplify UDUnits support, eliminate UDUNITS_PATH argument
 
 2022-12-20  Charlie Zender  <zender@uci.edu>
 

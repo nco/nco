@@ -45,6 +45,7 @@
 # AC_DEFINE Define token TKN to value VAL with comment CMNT in config.h
 # AC_DEFINE_UNQUOTED Define token TKN to value VAL with comment CMNT in config.h. Use when TKN or VAL are shell variables.
 # AC_EGREP_HEADER Search CPP output of header.h (NB: CPP outputs C-code only), define ${flg} accordingly
+# AC_MSG_ERROR Print MSG to output and abort configure
 # AC_MSG_NOTICE Print MSG to output
 # AC_MSG_WARN Print MSG to output
 # AC_SUBST fxm
@@ -55,7 +56,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOS will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[5.1.4-alpha04],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[5.1.4-alpha05],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -741,7 +742,9 @@ AC_ARG_ENABLE(udunits2,AS_HELP_STRING([--enable-udunits2],[Build-in UDUnits2 sup
 
 # Begin UDUnits2
 # Check for UDUnits2 libraries unless told not to
-if test "${enable_udunits2}" != 'no'; then
+# 20221221: De-cruft, revamp, simplify UDUnits support, eliminate UDUNITS_PATH argument
+# 20221221: From now on, failure to find UDUnits, if enabled, aborts configure
+if test "x${enable_udunits2}" != 'xno'; then
 
     AC_CHECK_HEADER([udunits2.h], ,
 		    [AC_MSG_ERROR([UDUNITS2 header-file not found])])
