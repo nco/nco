@@ -166,9 +166,6 @@
 /* Define to 1 if you have the `dl' library (-ldl). */
 #undef HAVE_LIBDL
 
-/* Define to 1 if you have the `expat' library (-lexpat). */
-#undef HAVE_LIBEXPAT
-
 /* Define to 1 if you have the `gsl' library (-lgsl). */
 #undef HAVE_LIBGSL
 
@@ -195,9 +192,6 @@
 
 /* Define to 1 if you have the `thread' library (-lthread). */
 #undef HAVE_LIBTHREAD
-
-/* Define to 1 if you have the `udunits2' library (-ludunits2). */
-#undef HAVE_LIBUDUNITS2
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
@@ -646,9 +640,6 @@
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
-
-/* Location of UDUnits2 data file */
-#undef UDUNITS2_PATH
 
 /* User */
 #undef USER

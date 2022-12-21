@@ -1329,8 +1329,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
       bd_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(var_typ_rgr));
       lt_out=(double *)nco_malloc_dbg(tm_nbr_out*grd_sz_out*lev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() lt_out value buffer");
-      rcd=nco_get_var(tpl_id,bd_id,bd_out,crd_typ_out);
-      rcd=nco_get_var(tpl_id,lt_id,lt_out,crd_typ_out);
+      rcd=nco_get_var(tpl_id,bd_id_tpl,bd_out,crd_typ_out);
+      rcd=nco_get_var(tpl_id,lt_id_tpl,lt_out,crd_typ_out);
       /* 20221215: Horizontal regridding omits extensive variable maxLevelCell */
       if(mlc_id_tpl != NC_MIN_INT){
 	rcd=nco_get_var(tpl_id,mlc_id,mlc_out,NC_INT);

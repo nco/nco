@@ -670,7 +670,6 @@ HAVE_MAKEINFO
 NCOXX
 NCO_CXX
 PATH_TO_NCGEN
-UDUNITS2_PATH
 ENABLE_CCR_FALSE
 ENABLE_CCR_TRUE
 ENABLE_GSL_FALSE
@@ -881,8 +880,7 @@ NETCDF_INC
 NETCDF_LIB
 NETCDF_ROOT
 ANTLR_ROOT
-I18N_SHARE
-UDUNITS2_PATH'
+I18N_SHARE'
 
 
 # Initialize some variables set by options.
@@ -1549,7 +1547,7 @@ Optional Features:
   --enable-gsl            Build-in GSL support if possible [default=yes]
   --enable-ccr            Build-in CCR support if possible [default=no]
   --enable-regex          Allow extended regular expressions [default=yes]
-  --enable-udunits        Build-in UDUnits support if possible [default=no]
+  --enable-udunits        Build-in UDUnits2 support if possible [default=no]
   --enable-udunits2       Build-in UDUnits2 support if possible [default=yes]
   --enable-debug-custom   Activate all known, helpful compile-time and
                           run-time debugging checks such as pedantic warnings,
@@ -1606,9 +1604,6 @@ Some influential environment variables:
   ANTLR_ROOT  Location of ANTLR version 2.7.x installation (compile-time)
   I18N_SHARE  Root of internationalization (i18n) locale directories (used at
               run-time)
-  UDUNITS2_PATH
-              Root directory of UDUnits2 (normally contains bin, include, lib,
-              share subdirectories)
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -21093,15 +21088,15 @@ fi
 # preprocessing programs to test for C and C++ features.
 
 echo "########################################"
-echo "#     Testing for UDUNITS support      #"
+echo "#     Testing for UDUNITS2 support     #"
 echo "########################################"
 
 # Check whether --enable-udunits was given.
 if test ${enable_udunits+y}
 then :
-  enableval=$enable_udunits; enable_udunits=${enableval}
+  enableval=$enable_udunits; enable_udunits2=${enableval}
 else $as_nop
-  enable_udunits=yes
+  enable_udunits2=yes
 fi
 
 # Check whether --enable-udunits2 was given.
@@ -21112,401 +21107,90 @@ else $as_nop
   enable_udunits2=yes
 fi
 
-# Are both UDUnits and UDUnits2 requested?
-if (test "${enable_udunits}" != 'no' && test "${enable_udunits2}" != 'no'); then
-# Override UDUnits request
-    echo "WARNING: Requested both UDUnits and UDUnits2 support---overriding UDUnits"
-    echo "Will attempt to build NCO with UDUnits support from libudunits2, not from libudunits"
-    enable_udunits='no'
-fi # End test for UDUnits duplication
 
 # Begin UDUnits2
 # Check for UDUnits2 libraries unless told not to
 if test "${enable_udunits2}" != 'no'; then
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for XML_ParserCreate in -lexpat" >&5
-printf %s "checking for XML_ParserCreate in -lexpat... " >&6; }
-if test ${ac_cv_lib_expat_XML_ParserCreate+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lexpat  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-char XML_ParserCreate ();
-int
-main (void)
-{
-return XML_ParserCreate ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_expat_XML_ParserCreate=yes
-else $as_nop
-  ac_cv_lib_expat_XML_ParserCreate=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_expat_XML_ParserCreate" >&5
-printf "%s\n" "$ac_cv_lib_expat_XML_ParserCreate" >&6; }
-if test "x$ac_cv_lib_expat_XML_ParserCreate" = xyes
-then :
-  printf "%s\n" "#define HAVE_LIBEXPAT 1" >>confdefs.h
-
-  LIBS="-lexpat $LIBS"
-
-fi
-
-    if test "${UDUNITS2_PATH}" != ''; then
-	if test -d "${UDUNITS2_PATH}"; then
-	    # NB: Use ${UDUNITS2_PATH} not ${UDUNITS2_ROOT} because UDUnits software looks for ${UDUNITS2_PATH}
-	    # Add ${UDUNITS2_PATH}/lib to search path if present
-	    # Some systems install 64bit libraries into $prefix/lib64 instead of $prefix/lib
-	    # If NCO libraries were installed in $prefix/lib64, then UDUNITS presumably was installed in $UDUNITS2_PATH/lib64
-	    # Therefore, we take `basename $libdir` (libdir=$prefix/lib|lib64), which is 'lib' or 'lib64', and append it to UDUNITS2_PATH
-	    # If this directory does not exist, we append 'lib' to UDUNITS2_PATH
-	    # (Daniel Neumann, 3rd June 2017)
-	    nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
-	    if test -d "${UDUNITS2_PATH}/`basename $libdir`"; then
-		LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/`basename $libdir`"
-	    else
-		LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
-	    fi
-	    CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
-	else
-	    echo "WARNING: UDUNITS2_PATH location \"${UDUNITS2_PATH}\" does not exist!"
-	fi # !UDUNITS2_PATH
-    elif test "${NETCDF_INC}"; then
-	nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
-    fi # !UDUNITS2_PATH
-    if test "${UDUNITS2_PATH}" = ''; then
-	# NO UDUNITS2_PATH section
-	# Fedora 1.7 has /usr/include/udunits2/udunits2.h
-	# 20160418 FC23 has /usr/include/udunits2/udunits2.h
-	# Add this path to CPPFLAGS if it exists, otherwise do nothing
-	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for /usr/include/udunits2/udunits2.h" >&5
-printf %s "checking for /usr/include/udunits2/udunits2.h... " >&6; }
-if test ${ac_cv_file__usr_include_udunits2_udunits2_h+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/include/udunits2/udunits2.h"; then
-  ac_cv_file__usr_include_udunits2_udunits2_h=yes
-else
-  ac_cv_file__usr_include_udunits2_udunits2_h=no
-fi
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_include_udunits2_udunits2_h" >&5
-printf "%s\n" "$ac_cv_file__usr_include_udunits2_udunits2_h" >&6; }
-if test "x$ac_cv_file__usr_include_udunits2_udunits2_h" = xyes
-then :
-  CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"
-fi
-
-	# 20170113 FC25 has /usr/include/udunits2/udunits2.h
-	# Ubuntu
-	# /usr/lib/x86_64-linux-gnu/libudunits2.a
-	# /usr/lib/i386-linux-gnu/libudunits2.a
-	# /usr/include/udunits2.h
-	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for /usr/include/udunits2.h" >&5
-printf %s "checking for /usr/include/udunits2.h... " >&6; }
-if test ${ac_cv_file__usr_include_udunits2_h+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/include/udunits2.h"; then
-  ac_cv_file__usr_include_udunits2_h=yes
-else
-  ac_cv_file__usr_include_udunits2_h=no
-fi
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_include_udunits2_h" >&5
-printf "%s\n" "$ac_cv_file__usr_include_udunits2_h" >&6; }
-if test "x$ac_cv_file__usr_include_udunits2_h" = xyes
-then :
-  CPPFLAGS="$CPPFLAGS -I/usr/include"
-fi
-
-	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for /usr/lib/x86_64-linux-gnu/libudunits2.a" >&5
-printf %s "checking for /usr/lib/x86_64-linux-gnu/libudunits2.a... " >&6; }
-if test ${ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/lib/x86_64-linux-gnu/libudunits2.a"; then
-  ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a=yes
-else
-  ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a=no
-fi
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a" >&5
-printf "%s\n" "$ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a" >&6; }
-if test "x$ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a" = xyes
-then :
-  LDFLAGS="$LDFLAGS -L/usr/lib/x86_64-linux-gnu"
-fi
-
-	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for /usr/lib/i386-linux-gnu/libudunits2.a" >&5
-printf %s "checking for /usr/lib/i386-linux-gnu/libudunits2.a... " >&6; }
-if test ${ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/lib/i386-linux-gnu/libudunits2.a"; then
-  ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a=yes
-else
-  ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a=no
-fi
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a" >&5
-printf "%s\n" "$ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a" >&6; }
-if test "x$ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a" = xyes
-then :
-  LDFLAGS="$LDFLAGS -L/usr/lib/i386-linux-gnu"
-fi
-
-	# Mac OSX MacPorts packages
-	# sudo port install libdap
-	# sudo port install gsl
-	# sudo port install antlr
-	# sudo port install udunits2
-	# sudo port install netcdf
-	# installs to /opt/local/include/udunits2/udunits2.h
-	# /opt/local/share/udunits/udunits2.xml
-	# Add this path to CPPFLAGS if it exists, otherwise do nothing
-	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for /opt/local/include/udunits2/udunits2.h" >&5
-printf %s "checking for /opt/local/include/udunits2/udunits2.h... " >&6; }
-if test ${ac_cv_file__opt_local_include_udunits2_udunits2_h+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/opt/local/include/udunits2/udunits2.h"; then
-  ac_cv_file__opt_local_include_udunits2_udunits2_h=yes
-else
-  ac_cv_file__opt_local_include_udunits2_udunits2_h=no
-fi
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_include_udunits2_udunits2_h" >&5
-printf "%s\n" "$ac_cv_file__opt_local_include_udunits2_udunits2_h" >&6; }
-if test "x$ac_cv_file__opt_local_include_udunits2_udunits2_h" = xyes
-then :
-  CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"
-fi
-
-	#/opt/local/lib/libudunits2.a
-	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for /opt/local/lib/libudunits2.a" >&5
-printf %s "checking for /opt/local/lib/libudunits2.a... " >&6; }
-if test ${ac_cv_file__opt_local_lib_libudunits2_a+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/opt/local/lib/libudunits2.a"; then
-  ac_cv_file__opt_local_lib_libudunits2_a=yes
-else
-  ac_cv_file__opt_local_lib_libudunits2_a=no
-fi
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_lib_libudunits2_a" >&5
-printf "%s\n" "$ac_cv_file__opt_local_lib_libudunits2_a" >&6; }
-if test "x$ac_cv_file__opt_local_lib_libudunits2_a" = xyes
-then :
-  LDFLAGS="$LDFLAGS -L/opt/local/lib"
-fi
-
-	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for /opt/local/lib/libudunits2.dylib" >&5
-printf %s "checking for /opt/local/lib/libudunits2.dylib... " >&6; }
-if test ${ac_cv_file__opt_local_lib_libudunits2_dylib+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/opt/local/lib/libudunits2.dylib"; then
-  ac_cv_file__opt_local_lib_libudunits2_dylib=yes
-else
-  ac_cv_file__opt_local_lib_libudunits2_dylib=no
-fi
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_lib_libudunits2_dylib" >&5
-printf "%s\n" "$ac_cv_file__opt_local_lib_libudunits2_dylib" >&6; }
-if test "x$ac_cv_file__opt_local_lib_libudunits2_dylib" = xyes
-then :
-  LDFLAGS="$LDFLAGS -L/opt/local/lib"
-fi
-
-	# 20201001 MacPorts installs /opt/local/lib/libudunits2.dylib not /opt/local/lib/libudunits2.a
-	# 20101011 Debian installs udunits2.xml in /usr/share/xml/udunits/udunits2
-	# NB: 20100729 udunits2.xml location seems to have changed from
-	# /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml
-	# Not sure of location in more recent Fedora systems...
-	# Updating patch from Fedora Core 6 nco.spec:
-	for udunits2_data_file in /usr/share/xml/udunits/udunits2/udunits2.xml /usr/local/share/udunits/udunits2.xml /usr/local/share/udunits2.xml /share/udunits2.xml /usr/share/udunits/udunits2.xml; do
-	    if test -e "$udunits2_data_file" ; then
-		nco_udunits2_xml="$udunits2_data_file"
-	    fi
-	done
-    fi # end NO UDUNITS2_PATH section
-
-# Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
-    as_ac_File=`printf "%s\n" "ac_cv_file_$nco_udunits2_xml" | $as_tr_sh`
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $nco_udunits2_xml" >&5
-printf %s "checking for $nco_udunits2_xml... " >&6; }
-if eval test \${$as_ac_File+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "$nco_udunits2_xml"; then
-  eval "$as_ac_File=yes"
-else
-  eval "$as_ac_File=no"
-fi
-fi
-eval ac_res=\$$as_ac_File
-	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-printf "%s\n" "$ac_res" >&6; }
-if eval test \"x\$"$as_ac_File"\" = x"yes"
-then :
-
-else $as_nop
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: file UDUNITS2 XML database file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support." >&5
-printf "%s\n" "$as_me: WARNING: file UDUNITS2 XML database file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support." >&2;}
-fi
-
-	# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
-
-printf "%s\n" "#define UDUNITS2_PATH \"$nco_udunits2_xml\"" >>confdefs.h
-
-
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: NB: Following tests of UDUnits2 library and header must succeed for UDUnits2 support:" >&5
-printf "%s\n" "$as_me: NB: Following tests of UDUnits2 library and header must succeed for UDUnits2 support:" >&6;}
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ut_read_xml in -ludunits2" >&5
-printf %s "checking for ut_read_xml in -ludunits2... " >&6; }
-if test ${ac_cv_lib_udunits2_ut_read_xml+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ludunits2  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-char ut_read_xml ();
-int
-main (void)
-{
-return ut_read_xml ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_udunits2_ut_read_xml=yes
-else $as_nop
-  ac_cv_lib_udunits2_ut_read_xml=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_udunits2_ut_read_xml" >&5
-printf "%s\n" "$ac_cv_lib_udunits2_ut_read_xml" >&6; }
-if test "x$ac_cv_lib_udunits2_ut_read_xml" = xyes
-then :
-  printf "%s\n" "#define HAVE_LIBUDUNITS2 1" >>confdefs.h
-
-  LIBS="-ludunits2 $LIBS"
-
-else $as_nop
-  enable_udunits2=no
-fi
-
-    if test "${UDUNITS2_PATH}"; then
-	as_ac_File=`printf "%s\n" "ac_cv_file_${UDUNITS2_PATH}/include/udunits2.h" | $as_tr_sh`
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ${UDUNITS2_PATH}/include/udunits2.h" >&5
-printf %s "checking for ${UDUNITS2_PATH}/include/udunits2.h... " >&6; }
-if eval test \${$as_ac_File+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "${UDUNITS2_PATH}/include/udunits2.h"; then
-  eval "$as_ac_File=yes"
-else
-  eval "$as_ac_File=no"
-fi
-fi
-eval ac_res=\$$as_ac_File
-	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-printf "%s\n" "$ac_res" >&6; }
-if eval test \"x\$"$as_ac_File"\" = x"yes"
-then :
-
-printf "%s\n" "#define HAVE_UDUNITS2_H 1" >>confdefs.h
-
-else $as_nop
-  enable_udunits2=no
-fi
-
-    else
-	ac_fn_c_check_header_compile "$LINENO" "udunits2.h" "ac_cv_header_udunits2_h" "$ac_includes_default"
+    ac_fn_c_check_header_compile "$LINENO" "udunits2.h" "ac_cv_header_udunits2_h" "$ac_includes_default"
 if test "x$ac_cv_header_udunits2_h" = xyes
 then :
 
-printf "%s\n" "#define HAVE_UDUNITS2_H 1" >>confdefs.h
-
 else $as_nop
-  enable_udunits2=no
+  as_fn_error $? "UDUNITS2 header-file not found" "$LINENO" 5
 fi
 
-    fi
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing ut_parse" >&5
+printf %s "checking for library containing ut_parse... " >&6; }
+if test ${ac_cv_search_ut_parse+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
 
-    if test "${enable_udunits2}" = 'no'; then
-	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: UDUnits2 support disabled (missing/unusable library or header file)" >&5
-printf "%s\n" "$as_me: WARNING: UDUnits2 support disabled (missing/unusable library or header file)" >&2;}
-    elif test "${enable_udunits2}" = 'yes'; then
-	LIBS="${LIBS} -ludunits2"
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+char ut_parse ();
+int
+main (void)
+{
+return ut_parse ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' udunits2
+do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_search_ut_parse=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext
+  if test ${ac_cv_search_ut_parse+y}
+then :
+  break
+fi
+done
+if test ${ac_cv_search_ut_parse+y}
+then :
+
+else $as_nop
+  ac_cv_search_ut_parse=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_ut_parse" >&5
+printf "%s\n" "$ac_cv_search_ut_parse" >&6; }
+ac_res=$ac_cv_search_ut_parse
+if test "$ac_res" != no
+then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+else $as_nop
+  as_fn_error $? "UDUNITS2 library not found" "$LINENO" 5
+fi
+
+
+printf "%s\n" "#define HAVE_UDUNITS2_H 1" >>confdefs.h
+
 
 printf "%s\n" "#define ENABLE_UDUNITS 1" >>confdefs.h
 
-    printf "%s\n" "#define HAVE_UDUNITS2_H 1" >>confdefs.h
-
-	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: UDUnits2 support enabled" >&5
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: UDUnits2 support enabled" >&5
 printf "%s\n" "$as_me: UDUnits2 support enabled" >&6;}
-    fi
-
-# When empty, utInit() uses environment variable UDUNITS2_PATH, if any (see nco_lmt.c)
-# Thus UDUNITS2_PATH need not be known at compile time
 
 fi
-
 # This would activate conditional UDUnits2 tests, if there were any
 # AM_CONDITIONAL(TEST_UDUNITS2,[test "${enable_udunits2}" = 'yes'])
 # End UDUnits2

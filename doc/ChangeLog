@@ -1,11 +1,15 @@
-2022-12-20  Charlie Zender  <zender@uci.edu>
+2022-12-21  Charlie Zender  <zender@uci.edu>
 
-	* Initialize previously uninitialized att_nm[NC_MAX_NAME+1L]={0}; at line 702 of nco_att_utl.c.
-	This eliminates vexing "Conditional jump or move depends on uninitialised value(s)" valgrind errors.
+	* configure.ac: De-cruft, revamp, simplify UDUnits support
+
+2022-12-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha05: Antlr';git push
 	git tag -a 5.1.4-alpha05 -m '';git push --tags
+
+	* Initialize previously uninitialized att_nm[NC_MAX_NAME+1L]={0}; at line 702 of nco_att_utl.c.
+	This eliminates vexing "Conditional jump or move depends on uninitialised value(s)" valgrind errors.
 
 	* Use NC_MAX_NAME+1 instead of NC_MAX_NAME
 

@@ -733,112 +733,25 @@ fi
 # preprocessing programs to test for C and C++ features.
 
 echo "########################################"
-echo "#     Testing for UDUNITS support      #"
+echo "#     Testing for UDUNITS2 support     #"
 echo "########################################"
 
-AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits support if possible [default=no]]),enable_udunits=${enableval},enable_udunits=yes)
+AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits2 support if possible [default=no]]),enable_udunits2=${enableval},enable_udunits2=yes)
 AC_ARG_ENABLE(udunits2,AS_HELP_STRING([--enable-udunits2],[Build-in UDUnits2 support if possible [default=yes]]),enable_udunits2=${enableval},enable_udunits2=yes)
-# Are both UDUnits and UDUnits2 requested?
-if (test "${enable_udunits}" != 'no' && test "${enable_udunits2}" != 'no'); then
-# Override UDUnits request
-    echo "WARNING: Requested both UDUnits and UDUnits2 support---overriding UDUnits"
-    echo "Will attempt to build NCO with UDUnits support from libudunits2, not from libudunits"
-    enable_udunits='no'
-fi # End test for UDUnits duplication
 
 # Begin UDUnits2
 # Check for UDUnits2 libraries unless told not to
 if test "${enable_udunits2}" != 'no'; then
-    AC_CHECK_LIB([expat],[XML_ParserCreate],,)
-    if test "${UDUNITS2_PATH}" != ''; then
-	if test -d "${UDUNITS2_PATH}"; then
-	    # NB: Use ${UDUNITS2_PATH} not ${UDUNITS2_ROOT} because UDUnits software looks for ${UDUNITS2_PATH}
-	    # Add ${UDUNITS2_PATH}/lib to search path if present
-	    # Some systems install 64bit libraries into $prefix/lib64 instead of $prefix/lib
-	    # If NCO libraries were installed in $prefix/lib64, then UDUNITS presumably was installed in $UDUNITS2_PATH/lib64
-	    # Therefore, we take `basename $libdir` (libdir=$prefix/lib|lib64), which is 'lib' or 'lib64', and append it to UDUNITS2_PATH
-	    # If this directory does not exist, we append 'lib' to UDUNITS2_PATH
-	    # (Daniel Neumann, 3rd June 2017)
-	    nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
-	    if test -d "${UDUNITS2_PATH}/`basename $libdir`"; then
-		LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/`basename $libdir`"
-	    else
-		LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
-	    fi
-	    CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
-	else
-	    echo "WARNING: UDUNITS2_PATH location \"${UDUNITS2_PATH}\" does not exist!"
-	fi # !UDUNITS2_PATH
-    elif test "${NETCDF_INC}"; then
-	nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
-    fi # !UDUNITS2_PATH
-    if test "${UDUNITS2_PATH}" = ''; then
-	# NO UDUNITS2_PATH section
-	# Fedora 1.7 has /usr/include/udunits2/udunits2.h
-	# 20160418 FC23 has /usr/include/udunits2/udunits2.h
-	# Add this path to CPPFLAGS if it exists, otherwise do nothing
-	AC_CHECK_FILE([/usr/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"], [])
-	# 20170113 FC25 has /usr/include/udunits2/udunits2.h
-	# Ubuntu
-	# /usr/lib/x86_64-linux-gnu/libudunits2.a
-	# /usr/lib/i386-linux-gnu/libudunits2.a
-	# /usr/include/udunits2.h
-	AC_CHECK_FILE([/usr/include/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include"], [])
-	AC_CHECK_FILE([/usr/lib/x86_64-linux-gnu/libudunits2.a], [LDFLAGS="$LDFLAGS -L/usr/lib/x86_64-linux-gnu"], [])
-	AC_CHECK_FILE([/usr/lib/i386-linux-gnu/libudunits2.a], [LDFLAGS="$LDFLAGS -L/usr/lib/i386-linux-gnu"], [])
-	# Mac OSX MacPorts packages
-	# sudo port install libdap
-	# sudo port install gsl
-	# sudo port install antlr
-	# sudo port install udunits2
-	# sudo port install netcdf
-	# installs to /opt/local/include/udunits2/udunits2.h
-	# /opt/local/share/udunits/udunits2.xml
-	# Add this path to CPPFLAGS if it exists, otherwise do nothing
-	AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
-	#/opt/local/lib/libudunits2.a
-	AC_CHECK_FILE([/opt/local/lib/libudunits2.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib"], [])
-	AC_CHECK_FILE([/opt/local/lib/libudunits2.dylib], [LDFLAGS="$LDFLAGS -L/opt/local/lib"], [])
-	# 20201001 MacPorts installs /opt/local/lib/libudunits2.dylib not /opt/local/lib/libudunits2.a 
-	# 20101011 Debian installs udunits2.xml in /usr/share/xml/udunits/udunits2
-	# NB: 20100729 udunits2.xml location seems to have changed from 
-	# /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml
-	# Not sure of location in more recent Fedora systems...
-	# Updating patch from Fedora Core 6 nco.spec:
-	for udunits2_data_file in /usr/share/xml/udunits/udunits2/udunits2.xml /usr/local/share/udunits/udunits2.xml /usr/local/share/udunits2.xml /share/udunits2.xml /usr/share/udunits/udunits2.xml; do
-	    if test -e "$udunits2_data_file" ; then
-		nco_udunits2_xml="$udunits2_data_file"
-	    fi
-	done
-    fi # end NO UDUNITS2_PATH section
 
-# Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
-    AC_CHECK_FILE([$nco_udunits2_xml],,AC_MSG_WARN(file UDUNITS2 XML database file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support.))
-	# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
-    AC_DEFINE_UNQUOTED([UDUNITS2_PATH],["$nco_udunits2_xml"],[Location of UDUnits2 data file])
+    AC_CHECK_HEADER([udunits2.h], ,
+		    [AC_MSG_ERROR([UDUNITS2 header-file not found])])
+    AC_SEARCH_LIBS([ut_parse], [udunits2], ,
+		   [AC_MSG_ERROR([UDUNITS2 library not found])])
+    AC_DEFINE(HAVE_UDUNITS2_H,1,[Define to 1 if <udunits2.h> is present])
+    AC_DEFINE(ENABLE_UDUNITS,1,Compile operators with UDUnits2 support)
+    AC_MSG_NOTICE([UDUnits2 support enabled])
 
-    AC_MSG_NOTICE([NB: Following tests of UDUnits2 library and header must succeed for UDUnits2 support:])
-    AC_CHECK_LIB([udunits2],[ut_read_xml],,enable_udunits2=no)
-    if test "${UDUNITS2_PATH}"; then
-	AC_CHECK_FILE([${UDUNITS2_PATH}/include/udunits2.h],AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]),enable_udunits2=no)
-    else
-	AC_CHECK_HEADER([udunits2.h],AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]),enable_udunits2=no)
-    fi
-
-    if test "${enable_udunits2}" = 'no'; then
-	AC_MSG_WARN([UDUnits2 support disabled (missing/unusable library or header file)])
-    elif test "${enable_udunits2}" = 'yes'; then
-	LIBS="${LIBS} -ludunits2"
-	AC_DEFINE(ENABLE_UDUNITS,1,Compile operators with UDUnits2 support)
-    AC_DEFINE(HAVE_UDUNITS2_H,1,[])
-	AC_MSG_NOTICE([UDUnits2 support enabled])
-    fi
-
-# When empty, utInit() uses environment variable UDUNITS2_PATH, if any (see nco_lmt.c)
-# Thus UDUNITS2_PATH need not be known at compile time
-    AC_ARG_VAR([UDUNITS2_PATH],[Root directory of UDUnits2 (normally contains bin, include, lib, share subdirectories)])
 fi
-
 # This would activate conditional UDUnits2 tests, if there were any
 # AM_CONDITIONAL(TEST_UDUNITS2,[test "${enable_udunits2}" = 'yes'])
 # End UDUnits2
