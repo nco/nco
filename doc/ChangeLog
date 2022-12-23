@@ -2,7 +2,7 @@
 
 	* NCO 5.1.4-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha06: Postop';git push
-	git tag -a 5.1.4-alpha06 -m '';git push --tags
+	git tag -a 5.1.4-alpha06 -m 'all: cxl UDUNITS2_PATH; ncremap: 3D->3D fixes';git push --tags
 
 	* Allow interpolation of ilev variables in input restart files to flg_grd_out_dpt_3D
 

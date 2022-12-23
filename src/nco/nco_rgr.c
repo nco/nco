@@ -2391,6 +2391,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(flg_grd_out_dpt_3D){
     rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
     if(dmn_id_ilev_in != NC_MIN_INT) rcd=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev_out);
+    if(dpt_id_tpl != NC_MIN_INT) rcd=nco_inq_vardimid(tpl_id,dpt_id_tpl,dmn_ids_out);
     /* Temporal and horizontal dimensions necessary to define Zmid variable */
     for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
       if(dpt_id_tpl != NC_MIN_INT){
