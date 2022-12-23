@@ -1,3 +1,17 @@
+2022-12-23  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.4-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha06: Postop';git push
+	git tag -a 5.1.4-alpha06 -m '';git push --tags
+
+	* Allow interpolation of ilev variables in input restart files to flg_grd_out_dpt_3D
+
+	* Implement new Perlmutter build packages
+
+2022-12-22  Charlie Zender  <zender@uci.edu>
+
+	* Remove UDUNITS2_PATH from autoconf build commands
+
 2022-12-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4-alpha05 release procedure:

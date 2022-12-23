@@ -1043,6 +1043,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     /* Automatically detect MPAS-O/I depth files so users can be lazy */
     lev_nm_tpl=(char *)strdup("nVertLevels");
     lev_nm_out=(char *)strdup("nVertLevels");
+    ilev_nm_out=(char *)strdup("nVertLevelsP1");
     dpt_nm_tpl=(char *)strdup("timeMonthly_avg_zMid");
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_out_dpt=True;
@@ -1216,7 +1217,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  nco_exit(EXIT_FAILURE);
 	} /* !bd_id, !lt_id */
 	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Determining horizontal and temporal gridsizes from %s and %s\n",nco_prg_nm_get(),fnc_nm,bd_nm,lt_nm);
-	assert(0 == 1);
+	(void)fprintf(stderr,"%s: ERROR %s This procedure remains to be written. It would allow the use of MPAS restart datasets as valid vertical output grids. Let CSZ know it is important to you! Exiting...\n",nco_prg_nm_get(),fnc_nm);
+	nco_exit(EXIT_FAILURE);
       } /* !dpt_id_tpl */
     } /* !flg_grd_out_dpt_3D */
   } /* !flg_grd_out_dpt */
@@ -1543,6 +1545,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   }else if((rcd=nco_inq_dimid_flg(vrt_in_id,"nVertLevels",&lev_id)) == NC_NOERR){
     /* Automatically detect MPAS-O/I depth files so users can be lazy */
     lev_nm_in=(char *)strdup("nVertLevels");
+    ilev_nm_in=(char *)strdup("nVertLevelsP1");
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_in_dpt=True;
   }else if((rcd=nco_inq_dimid_flg(vrt_in_id,"depth",&lev_id)) == NC_NOERR){
@@ -2374,7 +2377,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   /* Use explicitly specified output names, if any, otherwise use template names (either explicitly specified or discovered by fuzzing) */
   if(rgr->ilev_nm_out){
-    if(flg_grd_out_dpt_3D || flg_grd_out_hyb) ilev_nm_out=rgr->ilev_nm_out;
+    if(flg_grd_out_hyb) ilev_nm_out=rgr->ilev_nm_out;
     if(flg_grd_out_prs) lev_nm_out=rgr->ilev_nm_out;
   } /* !ilev_nm_out */
   if(flg_grd_out_prs){
@@ -2400,10 +2403,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	rcd=nco_inq_dimlen(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_cnt_out+dmn_idx);
       } /* !ps_id_tpl */
       if(!strcmp(lev_nm_out,dmn_nm)) dmn_ids_out[dmn_idx]=dmn_id_lev_out;
+      if(!strcmp(ilev_nm_out,dmn_nm) && dmn_id_ilev_out != NC_MIN_INT) dmn_ids_out[dmn_idx]=dmn_id_ilev_out;
       rcd=nco_inq_dimid_flg(out_id,dmn_nm,(int *)NULL);
       if(rcd != NC_NOERR){
 	rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
-	//(void)fprintf(stdout,"%s: DEBUG quark2 dmn_nm = %s, dmn_cnt_out = %ld\n",nco_prg_nm_get(),dmn_nm,dmn_cnt_out[dmn_idx]);
+	(void)fprintf(stdout,"%s: DEBUG quark2 dmn_idx = %d, dmn_nm = %s, dmn_cnt_out = %ld, dmn_ids_out = %d\n",nco_prg_nm_get(),dmn_idx,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out[dmn_idx]);
       } /* !rcd */
     } /* !dmn_idx */
   } /* !flg_grd_out_dpt_3D */
