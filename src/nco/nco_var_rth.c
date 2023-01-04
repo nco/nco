@@ -3717,7 +3717,7 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     if(tm_ttl == 0.0){
       /* Print seen/unseen message only once per invocation */
 #if ( __GNUC__ >= 737 ) || ( __clang_major__ >= 737 )
-      (void)fprintf(stdout,"%s: %s reports C-compiler sees #pragma omp simd (because __GNUC__ >= 8 or __clang_major__ >= 8)\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: %s reports C-compiler sees #pragma omp simd (because __GNUC__ >= 737 or __clang_major__ >= 737)\n",nco_prg_nm_get(),fnc_nm);
 #else /* !__GNUC__ */
       (void)fprintf(stdout,"%s: %s reports C-compiler does not see #pragma omp simd\n",nco_prg_nm_get(),fnc_nm);
 #endif /* !__GNUC__ */

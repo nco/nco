@@ -13,8 +13,8 @@
 // GSL Functions
 #ifdef ENABLE_GSL
 
-// dummy function -used to fill out arg list
-int  ncap_void(void){
+// Dummy function used to fill out arg list
+int ncap_void(void){
   return 10;
 }
 
@@ -445,7 +445,7 @@ void gsl_cls::gsl_ini_cdf(void){
     gpr_vtr.push_back(gpr_cls("gsl_cdf_pareto_Pinv",f_unn(gsl_cdf_pareto_Pinv),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_pareto_Qinv",f_unn(gsl_cdf_pareto_Qinv),hnd_fnc_nd,P3DBLX));
 
-      gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_P",f_unn(gsl_cdf_logistic_P),hnd_fnc_nd,P2DBLX));
+    gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_P",f_unn(gsl_cdf_logistic_P),hnd_fnc_nd,P2DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_Q",f_unn(gsl_cdf_logistic_Q),hnd_fnc_nd,P2DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_Pinv",f_unn(gsl_cdf_logistic_Pinv),hnd_fnc_nd,P2DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_logistic_Qinv",f_unn(gsl_cdf_logistic_Qinv),hnd_fnc_nd,P2DBLX));
@@ -463,13 +463,7 @@ void gsl_cls::gsl_ini_cdf(void){
 //     gpr_vtr.push_back(gpr_cls("gsl_cdf_hypergeometric_P",f_unn(gsl_cdf_hypergeometric_P),hnd_fnc_nd,P1DBLX));
 //     gpr_vtr.push_back(gpr_cls("gsl_cdf_hypergeometric_Q",f_unn(gsl_cdf_hypergeometric_Q),hnd_fnc_nd,P1DBLX));
 
-
-
-
-
-
-} // end gsl_ini_cdf()
-
+} // !gsl_ini_cdf()
 
 // Random Number Generators
 void gsl_cls::gsl_ini_ran(void){

@@ -2,7 +2,7 @@
 
 	* NCO 5.1.4-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha06: Postop';git push
-	git tag -a 5.1.4-alpha06 -m 'all: cxl UDUNITS2_PATH; ncremap: 3D->3D fixes';git push --tags
+	git tag -a 5.1.4-alpha06 -m 'all: deactivate SIMD, cxl UDUNITS2_PATH; ncremap: fix ilev rst->3D';git push --tags
 
 	* De-activate SIMD pragmas by resetting compiler version threshold from 8 to 737
 
