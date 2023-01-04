@@ -6288,7 +6288,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 # pragma omp target data map(to:col_src_adr[0:lnk_nbr],row_dst_adr[0:lnk_nbr],var_val_dbl_in[0:var_sz_in],wgt_raw[0:lnk_nbr]) map(tofrom:var_val_dbl_out[0:var_sz_out])
 # pragma omp target teams distribute parallel for simd schedule(static,1)
 #else /* !ENABLE_GPU */
-# if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
+# if ( __GNUC__ >= 737 ) || ( __clang_major__ >= 737 )
 #  pragma omp simd
 # endif /* !__GNUC__ */
 #endif /* !ENABLE_GPU */
@@ -6307,7 +6307,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 #ifdef ENABLE_GPU
 # pragma omp target teams distribute parallel for simd schedule(static,1)
 #else /* !ENABLE_GPU */
-# if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
+# if ( __GNUC__ >= 737 ) || ( __clang_major__ >= 737 )
 #  pragma omp simd
 # endif /* !__GNUC__ */
 #endif /* !ENABLE_GPU */

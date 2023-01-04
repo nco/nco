@@ -1,8 +1,12 @@
-2023-01-03  Charlie Zender  <zender@uci.edu>
+2023-01-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha06: Postop';git push
 	git tag -a 5.1.4-alpha06 -m 'all: cxl UDUNITS2_PATH; ncremap: 3D->3D fixes';git push --tags
+
+	* De-activate SIMD pragmas by resetting compiler version threshold from 8 to 737
+
+2023-01-03  Charlie Zender  <zender@uci.edu>
 
 	* Update nco.texi with new vertical interpolation features
 
