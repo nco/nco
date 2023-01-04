@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.4-alpha05
 @set copyright-years 1995--2022
 @set update-year 2022
-@set update-date 20 December 2022
-@set update-month December 2022
+@set update-date 3 January 2023
+@set update-month January 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -28303,24 +28303,42 @@ We plan to add pure-sigma coordinates in the future.
 Besides the vertical grid-type, the main assumptions, constraints, and
 priorities for future development of vertical regridding are:
 @enumerate
-@item Input datasets must have netCDF (and thus C-based)
+@item When originally released, the vertical interpolation feature
+      required that the input datasets have netCDF (and thus C-based)
       dimension-ordering @emph{all other dimensions, a single vertical 
-      dimension, then one or two horizontal dimensions} so that the
-      horizontal dimension(s) vary more rapidly than the vertical.
-      Eliminating this constraint will remain low priority until we
-      are lobbied with compelling use-cases.
+      dimension, then one or two horizontal dimensions, if any} so
+      that the horizontal dimension(s) vary most rapidly.
+      @acronym{NCO} @w{version 5.1.4}, released in January, 2023,
+      eliminated this constraint.
+      Now the regridder automatically determines whether the vertical
+      or the horizontal dimensions vary most rapidly, and adjusts its
+      algorithms accordingly.
 @item The vertical interpolation algorithm defaults to linear in
-      log(pressure). 
+      log(pressure) for pure pressure and for hybrid sigma-pressure
+      coordinates.  
       This assumption is more natural for gases (like the atmosphere)
       than for condensed media (like oceans or Earth's interior).
       To instead interpolate linearly in the vertical coordinate, use
       the @samp{ntp_mth=lin} options (as of @acronym{NCO} 4.9.0).
+      @acronym{NCO} @w{version 5.1.4}, released in January, 2023,
+      supports interpolation of data structured with a geometric
+      depth/height grid (such as ocean data usually uses).
+      Data on a depth/height grid defaults to linear interpolation.
 @item Vertical interpolation and horizontal regridding may be invoked
       simultaneously (as of @acronym{NCO} 4.9.0) by the user simply by
       supplying both a (horizontal) map-file and a vertical grid-file
       to @command{ncremap}. 
       When this occurs, @command{ncremap} internally performs the
       vertical interpolation prior to the horizontal regridding.
+      Exploiting this feature can have some unintended consequences.
+      For example, horizontal regridding requires that the horizontal
+      spatial dimension vary most rapidly, whereas vertical
+      interpolation makes no such assumption.
+      When the regridder needs to permute the dimension ordering of
+      the input dataset in order to perform horizontal regridding,
+      this step actually precedes the vertical regridding.
+      This order of operations is problematic and we are working
+      to address the issues in future updates.
 @item The default extrapolation method uses nearest neighbor except
       for temperature and geopotential (those extrapolation methods
       are described below).
@@ -28339,17 +28357,17 @@ priorities for future development of vertical regridding are:
       the input domain are linearly extrapolated from the nearest two
       values inside the input domain.
       Zero extrapolation sets values outside the extrapoloation domain
-      to 0.0.  
+      @w{to 0.0}.  
       Supporting other methods, or improving the existing
       special-case approximations for temperature or geopotential,
       will remain low priority until we are lobbied with compelling
       use-cases for other algorithms.  
-@item Missing values are not (yet) treated specially
-      Eliminating this constraint is not a priority because
-      atmospheric datasets often contain no missing data.
-      This could become a high priority issue if ocean modelers show
-      interest in employing this tool to regrid to/from depth
-      coordinates where missing values indicate bathymetry.
+@item Missing values may not always be treated correctly
+      Eliminating this constraint was not originally a priority
+      because atmospheric datasets often contain no missing data.
+      However, now that vertical regridding can be applied to ocean
+      data with a depth coordinate, we need to verify that using
+      missing values to indicate bathymetry works as expected.
 @item Time-varying vertical grids are only allowed for hybrid grids
       (not pure pressure grids), and these must store the time
       dimension as a record dimension.
@@ -28363,13 +28381,15 @@ priorities for future development of vertical regridding are:
       Eliminating this constraint will not be a priority unless/until
       an important use-case is identified.  
 @item Variable names for input and output vertical grids must match
-      @acronym{E3SM/CESM}, @acronym{ECMWF}, and @acronym{NCEP}
-      implementations. 
+      @acronym{E3SM/CESM}, @acronym{ECMWF}, @acronym{MPAS}, and
+      @acronym{NCEP} implementations. 
       These names include @code{hyai}, @code{hyam}, @code{hybi},
       @code{hybm}, @code{ilev}, @code{lev}, @code{P0}, and @code{PS}
       (for @acronym{E3SM/CESM} hybrid grids), @code{lev},
       @code{lev_2}, and @code{lnsp} (for @acronym{ECMWF} hybrid grids
-      only), and @code{plev} (for pure-pressure grids). 
+      only), @code{depth}, @code{timeMonthly_avg_zMid} (for
+      @acronym{MPAS} depth grids), and @code{plev} (for pure-pressure
+      grids).  
       The infrastructure to provide alternate names for any of these
       input/output variables names is straightforward, and is heavily 
       used for horizontal spatial regridding.
