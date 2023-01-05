@@ -1,4 +1,14 @@
+2023-01-05  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.4-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha07: Frontier';git push
+	git tag -a 5.1.4-alpha07 -m '';git push --tags
+
+	* ncremap: Allow positive-downwards 1D depth coordinates, verify with ARGO
+
 2023-01-04  Charlie Zender  <zender@uci.edu>
+
+	* ncremap: Add LATITUDE, LONGITUDE coordinates to database for ARGO observations
 
 	* NCO 5.1.4-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha06: Postop';git push

@@ -975,6 +975,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int p0_id=NC_MIN_INT; /* [id] Reference pressure ID */
   int ps_id=NC_MIN_INT; /* [id] Surface pressure ID */
   int plev_id; /* [id] Air pressure ID */
+  nco_bool flg_dpt_in_pst_dwn=False; /* [flg] Input depth/height coordinate increases downwards */
+  nco_bool flg_dpt_out_pst_dwn=False; /* [flg] Output depth/height coordinate increases downwards */
   nco_bool flg_grd_hyb_cameam=False; /* [flg] Hybrid coordinate vertical grid uses CAM/EAM conventions */
   nco_bool flg_grd_hyb_ecmwf=False; /* [flg] Hybrid coordinate vertical grid uses ECMWF conventions */
   nco_bool flg_grd_in_dpt=False; /* [flg] Input depth coordinate vertical grid */
@@ -1053,6 +1055,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     lev_nm_out=(char *)strdup("depth");
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_out_dpt=True;
+  }else if((rcd=nco_inq_dimid_flg(tpl_id,"PRESSURE",&lev_id)) == NC_NOERR){
+    /* Automatically detect standard depth files so users can be lazy (ARGO data uses positive PRESSURE vertical coordinate) */
+    lev_nm_tpl=(char *)strdup("PRESSURE");
+    lev_nm_out=(char *)strdup("PRESSURE");
+    dpt_nm_tpl=(char *)strdup("PRESSURE");
+    nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
+    flg_grd_out_dpt=True;
+    flg_dpt_out_pst_dwn=True;
   }else{ /* !hyai */
     (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure vertical grid coordinate information, or depth dimension, in vertical grid file for output data\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT ensure vertical grid coordinate file contains a valid vertical grid coordinate\n",nco_prg_nm_get());
@@ -1496,6 +1506,17 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(flg_grd_out_prs || flg_grd_out_dpt_1D){
     lev_out=(double *)nco_malloc(lev_nbr_out*nco_typ_lng(var_typ_rgr));
     rcd=nco_get_var(tpl_id,lev_id,lev_out,crd_typ_out);
+    if(flg_dpt_out_pst_dwn && flg_grd_out_dpt_1D){
+      /* NCO prefers depth coordinates to increase toward the positive Z direction (i.e., upwards)
+	 MPAS, SOSE, and WOA18 adhere to this convention
+	 ARGO uses a depth (in deci-bars) that increases toward the negative Z direction (i.e., downwards)
+	 Z-coordinate directions of input and output must align prior to interpolation
+	 NCO internally flips positive-downwards to positive-upwards depths for interpolation 
+	 Flip direction prior to interpolation, restore original output Z direction prior to writing results */
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Output one-dimensional depth coordinate %s is oriented positive-downwards. Will re-orient to positive upwards for interpolation...\n",nco_prg_nm_get(),fnc_nm,lev_nm_tpl);
+      for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
+	lev_out[lev_idx]*=-1;
+    } /* !flg_dpt_out_pst_dwn */
   } /* !flg_grd_out_prs, !flg_grd_out_dpt_1D */
 
   /* For vertical interpolation (unlike horizontal regridding), the destination grid is known a priori
@@ -1551,8 +1572,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   }else if((rcd=nco_inq_dimid_flg(vrt_in_id,"depth",&lev_id)) == NC_NOERR){
     /* Automatically detect standard depth files so users can be lazy */
     lev_nm_in=(char *)strdup("depth");
-    nco_vrt_grd_in=nco_vrt_grd_dpt; /* MPAS */
+    nco_vrt_grd_in=nco_vrt_grd_dpt; /* WOA18 */
     flg_grd_in_dpt=True;
+  }else if((rcd=nco_inq_dimid_flg(vrt_in_id,"PRESSURE",&lev_id)) == NC_NOERR){
+    /* Automatically detect standard depth files so users can be lazy */
+    lev_nm_in=(char *)strdup("PRESSURE");
+    nco_vrt_grd_in=nco_vrt_grd_dpt; /* ARGO */
+    flg_grd_in_dpt=True;
+    flg_dpt_in_pst_dwn=True;
   }else{ /* !hyai */
     (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure or depth vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. The signal variables default to \"hyai\" for hybrid, \"plev\" for pressure, and the signature dimension defaults to \"nVertLevels\" for height/depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
@@ -1979,6 +2006,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(flg_grd_in_dpt_1D){
       lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
       rcd=nco_get_var(vrt_in_id,lev_id,lev_in,crd_typ_out);
+      if(flg_dpt_in_pst_dwn && flg_grd_in_dpt_1D){
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Input one-dimensional depth coordinate %s is oriented positive-downwards. Will re-orient to positive upwards for interpolation...\n",nco_prg_nm_get(),fnc_nm,lev_nm_in);
+	for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
+	  lev_in[lev_idx]*=-1;
+      } /* !flg_dpt_in_pst_dwn */
     } /* !flg_grd_in_dpt_1D */
     if(flg_grd_in_dpt_3D){
       mlc_in=(int *)nco_malloc(grd_sz_in*nco_typ_lng(NC_INT));
@@ -2442,15 +2474,17 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   
   /* Do not extract grid variables (that are also extensive variables) like ilev, lev, hyai, hyam, hybi, hybm */ 
   /* Exception list source:
+     ARGO: PRESSURE
      CAM/EAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
      ECMWF: hyai, hyam, hybi, hybm, lev, lnsp
      MPAS-O: layerThickness, maxLevelCell, timeMonthly_avg_layerThickness, timeMonthly_avg_zMid, zMid
      MPAS-O: refBottomDepth, vertCoordMovementWeights (derived 1D-profiles, no horizontal dimensions) 
      NCEP: plev
      SCREAM: hyai, hyam, hybi, hybm, ilev, lev, P0, ps
+     SOSE: z
      WOA: depth, depth_bnds, volume, zBroadcast
      Run-time: dpt_nm_in, dpt_nm_out, plev_nm_in, plev_nm_out, ps_nm_in, ps_nm_tpl */
-  const char *var_xcl_lst_fix[]={"/depth","/depth_bnds","/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PS","/refBottomDepth","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/vertCoordMovementWeights","/volume","/zBroadcast","/zMid"};
+  const char *var_xcl_lst_fix[]={"/depth","/depth_bnds","/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PRESSURE","/PS","/refBottomDepth","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/vertCoordMovementWeights","/volume","/zBroadcast","/zMid"};
   int var_xcl_fix_nbr=sizeof(var_xcl_lst_fix)/sizeof(char *); /* [nbr] Number of variables in fixed (compile-time) exclusion list */
   /* Create list to hold both compile- and run-time exclusion variables */
   char **var_xcl_lst=NULL; /* [sng] List of variables to exclude */
@@ -2915,7 +2949,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_out_dpt_3D */
   
   if(flg_grd_out_prs || flg_grd_out_dpt_1D){
+
+    /* Restore original output Z direction prior to writing output */
+    if(flg_dpt_out_pst_dwn && flg_grd_out_dpt_1D)
+      for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
+	lev_out[lev_idx]*=-1;
+
     (void)nco_put_var(out_id,lev_id,lev_out,crd_typ_out);
+
+    /* Ensure positive-upwards Z coordinate prior to interpolation */
+    if(flg_dpt_out_pst_dwn && flg_grd_out_dpt_1D)
+      for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
+	lev_out[lev_idx]*=-1;
+
   } /* !flg_grd_out_prs || !flg_grd_out_dpt_1D */
   
   if(flg_grd_out_hyb){
@@ -5052,6 +5098,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* Exception list source:
      ALM/CLM: landmask (20170504: Debatable, including erroneous mask may be better than completely excluding an expected mask) (20170504: must keep landfrac since regridded by ncremap for SGS option)
      AMSR: Latitude, Longitude
+     ARGO: LATITUDE, LONGITUDE
      CAM, CERES, CMIP5: lat, lon
      CAM, CMIP5: gw, lat_bnds, lon_bnds
      CAM-FV: slon, slat, w_stag (w_stag is weights for slat grid, analagous to gw for lat grid)
@@ -5077,8 +5124,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      UV-CDAT regridder: bounds_lat, bounds_lon
      Unknown: XLAT_M, XLONG_M
      WRF: XLAT, XLONG */
-  const int var_xcl_lst_nbr=53; /* [nbr] Number of objects on exclusion list */
-  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/LAT","/lat","/Latitude","/latitude","/nav_lat","/global_latitude0","gridlat_0","/latitude0","/rlat","/slat","/LATIXY","/LONGXY","/TLAT","/ULAT","/XLAT","/XLAT_M","/CO_Latitude","/S1_Latitude","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/Longitude","/longitude","/nav_lon","/global_longitude0","gridlon_0","/longitude0","/rlon","/slon","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/CO_Longitude","/S1_Longitude","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
+  const int var_xcl_lst_nbr=55; /* [nbr] Number of objects on exclusion list */
+  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/LATITUDE","/LAT","/lat","/Latitude","/latitude","/nav_lat","/global_latitude0","gridlat_0","/latitude0","/rlat","/slat","/LATIXY","/LONGXY","/TLAT","/ULAT","/XLAT","/XLAT_M","/CO_Latitude","/S1_Latitude","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/LONGITUDE","/lon","/Longitude","/longitude","/nav_lon","/global_longitude0","gridlon_0","/longitude0","/rlon","/slon","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/CO_Longitude","/S1_Longitude","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
@@ -9288,6 +9335,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"LATIXY",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LATIXY"); /* CISM/CLM/ELM */
     else if((rcd=nco_inq_varid_flg(in_id,"TLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("TLAT"); /* CICE, POP */
     else if((rcd=nco_inq_varid_flg(in_id,"ULAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("ULAT"); /* CICE, POP */
+    else if((rcd=nco_inq_varid_flg(in_id,"LATITUDE",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LATITUDE"); /* ARGO */
     else if((rcd=nco_inq_varid_flg(in_id,"latCell",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latCell"); /* MPAS-O/I */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("nav_lat"); /* NEMO */
     else if((rcd=nco_inq_varid_flg(in_id,"rlat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("rlat"); /* RACMO */
@@ -9316,6 +9364,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"TLONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("TLONG"); /* POP */
     else if((rcd=nco_inq_varid_flg(in_id,"ULON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULON"); /* CICE */
     else if((rcd=nco_inq_varid_flg(in_id,"ULONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULONG"); /* POP */
+    else if((rcd=nco_inq_varid_flg(in_id,"LONGITUDE",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("LONGITUDE"); /* ARGO */
     else if((rcd=nco_inq_varid_flg(in_id,"lonCell",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lonCell"); /* MPAS-O/I */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("nav_lon"); /* NEMO */
     else if((rcd=nco_inq_varid_flg(in_id,"rlon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("rlon"); /* RACMO */
