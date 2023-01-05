@@ -2,7 +2,9 @@
 
 	* NCO 5.1.4-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-alpha07: Frontier';git push
-	git tag -a 5.1.4-alpha07 -m '';git push --tags
+	git tag -a 5.1.4-alpha07 -m 'ncremap: +ve-dwn dpt, ARGO';git push --tags
+
+	* ncremap: Verify that SIMD pragmas caused E3SMU Compy compute-node issues
 
 	* ncremap: Allow positive-downwards 1D depth coordinates, verify with ARGO
 
