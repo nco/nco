@@ -1,19 +1,21 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.3 erupt
+netCDF Operators NCO version 5.1.4 erupt
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nc/ncoo (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.3 improves the speed of vertical interpolation for
-fields whose most-rapidly-varying dimension is the vertical (not
-horizontal). This dramatically improves interpolation speed for
-EAMxx/SCREAM files. This release also fixes and issue in using
-ncremap to invoke the interpolation. Other than that, this release can
-be skipped. 
+Version 5.1.4 introduces vertical interpolation for datasets stored
+on depth/height grids, such as ocean data. The interpolation works
+on all datasets tested with vertical levels and bathymetry that are
+either horizontally varying (e.g., MPAS-Ocean, POP, MOM) or uniform
+(many observational datasets including ARGO, SOSE, WOA18).
+This release also fixes a vexing issue that can occur with certain
+compilers on AMD hardware. Other than that, this release can be
+skipped.  
 
-Work on NCO 5.1.4 has commenced and aims to add support for Zarr S3 
+Work on NCO 5.1.5 has commenced and aims to add support for Zarr S3 
 stores and to polish support for new codecs.
 
 Enjoy,
@@ -21,23 +23,23 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap can now vertically interpolate files/fields whose most
-rapidly varying dimension is the vertical without having to first
-permute the dimensions to be most rapidly varying in the horizontal
-dimension(s). This speeds up vertical interpolation of EAMxx/SCREAM
-fields dramatically (a factor of about three).
+A. ncremap can now vertically interpolate files/fields stored on
+depth/height-based vertical grids. The capability is analogous to
+the existing ncremap capability of interpolating data on pure-pressure
+or hybrid sigma/pressure vertical grids (all four combinations work).
 ncremap --vrt_out=vrt.nc in.nc out.nc
-ncremap -P eamxx --vrt_out=vrt.nc in.nc out.nc
+ncremap -P mpas --vrt_out=vrt.nc --map=map.nc in.nc out.nc
 http://nco.sf.net/nco.html#ncremap
 http://nco.sf.net/nco.html#vrt_out
 
 BUG FIXES:
    
-A. ncremap in version 5.1.2 (but not 5.1.1 or earlier) by default
-does the wrong thing when trying to vertically interpolate raw
-EAMxx/SCREAM files. The workaround is to manually permute the
-data vary most rapidly in the  horizontal dimension. The fix is to
-upgrade.
+A. ncremap versions 5.0.7--5.1.3 can, with certain compiler settings
+on AMD hardware, produce (obvisously) erroneous regridding results
+due to the behavior of OpenMP SIMD pragmas/directives. This is only
+known to affect Spack-compiled executables running on compute nodes of 
+the PNNL Compy cluster. The workaround is to use executables compiled
+any other way, or on any other hardware. The fix is to upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
@@ -45,8 +47,8 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.1.1 built/tested under
-MacOS 13.0.1 with netCDF 4.9.1-RC2 on HDF5 1.12.2 and with
+These problems occur with NCO 5.1.4 built/tested under
+MacOS 13.1 with netCDF 4.9.1-RC2 on HDF5 1.12.2 and with
 Linux with netCDF 4.8.1 on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)

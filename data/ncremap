@@ -1677,7 +1677,7 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 #	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20190806: MPAS LI,O,SI,depth and BGC in one swell foop
 #	pdq_opt='-a Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,nSnowLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20210226: MPAS LI,O,SI,depth and new SI BGC in one swell foop
 #        pdq_opt='-a Time,time,depth,nVertInterfaces,nVertLevelsP1,olevhalf,nVertLevels,nZBGCTracers,nBioLayers,P1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,nSnowLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20221115: MPAS LI, O, SI, depth, BGC, and CMOR
-        pdq_opt='-a Time,time,depth,PRESSURE,nVertInterfaces,nVertLevelsP1,olevhalf,nVertLevels,nZBGCTracers,nBioLayers,P1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,nSnowLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20221115: MPAS LI, O, SI, depth, ARGO, BGC, and CMOR
+        pdq_opt='-a Time,time,depth,PRESSURE,nVertInterfaces,nVertLevelsP1,olevhalf,nVertLevels,nZBGCTracers,nBioLayers,P1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,nSnowLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20221115: MPAS LI, O, SI, depth, ARGO, BGC, CMOR
     fi # !pdq_opt && !pdq_flg
     # 20181130 No known reason to include staggered grid with regridded MPAS data
     stg_grd='No'

@@ -1820,7 +1820,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    if(nco_dbg_lvl_get() >= nco_dbg_std){
 	      char var_nm[NC_MAX_NAME+1L];
 	      rcd=nco_inq_varname(in_id,var_idx,var_nm);
-	      (void)fprintf(stdout,"%s: DEBUG %s basing input horizontal grid dimensions on variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s basing input horizontal grid dimensions on variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	    } /* !dbg */
 	    break;
 	  } /* !dmn_idx */
