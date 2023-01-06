@@ -1050,19 +1050,26 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_out_dpt=True;
   }else if((rcd=nco_inq_dimid_flg(tpl_id,"depth",&lev_id)) == NC_NOERR){
-    /* Automatically detect standard depth files so users can be lazy */
+    /* WOA18 data uses positive-upwards vertical coordinate depth */
     lev_nm_tpl=(char *)strdup("depth");
     lev_nm_out=(char *)strdup("depth");
-    nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
+    nco_vrt_grd_out=nco_vrt_grd_dpt; /* WOA */
     flg_grd_out_dpt=True;
   }else if((rcd=nco_inq_dimid_flg(tpl_id,"PRESSURE",&lev_id)) == NC_NOERR){
-    /* Automatically detect standard depth files so users can be lazy (ARGO data uses positive PRESSURE vertical coordinate) */
+    /* ARGO data uses positive-downwards vertical coordinate PRESSURE */
     lev_nm_tpl=(char *)strdup("PRESSURE");
     lev_nm_out=(char *)strdup("PRESSURE");
     dpt_nm_tpl=(char *)strdup("PRESSURE");
-    nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
+    nco_vrt_grd_out=nco_vrt_grd_dpt; /* ARGO */
     flg_grd_out_dpt=True;
     flg_dpt_out_pst_dwn=True;
+  }else if((rcd=nco_inq_dimid_flg(tpl_id,"z",&lev_id)) == NC_NOERR){
+    /* SOSE data uses positive-upwards vertical coordinate z */
+    lev_nm_tpl=(char *)strdup("z");
+    lev_nm_out=(char *)strdup("z");
+    dpt_nm_tpl=(char *)strdup("z");
+    nco_vrt_grd_out=nco_vrt_grd_dpt; /* SOSE */
+    flg_grd_out_dpt=True;
   }else{ /* !hyai */
     (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure vertical grid coordinate information, or depth dimension, in vertical grid file for output data\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT ensure vertical grid coordinate file contains a valid vertical grid coordinate\n",nco_prg_nm_get());
@@ -1476,6 +1483,22 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   double *prs_ntf_out=NULL; /* [Pa] Interface pressure on output grid */
   double p0_out; /* [Pa] Reference pressure on output grid */
 
+  if(flg_grd_out_dpt_1D){
+    lev_out=(double *)nco_malloc(lev_nbr_out*nco_typ_lng(var_typ_rgr));
+    rcd=nco_get_var(tpl_id,dpt_id_tpl,lev_out,crd_typ_out);
+    if(flg_dpt_out_pst_dwn && flg_grd_out_dpt_1D){
+      /* NCO prefers depth coordinates to increase toward the positive Z direction (i.e., upwards)
+	 MPAS, SOSE, and WOA18 adhere to this convention
+	 ARGO uses a depth (in deci-bars) that increases toward the negative Z direction (i.e., downwards)
+	 Z-coordinate directions of input and output must align prior to interpolation
+	 NCO internally flips positive-downwards to positive-upwards depths for interpolation 
+	 Flip direction prior to interpolation, restore original output Z direction prior to writing results */
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Output one-dimensional depth coordinate %s is oriented positive-downwards. Will re-orient to positive upwards for interpolation...\n",nco_prg_nm_get(),fnc_nm,lev_nm_tpl);
+      for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
+	lev_out[lev_idx]*=-1;
+    } /* !flg_dpt_out_pst_dwn */
+  } /* !flg_grd_out_dpt_1D */
+
   if(flg_grd_out_hyb){
     hyai_out=(double *)nco_malloc(ilev_nbr_out*nco_typ_lng(var_typ_rgr));
     hyam_out=(double *)nco_malloc(lev_nbr_out*nco_typ_lng(var_typ_rgr));
@@ -1503,21 +1526,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !ilev_id_tpl */
   } /* !flg_grd_out_hyb */
   
-  if(flg_grd_out_prs || flg_grd_out_dpt_1D){
+  if(flg_grd_out_prs){
     lev_out=(double *)nco_malloc(lev_nbr_out*nco_typ_lng(var_typ_rgr));
     rcd=nco_get_var(tpl_id,lev_id,lev_out,crd_typ_out);
-    if(flg_dpt_out_pst_dwn && flg_grd_out_dpt_1D){
-      /* NCO prefers depth coordinates to increase toward the positive Z direction (i.e., upwards)
-	 MPAS, SOSE, and WOA18 adhere to this convention
-	 ARGO uses a depth (in deci-bars) that increases toward the negative Z direction (i.e., downwards)
-	 Z-coordinate directions of input and output must align prior to interpolation
-	 NCO internally flips positive-downwards to positive-upwards depths for interpolation 
-	 Flip direction prior to interpolation, restore original output Z direction prior to writing results */
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Output one-dimensional depth coordinate %s is oriented positive-downwards. Will re-orient to positive upwards for interpolation...\n",nco_prg_nm_get(),fnc_nm,lev_nm_tpl);
-      for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
-	lev_out[lev_idx]*=-1;
-    } /* !flg_dpt_out_pst_dwn */
-  } /* !flg_grd_out_prs, !flg_grd_out_dpt_1D */
+  } /* !flg_grd_out_prs */
 
   /* For vertical interpolation (unlike horizontal regridding), the destination grid is known a priori
      Straightforward copy all variables and attributes that define grid from fl_tpl to output
@@ -1570,16 +1582,18 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_in_dpt=True;
   }else if((rcd=nco_inq_dimid_flg(vrt_in_id,"depth",&lev_id)) == NC_NOERR){
-    /* Automatically detect standard depth files so users can be lazy */
     lev_nm_in=(char *)strdup("depth");
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* WOA18 */
     flg_grd_in_dpt=True;
   }else if((rcd=nco_inq_dimid_flg(vrt_in_id,"PRESSURE",&lev_id)) == NC_NOERR){
-    /* Automatically detect standard depth files so users can be lazy */
     lev_nm_in=(char *)strdup("PRESSURE");
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* ARGO */
     flg_grd_in_dpt=True;
     flg_dpt_in_pst_dwn=True;
+  }else if((rcd=nco_inq_dimid_flg(vrt_in_id,"z",&lev_id)) == NC_NOERR){
+    lev_nm_in=(char *)strdup("z");
+    nco_vrt_grd_in=nco_vrt_grd_dpt; /* SOSE */
+    flg_grd_in_dpt=True;
   }else{ /* !hyai */
     (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure or depth vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. The signal variables default to \"hyai\" for hybrid, \"plev\" for pressure, and the signature dimension defaults to \"nVertLevels\" for height/depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
@@ -1782,21 +1796,22 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    /* Only consider non-lev dimensions */
 	    if(dmn_ids_in[dmn_idx] == dmn_id_lev_in) continue; 
+	    /* Exclude any (record or fixed) dimensions named [tT]ime 
+	       20230105: SOSE data uses non-record Time dimension of size 12 */
+	    rcd=nco_inq_dimname(in_id,dmn_ids_in[dmn_idx],dmn_nm);
+	    if(strcasestr(dmn_nm,"time")) continue;
 	    for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
 	      if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
 		break; 
 	    if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 2){
 	      /* This dimension is not record dimension, or is sole non-vertical dimension */
 	      rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
+	      /* Skip "bounds" variables (e.g., depth_bnds) as inferred if dimension size is two */
+	      if(dmn_cnt_in[dmn_idx] == 2) break;
+	      /* Count non-vertical dimensions that are larger than the vertical dimension (ignore, e.g., species dimensions) */
 	      if(dmn_cnt_in[dmn_idx] > lev_nbr_in){
 		grd_sz_in*=dmn_cnt_in[dmn_idx];
-		// 20221220: dmn_idx_hrz is only used to define output file dimensions
-		//		dmn_idx_hrz[dmn_hrz_nbr_in]=dmn_idx;
 		dmn_hrz_nbr_in++;
-	      }else{
-		/* Skip "bounds" variables (e.g., depth_bnds) with non-vertical dimensions < vertical dimension */
-		//(void)fprintf(stdout,"%s: DEBUG %s variable %s will be skipped\n",nco_prg_nm_get(),fnc_nm,tmp_nm);
-		break;
 	      } /* !dmn_cnt_in */
 	    } /* !rec_idx, !dmn_nbr_in */
 	  } /* !dmn_idx */
@@ -1950,8 +1965,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  /* This Zmid dimension is not record dimension, or is sole Zmid dimension */
 	  if(dmn_ids_in[dmn_idx] != dmn_id_lev_in){
 	    grd_sz_in*=dmn_cnt_in[dmn_idx];
-	    // 20221220: dmn_idx_hrz is only used to define output file dimensions
-	    //dmn_idx_hrz[dmn_hrz_nbr_in]=dmn_idx;
 	    dmn_hrz_nbr_in++;
 	  } /* !dmn_id_lev_in */
 	} /* !rec_idx, !dmn_nbr_in */
@@ -1993,19 +2006,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     assert(grd_sz_in == grd_sz_out);
     assert(tm_nbr_in == tm_nbr_out);
 
-    if((flg_grd_in_dpt_3D && flg_grd_out_dpt_3D) && (flg_hrz_mrv_in != flg_hrz_mrv_out)){
-      (void)fprintf(stdout,"%s: ERROR %s reports that memory ordering of depth/height field differs between input and output: flg_hrz_mrv_in = %d != %d = flg_hrz_mrv_out. Exiting...\n",nco_prg_nm_get(),fnc_nm,flg_hrz_mrv_in,flg_hrz_mrv_out);
-      nco_exit(EXIT_FAILURE);
-    } /* !flg_hrz_mrv */
-
     dpt_mdp_in=(double *)nco_malloc_dbg(tm_nbr_in*lev_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() dpt_mdp_in value buffer");
 
   } /* !flg_grd_in_dpt_3D, !flg_grd_out_dpt_3D */
   
+  if((flg_grd_in_dpt && flg_grd_out_dpt) && (flg_hrz_mrv_in != flg_hrz_mrv_out)){
+    (void)fprintf(stdout,"%s: ERROR %s reports that memory ordering of depth/height field differs between input and output: flg_hrz_mrv_in = %d != %d = flg_hrz_mrv_out. Exiting...\n",nco_prg_nm_get(),fnc_nm,flg_hrz_mrv_in,flg_hrz_mrv_out);
+    nco_exit(EXIT_FAILURE);
+  } /* !flg_hrz_mrv */
+
   if(flg_grd_in_dpt){
     if(flg_grd_in_dpt_1D){
       lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
-      rcd=nco_get_var(vrt_in_id,lev_id,lev_in,crd_typ_out);
+      rcd=nco_get_var(vrt_in_id,dpt_id,lev_in,crd_typ_out);
       if(flg_dpt_in_pst_dwn && flg_grd_in_dpt_1D){
 	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Input one-dimensional depth coordinate %s is oriented positive-downwards. Will re-orient to positive upwards for interpolation...\n",nco_prg_nm_get(),fnc_nm,lev_nm_in);
 	for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
@@ -2440,7 +2453,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       rcd=nco_inq_dimid_flg(out_id,dmn_nm,(int *)NULL);
       if(rcd != NC_NOERR){
 	rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
-	(void)fprintf(stdout,"%s: DEBUG quark2 dmn_idx = %d, dmn_nm = %s, dmn_cnt_out = %ld, dmn_ids_out = %d\n",nco_prg_nm_get(),dmn_idx,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out[dmn_idx]);
+	//(void)fprintf(stdout,"%s: DEBUG quark2 dmn_idx = %d, dmn_nm = %s, dmn_cnt_out = %ld, dmn_ids_out = %d\n",nco_prg_nm_get(),dmn_idx,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out[dmn_idx]);
       } /* !rcd */
     } /* !dmn_idx */
   } /* !flg_grd_out_dpt_3D */
@@ -2484,7 +2497,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      SOSE: z
      WOA: depth, depth_bnds, volume, zBroadcast
      Run-time: dpt_nm_in, dpt_nm_out, plev_nm_in, plev_nm_out, ps_nm_in, ps_nm_tpl */
-  const char *var_xcl_lst_fix[]={"/depth","/depth_bnds","/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PRESSURE","/PS","/refBottomDepth","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/vertCoordMovementWeights","/volume","/zBroadcast","/zMid"};
+  const char *var_xcl_lst_fix[]={"/depth","/depth_bnds","/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PRESSURE","/PS","/refBottomDepth","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/vertCoordMovementWeights","/volume","/z","/zBroadcast","/zMid"};
   int var_xcl_fix_nbr=sizeof(var_xcl_lst_fix)/sizeof(char *); /* [nbr] Number of variables in fixed (compile-time) exclusion list */
   /* Create list to hold both compile- and run-time exclusion variables */
   char **var_xcl_lst=NULL; /* [sng] List of variables to exclude */
