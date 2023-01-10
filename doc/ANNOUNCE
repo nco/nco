@@ -8,12 +8,13 @@ http://github.com/nc/ncoo (Source Code, Issues, Releases)
 What's new?
 Version 5.1.4 introduces vertical interpolation for datasets stored
 on depth/height grids, such as ocean data. The interpolation works
-on all datasets tested with vertical levels and bathymetry that are
-either horizontally varying (e.g., MPAS-Ocean, POP, MOM) or uniform
-(many observational datasets including ARGO, SOSE, WOA18).
+on all datasets tested with vertical levels that are either
+horizontally varying (e.g., MPAS-Ocean, POP, MOM) or uniform (many
+observational datasets including ARGO, SOSE, WOA18).
+The algorithms play well with horzontally varying bathymetry.
 This release also fixes a vexing issue that can occur with certain
-compilers on AMD hardware. Other than that, this release can be
-skipped.
+compilers on AMD hardware. This release can be skipped if these
+regridding features are not useful to you.
 
 Work on NCO 5.1.5 has commenced and aims to add support for Zarr S3 
 stores and to polish support for new codecs.
@@ -26,16 +27,22 @@ NEW FEATURES (full details always in ChangeLog):
 A. ncremap can now vertically interpolate files/fields stored on
 depth/height-based vertical grids. The capability is analogous to
 the existing ncremap capability of interpolating data on pure-pressure
-or hybrid sigma/pressure vertical grids (all four combinations work).
-The depth grid may be positive upwards or downwards.
-ncremap --vrt_out=vrt.nc in.nc out.nc
-ncremap --vrt_out=vrt.nc in.nc out.nc
+or hybrid sigma/pressure vertical grids (all four combinations work):
+ncremap --vrt_out=vrt_out.nc in.nc out.nc
+ncremap --vrt_in=vrt_in.nc --vrt_in=vrt_out.nc in.nc out.nc
 ncremap -P mpas --vrt_out=vrt.nc --map=map.nc in.nc out.nc
+ncremap --vrt_out=sose.nc mpas.nc out.nc
+ncremap --vrt_out=mpas.nc sose.nc out.nc
+ncremap --vrt_out=woa18.nc mpas.nc out.nc
+ncremap --vrt_out=mpas.nc woa18.nc out.nc
+ncremap --vrt_out=argo.nc mpas.nc out.nc
+ncremap --vrt_out=mpas.nc argo.nc out.nc
+The depth/height grid may be positive upwards or downwards.
 http://nco.sf.net/nco.html#ncremap
 http://nco.sf.net/nco.html#vrt_out
 This is the first release of vertical interpolation for ocean data,
 and we expect some rough edges. Please let us know what features
-fail to work as expected on your ocean data.
+you want added or fixed.
 
 B. Operators now silently avoid attempting to compress variable-length
 datatypes, i.e., variables of type NC_STRING or NC_VLEN. This is

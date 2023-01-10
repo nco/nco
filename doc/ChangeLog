@@ -1,8 +1,10 @@
-2023-01-09  Charlie Zender  <zender@uci.edu>
+2023-01-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.4: Habana';git push
-	git tag -a 5.1.4 -m 'all: deactivate SIMD, cxl UDUNITS2_PATH, no cmp NC_STRING/NC_VLEN, NCO_ERR_FL_LN; ncremap: +ve-dwn dpt, ARGO SOSE';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.1.4: Bakhmut';git push
+	git tag -a 5.1.4 -m 'all: deactivate SIMD, cxl UDUNITS2_PATH, no cmp NC_STRING/NC_VLEN, NCO_ERR_FL_LN; ncremap: +ve-dwn dpt, ARGO SOSE WOA18';git push --tags
+
+2023-01-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.4-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.4-beta01: Habana';git push
