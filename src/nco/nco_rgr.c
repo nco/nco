@@ -2423,7 +2423,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Use explicitly specified output names, if any, otherwise use template names (either explicitly specified or discovered by fuzzing) */
   if(rgr->ilev_nm_out){
     if(flg_grd_out_hyb) ilev_nm_out=rgr->ilev_nm_out;
-    if(flg_grd_out_prs) lev_nm_out=rgr->ilev_nm_out;
+    if(flg_grd_out_prs) ilev_nm_out=rgr->ilev_nm_out;
   } /* !ilev_nm_out */
   if(flg_grd_out_prs){
     /* Unless user explicitly specifies output name, use same name as input */

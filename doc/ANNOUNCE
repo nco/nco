@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.4 erupt
+netCDF Operators NCO version 5.1.4 smite evil
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nc/ncoo (Source Code, Issues, Releases)
@@ -13,7 +13,7 @@ either horizontally varying (e.g., MPAS-Ocean, POP, MOM) or uniform
 (many observational datasets including ARGO, SOSE, WOA18).
 This release also fixes a vexing issue that can occur with certain
 compilers on AMD hardware. Other than that, this release can be
-skipped.  
+skipped.
 
 Work on NCO 5.1.5 has commenced and aims to add support for Zarr S3 
 stores and to polish support for new codecs.
@@ -27,10 +27,30 @@ A. ncremap can now vertically interpolate files/fields stored on
 depth/height-based vertical grids. The capability is analogous to
 the existing ncremap capability of interpolating data on pure-pressure
 or hybrid sigma/pressure vertical grids (all four combinations work).
+The depth grid may be positive upwards or downwards.
+ncremap --vrt_out=vrt.nc in.nc out.nc
 ncremap --vrt_out=vrt.nc in.nc out.nc
 ncremap -P mpas --vrt_out=vrt.nc --map=map.nc in.nc out.nc
 http://nco.sf.net/nco.html#ncremap
 http://nco.sf.net/nco.html#vrt_out
+This is the first release of vertical interpolation for ocean data,
+and we expect some rough edges. Please let us know what features
+fail to work as expected on your ocean data.
+
+B. Operators now silently avoid attempting to compress variable-length
+datatypes, i.e., variables of type NC_STRING or NC_VLEN. This is
+because neither netCDF nor HDF allow compression of these types.
+Previously, attempting to compress these types would trigger a netCDF
+error. Now the request will be silently ignored and program will
+proceed as expected in all other ways.
+
+C. The software stack upon which the Anaconda NCO package depends
+has been future-proofed. Specifically the feedstocks for the Antlr2
+and NCO packages have been updated to enable building conda-based
+packages on newer architectures such as linux-ppc64le, osx-arm64,
+and linux-aarch64. Thanks especially to Klaus Zimmerman, Xylar
+Asay-Davis, and Filipe Fernandes with this effort, and to Phil
+Rasch for spurring the effort in the first place.
 
 BUG FIXES:
    
@@ -40,6 +60,8 @@ due to the behavior of OpenMP SIMD pragmas/directives. This is only
 known to affect Spack-compiled executables running on compute nodes of 
 the PNNL Compy cluster. The workaround is to use executables compiled
 any other way, or on any other hardware. The fix is to upgrade.
+Thanks to Jill Zhang (PNNL) and Xylar Asay-Davis (LANL) for their help
+and patience with finding and fixing this bug.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
