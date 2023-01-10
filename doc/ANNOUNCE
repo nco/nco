@@ -11,7 +11,7 @@ on depth/height grids, such as ocean data. The interpolation works
 on all datasets tested with vertical levels that are either
 horizontally varying (e.g., MPAS-Ocean, POP, MOM) or uniform (many
 observational datasets including ARGO, SOSE, WOA18).
-The algorithms play well with horzontally varying bathymetry.
+The algorithms play well with horizontally varying bathymetry.
 This release also fixes a vexing issue that can occur with certain
 compilers on AMD hardware. This release can be skipped if these
 regridding features are not useful to you.
@@ -62,7 +62,7 @@ Rasch for spurring the effort in the first place.
 BUG FIXES:
    
 A. ncremap versions 5.0.7--5.1.3 can, with certain compiler settings
-on AMD hardware, produce (obvisously) erroneous regridding results
+on AMD hardware, produce (obviously) erroneous regridding results
 due to the behavior of OpenMP SIMD pragmas/directives. This is only
 known to affect Spack-compiled executables running on compute nodes of 
 the PNNL Compy cluster. The workaround is to use executables compiled

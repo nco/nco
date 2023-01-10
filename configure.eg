@@ -309,7 +309,7 @@ make install
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on acme1:
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
-# Personal recipe last modified: 20221214 (search new location of e3sm-u_latest)
+# Personal recipe last modified: 20230110
 # Personal recipe last used successfully: 20221128 (borken as of 20221214)
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
@@ -317,7 +317,8 @@ export PATH=${MY_BIN_DIR}:'/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_
 #export LD_LIBRARY_PATH=${MY_LIB_DIR}:'/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
 # NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
 # 20220104 NB: ANTLR_ROOT in ${HOME} is only used at compile-time, not run-time
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' UDUNITS2_PATH='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} CC='gcc' CPPFLAGS='-I/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' CXX='g++' LDFLAGS='-L/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
@@ -364,7 +365,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 216373 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 module load nco/4.7.4 # 20180417
 # Personal recipe last modified: 20190813
-# Personal recipe last used successfully: 20221118
+# Personal recipe last used successfully: 20230110
 # Personal recipe last failed: 20190812 (antlr needed GCC 9.1.0 recompile)
 # Cheyenne GNU:
 module purge
@@ -387,13 +388,13 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20221004 (use Anaconda)
-# Personal recipe last used successfully: 20221128
+# Personal recipe last used successfully: 20230110
 cd ~/nco;/bin/rm -f *.foo;make distclean
 module load gcc/9.2.0-ugetvbp
 module load openmpi/4.0.4-hpcx-hghvhj5
 # Default as of 20210924 is to build with Anaconda
 # This works until ncap2 fails to link to -lantlr because link path does not use MY_LIB_DIR for some reason
-ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Older method:
 # module load netcdf-c/4.7.4-a4uk6zy (only for non-anaconda builds)
 # ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy' UDUNITS2_PATH=${HOME} ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
@@ -411,7 +412,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 20190525 ICS-40n99 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
 # Personal recipe last modified: 20221222 (remove UDUNITS2_PATH)
-# Personal recipe last used successfully: 20221222
+# Personal recipe last used successfully: 20230110
 module purge
 module load gcc/10.2.0
 #module load mvapich2/2.3.7 # Required for ncclimo/ncremap in MPI-mode
@@ -553,7 +554,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20221223
-# Personal recipe last used successfully: 20221223
+# Personal recipe last used successfully: 20230110
 module load PrgEnv-gnu
 module load gcc/11.2.0
 module load cray-hdf5/1.12.2.1
