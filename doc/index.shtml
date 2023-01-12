@@ -357,6 +357,7 @@ program.
 
 <a name="nsf"></a> <!-- http://nco.sf.net#nsf -->
 <dt><a name="prp_e3"></a></dt> <!-- http://nco.sf.net#prp_e3 -->
+<!-- 
 <h2>NSF EarthCube Project</h2>
 <p>
 The National Science Foundation Grant
@@ -378,6 +379,7 @@ program.
   CF <a href="https://cfconventions.org/cf-conventions/cf-conventions.html#groups">adopted</a>
   our Groups proposal in 2019 and our extended integer types proposal in 2020.
 <hr></p>
+-->
 <!-- End http://nco.sf.net#nsf -->
 
 <a name="doe"></a> <!-- http://nco.sf.net#doe -->
@@ -397,6 +399,43 @@ a part of DOE's Earth System Modeling (ESM)
 has since 2015 supported our development of parallel climatology, timeseries
 splitting, and regridding workflows to help analyze E3SM output.
 Most NCO development during these years is a direct result of this DOE support.</p>
+<hr></p>
+
+<a name="nasa"></a>
+<a name="ostfl"></a>
+<dt><a name="prp_ostfl"></a></dt>
+<h2>NASA OSTFL 2020 Project</h2>
+<img src="nasa.png" height=180 width=180 align=right>
+<p>
+  The National Aeronautics and Space Administration (NASA)
+  Open Source Tools, Frameworks, and Libraries
+  (<a href="https://science.nasa.gov/researchers/sara/grant-solicitations/roses-2020/amendment-59-release-final-text-e7-open-source-tools-libraries-and-frameworks">OSTFL 2020</a>)
+  program funded our project &ldquo;NASA-Oriented Improvements to and Maintenance and Support of the netCDF Operators (NCO) Toolkit&rdquo;
+  from 20220901&ndash;202400831.
+
+<p>This OSTFL project funds NCO feature development, fostering
+community through user support, and improving software maintenance and
+infrastructure. 
+Our pre-proposal survey of NASA users highlighted three priority
+areas for the first track, feature development:
+1)&nbsp;Optimized access to/from/within cloud-storage environments, and 
+2)&nbsp;Improved interoperability with Python, and
+3)&nbsp;Transparent access to more efficient compression algorithms.
+These features will support the ongoing transition of many NASA
+scientists to fast, modern, local and cloud-based data analysis.
+
+The user-support aspect of this project takes place through the
+existing support channels (SourceForge, GitHub) as well as our new
+&ldquo;office hours&rdquo;.
+Users are invited to ask questions and discuss issues with the NCO
+team on Monday at noon (Pacific Time) on Zoom at 
+<a href="https://uci.zoom.us/my/zender">https://uci.zoom.us/my/zender</a>.
+Monday telecons will occasionally not occur due to holidays, travel,
+and/or schedule conflicts.
+Ideas for a way to verify meeting status and cancellations are
+welcome.
+Feedback is welcome about this exciting new outreach effort.
+</p>  
 <hr></p>
 
 <!-- 

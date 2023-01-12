@@ -788,7 +788,7 @@ main(int argc,char **argv)
   
   /* NB: Much of following logic is required by netCDF constraint that only
      one record variable is allowed per file. netCDF4 will relax this constraint.
-     Hence making following logic prettier or funcionalizing is not high priority.
+     Hence making following logic prettier or functionalizing is not high priority.
      Logic may need to be simplified/re-written once netCDF4 is released. */
   if(REDEFINED_RECORD_DIMENSION){
     if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF allows only one record dimension. Hence %s will make %s record (least rapidly varying) dimension in all variables that contain it.\n",nco_prg_nm,rec_dmn_nm_in,rec_dmn_nm_out,nco_prg_nm,rec_dmn_nm_out);
