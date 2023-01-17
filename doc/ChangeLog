@@ -1,8 +1,12 @@
-2023-01-11  Charlie Zender  <zender@uci.edu>
+2023-01-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha01: Morning Show';git push
 	git tag -a 5.1.5-alpha01 -m 'Functionally identical to 5.1.4';git push --tags
+
+	* Quiet clang++ v. 13 compiler warnings by shifting from sprintf() to snprintf()
+
+2023-01-11  Charlie Zender  <zender@uci.edu>
 
 2023-01-10  Charlie Zender  <zender@uci.edu>
 

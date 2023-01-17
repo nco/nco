@@ -199,7 +199,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
  int * const nc_id); /* O [id] File ID */
 
 nco_bool /* O [flg] Filename is valid NCZarr specification */
-nco_fl_nm_is_nczarr /* [fnc] Filename is valid NCZarr specification */
+nco_fl_nm_vld_ncz_syn /* [fnc] Filename is valid NCZarr specification */
 (const char * const fl_nm); /* I [sng] Filename */
 
 int /* O [rcd] Return code */

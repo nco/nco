@@ -241,6 +241,11 @@ const char * /* O [sng] String describing type */
 nco_typ_sng /* [fnc] Convert netCDF type enum to string */
 (const nc_type type) /* I [enm] netCDF type */
 {
+  /* 20230117: Results of nco_typ_sng() often pasted into buffer with sprintf()
+     This is now considered bad form, and compilers (Clang) suggest shifting to snprintf() instead 
+     snprintf() requires supplying the maximum number of characters to paste (including terminating NUL)
+     This function, nco_typ_sng(), returns a string at most thirteen characters long (including terminating NUL) */
+
   if(type >= NC_FIRSTUSERTYPEID) return "User-defined";
 
   switch(type){

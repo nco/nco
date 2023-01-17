@@ -1,15 +1,12 @@
 #include "ncap2_att.hh"
 
-
 nco_bool              // O [flg] true if var has an att name                         
 ncap_var_is_att(      //   [fnc] check var          
 var_sct *var)         // I [sct] var to check
 {
-  if( strchr(var->nm,'@') !=NULL_CEWI ) 
-    return True;
+  if(strchr(var->nm,'@') != NULL_CEWI) return True;
   return False;
 }
-
 
 std::string           // O [sng] text of va
 ncap_att2var          //   [fnc] return text content of var
@@ -439,6 +436,8 @@ ncap_att_prn     /* [fnc] Print a single attribute*/
   long att_lmn;
   long att_sz;
   
+  const size_t sng_sz_max=6+6; /* [nbr] Maximum number of characters to paste with snprintf() */
+
   /* Copy value to avoid indirection in loop over att_sz */
   att_sz=var->sz;
   
@@ -448,7 +447,7 @@ ncap_att_prn     /* [fnc] Print a single attribute*/
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(var->type,&var->val);
     (void)strcpy(dlm_sng,", ");
-    (void)sprintf(att_sng,"%s%%s",nco_typ_fmt_sng(var->type));
+    (void)snprintf(att_sng,sng_sz_max,"%s%%s",nco_typ_fmt_sng(var->type));
     /* user defined format string */ 
   } else {
     (void)strcpy(att_sng,att_in_sng);
@@ -528,25 +527,25 @@ ncap_att_sprn     /* [fnc] Print a single attribute*/
   long att_lmn;
   long att_sz;
   
+  const size_t sng_sz_max=NC_MAX_ATTRS; /* [nbr] Maximum number of characters to paste with snprintf() */
+
   /* Copy value to avoid indirection in loop over att_sz */
   att_sz=var->sz;
   
-  cp=(char*)nco_calloc(sizeof(char),(NC_MAX_ATTRS+100)); 
+  cp=(char *)nco_calloc(sizeof(char),NC_MAX_ATTRS+100); 
   tp=cp;  
-  cp_max=cp+ (size_t)(NC_MAX_ATTRS+100); 
-
-
+  cp_max=cp+(size_t)(NC_MAX_ATTRS+100); 
 
   if(att_in_sng ==(char*)NULL) {        
     /* default dont bother if att info if type is text */
     if(var->type != NC_CHAR && var->type != NC_STRING)
     {     
-      (void)sprintf(tp,"%s, size = %li %s, value = ",var->nm,att_sz,nco_typ_sng(var->type));
+      (void)snprintf(tp,sng_sz_max,"%s, size = %li %s, value = ",var->nm,att_sz,nco_typ_sng(var->type));
       tp+=strlen(tp); 
     }
     /* Typecast pointer to values before access */
     (void)strcpy(dlm_sng,", ");
-    (void)sprintf(att_sng,"%s%%s",nco_typ_fmt_sng(var->type));
+    (void)snprintf(att_sng,NCO_MAX_LEN_FMT_SNG,"%s%%s",nco_typ_fmt_sng(var->type));
     /* user defined format string */ 
   } else {
     (void)strcpy(att_sng,att_in_sng);
@@ -554,20 +553,19 @@ ncap_att_sprn     /* [fnc] Print a single attribute*/
   }
       
   (void)cast_void_nctype(var->type,&var->val);
-
   
   switch(var->type){
   case NC_FLOAT:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max ;att_lmn++) { (void)sprintf(tp,att_sng,var->val.fp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max ;att_lmn++) { (void)snprintf(tp,NC_MAX_ATTRS,att_sng,var->val.fp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");tp+=strlen(tp);}
     break;
   case NC_DOUBLE:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max ;att_lmn++) { (void)sprintf(tp,att_sng,var->val.dp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");  tp+=strlen(tp); }
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max ;att_lmn++) { (void)snprintf(tp,NC_MAX_ATTRS,att_sng,var->val.dp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");tp+=strlen(tp);}
     break;
   case NC_SHORT:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.sp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)snprintf(tp,NC_MAX_ATTRS,att_sng,var->val.sp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");tp+=strlen(tp);}
     break;
   case NC_INT:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,(long)var->val.ip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)snprintf(tp,NC_MAX_ATTRS,att_sng,(long)var->val.ip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");tp+=strlen(tp);}
     break;
   case NC_CHAR:
     if(att_in_sng ==(char*)NULL)    
@@ -577,34 +575,33 @@ ncap_att_sprn     /* [fnc] Print a single attribute*/
     {
       for(att_lmn=0;att_lmn<att_sz && tp<cp_max ;att_lmn++)
         /* Assume \0 is string terminator and do not print it */
-        if((char_foo=var->val.cp[att_lmn]) != '\0') 
-	{ 
-           (void)sprintf(tp,att_sng,char_foo);   
+        if((char_foo=var->val.cp[att_lmn]) != '\0'){ 
+           (void)snprintf(tp,NC_MAX_ATTRS,att_sng,char_foo);   
            tp+=strlen(tp); 
         } 
     } /* end loop over element */
 
     break;
   case NC_BYTE:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.bp[att_lmn], (att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)snprintf(tp,NC_MAX_ATTRS,att_sng,var->val.bp[att_lmn], (att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
     break;
   case NC_UBYTE:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.ubp[att_lmn], (att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)snprintf(tp,NC_MAX_ATTRS,att_sng,var->val.ubp[att_lmn], (att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
     break;
   case NC_USHORT:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.usp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)snprintf(tp,NC_MAX_ATTRS,att_sng,var->val.usp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
     break;
   case NC_UINT:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.uip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)snprintf(tp,NC_MAX_ATTRS,att_sng,var->val.uip[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
     break;
   case NC_INT64:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.i64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)snprintf(tp,NC_MAX_ATTRS,att_sng,var->val.i64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
     break;
   case NC_UINT64:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)sprintf(tp,att_sng,var->val.ui64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max;att_lmn++) { (void)snprintf(tp,NC_MAX_ATTRS,att_sng,var->val.ui64p[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : ""); tp+=strlen(tp); }
     break;
   case NC_STRING:
-    for(att_lmn=0;att_lmn<att_sz && tp<cp_max ; att_lmn++) { (void)sprintf(tp,att_sng,var->val.sngp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");tp+=strlen(tp); }
+    for(att_lmn=0;att_lmn<att_sz && tp<cp_max ; att_lmn++) { (void)snprintf(tp,NC_MAX_ATTRS,att_sng,var->val.sngp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");tp+=strlen(tp); }
     break;
   default: nco_dfl_case_nc_type_err();
     break;
@@ -612,19 +609,16 @@ ncap_att_sprn     /* [fnc] Print a single attribute*/
   
   (void)cast_nctype_void(var->type,&var->val);
   
-  if( tp >= cp_max )
-  {
-    cp=(char*)nco_realloc(cp, NC_MAX_ATTRS*sizeof(char));     
+  if(tp >= cp_max){
+    cp=(char*)nco_realloc(cp,NC_MAX_ATTRS*sizeof(char));     
     cp[NC_MAX_ATTRS-1]='\0';
-  }
-  else
-  {
-    cp=(char*)nco_realloc(cp, sizeof(char) * (strlen(cp)+1));     
+  }else{
+    cp=(char*)nco_realloc(cp,sizeof(char)*(strlen(cp)+1));     
   }       
   
   return cp;
 
-} /* end ncap_att_prn() */
+} /* !ncap_att_prn() */
 
 
 int          /* number appended */ 
@@ -652,18 +646,14 @@ ncap_att_str /* extract string(s) from a NC_CHAR or NC_STRING type attribute */
   if(var_att->type==NC_CHAR)
   { 
     char buffer[NC_MAX_NAME+1];
-    strncpy(buffer, var_att->val.cp, var_att->sz);        
+    strncpy(buffer,var_att->val.cp, var_att->sz);        
     buffer[var_att->sz+1]='\0'; 
     str_vtr.push_back(buffer);
   } 
   (void)cast_nctype_void((nc_type)var_att->type,&var_att->val);
   
   return (str_vtr.size() - srt_size);  
-
-
-
 }
-
 
 char *          /* new malloc'ed string */ 
 ncap_att_char  /* extract string from a NC_CHAR or first NC_STRING */

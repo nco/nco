@@ -330,14 +330,14 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
   /* 20220713 Allow for NCZarr storage */
   char *fl_src_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_src */
   char *fl_dst_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_dst */
-  if(nco_fl_nm_is_nczarr(fl_src)){
+  if(nco_fl_nm_vld_ncz_syn(fl_src)){
     src_is_drc=True;
     (void)nco_fl_ncz2psx(fl_src,&fl_src_psx,NULL,NULL);
-  } /* !nco_fl_nm_is_nczarr() */
-  if(nco_fl_nm_is_nczarr(fl_dst)){
+  } /* !nco_fl_nm_vld_ncz_syn() */
+  if(nco_fl_nm_vld_ncz_syn(fl_dst)){
     dst_is_drc=True;
     (void)nco_fl_ncz2psx(fl_dst,&fl_dst_psx,NULL,NULL);
-  } /* !nco_fl_nm_is_nczarr() */
+  } /* !nco_fl_nm_vld_ncz_syn() */
 
   /* Copying between file-store and directory-store requires thought */
   if(src_is_drc && !dst_is_drc) (void)fprintf(stderr,"%s: WARNING %s reports attempt to copy source directory %s to destination file %s will not go well...\n",nco_prg_nm_get(),fnc_nm,fl_src_psx,fl_dst);
@@ -875,7 +875,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
-  }else if(nco_fl_nm_is_nczarr(fl_nm_lcl)){
+  }else if(nco_fl_nm_vld_ncz_syn(fl_nm_lcl)){
     /* Important to check for NCZarr before https_url_sng because https is a legal NCZarr scheme */
 #if NC_HAS_NCZARR
     url_sng_lng=strlen(nczarr_url_sng);
@@ -1511,11 +1511,11 @@ nco_fl_mv /* [fnc] Move first file to second */
   /* 20220713 Allow for NCZarr storage */
   char *fl_src_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_src */
   char *fl_dst_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_dst */
-  if(nco_fl_nm_is_nczarr(fl_src)) (void)nco_fl_ncz2psx(fl_src,&fl_src_psx,NULL,NULL);
-  if(nco_fl_nm_is_nczarr(fl_dst)){
+  if(nco_fl_nm_vld_ncz_syn(fl_src)) (void)nco_fl_ncz2psx(fl_src,&fl_src_psx,NULL,NULL);
+  if(nco_fl_nm_vld_ncz_syn(fl_dst)){
     dst_is_drc=True;
     (void)nco_fl_ncz2psx(fl_dst,&fl_dst_psx,NULL,NULL);
-  } /* !nco_fl_nm_is_nczarr() */
+  } /* !nco_fl_nm_vld_ncz_syn() */
 
   /* 20131227 Allow for whitespace and naughty characters in fl_[src,dst]
      Assume CDL translation results in acceptable name for shell commands */
@@ -1838,7 +1838,7 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
 
   /* 20220821: Use fl_out to determine directory and thus blocksize for output
      Do not use nc_id here, since that refers to input file!!!*/
-  if(nco_fl_nm_is_nczarr(fl_nm)){
+  if(nco_fl_nm_vld_ncz_syn(fl_nm)){
     (void)nco_fl_ncz2psx(fl_nm,NULL,&drc_out,NULL);
   }else{
   /* Use filename manipulation to truncate the end of the path,
@@ -1974,7 +1974,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* NB: Calling routine has responsibility to free() this memory */
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
 
-  if(nco_fl_nm_is_nczarr(fl_out)) fl_fmt_xtn=nco_fmt_xtn_nczarr;
+  if(nco_fl_nm_vld_ncz_syn(fl_out)) fl_fmt_xtn=nco_fmt_xtn_nczarr;
   if(fl_fmt_xtn == nco_fmt_xtn_nczarr){
     /* 20220715 fxm: Exploit nco_fl_ncz2psx() formalism when constructing temporary filename
        Currently this code only works for file:// scheme */
@@ -2242,11 +2242,11 @@ nco_fl_rm /* [fnc] Remove file or directory */
   
   /* 20220713 Allow for NCZarr storage */
   char *fl_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_nm */
-  if(nco_fl_nm_is_nczarr(fl_nm)){
+  if(nco_fl_nm_vld_ncz_syn(fl_nm)){
     (void)nco_fl_ncz2psx(fl_nm,&fl_psx,NULL,NULL);
     obj_to_rm=fl_psx;
     obj_is_drc=True;
-  } /* !nco_fl_nm_is_nczarr() */
+  } /* !nco_fl_nm_vld_ncz_syn() */
   
   if(obj_is_drc) cmd_rm_typ=cmd_rm_drc; else cmd_rm_typ=cmd_rm_fl;
   /* Add one for the space and one for the terminating NUL character */
@@ -2291,11 +2291,11 @@ nco_fl_chmod2 /* [fnc] Ensure file or directory is user/owner-writable */
   
   /* 20220713 Allow for NCZarr storage */
   char *fl_psx=NULL; /* [sng] Full POSIX path of NCZarr fl_nm */
-  if(nco_fl_nm_is_nczarr(fl_nm)){
+  if(nco_fl_nm_vld_ncz_syn(fl_nm)){
     (void)nco_fl_ncz2psx(fl_nm,&fl_psx,NULL,NULL);
     obj_to_chmod=fl_psx;
     obj_is_drc=True;
-  } /* !nco_fl_nm_is_nczarr() */
+  } /* !nco_fl_nm_vld_ncz_syn() */
   
   if(obj_is_drc) cmd_chmod_typ=cmd_chmod_drc; else cmd_chmod_typ=cmd_chmod_fl;
   /* Add one for the space and one for the terminating NUL character */
@@ -2317,11 +2317,13 @@ nco_fl_chmod2 /* [fnc] Ensure file or directory is user/owner-writable */
 #endif /* !_MSC_VER */
 
 nco_bool /* O [flg] Filename is valid NCZarr specification */
-nco_fl_nm_is_nczarr /* [fnc] Filename is valid NCZarr specification */
+nco_fl_nm_vld_ncz_syn /* [fnc] Filename is valid NCZarr specification */
 (const char * const fl_nm) /* I [sng] Filename */
 {
-  /* Purpose: Determine whether NCZarr conventions apply to this filename */
-  const char fnc_nm[]="nco_fl_nm_is_nczarr()"; /* [sng] Function name */
+  /* Purpose: Determine whether this filename (not contents) adheres to NCZarr conventions
+     Currently this means the name is syntactically valid as an NCZarr object
+     This routine neither checks, assumes, nor implies that filename points to a valid NCZarr object */
+  const char fnc_nm[]="nco_fl_nm_vld_ncz_syn()"; /* [sng] Function name */
   const char * ncz_scm_arr[]={
     "file://",
     "s3://",
@@ -2352,7 +2354,7 @@ nco_fl_nm_is_nczarr /* [fnc] Filename is valid NCZarr specification */
   } /* !scm_idx */
   
   return fl_nm_is_nczarr;
-} /* !nco_fl_nm_is_nczarr() */
+} /* !nco_fl_nm_vld_ncz_syn() */
   
 int /* O [rcd] Return code */
 nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */

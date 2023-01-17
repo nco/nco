@@ -496,7 +496,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     nc_type bs_typ;
     nc_type cls_typ;
     
-    if(idx <= att_nbr_vsb-1){
+    if(idx < att_nbr_vsb){
       /* Visible attributes get standard treatment */
       att[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
       (void)nco_inq_attname(grp_id,var_id,idx,att[idx].nm);
@@ -1120,7 +1120,12 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 {
   /* Purpose: Provide sprintf() format string for specified type 
      nco_typ_fmt_sng() is "master" NCO formatting function that defines formatting 
-     in traditional NCO mode, i.e., when not explicitly requesting CDL or XML */
+     in traditional NCO mode, i.e., when not explicitly requesting CDL or XML
+
+     20230117: Results of nco_typ_fmt_sng() often pasted into buffer with sprintf()
+     This is now considered bad form, and compilers (Clang) suggest shifting to snprintf() instead 
+     snprintf() requires supplying the maximum number of characters to paste (including terminating NUL)
+     This function, nco_typ_fmt_sng(), returns a string at most six characters long (including terminating NUL) */
 
   static const char fmt_NC_FLOAT[]="%g"; /* %g defaults to 6 digits of precision */
   static const char fmt_NC_DOUBLE[]="%.12g"; /* %g defaults to 6 digits of precision */
