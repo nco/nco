@@ -1231,7 +1231,7 @@ main(int argc,char **argv)
     if(cb) cb=(clm_bnd_sct *)nco_free(cb);
 
   /* Add cell_methods attributes (before exiting define mode) */
-  if(nco_prg_id == ncra || nco_prg_id == ncrcat){
+  if(nco_prg_id == ncra){
     dmn_sct **dmn=NULL_CEWI;
     int nbr_dmn=nbr_rec;
     dmn=(dmn_sct **)nco_malloc(nbr_dmn*sizeof(dmn_sct *));
