@@ -132,7 +132,7 @@ main(int argc,char **argv)
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="34567ACcD:FfHhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
-  const char fnc_nm[]="main()";
+  const char fnc_nm[]="main";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 

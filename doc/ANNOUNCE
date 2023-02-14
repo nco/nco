@@ -1,12 +1,14 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.4 smite evil
+netCDF Operators NCO version 5.1.5 smite evil
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nc/ncoo (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.4 introduces vertical interpolation for datasets stored
+Version 5.1.5
+
+introduces vertical interpolation for datasets stored
 on depth/height grids, such as ocean data. The interpolation works
 on all datasets tested with vertical levels that are either
 horizontally varying (e.g., MPAS-Ocean, POP, MOM) or uniform (many
@@ -16,7 +18,7 @@ This release also fixes a vexing issue that can occur with certain
 compilers on AMD hardware. This release can be skipped if these
 regridding features are not useful to you.
 
-Work on NCO 5.1.5 has commenced and aims to add support for Zarr S3 
+Work on NCO 5.1.6 has commenced and aims to add support for Zarr S3 
 stores and to polish support for new codecs.
 
 Enjoy,
@@ -44,31 +46,13 @@ This is the first release of vertical interpolation for ocean data,
 and we expect some rough edges. Please let us know what features
 you want added or fixed.
 
-B. Operators now silently avoid attempting to compress variable-length
-datatypes, i.e., variables of type NC_STRING or NC_VLEN. This is
-because neither netCDF nor HDF allow compression of these types.
-Previously, attempting to compress these types would trigger a netCDF
-error. Now the request will be silently ignored and program will
-proceed as expected in all other ways.
-
-C. The software stack upon which the Anaconda NCO package depends
-has been future-proofed. Specifically the feedstocks for the Antlr2
-and NCO packages have been updated to enable building conda-based
-packages on newer architectures such as linux-ppc64le, osx-arm64,
-and linux-aarch64. Thanks especially to Klaus Zimmerman, Xylar
-Asay-Davis, and Filipe Fernandes with this effort, and to Phil
-Rasch for spurring the effort in the first place.
-
 BUG FIXES:
    
-A. ncremap versions 5.0.7--5.1.3 can, with certain compiler settings
-on AMD hardware, produce (obviously) erroneous regridding results
-due to the behavior of OpenMP SIMD pragmas/directives. This is only
-known to affect Spack-compiled executables running on compute nodes of 
-the PNNL Compy cluster. The workaround is to use executables compiled
-any other way, or on any other hardware. The fix is to upgrade.
-Thanks to Jill Zhang (PNNL) and Xylar Asay-Davis (LANL) for their help
-and patience with finding and fixing this bug.
+A. ncrcat versions 4.8.0--5.1.4 could erroneously add a cell_methods
+attribute to variables it processed. This behavior has been
+eliminated. ncra still adds the attribute by default. The workaround
+is to invoke ncrcat with the --no_cll_mth flag. The solution is to
+upgrade. Thanks to Brian Vanderwende (NCAR) for reporting this.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

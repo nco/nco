@@ -109,23 +109,17 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
     case "${HOSTNAME}" in 
 	acme1* )
-	    if [ ${spt_nm} = 'ncremap' ]; then
-		E3SMU_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_latest'
-	    fi # !ncremap
-	    export PATH='/home/zender1/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/home/zender1/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/home/zender1/bin:/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin'\:${PATH}
+            export LD_LIBRARY_PATH='/home/zender1/lib:/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib'\:${LD_LIBRARY_PATH} ; ;;
 	andes* )
 	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		E3SMU_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_latest'
+		module load esmf
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_andes'\:${PATH}
-	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/ccs/proj/cli900/sw/andes/e3sm-unified/base/envs/e3sm_unified_latest/lib'\:${LD_LIBRARY_PATH} ; ;;
 	blues* | blogin* | b[0123456789][0123456789][0123456789] )
-	    if [ ${spt_nm} = 'ncremap' ]; then
-		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
-	    fi # !ncremap
 	    export PATH='/home/zender/bin_blues'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_blues'\:${LD_LIBRARY_PATH} ; ;;
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
@@ -149,13 +143,15 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
             export PATH='/glade/u/home/zender/bin'\:${PATH}
             export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0/lib:/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib:/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	compy* | n[0123456789][0123456789][0123456789][0123456789] )
+	    module purge
+	    module load gcc/10.2.0
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		# 20210519: This script takes significant time (5-10 seconds) to load
 		source /compyfs/software/mbtempest.envs.sh
 		E3SMU_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
-	    export PATH='/qfs/people/zender/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/qfs/people/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/qfs/people/zender/bin:/qfs/people/zender/anaconda/bin'\:${PATH}
+	    export LD_LIBRARY_PATH='/qfs/people/zender/lib:/qfs/people/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	cooley* | cc[0123456789][0123456789][0123456789] )
 	    # 20160421: Split cooley from mira binary locations to allow for different system libraries
 	    # http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
@@ -178,20 +174,18 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
-		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 	    fi # !NCARG_ROOT
 	    export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
             export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
 	mira* )
 	    export PATH='/home/zender/bin_mira'\:${PATH}
 	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
-	perlmutter* | login[0123456789][0123456789] )
+	perlmutter* | login[0123456789][0123456789] | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] )
 	    # 20221103 Add build environment modules
 	    module load PrgEnv-gnu
 	    module load gcc/11.2.0
-	    module load cray-hdf5/1.12.1.1
-	    module load cray-netcdf/4.8.1.1
-	    module load gsl/2.7
+	    module load cray-hdf5/1.12.2.1
+	    module load cray-netcdf/4.9.0.1
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
 		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
@@ -221,14 +215,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	* ) # Default fall-through
 	    hrd_pth_fnd='No' ; ;;
     esac # !HOSTNAME
-    if [ -n "${MOAB_ROOT}" ]; then
-	export PATH="${PATH}:${MOAB_ROOT}/bin"
-	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MOAB_ROOT}/lib"
-    fi # !MOAB_ROOT
-    if [ -n "${TEMPESTREMAP_ROOT}" ]; then
-	export PATH="${PATH}:${TEMPESTREMAP_ROOT}/bin"
-	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${TEMPESTREMAP_ROOT}/lib"
-    fi # !TEMPESTREMAP_ROOT
     # 20210519: E3SM-U supplies many uncommon executables, e.g., ESMF_RegridWeightGen
     # Append E3SM-U to end of PATH so NCO binaries not redirected, e.g., from CSZ's development directory to E3SM-U
     if [ -n "${E3SMU_ROOT}" ]; then

@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.5-alpha02
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 10 January 2023
+@set update-date 26 January 2023
 @set update-month January 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7091,9 +7091,9 @@ ncremap -G ttl='NASA MERRA2 Cap grid 361x576'#latlon=361,576#lat_typ=cap#lon_typ
 ncremap -G ttl='CAM-FV scalar grid 1441x2880'#latlon=1441,2880#lat_typ=fv#lon_typ=grn_ctr \
         -g ${DATA}/grids/1441x2880_SCRIP.20170901.nc
 
-# 1440x2880 MOSART grid, first longitude west edge at DateLine
+# 1440x2880 ELM/MOSART grid, first longitude west edge at DateLine
 ncremap -7 -L 1 \
-        -G ttl='MOSART 1440x2880'#latlon=1440,2880#lat_typ=uni#lon_typ=180_wst \
+        -G ttl='ELM/MOSART 1440x2880 one-eighth degree uniform grid (r0125)'#latlon=1440,2880#lat_typ=uni#lon_typ=180_wst \
         -g ${DATA}/grids/r0125_1440x2880.20210401.nc
 
 # 91x180 CAM-FV grid, first longitude centered at Greenwich (2 degree grid)
@@ -7154,9 +7154,16 @@ ncremap -7 -L 1 \
 ncremap -G ttl='Equi-Angular Greenland 1x1 degree grid'#latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr \
         -g ${HOME}/greenland_1x1.nc
 
-# 721x1440 ECMWF ERA5 resolution
-ncremap -7 --dfl_lvl=1 -G ttl='Cap/FV ECMWF ERA5 grid 0.25x0.25 degree, dimensions 721x1440, cell centers on Poles/Equator and Prime Meridian/Date Line'#latlon=721,1440#lat_drc=n2s#lat_typ=cap#lon_typ=grn_ctr \
-        -g ${DATA}/grids/era5.nc
+# 721x1440 ECMWF ERA5 resolution in north-to-south order (ERA5/CAMS default order)
+ncremap -7 --dfl_lvl=1 -G ttl='Cap/FV ECMWF ERA5 grid 0.25x0.25 degree, dimensions 721x1440, cell centers on Poles/Equator (in north-to-south order) and Prime Meridian/Date Line'#latlon=721,1440#lat_drc=n2s#lat_typ=cap#lon_typ=grn_ctr \
+         -g ${DATA}/grids/era5_n2s_721x1440.nc
+
+# 721x1440 ECMWF ERA5 resolution in south-to-north order (E3SM/ELM-offline forcing order)
+ncremap -7 --dfl_lvl=1 -G ttl='Cap/FV ECMWF ERA5 grid 0.25x0.25 degree, dimensions 721x1440, cell centers on Poles/Equator (in south-to-north order) and Prime Meridian/Date Line'#latlon=721,1440#lat_drc=s2n#lat_typ=cap#lon_typ=grn_ctr \
+        -g ${DATA}/grids/era5_s2n_721x1440.nc
+
+# 360x720 ELM/MOSART grid, first longitude west edge at DateLine
+ncremap -7 --dfl_lvl=1 -G ttl='Equi-Angular 0.5x0.5 degree uniform grid (r05), dimensions 360x720, cell edges on Poles/Equator and Date Line/Prime Meridian'#latlon=360,720#lat_typ=uni#lon_typ=180_wst -g ${DATA}/grids/r05_360x720.nc
 
 # 105x401 Greenland ERA5
 ncremap -G ttl='Equi-Angular Greenland 0.25x0.25 degree ERA5 north-to-south grid'#latlon=105,401#snwe=58.875,85.125,-87.125,13.125#lat_typ=uni#lat_drc=n2s#lon_typ=grn_ctr \
@@ -14936,7 +14943,7 @@ These functions work in an identical fashion to (A1) except that @code{sprint()}
 and @code{sprint4()} outputs a netCDF4 @code{NC_STRING} attribute
 @example
 @verbatim
-time@units=sprint(nDays,"%d days since 1970-1-1")
+time@units=sprint(yyyy,"days since %d-1-1")
 bnd@num=sprint4(bnd_idx,"Band number=%d")
 
 time@arr=sprint4(time,"%.2f,") // "1.00,2.00,3.00,4.00,5.00,6.00,7.00,8.00,9.00,10.00,"

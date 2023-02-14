@@ -553,7 +553,7 @@ drc_rgr_prv='' # [sng] Regridded file directory for previous climatology
 drc_rgr_xmp="${DATA}/ne30/rgr" # [sng] Regrid file directory for examples
 drc_rgr_xtn='' # [sng] Regridded file directory for for extended climatology
 drc_xtn='' # [sng] Directory containing extended climatology
-dpy=365 # [nbr] Days-per-year
+dpy=365 # [nbr] Days-per-year (noleap calendar)
 fl_fmt='' # [enm] Output file format
 fl_nbr=0 # [nbr] Number of files to split
 fl_rmd=0 # [nbr] Number of files/months beyond an integral number of years
@@ -721,23 +721,6 @@ function trim_leading_zeros {
 	sng_trm='0'
     fi # !sng_trm
 } # !trim_leading_zeros()
-
-get_spt_drc () {
-# SMB (20150814):
-# Get calling script location to call other utilities in the PreAndPostProcessingScripts package
-# Resolve symlinks in case script is linked elsewhere with technique from
-# http://www.ostricher.com/2014/10/the-right-way-to-get-the-directory-of-a-bash-script
-    spt_src="${BASH_SOURCE[0]}"
-    # If ${spt_src} is a symlink, resolve it
-    while [ -h "${spt_src}" ]; do
-	spt_drc="$(cd -P "$(dirname "${spt_src}")" && pwd)"
-        spt_src="$(readlink "${spt_src}")"
-        # Resolve relative symlinks (no initial "/") against symlink base directory
-        [[ ${spt_src} != /* ]] && spt_src="${spt_drc}/${spt_src}"
-    done
-    spt_drc="$(cd -P "$(dirname "${spt_src}")" && pwd)"
-    echo ${spt_drc}
-} # !get_spt_drc()
 
 # Check argument number and complain accordingly
 arg_nbr=$#
@@ -983,27 +966,27 @@ if [ -n "${mdl_nm_usr}" ]; then
     mdl_nm="${mdl_nm_usr}"
 fi # !mdl_nm_usr
 if [ -n "${wnt_md_usr}" ]; then 
-    if [ "${wnt_md_usr}" = 'djf' ] || [ "${wnt_md_usr}" = 'DJF' ] || [ "${wnt_md_usr}" = 'scd' ] || [ "${wnt_md_usr}" = 'seasonally_contiguous_december' ] ; then
+    if [ "${wnt_md_usr}" = 'djf' ] || [ "${wnt_md_usr}" = 'DJF' ] || [ "${wnt_md_usr}" = 'scd' ] || [ "${wnt_md_usr}" = 'seasonally_contiguous_december' ]; then
 	wnt_md='djf'
-    elif [ "${wnt_md_usr}" = 'jfd' ] || [ "${wnt_md_usr}" = 'JFD' ] || [ "${wnt_md_usr}" = 'sdd' ] || [ "${wnt_md_usr}" = 'seasonally_discontiguous_december' ] ; then
+    elif [ "${wnt_md_usr}" = 'jfd' ] || [ "${wnt_md_usr}" = 'JFD' ] || [ "${wnt_md_usr}" = 'sdd' ] || [ "${wnt_md_usr}" = 'seasonally_discontiguous_december' ]; then
 	wnt_md='jfd'
     fi # !wnt_md_usr
 fi # !wnt_md_usr
 if [ -n "${clm_md_usr}" ]; then 
     # Climo mode must be explicitly selected with --clm_md when climo input files are from stdin or positional
-    if [ "${clm_md_usr}" = 'ann' ] || [ "${clm_md_usr}" = 'annual' ] || [ "${clm_md_usr}" = 'yearly' ] || [ "${clm_md_usr}" = 'year' ] ; then
+    if [ "${clm_md_usr}" = 'ann' ] || [ "${clm_md_usr}" = 'annual' ] || [ "${clm_md_usr}" = 'yearly' ] || [ "${clm_md_usr}" = 'year' ]; then
 	clm_md_usr='ann'
     fi # !clm_md_usr
-    if [ "${clm_md_usr}" = 'dly' ] || [ "${clm_md_usr}" = 'daily' ] || [ "${clm_md_usr}" = 'doy' ] || [ "${clm_md_usr}" = 'day' ] ; then
+    if [ "${clm_md_usr}" = 'dly' ] || [ "${clm_md_usr}" = 'daily' ] || [ "${clm_md_usr}" = 'doy' ] || [ "${clm_md_usr}" = 'day' ]; then
 	clm_md_usr='dly'
     fi # !clm_md_usr
-    if [ "${clm_md_usr}" = 'hfc' ] || [ "${clm_md_usr}" = 'high_frequency_climo' ] || [ "${clm_md_usr}" = 'hgh_frq_clm' ] ; then
+    if [ "${clm_md_usr}" = 'hfc' ] || [ "${clm_md_usr}" = 'high_frequency_climo' ] || [ "${clm_md_usr}" = 'hgh_frq_clm' ]; then
 	clm_md_usr='hfc'
     fi # !clm_md_usr
-    if [ "${clm_md_usr}" = 'hfs' ] || [ "${clm_md_usr}" = 'high_frequency_splitter' ] || [ "${clm_md_usr}" = 'hgh_frq_spl' ] ; then
+    if [ "${clm_md_usr}" = 'hfs' ] || [ "${clm_md_usr}" = 'high_frequency_splitter' ] || [ "${clm_md_usr}" = 'hgh_frq_spl' ]; then
 	clm_md_usr='hfs'
     fi # !clm_md_usr
-    if [ "${clm_md_usr}" = 'mth' ] || [ "${clm_md_usr}" = 'month' ] || [ "${clm_md_usr}" = 'monthly' ] ; then
+    if [ "${clm_md_usr}" = 'mth' ] || [ "${clm_md_usr}" = 'month' ] || [ "${clm_md_usr}" = 'monthly' ]; then
 	clm_md_usr='mth'
     fi # !clm_md_usr
     clm_md="${clm_md_usr}"
@@ -1014,7 +997,7 @@ fi # !clm_md
 if [ "${clm_md}" = 'dly' ] || [ "${clm_md}" = 'hfc' ]; then
     unset dpm # Days per month
     declare -a dpm
-    dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
+    dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # noleap 365-day calendar, 1-based indexing
 fi # !clm_md
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
@@ -1133,6 +1116,7 @@ if [ -n "${drc_rgr}" ] && [ ! -d "${drc_rgr}" ]; then
     fi # !err
 fi # !drc_rgr
 
+# Define calendar
 # Determine first full year
 trim_leading_zeros ${yr_srt}
 yr_srt_rth=${sng_trm}
@@ -1158,12 +1142,12 @@ mm_end=`printf "%02d" ${mth_end_rth}`
 let mth_nbr=${yr_end_rth}*12+${mth_end_rth}-${yr_srt_rth}*12-${mth_srt_rth}+1
 let mth_srtm1=${mth_srt_rth}-1
 let mth_endp1=${mth_end_rth}+1
-if [ ${mth_srtm1} -eq 0 ] ; then
+if [ ${mth_srtm1} -eq 0 ]; then
     mm_srtm1='12'
 else # !mth_srtm1
     mm_srtm1=`printf "%02d" ${mth_srtm1}`
 fi # !mth_srtm1
-if [ ${mth_endp1} -eq 13 ] ; then
+if [ ${mth_endp1} -eq 13 ]; then
     mm_endp1='01'
 else # !mth_endp1
     mm_endp1=`printf "%02d" ${mth_endp1}`
@@ -1172,7 +1156,7 @@ if [ "${mm_srt}" != '01' ] || [ "${mm_end}" != '12' ]; then
     mth_flg='Yes'
 fi # !mm_srt
     
-# Derived variables
+# Define actions based on standard options
 if [ -n "${caseid}" ]; then
     out_nm=${caseid}
 fi # !caseid
@@ -1182,7 +1166,7 @@ if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mali' ] || [ "${mdl_nm}" = 'mpas
     out_nm="${mdl_nm}"
     hst_nm='hist'
 fi # !caseid
-if [ "${mdl_typ}" = 'mpas' ] && [ -z "${prc_opt}" ] ; then
+if [ "${mdl_typ}" = 'mpas' ] && [ -z "${prc_opt}" ]; then
     prc_typ='mpas'
     prc_opt='-P mpas'
 fi # !mdl_typ && prc_opt
@@ -1234,7 +1218,7 @@ elif [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     fi # !csn_lst
 fi # !clm_md
 if [ -n "${gaa_sng_std}" ]; then
-    if [ "${yr_nbr}" -gt 1 ] ; then
+    if [ "${yr_nbr}" -gt 1 ]; then
 	yrs_avg_sng="${yr_srt}-${yr_end}"
     else
 	yrs_avg_sng="${yr_srt}"
@@ -1720,7 +1704,7 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_nom[${csn_fm}]=2
     csn_nom[${csn_ann}]=12
 
-    # Seasonal monthly weights (ncra/nces -w argument), assumes calendar = 365 dpy
+    # Seasonal monthly weights (ncra/nces -w argument), assumes noleap calendar = 365 dpy
     csn_wgt[${csn_mam}]='31,30,31'
     csn_wgt[${csn_jja}]='30,31,31'
     csn_wgt[${csn_son}]='30,31,30'
@@ -2196,7 +2180,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		if [ ${nm_typ} = 'cesm' ]; then
 		    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
-		    if [ ${mdl_nm} = 'mali' ] ; then 
+		    if [ ${mdl_nm} = 'mali' ]; then 
 			fl_all="${fl_all} ${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01_00000.nc"
 		    else # !mdl_nm
 			# 20161130: Old MPAS rule until today
@@ -2742,7 +2726,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    # var_idx is 0-based, bch_idx is 0-based
 	    let var_idx_srt=$((bch_idx * job_nbr))
 	    let var_idx_end=$((var_idx_srt + job_nbr - 1))
-	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ]; then
 		let var_idx_srt=$((bch_idx * job_nbr))
 		let var_idx_end=$((var_nbr - 1))
 	    fi # !bch_flg
@@ -2877,7 +2861,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		# var_idx is 0-based, bch_idx is 0-based
 		let var_idx_srt=$((bch_idx * job_nbr))
 		let var_idx_end=$((var_idx_srt + job_nbr - 1))
-		if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+		if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ]; then
 		    let var_idx_srt=$((bch_idx * job_nbr))
 		    let var_idx_end=$((var_nbr - 1))
 		fi # !bch_flg
@@ -3073,7 +3057,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	# clm_idx is 0-based, bch_idx is 0-based
 	let clm_idx_srt=$((bch_idx * job_nbr))
 	let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
-	if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+	if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ]; then
 	    let clm_idx_srt=$((bch_idx * job_nbr))
 	    let clm_idx_end=$((clm_nbr - 1))
 	fi # !bch_flg
@@ -3127,7 +3111,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    # clm_idx is 0-based, bch_idx is 0-based
 	    let clm_idx_srt=$((bch_idx * job_nbr))
 	    let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
-	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ]; then
 		let clm_idx_srt=$((bch_idx * job_nbr))
 		let clm_idx_end=$((clm_nbr - 1))
 	    fi # !bch_flg
@@ -3323,7 +3307,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	    # clm_idx is 1-based, bch_idx is 0-based
 	    let clm_idx_srt=$((12 + (bch_idx * job_nbr) + 1))
 	    let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
-	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ]; then
 		let clm_idx_srt=$((12 + (bch_idx * job_nbr) + 1))
 		let clm_idx_end=${clm_csn_end_idx}
 	    fi # !bch_flg
@@ -3644,19 +3628,19 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	    fl_amwg_xtn[${clm_idx}]=`expr match "${fl_xtn[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
 	    fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
 	    fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_xtn}\//}" # Delete prepended path to ease symlinking
-	    if [ ${wnt_md} = 'djf' ] ; then
+	    if [ ${wnt_md} = 'djf' ]; then
 		# Handle Dec, DJF, and ANN
 		let csn_idx=${clm_idx}-12-1
 		let ann_idx=${clm_csn_end_idx}+1
 		if [ ${csn_idx} -ge 0 ]; then
-		    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ] || [ ${clm_idx} -eq ${ann_idx} ] ; then
+		    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ] || [ ${clm_idx} -eq ${ann_idx} ]; then
 			flg_djf_or_ann='Yes'
 		    fi # !djf or ann
 		fi # !csn_idx
-		if [ ${clm_idx} -eq 12 ] || [ ${flg_djf_or_ann} = 'Yes' ] ; then 
+		if [ ${clm_idx} -eq 12 ] || [ ${flg_djf_or_ann} = 'Yes' ]; then 
 		    fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
 		    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_clm_srt_dec}/_${yyyy_clm_srt_dec_prv}}"
-		    if [ ${clm_idx} -eq 12 ] ; then 
+		    if [ ${clm_idx} -eq 12 ]; then 
 			fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_clm_end_dec}/_${yyyy_clm_end_dec_prv}}"
 		    else
 			fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_end}/_${yyyy_end_prv}}"
@@ -3792,7 +3776,7 @@ fi # !clm_flg
 if [ "${tms_flg}" = 'Yes' ]; then
     echo "Quick plots of last timeseries segment of last variable split:"
     let idx_lst=${var_nbr}-1
-    if [ -n "${rgr_opt}" ] && [ ${no_ntv_tms} = 'No' ] ; then 
+    if [ -n "${rgr_opt}" ] && [ ${no_ntv_tms} = 'No' ]; then 
 	echo "ncview ${fl_rgr[${idx_lst}]} &"
 	echo "panoply ${fl_rgr[${idx_lst}]} &"
     else

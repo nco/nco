@@ -384,6 +384,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # skinny template file
 # Missing-value extrapolation (mss_val|nrs_ngh)
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # Extrapolation results in missing values
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_prs_ncep_L19.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # 
 # Simultaneous horizontal/vertical regridding L72->L30
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --vrt_out=${DATA}/grids/vrt_hyb_L30.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
 # ncremap -P mpasocean -v timeMonthly_avg_activeTracers_temperature,timeMonthly_avg_zMid --map=${DATA}/maps/map_EC30to60E2r2_to_cmip6_180x360_nco.20220301.nc --vrt_out=${DATA}/grids/vrt_dpt_L10.nc ${DATA}/bm/mpov2_EC30to60E2r2l60.nc ~/foo.nc
@@ -732,7 +733,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--vrt_nm${fnt_nrm}   Vertical coordinate name (empty means \"plev\") (default ${fnt_bld}${vrt_nm}${fnt_nrm}) [${fnt_tlc}vrt_nm, plev_nm, vertical_coordinate_name${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_ntp${fnt_nrm}  Vertical interpolation type (empty means none) (default ${fnt_bld}${vrt_ntp}${fnt_nrm}) [${fnt_tlc}vrt_ntp, ntp_mth, interpolation_type, interpolation_method${fnt_nrm}] (lin|log)"
     echo " ${fnt_bld}--vrt_out${fnt_nrm}   Vertical grid file for output (empty means none) (default ${fnt_bld}${vrt_out}${fnt_nrm}) [${fnt_tlc}vrt_out, vrt_fl, vrt, vrt_crd, vrt_grd_out${fnt_nrm}]"
-    echo " ${fnt_bld}--vrt_xtr${fnt_nrm}  Vertical extrapolation type (empty means none) (default ${fnt_bld}${vrt_xtr}${fnt_nrm}) [${fnt_tlc}vrt_xtr, xtr_mth, extrapolation_type, extrapolation_method${fnt_nrm}] (linear|mss_val|nrs_ngh|zero)"
+    echo " ${fnt_bld}--vrt_xtr${fnt_nrm}  Vertical extrapolation type (empty means none) (default ${fnt_bld}nrs_ngh${fnt_nrm}) [${fnt_tlc}vrt_xtr, xtr_mth, extrapolation_type, extrapolation_method${fnt_nrm}] (linear|mss_val|nrs_ngh|zero)"
     echo "${fnt_rvr}-W${fnt_nrm} ${fnt_bld}wgt_opt${fnt_nrm}  Weight-generator options (default ${fnt_bld}${wgt_opt_esmf}${fnt_nrm}) [${fnt_tlc}wgt_opt, esmf_opt, esmf_options, tempest_opt, tps_opt${fnt_nrm}]"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_cmd${fnt_nrm}  Weight-generator command (default ${fnt_bld}${wgt_exe_esmf}${fnt_nrm}) [${fnt_tlc}wgt_cmd, wgt_gnr, weight_command, weight_generator${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
@@ -1469,7 +1470,7 @@ if [ -n "${wgt_opt_usr}" ]; then
     wgt_opt=${wgt_opt_usr}
 fi # !wgt_opt_usr    
 if [ -n "${mpi_pfx}" ]; then 
-    if [ ${wgt_typ} = 'esmf' ] || [ ${wgt_typ} = 'mbtempest' ] ; then
+    if [ ${wgt_typ} = 'esmf' ] || [ ${wgt_typ} = 'mbtempest' ]; then
 	wgt_cmd="${mpi_pfx} ${wgt_cmd}"
     fi # !wgt_typ
 fi # !mpi_pfx
@@ -1540,10 +1541,10 @@ if [ -n "${prs_stt_usr}" ]; then
 	echo "${spt_nm}: HINT The valid values for preserved_statistic are \"mean\" (or synonyms \"local\", \"local_mean\") and \"integral\" (or synonyms \"global\", \"global_integral\")"
 	exit 1
     fi # !prs_stt_usr
-    if [ "${prs_stt}" = 'mean' ] && [ -z "${rnr_thr}" ] ; then 
+    if [ "${prs_stt}" = 'mean' ] && [ -z "${rnr_thr}" ]; then 
 	rnr_thr=0.0
     fi # !prs_stt
-    if [ "${prs_stt}" = 'integral' ] && [ -n "${rnr_thr}" ] ; then 
+    if [ "${prs_stt}" = 'integral' ] && [ -n "${rnr_thr}" ]; then 
 	if [ "${rnr_thr}" != 'off' ] && [ "${rnr_thr}" != 'none' ]; then
 	    echo "${spt_nm}: ERROR preserved_statistic = \"${prs_stt}\" conflicts with rnr_thr=${rnr_thr}"
 	    echo "${spt_nm}: HINT Explicitly specifying \"integral\" for the preserved-statistic is the same as turning-off renormalization so do not specify any value for renormalization"
@@ -2894,7 +2895,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
     # fl_idx is 0-based, bch_idx is 0-based
     let fl_idx_srt=$((bch_idx * job_nbr))
     let fl_idx_end=$((fl_idx_srt + job_nbr - 1))
-    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ]; then
 	let fl_idx_srt=$((bch_idx * job_nbr))
 	let fl_idx_end=$((fl_nbr - 1))
     fi # !bch_flg
