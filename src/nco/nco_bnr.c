@@ -70,7 +70,9 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
      ncks -O -D 3 -v uint32_var.? --bsa=1 -b ~/foo.bnr ~/nco/data/in_grp.nc ~/foo.nc # Write binary in byte-swapped (non-native) order
      Examine input and output:
      ncks --hdn -v uint32_var.? ~/nco/data/in_grp.nc
-     od -An -X -N 8 ~/foo.bnr */
+     od -An -X -N 8 ~/foo.bnr
+     Command above tells od (octal dump) to omit (-An) printing the byte offset in the left-hand column,
+     and to print in hexadecimal format (-X) the first eight (-N 8) bytes */
 
   const char fnc_nm[]="nco_bnr_wrt()"; /* [sng] Function name */
 
@@ -84,7 +86,7 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
 
   unsigned short *u16_ptr=NULL;
   unsigned int *u32_ptr=NULL;
-  unsigned long int *u64_ptr=NULL;
+  unsigned long long int *u64_ptr=NULL;
 
   void *vp_bs; /* [ptr] CEWI Byte-swapped copy of input data */
 
@@ -94,7 +96,7 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
   flg_byt_swp=nco_bnr_cnv_get();
 
   /* Write unformatted data to binary output file */
-  if(flg_byt_swp && wrd_sz > 1L){
+  if(flg_byt_swp == nco_bnr_bsa && wrd_sz > 1L){
     mmr_sz=var_sz*wrd_sz;
     vp_bs=(void *)nco_malloc(mmr_sz);
     vp_bs=memcpy(vp_bs,vp,mmr_sz);
@@ -102,7 +104,7 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
     switch(wrd_sz){
 #ifdef _MSC_VER
     case 8:
-      u64_ptr=(unsigned long int *)vp_bs;
+      u64_ptr=(unsigned long long int *)vp_bs;
       for(idx=0;idx<var_sz;idx++) u64_ptr[idx]=_byteswap_uint64(u64_ptr[idx]);
       break;
     case 4:
@@ -115,7 +117,7 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
       break;
 #else /* !_MSC_VER */
     case 8:
-      u64_ptr=(unsigned long int *)vp_bs;
+      u64_ptr=(unsigned long long int *)vp_bs;
 # ifdef HAVE_BSWAP64
       for(idx=0;idx<var_sz;idx++) u64_ptr[idx]=__builtin_bswap64(u64_ptr[idx]);
 # else /* !HAVE_BSWAP64 */

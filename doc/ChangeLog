@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha02: Champignons';git push
 	git tag -a 5.1.5-alpha02 -m 'ncrcat: no_cll_mth';git push --tags
 
+	* nco_bnr_wrt() use unsigned long long pointers (not unsigned long pointers) for eight-byte words
+
 	* nco_fl_nm_vld_ncz_syn() caveat that WARNING about missing fragment only applies to NCZarr objects
 
 2023-02-15  Charlie Zender  <zender@uci.edu>
