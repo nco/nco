@@ -1276,8 +1276,8 @@ nco_ppc_bitmask_scl /* [fnc] Round input value significand by specified number o
 
   const int bit_xpl_nbr_sgn_dbl=52; /* [nbr] Bits 0-51 of DP significands are explicit. Bit 52 is implicit. */
   double val_rnd; /* [frc] Rounded version of exact value */
-  unsigned long int *u64_ptr;
-  unsigned long int msk_f64_u64_zro;
+  unsigned long long int *u64_ptr;
+  unsigned long long int msk_f64_u64_zro;
   assert(bit_xpl_nbr_zro >= 0 && bit_xpl_nbr_zro <= bit_xpl_nbr_sgn_dbl-NCO_PPC_BIT_XPL_NBR_MIN);
   CEWI_unused(bit_xpl_nbr_sgn_dbl);
   
@@ -1285,7 +1285,7 @@ nco_ppc_bitmask_scl /* [fnc] Round input value significand by specified number o
   msk_f64_u64_zro=0ull; /* Zero all bits */
   msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
   msk_f64_u64_zro <<= bit_xpl_nbr_zro;
-  u64_ptr=(unsigned long int *)&val_rnd;
+  u64_ptr=(unsigned long long int *)&val_rnd;
   *u64_ptr&=msk_f64_u64_zro;
 
   return val_rnd;

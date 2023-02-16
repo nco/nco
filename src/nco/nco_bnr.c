@@ -76,13 +76,12 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
 
   const char fnc_nm[]="nco_bnr_wrt()"; /* [sng] Function name */
 
-  long wrt_nbr; /* [nbr] Number of elements successfully written */
-
   nco_bool flg_byt_swp; /* [flg] Use byte-swap algorithm and write non-native order (write little- and big-endian on big- and little-endian machines, respectively) */
   
-  size_t wrd_sz;
-  size_t mmr_sz;
   size_t idx;
+  size_t mmr_sz;
+  size_t wrd_sz;
+  size_t wrt_nbr; /* [nbr] Number of elements successfully written */
 
   unsigned short *u16_ptr=NULL;
   unsigned int *u32_ptr=NULL;
@@ -147,7 +146,7 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
       (void)fprintf(stderr,"%s: ERROR %s reports variable %s of type %s has unexpected word-size = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_typ_sng(var_typ),(unsigned long)wrd_sz);
       nco_exit(EXIT_FAILURE);
       break;
-    } /* end switch */
+    } /* !wrd_sz */
 
     wrt_nbr=fwrite(vp_bs,wrd_sz,var_sz,fp_bnr);
 
