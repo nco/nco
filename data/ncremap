@@ -207,13 +207,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export PATH='/home/zender/bin_cooley'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
 	cori* | cmem* | nid[0123456789][0123456789][0123456789][0123456789][0123456789] )
-	    # 20220811 Add build environment modules
-	    module purge
-	    module load PrgEnv-intel
-	    module load cray-netcdf
-	    module load gsl/2.7
-	    module load antlr/2.7.7-intel
-	    module load udunits
+	    # 20230215 Use NERSC-compiled module since Cori now missing Intel library used by personal executables
+	    module load nco
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
 		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
@@ -222,9 +217,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
-	    fi # !NCARG_ROOT
-	    export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
-            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
+	    fi ; ;; # !NCARG_ROOT
 	mira* )
 	    export PATH='/home/zender/bin_mira'\:${PATH}
 	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
@@ -2155,7 +2148,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	# Convert this to file with uncompressed list (like Cobalt, PBS)
 	# http://www.ceci-hpc.be/slurm_faq.html#Q12
 	# Ensure file is in writable directory
-	nd_fl="${drc_out}/ncremap.slurm_nodelist.pid${spt_pid}.tmp"
+	nd_fl="${drc_out}/${spt_nm}.slurm_nodelist.pid${spt_pid}.tmp"
 	nd_lst=`scontrol show hostname ${SLURM_NODELIST}`
 	echo ${nd_lst} > ${nd_fl}
     else

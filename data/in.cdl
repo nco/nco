@@ -1411,6 +1411,10 @@ variables:
 	time_int_udunits:units = "seconds since 2019-03-12 00:00:00 UTC";
 	time_int_udunits:purpose = "time coordinate with integer values to test rebasing";
 
+	float u_sur(time);
+	u_sur:long_name = "one dimensional record variable, single precision";
+	u_sur:purpose = "test binary file writing as per https://sourceforge.net/p/nco/discussion/9830/thread/e0ec4cc513/?limit=25#1291";
+        
 	float u(time);
 	u:long_name = "Zonal wind speed";
 	u:units = "meter second-1";
@@ -1847,6 +1851,7 @@ data:
 	tpt_dbl=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8,273.9,274.0;
 	two=2.;
 	two_dmn_var=1.5,5.5,9.5,13.5,17.5,21.5;
+	u_sur=0.2632568,0.2568462,0.250575,0.2444414,0.2386823,0.2333696,0.2285719,0.2243158,0.220602,0.2174494;
 	u=1.,0.,1.,0.,1.,0.,1.,0.,1.,0.;
 	v=0.,1.,0.,1.,0.,1.,0.,1.,0.,1.;
 	val_half=0.5;

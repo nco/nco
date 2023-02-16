@@ -2350,7 +2350,13 @@ nco_fl_nm_vld_ncz_syn /* [fnc] Filename is valid NCZarr specification */
     for(frg_idx=0;frg_idx<frg_nbr;frg_idx++)
       if(strstr(fl_nm,ncz_frg_arr[frg_idx]))
 	break;
-    if(frg_idx < frg_nbr) fl_nm_is_nczarr=True; else (void)fprintf(stdout,"%s: WARNING %s reports file %s has NCZarr prefix without NCZarr fragment. This may throw code into Limbo...\n",nco_prg_nm_get(),fnc_nm,fl_nm);
+    if(frg_idx < frg_nbr){
+      fl_nm_is_nczarr=True;
+    }else{
+      /* 20230216: Filenames that are valid DAP URLs (and are not NCZarr) also have https:// prefixes
+	 So caveat the WARNING that NCZarr fragment is missing with qualifier that WARNING only applies to NCZarr files */
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports file %s has NCZarr prefix without NCZarr fragment. This is fine and expected if the filename is a DAP URL. However, if the file is an NCZarr then the lack of a fragment may throw code into Limbo...\n",nco_prg_nm_get(),fnc_nm,fl_nm);
+    } /* !frg_idx */
   } /* !scm_idx */
   
   return fl_nm_is_nczarr;

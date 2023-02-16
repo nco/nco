@@ -1,8 +1,16 @@
-2023-02-12  Charlie Zender  <zender@uci.edu>
+2023-02-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha02: Champignons';git push
 	git tag -a 5.1.5-alpha02 -m 'ncrcat: no_cll_mth';git push --tags
+
+	* nco_fl_nm_vld_ncz_syn() caveat that WARNING about missing fragment only applies to NCZarr objects
+
+2023-02-15  Charlie Zender  <zender@uci.edu>
+
+	* ncremap/ncclimo use NERSC-compiled module since Cori now missing Intel library used by personal executables
+
+2023-02-12  Charlie Zender  <zender@uci.edu>
 
 	* Updated ChangeLog with earliest (1995) announcements of NCO availability
 
