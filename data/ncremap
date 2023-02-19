@@ -1103,6 +1103,10 @@ fi # !std_chk
 
 # Derived variables
 if [ -n "${drc_usr}" ]; then
+    chr_fst=${drc_usr:0:1}
+    if [ "${chr_fst}" = '-' ]; then
+	printf "${spt_nm}: WARNING first character of user-specified output directory drc_out is \"${chr_fst}\", which looks like an option itself. Be sure the ${spt_nm} '-O' option is followed by an argument that specifies the output directory for regridded files. The '-O' option requires a pathname argument, and should not be confused with the '-O' flag (which takes no argument) used in the rest of NCO to force overwriting files (${spt_nm} automatically overwrites existing output files).\n"
+    fi # !chr_fst
     drc_out="${drc_usr%/}"
 else
     if [ -n "${out_fl}" ]; then
@@ -2374,6 +2378,12 @@ fi # !dbg
 
 # Create output directories
 if [ -n "${drc_out}" ] && [ ! -d "${drc_out}" ]; then 
+    chr_fst=${drc_out:0:1}
+    if [ "${chr_fst}" = '-' ]; then
+	echo "${spt_nm}: ERROR Attempting to mkdir user-specified output directory \"${drc_out}\" will fail because directory name begins with '-' which is an option indicator"
+	echo "${spt_nm}: HINT Specify output directory name that does not begin with '-'"
+	exit 1
+    fi # !chr_fst
     cmd_mkd="mkdir -p ${drc_out}"
     eval ${cmd_mkd}
     if [ "$?" -ne 0 ]; then

@@ -1092,6 +1092,12 @@ fi # !drc_rgr_xtn
 
 # Create output directories
 if [ -n "${drc_out}" ] && [ ! -d "${drc_out}" ]; then 
+    chr_fst=${drc_out:0:1}
+    if [ "${chr_fst}" = '-' ]; then
+	echo "${spt_nm}: ERROR Attempting to mkdir user-specified output directory \"${drc_out}\" will fail because directory name begins with '-' which is an option indicator"
+	echo "${spt_nm}: HINT Specify output directory name that does not begin with '-'"
+	exit 1
+    fi # !chr_fst
     cmd_mkd="mkdir -p ${drc_out}"
     eval ${cmd_mkd}
     if [ "$?" -ne 0 ]; then
@@ -1101,6 +1107,12 @@ if [ -n "${drc_out}" ] && [ ! -d "${drc_out}" ]; then
     fi # !err
 fi # !drc_out
 if [ -n "${drc_rgr}" ] && [ ! -d "${drc_rgr}" ]; then 
+    chr_fst=${drc_rgr:0:1}
+    if [ "${chr_fst}" = '-' ]; then
+	echo "${spt_nm}: ERROR Attempting to mkdir user-specified regrid directory \"${drc_rgr}\" will fail because directory name begins with '-' which is an option indicator"
+	echo "${spt_nm}: HINT Specify regrid directory name that does not begin with '-'"
+	exit 1
+    fi # !chr_fst
     cmd_mkd="mkdir -p ${drc_rgr}"
     eval ${cmd_mkd}
     if [ "$?" -ne 0 ]; then
@@ -1969,6 +1981,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: vrt_out  = ${vrt_out}\n"
     printf "dbg: wnt_md   = ${wnt_md}\n"
+    printf "dbg: xcl_flg  = ${xcl_flg}\n"
     printf "dbg: xtn_flg  = ${xtn_flg}\n"
     printf "dbg: ypf_max  = ${ypf_max}\n"
     printf "dbg: yr_sbs   = ${yr_sbs}\n"

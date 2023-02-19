@@ -1,8 +1,12 @@
-2023-02-16  Charlie Zender  <zender@uci.edu>
+2023-02-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha02: Champignons';git push
-	git tag -a 5.1.5-alpha02 -m 'ncrcat: no_cll_mth';git push --tags
+	git tag -a 5.1.5-alpha02 -m 'ncks bnr_wrt fix; ncrcat: no_cll_mth';git push --tags
+
+	* ncremap/ncclimo WARNING and ERROR when user specifies output directory beginning with dash
+
+2023-02-16  Charlie Zender  <zender@uci.edu>
 
 	* nco_bnr_wrt() change wrt_bnr from C-type long to C-type size_t for UNIX/Windows consistency
 
