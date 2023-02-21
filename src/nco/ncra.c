@@ -670,7 +670,7 @@ main(int argc,char **argv)
     case '7': /* Request netCDF4-classic output storage format */
       fl_out_fmt=NC_FORMAT_NETCDF4_CLASSIC;
       break;
-    case 'A': /* Toggle FORCE_APPEND */
+    case 'A': /* Activate FORCE_APPEND */
       FORCE_APPEND=True;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
@@ -728,8 +728,8 @@ main(int argc,char **argv)
         nco_exit(EXIT_FAILURE);
       } /* end if */
       break;
-    case 'O': /* Toggle FORCE_OVERWRITE */
-      FORCE_OVERWRITE=!FORCE_OVERWRITE;
+    case 'O': /* Activate FORCE_OVERWRITE */
+      FORCE_OVERWRITE=True;
       break;
     case 'o': /* Name of output file */
       fl_out=(char *)strdup(optarg);

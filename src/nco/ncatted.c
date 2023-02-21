@@ -166,7 +166,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="Aa:D:Hhl:Oo:p:Rrt-:";
+  const char * const opt_sht_lst="a:D:Hhl:Oo:p:Rrt-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -193,7 +193,6 @@ main(int argc,char **argv)
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FL_OUT_NEW=False;
   nco_bool FL_RTR_RMT_LCN;
-  nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
@@ -246,7 +245,6 @@ main(int argc,char **argv)
     {"log_lvl",required_argument,0,0}, /* [enm] netCDF library debugging verbosity [0..5] */
     {"log_level",required_argument,0,0}, /* [enm] netCDF library debugging verbosity [0..5] */
     /* Long options with short counterparts */
-    {"append",no_argument,0,'A'},
     {"attribute",required_argument,0,'a'},
     {"dbg_lvl",required_argument,0,'D'},
     {"debug",required_argument,0,'D'},
@@ -330,9 +328,6 @@ main(int argc,char **argv)
     switch(opt){
     case 0: /* Long options have already been processed, return */
       break;
-    case 'A': /* Toggle FORCE_APPEND */
-      FORCE_APPEND=!FORCE_APPEND;
-      break;
     case 'a': /* Copy argument for later processing */
       aed_arg[nbr_aed]=(char *)strdup(optarg);
       nbr_aed++;
@@ -350,8 +345,8 @@ main(int argc,char **argv)
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
       break;
-    case 'O': /* Toggle FORCE_OVERWRITE */
-      FORCE_OVERWRITE=!FORCE_OVERWRITE;
+    case 'O': /* Activate FORCE_OVERWRITE */
+      FORCE_OVERWRITE=True;
       break;
     case 'o': /* Name of output file */
       fl_out=(char *)strdup(optarg);

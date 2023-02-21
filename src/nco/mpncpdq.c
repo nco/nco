@@ -424,8 +424,8 @@ main(int argc,char **argv)
     case '7': /* Request netCDF4-classic output storage format */
       fl_out_fmt=NC_FORMAT_NETCDF4_CLASSIC;
       break;
-    case 'A': /* Toggle FORCE_APPEND */
-      FORCE_APPEND=!FORCE_APPEND;
+    case 'A': /* Activate FORCE_APPEND */
+      FORCE_APPEND=True;
       break;
     case 'a': /* Re-order dimensions */
       dmn_rdr_lst_in=nco_lst_prs_2D(optarg,",",&dmn_rdr_nbr_in);
@@ -462,8 +462,8 @@ main(int argc,char **argv)
       nco_pck_map_sng=(char *)strdup(optarg);
       nco_pck_map=nco_pck_map_get(nco_pck_map_sng);
       break;
-    case 'O': /* Toggle FORCE_OVERWRITE */
-      FORCE_OVERWRITE=!FORCE_OVERWRITE;
+    case 'O': /* Activate FORCE_OVERWRITE */
+      FORCE_OVERWRITE=True;
       break;
     case 'o': /* Name of output file */
       fl_out=(char *)strdup(optarg);
