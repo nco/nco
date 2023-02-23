@@ -1640,6 +1640,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     else assert(1 == 0);
     if(rcd != NC_NOERR){
       (void)fprintf(stdout,"%s: INFO %s did not find ready-made depth variable %s for input data\n",nco_prg_nm_get(),fnc_nm,flg_grd_in_dpt_1D ? lev_nm_in : dpt_nm_in);
+      rcd=NC_NOERR;
     } /* !rcd */
   } /* !flg_grd_in_hyb */
   const int dpt_id_in=dpt_id; /* [id] Ocean depth ID for input grid */

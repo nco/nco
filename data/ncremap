@@ -380,8 +380,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_prs_ncep_L19.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # 
 # Simultaneous horizontal/vertical regridding L72->L30
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --vrt_out=${DATA}/grids/vrt_hyb_L30.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
-# ncremap -P mpasocean -v timeMonthly_avg_activeTracers_temperature,timeMonthly_avg_zMid --map=${DATA}/maps/map_EC30to60E2r2_to_cmip6_180x360_nco.20220301.nc --vrt_out=${DATA}/grids/vrt_dpt_L10.nc ${DATA}/bm/mpov2_EC30to60E2r2l60.nc ~/foo.nc
-# ncremap -P mpasocean --map=${DATA}/maps/map_EC30to60E2r2_to_r025.20230101.nc --vrt_out=${DATA}/hdf/woa18_ANN_T_S_z_vol_20200514.nc ${DATA}/bm/mpov2_EC30to60E2r2l60.nc ~/foo.nc
+# ncremap -P mpasocean -v timeMonthly_avg_activeTracers_temperature,timeMonthly_avg_zMid --map=${DATA}/maps/map_EC30to60E2r2_to_cmip6_180x360_nco.20220301.nc --vrt_out=${DATA}/grids/vrt_dpt_L10.nc ${DATA}/bm/mpov2_EC30to60E2r2l60.nc ~/foo.nc # borken 20230222 since vrt_ntp (correctly) does not propagate timeMonthly_avg_zMid, yet horizontal regridder expects it
+# ncremap -P mpasocean --map=${DATA}/maps/map_EC30to60E2r2_to_r025_nco.20230101.nc --vrt_out=${DATA}/hdf/woa18_ANN_T_S_z_vol_20200514.nc ${DATA}/bm/mpov2_EC30to60E2r2l60.nc ~/foo.nc
 # SCREAM external surface pressure and input vertical grid (202211):
 # ncremap -v T_mid --ps_nm=${DATA}/bm/screamv1_ne1024pg2l128_QrPsPsl.nc/ps --vrt_in=${DATA}/grids/vrt_hyb_L128.nc --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/bm/screamv1_ne1024pg2l128_QvT.nc ~/foo.nc
 # ncremap -6 -P eamxx --map=${DATA}/maps/map_ne1024pg2_to_fv256x512_mono.20201201.nc ${DATA}/bm/screamv1_ne1024pg2l128.nc ~/foo.nc # Panoply breaks on CDF5 input
@@ -1647,7 +1647,7 @@ if [ "${prc_mpas}" = 'Yes' ]; then
     # Simply adding a _FillValue to the variable does not, by itself, change this
     # The _FillValue needs to be written in appropriate gridcells
     # The MPAS epic on improving CF-compliance will eventually do that
-    # Until then, need to automatically invoke add_fll on MPAS datasets to clearly mask "uncomputed" regions
+    # Until then, automatically invoke add_fll on MPAS datasets to clearly mask "uncomputed" regions
     # For MPAS-Ocean, this masks continents/islands
     # For MPAS-Seaice, this additionally masks open (non-sea-ice-covered) ocean
     # For MPAS-Landice (MALI), this masks (I think) non-glacier land and ocean gridcells

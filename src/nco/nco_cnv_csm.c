@@ -149,6 +149,8 @@ nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating
     /* As of 20060514, CLM 3.0 uses CF1.0 not CF-1.0 (CAM gets it right) */
     if(strstr(att_val,"CF1.")) cnv->CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
     if(strstr(att_val,"MPAS")) cnv->MPAS=True; /* This works for MPAS v1 data */
+    /* 20230224: Workaround since SCREAMv1/EAMxx has been stubborn about putting CF in Conventions attribute */
+    if(strstr(att_val,"None yet")) cnv->CCM_CCSM_CF=True;
     /* 20221215 For MPAS v2 data, use model_name attribute */
     char *att_cnv_val=NULL;
     char att_sng_cnv[]="model_name"; /* [sng] Global attribute in MPAS v1, v2 datasets */
