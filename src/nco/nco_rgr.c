@@ -879,9 +879,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Order is important in these derived names:
      Copy user-specified input name to output name if output name is unspecified...otherwise adopt default output name
      Template vertical coordinate name is either user-specified or default */
-  if(!rgr->plev_nm_out){
-    if(rgr->plev_nm_in) rgr->plev_nm_out=(char *)strdup(rgr->plev_nm_in); else rgr->plev_nm_out=(char *)strdup("plev"); /* [sng] Name of variable to output as vertical coordinate for pure pressure grids */
-  } /* !rgr->plev_nm_out */
   if(!rgr->plev_nm_in) rgr->plev_nm_in=(char *)strdup("plev"); /* [sng] Name of variable to recognize as pure pressure coordinate */
   if(!rgr->plev_nm_tpl) rgr->plev_nm_tpl=(char *)strdup("plev"); /* [sng] Name of template variable to recognize as vertical coordinate for pure pressure grids */
   if(!rgr->ps_nm_out){
@@ -2427,9 +2424,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !ilev_nm_out */
   if(flg_grd_out_prs){
     /* Unless user explicitly specifies output name, use same name as input */
-    if(!rgr->lev_nm_out) lev_nm_out=(char *)strdup(plev_nm_in);
+    if(!plev_nm_out){
+      if(plev_nm_in) plev_nm_out=(char *)strdup(plev_nm_in); else plev_nm_out=(char *)strdup("plev");
+    } /* !rgr->plev_nm_out */
+    lev_nm_out=(char *)strdup(plev_nm_out);
     /* Hybrid-sigma/pressure interface variables, if any, must also be output to pure-pressure files on lev grid */
-    ilev_nm_out=(char *)strdup(lev_nm_out);
+    ilev_nm_out=(char *)strdup(plev_nm_out);
   } /* !flg_grd_out_prs */
 
   /* Define new vertical dimensions before all else */

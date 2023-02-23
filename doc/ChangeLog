@@ -1,8 +1,12 @@
-2023-02-20  Charlie Zender  <zender@uci.edu>
+2023-02-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha02: Champignons';git push
 	git tag -a 5.1.5-alpha02 -m 'ncks bnr_wrt fix; ncrcat: no_cll_mth';git push --tags
+
+	* ncremap() re-enable plev_nm_out options, default to plev not lev for nco_vrt_grd_prs
+
+2023-02-20  Charlie Zender  <zender@uci.edu>
 
 	* Change implementation of FORCE_APPEND, FORCE_OVERWRITE from toggle to absolute
 
