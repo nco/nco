@@ -2510,7 +2510,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   for(idx=0;idx<var_xcl_fix_nbr;idx++)
     var_xcl_lst[idx]=(char *)strdup(var_xcl_lst_fix[idx]);
 
-  /* Add run-time variables to exclusion list (NB: Increment var_xcl_run_nbr_max to match list length) */
+  /* Add run-time variables to exclusion list (NB: Increment var_xcl_run_nbr_max to match list length)
+     20230223: *_in/_out names are almost always defined, so corresponding variables are always excluded. Too rash? */
   if(dpt_nm_in) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(dpt_nm_in);
   if(dpt_nm_out) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(dpt_nm_out);
   if(plev_nm_in) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(plev_nm_in);

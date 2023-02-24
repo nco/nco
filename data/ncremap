@@ -2137,7 +2137,7 @@ if [ ${inp_std} = 'Yes' ]; then
     done < /dev/stdin
 fi # !inp_std
 
-# 20221214 Retain multidimensional auxiliary coordinates needed for vertical interpolation
+# 20231214 Retain multidimensional auxiliary coordinates as needed for vertical (not horizontal) interpolation
 if [ "${prc_typ}" = 'mpaso' ] || [ "${prc_typ}" = 'mpasocean' ]; then
     if [ -n "${vrt_out}" ]; then
 	if [ -n "${nco_var_lst}" ] && [ "${xcl_flg}" != 'Yes' ]; then
@@ -2147,7 +2147,9 @@ if [ "${prc_typ}" = 'mpaso' ] || [ "${prc_typ}" = 'mpasocean' ]; then
 		mpaso_var_lst=`nchasvar ${mpaso_var_zmid} ${fl_in[0]}`
 		if [ "${mpaso_var_lst}" = ${mpaso_var_zmid} ]; then
 		    nco_var_lst="${nco_var_lst},${mpaso_var_zmid}"
-		    echo "DEBUG: Added ${mpaso_var_zmid} to extraction list: nco_var_lst = ${nco_var_lst}"
+		    # Alternatively, could create nco_var_lst_ncpdq to ensure ncpdq retains mpaso_var_zmid so vertical
+		    # interpolation finds it, yet it does not appear in horizontal regridding namelist
+		    #		    echo "DEBUG: Added ${mpaso_var_zmid} to extraction list: nco_var_lst = ${nco_var_lst}"
 		fi # !mpaso_var_lst
 	    fi # !nco_var_lst
 	fi # !nco_var_lst, !xcl_flg
