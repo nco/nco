@@ -176,6 +176,10 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
 (trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
 void
+nco_xtr_mpas_zmid_add /* [fnc] Add MPAS timeMonthly_avg_zMid auxiliary coordinate variable to extraction list */
+(trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+
+void
 nco_xtr_ilev_add                      /* [fnc] Add ilev coordinate to extraction list */
 (trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 

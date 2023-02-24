@@ -542,6 +542,7 @@ mbt_typ_grd=0 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, 
 mbt_typ_map=5 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, OVERLAP_MEMORY=4, OVERLAP_MOAB=5])
 mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indicates unlimited RAM)
 mlt_map_flg='Yes' # [sng] Multi-map flag
+mpaso_var_zmid='timeMonthly_avg_zMid' # [sng] Name of MPAS-O 3D depth variable
 mpi_flg='No' # [sng] Parallelize over nodes
 mpi_nbr=1 # [sng] Number of tasks-per-node that MPI-enabled weight generators will request (should be factor of prt_nbr)
 msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
@@ -760,6 +761,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
 # RRG processing needs NCO filters documented in http://nco.sf.net/nco.html#filter
 function ncvarlst { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 function ncdmnlst { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
+function nchasvar { ncks --trd -C -m -v ${1} ${2} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' ; }
 
 function dst_is_grd {
     # Purpose: Is destination grid specified as SCRIP grid-file?
@@ -1555,6 +1557,7 @@ if [ -n "${var_lst}" ]; then
     else
 	nco_var_lst="-v ${var_lst}"
     fi # !xcl_flg
+    nco_var_lst_hrz=${nco_var_lst}
 fi # !var_lst
 if [ -n "${area_dgn}" ]; then 
     nco_dgn_area="--rgr diagnose_area"
@@ -1922,14 +1925,6 @@ if [ -n "${vrt_out}" ]; then
 	exit 1
     fi # ! -f
     vrt_usr_flg='Yes'
-#    if [ "${prc_typ}" = 'mpaso' ] || [ "${prc_typ}" = 'mpasocean' ]; then
-#	if [ "${pdq_flg}" = 'Yes' ]; then
-#	    # 20221214 Keep multidimensional auxiliary coordinates needed for vertical interpolation
-#	    if [ -n "${nco_var_lst}" ]; then 
-#		nco_var_lst="${nco_var_lst},timeMonthly_avg_zMid"
-#	    fi # !var_lst
-#	fi # !pdq_opt && !pdq_flg
-#    fi # !mpaso
     if [ -n "${dpt_nm}" ]; then
 	vrt_opt="${vrt_opt} --rgr dpt_nm_in=${dpt_nm}"
     fi # !dpt_nm
@@ -2141,6 +2136,23 @@ if [ ${inp_std} = 'Yes' ]; then
 	let fl_nbr=${fl_nbr}+1
     done < /dev/stdin
 fi # !inp_std
+
+# 20221214 Retain multidimensional auxiliary coordinates needed for vertical interpolation
+if [ "${prc_typ}" = 'mpaso' ] || [ "${prc_typ}" = 'mpasocean' ]; then
+    if [ -n "${vrt_out}" ]; then
+	if [ -n "${nco_var_lst}" ] && [ "${xcl_flg}" != 'Yes' ]; then
+	    # Search the file iff the extraction list does not already contain the depth coordinate
+	    # https://stackoverflow.com/questions/4542732/how-do-i-negate-a-test-with-regular-expressions-in-a-bash-script
+	    if [[ ! "${nco_var_lst}" =~ ${mpaso_var_zmid} ]]; then
+		mpaso_var_lst=`nchasvar ${mpaso_var_zmid} ${fl_in[0]}`
+		if [ "${mpaso_var_lst}" = ${mpaso_var_zmid} ]; then
+		    nco_var_lst="${nco_var_lst},${mpaso_var_zmid}"
+		    echo "DEBUG: Added ${mpaso_var_zmid} to extraction list: nco_var_lst = ${nco_var_lst}"
+		fi # !mpaso_var_lst
+	    fi # !nco_var_lst
+	fi # !nco_var_lst, !xcl_flg
+    fi # !vrt_out
+fi # !mpaso
 
 if [ "${mpi_flg}" = 'Yes' ]; then
     if [ -n "${COBALT_NODEFILE}" ]; then 
@@ -3436,7 +3448,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 		printf "Map/Wgt  : ${map_fl}\n"
 	    fi # !vrb_lvl
-	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map_fl=\"${map_fl}\" \"${fl_in[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
+	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst_hrz} ${nco_msk_out} ${rgr_opt} --map_fl=\"${map_fl}\" \"${fl_in[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${fl_idx}]}
 	    fi # !dbg

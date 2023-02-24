@@ -1074,9 +1074,7 @@ nco_xtr_ilev_add                      /* [fnc] Add ilev coordinate to extraction
      This workaround ensures extraction of ilev occurs in tandem with lev */
 
   //  const char fnc_nm[]="nco_xtr_ilev_add()"; /* [sng] Function name */
-
   unsigned int tbl_nbr;
-
   unsigned int tbl_idx;
 
   tbl_nbr=(unsigned int)trv_tbl->nbr;
@@ -1103,7 +1101,63 @@ nco_xtr_ilev_add                      /* [fnc] Add ilev coordinate to extraction
   } /*  !xtr_lev */
 	
   return;
-} /* end nco_xtr_ilev_add() */
+} /* !nco_xtr_ilev_add() */
+
+void
+nco_xtr_mpas_zmid_add /* [fnc] Add MPAS timeMonthly_avg_zMid auxiliary coordinate variable to extraction list */
+(trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
+{
+  /* Purpose: Add MPAS timeMonthly_avg_zMid auxiliary coordinate variable to extraction list
+     20230224: MPAS datasets do not yet adhere to CF "coordinates" convention
+     timeMonthly_avg_zMid is an important, 3D, auxiliary coordinate variable necessary for vertical interpolation
+     This workaround ensures extraction of timeMonthly_avg_zMid
+     However, timeMonthly_avg_zMid is 3D, and thus large
+     Users will only want/need it in special circumstances (e.g., vertical interpolation) 
+     Thus there should be additional (as yet undetermined) conditions to activate it 
+     The initial idea is to invoke this iff these three conditions are met:
+     1. File is MPAS
+     2. Extraction list already contains a 3D variable
+     3. Vertical interpolation is desired
+     A key requirement is that normal NCO operators, especially ncpdq, can invoke this 
+     ncremap invokes ncpdq to re-order MPAS datasets prior to regridding
+     We need the temporary files produced by ncpdq to contain timeMonthly_avg_zMid when vertical interpolation is requested
+     Otherwise the vertical interpolation will fail
+
+     ncpdq intrinsically has no idea about conditions 1-3
+     ncpdq could be invoked with a new option?
+     ncremap could simply augment the extraction list if conditions 1-3 are met? based on bash functions?
+     Ended up doing this in bash, retaining this function because it provides good notes */
+
+  const char fnc_nm[]="nco_xtr_mpas_zmid_add()"; /* [sng] Function name */
+
+  unsigned int tbl_nbr;
+  unsigned int tbl_idx;
+
+  tbl_nbr=(unsigned int)trv_tbl->nbr;
+
+  /* Does extraction list contain lev? */
+  for(tbl_idx=0;tbl_idx<tbl_nbr;tbl_idx++){
+    trv_sct var_trv=trv_tbl->lst[tbl_idx];
+    if(var_trv.nco_typ == nco_obj_typ_var)
+      if(var_trv.flg_xtr)
+	if(!strcmp("lev",var_trv.nm))
+	  break;
+  } /* !tbl_idx */
+  
+  /* If so, and ilev is in file, then extract ilev */
+  if(tbl_idx != tbl_nbr){
+    for(tbl_idx=0;tbl_idx<tbl_nbr;tbl_idx++){
+      trv_sct var_trv=trv_tbl->lst[tbl_idx];
+      if(var_trv.nco_typ == nco_obj_typ_var)
+	if(!strcmp("ilev",var_trv.nm)){
+	  trv_tbl->lst[tbl_idx].flg_xtr=True;
+	  return;
+	} /* !ilev */
+    } /* !tbl_idx */
+  } /*  !xtr_lev */
+	
+  return;
+} /* !nco_xtr_mpas_zmid_add() */
 
 void
 nco_xtr_lst /* [fnc] Print extraction list and exit */
@@ -1349,32 +1403,28 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
         /* Does cf_lst_var have a path of some kind? */
 	ptr_chr=strchr(cf_lst_var,sls_chr);
         if(ptr_chr){
-          /* Does cf_lst start with '/' an absolute path? */
 	  if(cf_lst_var[0] == '/'){
+	    /* Does cf_lst start with '/' an absolute path? */
 	    strcpy(cf_lst_var_nm_fll,cf_lst_var);
-	  }
-          /* Does cf_lst_var start with "./"? */
-	  else if(strncmp(cf_lst_var,cur_dir_sng,strlen(cur_dir_sng)) == 0){
-            if(strcmp(var_trv->grp_nm_fll,sls_sng))    
-	      strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
+	  }else if(strncmp(cf_lst_var,cur_dir_sng,strlen(cur_dir_sng)) == 0){
+	    /* Does cf_lst_var start with "./"? */
+            if(strcmp(var_trv->grp_nm_fll,sls_sng)) strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
 	    strcat(cf_lst_var_nm_fll, cf_lst_var+(size_t)1);
-	  }
-	  /* Does cf_lst_var start with "../"? */
-          else if(strncmp(cf_lst_var,up_dir_sng,strlen(up_dir_sng)) == 0){
+	  }else if(strncmp(cf_lst_var,up_dir_sng,strlen(up_dir_sng)) == 0){
+	    /* Does cf_lst_var start with "../"? */
 	    /* Remove last dirname from var_trv->grp_nm_fll */
 	    strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
 	    /* Search for final '/' */
 	    ptr_chr=strrchr(cf_lst_var_nm_fll,sls_chr);      
 	    if(ptr_chr) *ptr_chr='\0';
 	    strcat(cf_lst_var_nm_fll,cf_lst_var+(size_t)2);     
-
-	  }
-	  /* '/' somewhere in middle of string */
-	  else{
+	  }else{
+	    /* '/' somewhere in middle of string */
 	    strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
 	    if(strcmp(var_trv->grp_nm_fll,sls_sng)) strcat(cf_lst_var_nm_fll,sls_sng);
 	    strcat(cf_lst_var_nm_fll,cf_lst_var);
-          } 	  
+          } /* !cf_lst_var */
+
           /* If variable is on list */
           if(trv_tbl_fnd_var_nm_fll(cf_lst_var_nm_fll,trv_tbl))
             /* Mark it for extraction */
@@ -1383,7 +1433,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
 	  cf_lst_var_nm_fll=(char *)nco_free(cf_lst_var_nm_fll);
 	  
           continue;
-	}  
+	} /* !ptr_chr */
 
         strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
         if(strcmp(var_trv->grp_nm_fll,sls_sng)) strcat(cf_lst_var_nm_fll,sls_sng);
@@ -1413,19 +1463,19 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
             ptr_chr=strrchr(cf_lst_var_nm_fll,sls_chr);
             psn_chr=ptr_chr-cf_lst_var_nm_fll;
           } /* !ptr_chr */
-        } /* end while */
+        } /* !while */
 
         /* Free allocated */
         if(cf_lst_var_nm_fll) cf_lst_var_nm_fll=(char *)nco_free(cf_lst_var_nm_fll);
     
-      } /* end loop over idx_cf */
+      } /* !idx_cf */
 
       /* Free allocated memory */
       att_val=(char *)nco_free(att_val);
       cf_lst=nco_sng_lst_free(cf_lst,nbr_cf);
 
-    } /* end strcmp() */
-  } /* end loop over attributes */
+    } /* !strcmp() */
+  } /* !idx_att */
 
   return;
 } /* nco_xtr_cf_var_add() */
@@ -1542,12 +1592,12 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
         /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm_var,&dmn_sz);
 
-        char dmn_nm_grp[NC_MAX_NAME+1];    /* [sng] Dimension name for *group*  */ 
+        char dmn_nm_grp[NC_MAX_NAME+1]; /* [sng] Dimension name for *group*  */ 
         
-        const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
+        const int flg_prn=1; /* [flg] Dimensions in all parent groups will also be retrieved */ 
 
         int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array */
-        int nbr_dmn_grp;             /* [nbr] Number of dimensions for *group* */
+        int nbr_dmn_grp; /* [nbr] Number of dimensions for *group* */
 
         /* Obtain number of dimensions visible to group */
         (void)nco_inq(grp_id,&nbr_dmn_grp,NULL,NULL,NULL);
@@ -1610,16 +1660,16 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
             /* Free allocated */
             if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
 
-          } /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
-        } /* Loop dimensions visible to group  */    
-      } /* Loop over dimensions of variable */
+          } /* !dmn_nm_grp, !dmn_nm_var */ 
+        } /* !idx_dmn */
+      } /* !idx_var_dmn */
       /* Free dimension IDs array */
       dmn_id_var=(int *)nco_free(dmn_id_var);
-    } /* Filter variables to extract */
-  } /* Loop table */
+    } /* !var_trv.nco_typ */
+  } /* !idx_tbl */
 
   return;
-} /* end nco_xtr_crd_ass_add() */
+} /* !nco_xtr_crd_ass_add() */
 
 void 
 nco_xtr_lst_prn /* [fnc] Print name-ID structure list */
@@ -2183,7 +2233,7 @@ nco_chk_nan                           /* [fnc] Check file for NaNs */
     } /* !var */
   } /* !idx_tbl */
   return;
-} /* end nco_chk_nan() */
+} /* !nco_chk_nan() */
 
 void
 nco_xtr_wrt                           /* [fnc] Write extracted data to output file */
@@ -6937,7 +6987,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 	     if(!nco_bld_crd_nm_aux(nc_id,"lat_gds","lon_gds",trv_tbl)){
 	        (void)fprintf(stderr,"%s: %s reports unable to find lat/lon coordinates with standard_name's = \"latitude/longitude\". Nor able to find appropriate auxiliary coordinates named \"lat/lon\", \"latitude/longitude\" or \"Latitude/Longitude\" or \"lat_gds/lon_gds\".\n",nco_prg_nm_get(),fnc_nm);
 	        nco_exit(EXIT_FAILURE);  
-	     }
+	     } /* !nco_bld_crd_nm_aux() */
     
   } /* !aux_nbr */
   
@@ -6958,9 +7008,9 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(!cnv->CCM_CCSM_CF && aux_nbr){
     (void)fprintf(stderr,"%s: WARNING -X option selected on input lacking global \"Conventions=CF-1.X\" attribute. Assuming CF-compliance intended in order to exploit -X. HINT: To fix this warning, add conformant Conventions attribute with, e.g., \"ncatted -a Conventions,global,c,c,CF-1.0 in.nc\"\n",nco_prg_nm_get());
     cnv->CCM_CCSM_CF=True;
-  } /* endif */
+  } /* cnv->CCM_CCSM_CF */
   if(cnv->CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
-    /* Workaround CCSM "feature" that lev lacks bounds="ilev" attribute */
+    /* Workaround CCSM/CESM "feature" that lev lacks bounds="ilev" attribute */
     (void)nco_xtr_ilev_add(trv_tbl);
     /* Implement CF "ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping" */
     if(EXTRACT_CLL_MSR) (void)nco_xtr_cf_add(nc_id,"cell_measures",trv_tbl);

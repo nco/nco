@@ -274,7 +274,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
   } /* end loop over idx */
 
   /* Detect associated coordinates specified by CF "coordinates" convention
-  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */
+     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */
   if(cnv->CCM_CCSM_CF){
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_crd_add()"; /* [sng] Function name */
@@ -293,8 +293,8 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
     nc_type att_typ;
 
     /* NB: Only difference between this algorithm and CF algorithm in 
-    nco_var_lst_crd_ass_add() is that this algorithm loops over 
-    all variables in file, not just over current extraction list. */ 
+       nco_var_lst_crd_ass_add() is that this algorithm loops over 
+       all variables in file, not just over current extraction list. */ 
     /* ...for each variable in file... */
     for(idx_var=0;idx_var<nbr_var;idx_var++){
       /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
@@ -304,7 +304,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
       (void)nco_inq_varname(nc_id,var_id,var_nm);
   
       /* fxm: Functionalize remainder and call from both 
-      nco_var_lst_crd_ass_add() and nco_var_lst_crd_add()? */
+	 nco_var_lst_crd_ass_add() and nco_var_lst_crd_add()? */
       /* Find number of attributes */
       (void)nco_inq_varnatts(nc_id,var_id,&nbr_att);
       for(idx_att=0;idx_att<nbr_att;idx_att++){
@@ -362,8 +362,8 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
   } /* !cnv->CCM_CCSM_CF for "coordinates" */
 
   /* Detect coordinate boundaries specified by CF "bounds" convention
-  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries
-  Algorithm copied with modification from "coordinates" algorithm above */
+     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries
+     Algorithm copied with modification from "coordinates" algorithm above */
   if(cnv->CCM_CCSM_CF){
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_crd_add()"; /* [sng] Function name */
@@ -382,8 +382,8 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
     nc_type att_typ;
 
     /* NB: Only difference between this algorithm and CF algorithm in 
-    nco_var_lst_crd_ass_add() is that this algorithm loops over 
-    all variables in file, not just over current extraction list. */ 
+       nco_var_lst_crd_ass_add() is that this algorithm loops over 
+       all variables in file, not just over current extraction list. */ 
     /* ...for each variable in file... */
     for(idx_var=0;idx_var<nbr_var;idx_var++){
       /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
@@ -445,7 +445,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
   } /* !cnv->CCM_CCSM_CF for "bounds" */
 
   return xtr_lst;
-} /* end nco_var_lst_crd_add() */
+} /* !nco_var_lst_crd_add() */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associated with extracted variables */
@@ -511,7 +511,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
   } /* end loop over idx_dmn */
 
   /* Detect associated coordinates specified by CF "coordinates" convention
-  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
+     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
   if(cnv->CCM_CCSM_CF){
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_crd_ass_add()"; /* [sng] Function name */
@@ -548,7 +548,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
           /* NUL-terminate attribute */
           att_val[att_sz]='\0';
           /* Split list into separate coordinate names
-          Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+	     Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
           crd_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_crd);
           /* ...for each coordinate in "coordinates" attribute... */
           for(idx_crd=0;idx_crd<nbr_crd;idx_crd++){
@@ -557,10 +557,10 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
             /* Verify "coordinate" exists in input file */
             rcd=nco_inq_varid_flg(nc_id,crd_lst[idx_crd],&crd_id);
             /* NB: Do not check that dimension by this name exists
-            CF files often use "coordinates" convention to identify
-            two-dimensional (or greater) variables which serve as coordinates.
-            In other words, we want to allow N-D variables to work as coordinates
-            for the purpose of adding them to the extraction list only. */
+	       CF files often use "coordinates" convention to identify
+	       two-dimensional (or greater) variables which serve as coordinates.
+	       In other words, we want to allow N-D variables to work as coordinates
+	       for the purpose of adding them to the extraction list only. */
             if(rcd == NC_NOERR){
               /* idx_var2 labels inner loop over variables */
               /* Is "coordinate" already on extraction list? */
@@ -590,8 +590,8 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
   } /* !cnv->CCM_CCSM_CF for "coordinates" */
 
   /* Detect coordinate boundaries specified by CF "bounds" convention
-  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries
-  Algorithm copied with modification from "coordinates" algorithm above */
+     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries
+     Algorithm copied with modification from "coordinates" algorithm above */
   if(cnv->CCM_CCSM_CF){
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_crd_ass_add()"; /* [sng] Function name */
@@ -668,7 +668,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
 
   return xtr_lst;
   
-} /* end nco_var_lst_crd_ass_add() */
+} /* !nco_var_lst_crd_ass_add() */
 
 nm_id_sct * /* O [sct] List with coordinate excluded */
 nco_var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
@@ -714,7 +714,7 @@ nco_var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
   
   return xtr_lst;
   
-} /* end nco_var_lst_crd_xcl() */
+} /* !nco_var_lst_crd_xcl() */
 
 void
 nco_var_lst_convert /* [fnc] Make variable structure list from variable name ID list */
@@ -748,7 +748,7 @@ nco_var_lst_convert /* [fnc] Make variable structure list from variable name ID 
   *var_ptr=var;
   *var_out_ptr=var_out;
 
-} /* end nco_var_lst_convert() */
+} /* !nco_var_lst_convert() */
 
 int /* O [enm] Return code */
 nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
