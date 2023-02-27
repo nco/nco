@@ -1,10 +1,10 @@
 2023-02-25  Charlie Zender  <zender@uci.edu>
 
-	* Thwart attempts to remove directories that are not NCZarr objects
-
 	* NCO 5.1.5-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha03: Blizzard';git push
 	git tag -a 5.1.5-alpha03 -m '';git push --tags
+
+	* Thwart attempts to remove directories that are not NCZarr objects
 
 2023-02-24  Charlie Zender  <zender@uci.edu>
 

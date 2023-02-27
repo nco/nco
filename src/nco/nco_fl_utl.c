@@ -356,21 +356,27 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
     struct stat stat_sct;
 
     rcd_stt=stat(fl_dst_psx,&stat_sct);
-    if(!rcd_stt && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports destination directory %s already exists on local system. Will attempt to remove directory tree...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
- 
-    /* Remove any NCZarr store that already exists at destination location
-       Otherwise, the temporary store will land within (instead of replace) the extant directory
-       20230225 Be careful only to remove NCZarr objects, not just any directory whose syntax resembles that of a NCZarr store */
-    char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
-    fl_dst_dpl=(char *)strdup(fl_dst);
-    rcd=nco_open_flg(fl_dst_dpl,NC_NOWRITE,&in_id);
-    if(rcd == NC_NOERR){
-      rcd=nco_close(in_id);
-      nco_fl_rm(fl_dst_dpl);
-    }else{
-      rcd=NC_NOERR;
-    } /* !rcd */
-    if(fl_dst_dpl) fl_dst_dpl=(char *)nco_free(fl_dst_dpl);
+
+    if(!rcd_stt){
+      /* Remove any NCZarr store that already exists at destination location
+	 Otherwise, the temporary store will land within (instead of replace) the extant directory
+	 20230225 Be careful only to remove NCZarr objects, not just any directory whose syntax resembles that of a NCZarr store */
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports destination directory %s already exists on local system. Will attempt to remove directory tree...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
+
+      char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
+      fl_dst_dpl=(char *)strdup(fl_dst);
+      rcd=nco_open_flg(fl_dst_dpl,NC_NOWRITE,&in_id);
+      if(rcd == NC_NOERR){
+	rcd=nco_close(in_id);
+	nco_fl_rm(fl_dst_dpl);
+      }else{
+	(void)fprintf(stderr,"%s: WARNING opening %s as NCZarr object failed with error code %d. ",nco_prg_nm_get(),fl_dst_dpl,rcd);
+	(void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
+	(void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove directory \"%s\" that does not open as an NCZarr file. NCO will only delete directory trees that successfully open as NCZarr stores. Deleting just any ole' directory would be a security risk. If you really want to delete/overwrite this directory, please do so with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_dpl);
+	nco_exit(EXIT_FAILURE);
+      } /* !rcd */
+      if(fl_dst_dpl) fl_dst_dpl=(char *)nco_free(fl_dst_dpl);
+    } /* !rcd_stt */
   } /* !dst_is_drc */
 
   if(dst_is_drc) cmd_cp_typ=cmd_cp_drc; else cmd_cp_typ=cmd_cp_fl;
@@ -1539,21 +1545,27 @@ nco_fl_mv /* [fnc] Move first file to second */
     struct stat stat_sct;
 
     rcd_stt=stat(fl_dst_psx,&stat_sct);
-    if(!rcd_stt && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports destination directory %s already exists on local system. Attempting to remove directory tree...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
  
-    /* Remove any NCZarr store that already exists at destination location
-       Otherwise, the temporary store will land within (instead of replace) the extant directory
-       20230225 Be careful only to remove NCZarr objects, not just any directory whose syntax resembles that of a NCZarr store */
-    char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
-    fl_dst_dpl=(char *)strdup(fl_dst);
-    rcd=nco_open_flg(fl_dst_dpl,NC_NOWRITE,&in_id);
-    if(rcd == NC_NOERR){
-      rcd=nco_close(in_id);
-      nco_fl_rm(fl_dst_dpl);
-    }else{
-      rcd=NC_NOERR;
-    } /* !rcd */
-    if(fl_dst_dpl) fl_dst_dpl=(char *)nco_free(fl_dst_dpl);
+    if(!rcd_stt){
+      /* Remove any NCZarr store that already exists at destination location
+	 Otherwise, the temporary store will land within (instead of replace) the extant directory
+	 20230225 Be careful only to remove NCZarr objects, not just any directory whose syntax resembles that of a NCZarr store */
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports destination directory %s already exists on local system. Will attempt to remove directory tree...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
+
+      char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
+      fl_dst_dpl=(char *)strdup(fl_dst);
+      rcd=nco_open_flg(fl_dst_dpl,NC_NOWRITE,&in_id);
+      if(rcd == NC_NOERR){
+	rcd=nco_close(in_id);
+	nco_fl_rm(fl_dst_dpl);
+      }else{
+	(void)fprintf(stderr,"%s: WARNING opening %s as NCZarr object failed with error code %d. ",nco_prg_nm_get(),fl_dst_dpl,rcd);
+	(void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
+	(void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove directory \"%s\" that does not open as an NCZarr file. NCO will only delete directory trees that successfully open as NCZarr stores. Deleting just any ole' directory would be a security risk. If you really want to delete/overwrite this directory, please do so with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_dpl);
+	nco_exit(EXIT_FAILURE);
+      } /* !rcd */
+      if(fl_dst_dpl) fl_dst_dpl=(char *)nco_free(fl_dst_dpl);
+    } /* !rcd_stt */
   } /* !dst_is_drc */
 
   /* Construct and execute move command */
@@ -2240,7 +2252,7 @@ nco_fl_rm /* [fnc] Remove file or directory */
 (char *fl_nm) /* I [sng] File or directory to be removed */
 {
   /* Purpose: Remove specified file or directory from local system */
-  const char fnc_nm[]="nco_fl_rm()"; /* [sng] Function name */
+  //const char fnc_nm[]="nco_fl_rm()"; /* [sng] Function name */
 
 #ifdef _MSC_VER
   char cmd_rm_fl[]="del /F";
@@ -2254,8 +2266,6 @@ nco_fl_rm /* [fnc] Remove file or directory */
   char *cmd_rm_typ;
   char *obj_to_rm=NULL;
 
-  int in_id; /* [id] Temporary input file ID */
-  int rcd=NC_NOERR; /* [rcd] Return code */
   int rcd_sys;
 
   nco_bool obj_is_drc=False; /* [flg] Object to remove is a directory */
@@ -2274,19 +2284,6 @@ nco_fl_rm /* [fnc] Remove file or directory */
   /* Add one for the space and one for the terminating NUL character */
   cmd_rm=(char *)nco_malloc((strlen(cmd_rm_typ)+1UL+strlen(obj_to_rm)+1UL)*sizeof(char));
   (void)sprintf(cmd_rm,"%s %s",cmd_rm_typ,obj_to_rm);
-
-  /* 20230225 Only remove directories that are valid NCZarr objects
-     Die if directory to remove is not an NCZarr object
-     Before installing this precaution I once accidentally deleted my entire $HOME directory! */
-  if(obj_is_drc){
-    rcd=nco_open_flg(obj_to_rm,NC_NOWRITE,&in_id);
-    if(rcd != NC_NOERR){
-      (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove directory \"%s\" that is not an NCZarr file\n",nco_prg_nm_get(),fnc_nm,obj_to_rm);
-      nco_exit(EXIT_FAILURE);
-    }else{ /* !rcd */
-      rcd=nco_close(in_id);
-    } /* !rcd */
-  } /* !obj_is_drc */
 
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG Removing %s with \"%s\"\n",nco_prg_nm_get(),obj_to_rm,cmd_rm);
   rcd_sys=system(cmd_rm);
