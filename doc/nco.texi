@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.5-alpha03
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 24 February 2023
+@set update-date 26 February 2023
 @set update-month February 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -30226,11 +30226,6 @@ Debian packaging
 @cindex Ed Hill
 @cindex Orion Poplawski
 @item Patrice Dumas, Ed Hill, Orion Poplawski
-RedHat packaging
-@cindex George Shapavalov
-@cindex Patrick Kursawe
-@cindex Manfred Schwarb
-@item George Shapavalov, Patrick Kursawe, Manfred Schwarb
 Gentoo packaging
 @cindex Filipe Fernandes
 @item Filipe Fernandes
@@ -30243,6 +30238,14 @@ OpenSuse packaging
 Mac OS packaging
 @cindex Eric Blake
 @item Eric Blake
+PyNCO Anaconda and Pip packaging, bug fixes
+@cindex Tim Heap
+@item Tim Heap
+RedHat packaging
+@cindex George Shapavalov
+@cindex Patrick Kursawe
+@cindex Manfred Schwarb
+@item George Shapavalov, Patrick Kursawe, Manfred Schwarb
 Autoconf/M4 help
 @cindex Gavin Burris
 @cindex Kyle Wilcox
