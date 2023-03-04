@@ -1126,9 +1126,9 @@ nco_xtr_mpas_zmid_add /* [fnc] Add MPAS timeMonthly_avg_zMid auxiliary coordinat
      ncpdq intrinsically has no idea about conditions 1-3
      ncpdq could be invoked with a new option?
      ncremap could simply augment the extraction list if conditions 1-3 are met? based on bash functions?
-     Ended up doing this in bash, retaining this function because it provides good notes */
+     202302XX: Ended up doing this in Bash instead of C, retaining this function because it provides good notes */
 
-  const char fnc_nm[]="nco_xtr_mpas_zmid_add()"; /* [sng] Function name */
+  //const char fnc_nm[]="nco_xtr_mpas_zmid_add()"; /* [sng] Function name */
 
   unsigned int tbl_nbr;
   unsigned int tbl_idx;
@@ -5960,7 +5960,7 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
         return;
       } /* !IDENTITY_REORDER */
 
-      if(var_in->has_dpl_dmn) (void)fprintf(stdout,"%s: WARNING %s reports non-identity re-order for variable with duplicate dimensions %s.\n%s does not support non-identity re-orders of variables with duplicate dimensions\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_prg_nm_get());
+      if(var_in->has_dpl_dmn && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports non-identity re-order requested for variable with multiple dimensions named \"%s\" (i.e., variable has multiple dimensions with same name, and likely same size). Re-ordering of variables with duplicated dimension names has not been thoroughly tested, thought we think it will likely work.\n%s: HINT If re-ordering does not work, please lobby the NCO project to better support it. There is currently no workaround.\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_prg_nm_get());
 
       /* Compute map for each dimension of input variable */
       for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++) dmn_in_map[dmn_in_idx]=1L;

@@ -1,8 +1,14 @@
-2023-02-25  Charlie Zender  <zender@uci.edu>
+2023-03-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha03: Blizzard';git push
 	git tag -a 5.1.5-alpha03 -m '';git push --tags
+
+	* ncpdq: Quiet warning message about non-identity re-ordering of multiple dimensions with same names (EAMxx restarts have multiple dimensions named gp)
+
+	* ncremap: Add plev to pdq_opt for EAMxx files
+
+2023-02-25  Charlie Zender  <zender@uci.edu>
 
 	* Thwart attempts to remove directories that are not NCZarr objects
 

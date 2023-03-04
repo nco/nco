@@ -570,6 +570,7 @@ prt_exe_mbt='mbpart' # [sng] MOAB-Tempest H5M partition executable
 prt_nbr=8 # [nbr] Partition number for mbpart (should be multiple of mpi_nbr)
 prs_stt='' # [sng] Preserved statistic ('integral' or 'mean')
 ps_nm='' # [sng] Name of variable containing surface pressure in input file
+ps_nm_dfl='PS' # [sng] Name of variable containing surface pressure in input file
 qea_flg='No' # [sng] Quasi-equal area mode for TempestRemap
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
 #rgr_opt='--rgr lat_dnm_nm=x --rgr lon_dmn_nm=y' # [sng] Regridding options for projection grid
@@ -597,7 +598,7 @@ vrt_nm='' # [sng] Vertical coordinate name
 vrt_opt='' # [sng] Vertical options (e.g., '--rgr xtr_mth=mss_val')
 vrt_out='' # [sng] Vertical grid file for output
 vrt_ntp='' # [sng] Vertical interpolation type (lin|log)
-vrt_xtr='' # [sng] Vertical extrapolation type (mss_val|nrs_ngh)
+vrt_xtr='' # [sng] Vertical extrapolation type (linear|mss_val|nrs_ngh|zero)
 wgt_exe_cdo='cdo' # [sng] ESMF executable (weight generation only)
 wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable (weight generation only)
 wgt_exe_mbt='mbtempest' # [sng] MOAB-Tempest executable (both mesh- and weight-generation)
@@ -695,7 +696,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--ppc_prc${fnt_nrm}  Precision-preserving compression (empty means none) (default ${fnt_bld}${ppc_prc}${fnt_nrm}) [${fnt_tlc}ppc, ppc_prc, precision, quantize${fnt_nrm}]"
     echo " ${fnt_bld}--preserve${fnt_nrm} Preserved statistic (empty preserves integral, except mean for MPAS) (default ${fnt_bld}${prs_stt}${fnt_nrm}) [${fnt_tlc}preserve, prs_stt, preserved_statistic${fnt_nrm}] (integral|mean)"
     echo " ${fnt_bld}--prt_nbr${fnt_nrm}  Partition number for MOAB parallelism (default ${fnt_bld}${prt_nbr}${fnt_nrm}) [${fnt_tlc}prt_nbr, prt, partition_number${fnt_nrm}]"
-    echo " ${fnt_bld}--ps_nm${fnt_nrm}    Surface pressure variable name (default ${fnt_bld}${ps_nm}${fnt_nrm}) [${fnt_tlc}ps_nm, ps_name, ps, vrt_ps${fnt_nrm}]"
+    echo " ${fnt_bld}--ps_nm${fnt_nrm}    Surface pressure variable name (default ${fnt_bld}${ps_nm_dfl}${fnt_nrm}) [${fnt_tlc}ps_nm, ps_name, ps, vrt_ps${fnt_nrm}]"
 #    echo " ${fnt_bld}--qea_flg${fnt_nrm}  Quasi-equal area mode for TempestRemap (default ${fnt_bld}${qea_flg}${fnt_nrm}) [${fnt_tlc}qea, qea_flg, np2, quasi-equal-area${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none (except for MPAS, see documentation)) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, rnr, renormalize, renormalization_threshold${fnt_nrm}]"
@@ -1853,8 +1854,10 @@ if [ "${prc_typ}" = 'eamxx' ]; then
     if [ -z "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then
 	# Permute horizontal dimensions to MRV
 	# dim2 is used in SCREAM SurfVars to store U,V components in horiz_winds, surf_mom_flux variables
+	#pdq_opt='-a ilev,lev,dim2,ncol'
+	# 20230304: EAMxx may have been vertically interpolated to pure-pressure levels prior to horizontal regridding
+	pdq_opt='-a ilev,lev,plev,dim2,ncol'
 	# NB: ncpdq is invoked iff performing horizontal regridding (vertical interpolation works fine either way)
-	pdq_opt='-a ilev,lev,dim2,ncol'
     fi # !pdq_opt && !pdq_flg
     if [ -z "${ps_nm}" ]; then
 	ps_nm='ps'
