@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha03: Blizzard';git push
 	git tag -a 5.1.5-alpha03 -m '';git push --tags
 
+	* ncremap: fix prs_stt_usr translation into prs_stt that has used wrong	(opposite) logic since ... forever?
+
 	* ncpdq: Quiet warning message about non-identity re-ordering of multiple dimensions with same names (EAMxx restarts have multiple dimensions named gp)
 
 	* ncremap: Add plev to pdq_opt for EAMxx files

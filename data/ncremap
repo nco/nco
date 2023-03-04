@@ -1532,9 +1532,9 @@ if [ "${msk_apl}" = 'Yes' ]; then
     rgr_opt="${rgr_opt} --rgr mask_apply"
 fi # !msk_apl
 if [ -n "${prs_stt_usr}" ]; then 
-    if [ "${prs_stt_usr}" != 'mean' ] && [ "${prs_stt_usr}" != 'local' ] && [ "${prs_stt_usr}" != 'local_mean' ] && [ "${prs_stt_usr}" != 'gridcell' ] && [ "${prs_stt_usr}" != 'gridcell_mean' ] && [ "${prs_stt_usr}" != 'natural_values' ]; then
+    if [ "${prs_stt_usr}" = 'mean' ] || [ "${prs_stt_usr}" = 'local' ] || [ "${prs_stt_usr}" = 'local_mean' ] || [ "${prs_stt_usr}" = 'gridcell' ] || [ "${prs_stt_usr}" = 'gridcell_mean' ] || [ "${prs_stt_usr}" = 'natural_values' ]; then
 	prs_stt='mean'
-    elif [ "${prs_stt_usr}" != 'integral' ] && [ "${prs_stt_usr}" != 'global' ] && [ "${prs_stt_usr}" != 'global_integral' ]; then
+    elif [ "${prs_stt_usr}" = 'integral' ] || [ "${prs_stt_usr}" = 'global' ] || [ "${prs_stt_usr}" = 'global_integral' ]; then
 	prs_stt='integral'
     else
 	echo "${spt_nm}: ERROR \"${prs_stt_usr}\" is an invalid value for preserved_statistic"

@@ -11859,7 +11859,8 @@ nco_xtr_var_get /* [fnc] Obtain variable specified by [external_path]/var_nm */
  char **rgr_var_nm_out, /* I/O [sng] Variable name in output file in regrid structure */
  int *var_id) /* O [id] Variable ID in input/external file */
 {
-  /* Purpose: Determine whether corner vertices are oriented CCW */
+  /* Purpose: Obtain variable specified by [external_path]/var_nm */
+
   char *var_nm; /* [sng] Variable name */
   char *fl_xtr=NULL; /* [sng] External surface pressure or depth/height-variable file name */
   int rcd=NCO_NOERR;
