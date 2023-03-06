@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.5-alpha03
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 26 February 2023
-@set update-month February 2023
+@set update-date 4 March 2023
+@set update-month March 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -27842,10 +27842,15 @@ The two statistics that can be preserved for incompletely overlapped
 gridcells are the local mean and/or the global integral of the source
 values. 
 Hence the valid values for this option are @samp{integral}
-(or, as of @acronym{NCO} @w{version 5.0.2}, released in September,
+(and, as of @acronym{NCO} @w{version 5.0.2}, released in September,
 2021, its synonyms @samp{global} and @samp{global_integral}) and
 @samp{mean} (or its synonyms @samp{local}, @samp{local_mean},
 @samp{gridcell}, @samp{gridcell_mean}, @samp{natural_values}).
+@acronym{NCO} @w{version 5.1.5}, released in March, 2023, fixed a
+longstanding problem with the implmentation of this option, which
+had essentially been broken since its inception.
+The option finally works as documented.
+
 Specifying @code{--preserve=@var{integral}} sets the destination
 gridcell equal to the sum of the valid source values times their
 source weights.

@@ -1,8 +1,12 @@
-2023-03-04  Charlie Zender  <zender@uci.edu>
+2023-03-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha03: Blizzard';git push
-	git tag -a 5.1.5-alpha03 -m '';git push --tags
+	git tag -a 5.1.5-alpha03 -m 'NCZarr chk drc, dnd rgl fl; ncremap eamxx pdq plev, fix prs_stt_usr';git push --tags
+
+	* Prevent NCO from deleting/overwriting regular files with NCZarr directories
+
+2023-03-04  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: fix prs_stt_usr translation into prs_stt that has used wrong	(opposite) logic since ... forever?
 
