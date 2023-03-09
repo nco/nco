@@ -1,8 +1,12 @@
-2023-03-05  Charlie Zender  <zender@uci.edu>
+2023-03-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha03: Blizzard';git push
-	git tag -a 5.1.5-alpha03 -m 'NCZarr chk drc, dnd rgl fl; ncremap eamxx pdq plev, fix prs_stt_usr';git push --tags
+	git tag -a 5.1.5-alpha03 -m 'NCZarr chk drc, dnd rgl fl; ncremap eamxx pdq plev, eamxx CF, fix prs_stt_usr';git push --tags
+
+	* Provide more information when NCZarr path attempts to mv or rm non-NCZarr files/directories
+
+2023-03-05  Charlie Zender  <zender@uci.edu>
 
 	* Prevent NCO from deleting/overwriting regular files with NCZarr directories
 

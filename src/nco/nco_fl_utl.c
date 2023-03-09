@@ -368,7 +368,10 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
 #ifdef _MSC_VER
 #include <shlwapi.h> /* PathIsDirectoryA() */
       if(PathIsDirectoryA(fl_dst_psx)){
-	/* 20230309: Windows also provides a stat() call:
+	/* 20230309: Windows documents a bewildering variety of stat() calls that have subtle differences with UNIX stat()
+	   After looking into all this, I tried just using the UNIX semantics on Windows
+	   Fortunately, UNIX stat() semantics appear to work (or at least compile without error and survive AppVeyor) on Windows
+	   Hence these notes are for future reference
 	   https://learn.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-pathisdirectorya
 	   https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/stat-functions?view=msvc-170
 	   Differences from UNIX are small yet annoying:
@@ -396,6 +399,18 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
 	if(fl_dst_dpl) fl_dst_dpl=(char *)nco_free(fl_dst_dpl);
 
       }else{
+
+#if 0	
+	  /* 20230309: DBG examine crazy nc_open() behavior */
+	  char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
+	  fl_dst_dpl=(char *)strdup(fl_dst);
+	  rcd=nco_open_flg(fl_dst_dpl,NC_NOWRITE,&in_id);
+	  if(rcd == NC_NOERR){
+	    (void)fprintf(stdout,"CSZ DBG fxm nc_open() returned NC_NOERR on file not directory!!!!\n");
+	    rcd=nco_close(in_id);
+	    nco_exit(EXIT_FAILURE);
+	  } /* !rcd */
+#endif /* !0 */
 
 	if(stat_sct.st_mode & S_IFREG) (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports to be a regular file. NCO will only delete regular files in order to replace them with netCDF POSIX files, not with NCZarr stores. To overwrite this file, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst); else (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports is neither a directory nor a regular file. NCO will overwrite regular files with netCDF files, and will replace directory trees that open as as NCZarr stores with a new NCZarr store. Deleting anything else could be a security risk. To delete/overwrite this object, do so with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst);
 	nco_exit(EXIT_FAILURE);
@@ -1617,7 +1632,7 @@ nco_fl_mv /* [fnc] Move first file to second */
      Linux rcd     > 0 indicates failure
      MacOS BSD rcd > 0 indicates failure */
   if(rcd_sys > 0){
-    (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",nco_prg_nm_get(),cmd_mv);
+    (void)fprintf(stdout,"%s: ERROR %s unable to execute mv command \"%s\"\n",nco_prg_nm_get(),fnc_nm,cmd_mv);
     nco_exit(EXIT_FAILURE);
   } /* end if */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"done\n");
