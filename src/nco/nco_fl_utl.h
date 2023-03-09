@@ -29,6 +29,10 @@
 #ifdef HAVE_STRINGS_H
 # include <strings.h> /* strcasecmp() */
 #endif /* !HAVE_STRINGS_H */
+#ifdef _MSC_VER
+/* 20230308: https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/stat-functions?view=msvc-170 */
+#include <sys/types.h> /* Must preceded stat.h on Windows */
+#endif /* !_MSC_VER */
 #include <sys/stat.h> /* stat() */
 #ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */

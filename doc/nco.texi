@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.5-alpha03
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 4 March 2023
+@set update-date 7 March 2023
 @set update-month March 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -15018,8 +15018,8 @@ Missing values operate slightly differently in @command{ncap2}
 Consider the expression where op is any of the following operators (excluding '=')
 @example
 Arithmetic operators ( * / % + - ^ )
-Binary Operators     ( >, >= <, <= ==, !=,==,||,&&, >>,<< ) 
-Assign Operators     ( +=,-=,/=, *= ) 
+Binary Operators     ( > >= < <= == != == || && >> << ) 
+Assign Operators     ( += -= /= *= ) 
 
 var1 'op' var2
 @end example

@@ -191,7 +191,7 @@ nco_fl_fmt_vet /* [fnc] Verify output file format supports requested actions */
   /* Purpose: Verify output file format supports requested actions */
   if(cnk_nbr > 0 && !(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)fprintf(stdout,"%s: WARNING Attempt to chunk variables in output file which has netCDF format %s. Chunking is only supported by netCDF filetypes NC_FORMAT_NETCDF4 and NC_FORMAT_NETCDF4_CLASSIC. Command will attempt to complete but without chunking. HINT: re-run command and change output type to netCDF4 using \"-4\", \"--fl_fmt=netcdf4\", or \"--fl_fmt=netcdf4_classic\" option.\n",nco_prg_nm_get(),nco_fmt_sng(fl_fmt));
   if(dfl_lvl > 0 && !(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)fprintf(stdout,"%s: WARNING Attempt to deflate (compress) variables in output file which has netCDF format %s. Deflation is only supported by netCDF filetypes NC_FORMAT_NETCDF4 and NC_FORMAT_NETCDF4_CLASSIC. Command will attempt to complete but without deflation. HINT: re-run command and change output type to netCDF4 using \"-4\", (same as \"--fl_fmt=netcdf4\"), or \"-7\" (same as \"--fl_fmt=netcdf4_classic\") option.\n",nco_prg_nm_get(),nco_fmt_sng(fl_fmt));
-} /* end nco_nco_fl_fmt_vet() */
+} /* !nco_nco_fl_fmt_vet() */
 
 void
 nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
@@ -364,8 +364,22 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
       
       if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports destination object %s already exists on local system. Will attempt to remove if object behaves (opens) as an NCZarr store...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
 
-      /* https://stackoverflow.com/questions/146924/how-can-i-tell-if-a-given-path-is-a-directory-or-a-file-c-c */
-      if(stat_sct.st_mode & S_IFDIR){
+#if 0
+#ifdef _MSC_VER
+#include <shlwapi.h> /* PathIsDirectoryA() */
+      if(PathIsDirectoryA(fl_dst_psx)){
+	/* 20230309: Windows also provides a stat() call:
+	   https://learn.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-pathisdirectorya
+	   https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/stat-functions?view=msvc-170
+	   Differences from UNIX are small yet annoying:
+	   Windows structure type is _stat, UNIX is stat
+	   Windows bitmask for directory is _S_IFDIR, UNIX is S_IFDIR
+	   Windows bitmask for regular file is _S_IFREG, UNIX is S_IFREG */
+	//	if(stat_sct.st_mode & _S_IFDIR){
+#endif /* !_MSC_VER */
+#endif /* !0 */
+        /* https://stackoverflow.com/questions/146924/how-can-i-tell-if-a-given-path-is-a-directory-or-a-file-c-c */
+	if(stat_sct.st_mode & S_IFDIR){
 
 	char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
 	fl_dst_dpl=(char *)strdup(fl_dst);
@@ -386,7 +400,7 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
 	if(stat_sct.st_mode & S_IFREG) (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports to be a regular file. NCO will only delete regular files in order to replace them with netCDF POSIX files, not with NCZarr stores. To overwrite this file, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst); else (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports is neither a directory nor a regular file. NCO will overwrite regular files with netCDF files, and will replace directory trees that open as as NCZarr stores with a new NCZarr store. Deleting anything else could be a security risk. To delete/overwrite this object, do so with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst);
 	nco_exit(EXIT_FAILURE);
 
-      } /* !stat_sct */
+      } /* !stat_sct, !PathIsDirectoryA() */
       
     } /* !rcd_stt */
   } /* !dst_is_drc */
