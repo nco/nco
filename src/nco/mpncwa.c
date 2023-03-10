@@ -506,7 +506,7 @@ main(int argc,char **argv)
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
     case 'h': /* Toggle appending to history global attribute */
-      HISTORY_APPEND=!HISTORY_APPEND;
+      HISTORY_APPEND=False;
       break;
     case 'I': /* [flg] Weight and/or mask coordinate variables */
       WGT_MSK_CRD_VAR=!WGT_MSK_CRD_VAR;
@@ -545,7 +545,7 @@ main(int argc,char **argv)
       fl_pth=(char *)strdup(optarg);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
-      RM_RMT_FL_PST_PRC=!RM_RMT_FL_PST_PRC;
+      RM_RMT_FL_PST_PRC=False;
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)nco_vrs_prn(CVS_Id,CVS_Revision);

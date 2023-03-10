@@ -704,10 +704,10 @@ main(int argc,char **argv)
       optarg_lcl=(char *)nco_free(optarg_lcl);
       break;
     case 'H': /* Toggle writing input file list attribute */
-      FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
+      FL_LST_IN_APPEND=False;
       break;
     case 'h': /* Toggle appending to history global attribute */
-      HISTORY_APPEND=!HISTORY_APPEND;
+      HISTORY_APPEND=False;
       break;
     case 'L': /* [enm] Deflate level. Default is 0. */
       dfl_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
@@ -742,7 +742,7 @@ main(int argc,char **argv)
       nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
-      RM_RMT_FL_PST_PRC=!RM_RMT_FL_PST_PRC;
+      RM_RMT_FL_PST_PRC=False;
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)nco_vrs_prn(CVS_Id,CVS_Revision);

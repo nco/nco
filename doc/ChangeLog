@@ -1,3 +1,11 @@
+2023-03-10  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.5-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha04: Rehab paddling';git push
+	git tag -a 5.1.5-alpha04 -m '';git push --tags
+
+	* Change toggle to absolute False for FL_LST_IN_APPEND, HISTORY_APPEND, RM_RMT_FL_PST_PRC switches
+
 2023-03-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-alpha03 release procedure:

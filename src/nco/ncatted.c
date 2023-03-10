@@ -337,10 +337,10 @@ main(int argc,char **argv)
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'H': /* Toggle writing input file list attribute */
-      FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
+      FL_LST_IN_APPEND=False;
       break;
     case 'h': /* Toggle appending to history global attribute */
-      HISTORY_APPEND=!HISTORY_APPEND;
+      HISTORY_APPEND=False;
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
@@ -355,7 +355,7 @@ main(int argc,char **argv)
       fl_pth=(char *)strdup(optarg);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
-      RM_RMT_FL_PST_PRC=!RM_RMT_FL_PST_PRC;
+      RM_RMT_FL_PST_PRC=False;
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)nco_vrs_prn(CVS_Id,CVS_Revision);
