@@ -959,7 +959,7 @@ main(int argc,char **argv)
       HAVE_LIMITS=True;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
-      FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
+      FORTRAN_IDX_CNV=True;
       break;
     case 'G': /* Apply Group Path Editing (GPE) to output group */
       gpe=nco_gpe_prs_arg(optarg);

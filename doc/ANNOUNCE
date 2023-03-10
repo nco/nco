@@ -1,21 +1,14 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.5 smite evil
+netCDF Operators NCO version 5.1.5 ascend the Silicon Throne
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nc/ncoo (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.5
-
-introduces vertical interpolation for datasets stored
-on depth/height grids, such as ocean data. The interpolation works
-on all datasets tested with vertical levels that are either
-horizontally varying (e.g., MPAS-Ocean, POP, MOM) or uniform (many
-observational datasets including ARGO, SOSE, WOA18).
-The algorithms play well with horizontally varying bathymetry.
-This release also fixes a vexing issue that can occur with certain
-compilers on AMD hardware. This release can be skipped if these
+Version 5.1.5 polishes the new vertical interpolation capabilities
+introduced in 5.1.3 and 5.1.4, improves the safety NCZarr operations,
+and fixes minor ncremap bugs. This release can be skipped if these
 regridding features are not useful to you.
 
 Work on NCO 5.1.6 has commenced and aims to add support for Zarr S3 
@@ -26,25 +19,19 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap can now vertically interpolate files/fields stored on
-depth/height-based vertical grids. The capability is analogous to
-the existing ncremap capability of interpolating data on pure-pressure
-or hybrid sigma/pressure vertical grids (all four combinations work):
-ncremap --vrt_out=vrt_out.nc in.nc out.nc
-ncremap --vrt_in=vrt_in.nc --vrt_in=vrt_out.nc in.nc out.nc
+A. ncremap now behaves more sensibly when vertically interpolating
+MPAS-Ocean files/fields. Previously, users had to explicitly add
+the multidimensional auxiliary depth coordinate (often
+timeMonthly_avg_zMid) to the subsetted list of variables whenever
+the subset list option (-v var1,var2...) was used. This is because
+most MPAS datasets do not adhere to the CF "coordinates" convention,
+and NCO has no way of knowing which auxiliary coordinates contain
+the depth field. Now ncremap uses the -P mpasocean option to trigger
+a search for the zMid coordinate in the input file. If found, ncremap
+automatically adds it to the subset as appropriate.
 ncremap -P mpas --vrt_out=vrt.nc --map=map.nc in.nc out.nc
-ncremap --vrt_out=sose.nc mpas.nc out.nc
-ncremap --vrt_out=mpas.nc sose.nc out.nc
-ncremap --vrt_out=woa18.nc mpas.nc out.nc
-ncremap --vrt_out=mpas.nc woa18.nc out.nc
-ncremap --vrt_out=argo.nc mpas.nc out.nc
-ncremap --vrt_out=mpas.nc argo.nc out.nc
-The depth/height grid may be positive upwards or downwards.
 http://nco.sf.net/nco.html#ncremap
 http://nco.sf.net/nco.html#vrt_out
-This is the first release of vertical interpolation for ocean data,
-and we expect some rough edges. Please let us know what features
-you want added or fixed.
 
 BUG FIXES:
    
@@ -53,6 +40,19 @@ attribute to variables it processed. This behavior has been
 eliminated. ncra still adds the attribute by default. The workaround
 is to invoke ncrcat with the --no_cll_mth flag. The solution is to
 upgrade. Thanks to Brian Vanderwende (NCAR) for reporting this.
+
+B. Recent versions of ncremap incorrectly parsed the
+--preserve_statistic (--prs_stt) option. The option was effectively
+ignored. This has been fixed. The workaround is to explicitly invoke
+the --rnr_thr=0.0 option. The solution is to upgrade.
+
+C. ncremap version 5.1.4 incorrectly handles the name of the output
+coordinate for vertical interpolation to pure-pressure surfaces.
+Instead of naming the coordinate 'plev', or whatever is in the vrt_out
+file, or what was specfified by the --plev_nm_out option, it just
+named the coordinate (variable+dimension) 'lev'. These have all been
+fixed. There is no workaround, and the solution is to upgrade.
+Thanks to Jill Zhang and Ben Hillman for reporting this issue.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

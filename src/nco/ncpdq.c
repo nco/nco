@@ -542,7 +542,7 @@ main(int argc,char **argv)
       lmt_nbr++;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
-      FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
+      FORTRAN_IDX_CNV=True;
       break;
     case 'G': /* Apply Group Path Editing (GPE) to output group */
       /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so avoid it

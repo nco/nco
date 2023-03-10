@@ -419,7 +419,7 @@ main(int argc,char **argv)
       lmt_nbr++;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
-      FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
+      FORTRAN_IDX_CNV=True;
       break;
     case 'H': /* Toggle writing input file list attribute */
       FL_LST_IN_APPEND=False;
