@@ -3354,8 +3354,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  /* Outer loop over columns */
 	  for(grd_idx=0;grd_idx<grd_nbr;grd_idx++){
 	    
-	    /* 20221206: Got to here with MPAS depth coordinate */
-
 	    /* Initialize pseudo-1D variables with consecutive memory addresses to avoid indirection */
 	    if(flg_hrz_mrv){
 	      for(lvl_idx_in=0;lvl_idx_in<lvl_nbr_in;lvl_idx_in++){
@@ -3417,15 +3415,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	      if(brk_lft_idx != in_nbr-1){
 		if(crd_in_mnt[brk_lft_idx+1] == crd_out_mnt[out_idx]){
 		  dat_out_mnt[out_idx]=dat_in_mnt[brk_lft_idx+1];
-		  if(brk_lft_idx == -1) brk_lft_idx=0; // Reset brk_lft_idx to 0 so next while loop works
+		  if(brk_lft_idx == -1) brk_lft_idx=0; // Reset brk_lft_idx to 0 so next while iteration works
 		  continue; // Jump to next iteration
 		} // !crd_in_mnt
 	      } // !brk_lft_idx
 	      if(brk_lft_idx == -1){
 		// LHS Extrapolation required
 		// Degenerate case: crd_out_mnt[out_idx] < crd_in_mnt[0]
-		brk_lft_idx=0; // Reset brk_lft_idx to 0 so next while loop works
-		if(xtr_LHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: WARNING %s reports variable %s column %lu output value dat_out_mnt[%lu] at coordinate crd_out_mnt[%lu] = %g requires LHS extrapolation beyond leftmost valid coordinate at crd_in_mnt[%lu] = %g. Nearest valid datum is dat_in_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,grd_idx,out_idx,out_idx,crd_out_mnt[out_idx],brk_lft_idx,crd_in_mnt[brk_lft_idx],brk_lft_idx,dat_in_mnt[brk_lft_idx]);
+		brk_lft_idx=0; // Reset brk_lft_idx to 0 so next while iteration works
+		if(xtr_LHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: WARNING %s reports variable %s column %lu output value dat_out_mnt[%lu] at coordinate crd_out_mnt[%lu] = %g requires LHS extrapolation beyond leftmost valid coordinate at crd_in_mnt[%lu] = %g. Nearest datum in input domain is dat_in_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,grd_idx,out_idx,out_idx,crd_out_mnt[out_idx],brk_lft_idx,crd_in_mnt[brk_lft_idx],brk_lft_idx,dat_in_mnt[brk_lft_idx]);
 		// Extrapolation options are presented in decreasing order of preference
 		if(!xtr_LHS.xtr_fll){
 		  (void)fprintf(fp_stdout,"%s: ERROR %s Full LHS extrapolation required but not permitted\n",nco_prg_nm_get(),fnc_nm);
@@ -3442,17 +3440,20 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  dat_out_mnt[out_idx]=dat_in_mnt[0];
 		  break;
 		case nco_xtr_fll_lnr:
-		  dat_out_mnt[out_idx]=dat_in_mnt[0]-
-		    (crd_in_mnt[0]-crd_out_mnt[out_idx])*
-		    (dat_in_mnt[1]-dat_in_mnt[0])/(crd_in_mnt[1]-crd_in_mnt[0]);
+		  if(dat_in_mnt[0] == mss_val_cmp_dbl || dat_in_mnt[1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else
+		    dat_out_mnt[out_idx]=dat_in_mnt[0]-
+		      (crd_in_mnt[0]-crd_out_mnt[out_idx])*
+		      (dat_in_mnt[1]-dat_in_mnt[0])/(crd_in_mnt[1]-crd_in_mnt[0]);
 		  break;
 		case nco_xtr_fll_gph:
-		  if(flg_ntp_log) /* Coordinates are already logarithmic in pressure */
-		    dat_out_mnt[out_idx]=dat_in_mnt[0]+
-		      Rd_rcp_g0*tpt_vrt_avg*(crd_in_mnt[0]-crd_out_mnt[out_idx]);
-		  else /* Interpolate with logarithm of pressure coordinates */
-		    dat_out_mnt[out_idx]=dat_in_mnt[0]+
-		      Rd_rcp_g0*tpt_vrt_avg*log(crd_in_mnt[0]/crd_out_mnt[out_idx]);
+		  if(dat_in_mnt[0] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{
+		    if(flg_ntp_log) /* Coordinates are already logarithmic in pressure */
+		      dat_out_mnt[out_idx]=dat_in_mnt[0]+
+			Rd_rcp_g0*tpt_vrt_avg*(crd_in_mnt[0]-crd_out_mnt[out_idx]);
+		    else /* Interpolate with logarithm of pressure coordinates */
+		      dat_out_mnt[out_idx]=dat_in_mnt[0]+
+			Rd_rcp_g0*tpt_vrt_avg*log(crd_in_mnt[0]/crd_out_mnt[out_idx]);
+		  } /* !mss_val_cmp_dbl */
 		  if(FIRST_WARNING_LHS) (void)fprintf(fp_stdout,"%s: INFO %s geopotential height extrapolated upward towards space using hypsometric equation with constant global mean virtual temperature = %g for variable %s\n",nco_prg_nm_get(),fnc_nm,tpt_vrt_avg,var_nm);
 		  FIRST_WARNING_LHS=False;
 		  break;
@@ -3471,16 +3472,17 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		// 2. The identity interpolation is satisfied since crd_dlt == 0.0: 
 		// i.e., If crd_out_mnt[idx] == crd_in_mnt[brk_lft_idx] then dat_out_mnt[out_idx] := dat_in_mnt[brk_lft_idx]
 		// Linearly interpolate
-		dat_out_mnt[out_idx]=
-		  dat_in_mnt[brk_lft_idx]+
-		  (crd_out_mnt[out_idx]-crd_in_mnt[brk_lft_idx])*
-		  (dat_in_mnt[brk_rgt_idx]-dat_in_mnt[brk_lft_idx])/
-		  (crd_in_mnt[brk_rgt_idx]-crd_in_mnt[brk_lft_idx]);
+		if(dat_in_mnt[brk_lft_idx] == mss_val_cmp_dbl || dat_in_mnt[brk_rgt_idx] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else
+		  dat_out_mnt[out_idx]=
+		    dat_in_mnt[brk_lft_idx]+
+		    (crd_out_mnt[out_idx]-crd_in_mnt[brk_lft_idx])*
+		    (dat_in_mnt[brk_rgt_idx]-dat_in_mnt[brk_lft_idx])/
+		    (crd_in_mnt[brk_rgt_idx]-crd_in_mnt[brk_lft_idx]);
 	      }else if(brk_lft_idx == in_nbr-1){
 		// RHS Extrapolation required
 		// Degenerate case: brk_lft_idx is last element of crd_in_mnt 
 		brk_rgt_idx=brk_lft_idx;
-		if(xtr_RHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: WARNING %s reports variable %s column %lu output value dat_out_mnt[%lu] at coordinate crd_out_mnt[%lu] = %g requires RHS extrapolation beyond rightmost valid coordinate at crd_in_mnt[%lu] = %g. Nearest valid datum is dat_in_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,grd_idx,out_idx,out_idx,crd_out_mnt[out_idx],brk_rgt_idx,crd_in_mnt[brk_rgt_idx],brk_rgt_idx,dat_in_mnt[brk_rgt_idx]);
+		if(xtr_RHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: WARNING %s reports variable %s column %lu output value dat_out_mnt[%lu] at coordinate crd_out_mnt[%lu] = %g requires RHS extrapolation beyond rightmost valid coordinate at crd_in_mnt[%lu] = %g. Nearest datum in input domain is dat_in_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,grd_idx,out_idx,out_idx,crd_out_mnt[out_idx],brk_rgt_idx,crd_in_mnt[brk_rgt_idx],brk_rgt_idx,dat_in_mnt[brk_rgt_idx]);
 		// Extrapolation options are presented in decreasing order of preference
 		if(!xtr_RHS.xtr_fll){
 		  (void)fprintf(fp_stdout,"%s: ERROR %s Full RHS extrapolation required but not permitted\n",nco_prg_nm_get(),fnc_nm);
@@ -3497,28 +3499,34 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1];
 		  break;
 		case nco_xtr_fll_lnr:
-		  dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
-		    (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*
-		    (dat_in_mnt[in_nbr-1]-dat_in_mnt[in_nbr-2])/
-		    (crd_in_mnt[in_nbr-1]-crd_in_mnt[in_nbr-2]);
+		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl || dat_in_mnt[in_nbr-2] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else
+		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
+		      (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*
+		      (dat_in_mnt[in_nbr-1]-dat_in_mnt[in_nbr-2])/
+		      (crd_in_mnt[in_nbr-1]-crd_in_mnt[in_nbr-2]);
 		  break;
 		case nco_xtr_fll_tpt:
-		  if(flg_ntp_log) /* Exponentiate so coordinates are linear in pressure */
-		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
-		      (exp(crd_out_mnt[out_idx])-exp(crd_in_mnt[in_nbr-1]))*gamma_moist;
-		  else /* Coordinates are already linear in pressure */
-		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
-		      (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*gamma_moist;
+		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{
+		    if(flg_ntp_log) /* Exponentiate so coordinates are linear in pressure */
+		      dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
+			(exp(crd_out_mnt[out_idx])-exp(crd_in_mnt[in_nbr-1]))*gamma_moist;
+		    else /* Coordinates are already linear in pressure */
+		      dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
+			(crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*gamma_moist;
+		  } /* !mss_val_cmp_dbl */
 		  if(FIRST_WARNING_RHS) (void)fprintf(fp_stdout,"%s: INFO %s temperature extrapolated toward/into surface assuming constant moist adiabatic lapse rate = %g K/(100 hPa) for variable %s\n",nco_prg_nm_get(),fnc_nm,gamma_moist*10000.0,var_nm);
 		  FIRST_WARNING_RHS=False;
 		  break;
 		case nco_xtr_fll_gph:
+		  /* 20230311 Got to here with missing value audit */
+		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{
 		  if(flg_ntp_log) /* Coordinates are already logarithmic in pressure */
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]-
 		      Rd_rcp_g0*tpt_vrt_avg*(crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1]);
 		  else /* Interpolate with logarithm of pressure coordinates */
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]-
 		      Rd_rcp_g0*tpt_vrt_avg*log(crd_out_mnt[out_idx]/crd_in_mnt[in_nbr-1]);
+		  } /* !mss_val_cmp_dbl */
 		  if(FIRST_WARNING_RHS) (void)fprintf(fp_stdout,"%s: INFO %s geopotential height extrapolated toward/into surface using hypsometric equation with constant global mean virtual temperature = %g for variable %s\n",nco_prg_nm_get(),fnc_nm,tpt_vrt_avg,var_nm);
 		  FIRST_WARNING_RHS=False;
 		  break;

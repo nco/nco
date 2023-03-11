@@ -1,4 +1,4 @@
-2023-03-10  Charlie Zender  <zender@uci.edu>
+2023-03-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-beta01: ';git push
@@ -7,6 +7,10 @@
 	* NCO 5.1.5-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha04: Rehab paddling';git push
 	git tag -a 5.1.5-alpha04 -m 'Toggle->Absolute';git push --tags
+
+	* ncremap prevent interpolation math with missing values
+
+2023-03-10  Charlie Zender  <zender@uci.edu>
 
 	* Change toggle to absolute False for FL_LST_IN_APPEND, HISTORY_APPEND, RM_RMT_FL_PST_PRC switches
 
