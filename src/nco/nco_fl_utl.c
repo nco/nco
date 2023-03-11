@@ -308,7 +308,7 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
   char *cmd_cp_typ;
 
 #ifdef WIN32
-  const char sls_sng[]="\\"'; /* [chr] Slash string for path separator */
+  const char sls_sng[]="\\"; /* [chr] Slash string for path separator */
 #else /* !WIN32 */
   const char sls_sng[]="/"; /* [chr] Slash string for path separator */
 #endif /* !WIN32 */
@@ -1562,7 +1562,7 @@ nco_fl_mv /* [fnc] Move first file to second */
   char *fl_src_cdl;
   
 #ifdef WIN32
-  const char sls_sng[]="\\"'; /* [chr] Slash string for path separator */
+  const char sls_sng[]="\\"; /* [chr] Slash string for path separator */
 #else /* !WIN32 */
   const char sls_sng[]="/"; /* [chr] Slash string for path separator */
 #endif /* !WIN32 */
