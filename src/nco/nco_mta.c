@@ -198,7 +198,10 @@ nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
     "no_cell_measures",
     "no_cll_msr",
     "no_stagger",
-    "no_stg"
+    "no_stg",
+    "ps_rtn",
+    "rtn_sfc_prs",
+    "retain_surface_pressure"
     };
   const char *gaa_flg[]={""};
   const char *trr_flg[]={""};
@@ -207,8 +210,8 @@ nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
   for(unsigned int idx=0;idx<sizeof(rgr_flg)/sizeof(char *);idx++){
     if(!strcmp(flg,rgr_flg[idx])){
       return NCO_NOERR;
-    }
-  }
+    } /* !flg */
+  } /* !idx */
   for(unsigned int idx=0;idx<sizeof(gaa_flg)/sizeof(char *);idx++){
     if(!strcmp(flg,gaa_flg[idx])) return NCO_NOERR;
   }
