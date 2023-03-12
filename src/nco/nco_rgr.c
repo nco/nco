@@ -3449,13 +3449,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  dat_out_mnt[out_idx]=dat_in_mnt[0];
 		  break;
 		case nco_xtr_fll_lnr:
-		  if(dat_in_mnt[0] == mss_val_cmp_dbl || dat_in_mnt[1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else // fxm
+		  if(dat_in_mnt[0] == mss_val_cmp_dbl || dat_in_mnt[1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else
 		    dat_out_mnt[out_idx]=dat_in_mnt[0]-
 		      (crd_in_mnt[0]-crd_out_mnt[out_idx])*
 		      (dat_in_mnt[1]-dat_in_mnt[0])/(crd_in_mnt[1]-crd_in_mnt[0]);
 		  break;
 		case nco_xtr_fll_gph:
-		  if(dat_in_mnt[0] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{ // fxm
+		  if(dat_in_mnt[0] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{
 		    if(flg_ntp_log) /* Coordinates are already logarithmic in pressure */
 		      dat_out_mnt[out_idx]=dat_in_mnt[0]+
 			Rd_rcp_g0*tpt_vrt_avg*(crd_in_mnt[0]-crd_out_mnt[out_idx]);
@@ -3481,7 +3481,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		// 2. The identity interpolation is satisfied since crd_dlt == 0.0: 
 		// i.e., If crd_out_mnt[idx] == crd_in_mnt[brk_lft_idx] then dat_out_mnt[out_idx] := dat_in_mnt[brk_lft_idx]
 		// Linearly interpolate
-		if(dat_in_mnt[brk_lft_idx] == mss_val_cmp_dbl || dat_in_mnt[brk_rgt_idx] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else
+		if(dat_in_mnt[brk_lft_idx] == mss_val_cmp_dbl){
+		  if(dat_in_mnt[brk_rgt_idx] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else dat_out_mnt[out_idx]=dat_in_mnt[brk_rgt_idx];
+		}else if(dat_in_mnt[brk_rgt_idx] == mss_val_cmp_dbl){
+		  dat_out_mnt[out_idx]=dat_in_mnt[brk_lft_idx];
+		}else
 		  dat_out_mnt[out_idx]=
 		    dat_in_mnt[brk_lft_idx]+
 		    (crd_out_mnt[out_idx]-crd_in_mnt[brk_lft_idx])*
@@ -3508,14 +3512,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1];
 		  break;
 		case nco_xtr_fll_lnr:
-		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl || dat_in_mnt[in_nbr-2] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else // fxm
+		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl || dat_in_mnt[in_nbr-2] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
 		      (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*
 		      (dat_in_mnt[in_nbr-1]-dat_in_mnt[in_nbr-2])/
 		      (crd_in_mnt[in_nbr-1]-crd_in_mnt[in_nbr-2]);
 		  break;
 		case nco_xtr_fll_tpt:
-		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{ // fxm
+		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{
 		    if(flg_ntp_log) /* Exponentiate so coordinates are linear in pressure */
 		      dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
 			(exp(crd_out_mnt[out_idx])-exp(crd_in_mnt[in_nbr-1]))*gamma_moist;
@@ -3527,7 +3531,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  FIRST_WARNING_RHS=False;
 		  break;
 		case nco_xtr_fll_gph:
-		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{ // fxm
+		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{
 		  if(flg_ntp_log) /* Coordinates are already logarithmic in pressure */
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]-
 		      Rd_rcp_g0*tpt_vrt_avg*(crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1]);

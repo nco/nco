@@ -1,4 +1,4 @@
-2023-03-11  Charlie Zender  <zender@uci.edu>
+2023-03-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-beta01: ';git push
@@ -8,9 +8,13 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha04: Rehab paddling';git push
 	git tag -a 5.1.5-alpha04 -m 'Toggle->Absolute';git push --tags
 
+	* ncremap vertical interpolation on half-range missing values copies from valid value
+
+2023-03-11  Charlie Zender  <zender@uci.edu>
+
 	* ncremap add --ps_rtn flag
 
-	* ncremap prevent interpolation math with missing values
+	* ncremap prevent vertical interpolation calculations from using missing values
 
 2023-03-10  Charlie Zender  <zender@uci.edu>
 
