@@ -1280,6 +1280,7 @@ typedef enum nco_xtr_typ_enm
     nco_bool flg_msk_apl; /* [flg] Apply msk_out to variables after regridding */
     nco_bool flg_msk_out; /* [flg] Add mask to output */
     nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
+    nco_bool flg_ps_rtn; /* [flg] Retain surface pressure variable in vertical interpolation output */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
     nco_bool flg_s1d; /* [flg] Unpack sparse-1D CLM/ELM variables */
     nco_bool flg_stg; /* [flg] Write staggered grid with FV output */

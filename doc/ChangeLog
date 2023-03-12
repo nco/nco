@@ -8,6 +8,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha04: Rehab paddling';git push
 	git tag -a 5.1.5-alpha04 -m 'Toggle->Absolute';git push --tags
 
+	* ncremap add --ps_rtn flag
+
 	* ncremap prevent interpolation math with missing values
 
 2023-03-10  Charlie Zender  <zender@uci.edu>

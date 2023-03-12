@@ -373,7 +373,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Add depth (201901):
 # ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
 # Vertical interpolation (201903):
-# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_L72_ps.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc # PS in "fat" template file
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_ne30np4l72_ps.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc # PS in "fat" template file
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # skinny template file
 # Missing-value extrapolation (mss_val|nrs_ngh)
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # Extrapolation results in missing values
@@ -555,7 +555,6 @@ mss_val='-9.99999979021476795361e+33' # [frc] Missing value for MPAS (ocean+seai
 #mss_val='-1.0e36' # [frc] Missing value (MALI)
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-6 -t 1')
 nd_nbr=1 # [nbr] Number of nodes
-stg_grd='No' # [flg] Include staggered grid variables
 nsx_alg='' # [enm] Intersection algorithm (mbtempest only)
 out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
@@ -571,6 +570,7 @@ prt_nbr=8 # [nbr] Partition number for mbpart (should be multiple of mpi_nbr)
 prs_stt='' # [sng] Preserved statistic ('integral' or 'mean')
 ps_nm='' # [sng] Name of variable containing surface pressure in input file
 ps_nm_dfl='PS' # [sng] Name of variable containing surface pressure in input file
+ps_rtn='No' # [flg] Retain surface pressure variable in vertical interpolation output
 qea_flg='No' # [sng] Quasi-equal area mode for TempestRemap
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
 #rgr_opt='--rgr lat_dnm_nm=x --rgr lon_dmn_nm=y' # [sng] Regridding options for projection grid
@@ -583,6 +583,7 @@ sgs_nrm='1.0' # [frc] Sub-grid normalization
 skl_fl='' # [sng] Skeleton file
 std_chk='Yes' # [sng] Check stdin for input file list
 std_flg='No' # [sng] Input available from pipe to stdin
+stg_grd='No' # [flg] Include staggered grid variables
 thr_nbr=2 # [nbr] Thread number for regridder
 trn_map='No' # [flg] Tempest transpose map (i.e., fv2se_flx == monotr)
 ugrid_fl='' # [sng] UGRID file
@@ -697,6 +698,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--preserve${fnt_nrm} Preserved statistic (empty preserves integral, except mean for MPAS) (default ${fnt_bld}${prs_stt}${fnt_nrm}) [${fnt_tlc}preserve, prs_stt, preserved_statistic${fnt_nrm}] (integral|mean)"
     echo " ${fnt_bld}--prt_nbr${fnt_nrm}  Partition number for MOAB parallelism (default ${fnt_bld}${prt_nbr}${fnt_nrm}) [${fnt_tlc}prt_nbr, prt, partition_number${fnt_nrm}]"
     echo " ${fnt_bld}--ps_nm${fnt_nrm}    Surface pressure variable name (default ${fnt_bld}${ps_nm_dfl}${fnt_nrm}) [${fnt_tlc}ps_nm, ps_name, ps, vrt_ps${fnt_nrm}]"
+    echo " ${fnt_bld}--ps_rtn${fnt_nrm}   Retain surface pressure after vertical interpolation (default ${fnt_bld}${ps_rtn}${fnt_nrm}) [${fnt_tlc}ps_rtn, rtn_sfc_prs, retain_surface_pressure${fnt_nrm}]"
 #    echo " ${fnt_bld}--qea_flg${fnt_nrm}  Quasi-equal area mode for TempestRemap (default ${fnt_bld}${qea_flg}${fnt_nrm}) [${fnt_tlc}qea, qea_flg, np2, quasi-equal-area${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none (except for MPAS, see documentation)) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, rnr, renormalize, renormalization_threshold${fnt_nrm}]"
@@ -890,6 +892,8 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       prs_stt=?* | preserve=?* | preserved_statistic=?* ) prs_stt_usr="${LONG_OPTARG}" ;; # # Preserved statistic
 	       prt=?* | prt_nbr=?* | partition_number=?* ) prt_nbr="${LONG_OPTARG}" ;; # # Partition number for MOAB parallelism
 	       ps_nm=?* | ps_name=?* | ps=?* | vrt_ps=?* ) ps_nm="${LONG_OPTARG}" ;; # # Surface pressure variable name
+	       ps_rtn | rtn_sfc_prs | retain_surface_pressure ) ps_rtn='Yes' ;; # # Retain surface pressure variable in vertical interpolation output
+	       ps_rtn=?* | rtn_sfc_prs=?* | retain_surface_pressure=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Retain surface pressure variable in vertical interpolation output
 	       qea | qea_flg | np2 | quasi-equal-area ) qea_flg='Yes' ;; # # Quasi-equal area mode for TempestRemap
 	       qea=?* | qea_flg=?* | np2=?* | quasi-equal-area=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Quasi-equal area mode for TempestRemap
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
@@ -1934,6 +1938,9 @@ if [ -n "${vrt_out}" ]; then
     if [ -n "${ps_nm}" ]; then
 	vrt_opt="${vrt_opt} --rgr ps_nm_in=${ps_nm}"
     fi # !ps_nm
+    if [ "${ps_rtn}" = 'Yes' ]; then
+	vrt_opt="${vrt_opt} --rgr ps_rtn"
+    fi # !ps_rtn
     if [ -n "${vrt_in}" ]; then
 	if [ ! -f "${vrt_in}" ]; then
 	    echo "ERROR: Unable to find specified vertical input grid file ${vrt_in}"
@@ -2338,6 +2345,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: prs_stt  = ${prs_stt}\n"
     printf "dbg: prt_nbr  = ${prt_nbr}\n"
     printf "dbg: ps_nm    = ${ps_nm}\n"
+    printf "dbg: ps_rtn   = ${ps_rtn}\n"
 #    printf "dbg: qea_flg  = ${qea_flg}\n"
     printf "dbg: rgr_opt  = ${rgr_opt}\n"
     printf "dbg: rnr_thr  = ${rnr_thr}\n"

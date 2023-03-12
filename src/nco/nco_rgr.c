@@ -334,6 +334,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_msk_apl=False; /* [flg] Apply msk_out to variables after regridding */
   rgr->flg_msk_out=False; /* [flg] Add mask to output */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
+  rgr->flg_ps_rtn=False; /* [flg] Retain surface pressure variable in vertical interpolation output */
   rgr->flg_s1d=False; /* [flg] Unpack sparse-1D CLM/ELM variables */
   rgr->flg_stg=False; /* [flg] Write staggered grid with FV output */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
@@ -761,6 +762,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       } /* !val */
       continue;
     } /* !ply_tri */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"ps_rtn") || !strcmp(rgr_lst[rgr_var_idx].key,"rtn_sfc_prs") || !strcmp(rgr_lst[rgr_var_idx].key,"retain_surface_pressure")){
+      rgr->flg_ps_rtn=True;
+      continue;
+    } /* !ps_rtn */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"sgs_frc_nm")){
       rgr->sgs_frc_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -990,6 +995,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_hrz_mrv_in=True; /* [flg] Horizontal dimension is Most-Rapidly-Varying in input */
   nco_bool flg_hrz_mrv_out=True; /* [flg] Horizontal dimension is Most-Rapidly-Varying in output */
   nco_bool flg_mlc_out=True; /* [flg] Add maxLevelCell to output 3D depth grids */
+  nco_bool flg_ps_rtn=False; /* [flg] Retain surface pressure variable in vertical interpolation output */
   nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_in=nco_vrt_grd_nil; /* [enm] Vertical grid type for input grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_out=nco_vrt_grd_nil; /* [enm] Vertical grid type for output grid */
@@ -1080,6 +1086,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(rgr->ps_nm_in) ps_nm_in=rgr->ps_nm_in;
   if(rgr->ps_nm_out) ps_nm_out=rgr->ps_nm_out;
   if(rgr->ps_nm_tpl) ps_nm_tpl=rgr->ps_nm_tpl;
+  flg_ps_rtn=rgr->flg_ps_rtn; /* [flg] Retain surface pressure variable in vertical interpolation output */
 
   int bd_id=NC_MIN_INT; /* [id] Depth of ocean bottom (positive) ID */
   int lt_id=NC_MIN_INT; /* [id] Layer thickness (possibly time-dependent) ID */
@@ -2498,7 +2505,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      SOSE: z
      WOA: depth, depth_bnds, volume, zBroadcast
      Run-time: dpt_nm_in, dpt_nm_out, plev_nm_in, plev_nm_out, ps_nm_in, ps_nm_tpl */
-  const char *var_xcl_lst_fix[]={"/depth","/depth_bnds","/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PRESSURE","/PS","/refBottomDepth","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/vertCoordMovementWeights","/volume","/z","/zBroadcast","/zMid"};
+  const char *var_xcl_lst_fix[]={"/depth","/depth_bnds","/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PRESSURE","/refBottomDepth","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/vertCoordMovementWeights","/volume","/z","/zBroadcast","/zMid"};
   int var_xcl_fix_nbr=sizeof(var_xcl_lst_fix)/sizeof(char *); /* [nbr] Number of variables in fixed (compile-time) exclusion list */
   /* Create list to hold both compile- and run-time exclusion variables */
   char **var_xcl_lst=NULL; /* [sng] List of variables to exclude */
@@ -2516,8 +2523,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(dpt_nm_out) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(dpt_nm_out);
   if(plev_nm_in) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(plev_nm_in);
   if(plev_nm_out) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(plev_nm_out);
-  if(ps_nm_in) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(ps_nm_in);
-  if(ps_nm_out) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(ps_nm_out);
+  if(!flg_ps_rtn){
+    if(ps_nm_in) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(ps_nm_in);
+    if(ps_nm_out) var_xcl_lst[var_xcl_lst_nbr++]=(char *)strdup(ps_nm_out);
+  } /* !flg_ps_rtn */
 
   /* Exclude forbidden fruit */
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
@@ -3440,13 +3449,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  dat_out_mnt[out_idx]=dat_in_mnt[0];
 		  break;
 		case nco_xtr_fll_lnr:
-		  if(dat_in_mnt[0] == mss_val_cmp_dbl || dat_in_mnt[1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else
+		  if(dat_in_mnt[0] == mss_val_cmp_dbl || dat_in_mnt[1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else // fxm
 		    dat_out_mnt[out_idx]=dat_in_mnt[0]-
 		      (crd_in_mnt[0]-crd_out_mnt[out_idx])*
 		      (dat_in_mnt[1]-dat_in_mnt[0])/(crd_in_mnt[1]-crd_in_mnt[0]);
 		  break;
 		case nco_xtr_fll_gph:
-		  if(dat_in_mnt[0] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{
+		  if(dat_in_mnt[0] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{ // fxm
 		    if(flg_ntp_log) /* Coordinates are already logarithmic in pressure */
 		      dat_out_mnt[out_idx]=dat_in_mnt[0]+
 			Rd_rcp_g0*tpt_vrt_avg*(crd_in_mnt[0]-crd_out_mnt[out_idx]);
@@ -3499,14 +3508,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1];
 		  break;
 		case nco_xtr_fll_lnr:
-		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl || dat_in_mnt[in_nbr-2] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else
+		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl || dat_in_mnt[in_nbr-2] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else // fxm
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
 		      (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*
 		      (dat_in_mnt[in_nbr-1]-dat_in_mnt[in_nbr-2])/
 		      (crd_in_mnt[in_nbr-1]-crd_in_mnt[in_nbr-2]);
 		  break;
 		case nco_xtr_fll_tpt:
-		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{
+		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{ // fxm
 		    if(flg_ntp_log) /* Exponentiate so coordinates are linear in pressure */
 		      dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
 			(exp(crd_out_mnt[out_idx])-exp(crd_in_mnt[in_nbr-1]))*gamma_moist;
@@ -3518,8 +3527,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  FIRST_WARNING_RHS=False;
 		  break;
 		case nco_xtr_fll_gph:
-		  /* 20230311 Got to here with missing value audit */
-		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{
+		  if(dat_in_mnt[in_nbr-1] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else{ // fxm
 		  if(flg_ntp_log) /* Coordinates are already logarithmic in pressure */
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]-
 		      Rd_rcp_g0*tpt_vrt_avg*(crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1]);
