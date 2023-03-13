@@ -1,7 +1,7 @@
 2023-03-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.5-beta01: ';git push
+	cd ~/nco;git commit -a -m 'Version 5.1.5-beta01: Heisler Picnic';git push
 	git tag -a 5.1.5-beta01 -m 'all: tgl->abs, NCZarr chk drc, dnd rgl fl; ncrcat: no_cll_mth; ncremap eamxx pdq plev, CF, prs_stt_usr fix plev_nm, ps_rtn, mss_val var_lst_zmid';git push --tags
 
 	* NCO 5.1.5-alpha04 release procedure:
