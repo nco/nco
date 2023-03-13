@@ -307,11 +307,6 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
   char *fl_src_cdl;
   char *cmd_cp_typ;
 
-#ifdef WIN32
-  const char sls_sng[]="\\"; /* [chr] Slash string for path separator */
-#else /* !WIN32 */
-  const char sls_sng[]="/"; /* [chr] Slash string for path separator */
-#endif /* !WIN32 */
 #ifdef _MSC_VER
   char cmd_cp_fl[]="copy %s %s";
   char cmd_cp_drc[]="copy /E %s %s";
@@ -320,7 +315,6 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
   char cmd_cp_drc[]="/bin/cp -r %s %s";
 #endif /* !_MSC_VER */
 
-  int in_id; /* [id] Temporary input file ID */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rcd_sys;
   const int fmt_chr_nbr=4;
@@ -355,84 +349,8 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
   fl_src_cdl= (fl_src_psx) ? nm2sng_fl(fl_src_psx) : nm2sng_fl(fl_src);
   fl_dst_cdl= (fl_dst_psx) ? nm2sng_fl(fl_dst_psx) : nm2sng_fl(fl_dst);
 
-  if(dst_is_drc){
-    /* Determine whether destination directory already exists */
-    const char fl_ncz_rqr[]=".zgroup"; /* [sng] Required file led to by NCZarr path (instead of useless nc_open() test) */
-    int rcd_stt=NC_MIN_INT; /* [rcd] Return code from stat() */
-    struct stat stat_sct;
-
-    rcd_stt=stat(fl_dst_psx,&stat_sct);
-
-    if(!rcd_stt){
-      /* Remove any NCZarr store that already exists at destination location
-	 Otherwise, the temporary store will land within (instead of replace) the extant directory
-	 20230225 Be careful only to remove NCZarr objects, not just any directory whose syntax resembles that of a NCZarr store */
-      
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports destination object %s already exists on local system. Will attempt to remove if object behaves as NCO expects an NCZarr store to, namely to be a directory that contains a hidden Zarr file (%s) and that produces a successful return code from nc_open()...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
-
-      //#include <shlwapi.h> /* PathIsDirectoryA() */
-      //if(PathIsDirectoryA(fl_dst_psx)){
-	/* 20230309: Windows documents a bewildering variety of stat() calls that have subtle differences with UNIX stat()
-	   After looking into all this, I tried just using the UNIX semantics on Windows
-	   Fortunately, UNIX stat() semantics appear to work (or at least compile without error and survive AppVeyor) on Windows
-	   Hence these notes are for future reference
-	   https://learn.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-pathisdirectorya
-	   https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/stat-functions?view=msvc-170
-	   Differences from UNIX are small yet annoying:
-	   Windows structure type is _stat, UNIX is stat
-	   Windows bitmask for directory is _S_IFDIR, UNIX is S_IFDIR
-	   Windows bitmask for regular file is _S_IFREG, UNIX is S_IFREG */
-	/* https://stackoverflow.com/questions/146924/how-can-i-tell-if-a-given-path-is-a-directory-or-a-file-c-c */
-      if(stat_sct.st_mode & S_IFDIR){
-	
-	/* 20230310: https://github.com/Unidata/netcdf-c/issues/2656 describes why nc_open()/nc_close() always 
-	   return NO_NOERR on NCZarr paths so long as the path exists, regardless of NCZarr validity
-	   Workaround is to test for existence of .zgroup */
-	char *fl_dst_tst; /* [sng] File required to prove validity of fl_dst as valid NCZarr store (instead of useless nc_open() test) */
-	fl_dst_tst=(char *)nco_malloc(strlen(fl_dst_psx)+1UL+strlen(fl_ncz_rqr)+1UL);
-	fl_dst_tst[0]='\0';
-	(void)strcat(fl_dst_tst,fl_dst);
-	(void)strcat(fl_dst_tst,sls_sng);
-	(void)strcat(fl_dst_tst,fl_ncz_rqr);
-
-	rcd_stt=stat(fl_dst_tst,&stat_sct);
-
-	if(!rcd_stt){
-
-	  char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
-	  fl_dst_dpl=(char *)strdup(fl_dst_psx);
-
-	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports mandatory NCZarr file %s exists in %s. Will attempt to remove if object behaves (opens) as an NCZarr store...\n",nco_prg_nm_get(),fnc_nm,fl_ncz_rqr,fl_dst_psx);
-
-	  rcd=nco_open_flg(fl_dst_dpl,NC_NOWRITE,&in_id);
-	  if(rcd == NC_NOERR){
-	    rcd=nco_close(in_id);
-	    nco_fl_rm(fl_dst_dpl);
-	  }else{
-	    (void)fprintf(stderr,"%s: ERROR nc_open(%s) failed with error code %d. ",nco_prg_nm_get(),fl_dst_dpl,rcd);
-	    (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
-	    (void)fprintf(stderr,"%s: ERROR %s thwarting attempt to remove directory \"%s\" that contains %s but does not open as an NCZarr store. NCO will only delete directory trees that successfully open as NCZarr stores. To overwrite this directory, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
-	    nco_exit(EXIT_FAILURE);
-	  } /* !rcd */
-	  if(fl_dst_dpl) fl_dst_dpl=(char *)nco_free(fl_dst_dpl);
-
-	}else{ /* !rcd_stt */
-
-	  (void)fprintf(stderr,"%s: ERROR %s reports mandatory NCZarr file %s does not exist in %s.\n",nco_prg_nm_get(),fnc_nm,fl_ncz_rqr,fl_dst_psx);
-	  (void)fprintf(stderr,"%s: ERROR %s will not attempt to remove directory \"%s\". NCO will only delete directory trees that contain the mandatory NCZarr file %s, and that successfully open as NCZarr stores. Deleting just any ole' directory would be asking for trouble. To overwrite this directory, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
-
-	} /* !rcd_stt */
-	if(fl_dst_tst) fl_dst_tst=(char *)nco_free(fl_dst_tst);
-
-      }else{
-
-	if(stat_sct.st_mode & S_IFREG) (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports to be a regular file. NCO will only delete regular files in order to replace them with netCDF POSIX files, not with NCZarr stores. To overwrite this file, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx); else (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports is neither a directory nor a regular file. NCO will overwrite regular files with netCDF files, and will replace directory trees that open as as NCZarr stores with a new NCZarr store. Deleting anything else is asking for trouble. To delete/overwrite this object, do so with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
-	nco_exit(EXIT_FAILURE);
-
-      } /* !stat_sct */
-      
-    } /* !rcd_stt */
-  } /* !dst_is_drc */
+  if(dst_is_drc) rcd=nco_drc_ncz_rm(fl_dst_psx);
+  assert(rcd == NC_NOERR);
 
   if(dst_is_drc) cmd_cp_typ=cmd_cp_drc; else cmd_cp_typ=cmd_cp_fl;
   /* Construct and execute copy command */
@@ -452,6 +370,107 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
   if(fl_dst_psx) fl_dst_psx=(char *)nco_free(fl_dst_psx);
   if(fl_src_psx) fl_src_psx=(char *)nco_free(fl_src_psx);
 } /* !nco_fl_cp() */
+
+int /* O [enm] Return code */
+nco_drc_ncz_rm /* [fnc] Safely remove valid NCZarr directory */
+(const char *fl_dst_psx) /* [sng] Full POSIX path of NCZarr fl_dst */
+{
+  /* Purpose: Determine whether directory is valid NCZarr object and, if so, remove it
+     fl_dst is an NCZarr-compliant store specification of form scheme://host:port/path?query#fragment
+     fl_dst_psx is the POSIX path component of fl_dst */
+
+  const char fnc_nm[]="nco_drc_ncz_rm()"; /* [sng] Function name */
+
+#ifdef WIN32
+  const char sls_sng[]="\\"; /* [chr] Slash string for path separator */
+#else /* !WIN32 */
+  const char sls_sng[]="/"; /* [chr] Slash string for path separator */
+#endif /* !WIN32 */
+
+  const char fl_ncz_rqr[]=".zgroup"; /* [sng] Required file led to by NCZarr path (instead of useless nc_open() test) */
+
+  int in_id; /* [id] Temporary input file ID */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int rcd_stt=NC_MIN_INT; /* [rcd] Return code from stat() */
+
+  struct stat stat_sct;
+  
+  /* Determine whether POSIX path already exists */
+  rcd_stt=stat(fl_dst_psx,&stat_sct);
+  
+  if(!rcd_stt){
+    /* Remove any NCZarr store that already exists at destination location
+       Otherwise, the temporary store will land within (instead of replace) the extant directory
+       20230225 Be careful only to remove NCZarr objects, not just any directory whose syntax resembles that of a NCZarr store */
+    
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports destination object %s already exists on local system. Will attempt to remove if object behaves as NCO expects an NCZarr store to, namely to be a directory that contains a hidden Zarr file (%s) and that produces a successful return code from nc_open()...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
+
+    //#include <shlwapi.h> /* PathIsDirectoryA() */
+    //if(PathIsDirectoryA(fl_dst_psx)){
+    /* 20230309: Windows documents a bewildering variety of stat() calls that have subtle differences with UNIX stat()
+       After looking into all this, I tried just using the UNIX semantics on Windows
+       Fortunately, UNIX stat() semantics appear to work (or at least compile without error and survive AppVeyor) on Windows
+       Hence these notes are for future reference
+       https://learn.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-pathisdirectorya
+       https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/stat-functions?view=msvc-170
+       Differences from UNIX are small yet annoying:
+       Windows structure type is _stat, UNIX is stat
+       Windows bitmask for directory is _S_IFDIR, UNIX is S_IFDIR
+       Windows bitmask for regular file is _S_IFREG, UNIX is S_IFREG */
+    /* https://stackoverflow.com/questions/146924/how-can-i-tell-if-a-given-path-is-a-directory-or-a-file-c-c */
+    if(stat_sct.st_mode & S_IFDIR){
+      
+      /* 20230310: https://github.com/Unidata/netcdf-c/issues/2656 describes why nc_open()/nc_close() always 
+	 return NO_NOERR on NCZarr paths so long as the path exists, regardless of NCZarr validity
+	 Workaround is to test for existence of .zgroup */
+      char *fl_dst_tst; /* [sng] File required to prove validity of fl_dst as valid NCZarr store (instead of useless nc_open() test) */
+      fl_dst_tst=(char *)nco_malloc(strlen(fl_dst_psx)+1UL+strlen(fl_ncz_rqr)+1UL);
+      fl_dst_tst[0]='\0';
+      (void)strcat(fl_dst_tst,fl_dst_psx);
+      (void)strcat(fl_dst_tst,sls_sng);
+      (void)strcat(fl_dst_tst,fl_ncz_rqr);
+      
+      rcd_stt=stat(fl_dst_tst,&stat_sct);
+      
+      if(!rcd_stt){
+	
+	char *fl_dst_dpl; /* [sng] Duplicate of fl_dst_psx */
+	fl_dst_dpl=(char *)strdup(fl_dst_psx);
+
+	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports mandatory NCZarr file %s exists in %s. Will attempt to remove if object behaves (opens) as an NCZarr store...\n",nco_prg_nm_get(),fnc_nm,fl_ncz_rqr,fl_dst_psx);
+
+	rcd=nco_open_flg(fl_dst_dpl,NC_NOWRITE,&in_id);
+	if(rcd == NC_NOERR){
+	  rcd=nco_close(in_id);
+	  nco_fl_rm(fl_dst_dpl);
+	}else{
+	  (void)fprintf(stderr,"%s: ERROR nc_open(%s) failed with error code %d. ",nco_prg_nm_get(),fl_dst_dpl,rcd);
+	  (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
+	  (void)fprintf(stderr,"%s: ERROR %s thwarting attempt to remove directory \"%s\" that contains %s but does not open as an NCZarr store. NCO will only delete directory trees that successfully open as NCZarr stores. To overwrite this directory, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
+	  nco_exit(EXIT_FAILURE);
+	} /* !rcd */
+	if(fl_dst_dpl) fl_dst_dpl=(char *)nco_free(fl_dst_dpl);
+	
+      }else{ /* !rcd_stt */
+	
+	(void)fprintf(stderr,"%s: ERROR %s reports mandatory NCZarr file %s does not exist in %s.\n",nco_prg_nm_get(),fnc_nm,fl_ncz_rqr,fl_dst_psx);
+	(void)fprintf(stderr,"%s: ERROR %s will not attempt to remove directory \"%s\". NCO will only delete directory trees that contain the mandatory NCZarr file %s, and that successfully open as NCZarr stores. Deleting just any ole' directory would be asking for trouble. To overwrite this directory, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
+
+      } /* !rcd_stt */
+      if(fl_dst_tst) fl_dst_tst=(char *)nco_free(fl_dst_tst);
+      
+    }else{
+      
+      if(stat_sct.st_mode & S_IFREG) (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports to be a regular file. NCO will only delete regular files in order to replace them with netCDF POSIX files, not with NCZarr stores. To overwrite this file, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx); else (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports is neither a directory nor a regular file. NCO will overwrite regular files with netCDF files, and will replace directory trees that open as as NCZarr stores with a new NCZarr store. Deleting anything else is asking for trouble. To delete/overwrite this object, do so with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
+      nco_exit(EXIT_FAILURE);
+
+    } /* !stat_sct */
+    
+  } /* !rcd_stt */
+  
+  return rcd;
+
+} /* !nco_drc_ncz_rm */
 
 #ifdef _MSC_VER
 char * nco_fl_info_get(const char * const fl_nm_lcl){return NULL;}
@@ -1561,18 +1580,12 @@ nco_fl_mv /* [fnc] Move first file to second */
   char *fl_dst_cdl;
   char *fl_src_cdl;
   
-#ifdef WIN32
-  const char sls_sng[]="\\"; /* [chr] Slash string for path separator */
-#else /* !WIN32 */
-  const char sls_sng[]="/"; /* [chr] Slash string for path separator */
-#endif /* !WIN32 */
 #ifdef _MSC_VER
   const char cmd_mv_fmt[]="move %s %s";
 #else /* !_MSC_VER */
   const char cmd_mv_fmt[]="/bin/mv -f %s %s";
 #endif /* !_MSC_VER */
 
-  int in_id; /* [id] Temporary input file ID */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rcd_sys; /* [rcd] Return code from system() */
   const int fmt_chr_nbr=4;
@@ -1599,84 +1612,8 @@ nco_fl_mv /* [fnc] Move first file to second */
   fl_src_cdl= (fl_src_psx) ? nm2sng_fl(fl_src_psx) : nm2sng_fl(fl_src);
   fl_dst_cdl= (fl_dst_psx) ? nm2sng_fl(fl_dst_psx) : nm2sng_fl(fl_dst);
 
-  if(dst_is_drc){
-    /* Determine whether destination directory already exists */
-    const char fl_ncz_rqr[]=".zgroup"; /* [sng] Required file led to by NCZarr path (instead of useless nc_open() test) */
-    int rcd_stt=NC_MIN_INT; /* [rcd] Return code from stat() */
-    struct stat stat_sct;
-
-    rcd_stt=stat(fl_dst_psx,&stat_sct);
-
-    if(!rcd_stt){
-      /* Remove any NCZarr store that already exists at destination location
-	 Otherwise, the temporary store will land within (instead of replace) the extant directory
-	 20230225 Be careful only to remove NCZarr objects, not just any directory whose syntax resembles that of a NCZarr store */
-      
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports destination object %s already exists on local system. Will attempt to remove if object behaves as NCO expects an NCZarr store to, namely to be a directory that contains a hidden Zarr file (%s) and that produces a successful return code from nc_open()...\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
-
-      //#include <shlwapi.h> /* PathIsDirectoryA() */
-      //if(PathIsDirectoryA(fl_dst_psx)){
-	/* 20230309: Windows documents a bewildering variety of stat() calls that have subtle differences with UNIX stat()
-	   After looking into all this, I tried just using the UNIX semantics on Windows
-	   Fortunately, UNIX stat() semantics appear to work (or at least compile without error and survive AppVeyor) on Windows
-	   Hence these notes are for future reference
-	   https://learn.microsoft.com/en-us/windows/win32/api/shlwapi/nf-shlwapi-pathisdirectorya
-	   https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/stat-functions?view=msvc-170
-	   Differences from UNIX are small yet annoying:
-	   Windows structure type is _stat, UNIX is stat
-	   Windows bitmask for directory is _S_IFDIR, UNIX is S_IFDIR
-	   Windows bitmask for regular file is _S_IFREG, UNIX is S_IFREG */
-	/* https://stackoverflow.com/questions/146924/how-can-i-tell-if-a-given-path-is-a-directory-or-a-file-c-c */
-      if(stat_sct.st_mode & S_IFDIR){
-	
-	/* 20230310: https://github.com/Unidata/netcdf-c/issues/2656 describes why nc_open()/nc_close() always 
-	   return NO_NOERR on NCZarr paths so long as the path exists, regardless of NCZarr validity
-	   Workaround is to test for existence of .zgroup */
-	char *fl_dst_tst; /* [sng] File required to prove validity of fl_dst as valid NCZarr store (instead of useless nc_open() test) */
-	fl_dst_tst=(char *)nco_malloc(strlen(fl_dst_psx)+1UL+strlen(fl_ncz_rqr)+1UL);
-	fl_dst_tst[0]='\0';
-	(void)strcat(fl_dst_tst,fl_dst);
-	(void)strcat(fl_dst_tst,sls_sng);
-	(void)strcat(fl_dst_tst,fl_ncz_rqr);
-
-	rcd_stt=stat(fl_dst_tst,&stat_sct);
-
-	if(!rcd_stt){
-
-	  char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
-	  fl_dst_dpl=(char *)strdup(fl_dst_psx);
-
-	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports mandatory NCZarr file %s exists in %s. Will attempt to remove if object behaves (opens) as an NCZarr store...\n",nco_prg_nm_get(),fnc_nm,fl_ncz_rqr,fl_dst_psx);
-
-	  rcd=nco_open_flg(fl_dst_dpl,NC_NOWRITE,&in_id);
-	  if(rcd == NC_NOERR){
-	    rcd=nco_close(in_id);
-	    nco_fl_rm(fl_dst_dpl);
-	  }else{
-	    (void)fprintf(stderr,"%s: ERROR nc_open(%s) failed with error code %d. ",nco_prg_nm_get(),fl_dst_dpl,rcd);
-	    (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
-	    (void)fprintf(stderr,"%s: ERROR %s thwarting attempt to remove directory \"%s\" that contains %s but does not open as an NCZarr store. NCO will only delete directory trees that successfully open as NCZarr stores. To overwrite this directory, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
-	    nco_exit(EXIT_FAILURE);
-	  } /* !rcd */
-	  if(fl_dst_dpl) fl_dst_dpl=(char *)nco_free(fl_dst_dpl);
-
-	}else{ /* !rcd_stt */
-
-	  (void)fprintf(stderr,"%s: ERROR %s reports mandatory NCZarr file %s does not exist in %s.\n",nco_prg_nm_get(),fnc_nm,fl_ncz_rqr,fl_dst_psx);
-	  (void)fprintf(stderr,"%s: ERROR %s will not attempt to remove directory \"%s\". NCO will only delete directory trees that contain the mandatory NCZarr file %s, and that successfully open as NCZarr stores. Deleting just any ole' directory would be asking for trouble. To overwrite this directory, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
-
-	} /* !rcd_stt */
-	if(fl_dst_tst) fl_dst_tst=(char *)nco_free(fl_dst_tst);
-
-      }else{
-
-	if(stat_sct.st_mode & S_IFREG) (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports to be a regular file. NCO will only delete regular files in order to replace them with netCDF POSIX files, not with NCZarr stores. To overwrite this file, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx); else (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports is neither a directory nor a regular file. NCO will overwrite regular files with netCDF files, and will replace directory trees that open as as NCZarr stores with a new NCZarr store. Deleting anything else is asking for trouble. To delete/overwrite this object, do so with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
-	nco_exit(EXIT_FAILURE);
-
-      } /* !stat_sct */
-      
-    } /* !rcd_stt */
-  } /* !dst_is_drc */
+  if(dst_is_drc) rcd=nco_drc_ncz_rm(fl_dst_psx);
+  assert(rcd == NC_NOERR);
 
   /* Construct and execute move command */
   cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));

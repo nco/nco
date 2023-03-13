@@ -3482,15 +3482,17 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		// i.e., If crd_out_mnt[idx] == crd_in_mnt[brk_lft_idx] then dat_out_mnt[out_idx] := dat_in_mnt[brk_lft_idx]
 		// Linearly interpolate
 		if(dat_in_mnt[brk_lft_idx] == mss_val_cmp_dbl){
-		  if(dat_in_mnt[brk_rgt_idx] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl; else dat_out_mnt[out_idx]=dat_in_mnt[brk_rgt_idx];
+		  if(dat_in_mnt[brk_rgt_idx] == mss_val_cmp_dbl) dat_out_mnt[out_idx]=mss_val_cmp_dbl;
+		  else dat_out_mnt[out_idx]=dat_in_mnt[brk_rgt_idx];
 		}else if(dat_in_mnt[brk_rgt_idx] == mss_val_cmp_dbl){
 		  dat_out_mnt[out_idx]=dat_in_mnt[brk_lft_idx];
-		}else
+		}else{
 		  dat_out_mnt[out_idx]=
 		    dat_in_mnt[brk_lft_idx]+
 		    (crd_out_mnt[out_idx]-crd_in_mnt[brk_lft_idx])*
 		    (dat_in_mnt[brk_rgt_idx]-dat_in_mnt[brk_lft_idx])/
 		    (crd_in_mnt[brk_rgt_idx]-crd_in_mnt[brk_lft_idx]);
+		} /* !mss_val_cmp_dbl */
 	      }else if(brk_lft_idx == in_nbr-1){
 		// RHS Extrapolation required
 		// Degenerate case: brk_lft_idx is last element of crd_in_mnt 

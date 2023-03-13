@@ -214,13 +214,13 @@ nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
   } /* !idx */
   for(unsigned int idx=0;idx<sizeof(gaa_flg)/sizeof(char *);idx++){
     if(!strcmp(flg,gaa_flg[idx])) return NCO_NOERR;
-  }
+  } /* !idx */
   for(unsigned int idx=0;idx<sizeof(trr_flg)/sizeof(char *);idx++){
     if(!strcmp(flg,trr_flg[idx])) return NCO_NOERR;
-  }
+  } /* !idx */
   for(unsigned int idx=0;idx<sizeof(ppc_flg)/sizeof(char *);idx++){
     if(!strcmp(flg,ppc_flg[idx])) return NCO_NOERR;
-  }
+  } /* !idx */
   
   (void)fprintf(stderr, "%s: ERROR %s Multi-Argument (MTA) parser reports unrecognized option \"%s\"\n%s: HINT Lack of equals sign indicates this may be a mis-typed flag rather than an erroneous key-value pair specification. Valid MTA flags are listed below. Synonyms for each flag are listed on the same line. A leading \"--\" is optional. MTA documentation is at http://nco.sf.net/nco.html#mta\n",nco_prg_nm_get(),fnc_nm,flg,nco_prg_nm_get());
 
