@@ -349,7 +349,7 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
   fl_src_cdl= (fl_src_psx) ? nm2sng_fl(fl_src_psx) : nm2sng_fl(fl_src);
   fl_dst_cdl= (fl_dst_psx) ? nm2sng_fl(fl_dst_psx) : nm2sng_fl(fl_dst);
 
-  if(dst_is_drc) rcd=nco_drc_ncz_rm(fl_dst_psx);
+  if(dst_is_drc) rcd=nco_drc_ncz_rm(fl_dst_psx,fl_dst);
   assert(rcd == NC_NOERR);
 
   if(dst_is_drc) cmd_cp_typ=cmd_cp_drc; else cmd_cp_typ=cmd_cp_fl;
@@ -373,7 +373,8 @@ nco_fl_cp /* [fnc] Copy first file (or directory) to second */
 
 int /* O [enm] Return code */
 nco_drc_ncz_rm /* [fnc] Safely remove valid NCZarr directory */
-(const char *fl_dst_psx) /* [sng] Full POSIX path of NCZarr fl_dst */
+(const char * const fl_dst_psx, /* I [sng] Full POSIX path of NCZarr fl_dst */
+ const char * const fl_dst) /* I [sng] Name of putative NCZarr destination store */
 {
   /* Purpose: Determine whether directory is valid NCZarr object and, if so, remove it
      fl_dst is an NCZarr-compliant store specification of form scheme://host:port/path?query#fragment
@@ -434,15 +435,15 @@ nco_drc_ncz_rm /* [fnc] Safely remove valid NCZarr directory */
       
       if(!rcd_stt){
 	
-	char *fl_dst_dpl; /* [sng] Duplicate of fl_dst_psx */
-	fl_dst_dpl=(char *)strdup(fl_dst_psx);
+	char *fl_dst_dpl; /* [sng] Duplicate of fl_dst */
+	fl_dst_dpl=(char *)strdup(fl_dst);
 
-	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports mandatory NCZarr file %s exists in %s. Will attempt to remove if object behaves (opens) as an NCZarr store...\n",nco_prg_nm_get(),fnc_nm,fl_ncz_rqr,fl_dst_psx);
+	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports mandatory NCZarr file %s exists in directory %s. Will attempt to remove if object behaves (opens) as an NCZarr store...\n",nco_prg_nm_get(),fnc_nm,fl_ncz_rqr,fl_dst_psx);
 
 	rcd=nco_open_flg(fl_dst_dpl,NC_NOWRITE,&in_id);
 	if(rcd == NC_NOERR){
 	  rcd=nco_close(in_id);
-	  nco_fl_rm(fl_dst_dpl);
+	  nco_fl_rm(fl_dst_psx);
 	}else{
 	  (void)fprintf(stderr,"%s: ERROR nc_open(%s) failed with error code %d. ",nco_prg_nm_get(),fl_dst_dpl,rcd);
 	  (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
@@ -1613,7 +1614,7 @@ nco_fl_mv /* [fnc] Move first file to second */
   fl_src_cdl= (fl_src_psx) ? nm2sng_fl(fl_src_psx) : nm2sng_fl(fl_src);
   fl_dst_cdl= (fl_dst_psx) ? nm2sng_fl(fl_dst_psx) : nm2sng_fl(fl_dst);
 
-  if(dst_is_drc) rcd=nco_drc_ncz_rm(fl_dst_psx);
+  if(dst_is_drc) rcd=nco_drc_ncz_rm(fl_dst_psx,fl_dst);
   assert(rcd == NC_NOERR);
 
   /* Construct and execute move command */

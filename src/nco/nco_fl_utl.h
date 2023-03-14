@@ -90,7 +90,8 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
 
 int /* O [enm] Return code */
 nco_drc_ncz_rm /* [fnc] Safely remove valid NCZarr directory */
-(const char *fl_dst_psx); /* [sng] Full POSIX path of NCZarr fl_dst */
+(const char * const fl_dst_psx, /* I [sng] Full POSIX path of NCZarr fl_dst */
+ const char * const fl_dst); /* I [sng] Name of putative NCZarr destination store */
   
 int /* O [enm] Return code */
 nco_fl_dmm_mk /* Create dummy file */

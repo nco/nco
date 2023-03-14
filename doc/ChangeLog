@@ -1,5 +1,11 @@
 2023-03-14  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.1.6-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha02: Baltimore';git push
+	git tag -a 5.1.6-alpha02 -m '';git push --tags
+
+	* Fix nco_drc_ncz_rm() to attempt nc_open(ncz_fl) not nc_open(psx_fl)
+
 	* NCO 5.1.6-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha01: Baltimore';git push
 	git tag -a 5.1.6-alpha01 -m 'Functionally identical to 5.1.5';git push --tags
