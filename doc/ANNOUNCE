@@ -33,6 +33,42 @@ ncremap -P mpas --vrt_out=vrt.nc --map=map.nc in.nc out.nc
 http://nco.sf.net/nco.html#ncremap
 http://nco.sf.net/nco.html#vrt_out
 
+B. ncremap has a --ps_rtn (--retain_surface_pressure) switch 
+to facilitate "round-trip" vertical interpolation such as
+hybrid->pressure->hybrid. By default ncremap excludes the surface
+pressure field from the output after hybrid->pressure interpolation.
+The --ps_rtn switch (which takes no argument) instructs the regridder
+to retain the surface pressure field after hybrid->pressure
+interpolation. This field is then available for subsequent
+interpolation back to a hybrid vertical coordinate.
+ncremap --ps_rtn --ps_nm=ps --vrt_out=ncep.nc in.nc out_ncep.nc
+ncremap --ps_rtn -v T,Q,U,PS --vrt_out=ncep.nc in.nc out_ncep.nc
+ncremap --vrt_out=hybrid.nc out_ncep.nc out_hybrid.nc
+http://nco.sf.net/nco.html#ps_rtn
+
+C. NCO is now more careful about overwriting existing directories
+and files with NCZarr stores. Previously NCO would overwrite any
+directory or file that the netCDF library could successfully open.
+However, netCDF library versions 4.8.0->4.9.1 "succeed" in opening
+non-NCZarr stores. Hence additional precautions are necessary to
+avoid unintentionally overwriting non-NCZarr paths with NCZarr
+stores. For example,
+ncks in_zarr4.nc file://${HOME}/ncz_dnd/foo#mode=nczarr,file
+now overwrites "foo" only if it is already an NCZarr store.
+Previously foo would be overwritten if it already existed yet was
+not a valid NCZarr store. Thanks to Dennis Heimbigner of Unidata
+for discussing this behavior.
+
+E. NCO improves handling of output from the DOE EAMxx model
+in two ways. First, NCO now treats this model output as
+CF-compliant. This causes NCO to implement special conventions such as
+carrying multi-dimensional auxiliary coordinate variables when
+subsetting. Second, ncremap automatically permutes EAMxx datasets
+that have been interpolated to pressure levels to have the correct
+dimension ordering (horizontal dimension as most-rapidly-varying)
+prior to horizontal regridding. Thanks to Chris Golaz (LLNL) prompting
+these features.
+
 BUG FIXES:
    
 A. ncrcat versions 4.8.0--5.1.4 could erroneously add a cell_methods
@@ -44,7 +80,10 @@ upgrade. Thanks to Brian Vanderwende (NCAR) for reporting this.
 B. Recent versions of ncremap incorrectly parsed the
 --preserve_statistic (--prs_stt) option. The option was effectively
 ignored. This has been fixed. The workaround is to explicitly invoke
-the --rnr_thr=0.0 option. The solution is to upgrade.
+the --rnr_thr=0.0 option. The solution is to upgrade. These two
+commands now produce the same result, use whichever you prefer:
+ncremap --rnr_thr=0.0 --map=map.nc in.nc out.nc
+ncremap --prs_stt=local_mean --map=map.nc in.nc out.nc
 
 C. ncremap version 5.1.4 incorrectly handles the name of the output
 coordinate for vertical interpolation to pure-pressure surfaces.
@@ -52,7 +91,18 @@ Instead of naming the coordinate 'plev', or whatever is in the vrt_out
 file, or what was specfified by the --plev_nm_out option, it just
 named the coordinate (variable+dimension) 'lev'. These have all been
 fixed. There is no workaround, and the solution is to upgrade.
-Thanks to Jill Zhang and Ben Hillman for reporting this issue.
+Thanks to Jill Zhang (LLNL) and Ben Hillman (SNL) for reporting this
+issue. 
+
+D. Vertical interpolation with ncremap now successfully handles
+missing values interior to the vertical domain. This is useful
+to interpolate from pure pressure and depth coordinates where
+bathymetry and orography are masked, to terrain following sigma
+coordinates where bathymetry and orography are outside the domain.
+Previously ncremap would allow missing values inside the vertical
+domain to contaminate the interpolated values. There is no
+workaround. The solution is to upgrade. Thanks to Peter Caldwell
+(LLNL) for reporting this issue and beta-testing the fix.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

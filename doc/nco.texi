@@ -28640,6 +28640,36 @@ This same functionality (of optionally embedding a filename into
 the variable name) is also implemented for the @var{sgs_frc} variable.
 
 @html
+<a name="ps_rtn"></a> <!-- http://nco.sf.net/nco.html#ps_rtn -->
+<a name="rtn_sfc_prs"></a> <!-- http://nco.sf.net/nco.html#rtn_sfc_prs -->
+<a name="retain_surface_pressure"></a> <!-- http://nco.sf.net/nco.html#retain_surface_pressure -->
+@end html
+@cindex @code{--ps_rtn}
+@cindex @var{ps_nm}
+@cindex @code{--ps_rtn}
+@cindex @code{--retain_surface_pressure}
+@cindex @code{--rtn_sfc_prs}
+@cindex surface pressure, retaining
+@item --ps_rtn (@code{--ps_rtn}, @code{--rtn_sfc_prs}, @code{--retain_surface_pressure})
+As of @acronym{NCO} version 5.1.5 (March, 2023), @command{ncremap} 
+includes a @code{--ps_rtn} switch (with long-option equivalents
+@code{--rtn_sfc_prs} and @code{--retain_surface_pressure}) to
+facilitate ``round-trip'' vertical interpolation such as
+hybrid-to-pressure followed by pressure-to-hybrid interpolation.
+By default @command{ncremap} excludes the surface pressure field named
+@var{ps_nm} from the output after hybrid-to-pressure interpolation. 
+The @code{--ps_rtn} switch (which takes no argument) instructs the
+regridder to retain the surface pressure field after
+hybrid-to-pressure interpolation.
+The surface pressure field is then available for subsequent
+interpolation back to a hybrid vertical coordinate:
+@example
+ncremap --ps_rtn --ps_nm=ps --vrt_out=ncep.nc in.nc out_ncep.nc
+ncremap --ps_rtn -v T,Q,U,PS --vrt_out=ncep.nc in.nc out_ncep.nc
+ncremap --vrt_out=hybrid.nc out_ncep.nc out_hybrid.nc
+@end example
+
+@html
 <a name="vrt_ntp"></a> <!-- http://nco.sf.net/nco.html#vrt_ntp -->
 @end html
 @cindex @code{--vrt_ntp=@var{vrt_ntp}}
@@ -30175,11 +30205,13 @@ Large work-load testing
 @cindex Sterling Baldwin 
 @cindex Dave Blodgett
 @cindex Peter Campbell
+@cindex Peter Caldwell
 @cindex Philip Cameron-Smith
 @cindex Martin Dix
 @cindex Mark Flanner
 @cindex Chris Golaz
 @cindex Barron Henderson
+@cindex Ben Hillman
 @cindex Aleksandar Jelenak
 @cindex Markus Liebig
 @cindex Keith Lindsay
@@ -30202,7 +30234,7 @@ Large work-load testing
 @cindex George White
 @cindex Min Xu
 @cindex Remik Ziemlinski
-@item Xylar Asay-Davis, Sterling Baldwin, Dave Blodgett, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Chris Golaz, Barron Henderson, Aleksandar Jelenak, Markus Liebig, Keith Lindsay, Daniel Macks, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Mark Taylor, Matthew Thompson, Qi Tang, Adrian Tompkins, Paul Ullrich, George White, Andrew Wittenberg, Min Xu, Remik Ziemlinski
+@item Xylar Asay-Davis, Sterling Baldwin, Dave Blodgett, Peter Caldwell, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Chris Golaz, Barron Henderson, Ben Hillman, Aleksandar Jelenak, Markus Liebig, Keith Lindsay, Daniel Macks, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Mark Taylor, Matthew Thompson, Qi Tang, Adrian Tompkins, Paul Ullrich, George White, Andrew Wittenberg, Min Xu, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @cindex Xylar Asay-Davis
 @cindex Filipe Fernandes
