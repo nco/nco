@@ -446,22 +446,23 @@ nco_drc_ncz_rm /* [fnc] Safely remove valid NCZarr directory */
 	}else{
 	  (void)fprintf(stderr,"%s: ERROR nc_open(%s) failed with error code %d. ",nco_prg_nm_get(),fl_dst_dpl,rcd);
 	  (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
-	  (void)fprintf(stderr,"%s: ERROR %s thwarting attempt to remove directory \"%s\" that contains %s but does not open as an NCZarr store. NCO will only delete directory trees that successfully open as NCZarr stores. To overwrite this directory, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
+	  (void)fprintf(stderr,"%s: ERROR %s thwarting attempt to remove directory \"%s\" that contains %s but does not open as an NCZarr store. NCO will only delete directory trees that successfully open as NCZarr stores. To overwrite this directory, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'rmdir' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
 	  nco_exit(EXIT_FAILURE);
 	} /* !rcd */
 	if(fl_dst_dpl) fl_dst_dpl=(char *)nco_free(fl_dst_dpl);
 	
       }else{ /* !rcd_stt */
 	
-	(void)fprintf(stderr,"%s: ERROR %s reports mandatory NCZarr file %s does not exist in %s.\n",nco_prg_nm_get(),fnc_nm,fl_ncz_rqr,fl_dst_psx);
-	(void)fprintf(stderr,"%s: ERROR %s will not attempt to remove directory \"%s\". NCO will only delete directory trees that contain the mandatory NCZarr file %s, and that successfully open as NCZarr stores. Deleting just any ole' directory would be asking for trouble. To overwrite this directory, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
+	(void)fprintf(stderr,"%s: ERROR %s reports mandatory NCZarr file %s does not exist in directory %s\n",nco_prg_nm_get(),fnc_nm,fl_ncz_rqr,fl_dst_psx);
+	(void)fprintf(stderr,"%s: ERROR %s will not attempt to remove directory \"%s\". NCO will only delete directory trees that contain the mandatory NCZarr file %s, and that successfully open as NCZarr stores. Deleting just any ole' directory would be asking for trouble. To overwrite this directory, or to remove it so that its name can be used for an NCZarr store, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'rmdir' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx,fl_ncz_rqr);
+	nco_exit(EXIT_FAILURE);
 
       } /* !rcd_stt */
       if(fl_dst_tst) fl_dst_tst=(char *)nco_free(fl_dst_tst);
       
     }else{
       
-      if(stat_sct.st_mode & S_IFREG) (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports to be a regular file. NCO will only delete regular files in order to replace them with netCDF POSIX files, not with NCZarr stores. To overwrite this file, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx); else (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports is neither a directory nor a regular file. NCO will overwrite regular files with netCDF files, and will replace directory trees that open as as NCZarr stores with a new NCZarr store. Deleting anything else is asking for trouble. To delete/overwrite this object, do so with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
+      if(stat_sct.st_mode & S_IFREG) (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports to be a regular file. NCO will only delete regular files in order to replace them with netCDF POSIX files, not with NCZarr stores. To overwrite this file with an NCZarr store, please delete it first with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx); else (void)fprintf(stderr,"%s: ERROR %s intentionally thwarting attempt to remove object \"%s\" that stat() reports is neither a directory nor a regular file. NCO will overwrite regular files with netCDF files, and will replace directory trees that open as as NCZarr stores with a new NCZarr store. Deleting anything else is asking for trouble. To delete/overwrite this object, do so with another tool, such as a shell remove command ('rm' on *NIX, 'del' on Windows).\n",nco_prg_nm_get(),fnc_nm,fl_dst_psx);
       nco_exit(EXIT_FAILURE);
 
     } /* !stat_sct */
@@ -2603,7 +2604,7 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
 
   } /* !fl_fmt_xtn, !flg_psx */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports psx_fll = %s, psx_drc = %s, psx_stb = %s\n",nco_prg_nm_get(),fnc_nm,psx_fll ? *psx_fll : "NULL",psx_drc ? *psx_drc : "NULL",psx_stb ? *psx_stb : "NULL");
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s reports psx_fll = %s, psx_drc = %s, psx_stb = %s\n",nco_prg_nm_get(),fnc_nm,psx_fll ? *psx_fll : "NULL",psx_drc ? *psx_drc : "NULL",psx_stb ? *psx_stb : "NULL");
 
   return fl_nm_is_nczarr;
   

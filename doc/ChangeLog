@@ -1,8 +1,14 @@
-2023-03-13  Charlie Zender  <zender@uci.edu>
+2023-03-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.5-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-beta01: Heisler Picnic';git push
 	git tag -a 5.1.5-beta01 -m 'all: tgl->abs, NCZarr chk drc, dnd rgl fl; ncrcat: no_cll_mth; ncremap eamxx pdq plev, CF, prs_stt_usr fix plev_nm, ps_rtn, mss_val var_lst_zmid';git push --tags
+
+	* Peter Caldwell verified roundtrip mss_val vertical interpolation works for him
+
+2023-03-13  Charlie Zender  <zender@uci.edu>
+
+	* Tweak NCZarr debug verbosity and information reported
 
 	* NCO 5.1.5-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5-alpha04: Rehab paddling';git push
