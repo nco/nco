@@ -1,5 +1,11 @@
 2023-03-14  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.1.6-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha01: Baltimore';git push
+	git tag -a 5.1.6-alpha01 -m 'Functionally identical to 5.1.5';git push --tags
+
+	* Update supported netCDF library versions
+
 	* NCO 5.1.5 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.5: Rhubarb Pi';git push
 	git tag -a 5.1.5 -m 'all: tgl->abs, NCZarr chk drc, dnd rgl fl; ncrcat: no_cll_mth; ncremap eamxx pdq plev, CF, prs_stt_usr fix plev_nm, ps_rtn, mss_val var_lst_zmid';git push --tags
@@ -22835,12 +22841,6 @@ Tue May  2 23:12:48 MDT 1995  Charlie Zender  <zender@ncar.ucar.edu>
 
 	* First public release of ncks announced on netCDF Group E-mail list:
 	https://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/1995/msg00069.html
-
-Tue May  2 23:12:48 MDT 1995  Charlie Zender  <zender@ncar.ucar.edu>
-
-	* The first public announcements of NCO operators (ncks, ncrename) appear
-	on the netCDF Group E-mail list in the year 1995:
-	https://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/1995/thread.html
 
 Sat May 15 23:01:04 MST 1993  Charlie Zender  <zender@ncar.ucar.edu>
 

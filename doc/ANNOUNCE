@@ -9,7 +9,7 @@ What's new?
 Version 5.1.5 polishes the new vertical interpolation capabilities
 introduced in 5.1.3 and 5.1.4, improves the safety NCZarr operations,
 and fixes minor ncremap bugs. This release can be skipped if these
-regridding features are not useful to you.
+regridding and NCZarr features are not useful to you.
 
 Work on NCO 5.1.6 has commenced and aims to add support for Zarr S3 
 stores and to polish support for new codecs.
@@ -59,7 +59,7 @@ Previously foo would be overwritten if it already existed yet was
 not a valid NCZarr store. Thanks to Dennis Heimbigner of Unidata
 for discussing this behavior.
 
-E. NCO improves handling of output from the DOE EAMxx model
+D. NCO improves handling of output from the DOE EAMxx model
 in two ways. First, NCO now treats this model output as
 CF-compliant. This causes NCO to implement special conventions such as
 carrying multi-dimensional auxiliary coordinate variables when
@@ -110,7 +110,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.1.4 built/tested under
+These problems occur with NCO 5.1.6 built/tested under
 MacOS 13.2 with netCDF 4.9.1 on HDF5 1.12.2 and with
 Linux with netCDF 4.9.1 on HDF5 1.8.19.
 

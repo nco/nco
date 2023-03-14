@@ -310,7 +310,7 @@ make install
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20230110
-# Personal recipe last used successfully: 20221128 (borken as of 20221214)
+# Personal recipe last used successfully: 20230314
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
 export PATH=${MY_BIN_DIR}:'/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
@@ -318,7 +318,6 @@ export PATH=${MY_BIN_DIR}:'/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_
 # NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
 # 20220104 NB: ANTLR_ROOT in ${HOME} is only used at compile-time, not run-time
 ANTLR_ROOT=${HOME} CC='gcc' CPPFLAGS='-I/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' CXX='g++' LDFLAGS='-L/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest' NETCDF_INC='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' NETCDF_LIB='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
@@ -331,7 +330,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/4.9.3 # 20201208
 # Personal recipe last modified: 20221019 (link -lantlr from MY_LIB_DIR not HOME/lib)
-# Personal recipe last used successfully: 20221128
+# Personal recipe last used successfully: 20230314
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -365,7 +364,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 216373 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 module load nco/4.7.4 # 20180417
 # Personal recipe last modified: 20190813
-# Personal recipe last used successfully: 20230110
+# Personal recipe last used successfully: 20230314
 # Personal recipe last failed: 20190812 (antlr needed GCC 9.1.0 recompile)
 # Cheyenne GNU:
 module purge
@@ -388,7 +387,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20221004 (use Anaconda)
-# Personal recipe last used successfully: 20230225
+# Personal recipe last used successfully: 20230315
 cd ~/nco;/bin/rm -f *.foo;make distclean
 module load gcc/9.2.0-ugetvbp
 module load openmpi/4.0.4-hpcx-hghvhj5
@@ -412,7 +411,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 20190525 ICS-40n99 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
 # Personal recipe last modified: 20221222 (remove UDUNITS2_PATH)
-# Personal recipe last used successfully: 20230225
+# Personal recipe last used successfully: 20230315
 module purge
 module load gcc/10.2.0
 #module load mvapich2/2.3.7 # Required for ncclimo/ncremap in MPI-mode
@@ -554,7 +553,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20221223
-# Personal recipe last used successfully: 20230225
+# Personal recipe last used successfully: 20230314
 module load PrgEnv-gnu
 module load gcc/11.2.0
 module load cray-hdf5/1.12.2.1
@@ -729,18 +728,6 @@ make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-
-# icc/icpc 20160217 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on yellowstone:
-# Sysadmin upgrade request: cislhelp@ucar.edu
-# Latest ticket to build NCO: 172597 on 20170526
-# Latest sysadmin-compiled module usage: module load nco/4.6.9 # 20171002
-# Personal recipe last modified: 20170812
-# Personal recipe last used successfully: 20171108
-module add intel/16.0.3;module add gsl;module add netcdf/4.4.1;
-export PATH=${PATH}:/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/bin # needed for ncgen
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/lib # needed to run NCO
-cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd -
 ************************************************************************
 End LINUX
 ************************************************************************

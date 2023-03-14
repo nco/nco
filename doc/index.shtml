@@ -647,15 +647,20 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 5.1.5 http://github.com/nco/nco.git nco-5.1.5</tt></a>.
 <ul>
-<li><b>NCO 5.1.6</b>: (<i>Future</i>)
+<li><b>NCO 5.1.7</b>: (<i>Future</i>)
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
-<li><b>NCO 5.1.5</b>: (<i>In Progress, features in-progress or complete include</i>)
+<li><b>NCO 5.1.6</b>: (<i>In Progress, features in-progress or complete include</i>)
 <tt>all --cmp_sng</tt> accept human-legible floating-point, unsigned codec parameters</li>
-<li><b>NCO 5.1.4</b>: (<i>Current Stable Release</i>)
-<tt>ncremap</tt> SIMD fix on Compy</li>
+<li><b>NCO 5.1.5</b>: (<i>Current Stable Release</i>)
+<tt>all</tt> overwrite NCZarr stores more safely;
+<tt>ncremap plev_nm, --prs_stt, mss_val</tt> fixes;
+<tt>ncremap</tt> EAMxx w/plev;
+<tt>ncremap --ps_rtn</tt></li>
+<li><b>NCO 5.1.4</b>: 
+<tt>ncremap</tt> SIMD fix on Compy;
 <tt>ncremap</tt> depth-based vertical interpolation</li>
 <li><b>NCO 5.1.3</b>: 
 <tt>ncremap</tt> column-MRV vertical interpolation</li>
