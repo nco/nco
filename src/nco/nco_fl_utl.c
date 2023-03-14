@@ -443,7 +443,7 @@ nco_drc_ncz_rm /* [fnc] Safely remove valid NCZarr directory */
 	rcd=nco_open_flg(fl_dst_dpl,NC_NOWRITE,&in_id);
 	if(rcd == NC_NOERR){
 	  rcd=nco_close(in_id);
-	  nco_fl_rm(fl_dst_psx);
+	  nco_fl_rm(fl_dst_dpl);
 	}else{
 	  (void)fprintf(stderr,"%s: ERROR nc_open(%s) failed with error code %d. ",nco_prg_nm_get(),fl_dst_dpl,rcd);
 	  (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
