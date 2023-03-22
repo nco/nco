@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.6-alpha01
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 14 March 2023
+@set update-date 21 March 2023
 @set update-month March 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -4474,6 +4474,31 @@ ncks -O --cmp='gbr|shf|zst' ${in_psx} ${out_ncz} # Quantize/Compress
 ncks -O --cmp='gbr|shf|zst' ${in_ncz} ${out_ncz} # Quantize/Compress
 @end verbatim
 @end example
+Note that NCZarr only supports the netCDF4 (not netCDF3) data model.
+This is because NCZarr needs to know chunking and compression
+information by default (it is not optional).
+Hence if the input format is netCDF3, then the user must explicitly
+specify a netCDF4 format for the output NCZarr storage:
+@example
+@verbatim
+in_psx="${HOME}/in_zarr3.nc" # As above, but a netCDF3 input file
+
+ncks -O -4 ${in_psx} ${out_ncz} # netCDF3 POSIX input to Zarr output
+ncks -O -7 ${in_psx} ${out_ncz} # netCDF3 POSIX input to Zarr output
+@end verbatim
+@end example
+Furthermore, the current NCZarr library (version 4.9.2, March 2023)
+does not yet support record dimensions (this is a significant and high
+priority netCDF library limitation, not an @acronym{NCO} limitation).
+All dimensions must be fixed, not record
+To workaround this limitation, first fix any record dimensions with,
+e.g., 
+@example
+@verbatim
+ncks -O --fix_rec_dmn=all ${in_psx} ${in_psx}
+@end verbatim
+@end example
+
 Commands with Zarr I/O behave mostly as expected.
 @acronym{NCO} treats Zarr and @acronym{POSIX} files identically once
 they are opened via the netCDF @acronym{API}.
@@ -4505,10 +4530,10 @@ desired scheme and append the desired fragment to the matched Zarr
 stores, and pipe those results onward to an @acronym{NCO} operator: 
 @example
 @verbatim
-ncra in*.nc out.nc      # POSIX input files via globbing
-ls in*.nc | ncra out.nc # POSIX input files via stdin
-ls in*.nc | ncz2psx | ncra out.nc # Zarr input via stdin
-ls in*.nc | ncz2psx --scheme=file --mode=nczarr,file | ncra out.nc
+nces in*.nc out.nc      # POSIX input files via globbing
+ls in*.nc | nces out.nc # POSIX input files via stdin
+ls -d in* | ncz2psx | nces out.nc # Zarr input via stdin
+ls -d in* | ncz2psx --scheme=file --mode=nczarr,file | nces out.nc
 @end verbatim
 @end example
 

@@ -12,7 +12,7 @@
 // 7. Report regressions in string handling to Unidata
 // 8. 20220906 Re-test variables/attributes of string type after PR #2497 by D. Heimbigner fixed support for strings. Strings now work as advertised
 // 9. 20220907 Report "Unmatched untrace: fcn=ncz_get_var_meta expected=NCZ_inq_var_filter_info" issue
-// 10. Remove degenerate "scalar" dimension
+// 10. Remove degenerate "scalar" dimension which NCZarr now supports
 
 // Usage:
 // netCDF4: ncgen arguments depend on version:

@@ -1,8 +1,14 @@
-2023-03-14  Charlie Zender  <zender@uci.edu>
+2023-03-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha02: Baltimore';git push
-	git tag -a 5.1.6-alpha02 -m '';git push --tags
+	git tag -a 5.1.6-alpha02 -m 'all: fix NCZarr overwrite/removal';git push --tags
+
+	* Hint that error code -137, "NetCDF: NCZarr error" can be a NCZarr codec decompression issue
+
+2023-03-14  Charlie Zender  <zender@uci.edu>
+
+	* Call nco_fl_rm(fl_ncz) not nco_fl_rm(fl_psx)
 
 	* Fix nco_drc_ncz_rm() to attempt nc_open(ncz_fl) not nc_open(psx_fl)
 

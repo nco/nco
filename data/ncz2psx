@@ -69,6 +69,7 @@ spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} 
 spt_pid=$$ # [nbr] Script PID (process ID)
 
 # Debugging and Benchmarking:
+# /bin/ls -d ${HOME}/nco/data/h000? | ncz2psx
 # /bin/ls -d ${HOME}/nco/data/h000? | ncz2psx | ncea -O ~/out.nc
 
 # Production usage:

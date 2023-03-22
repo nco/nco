@@ -967,7 +967,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(nco_fl_nm_vld_ncz_syn(fl_nm_lcl)){
-    /* Important to check for NCZarr before https_url_sng because https is a legal NCZarr scheme */
+    /* Check for NCZarr before https_url_sng because https:// and file:// are legal NCZarr schemes */
 #if NC_HAS_NCZARR
     url_sng_lng=strlen(nczarr_url_sng);
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s attempting to open %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
@@ -981,7 +981,11 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       /* 20220712: Set rcd_stt=0 to mimic successful stat() return like DAP (NCZarr protocol also treats files as local) */
       rcd_stt=0;
     }else{ /* !rcd */
-      if(!NCZARR_URL) (void)fprintf(stdout,"%s: INFO %s failed to nc_open() this Zarr-scheme file even though NCZarr is enabled. HINT: Check that filename adheres to this syntax: scheme://host:port/path?query#fragment and that filename exists. NB: s3 scheme requires that netCDF be configured with –enable-nczarr-s3 option.\n",nco_prg_nm_get(),fnc_nm);
+      if(!NCZARR_URL){
+	(void)fprintf(stdout,"%s: INFO %s failed to nc_open() this Zarr-scheme file even though NCZarr is enabled. HINT: Check that filename adheres to this syntax: scheme://host:port/path?query#fragment and that filename exists. NB: s3 scheme requires that netCDF be configured with –enable-nczarr-s3 option.\n",nco_prg_nm_get(),fnc_nm);
+	(void)fprintf(stderr,"HINT: As of 20230321, a known problem is that NCO (and ncdump) have trouble reading compressed NCZarr datasets. This can manifest as error code -137, \"NetCDF: NCZarr error\". If the next line reports that error, the error may be due to this issue, i.e., to a codec issue uncompressing the dataset:\n");
+	(void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
+      } /* !NCZARR_URL */
     } /* !rcd */
 #else /* !NC_HAS_NCZARR */
     (void)fprintf(stdout,"%s: ERROR %s interpreted %s as NCZarr file but NCZarr was not enabled in this netCDF library. HINT: Install a netCDF-library (4.8.0 or later) configured with --enable-nczarr (a default netCDF setting), and, for S3 support, with --enable-nczarr-s3 (not a default netCDF setting), then rebuild NCO with that library.\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
