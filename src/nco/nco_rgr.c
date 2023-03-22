@@ -5066,6 +5066,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"latitude0",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("latitude0"); /* Oxford */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2l_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x2l_ny"); /* E3SM coupler land domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2r_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x2r_ny"); /* E3SM coupler river domain */
     else if((rcd=nco_inq_dimid_flg(in_id,"y1",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y1"); /* NSIDC EASE */
     else if((rcd=nco_inq_dimid_flg(in_id,"ygrid",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("ygrid"); /* SSM/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"ygrid_0",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("ygrid_0"); /* NWS HRRR */
@@ -5106,6 +5108,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("y"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
     else if((rcd=nco_inq_dimid_flg(in_id,"x1",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x1"); /* NSIDC EASE */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2l_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x2l_nx"); /* E3SM coupler land domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2r_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x2r_nx"); /* E3SM coupler river domain */
     else if((rcd=nco_inq_dimid_flg(in_id,"xgrid",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("xgrid"); /* SSM/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"xgrid_0",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("xgrid_0"); /* NWS HRRR */
     else{
@@ -5266,7 +5270,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       } /* !dmn_idx */
     } /* !nco_obj_typ_var */
   } /* !idx_tbl */
-  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit regridding criteria. The regridder expects something to regrid, and variables not regridded are copied straight to output. HINT: If the name(s) of the input horizontal spatial dimensions to be regridded (e.g., latitude and longitude or column) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"latitude\", \"longitude\", and \"ncol\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr col=lndgrid --rgr lat=north\" or \"ncremap -R '--rgr col=lndgrid --rgr lat=north'\".\n",nco_prg_nm_get(),fnc_nm);
+  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit regridding criteria. The regridder expects something to regrid, and variables not regridded are copied straight to output. HINT: If the name(s) of the input horizontal spatial dimensions to be regridded (e.g., latitude and longitude or column) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"latitude\", \"longitude\", and \"ncol\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr col_nm=lndgrid --rgr lat_nm=north\" or \"ncremap -R '--rgr col_nm=lndgrid --rgr lat_nm=north'\".\n",nco_prg_nm_get(),fnc_nm);
   
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -9374,6 +9378,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"ULAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("ULAT"); /* CICE, POP */
     else if((rcd=nco_inq_varid_flg(in_id,"LATITUDE",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LATITUDE"); /* ARGO */
     else if((rcd=nco_inq_varid_flg(in_id,"latCell",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latCell"); /* MPAS-O/I */
+    else if((rcd=nco_inq_varid_flg(in_id,"doml_lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("doml_lat"); /* E3SM coupler land domain */
+    else if((rcd=nco_inq_varid_flg(in_id,"domr_lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("domr_lat"); /* E3SM coupler river domain */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("nav_lat"); /* NEMO */
     else if((rcd=nco_inq_varid_flg(in_id,"rlat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("rlat"); /* RACMO */
     else if((rcd=nco_inq_varid_flg(in_id,"global_latitude0",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("global_latitude0"); /* Oxford */
@@ -9403,6 +9409,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"ULONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULONG"); /* POP */
     else if((rcd=nco_inq_varid_flg(in_id,"LONGITUDE",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("LONGITUDE"); /* ARGO */
     else if((rcd=nco_inq_varid_flg(in_id,"lonCell",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lonCell"); /* MPAS-O/I */
+    else if((rcd=nco_inq_varid_flg(in_id,"doml_lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("doml_lon"); /* E3SM coupler land domain */
+    else if((rcd=nco_inq_varid_flg(in_id,"domr_lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("domr_lon"); /* E3SM coupler river domain */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("nav_lon"); /* NEMO */
     else if((rcd=nco_inq_varid_flg(in_id,"rlon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("rlon"); /* RACMO */
     else if((rcd=nco_inq_varid_flg(in_id,"global_longitude0",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("global_longitude0"); /* Oxford NB: Must search for global_* first */
