@@ -1,6 +1,6 @@
 :: bld.bat
-:: Windows script to build NCO on the command line, using Visual Studio 
-:: 1) clones all NCO dependecies 
+:: Windows script to build NCO on the command line, using Visual Studio
+:: 1) clones all NCO dependecies
 :: 2) cmake builds all NCO dependencies obtained with 'git clone'
 :: 3) cmake builds NCO
 :: 4) tests the netcdf build by reading a remote file with the built ncdump
@@ -54,7 +54,7 @@ if not exist %build% (
  echo skipping mkdir %build%
 )
 
-:: change to build place 
+:: change to build place
 :: replace the character string '\' with '/' needed for cmake
 pushd %build%
 set tmp=%cd%
@@ -366,8 +366,8 @@ if exist %build%\netcdf-c\build\ncdump\ncdump.exe (
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DENABLE_TESTS=OFF ^
            -DBUILD_SHARED_LIBS=OFF ^
-           -DHDF5_HL_LIBRARY=%root%/hdf5/build/bin/Debug/libhdf5_hl_D.lib ^
-           -DHDF5_C_LIBRARY=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
+           -DHDF5_HL_LIBRARY=%root%/hdf5/build/bin/Debug/hdf5_hl_D.lib ^
+           -DHDF5_C_LIBRARY=%root%/hdf5/build/bin/Debug/hdf5_D.lib ^
            -DHDF5_INCLUDE_DIR=%root%/hdf5/src ^
            -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
            -DSZIP_LIBRARY:FILE=%root%/szip/build/bin/Debug/szip.lib ^
@@ -413,8 +413,8 @@ if exist %build%\Debug\ncks.exe (
   -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
   -DNETCDF_INCLUDE:PATH=%root%/netcdf-c/include ^
   -DNETCDF_LIBRARY:FILE=%root%/netcdf-c/build/liblib/Debug/netcdf.lib ^
-  -DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
-  -DHDF5_HL_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_hl_D.lib ^
+  -DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/hdf5_D.lib ^
+  -DHDF5_HL_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/hdf5_hl_D.lib ^
   -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
   -DSZIP_LIBRARY:FILE=%root%/szip/build/bin/Debug/szip.lib ^
   -DCURL_LIBRARY:FILE=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
@@ -425,7 +425,7 @@ if exist %build%\Debug\ncks.exe (
   -DGSL_LIBRARY:FILE=%root%/gsl/build/Debug/gsl.lib ^
   -DGSL_CBLAS_LIBRARY:FILE=%root%/gsl/build/Debug/gslcblas.lib ^
   -DANTLR_INCLUDE:PATH=%root%/antlr2/lib/cpp ^
-  -DANTLR_LIBRARY:FILE=%root%/antlr2/lib/cpp/build/Debug/antlr.lib 
+  -DANTLR_LIBRARY:FILE=%root%/antlr2/lib/cpp/build/Debug/antlr.lib
   msbuild nco.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   if errorlevel 1 goto :eof
 )
@@ -441,13 +441,13 @@ set data=%root_win%\..\data
 :: generation of comparison files in UNIX done with
 :: pvicente@glace:~/nco/data$ ../cmake/ncks in_grp.nc > in_grp.nc.txt
 :: pvicente@glace:~/nco/data$ ../cmake/ncks in.nc > in.nc.txt
-:: generate text files in_grp.nc.gen.txt from in_grp.nc and in.nc and use tool FC to compare contents 
+:: generate text files in_grp.nc.gen.txt from in_grp.nc and in.nc and use tool FC to compare contents
 :: with pre-existing in_grp.nc.txt, in.nc.txt, generated in Linux
 :: generation of in_grp.nc.gen.txt must be done in 'data' folder so that paths match
 
 @pushd %data%
-%build%\Debug\ncks.exe in_grp.nc > %build%\in_grp.nc.gen.txt 
-%build%\Debug\ncks.exe in.nc > %build%\in.nc.gen.txt 
+%build%\Debug\ncks.exe in_grp.nc > %build%\in_grp.nc.gen.txt
+%build%\Debug\ncks.exe in.nc > %build%\in.nc.gen.txt
 @popd
 @popd
 fc %build%\in_grp.nc.gen.txt in_grp.nc.txt

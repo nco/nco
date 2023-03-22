@@ -36,8 +36,8 @@ bld crt
 NCO should detect the ZLIB dependency in HDF5 as
 
 ```
--- Looking for H5Z_DEFLATE in I:/nco/cmake/build/hdf5/build/bin/Debug/libhdf5_D.lib
--- Looking for H5Z_DEFLATE in I:/nco/cmake/build/hdf5/build/bin/Debug/libhdf5_D.lib - found
+-- Looking for H5Z_DEFLATE in I:/nco/cmake/build/hdf5/build/bin/Debug/hdf5_D.lib
+-- Looking for H5Z_DEFLATE in I:/nco/cmake/build/hdf5/build/bin/Debug/hdf5_D.lib - found
 -- ZLIB library is needed...
 ```
 
@@ -77,7 +77,7 @@ edit hdf5-static.vcxproj and add full path of ZLIB and SZIP libraries as depende
 ```
 <Lib>
 <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-<AdditionalDependencies>G:\nco\cmake\build\hdf5\build\bin\Debug\libhdf5_hl_D.lib;G:\nco\cmake\build\hdf5\build\bin\Debug\libhdf5_D.lib;G:\nco\cmake\build\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+<AdditionalDependencies>G:\nco\cmake\build\hdf5\build\bin\Debug\hdf5_hl_D.lib;G:\nco\cmake\build\hdf5\build\bin\Debug\hdf5_D.lib;G:\nco\cmake\build\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
 </Lib>
 ```
 

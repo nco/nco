@@ -17,8 +17,8 @@ cmake -G "NMake Makefiles" ^
       -D CMAKE_PREFIX_PATH=%LIBRARY_PREFIX% ^
       -D NETCDF_INCLUDE=%LIBRARY_INC% ^
       -D NETCDF_LIBRARY=%LIBRARY_LIB%\netcdf.lib ^
-      -D HDF5_LIBRARY=%LIBRARY_LIB%\libhdf5.lib ^
-      -D HDF5_HL_LIBRARY=%LIBRARY_LIB%\libhdf5_hl.lib ^
+      -D HDF5_LIBRARY=%LIBRARY_LIB%\hdf5.lib ^
+      -D HDF5_HL_LIBRARY=%LIBRARY_LIB%\hdf5_hl.lib ^
       -D GSL_INCLUDE=%LIBRARY_INC% ^
       -D GSL_LIBRARY=%LIBRARY_LIB%\gsl.lib ^
       -D GSL_CBLAS_LIBRARY=%LIBRARY_LIB%\gslcblas.lib ^

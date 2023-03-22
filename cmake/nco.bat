@@ -17,7 +17,7 @@ if not exist %build% (
  echo skipping mkdir %build%
 )
 
-:: change to build place 
+:: change to build place
 :: replace the character string '\' with '/' needed for cmake
 pushd %build%
 set tmp=%cd%
@@ -35,8 +35,8 @@ cmake .. -H..\.. ^
 -DMSVC_USE_STATIC_CRT=ON ^
 -DNETCDF_INCLUDE:PATH=%root%/netcdf-c/include ^
 -DNETCDF_LIBRARY:FILE=%root%/netcdf-c/build/liblib/Debug/netcdf.lib ^
--DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
--DHDF5_HL_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_hl_D.lib ^
+-DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/hdf5_D.lib ^
+-DHDF5_HL_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/hdf5_hl_D.lib ^
 -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
 -DSZIP_LIBRARY:FILE=%root%/szip/build/bin/Debug/szip.lib ^
 -DCURL_LIBRARY:FILE=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
@@ -47,4 +47,4 @@ cmake .. -H..\.. ^
 -DGSL_LIBRARY:FILE=%root%/gsl/build/Debug/gsl.lib ^
 -DGSL_CBLAS_LIBRARY:FILE=%root%/gsl/build/Debug/gslcblas.lib ^
 -DANTLR_INCLUDE:PATH=%root%/antlr2/lib/cpp ^
--DANTLR_LIBRARY:FILE=%root%/antlr2/lib/cpp/build/Debug/antlr.lib 
+-DANTLR_LIBRARY:FILE=%root%/antlr2/lib/cpp/build/Debug/antlr.lib
