@@ -5066,7 +5066,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"latitude0",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("latitude0"); /* Oxford */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
+    else if((rcd=nco_inq_dimid_flg(in_id,"a2x_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("a2x_ny"); /* E3SM coupler atmosphere domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"g2x_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("g2x_ny"); /* E3SM coupler glacier domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"l2x_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("l2x_ny"); /* E3SM coupler land domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"o2x_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("o2x_ny"); /* E3SM coupler ocean domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"r2x_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("r2x_ny"); /* E3SM coupler river domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2a_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x2a_ny"); /* E3SM coupler atmosphere domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2g_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x2g_ny"); /* E3SM coupler glacier domain */
     else if((rcd=nco_inq_dimid_flg(in_id,"x2l_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x2l_ny"); /* E3SM coupler land domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2o_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x2o_ny"); /* E3SM coupler ocean domain */
     else if((rcd=nco_inq_dimid_flg(in_id,"x2r_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x2r_ny"); /* E3SM coupler river domain */
     else if((rcd=nco_inq_dimid_flg(in_id,"y1",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y1"); /* NSIDC EASE */
     else if((rcd=nco_inq_dimid_flg(in_id,"ygrid",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("ygrid"); /* SSM/I */
@@ -5108,7 +5116,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("y"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
     else if((rcd=nco_inq_dimid_flg(in_id,"x1",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x1"); /* NSIDC EASE */
+    else if((rcd=nco_inq_dimid_flg(in_id,"a2x_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("a2x_nx"); /* E3SM coupler atmosphere domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"g2x_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("g2x_nx"); /* E3SM coupler glacier domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"l2x_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("l2x_nx"); /* E3SM coupler land domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"o2x_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("o2x_nx"); /* E3SM coupler ocean domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"r2x_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("r2x_nx"); /* E3SM coupler river domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2a_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x2a_nx"); /* E3SM coupler atmosphere domain */
     else if((rcd=nco_inq_dimid_flg(in_id,"x2l_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x2l_nx"); /* E3SM coupler land domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2o_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x2o_nx"); /* E3SM coupler ocean domain */
     else if((rcd=nco_inq_dimid_flg(in_id,"x2r_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x2r_nx"); /* E3SM coupler river domain */
     else if((rcd=nco_inq_dimid_flg(in_id,"xgrid",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("xgrid"); /* SSM/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"xgrid_0",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("xgrid_0"); /* NWS HRRR */

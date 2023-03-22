@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha02: Baltimore';git push
 	git tag -a 5.1.6-alpha02 -m 'all: fix NCZarr overwrite/removal';git push --tags
 
-	* ncremap add x2[lr]_n[xy] dimensions and dom[lr]_[lat/lon] variables for coupler land and river domains to database
+	* ncremap add x2[aglro]_n[xy] dimensions and dom[lr]_[lat/lon] variables for coupler land and river domains to database
 
 	* ncremap correct lon/lat dimension keys in error HINT
 
