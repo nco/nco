@@ -2847,7 +2847,7 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
     if(rcd == NC_EEDGE){
       (void)fprintf(stdout,"NC_EEDGE Error Diagnostics for variable \"%s\"\ndmn_idx\tsrt\tcnt\n",var_nm);
       for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
-	(void)fprintf(stdout,"%d\t%lu\t%lu",dmn_idx,srt_sz_t[dmn_idx],cnt_sz_t[dmn_idx]);
+	(void)fprintf(stdout,"%d\t%lu\t%lu\n",dmn_idx,srt_sz_t[dmn_idx],cnt_sz_t[dmn_idx]);
     } /* !rcd */
   } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara()");
