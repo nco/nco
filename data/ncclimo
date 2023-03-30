@@ -3765,18 +3765,14 @@ if [ "${clm_flg}" = 'Yes' ]; then
     if [ -n "${yr_srt_prv}" ]; then
 	if [ -n "${rgr_opt}" ]; then 
 	    echo "ncview ${fl_rgr_xtn[${idx_lst}]} &"
-	    echo "panoply ${fl_rgr_xtn[${idx_lst}]} &"
 	else
 	    echo "ncview ${fl_xtn[${idx_lst}]} &"
-	    echo "panoply ${fl_xtn[${idx_lst}]} &"
 	fi # !rgr_opt    
     else
 	if [ -n "${rgr_opt}" ]; then 
 	    echo "ncview ${fl_rgr[${idx_lst}]} &"
-	    echo "panoply ${fl_rgr[${idx_lst}]} &"
 	else
 	    echo "ncview ${fl_out[${idx_lst}]} &"
-	    echo "panoply ${fl_out[${idx_lst}]} &"
 	fi # !rgr_opt    
     fi # !yr_srt_prv
 fi # !clm_flg
@@ -3785,10 +3781,8 @@ if [ "${tms_flg}" = 'Yes' ]; then
     let idx_lst=${var_nbr}-1
     if [ -n "${rgr_opt}" ] && [ ${no_ntv_tms} = 'No' ]; then 
 	echo "ncview ${fl_rgr[${idx_lst}]} &"
-	echo "panoply ${fl_rgr[${idx_lst}]} &"
     else
 	echo "ncview ${fl_out[${idx_lst}]} &"
-	echo "panoply ${fl_out[${idx_lst}]} &"
     fi # !rgr_opt    
 fi # !tms_flg
 date_end=$(date +"%s")

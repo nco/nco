@@ -1,8 +1,18 @@
-2023-03-21  Charlie Zender  <zender@uci.edu>
+2023-03-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha02: Baltimore';git push
 	git tag -a 5.1.6-alpha02 -m 'all: fix NCZarr overwrite/removal;	ncremap cpl dmn';git push --tags
+
+	* ncremap/ncclimo cease printing example Panoply instructions
+
+2023-03-22  Charlie Zender  <zender@uci.edu>
+
+	* Note that ERWG 8.4.1 from Conda-Forge fails due to not being built with PIO
+
+	* Treat all datasets as CF-compliant (to carry associated coordinate variables and multi-dimensional associate coordinates)
+
+2023-03-21  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add x2[aglro]_n[xy] dimensions and dom[lr]_[lat/lon] variables for coupler land and river domains to database
 

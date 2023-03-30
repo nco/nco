@@ -160,7 +160,7 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
   if(wrt_nbr != var_sz){
     (void)fprintf(stderr,"%s: ERROR only succeeded in writing %ld of %ld elements of variable %s\n",nco_prg_nm_get(),wrt_nbr,var_sz,var_nm);
     nco_exit(EXIT_FAILURE);
-  } /* end if */
+  } /* !wrt_nbr */
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s (%s, %ld x %lu B), ",var_nm,c_typ_nm(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ));
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fflush(stderr);
   return wrt_nbr; /* O [nbr] Number of elements successfully written */
@@ -188,4 +188,4 @@ nco_bnr_rd /* [fnc] Read unformatted binary data */
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"Binary read of %s (%s, %ld x %lu B)",var_nm,c_typ_nm(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ));
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fflush(stderr);
   return rd_nbr; /* O [nbr] Number of elements successfully written */
-} /* end nco_bnr_rd() */
+} /* !nco_bnr_rd() */

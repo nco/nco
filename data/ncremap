@@ -10,7 +10,7 @@
 # 3-Clause BSD License.
 
 # You are permitted to link NCO with the HDF, netCDF, OPeNDAP, and UDUnits
-# libraries and to distribute the resulting executables under the terms 
+# libraries and to distribute the resulting executables under the terms
 # of the BSD, but in addition obeying the extra stipulations of the 
 # HDF, netCDF, OPeNDAP, and UDUnits licenses.
 
@@ -3611,7 +3611,6 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Completed regridding data file(s) at `date`.\n"
 	echo "Quick plots of results from last regridded file:"
 	echo "ncview  ${out_fl} &"
-	echo "panoply ${out_fl} &"
     fi # !fl_nbr
     date_dff=$((date_end-date_srt))
     echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"

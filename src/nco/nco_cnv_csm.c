@@ -122,7 +122,11 @@ nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating
   /* Allocate */
   cnv=(cnv_sct *)nco_malloc(sizeof(cnv_sct));
   /* Set defaults */
-  cnv->CCM_CCSM_CF=False;
+  /* 20230322: Change default to set CF Conventions to True 
+     Rationale: It is always useful to carry coordinates, associated coordinates, multi-disciplinary associated coordinates 
+     Downsides: Time to search group trees to find things like multi-disciplinary associated coordinates */
+  //  cnv->CCM_CCSM_CF=False;
+  cnv->CCM_CCSM_CF=True;
   cnv->MPAS=False;
   cnv->Group=False;
   cnv->cf_vrs=1.0;
@@ -134,7 +138,7 @@ nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating
     /* Re-try with lowercase string because some models, e.g., CLM, user lowercase "conventions" */
     cnv_sng=cnv_sng_LC;
     rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
-  } /* endif lowercase */
+  } /* !lowercase */
   
   if(rcd == NC_NOERR && att_typ == NC_CHAR){
     /* Add one for NUL byte */
@@ -167,7 +171,7 @@ nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating
       if(nco_dbg_lvl_get() >= nco_dbg_fl && nco_dbg_lvl_get() != nco_dbg_dev && nco_is_rth_opr(nco_prg_id_get())) (void)fprintf(stderr,"%s: INFO NCO attempts to abide by many official and unofficial metadata conventions including ARM, CCM, CCSM, CF, and MPAS. To adhere to these conventions, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\" (for CCM/CCSM files) or \"areaCell\" or \"edgesOnCell\" (for MPAS files), and many operators will always leave coordinate variables unchanged. The full list of exceptions is in the manual http://nco.sf.net/nco.html#CF\n",nco_prg_nm_get());
     } /* !dbg */
     att_val=(char *)nco_free(att_val);
-  } /* endif */
+  } /* !rcd */
 
   return cnv;
   
