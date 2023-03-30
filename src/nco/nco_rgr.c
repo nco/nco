@@ -4993,6 +4993,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"ncol_d",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("ncol_d"); /* EAM dynamics grid */
     else if((rcd=nco_inq_dimid_flg(in_id,"ncol_p",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("ncol_p"); /* EAM physics grid */
     else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("sounding_id"); /* OCO2 */
+    else if((rcd=nco_inq_dimid_flg(in_id,"a2x_nx",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("a2x_nx"); /* E3SM coupler atmosphere domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"g2x_nx",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("g2x_nx"); /* E3SM coupler glacier domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"l2x_nx",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("l2x_nx"); /* E3SM coupler land domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"o2x_nx",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("o2x_nx"); /* E3SM coupler ocean domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"r2x_nx",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("r2x_nx"); /* E3SM coupler river domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2a_nx",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("x2a_nx"); /* E3SM coupler atmosphere domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2l_nx",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("x2l_nx"); /* E3SM coupler land domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2o_nx",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("x2o_nx"); /* E3SM coupler ocean domain */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x2r_nx",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("x2r_nx"); /* E3SM coupler river domain */
     /* 20180605: Database matches to above names may be false-positives
        ALM/CLM/CTSM/ELM store all possible dimension names that archived variables could use
        NCO only prints dimensions used in variables, while ncdump prints all dimensions 

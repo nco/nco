@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha02: Baltimore';git push
 	git tag -a 5.1.6-alpha02 -m 'all: fix NCZarr overwrite/removal;	ncremap cpl dmn';git push --tags
 
+	* ncremap add coupler x-dimension names as unstructured dimension candidates
+
 	* ncremap/ncclimo add prc_typ='cpl' option stub
 
 2023-03-29  Charlie Zender  <zender@uci.edu>
