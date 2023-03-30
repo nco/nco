@@ -1,8 +1,12 @@
-2023-03-29  Charlie Zender  <zender@uci.edu>
+2023-03-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha02: Baltimore';git push
 	git tag -a 5.1.6-alpha02 -m 'all: fix NCZarr overwrite/removal;	ncremap cpl dmn';git push --tags
+
+	* ncremap/ncclimo add prc_typ='cpl' option stub
+
+2023-03-29  Charlie Zender  <zender@uci.edu>
 
 	* ncremap/ncclimo cease printing example Panoply instructions
 

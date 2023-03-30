@@ -580,7 +580,7 @@ no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
 par_typ="${par_bck}" # [sng] Parallelism type
 ppc_prc='' # [nbr] Precision-preserving compression precision
-prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'eamxx', 'elm', 'mali', 'mpas', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi')
+prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'cpl', 'eam', 'eamxx', 'elm', 'mali', 'mpas', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi')
 rgn_avg='No' # [sng] Regional and global average timeseries
 rgr_map='' # [sng] Regridding (horizontal) map
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
