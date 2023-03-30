@@ -2842,12 +2842,21 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   } /* !var_typ */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
+    int dmn_id[NC_MAX_VAR_DIMS];
+    size_t dmn_sz[NC_MAX_VAR_DIMS];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
     (void)fprintf(stdout,"ERROR: %s failed to nc_put_vara() variable \"%s\"\n",fnc_nm,var_nm);
     if(rcd == NC_EEDGE){
-      (void)fprintf(stdout,"NC_EEDGE Error Diagnostics for variable \"%s\"\ndmn_idx\tsrt\tcnt\n",var_nm);
+      (void)fprintf(stdout,"NC_EEDGE Error Diagnostics\ndmn_idx\tsrt\tcnt\n");
+      (void)fprintf(stdout,"Start and Count Vectors NCO tried to write for variable %s:\n",var_nm);
       for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
 	(void)fprintf(stdout,"%d\t%lu\t%lu\n",dmn_idx,srt_sz_t[dmn_idx],cnt_sz_t[dmn_idx]);
+      (void)nco_inq_vardimid(nc_id,var_id,dmn_id);
+      (void)fprintf(stdout,"Dimension sizes that netCDF file expected to receive for variable %s:\ndmn_idx\tsz\n",var_nm);
+      for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	(void)nc_inq_dimlen(nc_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
+	(void)fprintf(stdout,"%d\t%lu\n",dmn_idx,dmn_sz[dmn_idx]);
+      } /* !dmn_idx */
     } /* !rcd */
   } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara()");
