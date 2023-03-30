@@ -5034,7 +5034,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Hail Mary algorithm: Use following 2D input grid block to identify horizontal coordinates and dimensions */
 	flg_grd_in_1D_dat_in_2D=True;
 	flg_grd_in_2D=True;
-	//nco_exit(EXIT_FAILURE);
       } /* !dmn_idx */
     } /* !col_nm_in */
   } /* !1D */
@@ -5264,7 +5263,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
 	/* Regrid variables containing the horizontal spatial dimension on 1D grids, and both latitude and longitude on 2D grids */
-	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG variable %s, dmn_nm_cp = %s, lat_nm_in = %s, lon_nm_in = %s, col_nm_in = %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm,dmn_nm_cp,lat_nm_in,lon_nm_in,col_nm_in);
+	if(nco_dbg_lvl_get() >= nco_dbg_fl && flg_grd_in_1D_dat_in_2D) (void)fprintf(stdout,"%s: DEBUG variable %s, dmn_nm_cp = %s, lat_nm_in = %s, lon_nm_in = %s, col_nm_in = %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm,dmn_nm_cp,lat_nm_in,lon_nm_in,col_nm_in);
 	if(!strcmp(dmn_nm_cp,col_nm_in) || (has_lon && has_lat)){
 	  trv_tbl->lst[idx_tbl].flg_rgr=True;
 	  var_rgr_nbr++;

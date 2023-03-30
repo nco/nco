@@ -2839,12 +2839,17 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   case NC_STRING: rcd=NCO_PUT_VARA_STRING(nc_id,var_id,srt_sz_t,cnt_sz_t,(const char **)vp); break;
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !var_typ */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
     (void)fprintf(stdout,"ERROR: %s failed to nc_put_vara() variable \"%s\"\n",fnc_nm,var_nm);
-  } /* endif */
+    if(rcd == NC_EEDGE){
+      (void)fprintf(stdout,"NC_EEDGE Error Diagnostics for variable \"%s\"\ndmn_idx\tsrt\tcnt\n",var_nm);
+      for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
+	(void)fprintf(stdout,"%d\t%lu\t%lu",dmn_idx,srt_sz_t[dmn_idx],cnt_sz_t[dmn_idx]);
+    } /* !rcd */
+  } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara()");
   return rcd;
 } /* !nco_put_vara */
