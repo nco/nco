@@ -125,7 +125,7 @@ if [ -z "${DATA}" ]; then
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	compy* | n[0123456789][0123456789][0123456789][0123456789] ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
-	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
+	cooley* | cc[0123456789][0123456789][0123456789] ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* | cmem* | nid[0123456789][0123456789][0123456789][0123456789][0123456789] ) DATA="${SCRATCH}" ; ;; # NERSC cori compute nodes named nidNNNNN (Haswell/KNL) or cmemNN (AMD) with (32/68/64)|(96/128/1024) cores|GB/node (knl/haswell/amd) (login nodes 512 GB)
 	perlmutter* | login[0123456789][0123456789] | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) DATA="${SCRATCH}" ; ;; # NERSC perlmutter compute nodes named nidNNNNNN (CPU) with (64)|(512) cores|GB/node (cpu) (login nodes 512 GB)
 	theta* ) DATA="/projects/ClimateEnergy_3/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
@@ -218,9 +218,9 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 	    fi ; ;; # !NCARG_ROOT
-	mira* )
-	    export PATH='/home/zender/bin_mira'\:${PATH}
-	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
+	e3sm* )
+	    export PATH='/home/zender/bin:/home/zender/anaconda/bin'\:${PATH}
+	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	perlmutter* | login[0123456789][0123456789] | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] )
 	    # 20221103 Add build environment modules
 	    module load PrgEnv-gnu
@@ -1327,7 +1327,7 @@ if [ -n "${mpi_nbr_usr}" ]; then
 	*cheyenne* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
 	compy* | n[0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun --mpi=pmi2 -n ${mpi_nbr}" ; ;; 
 	constance* | node* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
-	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;;
+	cooley* | cc[0123456789][0123456789][0123456789] ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;;
 	cori* | cmem* | nid[0123456789][0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
 	perlmutter* | login[0123456789][0123456789] | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
 	theta* ) mpi_pfx="aprun -n ${mpi_nbr}" ; ;; 
@@ -2236,7 +2236,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    export MPI_SHEPHERD=true
 #		    cmd_mpi[${fl_idx}]="mpiexec_mpt dplace ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
 		    cmd_mpi[${fl_idx}]="mpirun ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
-		cooley* | cc[0123456789][0123456789][0123456789] | mira* ) 
+		cooley* | cc[0123456789][0123456789][0123456789] ) 
 		    # 20190310: Cooley mpirun now uses -hosts instead of -H for hostname option
 		    cmd_mpi[${fl_idx}]="mpirun -hosts ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # ALCF
 		theta* )
