@@ -6,6 +6,8 @@
 
 	* ncremap/ncclimo remove alcf mira, add e3sm.ess.uci.edu
 
+	* ncremap/ncclimo remove alcf mira, add e3sm.ess.uci.edu
+
 2023-03-30  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add coupler x-dimension names as unstructured dimension candidates
