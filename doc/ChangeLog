@@ -1,10 +1,14 @@
-2023-03-31  Charlie Zender  <zender@uci.edu>
+2023-04-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha02: Baltimore';git push
 	git tag -a 5.1.6-alpha02 -m 'all: fix NCZarr overwrite/removal;	ncremap cpl dmn';git push --tags
 
-	* ncremap/ncclimo remove alcf mira, add e3sm.ess.uci.edu
+	* ncremap add nco_vrt_grd_sng() to debug prs->prs issues
+
+2023-03-31  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add --col_nm
 
 	* ncremap/ncclimo remove alcf mira, add e3sm.ess.uci.edu
 

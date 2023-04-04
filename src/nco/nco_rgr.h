@@ -232,6 +232,10 @@ extern "C" {
   nco_rgr_grd_sng /* [fnc] Convert grid conversion enum to string */
   (const nco_rgr_typ_enm nco_rgr_typ); /* I [enm] Grid conversion enum */
 
+  const char * /* O [sng] String describing vertical grid-type */
+  nco_vrt_grd_sng /* [fnc] Convert vertical grid-type enum to string */
+  (const nco_grd_vrt_typ_enm nco_vrt_grd_typ); /* I [enm] Vertical grid-type enum */
+
   const char * /* O [sng] String describing regridding method */
   nco_ply_dcm_sng /* [fnc] Convert regridding method enum to string */
   (const nco_rgr_mth_typ_enm nco_rgr_mth_typ); /* I [enm] Regridding method enum */
