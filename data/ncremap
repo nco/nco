@@ -376,8 +376,11 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_ne30np4l72_ps.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc # PS in "fat" template file
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # skinny template file
 # Missing-value extrapolation (mss_val|nrs_ngh)
-# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # Extrapolation results in missing values
-# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_prs_ncep_L19.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # 
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_prs_ncep_L19.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
+# Pressure->Pressure
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_prs_ncep_L19.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo_L19.nc
+# ncremap --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_prs_L3.nc ~/foo_L19 ~/foo.nc
 # Simultaneous horizontal/vertical regridding L72->L30
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --vrt_out=${DATA}/grids/vrt_hyb_L30.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
 # ncremap -P mpasocean -v timeMonthly_avg_activeTracers_temperature,timeMonthly_avg_zMid --map=${DATA}/maps/map_EC30to60E2r2_to_cmip6_180x360_nco.20220301.nc --vrt_out=${DATA}/grids/vrt_dpt_L10.nc ${DATA}/bm/mpov2_EC30to60E2r2l60.nc ~/foo.nc # borken 20230222 since vrt_ntp (correctly) does not propagate timeMonthly_avg_zMid, yet horizontal regridder expects it

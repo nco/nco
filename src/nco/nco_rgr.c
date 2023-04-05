@@ -1106,7 +1106,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !flg_grd_out_dpt_3D */
   } /* !flg_grd_out_dpt */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG Output grid flags: flg_grd_out_hyb = %d, flg_grd_out_prs = %d, flg_grd_out_dpt_1D = %d, flg_grd_out_dpt_3D = %d\n",nco_prg_nm_get(),flg_grd_out_hyb,flg_grd_out_prs,flg_grd_out_dpt_1D,flg_grd_out_dpt_3D);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO Output grid flags: flg_grd_out_hyb = %d, flg_grd_out_prs = %d, flg_grd_out_dpt_1D = %d, flg_grd_out_dpt_3D = %d\n",nco_prg_nm_get(),flg_grd_out_hyb,flg_grd_out_prs,flg_grd_out_dpt_1D,flg_grd_out_dpt_3D);
 
   if(flg_grd_out_hyb){
     rcd=nco_inq_varid(tpl_id,"hyai",&hyai_id);
@@ -1617,7 +1617,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   assert(!(flg_grd_out_hyb && flg_grd_out_dpt));
   assert(!(flg_grd_out_prs && flg_grd_out_dpt));
   assert(flg_grd_out_hyb || flg_grd_out_prs || flg_grd_out_dpt);
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG Input grid flags : flg_grd_in_hyb = %d, flg_grd_in_prs = %d, flg_grd_in_dpt_1D = %d, flg_grd_in_dpt_3D = %d\n",nco_prg_nm_get(),flg_grd_in_hyb,flg_grd_in_prs,flg_grd_in_dpt_1D,flg_grd_in_dpt_3D);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO Input grid flags : flg_grd_in_hyb = %d, flg_grd_in_prs = %d, flg_grd_in_dpt_1D = %d, flg_grd_in_dpt_3D = %d\n",nco_prg_nm_get(),flg_grd_in_hyb,flg_grd_in_prs,flg_grd_in_dpt_1D,flg_grd_in_dpt_3D);
   
   /* 20191219: This block is not used, deprecate it? Or use once new coordinates like altitude, depth supported? */
   nco_vrt_ntp_typ_enm nco_vrt_ntp_typ=nco_ntp_nil; /* Vertical interpolation type */
@@ -1888,7 +1888,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	 Examine first multi-dimensional variable that includes plev dimension 
 	 Assume horizontal dimensions vary more rapidly than (i.e., follow) plev
 	 Compute horizontal grid size accordingly
-	 Set output horizontal size to input horizontal size */
+	 Set output horizontal size to input horizontal size
+	 Examine this same variable for record dimension representing time
+	 Set input number of timesteps to this value */
       int var_nbr; /* [nbr] Number of variables in file */
       int var_idx; /* [idx] Index over variables in file */
       rcd=nco_inq(in_id,&dmn_nbr_in,&var_nbr,(int *)NULL,(int *)NULL);
@@ -1903,12 +1905,31 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	/* Does current variable have lev dimension? */
 	if(dmn_idx < dmn_nbr_in){
 	  /* Yes. Do any dimensions vary more rapidly than lev? */
+	  /* 20230404 fxm: Following block sets grd_sz_in correctly only when flg_hrz_mrv == True? */
 	  if(dmn_idx < dmn_nbr_in-1){
 	    /* Yes. Assume remaining dimensions are horizontal spatial dimensions */
 	    for(int dmn_idx_hrz=dmn_idx+1;dmn_idx_hrz<dmn_nbr_in;dmn_idx_hrz++){
 	      rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx_hrz],dmn_cnt_in+dmn_idx_hrz);
 	      grd_sz_in*=dmn_cnt_in[dmn_idx_hrz];
 	    } /* !dmn_idx_hrz */
+
+	    /* 20230404 fxm: got to here with tm_nbr_in */
+	    /* Use this same multi-dimensional variable to determine number of timesteps */
+	    for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	      for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
+		if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
+		  break; 
+	      rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
+	      if(rec_idx != dmn_nbr_rec && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L){
+		/* Multi-dimensional template variable contains this multi-element record dimension, which we assume is time (not space) */
+		dmn_id_tm_in=dmn_ids_in[dmn_idx];
+		dmn_idx_tm_in=dmn_idx;
+		tm_nbr_in=dmn_cnt_in[dmn_idx_tm_in];
+		tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
+	      } /* !rec_idx, !dmn_nbr_out, !dmn_cnt_out */
+	    } /* !dmn_idx */
+
+	    /* We have gleaned both spatial and horizontal grid from this variable, no further variables need be examined */
 	    break;
 	  } /* !dmn_idx */
 	} /* !dmn_idx */
@@ -1917,7 +1938,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	if(var_idx == var_nbr)
 	  (void)fprintf(stdout,"%s: INFO %s reports input file has no variables with multiple dimensions, i.e., input could be vertical only, with no horizontal extent\n",nco_prg_nm_get(),fnc_nm);
       grd_sz_out=grd_sz_in;
-    } /* !flg_grd_out_hyb */
+
+    } /* !flg_grd_out_prs */
   } /* !flg_grd_in_prs */
 
   double *bd_in=NULL; /* [m] Depth of ocean bottom (positive) on input grid */
@@ -2316,6 +2338,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       memcpy(ps_out,ps_in,tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr));
     } /* !ps_id_tpl */
   } /* !flg_grd_in_hyb, !flg_grd_out_hyb */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO temporal and spatial dimensions: grd_sz_in = grd_sz_out = %ld, tm_nbr_in = tm_nbr_out = %ld\n",nco_prg_nm_get(),grd_sz_in,tm_nbr_in);
 
   /* Compare input and output surface pressure fields to determine whether subterranean extrapolation required */
   nco_bool flg_add_msv_att; /* [flg] Extrapolation requires _FillValue */
