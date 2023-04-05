@@ -1,7 +1,7 @@
 2023-04-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha02: Baltimore';git push
+	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha02: Indictment Excitement';git push
 	git tag -a 5.1.6-alpha02 -m 'all: fix NCZarr overwrite/removal;	ncremap cpl dmn, tms prs, non-spatial lrv';git push --tags
 
 	* ncremap support non-spatial dimensions (temporal, spectral, constituent) for all vertical grid types
