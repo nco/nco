@@ -2359,6 +2359,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     prs_min_in=(double *)nco_malloc_dbg(tm_hrz_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_in value buffer");
     prs_min_out=(double *)nco_malloc_dbg(tm_hrz_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_out value buffer");
     if(flg_grd_in_dpt_3D){
+      // 20230404 fxm fxm buggy on depth grids unless in_ncr==True
       // fxm: assumes depth/height grid has least/greatest depth/height at bottom/top level
       for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
 	idx_fst=tm_idx*grd_sz_in;
@@ -2369,6 +2370,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       } /* !tm_idx */
     } /* !flg_grd_in_dpt_3D */
     if(flg_grd_out_dpt_3D){
+      // 20230404 fxm fxm buggy on depth grids unless in_ncr==True
       // fxm: assumes depth/height grid has least/greatest depth/height at bottom/top level
       for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
 	idx_fst=tm_idx*grd_sz_out;
@@ -2395,6 +2397,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       for(size_t idx_out=0;idx_out<tm_hrz_sz;idx_out++) prs_min_out[idx_out]=lev_out_min;
     } /* !flg_grd_out_dpt_1D */
     if(flg_grd_in_hyb){
+      // 20230404 fxm fxm buggy on hybrid grids unless in_ncr==False
       // fxm: assumes hybrid grid has least/greatest pressure at top/bottom level
       idx_lev_max=lev_nbr_in-1;
       idx_lev_min=0L;
@@ -2407,6 +2410,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       } /* !tm_idx */
     } /* !flg_grd_in_hyb */
     if(flg_grd_out_hyb){
+      // 20230404 fxm fxm buggy on hybrid grids unless in_ncr==False
       // fxm: assumes hybrid grid has least/greatest pressure at top/bottom level
       idx_lev_max=lev_nbr_out-1;
       idx_lev_min=0L;
