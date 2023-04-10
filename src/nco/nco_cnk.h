@@ -138,7 +138,7 @@ nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
 (const int nc_id, /* I [idx] netCDF file ID */
  const int var_id); /* I [id] Variable ID */
 
-#if 0 
+#if false 
 size_t * /* O [nbr] Chunksize array for variable */
 nco_cnk_sz_get /* [fnc] Determine chunksize array */
 (const int nc_id, /* I [id] netCDF file ID */

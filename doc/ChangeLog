@@ -1,8 +1,18 @@
-2023-04-09  Charlie Zender  <zender@uci.edu>
+2023-04-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha03: Smoker';git push
 	git tag -a 5.1.6-alpha03 -m '';git push --tags
+
+	* Improve pressure bounds check to account for missing values in dpt_3D grids
+
+	* configure.ac use clang++ -std=c++14 to avoid deprecated std::binary_operator error with default -std=c++17 in Clangv16
+
+	* Henry patched NCO (NcapVector.hh) to avoid using std::binary_operator
+
+	* Replace #if 0 with #if false
+
+2023-04-09  Charlie Zender  <zender@uci.edu>
 
 	* Implement correct pressure bounds check for input dpt_3D grids with arbitrary flg_hrz_mrv and ncr_idx_in
 
@@ -14,7 +24,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha02: Indictment Excitement';git push
 	git tag -a 5.1.6-alpha02 -m 'all: fix NCZarr overwrite/removal;	ncremap cpl dmn, tms prs, non-spatial lrv';git push --tags
 
-	* ncremap support non-spatial dimensions (temporal, spectral, constituent) for all vertical grid types
+	* ncremap support non-spatial dimensions (temporal, spectral, chemical) for all vertical grid types
 
 	* ncremap support vertical interpolation of timeseries data from pure-pressure to pure-pressure grids
 

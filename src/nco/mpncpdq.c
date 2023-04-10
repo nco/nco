@@ -1039,11 +1039,11 @@ main(int argc,char **argv)
           lcl_nbr_var++;
           var_prc_out[idx]->id=msg_bfr[2];
           /* Process this variable same as UP code */
-#if 0
+#if false
 	  /* NB: Immediately preceding MPI else scope confounds Emacs indentation
 	     Fake end scope restores correct indentation, simplifies code-checking */
 	} /* fake end else */
-#endif /* !0 */
+#endif /* !false */
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,nco_dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,nco_prg_nm,rcd,var_prc,var_prc_out)

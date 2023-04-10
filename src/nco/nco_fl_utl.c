@@ -1362,7 +1362,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       } /* !cln_ptr */
     } /* !rmt_cmd */
     
-#if 0
+#if false
     /* NB: MSS commands deprecated 20110419 */
     if(!rmt_cmd){
       /* Does msrcp command exist on local system? */
@@ -1393,7 +1393,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	nco_exit(EXIT_FAILURE);
       } /* !fl_nm_rmt */
     } /* !rmt_cmd */
-#endif /* !False */
+#endif /* !false */
     
     /* NB: HPSS commands replaced MSS commands in NCO 4.0.8 in 201104 */
     if(!rmt_cmd){
@@ -2145,13 +2145,13 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 #else /* !ENABLE_MPI */
     rcd+=nco__create(fl_out_tmp,md_create,NC_SIZEHINT_DEFAULT,&bfr_sz_hnt_lcl,out_id);
 #endif /* !ENABLE_MPI */
-#if 0
+#if false
     if(nco_dbg_lvl_get() >= nco_dbg_fl){
       int fl_fmt_xtn_out=nco_fmt_xtn_nil; /* [enm] Extended file format */
       (void)nco_inq_format_extended(*out_id,&fl_fmt_xtn_out,(int *)NULL);
       (void)fprintf(stderr,"%s: DEBUG %s created file %s of extended type %s\n",nco_prg_nm_get(),fnc_nm,fl_out_tmp,nco_fmt_xtn_sng(fl_fmt_xtn_out));
     } /* !dbg */
-#endif /* !0 */
+#endif /* !false */
     return fl_out_tmp;
   } /* !FORCE_OVERWRITE */
 

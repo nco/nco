@@ -1848,7 +1848,7 @@ nco_gpe_prs_arg /* [fnc] Parse Group Path Editing (GPE) argument */
     gpe->nm_cnn[0]='/';
   } /* endif */
 
-#if 0  
+#if false  
   /* Slash-terminate name */
   if(gpe->nm[gpe->lng_cnn-1L] == '/'){
     gpe->nm_cnn=(char *)strdup(gpe->nm);
@@ -1860,7 +1860,7 @@ nco_gpe_prs_arg /* [fnc] Parse Group Path Editing (GPE) argument */
     gpe->nm_cnn[gpe->lng_cnn-1L]='/';
     gpe->nm_cnn[gpe->lng_cnn]='\0';
   } /* endif */
-#endif /* !0 */  
+#endif /* !false */  
 
   /* Final parsing results */
   if(nco_dbg_lvl_get() >= nco_dbg_scl){

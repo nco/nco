@@ -488,7 +488,7 @@ nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
   
 } /* end nco_cnk_dsk_inq() */
 
-#if 0
+#if false
 /* NB: Following routines are placeholders, currently not used */
 size_t * /* O [nbr] Chunksize array for variable */
 nco_cnk_sz_get /* [fnc] Determine chunksize array */

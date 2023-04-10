@@ -1169,7 +1169,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
 	      /* Process all variables in current record */
 	      if(nco_dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,gettext("Record %ld of %s is output record %ld\n"),idx_rec,fl_in,rec_usd_cml);
-#if 0
+#if false
 	      /* NB: Immediately preceding MPI for scope confounds Emacs indentation
 		 Fake end scope restores correct indentation, simplifies code-checking */
 	    } /* fake end for */
@@ -1339,7 +1339,7 @@ main(int argc,char **argv)
       if(prc_rnk != rnk_mgr){ /* Only workers have indices of variables to process */
 	for(jdx=0;jdx<lcl_nbr_var;jdx++){
 	  idx=lcl_idx_lst[jdx];
-#if 0
+#if false
 	  /* NB: Immediately preceding MPI if/for scopes confound Emacs indentation
 	     Fake end scopes restore correct indentation, simplify code-checking */
 	} /* fake end for */
@@ -1527,7 +1527,7 @@ main(int argc,char **argv)
     var_fix=(var_sct **)nco_free(var_fix);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
 #endif /* !1 */
-#if 0
+#if false
     /* 20051027: Try ncwa free()'ing technique to avoid freeing dangling pointers */
     if(xtr_nbr > 0) var=nco_var_lst_free(var,xtr_nbr); 
     /* ncwa uses nco_var_lst_free() on var_prc_out because var_out has dangling pointers */
@@ -1536,7 +1536,7 @@ main(int argc,char **argv)
     var_prc=(var_sct **)nco_free(var_prc);
     var_fix=(var_sct **)nco_free(var_fix);
     var_out=(var_sct **)nco_free(var_out);
-#endif /* !0 */
+#endif /* !false */
   } /* !flg_mmr_cln */
   
   nco_exit_gracefully();

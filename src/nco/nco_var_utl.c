@@ -1920,7 +1920,7 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
   /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
 
-#if 0
+#if false
   /* PJR requested warning to be added when multiple file operators worked on 
      variables with missing_value since so many things could go wrong
      Now un-necessary since multi-file packing ostensibly works

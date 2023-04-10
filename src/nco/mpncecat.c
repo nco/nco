@@ -791,12 +791,12 @@ main(int argc,char **argv)
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
     
-#if 0
+#if false
     /* fxm: netCDF4: Change to independent variable reads? */
 #ifdef ENABLE_NETCDF4
     rcd=nco_open_par(fl_in,NC_MPIIO|NC_NETCDF4,mpi_cmm,mpi_nfo,&in_id);
 #endif /* !ENABLE_NETCDF4 */
-#endif /* !0 */
+#endif /* !false */
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
     

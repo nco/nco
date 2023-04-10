@@ -611,7 +611,7 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
   
   /* Used this block of code until 20040603. 
      It keeps track of tally but does not do anything with it later */
-#if 0
+#if false
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
@@ -4021,7 +4021,7 @@ nco_var_zero /* [fnc] Zero value of first operand */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
-#if 0
+#if false
   /* Presumably this old method (used until 20050321) is slower because of pointer de-referencing */
   long idx;
   
@@ -4093,7 +4093,7 @@ nco_var_zero /* [fnc] Zero value of first operand */
   case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-#endif /* !0 */
+#endif /* !false */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */

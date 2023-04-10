@@ -2770,7 +2770,7 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
   }else{
     rcd=nc_get_vara(nc_id,var_id,srt_sz_t,cnt_sz_t,(void *)vp);
   } /* !udt */
-#if 0
+#if false
   if(var_typ <= NC_MAX_ATOMIC_TYPE){
     switch(var_typ){
     case NC_FLOAT: rcd=nc_get_vara_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(float *)vp); break;

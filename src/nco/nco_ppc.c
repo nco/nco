@@ -611,7 +611,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       {0.9,-0.096910013}, /* Approximate log10(mnt) for mantissas in [0.8,0.9) as log10(0.8) = -0.0969 */
       {1.0,-0.045757490}, /* Approximate log10(mnt) for mantissas in [0.9,1.0) as log10(0.9) = -0.0458 */
     }; /* !mnt_log10_tbl_dgr */
-#if 0 /* Not currently used */
+#if false /* Not currently used */
   const double mnt_log10_tbl_gbr[5][2]=
     { /* NB: Granular BitGroom extends Digit Round tabular precision from 9 to 15 digits */
      {0.6,-dgt_per_bit}, /* Approximate log10(mnt) for mantissas in [0.5,0.6) as log10(0.5) = log10(2^(-1)) = -log10(2) = -dgt_per_bit = -0.301 */
@@ -620,7 +620,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      {0.9,-0.096910013008056}, /* Approximate log10(mnt) for mantissas in [0.8,0.9) as log10(0.8) = -0.0969 */
      {1.0,-0.045757490560675}, /* Approximate log10(mnt) for mantissas in [0.9,1.0) as log10(0.9) = -0.0458 */
     }; /* !mnt_log10_tbl_gbr */
-#endif /* !0 */
+#endif /* !false */
   double mnt; /* [frc] Mantissa, 0.5 <= mnt < 1.0 */
   double mnt_fabs; /* [frc] fabs(mantissa) */
   double mnt_log10_fabs; /* [frc] log10(fabs(mantissa))) */

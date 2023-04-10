@@ -71,7 +71,7 @@ extern "C" {
 #endif /* !NEED_STRNCASECMP */
   
   /* 20161205 GNU since gcc 4.7.3 provides strcasestr() as non-standard extension iff _GNU_SOURCE is defined */
-#if 0
+#if false
 #ifdef __GNUC__  
 # define _GNU_SOURCE
 #endif /* __GNUC__ */
