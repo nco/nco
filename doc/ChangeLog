@@ -1,3 +1,13 @@
+2023-04-09  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.6-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha03: Smoker';git push
+	git tag -a 5.1.6-alpha03 -m '';git push --tags
+
+	* Implement correct pressure bounds check for input dpt_3D grids with arbitrary flg_hrz_mrv and ncr_idx_in
+
+	* Diagnose rather than assume whether input/output hybrid coordinates increase or decrease in index (not geometric) space
+
 2023-04-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6-alpha02 release procedure:
