@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-//#include <functional>
+#include <functional>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -20,7 +20,7 @@ public:
     return (int)(std::vector<T>::size());
   }
 
-  struct less_mag 
+  struct less_mag
    {
        bool operator()( T t1, T t2) { 
          return ( strcmp(t1->nm,t2->nm)<0) ; 
