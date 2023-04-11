@@ -16,4 +16,4 @@ if [ $# -lt 2 ];then
   exit 1;
 fi
 
-sed -E  's/:[ \t]+public ANTLR_USE_NAMESPACE\(std\)binary_function<.*>//g' <$1 >$2
+sed -E  's/:[ \t]+public ANTLR_USE_NAMESPACE\(std\)binary_function<[^\>]+>//g' <$1 >$2
