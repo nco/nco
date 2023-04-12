@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.6-alpha03
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 21 March 2023
-@set update-month March 2023
+@set update-date 12 April 2023
+@set update-month April 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -20272,7 +20272,7 @@ This switch (which takes no argument) explicitly instructs
 @command{ncclimo} to split the input multi-variable raw datasets into 
 per-variable timeseries spanning the entire period.
 The @code{--split} switch, and its synonyms @code{--splitter},
-@code{--tms_flg}, and @code{--timeseries}, wer introduced in
+@code{--tms_flg}, and @code{--timeseries}, were introduced in
 @acronym{NCO} version 5.0.4 (released December, 2021).
 Previously, the splitter was automatically invoked whenever the input
 files were provided via @code{stdin}, globbing, or positional
@@ -20501,31 +20501,36 @@ or to split the input files.
 This section of the @command{ncclimo} documentation applies only to
 resphaping mode, whereas all subsequent sections apply to climatology
 generation mode. 
-As mentioned above, 
-@command{ncclimo} automatically switches to timeseries reshaping mode 
-if it receives a list of files through @code{stdin}, or, alternatively,
+In splitter mode, @command{ncclimo} @emph{reshapes} the input so that
+the outputs are continuous timeseries of each variable taken from all
+input files.  
+As of @acronym{NCO} version 5.0.4 (released December, 2021), 
+@command{ncclimo} enters splitter mode when invoked with the
+@code{--split} switch (or its synonyms @code{--splitter}, 
+@code{--tms_flg}, or @code{--timeseries}) or with the @code{--ypf_max} 
+option. 
+Then @command{ncclimo} will create per-variable timeseries from the
+list of files supplied via @code{stdin}, or, alternatively,
 placed as positional arguments (after the last command-line option), or
 if neither of these is done and no @var{caseid} is specified, in which
 case it assumes all @code{*.nc} files in @var{drc_in} constitute the
 input file list. 
-These examples invoke reshaping mode in the three possible ways:
+These examples invoke reshaping mode in the four possible ways:
 @example
 # Pipe list to stdin
-cd $drc_in;ls *mdl*000[1-9]*.nc | ncclimo -v T,Q,RH -s 1 -e 9 -o $drc_out
+cd $drc_in;ls *mdl*000[1-9]*.nc | ncclimo --split -v T,Q,RH -s 1 -e 9 -o $drc_out
 # Redirect list from file to stdin
-cd $drc_in;ls *mdl*000[1-9]*.nc > foo;ncclimo -v T,Q,RH -s 1 -e 9 -o $drc_out < foo
+cd $drc_in;ls *mdl*000[1-9]*.nc > foo;ncclimo --split -v T,Q,RH -s 1 -e 9 -o $drc_out < foo
 # List as positional arguments
-ncclimo -v T,Q,RH -s 1 -e 9 -o $drc_out $drc_in/*mdl*000[1-9]*.nc
+ncclimo --split -v T,Q,RH -s 1 -e 9 -o $drc_out $drc_in/*mdl*000[1-9]*.nc
 # Glob directory
-ncclimo -v T,Q,RH -s 1 -e 9 -i $drc_in -o $drc_out
+ncclimo --split -v T,Q,RH -s 1 -e 9 -i $drc_in -o $drc_out
 @end example
 Assuming each input file is a monthly average comprising the variables
 @var{T}, @var{Q}, and @var{RH}, then the output will be files
 @file{T_000101_000912.nc}, 
 @file{Q_000101_000912.nc}, and
 @file{RH_000101_000912.nc}. 
-@command{ncclimo} @emph{reshapes} the input so that the outputs are
-continuous timeseries of each variable taken from all input files. 
 When necessary, the output is split into segments each containing no
 more than @var{ypf_max} (default 50) years of input, i.e., 
 @file{T_000101_005012.nc}, @file{T_005101_009912.nc},
@@ -20541,19 +20546,19 @@ members).
 @command{ncclimo} and @command{ncremap} recognize input files as being 
 @acronym{MPAS}-style when invoked with @samp{-P mpas} or with the
 more expressive synonym  @samp{--prc_typ=mpas}.
-While this works for generating climatologies for any @acronym{MPAS}
-model, some regridder options are model-specific and therefore it is
+The the generic @samp{-P mpas} invocation works for generating
+climatologies for any @acronym{MPAS} model.
+However, some regridder options are model-specific and therefore it is  
 smarter to specify which @acronym{MPAS} model produced the input
-data. 
-
-@samp{-m mpasocean}, (or @samp{-m mpaso} for short),
-@samp{-m mpasseaice}, (or @samp{-m mpassi} for short), or
-@samp{-m mali}, like this: 
+data with 
+@samp{-P mpasocean}, (or @samp{-P mpaso} for short),
+@samp{-P mpasseaice}, (or @samp{-P mpassi} for short), or
+@samp{-P mali}, like this: 
 @example
 @verbatim
-ncclimo -m mpaso  -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
-ncclimo -m mpassi -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-SI
-ncclimo -m mali   -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-LI
+ncclimo -P mpaso  -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
+ncclimo -P mpassi -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-SI
+ncclimo -P mali   -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-LI
 @end verbatim
 @end example
 
