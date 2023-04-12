@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha03: Smoker';git push
 	git tag -a 5.1.6-alpha03 -m '';git push --tags
 
+	* ncclimo: emit deprecation ERROR and HINT when invoked with --stdin
+
 	* nco.texi update documentation to reflect --split and --stdin changes from 5.0.4
 
 2023-04-10  Charlie Zender  <zender@uci.edu>
