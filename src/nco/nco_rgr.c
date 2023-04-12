@@ -2374,15 +2374,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       // 20230404 fxm fxm buggy on depth grids unless ncr_idx_in==True
       // fxm: assumes depth/height grid has least/greatest depth/height at bottom/top level
 #if false      
-      /* Must know missing value before determining monotonicity sign/direction */
+      /* Acquire or assign missing value before determining monotonicity sign/direction */
+      has_mss_val=False;
       if(dpt_id_in != NC_MIN_INT){
-	has_mss_val=False;
 	has_mss_val=nco_mss_val_get_dbl(fl_xtr_id,dpt_id,&mss_val_dbl);
       } /* !dpt_id_in */
       if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
       /* fxm: Find gridcell with valid depths in at least top two layers */
       for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
-	;
+	if(dpt_mdp_in[0L] != mss_val_cmp_dbl);
       } /* !grd_idx */
       /* Does input depth coordinate increase or decrease in index (not geometric) space? */
       prs_max_in[0]=dpt_mdp_in[0L];

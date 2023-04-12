@@ -1,8 +1,12 @@
-2023-04-10  Charlie Zender  <zender@uci.edu>
+2023-04-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha03: Smoker';git push
 	git tag -a 5.1.6-alpha03 -m '';git push --tags
+
+	* nco.texi update documentation to reflect --split and --stdin changes from 5.0.4
+
+2023-04-10  Charlie Zender  <zender@uci.edu>
 
 	* Improve pressure bounds check to account for missing values in dpt_3D grids
 

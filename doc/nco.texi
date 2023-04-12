@@ -20302,45 +20302,6 @@ generating timeseries filenames for the splitter, and of piping
 files to @code{stdin} or similar for climo generation.
 
 @html
-<a name="stdin"></a> <!-- http://nco.sf.net/nco.html#stdin -->
-@end html
-@cindex @acronym{SLURM}
-@cindex @acronym{PBS}
-@cindex @code{--stdin}
-@cindex @code{--inp_std}
-@cindex @code{--std_flg}
-@cindex @code{--redirect}
-@cindex @code{--standard_input}
-@item --stdin (@code{--stdin}, @code{--inp_std}, @code{--std_flg}, @code{--redirect}, @code{--standard_input})
-This switch (which takes no argument) explicitly indicates that 
-input file lists are provided via @code{stdin}, i.e., standard input.
-In interactive environments, @command{ncclimo} and @command{ncremap}
-can automatically (i.e., without any switch) detect whether input is
-provided via @code{stdin}. 
-This switch is never required for jobs run in an interactive shell. 
-However, non-interactive batch jobs (such as those submitted to the 
-@acronym{SLURM} and @acronym{PBS} schedulers) make it impossible to 
-unambiguously determine whether input has been provided via
-@code{stdin}. 
-Specifically, the @samp{--stdin} switch @emph{must} be used in
-non-interactive batch jobs on @acronym{PBS} when the input files
-are piped to @code{stdin}, and on @acronym{SLURM} when the input files 
-are redirected from a file to @code{stdin}.
-Using this switch in any other context (e.g., interactive shells) is
-optional.
-
-In some other non-interactive environments (e.g., @command{crontab},
-@code{nohup}, Azure @acronym{CI}, @acronym{CWL}), @command{ncclimo}
-and @command{ncremap} may mistakenly expect input to be provided on
-@code{stdin} simply because the environment is using @code{stdin} for
-other purposes. 
-In such cases users may disable checking @code{stdin} by explicitly
-invoking the @samp{--clm_md} option (this works, as described above,
-only for @command{ncclimo}), or by invoking the @samp{--no_stdin} flag
-(described next), which works for both @command{ncclimo} and
-@command{ncremap}. 
-
-@html
 <a name="no_stdin"></a> <!-- http://nco.sf.net/nco.html#no_stdin -->
 @end html
 @cindex Chrysalis
@@ -28047,6 +28008,49 @@ A skeleton file is a bare-bones datafile on the specified grid.
 It contains the complete latitude/longitude grid and an area field.
 Skeleton files are useful for validating that the grid-creation
 instructions in @var{grd_sng} perform as expected.
+
+@html
+<a name="stdin"></a> <!-- http://nco.sf.net/nco.html#stdin -->
+@end html
+@cindex @acronym{SLURM}
+@cindex @acronym{PBS}
+@cindex @code{--stdin}
+@cindex @code{--inp_std}
+@cindex @code{--std_flg}
+@cindex @code{--redirect}
+@cindex @code{--standard_input}
+@item --stdin (@code{--stdin}, @code{--inp_std}, @code{--std_flg}, @code{--redirect}, @code{--standard_input})
+This switch (which takes no argument) explicitly indicates that 
+input file lists are provided via @code{stdin}, i.e., standard input.
+In interactive environments, @command{ncremap} can automatically
+(i.e., without any switch) detect whether input is provided via
+@code{stdin}.  
+This switch is never required for jobs run in an interactive shell. 
+However, non-interactive batch jobs (such as those submitted to the 
+@acronym{SLURM} and @acronym{PBS} schedulers) make it impossible to 
+unambiguously determine whether input has been provided via
+@code{stdin}. 
+Specifically, the @samp{--stdin} switch @emph{must} be used with
+@command{ncremap} in non-interactive batch jobs on @acronym{PBS}
+when the input files are piped to @code{stdin}, and on @acronym{SLURM}
+when the input files are redirected from a file to @code{stdin}
+@footnote{
+Until version 5.0.4 (December, 2021) the @samp{--stdin} was
+also supported by @command{ncclimo}, and used for the same reasons
+as it still is for @command{ncclimo}.
+At that time, the @samp{--split} switch superceded the @samp{--stdin} 
+switch in @command{ncclimo}, where it is now deprecated.}.
+Using @samp{--stdin} in any other context (e.g., interactive shells)
+is optional.
+
+In some other non-interactive environments (e.g., @command{crontab},
+@code{nohup}, Azure @acronym{CI}, @acronym{CWL}),
+@command{ncremap} may mistakenly expect input to be provided on
+@code{stdin} simply because the environment is using @code{stdin} for
+other purposes. 
+In such cases users may disable checking @code{stdin} by explicitly
+invoking the @samp{--no_stdin} flag (described next), which works for
+both @command{ncclimo} and @command{ncremap}. 
 
 @html
 <a name="no_stdin"></a> <!-- http://nco.sf.net/nco.html#no_stdin -->

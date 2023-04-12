@@ -920,10 +920,8 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       skl_fl=?* | skl=?* | skeleton=?* | skeleton_file=?* ) skl_fl="${LONG_OPTARG}" ;; # # Skeleton file
 	       stdin | inp_std | std_flg | redirect | standard_input ) inp_std='Yes' ;; # # Input file list from stdin
 	       stdin=?* | inp_std=?* | std_flg=?* | redirect=?* | standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Input file list from stdin
-
-	       no_stdin | no_inp_std | no_redirect | no_standard_input ) std_chk='No' ;; # # Check stdin for input file list
-	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Check stdin for input file list
-
+	       no_stdin | no_inp_std | no_redirect | no_standard_input ) std_chk='No' ;; # # Do not check stdin for input file list
+	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Do not check stdin for input file list
 	       stg_grd | stg | stagger | staggered_grid ) stg_grd='Yes' ;; # # Add staggered grid variables
 	       stg_grd=?* | stg=?* | stagger=?* | staggered_grid ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Add staggered grid variables
 	       no_stg_grd | no_stg | no_stagger | no_staggered_grid ) stg_grd='No' ;; # # Omit staggered grid variables
