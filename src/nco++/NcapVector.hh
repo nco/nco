@@ -20,7 +20,7 @@ public:
     return (int)(std::vector<T>::size());
   }
 
-  struct less_mag : public std::binary_function< T, T, bool> 
+  struct less_mag
    {
        bool operator()( T t1, T t2) { 
          return ( strcmp(t1->nm,t2->nm)<0) ; 
