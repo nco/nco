@@ -1,8 +1,14 @@
-2023-04-12  Charlie Zender  <zender@uci.edu>
+2023-04-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha03: Smoker';git push
 	git tag -a 5.1.6-alpha03 -m 'ncclimo: --split, --stdin docs; ncremap: use flg_hrz_mrv and ncr_idx_in/out to set xtr flg for hyb, dpt_3D';git push --tags
+
+2023-04-25  Charlie Zender  <zender@uci.edu>
+
+	* Change Chrysalis build procedure to use Anaconda gcc/g++ to workaround unresolved function link error in new libicuuc library
+
+2023-04-12  Charlie Zender  <zender@uci.edu>
 
 	* nco.texi update documentation to reflect --split and --stdin changes from 5.0.4
 
