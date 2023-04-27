@@ -1192,7 +1192,7 @@ if [ "${nm_typ}" = 'yyyymm' ]  || [ "${nm_typ}" = 'yyyy-mm' ] || [ "${nm_typ}" =
     bs_nm="${BASH_REMATCH[1]}"
     bs_nm="$(basename ${bs_nm})"
     bs_nm="${bs_nm%.*}"
-    bs_nm="${bs_nm%_*}"
+    [[ ${prc_typ} != 'eamxx' ]] && bs_nm="${bs_nm%_*}"
     out_nm=${bs_nm}
     # https://stackoverflow.com/questions/12426659/how-extract-last-part-of-string-in-bash
     bs_sfx="${caseid##*.}"
@@ -2202,6 +2202,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
 		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
 		elif [ ${nm_typ} = 'yyyy-mm-01-00000' ]; then # Generate from caseid + YYYY-MM-01-00000
+#		    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 		fi # !cesm
 	    done # !yr

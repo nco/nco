@@ -1,8 +1,10 @@
-2023-04-26  Charlie Zender  <zender@uci.edu>
+2023-04-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha03: Smoker';git push
 	git tag -a 5.1.6-alpha03 -m 'ncclimo: --split, --stdin docs; ncremap: use flg_hrz_mrv and ncr_idx_in/out to set xtr flg for hyb, dpt_3D';git push --tags
+
+	* Name-generation algorithm for EAMxx works if caseid is supplied as any full filename
 
 2023-04-25  Charlie Zender  <zender@uci.edu>
 
