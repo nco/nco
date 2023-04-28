@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha03: Smoker';git push
 	git tag -a 5.1.6-alpha03 -m 'ncclimo: --split, --stdin docs; ncremap: use flg_hrz_mrv and ncr_idx_in/out to set xtr flg for hyb, dpt_3D';git push --tags
 
+	* Tidy man pages
+
 	* ncclimo/ncremap reveal --npo option to users in help message
 
 2023-04-27  Charlie Zender  <zender@uci.edu>
