@@ -43,13 +43,11 @@
 # scp ~/nco/data/ncclimo cheyenne.ucar.edu:bin
 # scp ~/nco/data/ncclimo ac.zender@chrysalis.lcrc.anl.gov:bin_chrysalis
 # scp ~/nco/data/ncclimo compy.pnl.gov:bin
-# scp ~/nco/data/ncclimo cooley.alcf.anl.gov:bin
-# scp ~/nco/data/ncclimo cori.nersc.gov:bin_cori
 # scp ~/nco/data/ncclimo dust.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo e3sm.ess.uci.edu:bin
-# scp ~/nco/data/ncclimo frazil.ess.uci.edu:bin
+# scp ~/nco/data/ncclimo imua.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo perlmutter-p1.nersc.gov:bin_perlmutter
-# scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
+# scp ~/nco/data/ncclimo spectral.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo theta.alcf.anl.gov:bin_theta
 # scp dust.ess.uci.edu:bin/ncclimo ~/bin
 # scp dust.ess.uci.edu:bin/ncclimo ${MY_BIN_DIR}
@@ -631,7 +629,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is inherited from input) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm}) [${fnt_tlc}hst_nm, history_name, history${fnt_nrm}]"
     echo " ${fnt_bld}--hrz_dmn${fnt_nrm}  Horizontal dimension name(s) (default ${fnt_bld}${hrz_dmn}${fnt_nrm}) [${fnt_tlc}hrz_dmn, dmn_hrz, hrz_dmn_nm, horizontal_dimension${fnt_nrm}]"
-#    echo " ${fnt_bld}--hrd_pth${fnt_nrm}  Use hard-coded paths on known machines (e.g., chrysalis, compy, cori) NB: Must be first option! [${fnt_tlc}hrd_pth, hard_path, npo, nco_path_override${fnt_nrm}]"
+    echo " ${fnt_bld}--hrd_pth${fnt_nrm}  Use CSZ's hard-coded paths on known machines (e.g., chrysalis, compy, perlmutter) NB: Must be first option! [${fnt_tlc}hrd_pth, hard_path, npo, nco_path_override${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
     echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
@@ -784,8 +782,8 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       hst_nm=?* | history_name=?* | history=?* ) hst_nm="${LONG_OPTARG}" ;; # -h # History tape name
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
-	       hrd_pth | hard_path | npo | nco_path_override ) hrd_pth='Yes' ;; # # Use hard-coded paths on known machines (intentional no-op because already handled prior to getopt())
-	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
+	       hrd_pth | hard_path | npo | nco_path_override | NCO_PATH_OVERRIDE ) hrd_pth='Yes' ;; # # Use hard-coded paths on known machines (intentional no-op because already handled prior to getopt())
+	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* | NCO_PATH_OVERRIDE=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
 	       hrz_dmn=?* | hrz_dmn_nm=?* | dmn_hrz=?* | horizontal_dimension=?* ) hrz_dmn="${LONG_OPTARG}" ;; # # Horizontal dimension name(s)
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       lnk_flg=?* | link_flag=?* ) lnk_flg="${LONG_OPTARG}" ;; # -l # Link E3SM to AMWG name
