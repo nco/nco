@@ -2371,22 +2371,24 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     prs_min_in=(double *)nco_malloc_dbg(tm_hrz_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_in value buffer");
     prs_min_out=(double *)nco_malloc_dbg(tm_hrz_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_out value buffer");
     if(flg_grd_in_dpt_3D){
-      // 20230404 fxm fxm buggy on depth grids unless ncr_idx_in==True
-      // fxm: assumes depth/height grid has least/greatest depth/height at bottom/top level
-#if false      
       /* Acquire or assign missing value before determining monotonicity sign/direction */
       has_mss_val=False;
       if(dpt_id_in != NC_MIN_INT){
-	has_mss_val=nco_mss_val_get_dbl(fl_xtr_id,dpt_id,&mss_val_dbl);
+	has_mss_val=nco_mss_val_get_dbl(fl_xtr_id,dpt_id_in,&mss_val_dbl);
       } /* !dpt_id_in */
       if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
-      /* fxm: Find gridcell with valid depths in at least top two layers */
       for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
-	if(dpt_mdp_in[0L] != mss_val_cmp_dbl);
+	if(dpt_mdp_in[grd_idx] != mss_val_cmp_dbl){
+	  prs_max_in[0]=dpt_mdp_in[grd_idx];
+	  if(flg_hrz_mrv) prs_max_in[1]=dpt_mdp_in[grd_idx+grd_sz_in]; else prs_max_in[1]=dpt_mdp_in[grd_idx+1L];
+	  if(prs_max_in[1] != mss_val_cmp_dbl) break;
+	} /* !dpt_mdp_in */
+      } /* !grd_idx */
+      if(grd_idx == grd_sz_in){
+	(void)fprintf(stdout,"%s: ERROR %s Unable to find two vertically adjacent input layers with valid depths\n",nco_prg_nm_get(),fnc_nm);
+	nco_exit(EXIT_FAILURE);
       } /* !grd_idx */
       /* Does input depth coordinate increase or decrease in index (not geometric) space? */
-      prs_max_in[0]=dpt_mdp_in[0L];
-      if(flg_hrz_mrv) prs_max_in[1]=dpt_mdp_in[grd_sz_in+1L]; else prs_max_in[1]=dpt_mdp_in[1L];
       if(prs_max_in[1]-prs_max_in[0] > 0.0) ncr_idx_in=True; else ncr_idx_in=False;
       for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
 	idx_fst=tm_idx*grd_sz_in;
@@ -2410,27 +2412,50 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  } /* !flg_hrz_mrv */
 	} /* !grd_idx */
       } /* !tm_idx */
-#endif /* !false */
-      for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
-	idx_fst=tm_idx*grd_sz_in;
-	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
-	  prs_max_in[grd_idx+idx_fst]=dpt_mdp_in[0L];
-	  prs_min_in[grd_idx+idx_fst]=dpt_mdp_in[mlc_in[grd_idx]];
-	} /* !grd_idx */
-      } /* !tm_idx */
     } /* !flg_grd_in_dpt_3D */
     if(flg_grd_out_dpt_3D){
-      // 20230404 fxm fxm buggy on depth grids unless ncr_idx_in==True
-      // fxm: assumes depth/height grid has least/greatest depth/height at bottom/top level
-      /* Diagnose whether depth coordinate increases upwards or downwards */
+      /* Acquire or assign missing value before determining monotonicity sign/direction */
+      has_mss_val=False;
+      if(dpt_id_tpl != NC_MIN_INT){
+	has_mss_val=nco_mss_val_get_dbl(tpl_id,dpt_id_tpl,&mss_val_dbl);
+      } /* !dpt_id_out */
+      if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
+      for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++){
+	if(dpt_mdp_out[grd_idx] != mss_val_cmp_dbl){
+	  prs_max_out[0]=dpt_mdp_out[grd_idx];
+	  if(flg_hrz_mrv) prs_max_out[1]=dpt_mdp_out[grd_idx+grd_sz_out]; else prs_max_out[1]=dpt_mdp_out[grd_idx+1L];
+	  if(prs_max_out[1] != mss_val_cmp_dbl) break;
+	} /* !dpt_mdp_out */
+      } /* !grd_idx */
+      if(grd_idx == grd_sz_out){
+	(void)fprintf(stdout,"%s: ERROR %s Unable to find two vertically adjacent output layers with valid depths\n",nco_prg_nm_get(),fnc_nm);
+	nco_exit(EXIT_FAILURE);
+      } /* !grd_idx */
+      /* Does input depth coordinate increase or decrease in index (not geometric) space? */
+      if(prs_max_out[1]-prs_max_out[0] > 0.0) ncr_idx_out=True; else ncr_idx_out=False;
       for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
 	idx_fst=tm_idx*grd_sz_out;
 	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++){
-	  prs_max_out[grd_idx+idx_fst]=dpt_mdp_out[0L];
-	  prs_min_out[grd_idx+idx_fst]=dpt_mdp_out[mlc_out[grd_idx]];
+	  if(ncr_idx_out){
+	    idx_lev_max=mlc_out[grd_idx];
+	    idx_lev_min=0L;
+	  }else{
+	    /* MPAS vertical coordinate decreases in index space since model top == ocean surface is level 0 and has greater (less negative) depth than sub-surface layer 1
+	       (MPAS vertical coordinate increases in geometric space since depth increases (is less negative) with upwards height)
+	       Therefore maximum "depth" is at level zero, minimum "depth" is bathymetry */
+	    idx_lev_max=0L;
+	    idx_lev_min=mlc_out[grd_idx];
+	  } /* !ncr_idx_out */	
+	  if(flg_hrz_mrv){
+	    prs_max_out[grd_idx+idx_fst]=dpt_mdp_out[tm_idx*idx_lev_max+grd_idx];
+	    prs_min_out[grd_idx+idx_fst]=dpt_mdp_out[tm_idx*idx_lev_min+grd_idx];
+	  }else{
+	    prs_max_out[grd_idx+idx_fst]=dpt_mdp_out[idx_fst*lev_nbr_out+idx_lev_max];
+	    prs_min_out[grd_idx+idx_fst]=dpt_mdp_out[idx_fst*lev_nbr_out+idx_lev_min];
+	  } /* !flg_hrz_mrv */
 	} /* !grd_idx */
       } /* !tm_idx */
-    } /* !flg_grd_in_dpt_3D */
+    } /* !flg_grd_out_dpt_3D */
     if(flg_grd_in_dpt_1D){
       double lev_in_max;
       double lev_in_min;
