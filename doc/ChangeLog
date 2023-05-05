@@ -1,12 +1,20 @@
-2023-05-03  Charlie Zender  <zender@uci.edu>
+2023-05-05  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.6-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.6-beta01: Crossroads';git push
+	git tag -a 5.1.6-beta01 -m 'all: CF dfl; fix NCZarr overwrite/removal; ncclimo: --split, --stdin docs, eamxx; ncremap: vrt xtr dyn hrz/vrt_mrv ncr_in/out, vrt non-spt dmn lrv, cpl dmn, vrt tms prs->prs, --col_dmn;';git push --tags
 
 	* NCO 5.1.6-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha04: Monte Nido';git push
 	git tag -a 5.1.6-alpha04 -m '';git push --tags
 
+	* Perlmutter: add 'module load gsl' to ncremap/ncclimo --npo configuration
+
+2023-05-03  Charlie Zender  <zender@uci.edu>
+
 	* NCO 5.1.6-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha03: Smoker';git push
-	git tag -a 5.1.6-alpha03 -m 'ncclimo: --split, --stdin docs; ncremap: use flg_hrz_mrv and ncr_idx_in/out to set xtr flg for hyb, dpt_3D';git push --tags
+	git tag -a 5.1.6-alpha03 -m 'ncclimo: --split, --stdin docs, eamxx; ncremap: use flg_hrz_mrv and ncr_idx_in/out to set xtr flg for hyb+dpt_3D';git push --tags
 
 	* ncremap allow missing values, hrz/vrt dimension ordering, ncr/dcr monotonicity when computing min/max values for dpt_3d fields
 
@@ -64,7 +72,7 @@
 
 2023-03-31  Charlie Zender  <zender@uci.edu>
 
-	* ncremap add --col_nm
+	* ncremap add --col_dmn
 
 	* ncremap/ncclimo remove alcf mira, add e3sm.ess.uci.edu
 

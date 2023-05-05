@@ -558,9 +558,9 @@ module load PrgEnv-gnu
 module load gcc/11.2.0
 module load cray-hdf5/1.12.2.1
 module load cray-netcdf/4.9.0.1
+module load gsl
 export HDF5_DISABLE_VERSION_CHECK=1
 export HDF5_USE_FILE_LOCKING=FALSE
-#module load gsl/2.7 (need to make private build)
 #module load udunits
 cd ~/nco;/bin/rm -f *.foo;make distclean
 ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_perlmutter CC='gcc' CXX='g++' NETCDF_DIR='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1' NETCDF_INC='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.9.0.1' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${HOME}/bin_perlmutter --datadir=${HOME}/nco/data --libdir=${HOME}/lib_perlmutter --mandir=${HOME}/man > nco.configure.foo 2>&1

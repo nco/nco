@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.5 ascend the Silicon Throne
+netCDF Operators NCO version 5.1.6 ascend the Silicon Throne
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nc/ncoo (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.5 polishes the new vertical interpolation capabilities
+Version 5.1.6 polishes the new vertical interpolation capabilities
 introduced in 5.1.3 and 5.1.4, improves the safety NCZarr operations,
 and fixes minor ncremap bugs. This release can be skipped if these
 regridding and NCZarr features are not useful to you.
@@ -101,8 +101,7 @@ bathymetry and orography are masked, to terrain following sigma
 coordinates where bathymetry and orography are outside the domain.
 Previously ncremap would allow missing values inside the vertical
 domain to contaminate the interpolated values. There is no
-workaround. The solution is to upgrade. Thanks to Peter Caldwell
-(LLNL) for reporting this issue and beta-testing the fix.
+workaround. The solution is to upgrade. 
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
@@ -111,8 +110,8 @@ KNOWN PROBLEMS DUE TO NCO:
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
 These problems occur with NCO 5.1.6 built/tested under
-MacOS 13.3 with netCDF 4.9.1 on HDF5 1.12.2 and with
-Linux with netCDF 4.9.1 on HDF5 1.8.19.
+MacOS 13.3.1 with netCDF 4.9.2 on HDF5 1.14 and with
+Linux with netCDF 4.9.2 on HDF5 1.14
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
