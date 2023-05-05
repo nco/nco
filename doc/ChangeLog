@@ -8,6 +8,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.6-alpha04: Monte Nido';git push
 	git tag -a 5.1.6-alpha04 -m '';git push --tags
 
+	* nco_scm.c: Fix cvs_Name back-compatibility issue
+
 	* Perlmutter: add 'module load gsl' to ncremap/ncclimo --npo configuration
 
 2023-05-03  Charlie Zender  <zender@uci.edu>

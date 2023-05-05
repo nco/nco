@@ -31,7 +31,9 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   /* Unexpanded cvs keywords in cvs_Name trigger GCC 4.0+ warning
      "./src/nco/nco_scm.c:81: warning: offset outside bounds of constant string"
      because routine looks for cvs_Name+7 later on */
-  char cvs_Name[]="$Name$";
+  //  char cvs_Name[]="$Name$";
+  // 20230505: CVS is no longer used so cvs_Name is never expanded so put in fake name
+  char cvs_Name[]="$Name: Fake name for CVS back-compatibility";
   const char dlr_nm_cln_spc[]="$Name: "; /* [sng] Dollar name colon space */
   const char nco_sng[]="nco"; 
   const char spc_dlr[]=" $"; /* [sng] Space dollar */
