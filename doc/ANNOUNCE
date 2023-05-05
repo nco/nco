@@ -1,17 +1,20 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.6 ascend the Silicon Throne
+netCDF Operators NCO version 5.1.6 are coronated
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nc/ncoo (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.6 polishes the new vertical interpolation capabilities
-introduced in 5.1.3 and 5.1.4, improves the safety NCZarr operations,
-and fixes minor ncremap bugs. This release can be skipped if these
-regridding and NCZarr features are not useful to you.
+Version 5.1.6 further polishes vertical interpolation, further
+improves NCZarr safety, and fixes minor ncremap issues, improves EAMxx 
+support, adds basic support for regridding Coupler history files, and
+employs CF Conventions, where possible, on all input files regardless
+of whether they claim to be CF-compliant.
+This release can be skipped if you would not use the NCZarr and
+regridder improvements.
 
-Work on NCO 5.1.6 has commenced and aims to add support for Zarr S3 
+Work on NCO 5.1.7 has commenced and aims to add support for Zarr S3 
 stores and to polish support for new codecs.
 
 Enjoy,
@@ -19,89 +22,53 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap now behaves more sensibly when vertically interpolating
-MPAS-Ocean files/fields. Previously, users had to explicitly add
-the multidimensional auxiliary depth coordinate (often
-timeMonthly_avg_zMid) to the subsetted list of variables whenever
-the subset list option (-v var1,var2...) was used. This is because
-most MPAS datasets do not adhere to the CF "coordinates" convention,
-and NCO has no way of knowing which auxiliary coordinates contain
-the depth field. Now ncremap uses the -P mpasocean option to trigger
-a search for the zMid coordinate in the input file. If found, ncremap
-automatically adds it to the subset as appropriate.
-ncremap -P mpas --vrt_out=vrt.nc --map=map.nc in.nc out.nc
+A. ncremap now diagnoses rather than prescribes the monotonicity
+direction (increasing or decreasing in index space) and dimension
+ordering of vertical grids prior to searching for maxima/minima
+surfaces beyond which extrapolation is necessary. That's a mouthful.
+Basically this feature fixes corner cases in which input or output 3D
+vertical grids (e.g., hybrid sigma/pressure, or MPAS-Ocean-style
+grids) with non-standard directionality (which way is up?) or
+dimensionality could have caused previous versions of NCO to misjudge
+the vertical domain of the grid, and thus prevented implementing
+missing values beyond the valid domain. Also, missing values in the
+grids are better handled when looking for vertical domain boundaries. 
+ncremap -P mpasocean --vrt_out=vrt.nc --map=map.nc in.nc out.nc
 http://nco.sf.net/nco.html#ncremap
 http://nco.sf.net/nco.html#vrt_out
 
-B. ncremap has a --ps_rtn (--retain_surface_pressure) switch 
-to facilitate "round-trip" vertical interpolation such as
-hybrid->pressure->hybrid. By default ncremap excludes the surface
-pressure field from the output after hybrid->pressure interpolation.
-The --ps_rtn switch (which takes no argument) instructs the regridder
-to retain the surface pressure field after hybrid->pressure
-interpolation. This field is then available for subsequent
-interpolation back to a hybrid vertical coordinate.
-ncremap --ps_rtn --ps_nm=ps --vrt_out=ncep.nc in.nc out_ncep.nc
-ncremap --ps_rtn -v T,Q,U,PS --vrt_out=ncep.nc in.nc out_ncep.nc
-ncremap --vrt_out=hybrid.nc out_ncep.nc out_hybrid.nc
-http://nco.sf.net/nco.html#ps_rtn
+B. ncclimo improves handling of output from the DOE EAMxx model
+in two ways. ncclimo now understands the commonly used suffixes
+for EAMxx monthly output files: "...YYYY-MM-01-00000.nc", and
+allows these names to be used as the caseid argument for templating
+filenames. Thanks to Chris Golaz (LLNL) prompting this feature.
+caseid=really_long_string.0001-01-01-00000.nc
+ncclimo -P eamxx -c ${caseid} -s 2000 -e 2019 -i $drc_in -o $drc_out
+http://nco.sf.net/nco.html#ncclimo
+http://nco.sf.net/nco.html#caseid
 
-C. NCO is now more careful about overwriting existing directories
-and files with NCZarr stores. Previously NCO would overwrite any
-directory or file that the netCDF library could successfully open.
-However, netCDF library versions 4.8.0->4.9.1 "succeed" in opening
-non-NCZarr stores. Hence additional precautions are necessary to
-avoid unintentionally overwriting non-NCZarr paths with NCZarr
-stores. For example,
-ncks in_zarr4.nc file://${HOME}/ncz_dnd/foo#mode=nczarr,file
-now overwrites "foo" only if it is already an NCZarr store.
-Previously foo would be overwritten if it already existed yet was
-not a valid NCZarr store. Thanks to Dennis Heimbigner of Unidata
-for discussing this behavior.
+C. ncremap now supports non-spatial dimensions (temporal, spectral,
+chemical) when vertically interpolating datasets. This now works for
+all vertical grid types. Previously this only worked for hybrid/sigma
+grids, and only then for temporal dimensions (this former limitation
+never affected horizontal regridding). Now datasets with
+non-spatio-temporal dimensions such as temperature(time, species, 
+wavelength, horizontal, vertical) should vertically regrid properly.
+http://nco.sf.net/nco.html#ncremap
 
-D. NCO improves handling of output from the DOE EAMxx model
-in two ways. First, NCO now treats this model output as
-CF-compliant. This causes NCO to implement special conventions such as
-carrying multi-dimensional auxiliary coordinate variables when
-subsetting. Second, ncremap automatically permutes EAMxx datasets
-that have been interpolated to pressure levels to have the correct
-dimension ordering (horizontal dimension as most-rapidly-varying)
-prior to horizontal regridding. Thanks to Chris Golaz (LLNL) prompting
-these features.
+D. ncremap now supports vertical interpolation of timeseries data from
+pure-pressure to pure-pressure grids
+ncremap --vrt_out=ncep_L17.nc ncep_L10.nc out.nc
+http://nco.sf.net/nco.html#vrt
 
 BUG FIXES:
    
-A. ncrcat versions 4.8.0--5.1.4 could erroneously add a cell_methods
-attribute to variables it processed. This behavior has been
-eliminated. ncra still adds the attribute by default. The workaround
-is to invoke ncrcat with the --no_cll_mth flag. The solution is to
-upgrade. Thanks to Brian Vanderwende (NCAR) for reporting this.
-
-B. Recent versions of ncremap incorrectly parsed the
---preserve_statistic (--prs_stt) option. The option was effectively
-ignored. This has been fixed. The workaround is to explicitly invoke
-the --rnr_thr=0.0 option. The solution is to upgrade. These two
-commands now produce the same result, use whichever you prefer:
-ncremap --rnr_thr=0.0 --map=map.nc in.nc out.nc
-ncremap --prs_stt=local_mean --map=map.nc in.nc out.nc
-
-C. ncremap version 5.1.4 incorrectly handles the name of the output
-coordinate for vertical interpolation to pure-pressure surfaces.
-Instead of naming the coordinate 'plev', or whatever is in the vrt_out
-file, or what was specfified by the --plev_nm_out option, it just
-named the coordinate (variable+dimension) 'lev'. These have all been
-fixed. There is no workaround, and the solution is to upgrade.
-Thanks to Jill Zhang (LLNL) and Ben Hillman (SNL) for reporting this
-issue. 
-
-D. Vertical interpolation with ncremap now successfully handles
-missing values interior to the vertical domain. This is useful
-to interpolate from pure pressure and depth coordinates where
-bathymetry and orography are masked, to terrain following sigma
-coordinates where bathymetry and orography are outside the domain.
-Previously ncremap would allow missing values inside the vertical
-domain to contaminate the interpolated values. There is no
-workaround. The solution is to upgrade. 
+A. This version of NCO fixes and error with the overwrite/removal of
+NCZarr stores implemented in 5.1.5.
+in_hdf5="${HOME}//nco/data/in_zarr4.nc"
+out_ncz="file://${HOME}/foo#mode=nczarr,file"
+ncks -O -v one ${in_hdf5} ${out_ncz}
+There is no workaround. The solution is to upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
