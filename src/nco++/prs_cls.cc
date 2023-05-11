@@ -448,7 +448,7 @@ prs_cls::ncap_var_write_omp(
   nco_inq_varid_flg(out_id,var->nm,&var_out_id);
   
   // Only go into define mode if necessary
-  if(!bdef || var->pck_ram ){  
+  if(!bdef || var->pck_ram){  
     
 #ifdef _OPENMP
     if(omp_in_parallel()) err_prn(fnc_nm, "Attempt to go into netCDF define mode while in OpenMP parallel mode");
@@ -459,23 +459,26 @@ prs_cls::ncap_var_write_omp(
     if(!bdef){
       (void)nco_def_var(out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
 
-      if(var->cnk_sz)
-        var->cnk_sz=(size_t*)nco_free(var->cnk_sz);
+      if(var->cnk_sz) var->cnk_sz=(size_t*)nco_free(var->cnk_sz);
       
       /* Set HDF Lempel-Ziv compression level, if requested */
       int fl_fmt; /* [enm] Output file format */
       (void)nco_inq_format(out_id,&fl_fmt);
-      if( (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) && var->nbr_dim > 0)
-      {
+      if((fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) && var->nbr_dim > 0){
         dmn_cmn_sct cmn[NC_MAX_VAR_DIMS];
         ncap_pop_dmn_cmn();
-        ncap_pop_var_dmn_cmn(var, cmn);
-        (void)nco_cnk_sz_set_trv(in_id,out_id,cnk_in, var->nm,cmn);
+        ncap_pop_var_dmn_cmn(var,cmn);
+        (void)nco_cnk_sz_set_trv(in_id,out_id,cnk_in,var->nm,cmn);
 
+	/* 20230510: Replace original nco_def_var_deflate() with cmp_sng infrastructure
         if(dfl_lvl >= 0)
           (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle, True,dfl_lvl);
         else if(var->dfl_lvl >= 0)
-          (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle, True,var->dfl_lvl);
+          (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,True,var->dfl_lvl);
+	*/
+
+	if(var->nbr_dim > 1)
+	  if(nco_cmp_glb_get()) (void)nco_flt_def_out(out_id,var_out_id,(char *)NULL,nco_flt_flg_prc_fll);
 
         /*
           flg_cnk=ncap_get_cnk_sz(var);
@@ -484,16 +487,16 @@ prs_cls::ncap_var_write_omp(
             if( var->dim[idx]->is_rec_dmn )
               break;
 
-          // chunk if it contains a record dim, deeflated, or chunking inherited form Input
+          // chunk if it contains a record dim, deflated, or chunking inherited form Input
           if( idx<var->nbr_dim || dfl_lvl >=0 || var->dfl_lvl >=0 || flg_cnk )
             (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,var->cnk_sz);
           else
             (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CONTIGUOUS,var->cnk_sz);
         */
 
-	  } /* endif netCDF4 */
+      } /* !netCDF4 */
 
-    } // bdef
+    } // !bdef
     /* Put missing value 
        if(var->has_mss_val) (void)nco_put_att(out_id,var_out_id,nco_mss_val_sng_get(),var->type,1,var->mss_val.vp);
     */
@@ -585,29 +588,32 @@ void prs_cls::ncap_def_ntl_scn(void) {
         dbg_prn(fnc_nm, Nvar->getFll() + (!Nvar->flg_mem ? " defined in output" : " RAM variable"));
 
       // Define variable
-      if (!Nvar->flg_mem) {
-        (void) nco_def_var(out_id, var1->nm, var1->type, var1->nbr_dim, var1->dmn_id, &var_id);
+      if(!Nvar->flg_mem){
+        (void)nco_def_var(out_id,var1->nm,var1->type,var1->nbr_dim,var1->dmn_id,&var_id);
 
-        Nvar->var->id = var_id;
-        Nvar->var->nc_id = out_id;
-        Nvar->flg_stt = 1;
+        Nvar->var->id=var_id;
+        Nvar->var->nc_id=out_id;
+        Nvar->flg_stt=1;
 
         // set cnk_sz to null
         if (var1->cnk_sz)
-          var1->cnk_sz = (size_t *) nco_free(var1->cnk_sz);
+          var1->cnk_sz=(size_t *) nco_free(var1->cnk_sz);
 
         /* Set HDF Lempel-Ziv compression level, if requested */
-
         if ((fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) && var1->nbr_dim) {
           // use chunking inheritance
-          ncap_pop_var_dmn_cmn(var1, cmn);
-          (void) nco_cnk_sz_set_trv(in_id, out_id, cnk_in, var1->nm, cmn);
+          ncap_pop_var_dmn_cmn(var1,cmn);
+          (void)nco_cnk_sz_set_trv(in_id,out_id,cnk_in,var1->nm,cmn);
 
-          if (dfl_lvl >= 0)
-            (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, True, dfl_lvl);
+	  /* 20230510: Replace original nco_def_var_deflate() with cmp_sng infrastructure
+          if(dfl_lvl >= 0)
+            (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,True,dfl_lvl);
           else if (var1->dfl_lvl >= 0)
-            (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, True, var1->dfl_lvl);
+            (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,True,var1->dfl_lvl);
+	  */
 
+	  if(var1->nbr_dim > 1)
+	    if(nco_cmp_glb_get()) (void)nco_flt_def_out(out_id,var_id,(char *)NULL,nco_flt_flg_prc_fll);
 
           /*
           {

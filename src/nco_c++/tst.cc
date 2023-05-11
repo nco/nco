@@ -36,6 +36,7 @@
 #include <netcdf.h> // netCDF C interface
 
 // Personal headers
+//#define MAIN_PROGRAM_FILE
 #include <libnco_c++.hh> // C++ interface to netCDF C library
 
 // Typedefs

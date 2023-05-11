@@ -12,10 +12,12 @@
 #include <vector>
 #include <string>
 #include <stdio.h>
-#include "nco.h"
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "NcapVector.hh"
 #include "NcapVarVector.hh"
 #include "NcapVar.hh"
+
+#include "nco_flt.h" /* Compression filters */
 
 // Forward declaration
 class fmc_cls;

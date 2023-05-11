@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.6-alpha04
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 3 May 2023
+@set update-date 9 May 2023
 @set update-month May 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18112,7 +18112,7 @@ name:    (LPHDGT|'-'|'+'|'.'|'('|')'|':' )+  ;
 
 @noindent Quote a variable:@*
 'avg' , '10_+10','set_miss' '+-90field' , '--test'=10.0d@* @* 
-Quote a attribute: @*
+Quote an attribute:@*
 'three@@10', 'set_mss@@+10', '666@@hell', 't1@@+units'="kelvin" @* @*
 Quote a dimension: @*
 '$10', '$t1--', '$--odd', c1['$10','$t1--']=23.0d @* 

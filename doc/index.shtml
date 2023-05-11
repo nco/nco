@@ -155,7 +155,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2023 Jun&nbsp;XX: 5.1.6 <i>In Progress...</i>
+<li>2023 Jun&nbsp;XX: 5.1.7 <i>In Progress...</i>
+<li>2023 May&nbsp;12: 5.1.6 Small features/fixes
 <li>2023 Mar&nbsp;14: 5.1.5 Small features/fixes
 <li>2023 Jan&nbsp;10: 5.1.4 Depth Interpolation
 <li>2022 Nov&nbsp;28: 5.1.3 EAMxx fix
@@ -647,14 +648,22 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 5.1.6 http://github.com/nco/nco.git nco-5.1.6</tt></a>.
 <ul>
-<li><b>NCO 5.1.7</b>: (<i>Future</i>)
+<li><b>NCO 5.1.8</b>: (<i>Future</i>)
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
-<li><b>NCO 5.1.6</b>: (<i>In Progress, features in-progress or complete include</i>)
+<li><b>NCO 5.1.7</b>: (<i>In Progress, features in-progress or complete include</i>)
 <tt>all --cmp_sng</tt> accept human-legible floating-point, unsigned codec parameters</li>
-<li><b>NCO 5.1.5</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 5.1.6</b>: (<i>Current Stable Release</i>)
+<tt>all</tt> overwrite NCZarr stores yet more safely;
+<tt>all</tt> CF handling on by default;
+<tt>ncremap</tt> vertical extrapolation boundaries more robust;
+<tt>ncremap</tt> support Coupler history files;
+<tt>ncremap --col_dmn</tt> column-dimension name;
+<tt>ncremap</tt> vertical pressure->pressure timeseries support;
+<tt>ncremap</tt> non-spatio-temporal dimension support in vertical interpolation;</li>
+<li><b>NCO 5.1.5</b>: 
 <tt>all</tt> overwrite NCZarr stores more safely;
 <tt>ncremap plev_nm, --prs_stt, mss_val</tt> fixes;
 <tt>ncremap</tt> EAMxx w/plev;
@@ -828,10 +837,10 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <a name="macports"></a> <!-- http://nco.sf.net#macports -->
 <a name="homebrew"></a> <!-- http://nco.sf.net#homebrew -->
 <a name="fink"></a> <!-- http://nco.sf.net#fink -->
-<h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;Darwin</a></h3>
+<h3><a href="http://www.apple.com/macosx/">MacOS&nbsp;Darwin</a></h3>
 <ul>
 <!-- 
-# MacOS 13.2 (Ventura) systems (firn, sastrugi, spectral):
+# MacOS 13.3 (Ventura) systems (firn, sastrugi, spectral):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
 cd ~/bin;tar cvzf ${DATA}/nco-5.1.6.macos.13.3.tar.gz nc*;scp ${DATA}/nco-5.1.6.macos.13.3.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
@@ -1116,9 +1125,9 @@ system, e.g.,
 <tt>
 <dt>brew install nco          # Linux or MacOS with Homebrew</dt>
 <dt>conda install -c conda-forge nco # Linux, MacOS, or Windows with Anaconda</dt>
-<dt>sudo aptitude install nco # Debian-based Linux systems like Debian, Mint, Ubuntu</dt>
-<dt>sudo dnf-install nco      # Newer RPM-based Linux systems like CentOS, Fedora, openSUSE, RHEL</dt>
-<dt>sudo yum-install nco      # Older RPM-based Linux systems like CentOS, Fedora, openSUSE, RHEL</dt>
+<dt>sudo aptitude install nco # Debian-based Linux systems including Debian, Mint, Ubuntu</dt>
+<dt>sudo dnf-install nco      # Newer RPM-based Linux systems including CentOS, Fedora, openSUSE, RHEL</dt>
+<dt>sudo yum-install nco      # Older RPM-based Linux systems</dt>
 <dt>sudo port install nco     # MacOS MacPorts </dt>
 </tt>
 If pre-built executables do not satisfy you (e.g., are out-of-date)
@@ -1176,7 +1185,7 @@ For Conda-based systems (any OS, particularly useful for building NCO with newer
 <dt>conda install gsl # GSL</dt>
 <dt>conda install libgomp # OpenMP [linux]</dt>
 <dt>conda install libnetcdf # netCDF</dt>
-<dt>conda install llvm-openmp # OpenMP [osx]</dt>
+<dt>conda install llvm-openmp # OpenMP [macos]</dt>
 <dt>conda install tempest-remap # (external executables for ncremap)</dt>
 <dt>conda install udunits2 # UDUnits</dt>
 <p>or, in one giant install,</p>
