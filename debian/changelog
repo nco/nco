@@ -1,6 +1,6 @@
 nco (5.1.6-1) unstable; urgency=low
 
-  * new upstream version Crossroads: all: CF dfl; fix NCZarr overwrite/removal; ncclimo: --split, --stdin docs, eamxx; ncremap: vrt xtr dyn hrz/vrt_mrv ncr_in/out, vrt non-spt dmn lrv, cpl dmn, vrt tms prs->prs, --col_dmn
+  * new upstream version Crossroads: all: CF dfl; fix NCZarr overwrite/removal; ncap2: cmp_sng; ncclimo: --split, --stdin docs, eamxx; ncremap: vrt xtr dyn hrz/vrt_mrv ncr_in/out, vrt non-spt dmn lrv, cpl dmn, vrt tms prs->prs, --col_dmn
 
  -- Charlie Zender <zender@uci.edu> Fri, 12 May 2023 12:26:03 -0700
 
