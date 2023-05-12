@@ -2153,18 +2153,21 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 } /* end nco_xtr_dfn() */
 
 void
-nco_chk_nan                           /* [fnc] Check file for NaNs */
-(const int nc_id,                     /* I [ID] netCDF input file ID */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+nco_chk_nan /* [fnc] Check file for NaNs */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Check file for NaNs 
-     ncks --chk_nan ~/nco/data/in.nc */
+     ncks --chk_nan ~/nco/data/in.nc
+     ncks -C --dbg=1 -v nan_scl,nan_arr --chk_nan in_4.nc */
 
   const char fnc_nm[]="nco_chk_nan()"; /* [sng] Function name */
 
   char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name (used for validation only) */ 
 
   int grp_id; /* [ID] Group ID where variable resides (passed to MSA) */
+
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI; /* [sct] Auxiliary Limit used in MSA */
@@ -2213,24 +2216,51 @@ nco_chk_nan                           /* [fnc] Check file for NaNs */
       
       switch(var->type){
       case NC_FLOAT:
+	//if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Examining %s: ",var->nm);
 	for(lmn=0;lmn<var->sz;lmn++){
+	  //if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"[%ld]=%g, ",lmn,var->val.fp[lmn]);
+	  rcd=fpclassify(var->val.fp[lmn]);
+	  switch(rcd){
+	  case FP_NORMAL: continue; break; /* Normal floating-point number */
+	  case FP_ZERO: continue; /*(void)fprintf(stdout,"[%ld]=%g is positive or negative zero\n",lmn,var->val.fp[lmn]);*/ break; /* x is +/- zero 20230512 positive zero appears to mean just normal zero, not newsworthy */
+	  case FP_NAN: (void)fprintf(stdout,"[%ld]=%g is NaNf\n",lmn,var->val.fp[lmn]); break; /* x is "Not a Number" */
+	  case FP_INFINITE: (void)fprintf(stdout,"[%ld]=%g is positive or negative infinity\n",lmn,var->val.fp[lmn]); break;   /* x is either positive infinity or negative infinity */
+	  case FP_SUBNORMAL: (void)fprintf(stdout,"[%ld]=%g is subnormal\n",lmn,var->val.fp[lmn]); break; /* x is too small to be represented in normalized format */
+	  default:
+	    (void)fprintf(stdout,"%s: ERROR %s reports invalid return code for fpclassify()\n",nco_prg_nm_get(),fnc_nm);
+	    nco_exit(EXIT_FAILURE);
+	    break;
+	  } /* !rcd */
 	  if(isnan(var->val.fp[lmn])){
 	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports variable %s has first NaNf at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
 	    nco_exit(EXIT_FAILURE);
 	  } /* !isnan */
 	} /* !lmn */
-	    break;
+	//if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"\n");
+	break;
       case NC_DOUBLE:
 	for(lmn=0;lmn<var->sz;lmn++){
+	  rcd=fpclassify(var->val.dp[lmn]);
+	  switch(rcd){
+	  case FP_NORMAL: continue; break; /* Normal floating-point number */
+	  case FP_ZERO: continue; /*(void)fprintf(stdout,"[%ld]=%g is positive or negative zero\n",lmn,var->val.fp[lmn]);*/ break; /* x is +/- zero 20230512 positive zero appears to mean just normal zero, not newsworthy */
+	  case FP_NAN: (void)fprintf(stdout,"[%ld]=%g is NaNf\n",lmn,var->val.dp[lmn]); break; /* x is "Not a Number" */
+	  case FP_INFINITE: (void)fprintf(stdout,"[%ld]=%g is positive or negative infinity\n",lmn,var->val.dp[lmn]); break;   /* x is either positive infinity or negative infinity */
+	  case FP_SUBNORMAL: (void)fprintf(stdout,"[%ld]=%g is subnormal\n",lmn,var->val.dp[lmn]); break; /* x is too small to be represented in normalized format */
+	  default:
+	    (void)fprintf(stdout,"%s: ERROR %s reports invalid return code for fpclassify()\n",nco_prg_nm_get(),fnc_nm);
+	    nco_exit(EXIT_FAILURE);
+	    break;
+	  } /* !rcd */
 	  if(isnan(var->val.dp[lmn])){
 	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports variable %s has first NaN at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
 	    nco_exit(EXIT_FAILURE);
 	  } /* !isnan */
-      } /* !lmn */
-	  break;
-      } /* end switch */
+	} /* !lmn */
+	break;
+      } /* !var->type */
       var=nco_var_free(var);
-    } /* !var */
+    } /* !var_trv.flg_xtr */
   } /* !idx_tbl */
   return;
 } /* !nco_chk_nan() */

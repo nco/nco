@@ -36,7 +36,7 @@ in_4c.nc : in.cdl
 # ncgen default chunksize for time = 4 MB produces ~200 MB in_4c.nc file. Avoid that!
 #	-@PATH_TO_NCGEN@ -k hdf5-nc3 -o $@ $< 
 
-in_4.nc : in.cdl
+in_4.nc : in_4.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 in_grp.nc : in_grp.cdl
