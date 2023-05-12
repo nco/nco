@@ -658,6 +658,7 @@ netCDF4 user-defined types support;
 <li><b>NCO 5.1.6</b>: (<i>Current Stable Release</i>)
 <tt>all</tt> overwrite NCZarr stores yet more safely;
 <tt>all</tt> CF handling on by default;
+<tt>ncap2 --cmp_sng</tt> fix;
 <tt>ncremap</tt> vertical extrapolation boundaries more robust;
 <tt>ncremap</tt> support Coupler history files;
 <tt>ncremap --col_dmn</tt> column-dimension name;

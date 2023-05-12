@@ -75,6 +75,7 @@ new variables defined in the script. Now ncap2 uses the
 cmp_sng option, if any, to determine and set compression
 levels for new variables. The workaround is to use the
 (old) '-L 1' option for DEFLATE. The solution is to upgrade.
+Thanks to Hugo Oliveira for reporting this issue.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

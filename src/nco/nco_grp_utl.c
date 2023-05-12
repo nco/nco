@@ -2159,7 +2159,7 @@ nco_chk_nan /* [fnc] Check file for NaNs */
 {
   /* Purpose: Check file for NaNs 
      ncks --chk_nan ~/nco/data/in.nc
-     ncks -C --dbg=1 -v nan_scl,nan_arr --chk_nan in_4.nc */
+     ncks -C --dbg=1 -v nan_scl,nan_arr --chk_nan ~/nco/data/in_4.nc */
 
   const char fnc_nm[]="nco_chk_nan()"; /* [sng] Function name */
 
@@ -2222,17 +2222,17 @@ nco_chk_nan /* [fnc] Check file for NaNs */
 	  rcd=fpclassify(var->val.fp[lmn]);
 	  switch(rcd){
 	  case FP_NORMAL: continue; break; /* Normal floating-point number */
-	  case FP_ZERO: continue; /*(void)fprintf(stdout,"[%ld]=%g is positive or negative zero\n",lmn,var->val.fp[lmn]);*/ break; /* x is +/- zero 20230512 positive zero appears to mean just normal zero, not newsworthy */
-	  case FP_NAN: (void)fprintf(stdout,"[%ld]=%g is NaNf\n",lmn,var->val.fp[lmn]); break; /* x is "Not a Number" */
-	  case FP_INFINITE: (void)fprintf(stdout,"[%ld]=%g is positive or negative infinity\n",lmn,var->val.fp[lmn]); break;   /* x is either positive infinity or negative infinity */
-	  case FP_SUBNORMAL: (void)fprintf(stdout,"[%ld]=%g is subnormal\n",lmn,var->val.fp[lmn]); break; /* x is too small to be represented in normalized format */
+	  case FP_ZERO: continue; /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative zero\n",var->nm,lmn,var->val.fp[lmn]);*/ break; /* x is +/- zero 20230512 positive zero appears to mean just normal zero, not newsworthy */
+	  case FP_NAN: /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is NaNf\n",var->nm,lmn,var->val.fp[lmn]);*/ break; /* x is "Not a Number" */
+	  case FP_INFINITE: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative infinity\n",var->nm,lmn,var->val.fp[lmn]); break;   /* x is either positive infinity or negative infinity */
+	  case FP_SUBNORMAL: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is subnormal\n",var->nm,lmn,var->val.fp[lmn]); break; /* x is too small to be represented in normalized format */
 	  default:
 	    (void)fprintf(stdout,"%s: ERROR %s reports invalid return code for fpclassify()\n",nco_prg_nm_get(),fnc_nm);
 	    nco_exit(EXIT_FAILURE);
 	    break;
 	  } /* !rcd */
 	  if(isnan(var->val.fp[lmn])){
-	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports variable %s has first NaNf at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
+	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: ERROR %s reports variable %s has first NaNf at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
 	    nco_exit(EXIT_FAILURE);
 	  } /* !isnan */
 	} /* !lmn */
@@ -2243,17 +2243,17 @@ nco_chk_nan /* [fnc] Check file for NaNs */
 	  rcd=fpclassify(var->val.dp[lmn]);
 	  switch(rcd){
 	  case FP_NORMAL: continue; break; /* Normal floating-point number */
-	  case FP_ZERO: continue; /*(void)fprintf(stdout,"[%ld]=%g is positive or negative zero\n",lmn,var->val.fp[lmn]);*/ break; /* x is +/- zero 20230512 positive zero appears to mean just normal zero, not newsworthy */
-	  case FP_NAN: (void)fprintf(stdout,"[%ld]=%g is NaNf\n",lmn,var->val.dp[lmn]); break; /* x is "Not a Number" */
-	  case FP_INFINITE: (void)fprintf(stdout,"[%ld]=%g is positive or negative infinity\n",lmn,var->val.dp[lmn]); break;   /* x is either positive infinity or negative infinity */
-	  case FP_SUBNORMAL: (void)fprintf(stdout,"[%ld]=%g is subnormal\n",lmn,var->val.dp[lmn]); break; /* x is too small to be represented in normalized format */
+	  case FP_ZERO: continue; /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative zero\n",var->nm,lmn,var->val.fp[lmn]);*/ break; /* x is +/- zero 20230512 positive zero appears to mean just normal zero, not newsworthy */
+	  case FP_NAN: /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is NaNf\n",var->nm,lmn,var->val.dp[lmn])*/; break; /* x is "Not a Number" */
+	  case FP_INFINITE: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative infinity\n",var->nm,lmn,var->val.dp[lmn]); break;   /* x is either positive infinity or negative infinity */
+	  case FP_SUBNORMAL: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is subnormal\n",var->nm,lmn,var->val.dp[lmn]); break; /* x is too small to be represented in normalized format */
 	  default:
 	    (void)fprintf(stdout,"%s: ERROR %s reports invalid return code for fpclassify()\n",nco_prg_nm_get(),fnc_nm);
 	    nco_exit(EXIT_FAILURE);
 	    break;
 	  } /* !rcd */
 	  if(isnan(var->val.dp[lmn])){
-	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports variable %s has first NaN at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
+	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: ERROR %s reports variable %s has first NaN at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
 	    nco_exit(EXIT_FAILURE);
 	  } /* !isnan */
 	} /* !lmn */

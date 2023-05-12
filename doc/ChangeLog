@@ -1,8 +1,12 @@
-2023-05-10  Charlie Zender  <zender@uci.edu>
+2023-05-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6: Crossroads';git push
 	git tag -a 5.1.6 -m 'all: CF dfl; fix NCZarr overwrite/removal; ncap2: cmp_sng; ncclimo: --split, --stdin docs, eamxx; ncremap: vrt xtr dyn hrz/vrt_mrv ncr_in/out, vrt non-spt dmn lrv, cpl dmn, vrt tms prs->prs, --col_dmn;';git push --tags
+
+	* Fix NaN->NaNf in in_4.cdl, beef-up nco_chk_nan()
+
+2023-05-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.6-beta01: Monte Nido';git push
