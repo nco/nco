@@ -310,7 +310,7 @@ make install
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20230110
-# Personal recipe last used successfully: 20230314
+# Personal recipe last used successfully: 20230512
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
 export PATH=${MY_BIN_DIR}:'/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
@@ -330,7 +330,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/4.9.3 # 20201208
 # Personal recipe last modified: 20221019 (link -lantlr from MY_LIB_DIR not HOME/lib)
-# Personal recipe last used successfully: 20230314
+# Personal recipe last used successfully: 20230512
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -364,7 +364,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 216373 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 module load nco/4.7.4 # 20180417
 # Personal recipe last modified: 20190813
-# Personal recipe last used successfully: 20230314
+# Personal recipe last used successfully: 20230515
 # Personal recipe last failed: 20190812 (antlr needed GCC 9.1.0 recompile)
 # Cheyenne GNU:
 module purge
@@ -387,7 +387,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20230425 (use conda gcc/g++ compilers so new libnetcdf links to C++ to resolve libicuuc dependencies)
-# Personal recipe last used successfully: 20230315
+# Personal recipe last used successfully: 20230512
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # Default as of 20210924 is to build with Anaconda netCDF
 # Default as of 20230425 is to build with Anaconda gcc/g++
@@ -411,7 +411,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 20190525 ICS-40n99 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
 # Personal recipe last modified: 20221222 (remove UDUNITS2_PATH)
-# Personal recipe last used successfully: 20230315
+# Personal recipe last used successfully: 20230512
 module purge
 module load gcc/10.2.0
 #module load mvapich2/2.3.7 # Required for ncclimo/ncremap in MPI-mode
@@ -552,8 +552,8 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: 
-# Personal recipe last modified: 20221223
-# Personal recipe last used successfully: 20230314
+# Personal recipe last modified: 20230512 (udunits arguments to configure)
+# Personal recipe last used successfully: 20230512
 module load PrgEnv-gnu
 module load gcc/11.2.0
 module load cray-hdf5/1.12.2.1
@@ -563,7 +563,7 @@ export HDF5_DISABLE_VERSION_CHECK=1
 export HDF5_USE_FILE_LOCKING=FALSE
 #module load udunits
 cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_perlmutter CC='gcc' CXX='g++' NETCDF_DIR='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1' NETCDF_INC='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.9.0.1' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${HOME}/bin_perlmutter --datadir=${HOME}/nco/data --libdir=${HOME}/lib_perlmutter --mandir=${HOME}/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_perlmutter CC='gcc' CXX='g++' NETCDF_DIR='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1' NETCDF_INC='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.9.0.1' UDUNITS2_ROOT=${HOME} ./configure --prefix=${HOME} --bindir=${HOME}/bin_perlmutter --datadir=${HOME}/nco/data --libdir=${HOME}/lib_perlmutter --mandir=${HOME}/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1

@@ -1,3 +1,9 @@
+2023-05-16  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.7-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.7-alpha01: Promotion';git push
+	git tag -a 5.1.7-alpha01 -m 'Functionally identical to 5.1.6';git push --tags
+
 2023-05-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.6 release procedure:

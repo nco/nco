@@ -6,7 +6,7 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nc/ncoo (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.6 further polishes vertical interpolation, further
+Version 5.1.7 further polishes vertical interpolation, further
 improves NCZarr safety, and fixes minor ncremap issues, improves EAMxx 
 support, adds basic support for regridding Coupler history files, and
 employs CF Conventions, where possible, on all input files regardless
@@ -83,7 +83,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.1.6 built/tested under
+These problems occur with NCO 5.1.7 built/tested under
 MacOS 13.3.1 with netCDF 4.9.3-dev on HDF5 1.14 and with
 Linux with netCDF 4.9.2 on HDF5 1.14
 
