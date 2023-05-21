@@ -133,7 +133,7 @@ typedef enum nco_flt_flg_enm{ /* [enm] Filter policies */
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */
+#endif /* !__cplusplus */
 
 #if !defined(CCR_HAS_BZIP2) && (NC_LIB_VERSION < 490)
 int nc_def_var_bzip2(int ncid, int varid, int level);
@@ -235,7 +235,7 @@ nco_cdc_lst_bld
 (const int nc_out_id); /* I [id] netCDF output file/group ID */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_FLT_H */
+#endif /* !NCO_FLT_H */

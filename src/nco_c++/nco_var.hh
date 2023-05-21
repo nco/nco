@@ -790,7 +790,7 @@ nco_get_var // [fnc] Ingest variable from netCDF file
 
 // Define inline'd functions in header so source is visible to calling files
 
-#endif // NCO_VAR_HH  
+#endif // !NCO_VAR_HH  
 
 
 

@@ -201,7 +201,7 @@ nco_char_att_put /* [fnc] Get a character string attribute from an open file */
  const char * const att_val_sng); /* [sng] Attribute value */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_ATT_UTL_H */
+#endif /* !NCO_ATT_UTL_H */

@@ -224,4 +224,4 @@ trv_tbl_nsm_nm_att                     /* [fnc] Return variable object  */
  const char * const grp_nm_fll_prn,    /* I [sng] Ensemble parent group */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
-#endif /* NCO_GRP_TRV_H */
+#endif /* !NCO_GRP_TRV_H */

@@ -118,7 +118,7 @@ trunc /* [fnc] Truncate x to nearest integer not larger in absolute value */
 #endif /* !defined(HPUX) && !defined(__INTEL_COMPILER) && !defined(LINUXAMD64) */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_RTH_FLT_H */

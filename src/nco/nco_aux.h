@@ -99,7 +99,7 @@ nco_check_nm_aux
 
   
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_AUX_H */
+#endif /* !NCO_AUX_H */

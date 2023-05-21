@@ -219,7 +219,7 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
  char ** const psx_stb); /* O [sng] POSIX filename (stub) without path or suffix, suitable for netCDF dataset name */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_FL_UTL_H */
+#endif /* !NCO_FL_UTL_H */

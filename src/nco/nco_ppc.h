@@ -95,7 +95,7 @@ extern "C" {
    const int bit_xpl_nbr_zro); /* I [nbr] Bits to round */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_PPC_H */

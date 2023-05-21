@@ -48,7 +48,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */
+#endif /* !__cplusplus */
 
   /* Calendar types */
   typedef enum {
@@ -211,7 +211,7 @@ extern "C" {
 #endif /* !ENABLE_UDUNITS */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_CLN_UTL_H */
+#endif /* !NCO_CLN_UTL_H */

@@ -184,7 +184,7 @@ int
 nco_poly_typ_sz(poly_typ_enm pl_typ);
   
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_PLY_H  */

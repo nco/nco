@@ -172,7 +172,7 @@ nco_lmt_msa_free                    /* [fnc] Free MSA */
  lmt_msa_sct **lmt_msa);            /* I [sct] MSA */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_MSA_H */

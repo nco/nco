@@ -163,7 +163,7 @@ nco_realloc /* [fnc] Wrapper for realloc() */
  const size_t size); /* I [B] Bytes required */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_MMR_H */

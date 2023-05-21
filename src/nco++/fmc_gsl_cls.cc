@@ -120,7 +120,7 @@ void gsl_cls::gsl_ini_sf(void) {
 # if NCO_GSL_VERSION >= 108
       gpr_vtr.push_back(gpr_cls("gsl_sf_debye_5",f_unn(gsl_sf_debye_5_e),hnd_fnc_x,NC_DOUBLE));
       gpr_vtr.push_back(gpr_cls("gsl_sf_debye_6",f_unn(gsl_sf_debye_6_e),hnd_fnc_x,NC_DOUBLE));
-# endif // NCO_GSL_VERSION < 108
+# endif // !NCO_GSL_VERSION < 108
     
     // Dilogarithm
     // not implemented as all involve complex numbers
@@ -134,7 +134,7 @@ void gsl_cls::gsl_ini_sf(void) {
 # if NCO_GSL_VERSION >= 109 
       gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Pcomp",f_unn(gsl_sf_ellint_Pcomp_e),hnd_fnc_nd,P2DBLMD));
       gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_Dcomp",f_unn(gsl_sf_ellint_Dcomp_e),hnd_fnc_nd,P1DBLMD));
-# endif // NCO_GSL_VERSION < 9
+# endif // !NCO_GSL_VERSION < 9
  
     gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_F",f_unn(gsl_sf_ellint_F_e),hnd_fnc_nd,P2DBLMD));
     gpr_vtr.push_back(gpr_cls("gsl_sf_ellint_E",f_unn(gsl_sf_ellint_E_e),hnd_fnc_nd,P2DBLMD));
@@ -181,7 +181,7 @@ void gsl_cls::gsl_ini_sf(void) {
 # if NCO_GSL_VERSION >= 110 
       gpr_vtr.push_back(gpr_cls("gsl_sf_expint_En",f_unn(gsl_sf_expint_En_e),hnd_fnc_xd,NC_INT));
       gpr_vtr.push_back(gpr_cls("gsl_sf_expint_En_scaled",f_unn(gsl_sf_expint_En_scaled_e),hnd_fnc_xd,NC_INT));
-# endif // NCO_GSL_VERSION < 10
+# endif // !NCO_GSL_VERSION < 10
 
     gpr_vtr.push_back(gpr_cls("gsl_sf_expint_Ei",f_unn(gsl_sf_expint_Ei_e),hnd_fnc_x,NC_DOUBLE));
     gpr_vtr.push_back(gpr_cls("gsl_sf_expint_Ei_scaled",f_unn(gsl_sf_expint_Ei_scaled_e),hnd_fnc_x,NC_DOUBLE));
@@ -318,7 +318,7 @@ void gsl_cls::gsl_ini_sf(void) {
    
 # if NCO_GSL_VERSION >= 105 
       gpr_vtr.push_back(gpr_cls("gsl_sf_psi_1",f_unn(gsl_sf_psi_1_e),hnd_fnc_x,NC_DOUBLE));
-# endif // NCO_GSL_VERSION < 105
+# endif // !NCO_GSL_VERSION < 105
 
     gpr_vtr.push_back(gpr_cls("gsl_sf_psi_n",f_unn(gsl_sf_psi_n_e),hnd_fnc_xd,NC_INT));
     
@@ -342,7 +342,7 @@ void gsl_cls::gsl_ini_sf(void) {
 # if NCO_GSL_VERSION >= 105 
       gpr_vtr.push_back(gpr_cls("gsl_sf_zetam1",f_unn(gsl_sf_zetam1_e),hnd_fnc_x,NC_DOUBLE));
       gpr_vtr.push_back(gpr_cls("gsl_sf_zetam1_int",f_unn(gsl_sf_zetam1_int_e),hnd_fnc_x,NC_INT));
-# endif // NCO_GSL_VERSION < 105
+# endif // !NCO_GSL_VERSION < 105
     
     gpr_vtr.push_back(gpr_cls("gsl_sf_hzeta",f_unn(gsl_sf_hzeta_e),hnd_fnc_nd,P2DBL));
     gpr_vtr.push_back(gpr_cls("gsl_sf_eta_int",f_unn(gsl_sf_eta_int_e),hnd_fnc_x,NC_INT));
@@ -407,7 +407,7 @@ void gsl_cls::gsl_ini_cdf(void){
 # if NCO_GSL_VERSION >= 108 
     gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_Pinv",f_unn(gsl_cdf_fdist_Pinv),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_fdist_Qinv",f_unn(gsl_cdf_fdist_Qinv),hnd_fnc_nd,P3DBLX));
-# endif // NCO_GSL_VERSION < 108
+# endif // !NCO_GSL_VERSION < 108
 
     gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_P",f_unn(gsl_cdf_beta_P),hnd_fnc_nd,P3DBLX));
     gpr_vtr.push_back(gpr_cls("gsl_cdf_beta_Q",f_unn(gsl_cdf_beta_Q),hnd_fnc_nd,P3DBLX));
@@ -512,14 +512,14 @@ void gsl_cls::gsl_ini_ran(void){
 # if NCO_GSL_VERSION >= 108 
   gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_mt",f_unn(gsl_ran_gamma_mt),hnd_fnc_rnd,P2DBLX));
   gpr_vtr.push_back(gpr_cls("gsl_ran_gamma_knuth",f_unn(gsl_ran_gamma_knuth),hnd_fnc_rnd,P2DBLX));
-# endif // NCO_GSL_VERSION < 108
+# endif // !NCO_GSL_VERSION < 108
 
   gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian",f_unn(gsl_ran_gaussian),hnd_fnc_rnd,P1DBLX));
   gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_ratio_method",f_unn(gsl_ran_gaussian_ratio_method),hnd_fnc_rnd,P1DBLX));
 
 # if NCO_GSL_VERSION >= 108 
   gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_ziggurat",f_unn(gsl_ran_gaussian_ziggurat),hnd_fnc_rnd,P1DBLX));
-# endif // NCO_GSL_VERSION < 108
+# endif // !NCO_GSL_VERSION < 108
 
   gpr_vtr.push_back(gpr_cls("gsl_ran_gaussian_pdf",f_unn(gsl_ran_gaussian_pdf),hnd_fnc_nd,P2DBLX));
 
@@ -753,7 +753,7 @@ void gsl_cls::gsl_ini_stats(void){
 
 # if NCO_GSL_VERSION >= 110
   gpr_vtr.push_back(gpr_cls("gsl_stats_correlation",f_unn(ncap_void),hnd_fnc_stat4,PS_COR));
-# endif // NCO_GSL_VERSION < 110
+# endif // !NCO_GSL_VERSION < 110
 
   gpr_vtr.push_back(gpr_cls("gsl_stats_pvariance",f_unn(ncap_void),hnd_fnc_stat4,PS_PVAR));
   gpr_vtr.push_back(gpr_cls("gsl_stats_ttest",f_unn(ncap_void),hnd_fnc_stat4,PS_TTST));
@@ -3636,7 +3636,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool&,std::vector<RefAST>&args_vtr,gpr_cls&gpr_o
 #endif /* !ENABLE_NETCDF4 */
      default: nco_dfl_case_nc_type_err(); break;    
      }  break;  
-# endif // NCO_GSL_VERSION < 110
+# endif // !NCO_GSL_VERSION < 110
     
    case PS_PVAR:
      switch(var_arr[0]->type){

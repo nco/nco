@@ -64,7 +64,7 @@ extern "C" {
    char md5_dgs_hxd_sng[NCO_MD5_DGS_SZ*2+1]); /* O [sng] MD5 digest */
   
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_MD5_H */
@@ -158,8 +158,8 @@ extern "C"
   void md5_finish(md5_state_t *pms, md5_byte_t digest[16]);
   
 #ifdef __cplusplus
-}  /* end extern "C" */
+}  /* !extern "C" */
 #endif
 
-#endif /* md5_INCLUDED */
+#endif /* !NCO_MD5_H */
 

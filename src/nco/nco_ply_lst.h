@@ -150,7 +150,7 @@ int sz_lst);
 
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* !__cplusplus */
 
 #endif /* NCO_PLY_LST_H */

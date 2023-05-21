@@ -161,7 +161,7 @@ extern "C" {
   (char * const sng_drt); /* I/O [sng] String to sanitize */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_SNG_UTL_H */

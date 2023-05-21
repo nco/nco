@@ -51,7 +51,7 @@ extern "C" {
    trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal Table */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_S1D_H */

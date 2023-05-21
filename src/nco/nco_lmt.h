@@ -139,7 +139,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_LMT_H */
+#endif /* !NCO_LMT_H */

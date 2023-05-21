@@ -58,7 +58,7 @@ enum nco_cnk_map{ /* [enm] Chunking conversion map */
 
 #ifdef __cplusplus
 extern "C" {
-#endif /* __cplusplus */
+#endif /* !__cplusplus */
 
 void 
 nco_dfl_case_cnk_map_err(void); /* [fnc] Print error and exit for illegal switch(cnk_map) case */
@@ -155,7 +155,7 @@ nco_is_chunkable /* [fnc] Will NCO attempt to chunk variable? */
 #endif /* endif 0 */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_CNK_H */
+#endif /* !NCO_CNK_H */

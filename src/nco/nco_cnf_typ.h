@@ -124,7 +124,7 @@ nco_typ_nc4_nc5 /* [fnc] Convert netCDF4 to CDF5 atomic type */
 (const nc_type typ_nc4); /* I [enm] netCDF4 type */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_CNF_TYP_H */
+#endif /* !NCO_CNF_TYP_H */

@@ -47,7 +47,7 @@ nco_srm_hdr /* [fnc] Write header to stream */
 (void);
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_SRM_H */

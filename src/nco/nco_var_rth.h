@@ -222,7 +222,7 @@ extern "C" {
    ptr_unn op1); /* O [val] Values of first operand zeroed on output */
   
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_VAR_RTH_H */

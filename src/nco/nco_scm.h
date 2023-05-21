@@ -49,7 +49,7 @@ nco_vrs_prn /* [fnc] Print NCO version */
  const char * const CVS_Revision); /* I [sng] CVS revision string */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_SCM_H */

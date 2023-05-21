@@ -112,7 +112,7 @@ extern "C" {
    scv_sct *scv); /* I [val] Pointer to scalar value (second operand) */
   
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_VAR_SCV_H */

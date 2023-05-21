@@ -172,7 +172,7 @@ double val_dbl);
   
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_PRN_H */

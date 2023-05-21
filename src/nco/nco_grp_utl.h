@@ -1000,7 +1000,7 @@ nco_srt_aux                           /* [fnc] sort auxiliary coordinates */
 (const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
   
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_GRP_UTL_H */
+#endif /* !NCO_GRP_UTL_H */

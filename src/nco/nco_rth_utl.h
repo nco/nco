@@ -100,7 +100,7 @@ nco_set_long /* [fnc] Set all values of long array */
  long * restrict const op1); /* I/O [nbr] Array to be set */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_RTH_UTL_H */

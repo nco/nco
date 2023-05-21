@@ -490,7 +490,7 @@ extern "C" {
   /* Hi */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_TYP_H */

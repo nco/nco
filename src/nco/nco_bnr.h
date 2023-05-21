@@ -60,7 +60,7 @@ nco_bnr_rd /* [fnc] Read unformatted binary data */
  void * const void_ptr); /* O [ptr] Data to read */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_BNR_H */
+#endif /* !NCO_BNR_H */

@@ -299,7 +299,7 @@ extern "C" {
    int *var_id); /* O [id] Variable ID in input/external file */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 /* its here temporarily as a func prototype uses nco_mf_sct */

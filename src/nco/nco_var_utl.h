@@ -202,7 +202,7 @@ extern "C" {
   (const var_sct * const var);          /* I [sct] Variable to be defined in output file */
   
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_VAR_UTL_H */

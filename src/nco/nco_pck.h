@@ -147,7 +147,7 @@ nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
  var_sct * const var_out); /* I/O [sct] Variable to unpack into */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_PCK_H */

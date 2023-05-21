@@ -1,3 +1,11 @@
+2023-05-21  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.7-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.7-alpha02: Prom';git push
+	git tag -a 5.1.7-alpha02 -m '';git push --tags
+
+	* Tidy header files
+
 2023-05-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.7-alpha01 release procedure:

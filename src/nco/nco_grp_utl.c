@@ -2252,6 +2252,8 @@ nco_chk_nan /* [fnc] Check file for NaNs */
 	    nco_exit(EXIT_FAILURE);
 	    break;
 	  } /* !rcd */
+	  /* Wikipedia entry on NaN is full of useful information:
+	     https://en.wikipedia.org/wiki/NaN */
 	  if(isnan(var->val.dp[lmn])){
 	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: ERROR %s reports variable %s has first NaN at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
 	    nco_exit(EXIT_FAILURE);

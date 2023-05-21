@@ -30,7 +30,7 @@ err_prn /* [fnc] Print formatted error messages */
 (char *err_msg); /* I [sng] Formatted error message to print */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_DBG_H */
+#endif /* !NCO_DBG_H */

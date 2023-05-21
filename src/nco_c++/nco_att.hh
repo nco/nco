@@ -400,7 +400,7 @@ nco_get_att // [fnc] Get attribute value
 
 // Define inline'd functions in header so source is visible to calling files
 
-#endif // NCO_ATT_HH  
+#endif // !NCO_ATT_HH  
 
 
 

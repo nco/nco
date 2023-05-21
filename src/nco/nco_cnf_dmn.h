@@ -71,7 +71,7 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
  const nco_bool * const dmn_rvr_in); /* I [idx] Reverse dimension */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_CNF_DMN_H */
+#endif /* !NCO_CNF_DMN_H */

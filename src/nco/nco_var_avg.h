@@ -77,7 +77,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
  ptr_unn op2); /* O [sct] Maximum of each block of op1 */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_VAR_AVG_H */

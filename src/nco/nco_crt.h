@@ -134,7 +134,7 @@ poly_sct *pl_out);
 
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* !__cplusplus */
 
-#endif /* NCO_CRT_H */
+#endif /* !NCO_CRT_H */

@@ -171,7 +171,7 @@ sng_lst_cat /* [fnc] Join string list together into one string, delete originals
  const char * const dlm_sng); /* I [sng] Delimiter string to use as glue */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_LST_UTL_H */
+#endif /* !NCO_LST_UTL_H */

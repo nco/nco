@@ -78,7 +78,7 @@ extern "C" {
   void nco_cnt_run(int signo){nco_spn_lck_brk=1+0*signo;} /* Signal handler, CEWI */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_MPI_H */

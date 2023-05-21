@@ -41,7 +41,7 @@ rec_crd_chk /* Check for monotonicity of coordinate values */
  const long idx_rec_out); /* I [idx] Index of record coordinate in output file */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_REC_VAR_H */

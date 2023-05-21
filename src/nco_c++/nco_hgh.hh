@@ -53,7 +53,7 @@ nco_var_dfn // [fnc] Define variables in output netCDF file
 
 // Define inline'd functions in header so source is visible to calling files
 
-#endif // NCO_HGH_HH  
+#endif // !NCO_HGH_HH  
 
 
 

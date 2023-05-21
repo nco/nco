@@ -318,7 +318,7 @@ nco_bool
 nco_mat_int_pl(const double *p0, const double *p1, const double *q0, const double *q1, double *r0);
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* !__cplusplus */
 
 #endif /* NCO_SPH_H */

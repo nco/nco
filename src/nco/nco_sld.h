@@ -169,7 +169,7 @@ extern "C" {
 #endif /* !ENABLE_ESMF */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_SLD_H */

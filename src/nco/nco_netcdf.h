@@ -773,7 +773,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 /* End netCDF4 stubs */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_NETCDF_H */

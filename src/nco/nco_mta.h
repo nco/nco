@@ -85,7 +85,7 @@ extern "C" {
    const char *dlm); // I [sng] Delimiter
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_MTA_H */

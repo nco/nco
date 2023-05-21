@@ -71,7 +71,7 @@ nco_mss_val_get_dbl /* [fnc] Return missing value of variable, if any, as double
  double *mss_val_dbl); /* O [frc] Missing value in double precision */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_MSS_VAL_H */

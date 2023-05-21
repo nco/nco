@@ -125,7 +125,7 @@ nco_dmn_lmt_all_mrg /* [fnc] Merge limit structure information into dimension st
 
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_DMN_UTL_H */
+#endif /* !NCO_DMN_UTL_H */

@@ -75,7 +75,7 @@ nco_gsl_stats_covariance
  const double *mss_val); /* fill value */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_GSL_HH */

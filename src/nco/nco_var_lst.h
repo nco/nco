@@ -151,7 +151,7 @@ nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
  const cnv_sct * const cnv); /* I [sct] Convention structure */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_VAR_LST_H */

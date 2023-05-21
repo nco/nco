@@ -82,7 +82,7 @@ void
 nco_omp_for_chk(const char *smsg);
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_OMP_H */

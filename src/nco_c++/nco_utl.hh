@@ -44,7 +44,7 @@ const int NCO_NOERR=NC_NOERR; // [enm] Variable'ize CPP macro for use in functio
      Saftest way is to compare current value of fl_out_fmt to initial value 
      Initial value should be a number that will never be a true netCDF format */
 # define NCO_FORMAT_UNDEFINED 0
-#endif // NCO_FORMAT_UNDEFINED
+#endif // !NCO_FORMAT_UNDEFINED
 
 /* Define compatibility tokens when user does not have netCDF4 */
 /* Single compatibility token new to netCDF4 netcdf.h */
@@ -393,7 +393,7 @@ nco_get_xtype // [fnc] Determine external netCDF type
 
 // Define inline'd functions in header so source is visible to calling files
 
-#endif // NCO_UTL_HH  
+#endif // !NCO_UTL_HH  
 
 
 

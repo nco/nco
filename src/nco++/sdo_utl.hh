@@ -40,7 +40,7 @@
 extern "C" {
   char *nco_prg_nm_get(void);
   unsigned short nco_dbg_lvl_get(void);
-} // end extern C
+} // !extern C
 
 // Define inline'd functions in header so source is visible to calling files
 

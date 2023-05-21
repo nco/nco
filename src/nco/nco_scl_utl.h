@@ -62,7 +62,7 @@ ptr_unn_2_scv /* [fnc] Convert ptr_unn to scalar value structure */
  ptr_unn val); /* I [sct] Value to convert to scalar value structure */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCO_SCL_UTL_H */

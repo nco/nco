@@ -110,7 +110,7 @@ extern "C" {
   (const int nco_op_typ); /* I [enm] Operation type */
   
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_CNV_CSM_H */
+#endif /* !NCO_CNV_CSM_H */

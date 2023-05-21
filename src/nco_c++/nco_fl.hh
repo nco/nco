@@ -144,7 +144,7 @@ nco_close // [fnc] Close netCDF file
 
 // Define inline'd functions in header so source is visible to calling files
 
-#endif // NCO_FL_HH  
+#endif // !NCO_FL_HH  
 
 
 

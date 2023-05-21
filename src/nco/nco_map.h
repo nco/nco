@@ -165,7 +165,7 @@ extern "C" {
   (poly_sct *pl);
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_MAP_H */
+#endif /* !NCO_MAP_H */

@@ -293,7 +293,7 @@ int nco_yyparse (prs_sct *prs_arg);
 #endif /* !YY_NCO_YY_NCAP_YACC_H_INCLUDED  */
 
 #ifdef __cplusplus
-} /* end extern "C" */
+} /* !extern "C" */
 #endif /* __cplusplus */
 
 #endif /* NCAP_UTL_H */

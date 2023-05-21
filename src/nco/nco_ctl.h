@@ -93,7 +93,7 @@ void
 nco_usg_prn(void); /* [fnc] Print correct program usage */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_CTL_H */
+#endif /* !NCO_CTL_H */

@@ -49,7 +49,7 @@ nco_cnv_arm_base_time_get /* [fnc] Get base_time variable from ARM file */
 (const int nc_id); /* I [id] netCDF file ID */
 
 #ifdef __cplusplus
-} /* end extern "C" */
-#endif /* __cplusplus */
+} /* !extern "C" */
+#endif /* !__cplusplus */
 
-#endif /* NCO_CNV_ARM_H */
+#endif /* !NCO_CNV_ARM_H */

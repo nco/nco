@@ -102,7 +102,7 @@ nco_inq_dimlen // [fnc] Inquire dimension length
 
 // Define inline'd functions in header so source is visible to calling files
 
-#endif // NCO_DMN_HH  
+#endif // !NCO_DMN_HH  
 
 
 
