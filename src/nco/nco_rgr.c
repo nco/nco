@@ -3390,7 +3390,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    mrv_nbr_in*=ilev_nbr_in;
 	    mrv_nbr_out*=ilev_nbr_out;
 	  } /* !has_lev */
-	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s: flg_vrt_tm = %d, has_tm = %d, tm_idx = %ld, lev_nbr_in = %lu, grd_sz_in = %lu, var_sz_in = %lu, lrv_nbr = %lu, mrv_nbr_in = %lu, mrv_nbr_out = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,flg_vrt_tm,has_tm,tm_idx,lev_nbr_in,grd_sz_in,var_sz_in,lrv_nbr,mrv_nbr_in,mrv_nbr_out);
+	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s: flg_vrt_tm = %d, has_tm = %d, tm_idx = %ld, lev_nbr_in = %lu, grd_nbr = %lu, var_sz_in = %lu, lrv_nbr = %lu, mrv_nbr_in = %lu, mrv_nbr_out = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,flg_vrt_tm,has_tm,tm_idx,lev_nbr_in,grd_nbr,var_sz_in,lrv_nbr,mrv_nbr_in,mrv_nbr_out);
 	  
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	    /* Dimension count vector is same as input except for lvl dimension */
