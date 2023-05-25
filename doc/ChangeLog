@@ -1,8 +1,12 @@
-2023-05-22  Charlie Zender  <zender@uci.edu>
+2023-05-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.7-alpha02: Prom';git push
-	git tag -a 5.1.7-alpha02 -m '';git push --tags
+	git tag -a 5.1.7-alpha02 -m 'all: fix Intel compiler issue with	OpenMP pragma';git push --tags
+
+	* ncremap/ncclimo: Excise all Cori-specific script commands
+
+2023-05-22  Charlie Zender  <zender@uci.edu>
 
 	* Fix Intel compiler error by using grd_nbr instead of grd_sz_in in OpenMP block
 

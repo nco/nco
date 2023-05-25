@@ -110,7 +110,6 @@ if [ -z "${DATA}" ]; then
 	compy* | n[0123456789][0123456789][0123456789][0123456789] ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
 	cooley* | cc[0123456789][0123456789][0123456789] ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
-	cori* | cmem* | nid[0123456789][0123456789][0123456789][0123456789][0123456789] ) DATA="${SCRATCH}" ; ;; # NERSC cori compute nodes named nidNNNNN (Haswell/KNL) or cmemNN (AMD) with (32/68/64)|(96/128/1024) cores|GB/node (knl/haswell/amd) (login nodes 512 GB)
 	perlmutter* | login[0123456789][0123456789] | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) DATA="${SCRATCH}" ; ;; # NERSC perlmutter compute nodes named nidNNNNNN (CPU) with (64)|(512) cores|GB/node (cpu) (login nodes 512 GB)
 	theta* ) DATA="/projects/ClimateEnergy_3/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
@@ -182,18 +181,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
             export PBS_NUM_PPN=12 # Spoof PBS on Soft (which knows nothing about node capabilities)
 	    export PATH='/home/zender/bin_cooley'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
-	cori* | cmem* | nid[0123456789][0123456789][0123456789][0123456789][0123456789] )
-	    # 20230215 Use NERSC-compiled module since Cori now missing Intel library used by personal executables
-	    module load nco
-	    if [ ${spt_nm} = 'ncremap' ]; then
-		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
-		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
-		E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
-	    fi # !ncremap
-	    if [ -n "${NCARG_ROOT}" ]; then
-		export PATH="${PATH}:${NCARG_ROOT}/bin"
-		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
-	    fi ; ;; # !NCARG_ROOT
 	e3sm* )
 	    export PATH='/home/zender/bin:/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
@@ -355,7 +342,6 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Chrysalis: salloc  -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # Use compute queue instead if debug is slow to grant resources
 #   Compy:  salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo
 #   Cooley: qsub -I -A ClimateEnergy_4 --nodecount=1 --time=00:30:00 --jobname=ncclimo
-#   Cori:   salloc  -A e3sm --constraint=knl --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
 #   Cori:   salloc  -A e3sm --constraint=amd --nodes=1 --qos=interactive --time=00:30:00 --job-name=ncclimo # NB: No time limit
 #   Perl:   salloc  -A e3sm --constraint=cpu --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
 #   Oldrhea:qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
@@ -365,8 +351,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # 2. Cobalt appends stdout/stderr to existing output files, if any, whereas PBS overwrites existing files
 # 3. Cobalt uses ${COBALT_NODEFILE} and (NA) whereas PBS (and PBSPro) use ${PBS_NODEFILE} and ${PBS_NUM_PPN}, respectively, and SLURM uses ${SLURM_NODELIST} and ${SLURM_CPUS_ON_NODE}, respectively
 # 4. SLURM automatically combines stdout and stderr, yet does not understand tilde (~ = home directory) expansion in error/output filenames
-# 5. After merger of Cori Phase 1 Haswell and Phase 2 KNL cabinets in ~2017, SLURM on Cori requires Quality-of-Service (QOS) argument, either --constraint=haswell or --constraint=knl or --constraint=gpu
-# Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s; difference 5 requires --constraint=argument on Cori only
+# Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s
 #   Andes a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #                   echo "ncclimo -a djf -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1 -e 2 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Blues a):  echo "ncclimo -a djf -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
@@ -383,7 +368,6 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Cheyenne b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Cooley b): qsub -A ClimateEnergy_4 --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
-#   Cori b): sbatch -A e3sm --constraint=haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Oldrhea b):qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Perlm b): sbatch -A e3sm --constraint=cpu --nodes=12 --time=00:30:00 --qos=debug --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 # NB: stdout/stderr files returned from batch jobs are read-protected, need 'chmod 644 ~/ncclimo.out' afterwards
@@ -689,9 +673,6 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "chrysa: srun --nodes=1 --time=30 --job-name=ncclimo --pty bash\n" # Compute node
     printf "compy : srun -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash\n"
     printf "cooley: qsub -I -A ClimateEnergy_4 --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
-    printf "cori  : srun -A e3sm --constraint=haswell --nodes=1 --time=00:30:00 --qos=debug --job-name=ncclimo --pty bash\n"
-    printf "cori  : srun -A e3sm --constraint=knl --nodes=1 --time=00:30:00 --qos=debug --job-name=ncclimo --pty bash\n"
-    printf "cori  : srun -A e3sm --constraint=amd --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash # Bigmem\n"
     printf "perlmu: srun -A e3sm --constraint=cpu --nodes=1 --time=00:30:00 --qos=debug --job-name=ncclimo --pty bash\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
     exit 1
@@ -1833,8 +1814,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		let mpi_idx=${mpi_idx_zro}+1
 	    fi # !tms_flg
 	    case "${HOSTNAME}" in 
-		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | login[0123456789][0123456789] | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | perlmutter* )
-		    # 20160502: Non-interactive batch jobs at NERSC/Cori return HOSTNAME as nid?????, not cori* 
+		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | compy* | constance* | login[0123456789][0123456789] | nid* | node* | perlmutter* )
 		    # 20220518: Non-interactive batch jobs at NERSC/Perlmutter return HOSTNAME as login??, and nodes as nid??????
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
@@ -1864,7 +1844,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 #		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
 	    case "${HOSTNAME}" in 
-		cori* | nid* | perlmutter* | login[0123456789][0123456789] )
+		perlmutter* | login[0123456789][0123456789] | nid* )
 		    # 20210319: Multiple srun commands cannot run concurrently on single Cori node without special options
 		    # --gres=craynetwork:0 --mem=20000 tested by me, Noel Keen documented here:
 		    # https://docs.nersc.gov/jobs/examples/#multiple-parallel-jobs-while-sharing-nodes
