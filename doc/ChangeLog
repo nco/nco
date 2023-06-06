@@ -1,8 +1,10 @@
-2023-05-25  Charlie Zender  <zender@uci.edu>
+2023-05-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.7-alpha02: Prom';git push
 	git tag -a 5.1.7-alpha02 -m 'all: fix Intel compiler issue with	OpenMP pragma';git push --tags
+
+2023-05-25  Charlie Zender  <zender@uci.edu>
 
 	* ncremap/ncclimo: Excise all Cori-specific script commands
 

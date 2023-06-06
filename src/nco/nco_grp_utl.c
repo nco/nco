@@ -269,7 +269,7 @@ nco_prn_grp_nm_fll                    /* [fnc] Debug function to print group ful
   (void)fprintf(stdout,"%s",grp_nm_fll);
   grp_nm_fll=(char*)nco_free(grp_nm_fll);
 #endif
-} /* nco_prn_grp_nm_fll() */
+} /* !nco_prn_grp_nm_fll() */
 
 int                                  /* [rcd] Return code */
 nco_grp_dfn                          /* [fnc] Define groups in output file */
@@ -342,7 +342,7 @@ nco_get_sls_chr_cnt /* [fnc] Count slash characters in a string path */
   } /* end while */
 
   return sls_nbr;
-} /* nco_get_sls_chr_cnt() */
+} /* !nco_get_sls_chr_cnt() */
 
 int
 nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (path components) */
@@ -405,7 +405,7 @@ nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (pa
   if(sng) sng=(char *)nco_free(sng);
 
   return sls_nbr;
-} /* nco_get_sls_chr_cnt() */
+} /* !nco_get_sls_chr_cnt() */
 
 void 
 nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes */
@@ -605,7 +605,7 @@ nco_pth_mch                            /* [fnc] Name component in full path matc
 
   return False;
 
-} /* nco_pth_mch() */
+} /* !nco_pth_mch() */
 
 nco_bool                              /* O [flg] All names are in file */
 nco_xtr_mk                            /* [fnc] Check -v and -g input names and create extraction list */
@@ -890,7 +890,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
           } /* end loop over obj2_idx */
           if(!grp_obj.flg_mch) trv_tbl->lst[obj_idx].flg_nsx=False;
         } /* flg_mch && flg_vfp */
-      } /* nco_obj_typ_grp */
+      } /* !nco_obj_typ_grp */
     } /* end loop over obj_idx */
   } /* flg_unn */
   
@@ -1300,7 +1300,7 @@ nco_xtr_cf_add /* [fnc] Add to extraction list variables associated with CF conv
   if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
-} /* nco_xtr_cf_add() */
+} /* !nco_xtr_cf_add() */
 
 void
 nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified variable to extraction list */
@@ -1478,7 +1478,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
   } /* !idx_att */
 
   return;
-} /* nco_xtr_cf_var_add() */
+} /* !nco_xtr_cf_var_add() */
 
 nm_id_sct *                           /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_sct from traversal table */
@@ -2150,7 +2150,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   /* Print extraction list in developer mode */
   if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
-} /* end nco_xtr_dfn() */
+} /* !nco_xtr_dfn() */
 
 void
 nco_chk_nan /* [fnc] Check file for NaNs */
@@ -2257,7 +2257,7 @@ nco_chk_nan /* [fnc] Check file for NaNs */
 	  if(isnan(var->val.dp[lmn])){
 	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: ERROR %s reports variable %s has first NaN at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
 	    nco_exit(EXIT_FAILURE);
-	  } /* !isnan */
+	  } /* !isnan() */
 	} /* !lmn */
 	break;
       } /* !var->type */
@@ -2973,7 +2973,7 @@ nco_bld_crd_rec_var_trv /* [fnc] Build dimension information for all variables *
     } /* Interested in variables only */
   } /* Loop all variables */
 
-} /* nco_bld_crd_rec_var_trv() */
+} /* !nco_bld_crd_rec_var_trv() */
 
 void                      
 nco_bld_crd_var_trv /* [fnc] Build GTT "crd_sct" coordinate variable structure */
@@ -3102,7 +3102,7 @@ nco_bld_crd_var_trv /* [fnc] Build GTT "crd_sct" coordinate variable structure *
       } /* Interested in variables only */
     } /* Loop all objects */
   } /* Loop unique dimensions list in groups */
-} /* nco_bld_crd_var_trv() */
+} /* !nco_bld_crd_var_trv() */
 
 static void
 prt_lmt                             /* [fnc] Print limit  */
@@ -3220,7 +3220,7 @@ nco_prn_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
   assert(nbr_crd_var == nbr_crd);
 
-} /* nco_prn_trv_tbl() */
+} /* !nco_prn_trv_tbl() */
 
 void                          
 nco_has_crd_dmn_scp /* [fnc] Is there a variable with same name in dimension's scope?   */
@@ -3272,7 +3272,7 @@ nco_has_crd_dmn_scp /* [fnc] Is there a variable with same name in dimension's s
   /* Unique dimension list */
   for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++) assert(trv_tbl->lst_dmn[idx_dmn].has_crd_scp != nco_obj_typ_err);
 
-} /* nco_has_crd_dmn_scp() */
+} /* !nco_has_crd_dmn_scp() */
 
 nco_bool                               /* O [flg] True if variable is in-scope of dimension */
 nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimension scope */
@@ -3387,7 +3387,7 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
   }/* Look for partial match, not necessarily on path boundaries */
 
   return False;
-} /* nco_crd_var_dmn_scp() */
+} /* !nco_crd_var_dmn_scp() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_crd_dpt /* [fnc] Compare two crd_sct's by group depth */
@@ -3449,7 +3449,7 @@ nco_scp_var_crd                       /* [fnc] Return in-scope coordinate for va
   } /* Loop coordinates */
 
   return NULL;
-} /* nco_scp_var_crd() */
+} /* !nco_scp_var_crd() */
 
 void
 nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to either coordinates or dimension structs */
@@ -3620,7 +3620,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
   if(nco_dbg_lvl_get() >= nco_dbg_sup)(void)fprintf(stdout,"%s: %s DEBUG %d crd",nco_prg_nm_get(),fnc_nm,crt_counter);
 #endif
 
-} /* nco_bld_var_dmn() */
+} /* !nco_bld_var_dmn() */
 
 void                          
 nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (Group Traversal Table) for debugging  */
@@ -3681,7 +3681,7 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
 
     } /* endif */
   } /* end loop over idx_tbl */
-} /* nco_wrt_trv_tbl() */
+} /* !nco_wrt_trv_tbl() */
 
 void
 nco_gpe_chk                            /* [fnc] Check valid GPE new name  */
@@ -3727,7 +3727,7 @@ nco_gpe_chk                            /* [fnc] Check valid GPE new name  */
 
   *nbr_gpe_nm=nbr_gpe;
 
-} /* nco_gpe_chk() */
+} /* !nco_gpe_chk() */
 
 void
 nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
@@ -3774,7 +3774,7 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 
   if(*rec_dmn_nm) (*rec_dmn_nm)->nbr=nbr_rec;
 
-} /* nco_get_rec_dmn_nm() */
+} /* !nco_get_rec_dmn_nm() */
 
 var_sct **                            /* O [sct] Variable list */  
 nco_fll_var_trv                       /* [fnc] Fill-in variable structure list for all extracted variables */
@@ -3828,7 +3828,7 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
   *xtr_nbr=nbr_xtr;
   return var;
 
-} /* nco_fll_var_trv() */
+} /* !nco_fll_var_trv() */
 
 var_sct **                            /* O [sct] Variable list */  
 nco_var_trv                           /* [fnc] Fill-in variable structure list for all variables named "var_nm" */
@@ -3879,7 +3879,7 @@ nco_var_trv                           /* [fnc] Fill-in variable structure list f
 
   *xtr_nbr=nbr_xtr;
   return var;
-} /* nco_var_trv() */
+} /* !nco_var_trv() */
 
 void
 nco_cpy_fix_var_trv                   /* [fnc] Copy fixed variables from input to output file */
@@ -3933,7 +3933,7 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy fixed variables from input t
     } /* If object is a fixed variable... */ 
   } /* Loop table */
 
-} /* nco_cpy_fix_var_trv() */
+} /* !nco_cpy_fix_var_trv() */
 
 void                          
 nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
@@ -4197,7 +4197,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
   /* Free output path name */
   grp_out_fll=(char *)nco_free(grp_out_fll);
-} /* nco_prc_cmn() */
+} /* !nco_prc_cmn() */
 
 void                          
 nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
@@ -4299,7 +4299,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
 
   /* Free output path name */
   grp_out_fll=(char *)nco_free(grp_out_fll);
-} /* nco_cpy_fix() */
+} /* !nco_cpy_fix() */
 
 nco_bool                               /* O [flg] Copy packing attributes */
 nco_pck_cpy_att                        /* [fnc] Inquire about copying packing attributes  */
@@ -4338,7 +4338,7 @@ nco_pck_cpy_att                        /* [fnc] Inquire about copying packing at
     PCK_ATT_CPY=False;  
 
   return PCK_ATT_CPY;
-} /* nco_pck_cpy_att() */
+} /* !nco_pck_cpy_att() */
 
 void
 nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */
@@ -4677,7 +4677,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   dmn_in_id_var=(int *)nco_free(dmn_in_id_var);
 
   return var;
-} /* nco_var_fll_trv() */
+} /* !nco_var_fll_trv() */
 
 int                                 /* O [id] Output file variable ID */
 nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output file */
@@ -5394,7 +5394,7 @@ nco_dmn_swap                           /* [fnc] Swap dimensions */
   dmn_cmn_tmp=dmn_cmn[dmn_nm_1_idx];
   dmn_cmn[dmn_nm_1_idx]=dmn_cmn[dmn_nm_2_idx];
   dmn_cmn[dmn_nm_2_idx]=dmn_cmn_tmp;
-} /* nco_dmn_swap */
+} /* !nco_dmn_swap */
 
 void
 nco_dfn_dmn                            /* [fnc] Define dimension size and ID in array */
@@ -5414,7 +5414,7 @@ nco_dfn_dmn                            /* [fnc] Define dimension size and ID in 
     } /* Find dimension */
   } /* Loop dimensions */
 
-} /* nco_dmn_dfn */
+} /* !nco_dmn_dfn */
 
 const char *
 nco_get_dmn_nm_fll                     /* [fnc] Return name corresponding to input dimension ID (debug) */
@@ -5427,7 +5427,7 @@ nco_get_dmn_nm_fll                     /* [fnc] Return name corresponding to inp
     if(dmn_id == dmn_cmn[idx_dmn].id) return dmn_cmn[idx_dmn].nm_fll;
 
   return "ERROR";
-} /* nco_get_dmn_nm_fll() */
+} /* !nco_get_dmn_nm_fll() */
 
 void
 nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-ordered variable */
@@ -5798,7 +5798,7 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
 
   return;
 
-} /* nco_var_dmn_rdr_mtd_trv() */
+} /* !nco_var_dmn_rdr_mtd_trv() */
 
 nco_bool                              /* [flg] Name was found */
 nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable that matches full name */
@@ -5824,7 +5824,7 @@ nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable 
   assert(0);
   return False;
 
-} /* nco_var_prc_idx_trv() */
+} /* !nco_var_prc_idx_trv() */
 
 nco_bool                              /* O [flg] Re-define dimension ordering */
 nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
@@ -5866,7 +5866,7 @@ nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
 
   return False;
 
-} /* nco_had_rdf_dmn_trv() */
+} /* !nco_had_rdf_dmn_trv() */
 
 void
 nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of variable values */
@@ -6061,7 +6061,7 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 
   return;
 
-} /* nco_var_dmn_rdr_val_trv() */
+} /* !nco_var_dmn_rdr_val_trv() */
   
 void
 nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hyperslabbed size */
@@ -6325,7 +6325,7 @@ nco_dmn_dgn_tbl                       /* [fnc] Transfer degenerated dimensions i
     trv_tbl->dmn_dgn[idx_dmn].cnt=dmn_dgn[idx_dmn]->cnt;
   } /* Loop dimensions */
 
-} /* nco_dmn_dgn_tbl() */
+} /* !nco_dmn_dgn_tbl() */
 
 void
 nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq, ncwa) */
@@ -6592,7 +6592,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
   
   return;
   
-} /* nco_dmn_avg_mk() */
+} /* !nco_dmn_avg_mk() */
 
 void
 nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep on output */
@@ -6678,7 +6678,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
 
   return;
 
-} /* nco_dmn_out_mk() */
+} /* !nco_dmn_out_mk() */
 
 void
 nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally flag degenerate for all dimensions that have the input ID */
@@ -6718,7 +6718,7 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally fl
 
   return;
 
-} /* nco_dmn_id_mk() */
+} /* !nco_dmn_id_mk() */
 
 void                          
 nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
@@ -6866,7 +6866,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   /* Export */
   *nbr_rec=rec_nbr;
   return;
-} /* nco_bld_rec_dmn() */
+} /* !nco_bld_rec_dmn() */
 
 void
 nco_prn_tbl_lmt                       /* [fnc] Print table limits */
@@ -6923,7 +6923,7 @@ nco_prn_tbl_lmt                       /* [fnc] Print table limits */
     } /* Is variable */
   } /* Loop table */
 
-} /* nco_prn_tbl_lmt() */
+} /* !nco_prn_tbl_lmt() */
 
 void
 nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
@@ -7094,7 +7094,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(nco_dbg_lvl_get() == nco_dbg_vrb) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
 
   return;
-} /* nco_bld_trv_tbl() */
+} /* !nco_bld_trv_tbl() */
 
 void
 nco_chk_dmn                           /* [fnc] Check valid dimension names */
@@ -7110,7 +7110,7 @@ nco_chk_dmn                           /* [fnc] Check valid dimension names */
       nco_exit(EXIT_FAILURE);
     } /* Check this flag */
   } /* Were all user-specified dimensions found? */
-} /* nco_chk_dmn() */
+} /* !nco_chk_dmn() */
 
 void
 nco_chk_dmn_in                        /* [fnc] Check input dimensions */
@@ -7134,7 +7134,7 @@ nco_chk_dmn_in                        /* [fnc] Check input dimensions */
     for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++)
       if(!strcmp(lmt[lmt_idx]->nm,trv_tbl->lst_dmn[dmn_idx].nm)) (*dne_lst)[lmt_idx].flg_dne=False; 
   } /* end for */
-} /* nco_chk_dmn_in() */
+} /* !nco_chk_dmn_in() */
 
 void
 nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
@@ -7450,7 +7450,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     } /* Is variable to extract  */
   } /* Loop table step 3 */
 
-} /* nco_bld_lmt() */
+} /* !nco_bld_lmt() */
 
 void
 nco_bld_lmt_var                       /* [fnc] Assign user specified dimension limits to one GTT variable */
@@ -7825,7 +7825,7 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
 
   return flg_skp;
 
-} /* nco_skp_var() */
+} /* !nco_skp_var() */
 
 var_sct *                             /* O [sct] Variable (weight or mask) */
 nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variable */
@@ -7962,7 +7962,7 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
   nco_exit(EXIT_FAILURE);
 
   return NULL;
-} /* nco_var_get_wgt_trv() */
+} /* !nco_var_get_wgt_trv() */
 
 void                                    
 nco_grp_var_lst                        /* [fnc] Export list of variable names for group */
@@ -8085,7 +8085,7 @@ nco_var_has_cf /* [fnc] Variable has CF-compliant attributes ("ancillary_variabl
 
   return NULL;
 
-} /* nco_var_has_cf() */
+} /* !nco_var_has_cf() */
 
 int                                    /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by group depth */
@@ -8102,7 +8102,7 @@ nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by gro
   else if(crd_1->grp_dpt < crd_2->grp_dpt) return -1;
   else return 0;
 
-} /* nco_cmp_aux_crd_dpt() */
+} /* !nco_cmp_aux_crd_dpt() */
 
 void
 nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
@@ -8220,7 +8220,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   } /* !idx_tbl */
 
   return;
-} /* nco_prs_aux_crd() */
+} /* !nco_prs_aux_crd() */
 
 void
 nco_lmt_aux_tbl                       /* [fnc] Apply limits to variable in table */
@@ -8244,7 +8244,7 @@ nco_lmt_aux_tbl                       /* [fnc] Apply limits to variable in table
   } /* !idx_tbl */
 
   return;
-} /* nco_lmt_aux_tbl() */
+} /* !nco_lmt_aux_tbl() */
 
 void
 nco_lmt_std_att_lat_lon               /* [fnc] Apply limits to variable in table that contains 'standard_name' attribute "latitude" */
@@ -8268,7 +8268,7 @@ nco_lmt_std_att_lat_lon               /* [fnc] Apply limits to variable in table
   } /* Loop table  */
 
   return;
-} /* nco_lmt_std_att_lat_lon() */
+} /* !nco_lmt_std_att_lat_lon() */
 
 void
 nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxiliary function called by different functions ) */
@@ -8480,7 +8480,7 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
   } /* b) Dimension only (no coordinate variable for this dimension) */
 
   return;
-} /* nco_lmt_aux() */
+} /* !nco_lmt_aux() */
 
 int
 nco_bld_crd_aux /* [fnc] Build auxiliary coordinates information into table */
@@ -8639,7 +8639,7 @@ nco_bld_crd_aux /* [fnc] Build auxiliary coordinates information into table */
 
   /* return True if only latitude and longitude found */ 
   return (nbr_lat && nbr_lon);
-} /* nco_bld_crd_aux() */
+} /* !nco_bld_crd_aux() */
 
 int
 nco_bld_crd_nm_aux                     /* [fnc] Build auxiliary coordinates information into table using named latitude and longitude*/
@@ -8896,7 +8896,7 @@ nco_prn_nsm                                 /* [fnc] Print ensembles  */
       }
     }
   }
-} /* nco_prn_nsm() */
+} /* !nco_prn_nsm() */
 
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
@@ -9116,7 +9116,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
     } /* Loop table */
   } /* Loop ensembles */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) nco_prn_nsm(trv_tbl);
-} /* nco_bld_nsm() */
+} /* !nco_bld_nsm() */
 
 void
 nco_wrt_atr
@@ -9136,7 +9136,7 @@ nco_wrt_atr
   (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
   
   (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,True);
-} /* nco_wrt_atr() */
+} /* !nco_wrt_atr() */
 
 void
 nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed variables */
@@ -9196,7 +9196,7 @@ nco_nsm_dfn_wrt                      /* [fnc] Define OR write ensemble fixed var
 
   } /* Ensembles */
 
-} /* nco_nsm_dfn_wrt() */
+} /* !nco_nsm_dfn_wrt() */
 
 void
 nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 file cases) */
@@ -9329,7 +9329,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
     nco_prn_nsm(trv_tbl);
   }
 
-} /* nco_nsm_ncr() */
+} /* !nco_nsm_ncr() */
 
 nco_bool                               /* O [flg] True for match found */
 nco_prc_rel_mch                        /* [fnc] Relative match of object in table 1 to table 2  */
@@ -9383,7 +9383,7 @@ nco_prc_rel_mch                        /* [fnc] Relative match of object in tabl
 
   return rel_mch;
 
-} /* nco_prc_rel_mch() */
+} /* !nco_prc_rel_mch() */
 
 void                          
 nco_cmn_var                            /* [fnc] Does the list of common names contain absolute/relative variables match? */
@@ -9434,7 +9434,7 @@ nco_cmn_var                            /* [fnc] Does the list of common names co
 
   } /* Process objects in list */
 
-} /* nco_cmn_var() */
+} /* !nco_cmn_var() */
 
 void                                               
 nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute variables in both files (same path) (ncbo) */
@@ -9479,7 +9479,7 @@ nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute
     } /* Both variables exist in same location, both are to extract */
   } /* Process objects in list */
 
-} /* nco_prc_cmn_var_nm_fll() */
+} /* !nco_prc_cmn_var_nm_fll() */
 
 void                          
 nco_cmn_nsm_var                        /* [fnc] Common variable exist in ensembles (ncbo only) */
@@ -9558,7 +9558,7 @@ nco_cmn_nsm_var                        /* [fnc] Common variable exist in ensembl
 
   }/* Loop ensembles table 1  */
 
-}/* nco_cmn_nsm_var() */
+}/* !nco_cmn_nsm_var() */
 
 void                          
 nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) */
@@ -9767,7 +9767,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   for(int idx_nm=0;idx_nm<nsm_grp_nm_fll_prn_1->nbr;idx_nm++)
     nsm_grp_nm_fll_prn_1->lst[idx_nm].nm=(char *)nco_free(nsm_grp_nm_fll_prn_1->lst[idx_nm].nm);   
   nsm_grp_nm_fll_prn_1=(nm_lst_sct *)nco_free(nsm_grp_nm_fll_prn_1);
-} /* nco_grp_brd() */
+} /* !nco_grp_brd() */
 
 void                                               
 nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variables belonging to ensembles in both files (ncbo) */
@@ -9874,7 +9874,7 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
 
   } /* ! flg_grp_1 */
 
-} /* nco_prc_cmn_nsm() */
+} /* !nco_prc_cmn_nsm() */
 
 void                                               
 nco_prc_nsm                            /* [fnc] Process (define, write) variables belonging to ensembles only in 1 file (ncbo) */
@@ -10066,7 +10066,7 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
 
   } /* ! Using table 1 as template */ 
 
-} /* nco_prc_nsm() */
+} /* !nco_prc_nsm() */
 
 void                          
 nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (ncbo) */
@@ -10131,7 +10131,7 @@ nco_fix_dfn_wrt                        /* [fnc] Define/write fixed variables (nc
   /* Free output path name */
   grp_out_fll=(char *)nco_free(grp_out_fll);
 
-} /* nco_fix_dfn_wrt() */
+} /* !nco_fix_dfn_wrt() */
 
 nco_bool                               /* O [flg] True for match found */
 nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
@@ -10168,7 +10168,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
 
   return rel_mch;
 
-} /* nco_rel_mch() */
+} /* !nco_rel_mch() */
 
 void                          
 nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects from a common mames list (ncbo only) */
@@ -10289,7 +10289,7 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
     } /* Process objects in list */
   } /* File 2 "larger" (typically model file) (e.g ncbo -O obs.nc cmip5.nc out.nc ) */
 
-} /* nco_prc_rel_cmn_nm() */
+} /* !nco_prc_rel_cmn_nm() */
 
 void                  
 nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */                                
@@ -10507,7 +10507,7 @@ nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
     var_tpl_trv=(trv_sct **)nco_free(var_tpl_trv);
 
   } /* Loop ensembles */
-} /* nco_chk_nsm() */
+} /* !nco_chk_nsm() */
 
 
 void                          
@@ -10576,7 +10576,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
           } /* Check retrun code */
       } /* Filter groups */
   } /* Loop table  */
-} /* nco_nsm_att() */
+} /* !nco_nsm_att() */
 
 void                      
 nco_rad                                /* [fnc] Retain all dimensions */
@@ -10630,7 +10630,7 @@ nco_rad                                /* [fnc] Retain all dimensions */
 
     } /* Dimension not found, make it */
   } /* Loop unique dimensions list */
-} /* nco_rad() */
+} /* !nco_rad() */
 
 void                                               
 nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variables belonging to ensembles in both files (ncbo) */
@@ -10728,7 +10728,7 @@ nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variable
     } /* Loop ensembles */
   } /* !flg_grp_1 */
 
-} /* nco_prc_cmn_nsm_att() */
+} /* !nco_prc_cmn_nsm_att() */
 
 void
 nco_prn_dmn                            /* [fnc] Print dimensions (debug) */
@@ -10798,7 +10798,7 @@ nco_prn_dmn                            /* [fnc] Print dimensions (debug) */
   } /* Loop over dimensions of variable */
 
   dmn_id_var=(int *)nco_free(dmn_id_var); 
-} /* nco_prn_dmn() */
+} /* !nco_prn_dmn() */
 
 void
 nco_nsm_wrt_att                  /* [fnc] Save ncge metadata attribute */
@@ -10865,7 +10865,7 @@ nco_nsm_wrt_att                  /* [fnc] Save ncge metadata attribute */
 
     } /* end if group and flg_xtr */
   } /* end loop to define group attributes */
-} /* nco_nsm_wrt_att() */
+} /* !nco_nsm_wrt_att() */
 
 void
 nco_var_xtr_trv                       /* [fnc] Print all variables to extract (debug) */
@@ -10878,7 +10878,7 @@ nco_var_xtr_trv                       /* [fnc] Print all variables to extract (d
       (void)fprintf(stdout, "%s\n",trv_tbl->lst[tbl_idx].nm_fll);
     } /* Filter variables  */
   } /* Loop table */
-} /* nco_var_xtr_trv() */
+} /* !nco_var_xtr_trv() */
 
 crd_sct*
 nco_get_crd_sct                       /* [fnc] Return a coordinate variable crd_sct for a given table variable var_trv */
@@ -10950,4 +10950,3 @@ nco_srt_aux /* [fnc] Sort auxiliary coordinates */
   } /* !idx */
 
 } /* !nco_srt_aux() */
-
