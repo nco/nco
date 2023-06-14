@@ -84,7 +84,7 @@ KNOWN PROBLEMS DUE TO NCO:
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
 These problems occur with NCO 5.1.7 built/tested under
-MacOS 13.3.1 with netCDF 4.9.3-dev on HDF5 1.14 and with
+MacOS 13.4 with netCDF 4.9.3-dev on HDF5 1.14 and with
 Linux with netCDF 4.9.2 on HDF5 1.14
 
 A. NOT YET FIXED (NCO problem)

@@ -1293,7 +1293,7 @@ nco_cdc_lst_bld
 {
   /* Purpose: Build list of available quantization algorithms and HDF5 Filters */
   /* Build list of available filters once */
-  const char fnc_nm[]="nc_cdc_lst_bld()";
+  const char fnc_nm[]="nco_cdc_lst_bld()";
 
   char char_foo;
 

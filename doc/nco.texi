@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.7-alpha02
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 20 May 2023
-@set update-month May 2023
+@set update-date 11 June 2023
+@set update-month June 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -9275,9 +9275,9 @@ default mappings.@*
 Mnemonic: E@emph{X}i@emph{ST}@*
 @item Chunksize Balances 1D and (N-1)-D Access to N-D Variable [@emph{default for netCDF4 input}]
 Definition: Chunksizes are chosen so that 1-D and (@var{N-1})-D
-hyperslabs of @var{3}-D variables (e.g., point-timeseries orn
+hyperslabs of @var{3}-D variables (e.g., point-timeseries or
 latitude/longitude surfaces of 3-D fields) both require approximately
-the number of chunks. 
+the same number of chunks. 
 Hence their access time should be balanced.
 Russ Rew explains the motivation and derivation for this strategy 
 @uref{http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_choosing_shapes,
@@ -9873,7 +9873,7 @@ the floating-point configuration parameters required by some
 @acronym{CCR} filters and many external filters.
 That said, most of the code to support the filter parameter syntax
 documented at
-@url{https://docs.unidata.ucar.edu/netcdf-c/current/md__home_wfisher_Desktop_gitprojects_netcdf_c_docs_filters.html#filters_syntax}
+@url{https://docs.unidata.ucar.edu/netcdf-c/current/filters.html}
 and implemented in @command{ncgen} and @command{nccopy} is ready and
 we expect to support that syntax in @acronym{NCO} 5.0.9.
 That syntax is backward compatible with the integer-only input
@@ -9881,16 +9881,15 @@ assumptions already embedded in @acronym{NCO} 5.1.0.
 In the meantime, we request your feedback, use-cases, and suggestions
 before adopting a final approach.
 
-Another limitation of @acronym{NCO} 5.1.0 is that the Blosc filters
-may fail without explanation.
-We are working to understand why this is the case and hope to have
-a fix by 5.1.1.
+Another limitation of @acronym{NCO} 5.1.0 was that the Blosc filters
+would fail without explanation.
 This is why the manual does not yet document much about Blosc filters.
+The Blosc issues were fixed upstream in netCDF version 4.9.1.
 
-netCDF 4.9.0 contains some inadvertent mistakes that will be fixed
+netCDF 4.9.0 contained some other inadvertent mistakes that were fixed 
 in 4.9.1.
 First, the quantization algorithms internal to netCDF work only on
-datasets of type @acronym{NETCDF4}.
+datasets of type @acronym{NETCDF4} in netCDF 4.9.0.
 A recently discovered bug prevents them from working on
 @acronym{NETCDF4_CLASSIC}-format datasets 
 @footnote{Quantization may never be implemented in netCDF for any 
@@ -9898,27 +9897,26 @@ A recently discovered bug prevents them from working on
 compression advantage to doing so.
 Use the @acronym{NCO} implementation to quantize to netCDF3 output
 formats.}.
-The fix to the @acronym{NETCDF4_CLASSIC} bug is available now in the
-main netCDF trunk, and will be officially released in netCDF 4.9.1.  
-Note that this bug does not affect the same quantization algorithms as
+The fix to the @acronym{NETCDF4_CLASSIC} bug was officially released
+in netCDF 4.9.1.
+Note that this bug did not affect the same quantization algorithms as
 implemented in @acronym{NCO} (or in the @acronym{CCR}, for that
 matter). 
 In other words, quantization to netCDF3 and
-@acronym{NETCDF4_CLASSIC}-format output files @emph{must} currently be
-invoked through the @samp{--ppc} (not @samp{--cmp}) option. 
-This restriction will be partially lifted once the
-@acronym{NETCDF4_CLASSIC} bug is fixed in netCDF. 
+@acronym{NETCDF4_CLASSIC}-format output files @emph{always} works
+when invoked through the @samp{--ppc} (not @samp{--cmp}) option. 
+This restriction will only affects netCDF prior to 4.9.1. 
 Per-variable quantization settings must also be invoked through
 @samp{--ppc} (not @samp{--cmp}) for all output formats, until and
 unless this feature is migrated to @samp{--cmp} (there are no plans
 to do so).
 
-Another sticky expected to be fixed in netCDF 4.9.1 is the use of the
-Blosc codec.
+Another sticky wicket expected that was fixed in netCDF 4.9.1
+was the use of the Blosc codec.
 NCZarr uses Blosc internally, however the @acronym{HDF5} Blosc codec
-in netCDF 4.9.0 requires some fixes before it can be considered
-robust.
-That is why we do not yet advertise its use in @acronym{NCO}.
+in netCDF 4.9.0 was not robust.
+We plan to advertise the advantages of Blosc more fully in future
+versions of @acronym{NCO}.
 Feedback on any or all of these constraints is welcome.
 
 @unnumberedsubsec Best Practices for Real World Lossy Compression
