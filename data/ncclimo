@@ -1247,7 +1247,8 @@ if [ -n "${var_lst}" ] && [ "${tms_flg}" != 'Yes' ]; then
     nco_opt="${nco_opt} -v ${var_lst}"
 fi # !var_lst
 if [ -n "${cmp_sng}" ]; then
-    nco_opt="${nco_opt} --cmp=${cmp_sng}"
+    # 20230623: Insert backslashes to protect pipe characters from shell
+    nco_opt="${nco_opt} --cmp=${cmp_sng//\|/\\|}"
 fi # !cmp_sng
 if [ -n "${dfl_lvl}" ]; then
     nco_opt="${nco_opt} --dfl_lvl=${dfl_lvl}"

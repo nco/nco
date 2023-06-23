@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.7-alpha02
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 11 June 2023
+@set update-date 15 June 2023
 @set update-month June 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7188,8 +7188,13 @@ ncremap -7 --dfl_lvl=1 -G ttl='Cap/FV ECMWF ERA5 grid 0.25x0.25 degree, dimensio
 ncremap -7 --dfl_lvl=1 -G ttl='Cap/FV ECMWF ERA5 grid 0.25x0.25 degree, dimensions 721x1440, cell centers on Poles/Equator (in south-to-north order) and Prime Meridian/Date Line'#latlon=721,1440#lat_drc=s2n#lat_typ=cap#lon_typ=grn_ctr \
         -g ${DATA}/grids/era5_s2n_721x1440.nc
 
-# 360x720 ELM/MOSART grid, first longitude west edge at DateLine
-ncremap -7 --dfl_lvl=1 -G ttl='Equi-Angular 0.5x0.5 degree uniform grid (r05), dimensions 360x720, cell edges on Poles/Equator and Date Line/Prime Meridian'#latlon=360,720#lat_typ=uni#lon_typ=180_wst -g ${DATA}/grids/r05_360x720.nc
+# 360x720 CRUNCEP (E3SM/ELM-offline forcing grid) (NB: CRUNCEP starts at Greenwich, is not r05)
+ncremap -7 --dfl_lvl=1 -G ttl='CRUNCEP Equi-Angular 0.5x0.5 degree uniform grid, dimensions 360x720, cell edges on Poles/Equator and Prime Meridian/Date Line'#latlon=360,720#lat_typ=uni#lon_typ=Grn_wst \
+        -g ${DATA}/grids/cruncep_360x720.nc
+
+# 360x720 ELM/MOSART grid, first longitude west edge at DateLine (NB: ELM defines r05, starts at Dateline)
+ncremap -7 --dfl_lvl=1 -G ttl='Equi-Angular 0.5x0.5 degree uniform grid (r05), dimensions 360x720, cell edges on Poles/Equator and Date Line/Prime Meridian'#latlon=360,720#lat_typ=uni#lon_typ=180_wst \
+        -g ${DATA}/grids/r05_360x720.nc
 
 # 105x401 Greenland ERA5
 ncremap -G ttl='Equi-Angular Greenland 0.25x0.25 degree ERA5 north-to-south grid'#latlon=105,401#snwe=58.875,85.125,-87.125,13.125#lat_typ=uni#lat_drc=n2s#lon_typ=grn_ctr \
@@ -9585,7 +9590,7 @@ when invoked with a higher debugging level:
 @cindex @code{f32}
 @cindex @code{dns}
 @cindex Shuffle
-@cindex Fletchdf32
+@cindex Fletcher32
 You may provide any operator (besides @command{ncrename} and
 @command{ncatted}) with a @var{cmp_sng} comprised of an arbitrary
 number of @acronym{HDF5} filters specified either by numeric

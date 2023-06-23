@@ -1490,7 +1490,8 @@ if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="--dbg_lvl=${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
 if [ -n "${cmp_sng}" ]; then
-    nco_opt="${nco_opt} --cmp=${cmp_sng}"
+    # 20230623: Insert backslashes to protect pipe characters from shell
+    nco_opt="${nco_opt} --cmp=${cmp_sng//\|/\\|}"
 fi # !cmp_sng
 if [ -n "${col_dmn}" ]; then
     rgr_opt="${rgr_opt} --rgr col_nm=${col_dmn}"
