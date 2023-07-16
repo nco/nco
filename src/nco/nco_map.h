@@ -25,14 +25,15 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_omp.h" /* OpenMP utilities */
 #include "nco_rgr.h" /* Regridding */
 #include "nco_sld.h" /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
-#include "nco_ply_lst.h"  /* polygon list functions */
-#include "nco_ply.h"     /* polygon functions */
-#include "nco_kd.h"
+#include "nco_ply_lst.h" /* Polygon list manipulation */
+#include "nco_ply.h" /* Polygon structure & utilities */
+#include "nco_kd.h" /* K-d tree geometric data structure */
 
 #ifdef __cplusplus
 extern "C" {

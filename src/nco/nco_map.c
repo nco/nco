@@ -789,10 +789,10 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   int pl_cnt_in=0;
   int pl_cnt_out=0;
 
-  long grd_crn_nbr_in;    /* [nbr] Maximum number of corners in source gridcell */
-  long grd_crn_nbr_out;  /*  [nbr] Maximum number of corners in destination gridcell */
-  size_t grd_sz_in;       /* [nbr] Number of elements in single layer of source grid */
-  size_t grd_sz_out;     /*  [nbr] Number of elements in single layer of destination grid */
+  long grd_crn_nbr_in; /* [nbr] Maximum number of corners in source gridcell */
+  long grd_crn_nbr_out; /* [nbr] Maximum number of corners in destination gridcell */
+  size_t grd_sz_in; /* [nbr] Number of elements in single layer of source grid */
+  size_t grd_sz_out; /* [nbr] Number of elements in single layer of destination grid */
 
   int *col_src_adr; /* [idx] Source address (col) */
   int *row_dst_adr; /* [idx] Destination address (row) */
@@ -843,20 +843,21 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     if(rgr->edg_typ == nco_edg_nil) rgr->edg_typ=nco_edg_gtc;
     pl_typ=poly_sph;
   } /* !edg_typ */
+
   /* 20200304: NB: edg_typ and pl_typ are NOT synonyms:
      pl_typ determines which area routines to use
      edg_typ determines which edge types to assume for intersections and within the spherical area routines
      Polygons of type poly_sph may have edges of type edg_typ_smc
      edg_typ_smc means edges with same latitude are small circles, other edges are great circles */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_crr)
-    (void)fprintf(stderr,"%s:%s(): Interpolation type=%s\n",nco_prg_nm_get(),fnc_nm,nco_poly_typ_sng_get(pl_typ));
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: %s reports interpolation type=%s\n",nco_prg_nm_get(),fnc_nm,nco_poly_typ_sng_get(pl_typ));
 
   /* Create some statistics on grid in and grid out */
   pl_glb_in=nco_msh_stats(area_in,msk_in,lat_ctr_in,lon_ctr_in,lat_crn_in,lon_crn_in,grd_sz_in,grd_crn_nbr_in);
   pl_glb_out=nco_msh_stats(area_out,msk_out,lat_ctr_out,lon_ctr_out,lat_crn_out,lon_crn_out,grd_sz_out,grd_crn_nbr_out);
 
-  /* determine lon_typ  nb temporary */
+  /* Determine longitude grid input/output types
+     NB: this determination is "temporary" */
   grd_lon_typ_in=nco_poly_minmax_2_lon_typ(pl_glb_in);
   grd_lon_typ_out=nco_poly_minmax_2_lon_typ(pl_glb_out);
 
@@ -866,16 +867,20 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     (void)fprintf(stderr,"\n%s:%s mesh out statistics (grd_lon_typ=%s)\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(grd_lon_typ_out));
     nco_poly_prn(pl_glb_out,0);
-  }
+  } /* !dbg */
 
+  /* 20230716: nco_msh_lon_crr() is only called here and invocation is non-optimal
+     Each call can modify longitude arrays */
   /* Check whether (0-360) SCRIP files have negative longitude for wrapped cells */
   nco_msh_lon_crr(lon_crn_in,grd_sz_in,grd_crn_nbr_in,grd_lon_typ_in,grd_lon_typ_in);
+
+  /* 20230716 NB: This call in particular can change branch cut of gridcell corners in map-file and thus in regridded files */
   nco_msh_lon_crr(lon_crn_out,grd_sz_out,grd_crn_nbr_out,grd_lon_typ_out,grd_lon_typ_out);
 
   /* Convert corners */
   nco_msh_lon_crr(lon_crn_in,grd_sz_in,grd_crn_nbr_in,grd_lon_typ_in,grd_lon_typ_out);
   /* Convert centers */
-  nco_msh_lon_crr(lon_ctr_in,grd_sz_in,1 ,grd_lon_typ_in,grd_lon_typ_out);
+  nco_msh_lon_crr(lon_ctr_in,grd_sz_in,1L,grd_lon_typ_in,grd_lon_typ_out);
 
   //nco_msh_wrt("nco_map_tst_in.nc",grd_sz_in,grd_crn_nbr_in,lat_crn_in,lon_crn_in);
   //nco_msh_wrt("nco_map_tst_out.nc",grd_sz_out,grd_crn_nbr_out,lat_crn_out,lon_crn_out);
@@ -1385,8 +1390,8 @@ nco_grd_lon_typ_enm typ_out)
 {
   const char fnc_nm[]="nco_msh_lon_crr()";
 
-  int idx;
-  int sz;
+  size_t idx;
+  size_t sz;
 
   const char *typ_in_sng;
   const char *typ_out_sng;
@@ -1394,21 +1399,16 @@ nco_grd_lon_typ_enm typ_out)
   sz=grd_sz*grd_crn_nbr;
 
   /* Do nothing */
-  if(typ_in== nco_grd_lon_nil || typ_out == nco_grd_lon_nil) return;
+  if(typ_in == nco_grd_lon_nil || typ_out == nco_grd_lon_nil) return;
 
   typ_in_sng=nco_grd_lon_sng(typ_in);
   typ_out_sng=nco_grd_lon_sng(typ_out);
 
-  /* Do nothing
-  if(typ_in == typ_out)
-    return;
-  */
-
   /* Check type out */
   if(typ_out == nco_grd_lon_bb || typ_out == nco_grd_lon_unk){
     (void)fprintf(stderr,"%s(): ERROR %s cannot convert grd_lon to \"%s\"\n",nco_prg_nm_get(),fnc_nm,typ_out_sng);
-    exit(EXIT_FAILURE);
-  }
+    nco_exit(EXIT_FAILURE);
+  } /* !typ_out */
 
   if(False && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s converting longitude coord from \"%s\" to \"%s\"\n",nco_prg_nm_get(),fnc_nm,typ_in_sng,typ_out_sng);
 
@@ -1427,7 +1427,7 @@ nco_grd_lon_typ_enm typ_out)
       for(idx=0;idx<sz;idx++)
 	if(lon_crn[idx] < 0.0) lon_crn[idx]+=360.0;
       break;
-    }
+    } /* !typ_out */
     break;
   case nco_grd_lon_180_wst:
   case nco_grd_lon_180_ctr:
@@ -1444,7 +1444,7 @@ nco_grd_lon_typ_enm typ_out)
       for(idx=0;idx<sz;idx++)
 	if(lon_crn[idx] < 0.0) lon_crn[idx]+=360.0;
       break;
-    }
+    } /* !typ_out */
     break;
   case nco_grd_lon_Grn_wst:
   case nco_grd_lon_Grn_ctr:
@@ -1462,12 +1462,12 @@ nco_grd_lon_typ_enm typ_out)
       for(idx=0;idx<sz;idx++)
 	if(lon_crn[idx] < 0.0) lon_crn[idx]+=360.0;
       break;
-    }
+    } /* !typ_out */
     break;
 
   case nco_grd_lon_nil:
     break;
-  }
+  } /* !typ_in */
   return;
 } /* !nco_msh_lon_crr() */
 
