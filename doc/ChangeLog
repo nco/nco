@@ -1,8 +1,12 @@
-2023-06-23  Charlie Zender  <zender@uci.edu>
+2023-07-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.7-alpha03: Cool Shades';git push
 	git tag -a 5.1.7-alpha03 -m '';git push --tags
+
+	* Tidy nco_map_mk(), nco_msh_lon_crr() to prepare to always output bounds on same branch cut
+
+2023-06-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.7-alpha02: Prom';git push
