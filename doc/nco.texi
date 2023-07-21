@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.7-alpha03
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 15 June 2023
-@set update-month June 2023
+@set update-date 18 July 2023
+@set update-month July 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -16245,7 +16245,6 @@ three_dmn_var_int:units = "watt meter-2" ;
 @end example
 
 @html
-<a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
 

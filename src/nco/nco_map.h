@@ -88,8 +88,15 @@ extern "C" {
    nco_grd_lon_typ_enm typ_out);
   
   void
-  nco_msh_poly_lst_wrt
-  (const char *fl_out,
+  nco_msh_lon_cf /* [fnc] Adjust longitude bounds to adhere to CF conventions */
+  (const size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
+   const long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
+   const double * const lon_ctr, /* I [dgr] Longitude centers */
+   double * const lon_crn); /* I/O [dgr] Longitude corners to be corrected */
+   
+   void
+   nco_msh_poly_lst_wrt
+   (const char *fl_out,
    poly_sct **pl_lst,
    int pl_nbr,
    nco_grd_lon_typ_enm grd_lon_typ,

@@ -7974,7 +7974,7 @@ nco_grd_lon_sng /* [fnc] Convert longitude grid-type enum to string */
   case nco_grd_lon_Grn_ctr: return "Greenwich at center of first longitude cell";
   case nco_grd_lon_bb: return "Longitude grid determined by bounding box (lon_wst/lon_est) and gridcell number (lon_nbr)";
   default: nco_dfl_case_generic_err(); break;
-  } /* end switch */
+  } /* !nco_grd_lon_typ */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
@@ -10543,7 +10543,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       }else{
 	lon_bnd[2*col_idx]=lon_brnch_max;
 	lon_bnd[2*col_idx+1]=lon_brnch_min;
-      } /* end else */
+      } /* !lon_brnch_min */
     } /* !col_idx */
     /* Convert boundaries that were provided as pseudo-rectangular to corners */
     for(col_idx=0;col_idx<col_nbr;col_idx++){

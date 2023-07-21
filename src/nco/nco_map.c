@@ -494,6 +494,12 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG return from nco_msh_mk()...\n",nco_prg_nm_get());
 
+  /* 20230720: Adjust corner longitudes to adhere to CF conventions */
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG ensuring corner longitude CF-compliance with nco_msh_lon_cf()...\n",nco_prg_nm_get());
+  //  nco_msh_lon_cf(grd_sz_in,src_grd_crn_nbr,lon_ctr_in,lon_crn_in);
+  /*  */
+  nco_msh_lon_cf(grd_sz_out,dst_grd_crn_nbr,lon_ctr_out,lon_crn_out);
+
   if(False && nco_dbg_lvl_get() >= nco_dbg_quiet){
     /* 20191012: Normalize areas and weights to yield 4*pi steradians for global grids
        This worsens overall statistics, so do not turn-on by default
@@ -871,10 +877,11 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   /* 20230716: nco_msh_lon_crr() is only called here and invocation is non-optimal
      Each call can modify longitude arrays */
-  /* Check whether (0-360) SCRIP files have negative longitude for wrapped cells */
+  /* Check whether source SCRIP files have negative longitude for wrapped cells */
   nco_msh_lon_crr(lon_crn_in,grd_sz_in,grd_crn_nbr_in,grd_lon_typ_in,grd_lon_typ_in);
 
-  /* 20230716 NB: This call in particular can change branch cut of gridcell corners in map-file and thus in regridded files */
+  /* 20230716 NB: This call in particular can change branch cut of gridcell corners in map-file and thus in regridded files
+     Is this call justified any longer? */
   nco_msh_lon_crr(lon_crn_out,grd_sz_out,grd_crn_nbr_out,grd_lon_typ_out,grd_lon_typ_out);
 
   /* Convert corners */
@@ -1448,7 +1455,6 @@ nco_grd_lon_typ_enm typ_out)
     break;
   case nco_grd_lon_Grn_wst:
   case nco_grd_lon_Grn_ctr:
-
     switch(typ_out){
     case nco_grd_lon_180_wst:
     case nco_grd_lon_180_ctr:
@@ -1470,6 +1476,71 @@ nco_grd_lon_typ_enm typ_out)
   } /* !typ_in */
   return;
 } /* !nco_msh_lon_crr() */
+
+void
+nco_msh_lon_cf /* [fnc] Adjust longitude bounds to adhere to CF conventions */
+(const size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
+ const long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
+ const double * const lon_ctr, /* I [dgr] Longitude centers */
+ double * const lon_crn) /* I/O [dgr] Longitude corners to be corrected */
+{
+  /* Purpose: Ensure longitude bounds adhere to CF conventions and form a monotonically
+     increasing array in the CCW direction, and are on the same branch cut as the cell center
+
+     Assumptions: Input coordinates are stored in degrees (not radians) */
+
+  const char fnc_nm[]="nco_msh_lon_cf()";
+
+  double lon_dff_crn;
+  double lon_dff_ctr_crr;
+  double lon_dff_ctr_nxt;
+
+  size_t idx_crn;
+  size_t idx_crr;
+  size_t idx_ctr;
+  size_t idx_fst;
+  size_t idx_nxt;
+  size_t sz;
+
+  sz=grd_sz*grd_crn_nbr;
+
+  for(idx_ctr=0;idx_ctr<sz;idx_ctr++){
+    idx_fst=idx_ctr*grd_crn_nbr;
+
+    /* Find difference between current and "next" vertice longitude for each edge in current cell */
+    for(idx_crn=0;idx_crn<grd_crn_nbr;idx_crn++){
+      idx_crr=idx_fst+idx_crn;
+      /* Ensure indexing is cyclic... */
+      idx_nxt= (idx_crn == grd_crn_nbr-1L) ? idx_fst : idx_crr+1L;
+      lon_dff_crn=lon_crn[idx_crr]-lon_crn[idx_nxt];
+      /* Adjust longitudes to same branch cut */
+      if(fabs(lon_dff_crn) >= 180.0){
+	(void)fprintf(stdout,"%s: DEBUG %s reports boundary longitude adjustment for idx_ctr = %lu, idx_crn = %lu, idx_crr = %lu, idx_nxt = %lu, lon_ctr = %g, lon_crn_crr = %g, lon_crn_nxt = %g, lon_dff_crn = %g. Will adjust lon_crn[idx_crr] or lon_crn[idx_nxt] by 360.0 degrees to be on same branch cut as lon_ctr.\n",nco_prg_nm_get(),fnc_nm,idx_ctr,idx_crn,idx_crr,idx_nxt,lon_ctr[idx_ctr],lon_crn[idx_crr],lon_crn[idx_nxt],lon_dff_crn);
+	lon_dff_ctr_crr=lon_crn[idx_crr]-lon_ctr[idx_ctr];
+	lon_dff_ctr_nxt=lon_crn[idx_nxt]-lon_ctr[idx_ctr];
+	if(lon_dff_ctr_crr <= -180.0) lon_crn[idx_crr]+=360.0;
+	else if(lon_dff_ctr_crr >= 180.0) lon_crn[idx_crr]-=360.0;
+	if(lon_dff_ctr_nxt <= -180.0) lon_crn[idx_nxt]+=360.0;
+	else if(lon_dff_ctr_nxt >= 180.0) lon_crn[idx_nxt]-=360.0;
+      } /* !lon_dff_crn */
+    } /* !idx_crn */
+
+    /* Repeat above procedure and die if it did not fix the problem */
+    for(idx_crn=0;idx_crn<grd_crn_nbr;idx_crn++){
+      idx_crr=idx_fst+idx_crn;
+      /* Ensure indexing is cyclic... */
+      idx_nxt= (idx_crn == grd_crn_nbr-1L) ? idx_fst : idx_crr+1L;
+      lon_dff_crn=lon_crn[idx_crr]-lon_crn[idx_nxt];
+      /* Does problem still exist? */
+      if(fabs(lon_dff_crn) >= 180.0){
+	(void)fprintf(stdout,"%s: ERROR %s reports boundary longitude adjustment failed for idx_ctr = %lu, idx_crn = %lu, idx_crr = %lu, idx_nxt = %lu, lon_ctr = %g, lon_crn_crr = %g, lon_crn_nxt = %g, lon_dff_crn = %g\n",nco_prg_nm_get(),fnc_nm,idx_ctr,idx_crn,idx_crr,idx_nxt,lon_ctr[idx_ctr],lon_crn[idx_crr],lon_crn[idx_nxt],lon_dff_crn);
+	nco_exit(EXIT_FAILURE);
+      } /* !lon_dff_crn */
+    } /* !idx_crn */
+
+  } /* !idx_ctr */
+
+} /* !nco_msh_lon_cf() */
 
 void
 nco_msh_poly_lst_wrt
