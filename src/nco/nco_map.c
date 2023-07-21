@@ -487,7 +487,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   /* Define overlap mesh vertices, count links, compute overlap weights
      This includes Mohammad Abouali code to create triangle list and Zender code to compute triangle areas */
   (void)nco_msh_mk
-    (rgr, &mpf,
+    (rgr,&mpf,
      area_in,msk_in,lat_ctr_in,lon_ctr_in,lat_crn_in,lon_crn_in,
      area_out,msk_out,lat_ctr_out,lon_ctr_out,lat_crn_out,lon_crn_out,
      frc_in,frc_out,&col_src_adr,&row_dst_adr,&wgt_raw,&lnk_nbr);
@@ -495,10 +495,9 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG return from nco_msh_mk()...\n",nco_prg_nm_get());
 
   /* 20230720: Adjust corner longitudes to adhere to CF conventions */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG ensuring corner longitude CF-compliance with nco_msh_lon_cf()...\n",nco_prg_nm_get());
-  //  nco_msh_lon_cf(grd_sz_in,src_grd_crn_nbr,lon_ctr_in,lon_crn_in);
-  /*  */
-  nco_msh_lon_cf(grd_sz_out,dst_grd_crn_nbr,lon_ctr_out,lon_crn_out);
+  //  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG ensuring corner longitude CF-compliance with nco_msh_lon_cf()...\n",nco_prg_nm_get());
+  // nco_msh_lon_cf(grd_sz_in,src_grd_crn_nbr,lon_ctr_in,lon_crn_in);
+  // nco_msh_lon_cf(grd_sz_out,dst_grd_crn_nbr,lon_ctr_out,lon_crn_out);
 
   if(False && nco_dbg_lvl_get() >= nco_dbg_quiet){
     /* 20191012: Normalize areas and weights to yield 4*pi steradians for global grids
