@@ -1,3 +1,7 @@
+2023-07-23  Charlie Zender  <zender@uci.edu>
+
+	* Implement nco_msh_lon_cf() in nco_rgr_wgt() to ensure	CF-compliant longitude bounds in regridded files
+
 2023-07-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.7-alpha03 release procedure:
