@@ -874,8 +874,25 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     nco_poly_prn(pl_glb_out,0);
   } /* !dbg */
 
-  /* 20230716: nco_msh_lon_crr() is only called here and invocation is non-optimal
-     Each call can modify longitude arrays */
+  /* 20230716: nco_msh_lon_crr() is called here four time and implementation seems non-optimal because centers and corners done separately, lon_crn_in done twice, determination of longitude grid type (done above) is faulty
+     Each call can modify longitude arrays to put all coordinates within 0,360 or -180,180
+     This constraint was imposed by CZ during regridder development
+     However, in 202307, CZ learned that CF prefers vertice boundaries to always be on same branch cut
+     CZ wrote nco_msh_lon_cf() to re-adjust vertices before writing to map-files
+     That would have worked except the longitude centers (which nco_msh_lon_cf() uses to determine branch cut) are sometimes faulty
+     Faulty in that nco_msh_lon_crr() sequence below leaves longitude centers for branch cut gridcells on Greenwich equal to dateline, i.e.,
+     when lon_bnd_in = 359.6484375, 0.3515625, 0.3515625, 359.6484375 then lon_ctr_out=180 not 0 in nco_msh_mk() where nco_msh_lon_cf() 
+     would most naturally be implemented. 
+     Since nco_msh_lon_cf() in nco_msh_mk() does not receive correct lon_ctr_in, it cannot and does not yet work as intended.
+     Temporary fix: As of 20230722, we place and invoke nco_msh_lon_crr() in nco_rgr_wgt() just before regridded coordinates are written
+     This ensures regridded files are CF-compliant, though maps may still have CF non-compliant lon_bnds in xv_a/b.
+     Example: 
+     ncremap -7 -L 1 -P elm --vrb=3 --dbg=3 --thr_nbr=6 --grd_src=${DATA}/grids/r05_360x720.nc --grd_dst=${DATA}/grids/256x512_SCRIP.20160301.nc --map=${HOME}/map_lon_cf.nc ${DATA}/bm/elm_mali_ig_hst.nc ~/rgr.nc
+     ncks -v xv_b,xc_b -d n_b,0 ~/map_lon_cf.nc | m
+     ncks -C -v TSA,lon_bnds,lon -d lat,0 -d lon,0 ~/rgr.nc | m
+     NB: 
+     Would weight generation suffer if these calls were omitted?
+     Leave as is for now until/unless HMB verifies weight generation would not suffer */
   /* Check whether source SCRIP files have negative longitude for wrapped cells */
   nco_msh_lon_crr(lon_crn_in,grd_sz_in,grd_crn_nbr_in,grd_lon_typ_in,grd_lon_typ_in);
 
