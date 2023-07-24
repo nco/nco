@@ -883,9 +883,10 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
      Faulty in that nco_msh_lon_crr() sequence below leaves longitude centers for branch cut gridcells on Greenwich equal to dateline, i.e.,
      when lon_bnd_in = 359.6484375, 0.3515625, 0.3515625, 359.6484375 then lon_ctr_out=180 not 0 in nco_msh_mk() where nco_msh_lon_cf() 
      would most naturally be implemented. 
-     Since nco_msh_lon_cf() in nco_msh_mk() does not receive correct lon_ctr_in, it cannot and does not yet work as intended.
+     Since nco_msh_lon_cf() in nco_msh_mk() does not receive correct lon_ctr_in, it cannot and does not yet work as intended
      Temporary fix: As of 20230722, we place and invoke nco_msh_lon_crr() in nco_rgr_wgt() just before regridded coordinates are written
-     This ensures regridded files are CF-compliant, though maps may still have CF non-compliant lon_bnds in xv_a/b.
+     This ensures regridded files are CF-compliant, though maps may still have CF non-compliant lon_bnds in xv_a/b
+     Long-term solution to this whole mess is to ensure lon_ctr is always determined by branch-cut-mean (not straight mean) of lon_crn
      Example: 
      ncremap -7 -L 1 -P elm --vrb=3 --dbg=3 --thr_nbr=6 --grd_src=${DATA}/grids/r05_360x720.nc --grd_dst=${DATA}/grids/256x512_SCRIP.20160301.nc --map=${HOME}/map_lon_cf.nc ${DATA}/bm/elm_mali_ig_hst.nc ~/rgr.nc
      ncks -v xv_b,xc_b -d n_b,0 ~/map_lon_cf.nc | m
