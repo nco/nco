@@ -1,16 +1,18 @@
+2023-07-26  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.7 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.7: Barbenheimer';git push
+	git tag -a 5.1.7 -m 'all: Intel compiler fixes;ncclimo/ncremap implement cmp_sng; ncremap: CF lon_bnds';git push --tags
+
 2023-07-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.7-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.7-beta01: Broken Necks';git push
-	git tag -a 5.1.7-beta01 -m 'all: Intel compiler	fix;ncclimo/ncremap implement cmp_sng; ncremap: CF lon_bnds;';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.1.7-beta01: Fan Dance';git push
+	git tag -a 5.1.7-beta01 -m 'all: Intel compiler fixes;ncclimo/ncremap implement cmp_sng; ncremap: CF lon_bnds';git push --tags
 
-	* ncks.c protect omp_set_num_threads() with ENABLE_OPENMP
+	* ncks.c protect omp_set_num_threads() with ENABLE_OPENMP to fix #271
 
 2023-07-23  Charlie Zender  <zender@uci.edu>
-
-	* NCO 5.1.7-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.7-alpha03: Cool Shades';git push
-	git tag -a 5.1.7-alpha03 -m 'ncremap: CF lon_bnds;';git push --tags
 
 	* Implement nco_msh_lon_cf() in nco_rgr_wgt() to ensure	CF-compliant longitude bounds in regridded files
 

@@ -71,7 +71,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Bienvenue sur le netCDF Operator (NCO) site</h1>
 
 <p><h2>
-Current stable NCO version is 5.1.6 released <!--#flastmod file="src/nco-5.1.6.tar.gz"-->
+Current stable NCO version is 5.1.7 released <!--#flastmod file="src/nco-5.1.7.tar.gz"-->
 </h2>
 
 <table border=0 width=100%>
@@ -155,7 +155,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2023 Jun&nbsp;XX: 5.1.7 <i>In Progress...</i>
+<li>2023 Sep&nbsp;??: 5.1.7 <i>In Progress...</i>
+<li>2023 Jul&nbsp;26: 5.1.7 Small features/fixes
 <li>2023 May&nbsp;12: 5.1.6 Small features/fixes
 <li>2023 Mar&nbsp;14: 5.1.5 Small features/fixes
 <li>2023 Jan&nbsp;10: 5.1.4 Depth Interpolation
@@ -646,16 +647,19 @@ Identical copies of those tarballs are also stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge for historical
 continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
-<tt>git clone -b 5.1.6 http://github.com/nco/nco.git nco-5.1.6</tt></a>.
+<tt>git clone -b 5.1.7 http://github.com/nco/nco.git nco-5.1.7</tt></a>.
 <ul>
-<li><b>NCO 5.1.8</b>: (<i>Future</i>)
+<li><b>NCO 5.1.9</b>: (<i>Future</i>)
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
-<li><b>NCO 5.1.7</b>: (<i>In Progress, features in-progress or complete include</i>)
-<tt>all --cmp_sng</tt> accept human-legible floating-point, unsigned codec parameters</li>
-<li><b>NCO 5.1.6</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 5.1.8</b>: (<i>In Progress, features in-progress or complete include</i>)
+<tt>ncremap</tt> CF Convention for longitude vertices in map-files</li>
+<li><b>NCO 5.1.7</b>: (<i>Current Stable Release</i>)
+<tt>ncclimo/ncremap --cmp_sng</tt> accept human-legible floating-point, unsigned codec parameters;
+<tt>ncremap</tt> CF Convention for longitude vertices in regridded files</li>
+<li><b>NCO 5.1.6</b>: 
 <tt>all</tt> overwrite NCZarr stores yet more safely;
 <tt>all</tt> CF handling on by default;
 <tt>ncap2 --cmp_sng</tt> fix;
