@@ -91,7 +91,7 @@ This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
 These problems occur with NCO 5.1.7 built/tested under
 MacOS 13.4.1 (c) with netCDF 4.9.3-dev on HDF5 1.14.1 and with
-Linux with netCDF 4.9.2 on HDF5 1.14.1.
+Linux FC38 with netCDF 4.9.2 on HDF5 1.14.1.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
