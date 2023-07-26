@@ -6109,7 +6109,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   (void)nco_enddef(out_id);
 
   /* 20230722: Adjust corner longitudes to adhere to CF conventions */
-  if(flg_grd_out_1D || flg_grd_out_crv) nco_msh_lon_cf(grd_sz_out,bnd_nbr_out,lon_ctr_out,lon_bnd_out); else nco_msh_lon_cf(lon_nbr_out,bnd_nbr_out,lon_ctr_out,lon_bnd_out);
+  //  if(flg_grd_out_1D || flg_grd_out_crv) nco_msh_lon_cf(grd_sz_out,bnd_nbr_out,lon_ctr_out,lon_bnd_out); else nco_msh_lon_cf(lon_nbr_out,bnd_nbr_out,lon_ctr_out,lon_bnd_out);
 
   /* Write new coordinates and variables to regridded file */
   if(flg_grd_out_1D){
