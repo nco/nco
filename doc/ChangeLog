@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.7: Barbenheimer';git push
 	git tag -a 5.1.7 -m 'all: Intel compiler fixes;ncclimo/ncremap implement cmp_sng; ncremap: CF lon_bnds';git push --tags
 
+	* Add "DOI = 10.1016/j.envsoft.2008.03.004" in NCO global attribute
+
 2023-07-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.7-beta01 release procedure:
