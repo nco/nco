@@ -30,6 +30,7 @@ ncremap -7 --cmp='shf|gbr=3|zst=3' ... # Explicit levels
 ncclimo -7 --cmp='shf|gbr|zst' ...
 ncclimo -7 --cmp='shf|gbr=3|zst=3' ... # Explicit levels
 
+NB: single quotes above protect the pipe "|" separator from the shell.
 The second command is equivalent to the first since the default
 number of significant digits to retain during quantization is 3,
 and the default Zstandard compression level is also 3. 
@@ -41,11 +42,11 @@ netcdf foo {
 
   variables:
     float FSNT(time,lat,lon) ;
-      FSNT:_QuantizeGranularBitRoundNumberOfSignificantDigits = 3 ;
+      FSNT:_QuantizeGranularBitRoundNumberOfSignificantDigits = 3 ; <--- Quantization
       FSNT:_Storage = "chunked" ;
       FSNT:_ChunkSizes = 1, 180, 360 ;
-      FSNT:_Filter = "32015,3" ;
-      FSNT:_Shuffle = "true" ;
+      FSNT:_Filter = "32015,3" ; <---Zstandard
+      FSNT:_Shuffle = "true" ; <---Shuffle
       ...
 
 } // group /
