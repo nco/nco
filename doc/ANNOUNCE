@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.7 burst forth
+netCDF Operators NCO version 5.1.8 burst forth
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nc/ncoo (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.7 simplifies netCDF codec invocation in ncremap/ncclimo,
+Version 5.1.8 simplifies netCDF codec invocation in ncremap/ncclimo,
 ensures ncremap places gridcell vertices on the same branch cut at
 longitude discontinuities, and fixes two issues with Intel compilers.
 Skip this release if these issues are of no import to you.
@@ -90,7 +90,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.1.7 built/tested under
+These problems occur with NCO 5.1.8 built/tested under
 MacOS 13.4.1 (c) with netCDF 4.9.3-dev on HDF5 1.14.1 and with
 Linux FC38 with netCDF 4.9.2 on HDF5 1.14.1.
 

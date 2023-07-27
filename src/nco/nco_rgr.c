@@ -6109,7 +6109,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   (void)nco_enddef(out_id);
 
   /* 20230722: Adjust corner longitudes to adhere to CF conventions */
-  //  if(flg_grd_out_1D || flg_grd_out_crv) nco_msh_lon_cf(grd_sz_out,bnd_nbr_out,lon_ctr_out,lon_bnd_out); else nco_msh_lon_cf(lon_nbr_out,bnd_nbr_out,lon_ctr_out,lon_bnd_out);
+  //if(flg_grd_out_1D || flg_grd_out_crv) nco_msh_lon_cf(grd_sz_out,bnd_nbr_out,lon_ctr_out,lon_bnd_out); else nco_msh_lon_cf(lon_nbr_out,bnd_nbr_out,lon_ctr_out,lon_bnd_out);
 
   /* Write new coordinates and variables to regridded file */
   if(flg_grd_out_1D){
@@ -9569,7 +9569,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"TLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("TLAT"); /* CICE, POP */
     else if((rcd=nco_inq_varid_flg(in_id,"ULAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("ULAT"); /* CICE, POP */
     else if((rcd=nco_inq_varid_flg(in_id,"LATITUDE",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LATITUDE"); /* ARGO */
-    else if((rcd=nco_inq_varid_flg(in_id,"latCell",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latCell"); /* MPAS-O/I */
+    else if((rcd=nco_inq_varid_flg(in_id,"latCell",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latCell"); /* MPAS-O/I/LI */
     else if((rcd=nco_inq_varid_flg(in_id,"doml_lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("doml_lat"); /* E3SM coupler land domain */
     else if((rcd=nco_inq_varid_flg(in_id,"domr_lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("domr_lat"); /* E3SM coupler river domain */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("nav_lat"); /* NEMO */
@@ -9600,7 +9600,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"ULON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULON"); /* CICE */
     else if((rcd=nco_inq_varid_flg(in_id,"ULONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULONG"); /* POP */
     else if((rcd=nco_inq_varid_flg(in_id,"LONGITUDE",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("LONGITUDE"); /* ARGO */
-    else if((rcd=nco_inq_varid_flg(in_id,"lonCell",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lonCell"); /* MPAS-O/I */
+    else if((rcd=nco_inq_varid_flg(in_id,"lonCell",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lonCell"); /* MPAS-O/I/LI */
     else if((rcd=nco_inq_varid_flg(in_id,"doml_lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("doml_lon"); /* E3SM coupler land domain */
     else if((rcd=nco_inq_varid_flg(in_id,"domr_lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("domr_lon"); /* E3SM coupler river domain */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("nav_lon"); /* NEMO */

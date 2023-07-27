@@ -126,6 +126,7 @@ sub tst_rgr {
     # 491 (for library 4.9.1)
     # 492 (for library 4.9.2)
     # 493 (for library 4.9.3)
+    # 494 (for library 4.9.4)
 
   if($exit_value == 410){print "netCDF version 4.1.x detected\n";}
   if($exit_value == 431){print "netCDF version 4.3.1 detected\n";}
