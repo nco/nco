@@ -3,7 +3,7 @@ $Header$ -*-text-*-
 netCDF Operators NCO version 5.1.8 burst forth
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
-http://github.com/nc/ncoo (Source Code, Issues, Releases)
+http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
 Version 5.1.8 simplifies netCDF codec invocation in ncremap/ncclimo,
