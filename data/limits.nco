@@ -29,9 +29,9 @@ nbr_err_ttl=0;
 
 
 
- short_max=65535s;
+ short_max=32767s;
 
- if( -short_max -1 != -65536s ) {
+ if( -short_max -1 != -32768s ) {
   print("ERROR: short min\n");
   nbr_err++;
   }
