@@ -1423,10 +1423,10 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
           rcd+=nco_inq_varname(nc_id,var_id,var_nm);
-	  if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violated the CF Conventions for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types) until about CF-1.8 released in 2019, when CF introduced support for attributes of (extended) type %s. NCO support for this feature is currently underway and is trackable at https://github.com/nco/nco/issues/274. Until this support is complete, %s will skip this attribute. NB: To avoid excessive noise, NCO prints this WARNING at most once per dataset.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),fnc_nm);
+	  if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s, not %s. This violated the CF Conventions for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types) until about CF-1.8 released in 2019, when CF introduced support for attributes of (extended) type %s. NCO support for this feature is currently underway and is trackable at https://github.com/nco/nco/issues/274. Until this support is complete, NCO will skip this attribute. NB: To avoid excessive noise, NCO prints this WARNING at most once per dataset.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING));
 	  FIRST_WARNING=False;
           return IS_SPC_IN_CF_ATT;
-        } /* end if */
+        } /* !att_typ */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
         if(att_sz > 0) rcd+=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
         /* NUL-terminate attribute */

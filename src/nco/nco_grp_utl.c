@@ -1338,20 +1338,29 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
 
     /* Is attribute part of CF convention? */
     if(!strcmp(att_nm,cf_nm)){
-      char *att_val;
+      char *att_val=NULL;
       long att_sz;
-      nc_type att_typ;
+      nc_type att_typ=NC_NAT;
 
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
-      if(att_typ != NC_CHAR){
-        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violated the CF Conventions for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types) until about CF-1.8 released in 2019, when CF introduced support for attributes of (extended) type %s. NCO support for this feature is currently underway and is trackable at https://github.com/nco/nco/issues/274. Until this support is complete, %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),fnc_nm);
+      if(att_typ == NC_STRING){
+        (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s, not %s. This violated the CF Conventions for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types) until about CF-1.8 released in 2019, when CF introduced support for attributes of (extended) type %s. NCO support for this feature is currently underway and is trackable at https://github.com/nco/nco/issues/274. Until this support is complete, NCO will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING));
+	// if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"att_nm = %s, att_typ = %s, att_sz = %ld\n",att_nm,nco_typ_sng(att_typ),att_sz);
+      }else if(att_typ != NC_CHAR){
+        (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s. This violates the CF Conventions which allow only datatypes %s and %s for this attribute. Will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING));
         return;
-      } /* end if */
-      att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-      if(att_sz > 0L) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
-      /* NUL-terminate attribute */
-      att_val[att_sz]='\0';
+      } /* !att_typ */
+      /* 20230812: Differentiate retrieving NC_CHAR from NC_STRING */
+      if(att_typ == NC_CHAR){
+	att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+	if(att_sz > 0L) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);
+	/* NUL-terminate attribute */
+	att_val[att_sz]='\0';
+      }else if(att_typ == NC_STRING){
+	if(att_sz != 1L) (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is an %s array of size %ld. This violates the CF Conventions which requires a single string for this attribute. Will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),att_sz);
+        return;
+      } /* !att_typ */
 
       /* Split list into separate coordinate names
 	 Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
@@ -1388,13 +1397,13 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
         char *cf_lst_var=cf_lst[idx_cf];
         if(!cf_lst_var) continue;
 
-        const char sls_chr='/';        /* [chr] Slash character */
-        const char sls_sng[]="/";      /* [sng] Slash string */
+        const char sls_chr='/'; /* [chr] Slash character */
+        const char sls_sng[]="/"; /* [sng] Slash string */
 	const char cur_dir_sng[]="./"; /* [sng] Current directory */
 	const char up_dir_sng[]="../"; /* [sng] Parent directory */
-        char *cf_lst_var_nm_fll;       /* [sng] Built full name of 'CF' variable to find */
-        char *ptr_chr;                 /* [sng] Pointer to character '/' in full name */
-        int psn_chr;                   /* [nbr] Position of character '/' in in full name */
+        char *cf_lst_var_nm_fll; /* [sng] Built full name of 'CF' variable to find */
+        char *ptr_chr; /* [sng] Pointer to character '/' in full name */
+        int psn_chr; /* [nbr] Position of character '/' in in full name */
 
 	/* Create memory for full name of CF variable */
         cf_lst_var_nm_fll=(char *)nco_malloc(strlen(var_trv->grp_nm_fll)+strlen(cf_lst_var)+2L);
@@ -8054,6 +8063,7 @@ nco_var_has_cf /* [fnc] Variable has CF-compliant attributes ("ancillary_variabl
 
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
+      /* 20230812: NB this routine is superceded by nco_xtr_cf_var_add() and nco_is_spc_in_cf_att() */
       if(att_typ != NC_CHAR){
         (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violated the CF Conventions for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types) until about CF-1.8 released in 2019, when CF introduced support for attributes of (extended) type %s. NCO support for this feature is currently underway and is trackable at https://github.com/nco/nco/issues/274. Until this support is complete, %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),fnc_nm);
         return NULL;

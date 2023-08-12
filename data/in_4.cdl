@@ -57,7 +57,7 @@
 
 netcdf in {
 dimensions:
-	dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,time=unlimited;
+	dgn=1,bnd=2,lat=2,lat2=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,time=unlimited;
 variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
@@ -112,9 +112,13 @@ variables:
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
 	lat:units = "degrees_north";
+        lat:bounds = "lat_bnd";
+
+	float lat2(lat2);
+	lat2:long_name = "Latitude (typically midpoints)";
+	lat2:units = "degrees_north";
 	// fxm 20230812: https://github.com/nco/nco/issues/274
-	//	lat:bounds = "lat_bnd";
-        string lat:bounds = "lat_bnd";
+        string lat2:bounds = "lat_bnd";
 
 	float lat_bnd(lat,vrt_nbr);
 	lat_bnd:purpose = "Cell boundaries for lat coordinate";
