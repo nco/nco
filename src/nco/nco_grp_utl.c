@@ -1345,7 +1345,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ != NC_CHAR){
-        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute. If you want CF to support NC_STRING attributes, please tell CF and CC: NCO.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violated the CF Conventions for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types) until about CF-1.8 released in 2019, when CF introduced support for attributes of (extended) type %s. NCO support for this feature is currently underway and is trackable at https://github.com/nco/nco/issues/274. Until this support is complete, %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),fnc_nm);
         return;
       } /* end if */
       att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -1388,11 +1388,11 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
         char *cf_lst_var=cf_lst[idx_cf];
         if(!cf_lst_var) continue;
 
-        char *cf_lst_var_nm_fll;       /* [sng] Built full name of 'CF' variable to find */
         const char sls_chr='/';        /* [chr] Slash character */
         const char sls_sng[]="/";      /* [sng] Slash string */
-	const char cur_dir_sng[]="./"; /* [sng] current dir */  
-	const char up_dir_sng[]="../"; /* [sng] current dir */  					 
+	const char cur_dir_sng[]="./"; /* [sng] Current directory */
+	const char up_dir_sng[]="../"; /* [sng] Parent directory */
+        char *cf_lst_var_nm_fll;       /* [sng] Built full name of 'CF' variable to find */
         char *ptr_chr;                 /* [sng] Pointer to character '/' in full name */
         int psn_chr;                   /* [nbr] Position of character '/' in in full name */
 
@@ -8044,7 +8044,7 @@ nco_var_has_cf /* [fnc] Variable has CF-compliant attributes ("ancillary_variabl
     /* Get attribute name */
     (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
 
-    /* Is attribute part of CF convention? */
+    /* Is attribute part of CF Conventions? */
     if(!strcmp(att_nm,cf_nm)){
       char *att_val;
       long att_sz;
@@ -8055,9 +8055,9 @@ nco_var_has_cf /* [fnc] Variable has CF-compliant attributes ("ancillary_variabl
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ != NC_CHAR){
-        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violated the CF Conventions for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types) until about CF-1.8 released in 2019, when CF introduced support for attributes of (extended) type %s. NCO support for this feature is currently underway and is trackable at https://github.com/nco/nco/issues/274. Until this support is complete, %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),fnc_nm);
         return NULL;
-      } /* end if */
+      } /* !att_typ */
       att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
       if(att_sz > 0L) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
       /* NUL-terminate attribute */

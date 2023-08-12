@@ -112,7 +112,9 @@ variables:
 	float lat(lat);
 	lat:long_name = "Latitude (typically midpoints)";
 	lat:units = "degrees_north";
-	lat:bounds = "lat_bnd";
+	// fxm 20230812: https://github.com/nco/nco/issues/274
+	//	lat:bounds = "lat_bnd";
+        string lat:bounds = "lat_bnd";
 
 	float lat_bnd(lat,vrt_nbr);
 	lat_bnd:purpose = "Cell boundaries for lat coordinate";
@@ -199,30 +201,30 @@ variables:
 	lon_grd:units = "degrees_east";
 
 	double time(time);
-	time: long_name = "time";
-	time: units = "days since 1964-03-12 12:09:00 -9:00"; 
-	time: calendar = "gregorian";
-	time: bounds = "time_bnds";
+	time:long_name = "time";
+	time:units = "days since 1964-03-12 12:09:00 -9:00"; 
+	time:calendar = "gregorian";
+	time:bounds = "time_bnds";
 
 	int time2(time);
-	time2: long_name = "time2";
-	string time2: units = "days since 1964-03-12 12:09:00 -9:00"; 
-	time2: calendar = "gregorian";
-	time2: purpose = "Store epoch as string not chararray as in https://github.com/Unidata/netcdf-c/issues/2556";
-	time2: bounds = "time_bnds";
+	time2:long_name = "time2";
+	string time2:units = "days since 1964-03-12 12:09:00 -9:00"; 
+	time2:calendar = "gregorian";
+	time2:purpose = "Store epoch as string not chararray as in https://github.com/Unidata/netcdf-c/issues/2556";
+	time2:bounds = "time_bnds";
 
 	float time_bnds(time,vrt_nbr);
 	time_bnds:purpose = "Cell boundaries for time coordinate";
 
 	double lon_cal(lon_cal);
-	lon_cal: long_name = "lon_cal";
-	lon_cal: units = "days since 1964-2-28"; 
-	lon_cal: calendar = "365_day";
+	lon_cal:long_name = "lon_cal";
+	lon_cal:units = "days since 1964-2-28"; 
+	lon_cal:calendar = "365_day";
 
 	double lat_cal(lat_cal);
-	lat_cal: long_name = "lat_cal";
-	lat_cal: units = "days since 1964-2-28"; 
-	lat_cal: calendar = "360_day";
+	lat_cal:long_name = "lat_cal";
+	lat_cal:units = "days since 1964-2-28"; 
+	lat_cal:calendar = "360_day";
 
 	float lsmlev(lsmlev);
 	lsmlev:purpose = "Homebrew level coordinate for LSM";
