@@ -1964,6 +1964,20 @@ nco_inq_enum_ident(const int nc_id,const nc_type var_typ,const long long val,cha
 
 /* End enum routines */
 
+/* Begin string routines (_string) */
+int
+nco_free_string(const size_t sz,char ** const sngp)
+{
+  /* Purpose: Wrapper for nc_free_string() */
+  const char fnc_nm[]="nco_free_string()";
+  int rcd;
+  rcd=nc_free_string(sz,sngp);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* !nco_free_string() */
+
+/* End string routines */
+
 /* Begin vlen routines (_vlen) */
 int
 nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,nc_type * const var_typ)

@@ -12868,9 +12868,9 @@ multiple uses of the @samp{--glb} (or equivalent @samp{--gaa} or
 @samp{--glb_att_add}) switch.
 @cindex indicator option
 @cindex multi-arguments
-The option @samp{--gaa} (and its long option equivalents such
-as @samp{--glb_att_add}) indicates the argument syntax will be
-@var{key}=@var{val}.
+The option @samp{--gaa} (and its long option equivalents such as
+@samp{--glb_att_add}) indicates the argument syntax will be
+@var{key}=@var{val}. 
 As such, @samp{--gaa} and its synonyms are indicator options that accept
 arguments supplied one-by-one like 
 @samp{--gaa @var{key1}=@var{val1} --gaa @var{key2}=@var{val2}}, or

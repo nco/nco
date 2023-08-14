@@ -1331,12 +1331,10 @@ nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
     const int var_xcl_lst_nbr=39; /* [nbr] Number of objects on exclusion list */
     const char *var_xcl_lst[]={"angleEdge","areaCell","areaTriangle","cellMask","cellsOnCell","cellsOnEdge","cellsOnVertex","dcEdge","dvEdge","edgesOnCell","edgesOnEdge","edgesOnVertex","indexToCellID","indexToEdgeID","indexToVertexID","kiteAreasOnVertex","latCell","latEdge","latVertex","lonCell","lonEdge","lonVertex","maxLevelCell","meshDensity","nEdgesOnCell","nEdgesOnEdge","vertexMask","verticesOnCell","verticesOnEdge","weightsOnEdge","xCell","xEdge","xVertex","yCell","yEdge","yVertex","zCell","zEdge","zVertex"};
     int idx;
-    int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
     for(idx=0;idx<var_xcl_lst_nbr;idx++)
       if(!strcmp(var_nm,var_xcl_lst[idx])) break;
     if(idx < var_xcl_lst_nbr){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s preventing arithmetic processing of MPAS grid-like variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
-      var_xcl_nbr++;
       var_is_fix=True;
     } /* endif */
   
@@ -1344,4 +1342,4 @@ nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
 
   return var_is_fix;
 
-} /* nco_var_is_fix() */
+} /* !nco_var_is_fix() */

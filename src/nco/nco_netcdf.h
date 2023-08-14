@@ -532,6 +532,10 @@ int nco_inq_enum_member(const int nc_id,const nc_type var_typ,const int idx,char
 int nco_inq_enum_ident(const int nc_id,const nc_type var_typ,const long long val,char * const mbr_nm);
 /* End enum routines */
 
+/* Begin string routines (_string) */
+int nco_free_string(const size_t sz,char ** const sngp);
+/* End string routines */
+
 /* Begin vlen routines (_vlen) */
 int nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,nc_type * const vlen_typ);
 int nco_inq_vlen(const int nc_id,const nc_type vlen_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ);
