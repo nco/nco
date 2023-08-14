@@ -1,3 +1,9 @@
+2023-08-14  Charlie Zender  <zender@uci.edu>
+
+	* 
+
+	* Add nco_free_string() in support of NC_STRING support
+
 2023-08-12  Charlie Zender  <zender@uci.edu>
 
 	* nco_xtr_cf_var_add() nco_is_spc_in_cf_att(): update WARNING messages about NC_STRING attributes not being CF-compliant

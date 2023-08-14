@@ -117,11 +117,14 @@ variables:
 	float lat2(lat2);
 	lat2:long_name = "Latitude (typically midpoints)";
 	lat2:units = "degrees_north";
-	// fxm 20230812: https://github.com/nco/nco/issues/274
-        string lat2:bounds = "lat_bnd";
+	lat2:purpose = "Ensure NC_STRING attributes behave just like NC_CHAR attributes as required by CF-1.8+ and referenced in https://github.com/nco/nco/issues/274";
+        string lat2:bounds = "lat2_bnd";
 
 	float lat_bnd(lat,vrt_nbr);
 	lat_bnd:purpose = "Cell boundaries for lat coordinate";
+
+	float lat2_bnd(lat2,vrt_nbr);
+	lat2_bnd:purpose = "Cell boundaries for lat2 coordinate";
 
 	float lat_grd(lat_grd);
 	lat_grd:long_name = "Latitude grid (typically interfaces)";
@@ -1044,7 +1047,9 @@ data:
 	lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
 	lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
 	lat=-90,90;
+	lat2=-90,90;
 	lat_bnd=-90,0,0,90;
+	lat2_bnd=-90,0,0,90;
         lat_cal=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	lon_cal=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	lat_times_lon=0,1,2,3,4,5,6,7;

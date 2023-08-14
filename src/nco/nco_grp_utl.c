@@ -1323,43 +1323,50 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
   int grp_id; /* [id] Group ID */
   int nbr_att; /* [nbr] Number of attributes */
   int nbr_cf; /* [nbr] Number of variables specified in CF attribute ("ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping") */
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int var_id; /* [id] Variable ID */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
-  (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
-  (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
-  (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
+  rcd+=nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
+  rcd+=nco_inq_varid(grp_id,var_trv->nm,&var_id);
+  rcd+=nco_inq_varnatts(grp_id,var_id,&nbr_att);
   assert(nbr_att == var_trv->nbr_att);
 
   for(int idx_att=0;idx_att<nbr_att;idx_att++){
 
     /* Get attribute name */
-    (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
+    rcd+=nco_inq_attname(grp_id,var_id,idx_att,att_nm);
 
     /* Is attribute part of CF convention? */
     if(!strcmp(att_nm,cf_nm)){
       char *att_val=NULL;
+      nco_string *att_val_sngp=&att_val; /* Value returned for NC_STRING type is type char ** */
       long att_sz;
       nc_type att_typ=NC_NAT;
 
       /* Yes, get list of specified attributes */
-      (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
+      rcd+=nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ == NC_STRING){
         (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s, not %s. This violated the CF Conventions for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types) until about CF-1.8 released in 2019, when CF introduced support for attributes of (extended) type %s. NCO support for this feature is currently underway and is trackable at https://github.com/nco/nco/issues/274. Until this support is complete, NCO will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING));
 	// if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"att_nm = %s, att_typ = %s, att_sz = %ld\n",att_nm,nco_typ_sng(att_typ),att_sz);
       }else if(att_typ != NC_CHAR){
-        (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s. This violates the CF Conventions which allow only datatypes %s and %s for this attribute. Will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING));
+        (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s. This violates the CF Conventions which allow only datatypes %s and %s for attribute %s. Will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),cf_nm);
         return;
       } /* !att_typ */
       /* 20230812: Differentiate retrieving NC_CHAR from NC_STRING */
       if(att_typ == NC_CHAR){
 	att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-	if(att_sz > 0L) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);
+	if(att_sz > 0L) rcd+=nco_get_att(grp_id,var_id,att_nm,(void *)att_val,att_typ);
 	/* NUL-terminate attribute */
 	att_val[att_sz]='\0';
       }else if(att_typ == NC_STRING){
-	if(att_sz != 1L) (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is an %s array of size %ld. This violates the CF Conventions which requires a single string for this attribute. Will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),att_sz);
-        return;
+	if(att_sz != 1L){
+	  (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is an %s array of size %ld. This violates the CF Conventions which requires a single string for this attribute. Will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),att_sz);
+	  return;
+	} /* !att_sz */
+	rcd+=nco_get_att(grp_id,var_id,att_nm,(void *)att_val_sngp,att_typ);
+	/* De-reference the char ** NC_STRING array, a list now known to be of size one, into a normal char * string */
+	att_val=att_val_sngp[0];
       } /* !att_typ */
 
       /* Split list into separate coordinate names
@@ -1390,6 +1397,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
       }else{
 	/* All CF attributes that NCO handles besides "cell_measures" and "formula_terms" are space-separated lists */
 	cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG %s reports nbr_cf = %d,cf_lst[0] = %s\n",nco_prg_nm_get(),fnc_nm,nbr_cf,cf_lst[0]);
       } /* !formula_terms */
       
       /* ...for each variable in CF convention attribute, i.e., for each variable listed in "ancillary_variables", or in "bounds", or in "coordinates", or in "grid_mapping", ... */
@@ -1428,7 +1436,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
 	    if(ptr_chr) *ptr_chr='\0';
 	    strcat(cf_lst_var_nm_fll,cf_lst_var+(size_t)2);     
 	  }else{
-	    /* '/' somewhere in middle of string */
+	    /* '/' is somewhere in middle of string */
 	    strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
 	    if(strcmp(var_trv->grp_nm_fll,sls_sng)) strcat(cf_lst_var_nm_fll,sls_sng);
 	    strcat(cf_lst_var_nm_fll,cf_lst_var);
@@ -1474,15 +1482,17 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
           } /* !ptr_chr */
         } /* !while */
 
-        /* Free allocated */
+        /* Free allocated memory */
         if(cf_lst_var_nm_fll) cf_lst_var_nm_fll=(char *)nco_free(cf_lst_var_nm_fll);
     
       } /* !idx_cf */
 
       /* Free allocated memory */
-      att_val=(char *)nco_free(att_val);
+      if(att_typ == NC_CHAR) att_val=(char *)nco_free(att_val);
+      if(att_typ == NC_STRING) rcd+=nco_free_string(att_sz,att_val_sngp);
       cf_lst=nco_sng_lst_free(cf_lst,nbr_cf);
-
+      assert(rcd == NC_NOERR);
+      
     } /* !strcmp() */
   } /* !idx_att */
 

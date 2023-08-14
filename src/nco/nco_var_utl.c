@@ -1389,7 +1389,6 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
   const char dlm_sng[]=" "; /* [sng] Delimiter string */
   const char fnc_nm[]="nco_is_spc_in_cf_att()"; /* [sng] Function name */
   char **cf_lst; /* [sng] 1D array of list elements */
-  char *att_val;
   char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
   char var_trg_nm[NC_MAX_NAME];
@@ -1401,8 +1400,6 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
   int nbr_var; /* [nbr] Number of variables in file */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_id; /* [id] Variable ID */
-  long att_sz;
-  nc_type att_typ;
   static nco_bool FIRST_WARNING=True;
 
   /* May need variable name for later comparison to those listed in this attribute */
@@ -1412,25 +1409,46 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
   for(idx_var=0;idx_var<nbr_var;idx_var++){
     /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
     var_id=idx_var;
+    rcd+=nco_inq_varname(nc_id,var_id,var_nm);
 
     /* Find number of attributes */
     rcd+=nco_inq_varnatts(nc_id,var_id,&nbr_att);
     for(idx_att=0;idx_att<nbr_att;idx_att++){
+      
+      /* Get attribute name */
       rcd+=nco_inq_attname(nc_id,var_id,idx_att,att_nm);
-      /* Is attribute part of CF convention? */
+
+      /* Is attribute part of current CF convention? */
       if(!strcmp(att_nm,cf_nm)){
-        /* Yes, get list of specified attributes */
+	char *att_val=NULL;
+	nco_string *att_val_sngp=&att_val; /* Value returned for NC_STRING type is type char ** */
+	long att_sz;
+	nc_type att_typ=NC_NAT;
+
+	/* Yes, get attribute value(s) */
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
-        if(att_typ != NC_CHAR){
-          rcd+=nco_inq_varname(nc_id,var_id,var_nm);
+	if(att_typ == NC_STRING){
 	  if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s, not %s. This violated the CF Conventions for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types) until about CF-1.8 released in 2019, when CF introduced support for attributes of (extended) type %s. NCO support for this feature is currently underway and is trackable at https://github.com/nco/nco/issues/274. Until this support is complete, NCO will skip this attribute. NB: To avoid excessive noise, NCO prints this WARNING at most once per dataset.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING));
 	  FIRST_WARNING=False;
-          return IS_SPC_IN_CF_ATT;
-        } /* !att_typ */
-        att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-        if(att_sz > 0) rcd+=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
-        /* NUL-terminate attribute */
-        att_val[att_sz]='\0';
+	}else if(att_typ != NC_CHAR){
+	  (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s. This violates the CF Conventions which allow only datatypes %s and %s for attribute %s. Will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),cf_nm);
+	  return IS_SPC_IN_CF_ATT;
+	} /* !att_typ */
+	if(att_typ == NC_CHAR){
+	  att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+	  if(att_sz > 0L) rcd+=nco_get_att(nc_id,var_id,att_nm,(void *)att_val,att_typ);
+	  /* NUL-terminate attribute */
+	  att_val[att_sz]='\0';
+	}else if(att_typ == NC_STRING){
+	  if(att_sz != 1L){
+	    (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is an %s array of size %ld. This violates the CF Conventions which requires a single string for this attribute. Will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_nm,nco_typ_sng(att_typ),att_sz);
+	    return IS_SPC_IN_CF_ATT;
+	  } /* !att_sz */
+	  rcd+=nco_get_att(nc_id,var_id,att_nm,(void *)att_val_sngp,att_typ);
+	  /* De-reference the char ** NC_STRING array, a list now known to be of size one, into a normal char * string */
+	  att_val=att_val_sngp[0];
+	} /* !att_typ */
+
         /* Split list into separate variable names
 	   Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
         cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
@@ -1439,18 +1457,21 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
           /* Does variable match name specified in CF attribute list? */
           if(!strcmp(var_trg_nm,cf_lst[idx_cf])) break;
         } /* end loop over coordinates in list */
-        /* Free allocated memory */
-        att_val=(char *)nco_free(att_val);
-        cf_lst=nco_sng_lst_free(cf_lst,nbr_cf);
 
-        if(idx_cf!=nbr_cf){
+        /* Free allocated memory */
+	if(att_typ == NC_CHAR) att_val=(char *)nco_free(att_val);
+	if(att_typ == NC_STRING) rcd+=nco_free_string(att_sz,att_val_sngp);
+	cf_lst=nco_sng_lst_free(cf_lst,nbr_cf);
+	assert(rcd == NC_NOERR);
+
+        if(idx_cf != nbr_cf){
            IS_SPC_IN_CF_ATT = True;
            if(cf_var_id) *cf_var_id=var_id;
            goto end_lbl; /* break out of all loops */
-        }
+        } /* !idx_cf */
       } /* !coordinates */
-    } /* end loop over attributes */
-  } /* end loop over idx_var */
+    } /* !idx_att */
+  } /* !idx_var */
 
   end_lbl: ;
 
