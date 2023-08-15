@@ -1961,7 +1961,7 @@ nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
   } /* end debug */
 
   return rnm_lst;
-} /* end nco_prs_rnm_lst() */
+} /* !nco_prs_rnm_lst() */
 
 void 
 nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
@@ -2008,7 +2008,7 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
   (void)nco_aed_prc(out_id,NC_GLOBAL,vrs_sng_aed);
 
   if(vrs_sng_xtn) vrs_sng_xtn=(char *)nco_free(vrs_sng_xtn);
-} /* end nco_vrs_att_cat() */
+} /* !nco_vrs_att_cat() */
 
 void 
 nco_glb_att_add /* [fnc] Add global attributes */
@@ -2212,7 +2212,7 @@ nco_char_att_get /* [fnc] Get a character string attribute from an open file */
 } /* !nco_char_att_get() */
 
 int /* O [rcd] Return code */
-nco_char_att_put /* [fnc] Get a character string attribute from an open file */
+nco_char_att_put /* [fnc] Put a character string attribute into an open file */
 (const int out_id, /* I [id] netCDF output-file ID */
  const char * const var_nm_sng, /* [sng] Variable name */
  const char * const att_nm_sng, /* [sng] Attribute name */

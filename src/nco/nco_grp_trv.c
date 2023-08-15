@@ -207,14 +207,14 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
       var_tmc_lcl+=var_trv.nbr_var;
       if(grp_dpt_lcl < var_trv.grp_dpt) grp_dpt_lcl=var_trv.grp_dpt;
       if(!strcmp(var_trv.nm_fll,"/")) att_glb_lcl=var_trv.nbr_att; else att_grp_lcl+=var_trv.nbr_att; 
-    } /* end nco_obj_typ_grp */
-  } /* end idx_tbl */
+    } /* !nco_obj_typ_grp */
+  } /* !idx_tbl */
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr_dmn;idx_tbl++)
     if(trv_tbl->lst_dmn[idx_tbl].is_rec_dmn) dmn_rec_lcl++;
 
   if(typ_nbr_lcl > 0 || var_udt_lcl > 0){
-    (void)fprintf(stderr,"%s: WARNING File contains %d user-defined types (i.e., compound, enum, opaque, or vlen) used to define %d non-atomic variables and their attributes. NCO currently ignores variables and attributes with user-defined types by default, although some preliminary features can be accessed with the --udt flag. Nevertheless, most %s features will only work for atomic variables.\n",nco_prg_nm_get(),typ_nbr_lcl,var_udt_lcl,nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING File contains %d user-defined types (UDTs) (i.e., compound, enum, opaque, or vlen) used to define %d non-atomic variables and their attributes. NCO currently ignores variables and attributes with UDTs by default, although some preliminary features can be accessed with the --udt flag. Nevertheless, most %s features will only work for atomic variables.\n",nco_prg_nm_get(),typ_nbr_lcl,var_udt_lcl,nco_prg_nm_get());
   } /* !var_udt_lcl */
 
   if(att_glb_all) *att_glb_all=att_glb_lcl;

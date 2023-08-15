@@ -9932,6 +9932,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(vrt_lon_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_lon_id,dmn_srt,dmn_cnt,vrt_lon,crd_typ);
       rcd=nco_inq_att_flg(in_id,vrt_lat_id,unt_sng,&att_typ,&att_sz);
       if(rcd == NC_NOERR && att_typ == NC_CHAR){
+	/* 20230815: fxm Add NC_STRING support */
 	att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
 	rcd+=nco_get_att(in_id,vrt_lat_id,unt_sng,att_val,att_typ);
 	/* NUL-terminate attribute before using strstr() */
@@ -10142,6 +10143,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(area_id != NC_MIN_INT){
     rcd=nco_inq_att_flg(in_id,area_id,unt_sng,&att_typ,&att_sz);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){
+      /* 20230815: fxm Add NC_STRING support */
       att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
       rcd+=nco_get_att(in_id,area_id,unt_sng,att_val,att_typ);
       /* NUL-terminate attribute before using strstr() */
