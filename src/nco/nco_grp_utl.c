@@ -1347,10 +1347,12 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
       /* Yes, get list of specified attributes */
       rcd+=nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ == NC_STRING){
-        (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s, not %s. This violated the CF Conventions for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types) until about CF-1.8 released in 2019, when CF introduced support for attributes of (extended) type %s. NCO support for this feature is currently underway and is trackable at https://github.com/nco/nco/issues/274. Until this support is complete, NCO will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING));
+	;
+	// 20230815 NC_STRING Support added, and WARNING deprecated
+        // (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s, not %s. This violated the CF Conventions for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types) until about CF-1.8 released in 2019, when CF introduced support for attributes of (extended) type %s. NCO support for this feature is currently underway and is trackable at https://github.com/nco/nco/issues/274. Until this support is complete, NCO will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING));
 	// if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"att_nm = %s, att_typ = %s, att_sz = %ld\n",att_nm,nco_typ_sng(att_typ),att_sz);
       }else if(att_typ != NC_CHAR){
-        (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s. This violates the CF Conventions which allow only datatypes %s and %s for attribute %s. Will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),cf_nm);
+        (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s. This violates the CF Conventions which allow only datatypes %s and %s for attribute %s. NCO will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),cf_nm);
         return;
       } /* !att_typ */
       /* 20230812: Differentiate retrieving NC_CHAR from NC_STRING */

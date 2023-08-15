@@ -1,6 +1,10 @@
+2023-08-15  Charlie Zender  <zender@uci.edu>
+
+	* Remove WARNING statements about NC_STRING not being supported/CF-compliant
+
 2023-08-14  Charlie Zender  <zender@uci.edu>
 
-	* 
+	* Verify CF bounds attribute now handled correctly when stored as NC_STRING
 
 	* Add nco_free_string() in support of NC_STRING support
 
