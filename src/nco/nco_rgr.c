@@ -9942,7 +9942,30 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	if(flg_crd_rdn) flg_crd_rdn=True; /* CEWI */
 	if(att_val) ngl_unt=(char *)strdup(att_val);
 	if(att_val) att_val=(char *)nco_free(att_val);
-      } /* !rcd && att_typ */
+      }else{
+	/* 20230816: Some MPAS meshes, espcially Land Ice (LI) meshes, do not specify units attributes for coordinates 
+	   This would be fine for if the coordinates were in degrees, but MPAS prefers to use radians 
+	   Here we determine whether unitless cell center coordinates are between -2*pi and +2*pi
+	   If so, we assume the coordinates are radians and we set a flag to indicate this in the output file */
+	double max_lat=0.0; /* [dgr] Maximum latitude */
+	double min_lat=0.0; /* [dgr] Minimum latitude */
+	double max_lon=0.0; /* [dgr] Maximum longitude */
+	double min_lon=0.0; /* [dgr] Minimum longitude */
+	for(idx=0;idx<grd_sz_nbr;idx++){
+	  max_lat=max_dbl(max_lat,lat_ctr[idx]);
+	  max_lon=max_dbl(max_lon,lon_ctr[idx]);
+	  min_lat=min_dbl(min_lat,lat_ctr[idx]);
+	  min_lon=min_dbl(min_lon,lon_ctr[idx]);
+	} /* !idx */
+	const double two_pi=2.0*M_PI;
+	if(max_lat >= -two_pi && max_lat <= two_pi)
+	  if(min_lat >= -two_pi && min_lat <= two_pi)
+	    if(max_lon >= -two_pi && max_lon <= two_pi)
+	      if(min_lon >= -two_pi && min_lon <= two_pi)
+		flg_crd_rdn=True;
+	ngl_unt=(char *)strdup("radians");
+      } /* !rcd */
+      /* !rcd && att_typ */
       /* 20211031: Replace inelegant homebrew algorithm with MPAS algorithm
 	 https://github.com/MPAS-Dev/pyremap/blob/master/pyremap/descriptor.py#L189-L256 */
       for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
