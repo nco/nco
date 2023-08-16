@@ -9947,10 +9947,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	   This would be fine for if the coordinates were in degrees, but MPAS prefers to use radians 
 	   Here we determine whether unitless cell center coordinates are between -2*pi and +2*pi
 	   If so, we assume the coordinates are radians and we set a flag to indicate this in the output file */
-	double max_lat=0.0; /* [dgr] Maximum latitude */
-	double min_lat=0.0; /* [dgr] Minimum latitude */
-	double max_lon=0.0; /* [dgr] Maximum longitude */
-	double min_lon=0.0; /* [dgr] Minimum longitude */
+	double max_lat=0.0; /* [dgr/rdn] Maximum latitude */
+	double min_lat=0.0; /* [dgr/rdn] Minimum latitude */
+	double max_lon=0.0; /* [dgr/rdn] Maximum longitude */
+	double min_lon=0.0; /* [dgr/rdn] Minimum longitude */
 	for(idx=0;idx<grd_sz_nbr;idx++){
 	  max_lat=max_dbl(max_lat,lat_ctr[idx]);
 	  max_lon=max_dbl(max_lon,lon_ctr[idx]);
@@ -9963,7 +9963,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	    if(max_lon >= -two_pi && max_lon <= two_pi)
 	      if(min_lon >= -two_pi && min_lon <= two_pi)
 		flg_crd_rdn=True;
-	ngl_unt=(char *)strdup("radians");
+	if(flg_crd_rdn){
+	  ngl_unt=(char *)strdup("radians");
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports MPAS unstructured grid coordinates lack units attributes, yet were determined to most likely be stored in radians. Will write inferred grid with units attribute = \"radians\".\n",nco_prg_nm_get(),fnc_nm,bnd_nbr,col_nbr,grd_crn_nbr,vrt_nbr);
+	} /* !flg_crd_rdn */
       } /* !rcd */
       /* !rcd && att_typ */
       /* 20211031: Replace inelegant homebrew algorithm with MPAS algorithm
