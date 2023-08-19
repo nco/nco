@@ -2289,6 +2289,86 @@ nco_chk_nan /* [fnc] Check file for NaNs */
 } /* !nco_chk_nan() */
 
 void
+nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Check file for illegal characters in names
+     ncks --chk_chr ~/nco/data/in.nc
+     ncks -C --dbg=1 -v att_var_spc_chr --chk_chr ~/nco/data/in.nc
+
+     CF-Conventions: "Variable, dimension, attribute and group names should begin with a letter and be composed of letters, digits, and underscores. Note that this is in conformance with the COARDS conventions, but is more restrictive than the netCDF interface which allows use of the hyphen character. The netCDF interface also allows leading underscores in names, but the NUG states that this is reserved for system use." */
+
+  const char fnc_nm[]="nco_chk_chr()"; /* [sng] Function name */
+
+  char att_nm[NC_MAX_NAME+1]; /* [sng] Attribute name */ 
+
+  char *nm; /* [sng] Name of dimension/group/variable/attribute */
+  
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int att_nbr; /* [nbr] Number of attributes */
+  int grp_id; /* [ID] Group ID */
+  int var_id; /* [id] Variable ID */
+
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking variable %s for bad characters...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
+      nm=var_trv.nm;
+      /* Is variable name CF-compliant? */
+      if(!nm_cf_chk(nm)){
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports variable name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
+      } /* !nm_cf_chk */
+	
+      rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      rcd+=nco_inq_varid(grp_id,nm,&var_id);
+      att_nbr=var_trv.nbr_att;
+      for(unsigned att_idx=0;att_idx < att_nbr;att_idx++){
+	rcd+=nco_inq_attname(grp_id,var_id,att_idx,att_nm);
+	nm=att_nm;
+	/* Is attribute name CF-compliant? */
+	if(!nm_cf_chk(nm)){
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports variable %s attribute name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,nm);
+	} /* !nm_cf_chk */
+      } /* !att_idx */
+    } /* !nco_obj_typ_var */
+    if(var_trv.nco_typ == nco_obj_typ_grp && var_trv.flg_xtr){ 
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking group %s for bad characters...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
+      nm=var_trv.nm;
+      /* Do not check the root group short name "/" */
+      if(strcmp(var_trv.nm_fll,"/")){
+	/* Is group name CF-compliant? */
+	if(!nm_cf_chk(nm)){
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports group name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
+	} /* !nm_cf_chk */
+      } /* !root group */
+      att_nbr=var_trv.nbr_att;
+      rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      for(unsigned att_idx=0;att_idx < att_nbr;att_idx++){
+	rcd+=nco_inq_attname(grp_id,(int)NC_GLOBAL,att_idx,att_nm);
+	nm=att_nm;
+	/* Is global or group attribute name CF-compliant? */
+	if(!nm_cf_chk(nm)){
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports group %s attribute name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,nm);
+	} /* !nm_cf_chk */
+      } /* !att_idx */
+    } /* !nco_obj_typ_grp */
+  } /* !idx_tbl */
+
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr_dmn;idx_tbl++){
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking dimension %s for bad characters...\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst_dmn[idx_tbl].nm);
+    nm=trv_tbl->lst_dmn[idx_tbl].nm;
+    /* Is dimension name CF-compliant? */
+    if(!nm_cf_chk(nm)){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports dimension name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
+      } /* !nm_cf_chk */
+  } /* !idx_tbl */
+
+  assert(rcd == NC_NOERR);
+  return;
+} /* !nco_chk_chr() */
+
+void
 nco_xtr_wrt                           /* [fnc] Write extracted data to output file */
 (const int nc_id_in,                  /* I [ID] netCDF input file ID */
  const int nc_id_out,                 /* I [ID] netCDF output file ID */

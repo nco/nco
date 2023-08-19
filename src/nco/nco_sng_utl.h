@@ -107,6 +107,10 @@ extern "C" {
    CST_X_PTR_CST_PTR_CST_Y(char,argv)); /* I [sng] Command line argument values */
   /* char **argv); *//* I [sng] Command line argument values */
   
+  nco_bool /* O [flg] Name complies with CF */
+  nm_cf_chk /* [fnc] Check that variable/dimension/attribute name is CF-compliant */
+  (const char * const nm); /* I [sng] Name to check */
+
   char * /* O [sng] CDL-compatible name */
   nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
   (const char * const nm_sng); /* I [sng] Name to CDL-ize */

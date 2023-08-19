@@ -294,7 +294,7 @@ netcdf buggy {
     time3 = 2; 
     maxStrlen64 = 64 ;    
     variables:
-    char time3(time3, maxStrlen64) ;
+    char time3(time3,maxStrlen64) ;
      time3:_CoordinateAxisType = "Time" ;
     data:   
     time3 = "2002-06-19T00:00:00Z","2002-06-20T00:00:00Z" ;

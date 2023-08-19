@@ -53,11 +53,16 @@ extern "C" {
 #endif /* __cplusplus */
 
 void
-nco_chk_nan                           /* [fnc] Check file for NaNs */
-(const int nc_id,                     /* I [ID] netCDF input file ID */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+nco_chk_nan /* [fnc] Check file for NaNs */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
-  nm_id_sct *                           /* O [sct] Extraction list */  
+void
+nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
+
+nm_id_sct *                           /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_sct from traversal table */
 (const int nc_id_in,                  /* I [ID] netCDF input file ID */
  const int nc_id_out,                 /* I [ID] netCDF output file ID */

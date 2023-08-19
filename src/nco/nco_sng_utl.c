@@ -379,7 +379,48 @@ nm2sng_jsn /* [fnc] Turn variable/dimension/attribute name into legal JSON */
   nm_cpy=(char *)nco_free(nm_cpy);
 
   return nm_jsn;
-} /* end nm2sng_jsn() */
+} /* !nm2sng_jsn() */
+
+nco_bool /* O [flg] Name complies with CF */
+nm_cf_chk /* [fnc] Check that variable/dimension/attribute name is CF-compliant */
+(const char * const nm) /* I [sng] Name to check */
+{
+  /* Purpose: Check that netCDF identifier (i.e., variable/dimension/attribute name( is CF-compliant */
+  const char fnc_nm[]="nm_cf_chk()"; /* [sng] Function name */
+
+  const char chr_ndr='_'; /* [chr] Underscore */
+  unsigned char chr_crr; /* [chr] Current character in name */
+
+  nco_bool flg_ndr; /* [flg] Character is underscore */
+  nco_bool NM_IS_CF_COMPLIANT=True; /* [flg] Name complies with CF */
+
+  size_t nm_lng; /* [nbr] Length of name */
+
+  nm_lng=strlen(nm);
+
+  for(unsigned idx_chr=0;idx_chr < nm_lng;idx_chr++){
+    flg_ndr=False;
+    chr_crr=nm[idx_chr];
+    if(chr_crr == chr_ndr) flg_ndr=True;
+    if(idx_chr == 0){
+      /* First character must be alphabetic */
+      if(isalpha(chr_crr)) continue;
+      /* netCDF library-defined attributes with leading underscores are only exceptions allowed to above rule */
+      if(flg_ndr && !strcmp(nm,"_FillValue"))
+	continue;
+    }else if(idx_chr > 0){
+      /* Remaining characters must be alphanumeric or underscores */
+      if(isalnum(chr_crr) || flg_ndr)
+	continue;
+    } /* !idx_chr */
+    /* Uh oh, non-compliant character */
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: WARNING %s reports CF non-compliant character '%c' appears in identifier \"%s\"\n",nco_prg_nm_get(),fnc_nm,chr_crr,nm);
+    NM_IS_CF_COMPLIANT=False;
+  } /* idx_chr */
+  
+  return NM_IS_CF_COMPLIANT;
+
+} /* !nm_cf_chk() */
 
 char * /* O [sng] CDL-compatible name */
 nm2sng_fl /* [fnc] Turn file name into legal string for shell commands */
@@ -526,7 +567,7 @@ sng2sng_sf /* [fnc] Translate C language string to printable, visible ASCII byte
   return sng_val_sng;
 } /* end sng2sng_sf() */
 
-  char * /* O [sng] String containing printable result */
+char * /* O [sng] String containing printable result */
 chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII bytes */
 (const char chr_val, /* I [chr] Character to process */
  char * const val_sng) /* I/O [sng] String to stuff printable result into */

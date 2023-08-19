@@ -1,3 +1,11 @@
+2023-08-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.8-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.8-alpha03: Giggles';git push
+	git tag -a 5.1.8-alpha03 -m 'ncks --chk_chr';git push --tags
+
+	* Add nco_chk_chr(), nm_cf_chk(), --chk_chr to check identifier	names for CF-Compliance (DIWG)
+
 2023-08-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.8-alpha02 release procedure:

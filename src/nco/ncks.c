@@ -244,6 +244,7 @@ main(int argc,char **argv)
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
  
   nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
+  nco_bool CHK_CHR=False; /* [flg] Check identifiers for bad characters */
   nco_bool CHK_MAP=False; /* [flg] Check map-file quality */
   nco_bool CHK_NAN=False; /* [flg] Check for NaNs */
   nco_bool CPY_GRP_METADATA; /* [flg] Copy group metadata (attributes) */
@@ -341,6 +342,8 @@ main(int argc,char **argv)
     {"formula_terms",no_argument,0,0}, /* [flg] Extract formula_terms variables */
     {"no_frm_trm",no_argument,0,0}, /* [flg] Do not extract formula_terms variables */
     {"no_formula_terms",no_argument,0,0}, /* [flg] Do not extract formula_terms variables */
+    {"chk_chr",no_argument,0,0}, /* [flg] Check identifiers for bad characters */
+    {"check_char",no_argument,0,0}, /* [flg] Check identifiers for bad characters */
     {"chk_map",no_argument,0,0}, /* [flg] Check map-file quality */
     {"check_map",no_argument,0,0}, /* [flg] Check map-file quality */
     {"chk_nan",no_argument,0,0}, /* [flg] Check file for NaNs */
@@ -673,6 +676,7 @@ main(int argc,char **argv)
         dt_fmt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       } /* !dt_fmt */
       if(!strcmp(opt_crr,"calendar") || !strcmp(opt_crr,"cln_lgb") || !strcmp(opt_crr,"prn_cln_lgb") || !strcmp(opt_crr,"prn_lgb") || !strcmp(opt_crr,"timestamp")) PRN_CLN_LGB=True; /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
+      if(!strcmp(opt_crr,"chk_chr") || !strcmp(opt_crr,"check_char")) CHK_CHR=True; /* [flg] Check identifiers for bad characters */
       if(!strcmp(opt_crr,"chk_map") || !strcmp(opt_crr,"check_map")) CHK_MAP=True; /* [flg] Check map-file quality */
       if(!strcmp(opt_crr,"chk_nan") || !strcmp(opt_crr,"check_nan") || !strcmp(opt_crr,"nan") || !strcmp(opt_crr,"NaN")) CHK_NAN=True; /* [flg] Check for NaNs */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
@@ -1495,6 +1499,12 @@ main(int argc,char **argv)
       if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
       
     }else{ 
+
+      if(CHK_CHR){
+	/* Check identifiers for bad characters */
+        nco_chk_chr(in_id,trv_tbl);
+        goto close_and_free;
+      } /* !CHK_CHR */
 
       if(CHK_MAP){
 	/* Check map-file quality */

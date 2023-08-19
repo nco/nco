@@ -228,7 +228,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   if(var_tmc_all) *var_tmc_all=var_tmc_lcl;
 
   return;
-} /* end trv_tbl_inq() */
+} /* !trv_tbl_inq() */
 
 void 
 trv_tbl_prn_flg_mch                  /* [fnc] Print table items that have .flg_mch  */

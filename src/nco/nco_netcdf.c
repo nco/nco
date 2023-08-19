@@ -34,7 +34,7 @@ nm2sng_nc /* [fnc] Turn group/variable/dimension/attribute name into legal netCD
   while(*nm_cpy){
     if(*nm_cpy == '/') *nm_cpy=chr_sf;
     nm_cpy++;
-  } /* end while */
+  } /* !while() */
 
   /* netCDF requires first character of element name to be alphanumeric
      Change first character that is special by underscore */
@@ -47,8 +47,8 @@ nm2sng_nc /* [fnc] Turn group/variable/dimension/attribute name into legal netCD
       if(*nm_cpy == '(') *nm_cpy=chr_sf;
       if(*nm_cpy == ')') *nm_cpy=chr_sf;
       nm_cpy++;
-    } /* end while */
-  } /* endif parentheses*/
+    } /* !while() */
+  } /* !parentheses*/
 
   return nm_nc;
 } /* !nm2sng_nc() */
@@ -3402,17 +3402,17 @@ int nco_inq_vlen(const int nc_id,const nc_type var_typ,char * const typ_nm,size_
 int nco_free_vlen(nc_vlen_t * const vlenp){assert(0);return NC_NOERR;}
 int nco_free_vlens(const size_t sz,nc_vlen_t * const vlenp){assert(0);return NC_NOERR;}
 int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
+int nco_inq_grp_full_ncid(const int nc_id,const char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
+int nco_inq_grp_full_ncid_flg(const int nc_id,const char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
+int nco_inq_grp_ncid(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
+int nco_inq_grp_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
+int nco_inq_grp_parent(const int nc_id,int * const prn_id){assert(0);return NC_ENOGRP;}
+int nco_inq_grp_parent_flg(const int nc_id,int * const prn_id){return NC_ENOGRP;}
+int nco_inq_grpname(const int nc_id,char * const grp_nm){if(grp_nm) strcpy(grp_nm,"/");return NC_NOERR;}
 int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){assert(0);return NC_NOERR;}
 int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){assert(0);return NC_NOERR;}
 int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids){if(grp_nbr) *grp_nbr=0;return NC_NOERR;}
-int nco_inq_grp_full_ncid(const int nc_id,const char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
-int nco_inq_grp_ncid(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
-int nco_inq_grp_parent(const int nc_id,int * const prn_id){assert(0);return NC_ENOGRP;}
-int nco_inq_grp_parent_flg(const int nc_id,int * const prn_id){return NC_ENOGRP;}
 int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
-int nco_inq_grp_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
-int nco_inq_grpname(const int nc_id,char * const grp_nm){if(grp_nm) strcpy(grp_nm,"/");return NC_NOERR;}
-int nco_inq_grp_full_ncid_flg(const int nc_id,const char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
 int nco_rename_grp(int grp_id,const char * const grp_nm){assert(0);return NC_NOERR;}
 
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn){
