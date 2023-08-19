@@ -128,12 +128,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.1.8-alpha02
-@set doc-edition 5.1.8-alpha02
+@set nco-edition 5.1.8-alpha03
+@set doc-edition 5.1.8-alpha03
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 26 July 2023
-@set update-month July 2023
+@set update-date 18 August 2023
+@set update-month August 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -29197,8 +29197,8 @@ whose attributes are to be renamed.
 <a name="bug_nc4_rename"></a> <!-- http://nco.sf.net/nco.html#bug_nc4_rename -->
 @end html
 @cartouche
-Caveat lector: Unforunately from 2007--present (June, 2023) the
-netCDF library (versions 4.0.0--4.9.2) contains bugs or limitations
+Caveat lector: Unforunately from 2007--present (August, 2023) the
+netCDF library (versions 4.0.0--4.9.3) contains bugs or limitations
 that sometimes prevent @acronym{NCO} from correctly renaming coordinate
 variables, dimensions, and groups in netCDF4 files. 
 (To our knowledge the netCDF library calls for renaming always work
@@ -29431,7 +29431,7 @@ ncks -v /g1/lon ~/foo.nc # Shows units and new_units are both gone
 @end verbatim
 @end example
 
-Clearly, renaming dimensions in netCDF4 files is non-trivial.
+Clearly, renaming coordinates in netCDF4 files is non-trivial.
 The penultimate chapter in this saga is a netCDF4 bug discovered in
 September, 2015, and present in versions 4.3.3.1 (and possibly earlier 
 versions too) and later.

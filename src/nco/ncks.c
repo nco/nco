@@ -1503,7 +1503,7 @@ main(int argc,char **argv)
       if(CHK_CHR){
 	/* Check identifiers for bad characters */
         nco_chk_chr(in_id,trv_tbl);
-        goto close_and_free;
+        if (!CHK_NAN) goto close_and_free;
       } /* !CHK_CHR */
 
       if(CHK_MAP){

@@ -1399,7 +1399,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
       }else{
 	/* All CF attributes that NCO handles besides "cell_measures" and "formula_terms" are space-separated lists */
 	cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG %s reports nbr_cf = %d,cf_lst[0] = %s\n",nco_prg_nm_get(),fnc_nm,nbr_cf,cf_lst[0]);
+	if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stderr,"%s: DEBUG %s reports nbr_cf = %d,cf_lst[0] = %s\n",nco_prg_nm_get(),fnc_nm,nbr_cf,cf_lst[0]);
       } /* !formula_terms */
       
       /* ...for each variable in CF convention attribute, i.e., for each variable listed in "ancillary_variables", or in "bounds", or in "coordinates", or in "grid_mapping", ... */
@@ -2307,8 +2307,12 @@ nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
   
   int rcd=NC_NOERR; /* [rcd] Return code */
   int att_nbr; /* [nbr] Number of attributes */
+  int brk_nbr; /* [nbr] Number of non-compliant identifiers */
   int grp_id; /* [ID] Group ID */
   int var_id; /* [id] Variable ID */
+
+  /* Initialize */
+  brk_nbr=0;
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
@@ -2317,7 +2321,8 @@ nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
       nm=var_trv.nm;
       /* Is variable name CF-compliant? */
       if(!nm_cf_chk(nm)){
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports variable name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
+	(void)fprintf(stdout,"%s: WARNING %s reports variable name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
+	brk_nbr++;
       } /* !nm_cf_chk */
 	
       rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
@@ -2328,7 +2333,8 @@ nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
 	nm=att_nm;
 	/* Is attribute name CF-compliant? */
 	if(!nm_cf_chk(nm)){
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports variable %s attribute name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,nm);
+	  (void)fprintf(stdout,"%s: WARNING %s reports variable %s attribute name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,nm);
+	  brk_nbr++;
 	} /* !nm_cf_chk */
       } /* !att_idx */
     } /* !nco_obj_typ_var */
@@ -2339,7 +2345,8 @@ nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
       if(strcmp(var_trv.nm_fll,"/")){
 	/* Is group name CF-compliant? */
 	if(!nm_cf_chk(nm)){
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports group name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
+	  (void)fprintf(stdout,"%s: WARNING %s reports group name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
+	  brk_nbr++;
 	} /* !nm_cf_chk */
       } /* !root group */
       att_nbr=var_trv.nbr_att;
@@ -2349,7 +2356,8 @@ nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
 	nm=att_nm;
 	/* Is global or group attribute name CF-compliant? */
 	if(!nm_cf_chk(nm)){
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports group %s attribute name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,nm);
+	  (void)fprintf(stdout,"%s: WARNING %s reports group %s attribute name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,nm);
+	  brk_nbr++;
 	} /* !nm_cf_chk */
       } /* !att_idx */
     } /* !nco_obj_typ_grp */
@@ -2360,9 +2368,15 @@ nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
     nm=trv_tbl->lst_dmn[idx_tbl].nm;
     /* Is dimension name CF-compliant? */
     if(!nm_cf_chk(nm)){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports dimension name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
-      } /* !nm_cf_chk */
+      (void)fprintf(stdout,"%s: WARNING %s reports dimension name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
+      brk_nbr++;
+    } /* !nm_cf_chk */
   } /* !idx_tbl */
+
+  if(brk_nbr > 0){
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports total number of identifiers with CF non-compliant names is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
+    nco_exit(EXIT_FAILURE);
+  } /* !brk_nbr */
 
   assert(rcd == NC_NOERR);
   return;
