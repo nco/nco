@@ -1,8 +1,12 @@
-2023-08-18  Charlie Zender  <zender@uci.edu>
+2023-08-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.8-alpha03: Giggles';git push
-	git tag -a 5.1.8-alpha03 -m 'ncks --chk_chr';git push --tags
+	git tag -a 5.1.8-alpha03 -m 'ncks --chk_chr, --chk_mss';git push --tags
+
+	* Add nco_chk_mss() to check for missing_value attributes
+
+2023-08-18  Charlie Zender  <zender@uci.edu>
 
 	* Add nco_chk_chr(), nm_cf_chk(), --chk_chr to check identifier	names for CF-Compliance (DIWG)
 

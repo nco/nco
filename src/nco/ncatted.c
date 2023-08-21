@@ -378,7 +378,7 @@ main(int argc,char **argv)
       break;
     default: /* Print proper usage */
       //(void)fprintf(stdout,"%s ERROR bad syntax in received command line:\n%s\n",nco_prg_nm_get(),cmd_ln);
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command or upgrade NCO as appropriate.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end switch */

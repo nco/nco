@@ -2173,127 +2173,12 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
 } /* !nco_xtr_dfn() */
 
-void
-nco_chk_nan /* [fnc] Check file for NaNs */
+int /* O [nbr] Number of CF non-compliant identifiers */
+nco_chk_chr /* [fnc] Check identifiers for NUG-non-compliant characters */
 (const int nc_id, /* I [ID] netCDF input file ID */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Check file for NaNs 
-     ncks --chk_nan ~/nco/data/in.nc
-     ncks -C --dbg=1 -v nan_scl,nan_arr --chk_nan ~/nco/data/in_4.nc */
-
-  const char fnc_nm[]="nco_chk_nan()"; /* [sng] Function name */
-
-  char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name (used for validation only) */ 
-
-  int grp_id; /* [ID] Group ID where variable resides (passed to MSA) */
-
-  int rcd=NC_NOERR; /* [rcd] Return code */
-
-  lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
-  lmt_sct **lmt=NULL_CEWI; /* [sct] Auxiliary Limit used in MSA */
-
-  long lmn; /* [nbr] Index to print variable data */
-
-  var_sct *var=NULL_CEWI; /* [sct] Variable structure */
-
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
-    if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var && (var_trv.var_typ == NC_FLOAT || var_trv.var_typ == NC_DOUBLE)){
-      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking variable %s for NaNs...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
-
-      /* NB: Following block to get variable copied from nco_prn_var_val_trv() */
-      /* Obtain group ID where variable is located */
-      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-      /* malloc space */
-      var=(var_sct *)nco_malloc(sizeof(var_sct));
-      /* Set defaults */
-      (void)var_dfl_set(var);
-      /* Get ID for requested variable */
-      var->nm=(char *)strdup(var_trv.nm);
-      var->nc_id=grp_id;
-      (void)nco_inq_varid(grp_id,var_trv.nm,&var->id);
-      /* Get type of variable (get also name and number of dimensions for validation against parameter object) */
-      (void)nco_inq_var(grp_id,var->id,var_nm,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
-      /* Scalars */
-      if(var->nbr_dim == 0){
-	var->sz=1L;
-	var->val.vp=nco_malloc(nco_typ_lng_udt(nc_id,var->type));
-	/* Block is critical/thread-safe for identical/distinct grp_id's */
-	{ /* begin potential OpenMP critical */
-	  (void)nco_get_var1(grp_id,var->id,0L,var->val.vp,var->type);
-	} /* end potential OpenMP critical */
-      }else{ /* ! Scalars */
-	/* Allocate local MSA */
-	lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv.nbr_dmn*sizeof(lmt_msa_sct *));
-	lmt=(lmt_sct **)nco_malloc(var_trv.nbr_dmn*sizeof(lmt_sct *));
-	/* Copy from table to local MSA */
-	(void)nco_cpy_msa_lmt(&var_trv,&lmt_msa);
-	/* Call super-dooper recursive routine */
-	var->val.vp=nco_msa_rcr_clc((int)0,var->nbr_dim,lmt,lmt_msa,var);
-      } /* ! Scalars */
-      /* Refresh missing value attribute, if any */
-      var->has_mss_val=nco_mss_val_get(var->nc_id,var);
-      
-      switch(var->type){
-      case NC_FLOAT:
-	//if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Examining %s: ",var->nm);
-	for(lmn=0;lmn<var->sz;lmn++){
-	  //if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"[%ld]=%g, ",lmn,var->val.fp[lmn]);
-	  rcd=fpclassify(var->val.fp[lmn]);
-	  switch(rcd){
-	  case FP_NORMAL: continue; break; /* Normal floating-point number */
-	  case FP_ZERO: continue; /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative zero\n",var->nm,lmn,var->val.fp[lmn]);*/ break; /* x is +/- zero 20230512 positive zero appears to mean just normal zero, not newsworthy */
-	  case FP_NAN: /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is NaNf\n",var->nm,lmn,var->val.fp[lmn]);*/ break; /* x is "Not a Number" */
-	  case FP_INFINITE: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative infinity\n",var->nm,lmn,var->val.fp[lmn]); break;   /* x is either positive infinity or negative infinity */
-	  case FP_SUBNORMAL: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is subnormal\n",var->nm,lmn,var->val.fp[lmn]); break; /* x is too small to be represented in normalized format */
-	  default:
-	    (void)fprintf(stdout,"%s: ERROR %s reports invalid return code for fpclassify()\n",nco_prg_nm_get(),fnc_nm);
-	    nco_exit(EXIT_FAILURE);
-	    break;
-	  } /* !rcd */
-	  if(isnan(var->val.fp[lmn])){
-	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: ERROR %s reports variable %s has first NaNf at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
-	    nco_exit(EXIT_FAILURE);
-	  } /* !isnan */
-	} /* !lmn */
-	//if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"\n");
-	break;
-      case NC_DOUBLE:
-	for(lmn=0;lmn<var->sz;lmn++){
-	  rcd=fpclassify(var->val.dp[lmn]);
-	  switch(rcd){
-	  case FP_NORMAL: continue; break; /* Normal floating-point number */
-	  case FP_ZERO: continue; /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative zero\n",var->nm,lmn,var->val.fp[lmn]);*/ break; /* x is +/- zero 20230512 positive zero appears to mean just normal zero, not newsworthy */
-	  case FP_NAN: /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is NaNf\n",var->nm,lmn,var->val.dp[lmn])*/; break; /* x is "Not a Number" */
-	  case FP_INFINITE: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative infinity\n",var->nm,lmn,var->val.dp[lmn]); break;   /* x is either positive infinity or negative infinity */
-	  case FP_SUBNORMAL: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is subnormal\n",var->nm,lmn,var->val.dp[lmn]); break; /* x is too small to be represented in normalized format */
-	  default:
-	    (void)fprintf(stdout,"%s: ERROR %s reports invalid return code for fpclassify()\n",nco_prg_nm_get(),fnc_nm);
-	    nco_exit(EXIT_FAILURE);
-	    break;
-	  } /* !rcd */
-	  /* Wikipedia entry on NaN is full of useful information:
-	     https://en.wikipedia.org/wiki/NaN */
-	  if(isnan(var->val.dp[lmn])){
-	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: ERROR %s reports variable %s has first NaN at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
-	    nco_exit(EXIT_FAILURE);
-	  } /* !isnan() */
-	} /* !lmn */
-	break;
-      } /* !var->type */
-      var=nco_var_free(var);
-    } /* !var_trv.flg_xtr */
-  } /* !idx_tbl */
-  return;
-} /* !nco_chk_nan() */
-
-void
-nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
-(const int nc_id, /* I [ID] netCDF input file ID */
- const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
-{
-  /* Purpose: Check file for illegal characters in names
+  /* Purpose: Check identifiers for naughty characters
      ncks --chk_chr ~/nco/data/in.nc
      ncks -C --dbg=1 -v att_var_spc_chr --chk_chr ~/nco/data/in.nc
 
@@ -2307,7 +2192,7 @@ nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
   
   int rcd=NC_NOERR; /* [rcd] Return code */
   int att_nbr; /* [nbr] Number of attributes */
-  int brk_nbr; /* [nbr] Number of non-compliant identifiers */
+  int brk_nbr; /* [nbr] Number of CF non-compliant identifiers */
   int grp_id; /* [ID] Group ID */
   int var_id; /* [id] Variable ID */
 
@@ -2374,13 +2259,230 @@ nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
   } /* !idx_tbl */
 
   if(brk_nbr > 0){
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports total number of identifiers with CF non-compliant names is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
-    nco_exit(EXIT_FAILURE);
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of identifiers with CF non-compliant names is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
+    //nco_exit(EXIT_FAILURE);
   } /* !brk_nbr */
 
   assert(rcd == NC_NOERR);
-  return;
+  return brk_nbr;
 } /* !nco_chk_chr() */
+
+int /* O [nbr] Number of naughty attributes */
+nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Check variables for missing_value attributes
+     ncks --chk_mss ~/nco/data/in.nc
+     ncks -C --dbg=1 -v att_var_spc_chr --chk_mss ~/nco/data/in.nc
+
+     https://wiki.earthdata.nasa.gov/display/ESDSWG/Avoid+Use+of+the+missing_value+Attribute
+     "Avoid use of the missing_value attribute in new Earth Science data products.
+     Recommendation Details: The missing_value attribute has been semi deprecated, and so this attribute should not be used in new Earth Science data products.
+
+     Historically, the missing_value attribute has been used both as a scalar (single-value) and as an array (multi-value) in Earth Science data products.
+
+     Use the CF _FillValue attribute instead of using missing_value as a scalar attribute.
+
+     Use a flag variable with the CF flag_meanings plus flag_values and/or flag_masks attributes attached (as explained in a separate recommendation) instead of using missing_value as an array attribute.
+
+     It is acceptable to continue to use the missing_value attribute in already published Earth Science data products, especially in cases where the downstream software specifically makes use of the missing_value attribute, though it would be a worthwhile improvement to include, in new releases of such products, the CF _FillValue attribute, and, where appropriate, flag variables with CF flag_meanings plus flag_values and/or flag_masks attributes attached." */
+
+  const char fnc_nm[]="nco_chk_mss()"; /* [sng] Function name */
+  const char att_not[]="missing_value"; /* [sng] Naughty attribute name */
+
+  char att_nm[NC_MAX_NAME+1]; /* [sng] Attribute name */
+
+  char *nm; /* [sng] Name of dimension/group/variable/attribute */
+  
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int att_nbr; /* [nbr] Number of attributes */
+  int brk_nbr; /* [nbr] Number of naughty attributes */
+  int grp_id; /* [ID] Group ID */
+  int var_id; /* [id] Variable ID */
+
+  /* Initialize */
+  brk_nbr=0;
+
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking variable %s for \"%s\" attribute...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,att_not);
+      nm=var_trv.nm;
+      rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      rcd+=nco_inq_varid(grp_id,nm,&var_id);
+      att_nbr=var_trv.nbr_att;
+      for(unsigned att_idx=0;att_idx < att_nbr;att_idx++){
+	rcd+=nco_inq_attname(grp_id,var_id,att_idx,att_nm);
+	nm=att_nm;
+	/* Is this a naughty attribute? */
+	if(!strcmp(nm,att_not)){
+	  (void)fprintf(stdout,"%s: WARNING %s reports variable %s contains \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,nm);
+	  brk_nbr++;
+	} /* !nm_cf_chk */
+      } /* !att_idx */
+    } /* !nco_obj_typ_var */
+    if(var_trv.nco_typ == nco_obj_typ_grp && var_trv.flg_xtr){ 
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking group %s for \"%s\" attribute...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,att_not);
+      nm=var_trv.nm;
+      att_nbr=var_trv.nbr_att;
+      rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      for(unsigned att_idx=0;att_idx < att_nbr;att_idx++){
+	rcd+=nco_inq_attname(grp_id,(int)NC_GLOBAL,att_idx,att_nm);
+	nm=att_nm;
+	/* Is this a naughty attribute? */
+	if(!strcmp(nm,att_not)){
+	  (void)fprintf(stdout,"%s: WARNING %s reports group %s contains \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,nm);
+	  brk_nbr++;
+	} /* !nm_cf_chk */
+      } /* !att_idx */
+    } /* !nco_obj_typ_grp */
+  } /* !idx_tbl */
+
+  if(brk_nbr > 0){
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of variables and/or groups with \"%s\" attribute is %d\n",nco_prg_nm_get(),fnc_nm,att_not,brk_nbr);
+    //nco_exit(EXIT_FAILURE);
+  } /* !brk_nbr */
+
+  assert(rcd == NC_NOERR);
+  return brk_nbr;
+} /* !nco_chk_mss() */
+
+int /* O [nbr] Number of variables with NaN */
+nco_chk_nan /* [fnc] Check file for NaNs */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Check file for NaNs 
+     ncks --chk_nan ~/nco/data/in.nc
+     ncks -C --dbg=1 -v nan_scl,nan_arr --chk_nan ~/nco/data/in_4.nc
+
+     NB: Wikipedia entry on NaN is full of useful information:
+     https://en.wikipedia.org/wiki/NaN */
+
+  const char fnc_nm[]="nco_chk_nan()"; /* [sng] Function name */
+
+  char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name (used for validation only) */ 
+
+  int brk_nbr; /* [nbr] Number of variables with NaN */
+  int grp_id; /* [ID] Group ID where variable resides (passed to MSA) */
+
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
+  lmt_sct **lmt=NULL_CEWI; /* [sct] Auxiliary Limit used in MSA */
+
+  long lmn; /* [nbr] Index to print variable data */
+
+  nco_bool flg_crr_var_has_nan;
+
+  var_sct *var=NULL_CEWI; /* [sct] Variable structure */
+
+  /* Initialize */
+  brk_nbr=0;
+
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
+    if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var && (var_trv.var_typ == NC_FLOAT || var_trv.var_typ == NC_DOUBLE)){
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking variable %s for NaNs...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
+      flg_crr_var_has_nan=False;
+
+      /* NB: Following block to get variable is copied from nco_prn_var_val_trv() */
+      /* Obtain group ID where variable is located */
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      /* malloc space */
+      var=(var_sct *)nco_malloc(sizeof(var_sct));
+      /* Set defaults */
+      (void)var_dfl_set(var);
+      /* Get ID for requested variable */
+      var->nm=(char *)strdup(var_trv.nm);
+      var->nc_id=grp_id;
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var->id);
+      /* Get type of variable (get also name and number of dimensions for validation against parameter object) */
+      (void)nco_inq_var(grp_id,var->id,var_nm,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
+      /* Scalars */
+      if(var->nbr_dim == 0){
+	var->sz=1L;
+	var->val.vp=nco_malloc(nco_typ_lng_udt(nc_id,var->type));
+	/* Block is critical/thread-safe for identical/distinct grp_id's */
+	{ /* begin potential OpenMP critical */
+	  (void)nco_get_var1(grp_id,var->id,0L,var->val.vp,var->type);
+	} /* end potential OpenMP critical */
+      }else{ /* ! Scalars */
+	/* Allocate local MSA */
+	lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv.nbr_dmn*sizeof(lmt_msa_sct *));
+	lmt=(lmt_sct **)nco_malloc(var_trv.nbr_dmn*sizeof(lmt_sct *));
+	/* Copy from table to local MSA */
+	(void)nco_cpy_msa_lmt(&var_trv,&lmt_msa);
+	/* Call super-dooper recursive routine */
+	var->val.vp=nco_msa_rcr_clc((int)0,var->nbr_dim,lmt,lmt_msa,var);
+      } /* ! Scalars */
+      /* Refresh missing value attribute, if any */
+      var->has_mss_val=nco_mss_val_get(var->nc_id,var);
+      
+      switch(var->type){
+      case NC_FLOAT:
+	//if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Examining %s: ",var->nm);
+	for(lmn=0;lmn<var->sz;lmn++){
+	  //if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"[%ld]=%g, ",lmn,var->val.fp[lmn]);
+	  rcd=fpclassify(var->val.fp[lmn]);
+	  switch(rcd){
+	  case FP_NORMAL: continue; break; /* Normal floating-point number */
+	  case FP_ZERO: continue; /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative zero\n",var->nm,lmn,var->val.fp[lmn]);*/ break; /* x is +/- zero 20230512 positive zero appears to mean just normal zero, not newsworthy */
+	  case FP_NAN: /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is NaNf\n",var->nm,lmn,var->val.fp[lmn]);*/ break; /* x is "Not a Number" */
+	  case FP_INFINITE: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative infinity\n",var->nm,lmn,var->val.fp[lmn]); break; /* x is either positive infinity or negative infinity */
+	  case FP_SUBNORMAL: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is subnormal\n",var->nm,lmn,var->val.fp[lmn]); break; /* x is too small to be represented in normalized format */
+	  default:
+	    (void)fprintf(stdout,"%s: ERROR %s reports invalid return code for fpclassify() on variable %s element %ld\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,lmn);
+	    nco_exit(EXIT_FAILURE);
+	    break;
+	  } /* !rcd */
+	  if(isnan(var->val.fp[lmn])){
+	    flg_crr_var_has_nan=True;
+	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has first NaNf at hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
+	    //nco_exit(EXIT_FAILURE);
+	    /* Quit loop over elements, move on to next variable... */
+	    break; 
+	  } /* !isnan */
+	} /* !lmn */
+	//if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"\n");
+	break;
+      case NC_DOUBLE:
+	for(lmn=0;lmn<var->sz;lmn++){
+	  rcd=fpclassify(var->val.dp[lmn]);
+	  switch(rcd){
+	  case FP_NORMAL: continue; break; /* Normal floating-point number */
+	  case FP_ZERO: continue; /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative zero\n",var->nm,lmn,var->val.fp[lmn]);*/ break; /* x is +/- zero 20230512 positive zero appears to mean just normal zero, not newsworthy */
+	  case FP_NAN: /*if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is NaNf\n",var->nm,lmn,var->val.dp[lmn])*/; break; /* x is "Not a Number" */
+	  case FP_INFINITE: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative infinity\n",var->nm,lmn,var->val.dp[lmn]); break; /* x is either positive infinity or negative infinity */
+	  case FP_SUBNORMAL: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is subnormal\n",var->nm,lmn,var->val.dp[lmn]); break; /* x is too small to be represented in normalized format */
+	  default:
+	    (void)fprintf(stdout,"%s: ERROR %s reports invalid return code for fpclassify() on variable %s element %ld\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,lmn);
+	    nco_exit(EXIT_FAILURE);
+	    break;
+	  } /* !rcd */
+	  if(isnan(var->val.dp[lmn])){
+	    flg_crr_var_has_nan=True;
+	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has first NaN at hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
+	    //nco_exit(EXIT_FAILURE);
+	    /* Quit loop over elements, move on to next variable... */
+	    break; 
+	  } /* !isnan() */
+	} /* !lmn */
+	break;
+      } /* !var->type */
+      var=nco_var_free(var);
+      if(flg_crr_var_has_nan == True) brk_nbr++;
+    } /* !var_trv.flg_xtr */
+  } /* !idx_tbl */
+
+  if(brk_nbr > 0){
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of floating-point variables with NaN elements is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
+    //nco_exit(EXIT_FAILURE);
+  } /* !brk_nbr */
+
+  return brk_nbr;
+} /* !nco_chk_nan() */
 
 void
 nco_xtr_wrt                           /* [fnc] Write extracted data to output file */

@@ -552,7 +552,7 @@ main(int argc,char **argv)
       xtr_nbr=0;
       break;
     case '?': /* Question mark means unrecognized option, print proper usage then EXIT_FAILURE */
-      (void)fprintf(stdout,"%s: ERROR in command-line syntax/options. Missing or unrecognized option. Please reformulate command accordingly.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR in command-line syntax/options. Missing or unrecognized option. Please reformulate command or upgrade NCO as appropriate.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -560,7 +560,7 @@ main(int argc,char **argv)
       err_prn(fnc_nm,"Long options are not available in this build. Use single letter options instead.\n");
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command or upgrade NCO as appropriate.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;

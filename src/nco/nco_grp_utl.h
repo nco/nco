@@ -52,13 +52,18 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
-void
-nco_chk_nan /* [fnc] Check file for NaNs */
+int /* O [nbr] Number of CF non-compliant identifiers */
+nco_chk_chr /* [fnc] Check identifiers for NUG-non-compliant characters */
 (const int nc_id, /* I [ID] netCDF input file ID */
  const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
-void
-nco_chk_chr /* [fnc] Check file for NUG-non-compliant characters in names */
+int /* O [nbr] Number of naughty attributes */
+nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
+
+int /* O [nbr] Number of variables with NaN */
+nco_chk_nan /* [fnc] Check file for NaNs */
 (const int nc_id, /* I [ID] netCDF input file ID */
  const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
