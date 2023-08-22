@@ -9965,7 +9965,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 		flg_crd_rdn=True;
 	if(flg_crd_rdn){
 	  ngl_unt=(char *)strdup("radians");
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports MPAS unstructured grid coordinates lack units attributes, yet were determined to most likely be stored in radians. Will write inferred grid with units attribute = \"radians\".\n",nco_prg_nm_get(),fnc_nm,bnd_nbr,col_nbr,grd_crn_nbr,vrt_nbr);
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports MPAS unstructured grid coordinates lack units attributes, yet were determined to most likely be stored in radians. Will write inferred grid with units attribute = \"radians\".\n",nco_prg_nm_get(),fnc_nm);
 	} /* !flg_crd_rdn */
       } /* !rcd */
       /* !rcd && att_typ */

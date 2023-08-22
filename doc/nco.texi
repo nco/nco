@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.8-alpha03
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 18 August 2023
+@set update-date 21 August 2023
 @set update-month August 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22214,7 +22214,7 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 SYNTAX
 @example
 ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [--area_wgt] [-b @var{fl_bnr}]
-[-C] [-c] [--cdl] [--chk_map] [--chk_nan] [--cmp @var{cmp_sng}]
+[-C] [-c] [--cdl] [--chk_chr] [--chk_map] [--chk_mss] [--chk_nan] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
@@ -22878,25 +22878,106 @@ alter @file{map.nc} in-xsplace, so backup the original file first.
 @end example
 
 @html
+<a name="chk_chr"></a> <!-- http://nco.sf.net/nco.html#chk_chr -->
+<a name="check_char"></a> <!-- http://nco.sf.net/nco.html#check_char -->
+@end html
+@cindex @code{--chk_chr}
+@cindex @code{--check_char}
+@cindex @code{missing_value}
+@cindex @acronym{CF}
+@cindex @acronym{DIWG}
+@item --chk_chr
+The @emph{identifiers} in a netCDF file are the set of dimension,
+group, variable, and attribute names it contains.
+As of @acronym{NCO} version 5.1.8 (September, 2023), @command{ncks}
+can report all identifiers that violate the @acronym{CF} Convention
+that identifiers ``should begin with a letter and be composed of
+letters, digits, and underscores.''
+System or library-defined identifiers (such as @code{_FillValue})
+are not subject to this (user-land) rule.
+@acronym{NASA}'s Dataset Interoperability Working Group 
+(@uref{https://wiki.earthdata.nasa.gov/display/ESDSWG/Dataset+Interoperability+Working+Group,
+DIWG}) supports this convention.
+This option reports which identifiers do not comply with this
+convention, so that a file can be easily checked for compliance with
+the @acronym{DIWG} recommendation and the underlying @acronym{CF}
+Convention: 
+@example
+@verbatim
+$ ncks --chk_chr ~/nco/data/in.nc
+...
+ncks: WARNING nco_chk_chr() reports variable att_var_spc_chr attribute name "at_in_name@" is not CF-compliant
+ncks: WARNING nco_chk_chr() reports variable name "var_nm-dash" is not CF-compliant
+ncks: WARNING nco_chk_chr() reports variable var_nm-dash attribute name "att_nm-dash" is not CF-compliant
+ncks: INFO nco_chk_chr() reports total number of identifiers with CF non-compliant names is 26
+@end verbatim
+@end example
+
+@html
+<a name="chk_mss"></a> <!-- http://nco.sf.net/nco.html#chk_mss -->
+<a name="check_missing_value"></a> <!-- http://nco.sf.net/nco.html#check_missing_value -->
+@end html
+@cindex @code{--chk_mss}
+@cindex @code{--check_missing_value}
+@cindex @code{missing_value}
+@cindex @acronym{CF}
+@cindex @acronym{DIWG}
+@item --chk_mss
+As of @acronym{NCO} version 5.1.8 (September, 2023), @command{ncks}
+can report all variables and groups that contain a
+@code{missing_value} attribute.
+@acronym{NASA}'s Dataset Interoperability Working Group 
+(@uref{https://wiki.earthdata.nasa.gov/display/ESDSWG/Dataset+Interoperability+Working+Group,
+DIWG}) notes that the @code{missing_value} attribute has been
+semi-deprecated, and recommends that it should not be used in new
+Earth Science data products.
+This option reports which variables (and groups) contain a
+@code{missing_value} attribute, so that a file can be easily
+checked for compliance with the @acronym{DIWG} recommendation:
+@example
+@verbatim
+$ ncks --chk_mss ~/nco/data/in.nc
+ncks: WARNING nco_chk_mss() reports variable fll_val_mss_val contains "missing_value" attribute
+ncks: WARNING nco_chk_mss() reports variable one_dmn_rec_var_missing_value contains "missing_value" attribute
+...
+ncks: WARNING nco_chk_mss() reports variable rec_var_int_mss_val_flt contains "missing_value" attribute
+ncks: INFO nco_chk_mss() reports total number of variables and/or groups with "missing_value" attribute is 11
+@end verbatim
+@end example
+
+@html
 <a name="chk_nan"></a> <!-- http://nco.sf.net/nco.html#chk_nan -->
+<a name="check_nan"></a> <!-- http://nco.sf.net/nco.html#check_nan -->
 @end html
 @cindex @code{--chk_nan}
+@cindex @code{--check_nan}
 @cindex @code{NaN}
 @cindex @code{NaNf}
+@cindex @acronym{DIWG}
 @item --chk_nan
 As of @acronym{NCO} version 4.8.0 (May, 2019), @command{ncks} can
 locate @code{NaN} or @code{NaNf} in double- and single-precision
 floating-point variables, respectively.
-If a @code{NaN} is encountered, @acronym{NCO} prints its location and
-then exits with an error code.
-When run with a higher debugging level, the output will include the
-location of the @code{NaN} in the array.
-Thanks to Matthew Thompson of @acronym{NASA} for this suggestion.
+@acronym{NCO} prints the location of the first @code{NaN} (if any)
+encountered in each variable. 
+@acronym{NASA}'s Dataset Interoperability Working Group 
+(@uref{https://wiki.earthdata.nasa.gov/display/ESDSWG/Dataset+Interoperability+Working+Group,
+DIWG}) notes that the @code{missing_value} attribute has been
+semi-deprecated, and recommends that it should not be used in new
+Earth Science data products.
+This option reports allows users to easily check whether all the
+floating point variables in a file comply with the @acronym{DIWG}
+recommendation: 
 @example
 @verbatim
-$ ncks --chk_nan ~/nco/data/in.nc
+$ ncks --chk_nan ~/nco/data/in_4.nc
+ncks: WARNING nco_chk_nan() reports variable /nan_arr has first NaNf at hyperslab element 1
+ncks: WARNING nco_chk_nan() reports variable /nan_scl has first NaNf at hyperslab element 0
+ncks: INFO nco_chk_nan() reports total number of floating-point variables with NaN elements is 2
 @end verbatim
 @end example
+Thanks to Matthew Thompson of @acronym{NASA} for originally suggesting
+this feature.
 
 @html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->

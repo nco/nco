@@ -2213,7 +2213,7 @@ nco_chk_chr /* [fnc] Check identifiers for NUG-non-compliant characters */
       rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
       rcd+=nco_inq_varid(grp_id,nm,&var_id);
       att_nbr=var_trv.nbr_att;
-      for(unsigned att_idx=0;att_idx < att_nbr;att_idx++){
+      for(int att_idx=0;att_idx < att_nbr;att_idx++){
 	rcd+=nco_inq_attname(grp_id,var_id,att_idx,att_nm);
 	nm=att_nm;
 	/* Is attribute name CF-compliant? */
@@ -2236,7 +2236,7 @@ nco_chk_chr /* [fnc] Check identifiers for NUG-non-compliant characters */
       } /* !root group */
       att_nbr=var_trv.nbr_att;
       rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-      for(unsigned att_idx=0;att_idx < att_nbr;att_idx++){
+      for(int att_idx=0;att_idx < att_nbr;att_idx++){
 	rcd+=nco_inq_attname(grp_id,(int)NC_GLOBAL,att_idx,att_nm);
 	nm=att_nm;
 	/* Is global or group attribute name CF-compliant? */
@@ -2312,7 +2312,7 @@ nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
       rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
       rcd+=nco_inq_varid(grp_id,nm,&var_id);
       att_nbr=var_trv.nbr_att;
-      for(unsigned att_idx=0;att_idx < att_nbr;att_idx++){
+      for(int att_idx=0;att_idx < att_nbr;att_idx++){
 	rcd+=nco_inq_attname(grp_id,var_id,att_idx,att_nm);
 	nm=att_nm;
 	/* Is this a naughty attribute? */
@@ -2327,7 +2327,7 @@ nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
       nm=var_trv.nm;
       att_nbr=var_trv.nbr_att;
       rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-      for(unsigned att_idx=0;att_idx < att_nbr;att_idx++){
+      for(int att_idx=0;att_idx < att_nbr;att_idx++){
 	rcd+=nco_inq_attname(grp_id,(int)NC_GLOBAL,att_idx,att_nm);
 	nm=att_nm;
 	/* Is this a naughty attribute? */

@@ -831,9 +831,8 @@ if (HAVE_REGEX_H AND HAVE_REGEXEC AND HAVE_REGCOMP AND HAVE_REGFREE)
   add_definitions(-DNCO_HAVE_REGEX_FUNCTIONALITY)
 endif()
 
-
 #//////////////////////////
-#additional informational definitions used by ncks -r
+# Additional definitions used by ncks -r
 #//////////////////////////
 
 if (CURL_LIBRARY)
@@ -843,7 +842,6 @@ endif()
 if (CMAKE_BUILD_TYPE MATCHES Debug)
   add_definitions(-DENABLE_DEBUG_SYMBOLS)
 endif()
-
 
 #//////////////////////////
 #USER, HOSTNAME, NCO_BUILDENGINE

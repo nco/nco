@@ -245,7 +245,7 @@ main(int argc,char **argv)
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
  
   nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
-  nco_bool CHK_CHR=False; /* [flg] Check identifiers for bad characters */
+  nco_bool CHK_CHR=False; /* [flg] Check identifiers for naughty characters */
   nco_bool CHK_MAP=False; /* [flg] Check map-file quality */
   nco_bool CHK_MSS=False; /* [flg] Check for missing_value attribute */
   nco_bool CHK_NAN=False; /* [flg] Check for NaNs */
@@ -1513,7 +1513,7 @@ main(int argc,char **argv)
       } /* !CHK_CHR */
 
       if(CHK_MSS){
-	/* Check variables/groups for missing_value attribute */
+	/* Check variables+groups for missing_value attribute */
         brk_nbr=nco_chk_mss(in_id,trv_tbl);
 	if(brk_nbr) exit(EXIT_FAILURE); else nco_exit(EXIT_SUCCESS);
       } /* !CHK_MSS */
