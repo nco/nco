@@ -5780,10 +5780,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd+=nco_inq_unlimdims(in_id,&dmn_nbr_rec,dmn_ids_rec);
   } /* !dmn_nbr_rec */
   
-  int flg_pck; /* [flg] Variable is packed on disk  */
-  nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
   double mss_val_dbl;
   double mss_val_cmp_dbl; /* Missing value for comparison to double precision values */
+  int flg_pck; /* [flg] Variable is packed on disk  */
+  nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
+  nco_bool FIRST_WARNING=True; /* [flg] First warning for LHS extrapolation */
   /* Define regridded and copied variables in output file */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv_tbl->lst[idx_tbl].flg_mrv=True;
@@ -5813,7 +5814,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    if(flg_grd_in_1D && !strcmp(dmn_nm,col_nm_in)){
 	      if(dmn_idx != dmn_nbr_in-1){
 		/* Unstructured input grid has col in non-MRV location (expect this with, e.g., MPAS-O/I native grid dimension-ordering */
-		(void)fprintf(stdout,"%s: WARNING %s reports unstructured grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. The NCO regridder does not support unstructured spatial dimensions that are not the last (i.e., most rapidly varying) dimension of an input variable, so results are likely garbage.\nHINT: Re-arrange input file dimensions to place horizontal dimension(s) last with, e.g., \'ncpdq -a time,lev,%s in.nc out.nc\' prior to calling the regridder. E3SM users: If this is an MPAS dataset with a new (unknown to ncremap) dimension, please ask Charlie to add the dimension to the ncremap dimension permutation list.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in,dmn_nm);
+		if(FIRST_WARNING) (void)fprintf(stdout,"%s: WARNING %s reports unstructured grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. The NCO regridder does not support unstructured spatial dimensions that are not the last (i.e., most rapidly varying) dimension of an input variable, so results are likely garbage. This WARNING is printed only once per dataset.\nHINT: Re-arrange input file dimensions to place horizontal dimension last. The preferred way to do this with output from E3SM/CESM-style model output is to invoke the regridder and specify the source model name with, e.g., \'ncremap -P eamxx ...\'. Or permute dimensions manually prior to calling the regridder with, e.g., \'ncpdq -a time,lev,%s in.nc out.nc\'. Or specify the dimensions in the correct regridding order (horizontal spatial dimensions last), e.g., \'ncremap --pdq_opt=time,lev,%s ...\'.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in,dmn_nm,dmn_nm);
+		FIRST_WARNING=False;
 		trv_tbl->lst[idx_tbl].flg_mrv=False;
 	      } /* !dmn_idx */
 	    } /* !flg_grd_in_1D */
@@ -5821,7 +5823,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      /* Are horizontal dimensions most-rapidly-varying? */
 	      if(dmn_idx != dmn_nbr_in-1 && dmn_idx != dmn_nbr_in-2){
 		/* NB: Lat/lon input grid has lat/lon in non-MRV location (expect this with, e.g., AIRS L2 grid dimension-ordering */
-		(void)fprintf(stdout,"%s: WARNING %s reports lat-lon grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. The NCO regridder does not support rectangular lat-lon dimension(s) that are not the last two (i.e., most rapidly varying) dimensions of an input variable, so results are likely garbage.\nHINT: Re-arrange input file dimensions to place horizontal dimensions last with, e.g., \'ncpdq -a time,lev,lat,lon in.nc out.nc\' prior to calling the regridder.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in);
+		if(FIRST_WARNING) (void)fprintf(stdout,"%s: WARNING %s reports lat-lon grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. The NCO regridder does not support rectangular lat-lon dimension(s) that are not the last two (i.e., most rapidly varying) dimensions of an input variable, so results are likely garbage. This WARNING is printed only once per dataset.\nHINT: Re-arrange input file dimensions to place horizontal dimension last. The preferred way to do this with output from E3SM/CESM-style model output is to invoke the regridder and specify the source model name with, e.g., \'ncremap -P eamxx ...\'. Or permute dimensions manually prior to calling the regridder with, e.g., \'ncpdq -a time,lev,lat,lon in.nc out.nc\'. Or specify the dimensions in the correct regridding order (horizontal spatial dimensions last), e.g., \'ncremap --pdq_opt=time,lev,lat,lon ...\'.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in);
+		FIRST_WARNING=False;
 		trv_tbl->lst[idx_tbl].flg_mrv=False;
 	      } /* !dmn_idx */
 	    } /* !flg_grd_in_2D */	      
