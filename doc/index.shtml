@@ -1184,6 +1184,7 @@ For Conda-based systems (any OS, particularly useful for building NCO with newer
 <tt>
 <dt>conda install antlr=2.7.7 # ANTLR</dt>
 <dt>conda install bison cmake flex # GNU toolchain</dt>
+<dt>conda install blosc bzip2 zstd # BLOSC, Bzip2, and Zstandard codecs needed by libnetcdf</dt>
 <dt>conda install curl # DAP-prereqs</dt>
 <dt>conda install esmf # ESMF_RegridWeightGen (external executable for ncremap)</dt>
 <dt>conda install expat # expat XML parser, a UDUnits-prereq</dt>

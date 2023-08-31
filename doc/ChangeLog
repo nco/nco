@@ -1,5 +1,7 @@
 2023-08-30  Charlie Zender  <zender@uci.edu>
 
+	* Clarify error message with how to get filters working
+
 	* Copy many variables from in.cdl to in_4.cdl to facilitate compression testing
 
 2023-08-22  Charlie Zender  <zender@uci.edu>
