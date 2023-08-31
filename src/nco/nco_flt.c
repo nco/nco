@@ -1260,8 +1260,8 @@ nco_flt_def_out /* [fnc]  */
       /* Build list of available filters the first time it might be useful in a debugging message */
       if(!nco_cdc_lst_glb) (void)nco_cdc_lst_bld(nc_out_id);
 
-      char *nvr_HDF5_PLUGIN_PATH; /* [sng] Path where netCDF-HDF5 plugins are stored */
-      nvr_HDF5_PLUGIN_PATH=getenv("OMP_NUM_THREADS");
+      char *nvr_HDF5_PLUGIN_PATH=NULL; /* [sng] Path where netCDF-HDF5 plugins are stored */
+      nvr_HDF5_PLUGIN_PATH=getenv("HDF5_PLUGIN_PATH");
       (void)fprintf(stdout,"%s: ERROR %s reports the netCDF library does not appear to define an API for requested filter (aka codec) \"%s\". If this filter name was not a typo, then probably this filter was not built and/or not installed by netCDF (nor CCR).\nHINT: If the filter is supposed to be in netCDF (e.g., Zstandard), be sure that the external filter libraries (e.g., libzstd.a) is installed. Moreover, the netCDF-HDF5 \"glue\" library (e.g., lib__nch5zstd.so) for each HDF5-style filter must reside where libnetcdf looks for it. The location where it was built during netCDF installation can be determined by executing 'nc-config --plugindir'. Unless configured otherwise during installation, it will be /usr/local/hdf5/lib/plugin. However, the environment variable HDF5_PLUGIN_PATH (if it exists) will override this location. Currently, HDF5_PLUGIN_PATH = %s. If the preceding hints do not resolve the problem, re-try this command and specify only filters included in this list of available filters: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2nmid(flt_alg[flt_idx],NULL),(nvr_HDF5_PLUGIN_PATH) ? nvr_HDF5_PLUGIN_PATH : "not set",nco_cdc_lst_glb);
       nco_exit(EXIT_FAILURE);
     } /* !cdc_has_flt */
