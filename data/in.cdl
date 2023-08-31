@@ -446,6 +446,11 @@ variables:
         ppc_btg_scl:purpose = "test --ppc switches";
         ppc_btg_scl:original_value="1234567890e11";
 
+	float ppc_dcm(time);
+        ppc_dcm:long_name = "Precision-Preserving Compression, decimal tests";
+        ppc_dcm:purpose = "test --ppq";
+        ppc_dcm:original_values="55,155,255,355,455,555,655,755,855,955";
+
 	double ppc_hgh(time);
         ppc_hgh:long_name = "Precision-Preserving Compression, high precision";
         ppc_hgh:purpose = "test --ppc switches";
@@ -459,10 +464,14 @@ variables:
         ppc_tst:purpose = "test --ppq";
         ppc_tst:original_values="0.0,_,0.1234567,-0.1234567,64,-64,123456789e25,123456789e-25,3.1415926535897932384626433832795029,-3.1415926535897932384626433832795029";
 
-	float ppc_dcm(time);
-        ppc_dcm:long_name = "Precision-Preserving Compression, decimal tests";
-        ppc_dcm:purpose = "test --ppq";
-        ppc_dcm:original_values="55,155,255,355,455,555,655,755,855,955";
+	float ppc_zro_flt(time);
+	ppc_zro_flt:long_name = "array of single precision floating point zeros";
+
+	double ppc_zro_dbl(time);
+	ppc_zro_dbl:long_name = "array of double precision floating point zeros";
+
+	int ppc_zro_int(time);
+	ppc_zro_int:long_name = "array of integer zeros";
 
 	float qnt_flt_tst1(dgn);
         qnt_flt_tst1:long_name = "Quantization test, single precision";
