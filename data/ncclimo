@@ -103,7 +103,7 @@ fi # HOSTNAME
 if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
 	acme1* ) DATA="/home/${USER}" ; ;; # LLNL acme1 
-	andes* | titan* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
+	andes* | frontier* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC blues compute nodes named bNNN, 36|64 cores|GB/node 
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
@@ -184,6 +184,18 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	e3sm* )
 	    export PATH='/home/zender/bin:/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
+	frontier* )
+	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
+	    module load gcc
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# 20170831: Use module load ncl (6.3.0 lacks ERWG)
+		module load ncl # 20170916 OK
+	    fi # !ncremap
+	    if [ -n "${NCARG_ROOT}" ]; then
+		export PATH="${PATH}:${NCARG_ROOT}/bin"
+	    fi # !NCARG_ROOT
+            export PATH='/ccs/home/zender/bin_frontier'\:${PATH}
+	    export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_frontier'\:${LD_LIBRARY_PATH} ; ;;
 	perlmutter* | login[0123456789][0123456789] | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] )
 	    # 20221103 Add build environment modules
 	    module load PrgEnv-gnu
@@ -205,18 +217,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	theta* )
 	    export PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib'\:${LD_LIBRARY_PATH} ; ;;
-	titan* )
-	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
-	    module load gcc
-	    if [ ${spt_nm} = 'ncremap' ]; then
-		# 20170831: Use module load ncl (6.3.0 lacks ERWG)
-		module load ncl # 20170916 OK
-	    fi # !ncremap
-	    if [ -n "${NCARG_ROOT}" ]; then
-		export PATH="${PATH}:${NCARG_ROOT}/bin"
-	    fi # !NCARG_ROOT
-            export PATH='/ccs/home/zender/bin_titan'\:${PATH}
-	    export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
 	* ) # Default fall-through
 	    hrd_pth_fnd='No' ; ;;
     esac # !HOSTNAME
