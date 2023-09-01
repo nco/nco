@@ -1,3 +1,11 @@
+2023-09-01  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.8-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.8-alpha05: Foggy Wharf';git push
+	git tag -a 5.1.8-alpha05 -m '';git push --tags
+
+	* Disambiguate Frontier + Perlmutter nodes named login[0123456789][0123456789]
+
 2023-08-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.8-alpha04 release procedure:

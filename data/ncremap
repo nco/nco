@@ -126,7 +126,14 @@ if [ -z "${DATA}" ]; then
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
 	cooley* | cc[0123456789][0123456789][0123456789] ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	frontier* ) DATA="/lustre/orion/cli115/world-shared/${USER}" ; ;; # OLCF frontier compute nodes named frontier01276 64|512 cores|GB/node
-	perlmutter* | login[0123456789][0123456789] | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) DATA="${SCRATCH}" ; ;; # NERSC perlmutter compute nodes named nidNNNNNN (CPU) with (64)|(512) cores|GB/node (cpu) (login nodes 512 GB)
+	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
+	    if [ "${LMOD_SYSTEM_NAME}" = 'frontier' ]; then
+		DATA="/lustre/orion/cli115/world-shared/${USER}"
+	    elif [ "${LMOD_SYSTEM_NAME}" = 'perlmutter' ]; then
+		DATA="${SCRATCH}"
+	    fi # !LMOD_SYSTEM_NAME
+	    ;; # !login	
+	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) DATA="${SCRATCH}" ; ;; # NERSC perlmutter compute nodes named nidNNNNNN (CPU) with (64)|(512) cores|GB/node (cpu) (login nodes 512 GB)
 	theta* ) DATA="/projects/ClimateEnergy_3/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
@@ -210,7 +217,31 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	frontier* )
             export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
-	perlmutter* | login[0123456789][0123456789] | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] )
+	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
+	    if [ "${LMOD_SYSTEM_NAME}" = 'frontier' ]; then
+		export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
+		export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH}
+	    elif [ "${LMOD_SYSTEM_NAME}" = 'perlmutter' ]; then
+		# 20221103 Add build environment modules
+		module load PrgEnv-gnu
+		module load gcc/11.2.0
+		module load cray-hdf5/1.12.2.1
+		module load cray-netcdf/4.9.0.1
+		module load gsl
+		if [ ${spt_nm} = 'ncremap' ]; then
+		    MOAB_ROOT=/project/projectdirs/e3sm/software/moab
+		    TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
+		    E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
+		fi # !ncremap
+		if [ -n "${NCARG_ROOT}" ]; then
+		    export PATH="${PATH}:${NCARG_ROOT}/bin"
+		    export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
+		fi # !NCARG_ROOT
+		export PATH='/global/homes/z/zender/bin_perlmutter'\:${PATH}
+		export LD_LIBRARY_PATH='/global/homes/z/zender/lib_perlmutter'\:${LD_LIBRARY_PATH}
+	    fi # !LMOD_SYSTEM_NAME
+	    ;; # !login	
+	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] )
 	    # 20221103 Add build environment modules
 	    module load PrgEnv-gnu
 	    module load gcc/11.2.0
@@ -1323,7 +1354,8 @@ if [ -n "${mpi_nbr_usr}" ]; then
 	constance* | node* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
 	cooley* | cc[0123456789][0123456789][0123456789] ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;;
 	frontier* ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
-	perlmutter* | login[0123456789][0123456789] | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
+	login[0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
+	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
 	theta* ) mpi_pfx="aprun -n ${mpi_nbr}" ; ;; 
 	* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; # Other
     esac # !HOSTNAME
