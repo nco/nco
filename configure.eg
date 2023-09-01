@@ -548,6 +548,26 @@ make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 
+# gcc/g++ 20201208 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on Frontier:
+# Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
+# Latest ticket to build NCO: 381695 on 20180413
+# Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/5.0.1 # 20230831
+# Personal recipe last modified: 20230831 (original version)
+# Personal recipe last used successfully: 20230831
+module purge
+export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
+export LINUX_CXX='g++ -std=c++11'
+export LINUX_FC='gfortran'
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/anaconda/lib
+export NETCDF_ROOT=${HOME}/anaconda
+export PATH=${PATH}:${HOME}/anaconda/bin
+#export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest/lib
+#export NETCDF_ROOT=/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest
+#export PATH=${PATH}:/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest/bin
+cd ~/nco;git reset --hard origin/master
+cd ~/nco/bld;make ANTLR_ROOT=${HOME}/anaconda ANTLR_LIB=${HOME}/anaconda NETCDF_ROOT=${HOME}/anaconda OPTS=D OMP=Y allinone;cd -
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
+
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on Perlmutter with GNU:
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
 # Latest ticket to build NCO: INC0118469 on 20180413
