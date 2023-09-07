@@ -1,8 +1,12 @@
-2023-09-01  Charlie Zender  <zender@uci.edu>
+2023-09-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.8-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.8-alpha05: Foggy Wharf';git push
-	git tag -a 5.1.8-alpha05 -m '';git push --tags
+	git tag -a 5.1.8-alpha05 -m 'ncclimo: diambiguate Frontier/Perlmutter login nodes; ncremap: nrm=N/A';git push --tags
+
+	* Make "N/A" equivalent to "none" when parsing ESMF "normalization" map attributes
+
+2023-09-01  Charlie Zender  <zender@uci.edu>
 
 	* Disambiguate Frontier + Perlmutter nodes named login[0123456789][0123456789]
 

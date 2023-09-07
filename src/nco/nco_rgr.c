@@ -4092,14 +4092,16 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(att_val){
     if(strstr(att_val,"fracarea")) nco_rgr_nrm_typ=nco_rgr_nrm_fracarea; /* 20190912: map_gx1v6T_to_1x1_bilin.nc and map_0.1T_tripole_to_0.1x0.1_bilin.nc store "fracarea" in normalization attribute. I think NCAR created both maps for POP, probably by running ERWG with option --norm_type=fracarea. Hence "fracarea" seems to be the NCAR-way of guaranteeing that ESMF re-normalization is not performed by default. */
     if(strstr(att_val,"destarea")) nco_rgr_nrm_typ=nco_rgr_nrm_destarea; /* ESMF conserve "aave" and bilinear "bilin" generate "destarea" by default */
-    if(strstr(att_val,"none")) nco_rgr_nrm_typ=nco_rgr_nrm_none;
+    /* 20230906: https://github.com/esmf-org/esmf/issues/170
+       @oehmke's suggestion was to use normalization = "N/A" for anything other than conservative maps */
+    if(strstr(att_val,"none") || strstr(att_val,"N/A")) nco_rgr_nrm_typ=nco_rgr_nrm_none;
     if(att_val) att_val=(char *)nco_free(att_val);
   }else{
     /* 20150712: Tempest does not store a normalization attribute
        20170620: ESMF weight_only does not store a normalization attribute
        20190312: NCO does not yet store a normalization attribute */
     if(nco_rgr_mpf_typ == nco_rgr_mpf_MBTR || nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_NCO || nco_rgr_mpf_typ == nco_rgr_mpf_unknown || nco_rgr_mpf_typ == nco_rgr_mpf_ESMF_weight_only) nco_rgr_nrm_typ=nco_rgr_nrm_unknown;
-  } /* endif normalization */
+  } /* !normalization */
   assert(nco_rgr_nrm_typ != nco_rgr_nrm_nil);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
 
