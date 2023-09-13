@@ -1,0 +1,36 @@
+/* Purpose: Estimate Solar Zenith Angle from Mean TOA Insolation
+
+   First obtain ESM-estimated regional/seasonal insolation
+   Insolation during daylight hours in summer from 30-60 N:
+   ncwa -O -d lat,30.0,60.0 -a lat,lon -w area ${DATA}/ne30/rgr/v2.LR.historical_0101_JJA_201306_201408_climo.nc ~/solin.nc
+   ncwa -O -d lat,30.0,60.0 -a lat,lon -w area ${DATA}/ne30/rgr/v2.LR.historical_0101_ANN_201301_201412_climo.nc ~/solin.nc
+   ncks -C -v SOLIN ~/solin.nc
+   SOLIN = 450.5735 ; // JJA
+   SOLIN = 310.5892 ; // ANN
+
+   Define sza_rdn as the angle such that:
+   SOLIN=slr_cst*cos(sza_rdn)*frc_sun
+
+   Solve defining relationship for sza_rdn
+   cos(sza_rdn)=SOLIN/(slr_cst*frc_sun)
+   sza_rdn=acos(SOLIN/(slr_cst*frc_sun))
+   sza_dgr=sza_rdn*180.0/pi
+
+   Run script:
+   ncap2 -O -S ~/sza_ffc.nco ~/solin.nc ~/solin_ffc.nc
+
+   Examine results:
+   ncks ~/solin_ffc.nc
+
+   Selected results:
+   sza_dgr = 62.87 ; // ANN 30-60 12 hr/day
+   sza_dgr = 48.58 ; // JJA 30-60 12 hr/day
+   sza_dgr = 55.45 ; // JJA 30-60 14 hr/day */
+
+pi=4.0*atan(1.0); // [frc] 3.14
+slr_cst=1362.0; // [W m-2] Solar constant
+sun_hr_per_day=14.0; // [nbr] Sunlit hours per day
+frc_sun=sun_hr_per_day/24.0; // [frc] Sunlit fraction of day/season
+sza_cos=SOLIN/(slr_cst*frc_sun); // [frc] Effective Cosine SZA
+sza_rdn=acos(sza_cos); // [rdn] Effective SZA
+sza_dgr=sza_rdn*180.0/pi; // [dgr] Effective SZA

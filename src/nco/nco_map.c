@@ -2245,11 +2245,16 @@ nco_map_chk /* Map-file evaluation */
   var_yc_a=nco_map_var_init(in_id,"yc_a",dmn_in,dmn_in_nbr);
   var_yc_b=nco_map_var_init(in_id,"yc_b",dmn_in,dmn_in_nbr);
 
+  if(!var_area_a) (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports var_area_a is not in map-file. This is barely legal and highly unusual. This may be a weight-only map-file, and as such its quality cannot be assessed by the map-checker. Expect failure soon.\n",nco_prg_nm_get(),fnc_nm);
+  if(!var_area_b) (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports var_area_b is not in map-file. This is barely legal and highly unusual. This may be a weight-only map-file, and as such its quality cannot be assessed by the map-checker. This field is necessary for some diagnostics. Expect failure soon.\n",nco_prg_nm_get(),fnc_nm);
+  if(!var_frac_a) (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports var_frac_a is not in map-file. This is barely legal and highly unusual. This may be a weight-only map-file, and as such its quality cannot be assessed by the map-checker. This field is necessary for some diagnostics. Expect failure soon.\n",nco_prg_nm_get(),fnc_nm);
+  if(!var_frac_b) (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports var_frac_b is not in map-file. This is barely legal and highly unusual. This may be a weight-only map-file, and as such its quality cannot be assessed by the map-checker. This field is necessary for some diagnostics. Expect failure soon.\n",nco_prg_nm_get(),fnc_nm);
+
   /* Type conversions */
-  if(var_area_a->type != NC_DOUBLE) var_area_a=nco_var_cnf_typ(NC_DOUBLE,var_area_a);
-  if(var_area_b->type != NC_DOUBLE) var_area_b=nco_var_cnf_typ(NC_DOUBLE,var_area_b);
-  if(var_frac_a->type != NC_DOUBLE) var_frac_a=nco_var_cnf_typ(NC_DOUBLE,var_frac_a);
-  if(var_frac_b->type != NC_DOUBLE) var_frac_b=nco_var_cnf_typ(NC_DOUBLE,var_frac_b);
+  if(var_area_a && var_area_a->type != NC_DOUBLE) var_area_a=nco_var_cnf_typ(NC_DOUBLE,var_area_a);
+  if(var_area_b && var_area_b->type != NC_DOUBLE) var_area_b=nco_var_cnf_typ(NC_DOUBLE,var_area_b);
+  if(var_frac_a && var_frac_a->type != NC_DOUBLE) var_frac_a=nco_var_cnf_typ(NC_DOUBLE,var_frac_a);
+  if(var_frac_b && var_frac_b->type != NC_DOUBLE) var_frac_b=nco_var_cnf_typ(NC_DOUBLE,var_frac_b);
   if(var_mask_a && var_mask_a->type != NC_INT) var_mask_a=nco_var_cnf_typ(NC_INT,var_mask_a);
   if(var_mask_b && var_mask_b->type != NC_INT) var_mask_b=nco_var_cnf_typ(NC_INT,var_mask_b);
 
