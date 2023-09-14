@@ -149,8 +149,11 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		module load esmf
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_andes'\:${PATH}
-	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/ccs/proj/cli900/sw/andes/e3sm-unified/base/envs/e3sm_unified_latest/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest/lib'\:${LD_LIBRARY_PATH} ; ;;
 	blues* | blogin* | b[0123456789][0123456789][0123456789] )
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
+	    fi # !ncremap
 	    export PATH='/home/zender/bin_blues'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_blues'\:${LD_LIBRARY_PATH} ; ;;
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
@@ -177,7 +180,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    module load gcc/10.2.0
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		# 20210519: This script takes significant time (5-10 seconds) to load
-		source /compyfs/software/mbtempest.envs.sh
+		# 20230914: Deprecate special MOAB paths, rely on E3SMU
+		# source /compyfs/software/mbtempest.envs.sh
 		E3SMU_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
 	    export PATH='/qfs/people/zender/bin:/qfs/people/zender/anaconda/bin'\:${PATH}
@@ -193,10 +197,16 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export PATH='/home/zender/bin:/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	frontier* )
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
+	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
 	    if [ "${LMOD_SYSTEM_NAME}" = 'frontier' ]; then
+		if [ ${spt_nm} = 'ncremap' ]; then
+		    E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
+		fi # !ncremap
 		export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
 		export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH}
 	    elif [ "${LMOD_SYSTEM_NAME}" = 'perlmutter' ]; then

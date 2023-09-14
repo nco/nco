@@ -1,8 +1,14 @@
-2023-09-07  Charlie Zender  <zender@uci.edu>
+2023-09-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.8-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.8-alpha05: Foggy Wharf';git push
-	git tag -a 5.1.8-alpha05 -m 'ncclimo: diambiguate Frontier/Perlmutter login nodes; ncremap: nrm=N/A';git push --tags
+	git tag -a 5.1.8-alpha05 -m 'ncclimo: disambiguate Frontier/Perlmutter login nodes; ncremap: nrm=N/A; E3SMU 1.9.0 paths';git push --tags
+
+	* Verify nco_bm.pl --regress ncremap works once again with server dust=imua
+
+	* ncremap/ncclimo update NPO paths to be consistent with E3SMU 1.9.0
+
+2023-09-07  Charlie Zender  <zender@uci.edu>
 
 	* Make "N/A" equivalent to "none" when parsing ESMF "normalization" map attributes
 
