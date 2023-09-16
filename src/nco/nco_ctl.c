@@ -1155,9 +1155,9 @@ nco_usg_prn(void)
   // if(strstr(opt_sng,"--rgr_in")) (void)fprintf(stdout,"    --rgr_in file\tFile containing fields to be regridded\n");
   if(strstr(opt_sng,"[-s")){
     if(prg_lcl != ncap) (void)fprintf(stdout,"-s, --sng_fmt, string format\tString format for text output\n");
-    if(prg_lcl == ncap) (void)fprintf(stdout,"-s, --spt, script algebra\tAlgebraic command defining single output variable\n");
+    if(prg_lcl == ncap) (void)fprintf(stdout,"-s, --spt, script algebra\tncap2 command-line script to modify input/create output\n");
   } /* end if */
-  if(strstr(opt_sng,"[-S")) (void)fprintf(stdout,"-S, --fl_spt, script-file fl.nco\tScript file containing multiple algebraic commands\n");
+  if(strstr(opt_sng,"[-S")) (void)fprintf(stdout,"-S, --fl_spt, script-file fl.nco\tText file of ncap2 commands to modify input/create output\n");
   if(strstr(opt_sng,"[-T")) (void)fprintf(stdout,"-T, --mask_comparator, msk_cmp_typ, op_rlt comparator\tComparator for mask condition: eq,ne,ge,le,gt,lt\n");
   if(strstr(opt_sng,"[-t")){
     if(prg_lcl == ncatted) (void)fprintf(stdout,"-t, --typ_mch, type_match \tType-match attribute edits\n");
