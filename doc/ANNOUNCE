@@ -1,17 +1,19 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.8 burst forth
+netCDF Operators NCO version 5.1.8 spill out
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.8 simplifies netCDF codec invocation in ncremap/ncclimo,
-ensures ncremap places gridcell vertices on the same branch cut at
-longitude discontinuities, and fixes two issues with Intel compilers.
+Version 5.1.8 recognizes NC_STRING as valid alternatives to NC_CHAR
+attributes (consistent with CF Conventions), infers MPAS grids stored
+in radians when units attributes are not present, and support checks
+for adherence to NASA DIWG (and CF) recommendations for valid
+identiers, and for the missing_value attribute. It also recognizes
 Skip this release if these issues are of no import to you.
 
-Work on NCO 5.1.8 has commenced and aims to add support for Zarr S3
+Work on NCO 5.1.9 has commenced and aims to add support for Zarr S3
 stores, and to polish support for new codecs..
 
 Enjoy,
@@ -19,70 +21,57 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap and ncclimo now support the same API for codec invocation
-as the binary NCO operators, i.e., --cmp_sng=<compression_string>.
-For example, the following commands instruct the regridder to apply
-the Shuffle filter, then Granular BitRound quantization, then
-Zstandard lossless compression: 
+A. NCO operators are now much better, though perhaps not perfect,
+at recognizing NC_STRING attributes as equivalent and interchangeable
+with NC_CHAR attributes, as permitted by CF Conventions since ~2020.
+In particular, this prevents annoying WARNINGs when CF attributes
+like "bounds" are stored as NC_STRING. Thanks to Abel Aoun for
+reporting/suggesting this.
 
-ncremap -7 --cmp='shf|gbr|zst' --map=map.nc in.nc out.nc
-ncremap -7 --cmp='shf|gbr=3|zst=3' ... # Explicit levels
-ncclimo -7 --cmp='shf|gbr|zst' ...
-ncclimo -7 --cmp='shf|gbr=3|zst=3' ... # Explicit levels
+A. ncremap can now infer SCRIP grid-files from MPAS datasets
+when the coordinates are in radians yet not marked as such in
+the units attribute. The algorithm simply assumes that if the
+bounding latitudes and longitudes are within +/-2*pi then the
+units are radians. Imperfect, yet unlikely to fail in most
+MPAS meshes.
+ncremap --dst_fl=AIS_4to20km.nc --grd_dst=ais4to20km_ismip6.nc
 
-NB: single quotes above protect the pipe "|" separator from the shell.
-The second command is equivalent to the first since the default
-number of significant digits to retain during quantization is 3,
-and the default Zstandard compression level is also 3. 
-The resulting compression metadata can be viewed with, e.g.,
-
-zender@spectral:~$ ncks --hdn -C -v FSNT -m ~/foo.nc
-netcdf foo {
+A. ncks supports a new flag, --chk_chr, that prints any identifiers
+(dimension,group,variable,attribute names) that do not comply with
+the CF Conventions. CF-compliant identifiers must match this
+regular expression: [A-Za-z][A-Za-z0-9_]*
+This is much more restrictive than the NUG, as it eliminates most
+special characters.
+$ ncks --chk_chr ~/nco/data/in.nc
 ...
+ncks: WARNING nco_chk_chr() reports variable att_var_spc_chr attribute name "at_in_name@" is not CF-compliant
+ncks: WARNING nco_chk_chr() reports variable name "var_nm-dash" is not CF-compliant
+ncks: WARNING nco_chk_chr() reports variable var_nm-dash attribute name "att_nm-dash" is not CF-compliant
+ncks: INFO nco_chk_chr() reports total number of identifiers with CF non-compliant names is 26
+$
+http://nco.sf.net/nco.htlm/chk_chr
 
-  variables:
-    float FSNT(time,lat,lon) ;
-      FSNT:_QuantizeGranularBitRoundNumberOfSignificantDigits = 3 ; <--- Quantization
-      FSNT:_Storage = "chunked" ;
-      FSNT:_ChunkSizes = 1, 180, 360 ;
-      FSNT:_Filter = "32015,3" ; <---Zstandard
-      FSNT:_Shuffle = "true" ; <---Shuffle
-      ...
+A. ncks supports a new flag, --chk_mss, that reports which variables
+(and groups) contain a missing_value attribute.
+NASA's Dataset Interoperability Working Group (DIWG) notes that the
+missing_value attribute has been semi-deprecated, and recommends that
+it should not be used in new Earth Science data products. 
+To check a file for compliance with the DIWG recommendation: 
+$ ncks --chk_mss ~/nco/data/in.nc
+ncks: WARNING nco_chk_mss() reports variable fll_val_mss_val contains "missing_value" attribute
+ncks: WARNING nco_chk_mss() reports variable one_dmn_rec_var_missing_value contains "missing_value" attribute
+...
+ncks: WARNING nco_chk_mss() reports variable rec_var_int_mss_val_flt contains "missing_value" attribute
+ncks: INFO nco_chk_mss() reports total number of variables and/or groups with "missing_value" attribute is 11
+$
+http://nco.sf.net/nco.htlm/chk_mss
 
-} // group /
-
-http://nco.sf.net/nco.html#cmp
-http://nco.sf.net/nco.html#zst
-http://nco.sf.net/nco.html#gbr
-
-B. ncremap now always places gridcell vertices on the same branch cut
-at longitude discontinuities. Consider a quadrilateral gridcell that
-crosses the Greenwich Meridian and that has vertice longitudes at,
-(enumerated in counter-clockwise order), occur at [359, 1, 1, 359].
-This enumeration has the advantage of keeping all longitudes within
-the same 360 degree domain [0..360] as the longitude centers. However, 
-it violates the spirit of the CF Conventions which (seem to) prefer
-that all vertice longitudes have values on the same "branch cut",
-i.e., [-1, 1, 1, -1]. The CF enumeration has the advantage that the
-vertices can be linearly averaged to find the gridcell center.
-NCO now always uses the CF-preferred method when writing longitude
-vertices to the output file. NB: the NCO weight generator still
-places the vertices in the old order in the map-file. We plan to
-fix that in the next release. Well-behaved regridders (like NCO's)
-do the right thing no matter what longitude vertice convention is
-employed in the map-file. Thanks to Steven Po-Chedley and Jill Zhang
-(LLNL) for bringing this issue to our attention.
+A. ncremap and ncclimo now support paths and nodenames on DOE OLCF's
+Frontier supercomputer.
 
 BUG FIXES:
    
-A. The previous version (5.1.6) failed to compile with Intel compilers
-due to an OpenMP issue. This issue has been fixed. Thanks to Matthew
-Thompson (GSFC) for pointing this out.
-
-B. Intel compilers could not compile the previous version (5.1.6) even
-when NCO was configured with configure --disable_openmp. This issue
-has also been fixed. Thanks to Timothy Brown (AWS) for pointing this
-out. 
+A. N/A
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

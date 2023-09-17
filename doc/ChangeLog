@@ -1,8 +1,8 @@
 2023-09-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.8-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.8-beta01: Santa Fe';git push
-	git tag -a 5.1.8-beta01 -m 'all: NC_STRING atts ok, Frontier;ncremap mpas grd rdn, E3SMU 1.9.0;ncks chk_chr, chk_mss, diwg_chk';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.1.8: Cafe Pasqual\'s';git push
+	git tag -a 5.1.8 -m 'all: NC_STRING atts ok, Frontier;ncremap mpas grd rdn, E3SMU 1.9.0;ncks chk_chr, chk_mss, diwg_chk';git push --tags
 
 2023-09-14  Charlie Zender  <zender@uci.edu>
 
