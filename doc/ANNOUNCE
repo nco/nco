@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.8 spill out
+netCDF Operators NCO version 5.1.8 make the scene
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
@@ -21,14 +21,14 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. NCO operators are now much better, though perhaps not perfect,
+A. NCO operators are now much better, though not perfect,
 at recognizing NC_STRING attributes as equivalent and interchangeable
 with NC_CHAR attributes, as permitted by CF Conventions since ~2020.
 In particular, this prevents annoying WARNINGs when CF attributes
 like "bounds" are stored as NC_STRING. Thanks to Abel Aoun for
 reporting/suggesting this.
 
-A. ncremap can now infer SCRIP grid-files from MPAS datasets
+B. ncremap can now infer SCRIP grid-files from MPAS datasets
 when the coordinates are in radians yet not marked as such in
 the units attribute. The algorithm simply assumes that if the
 bounding latitudes and longitudes are within +/-2*pi then the
@@ -36,7 +36,7 @@ units are radians. Imperfect, yet unlikely to fail in most
 MPAS meshes.
 ncremap --dst_fl=AIS_4to20km.nc --grd_dst=ais4to20km_ismip6.nc
 
-A. ncks supports a new flag, --chk_chr, that prints any identifiers
+C. ncks supports a new flag, --chk_chr, that prints any identifiers
 (dimension,group,variable,attribute names) that do not comply with
 the CF Conventions. CF-compliant identifiers must match this
 regular expression: [A-Za-z][A-Za-z0-9_]*
@@ -51,7 +51,7 @@ ncks: INFO nco_chk_chr() reports total number of identifiers with CF non-complia
 $
 http://nco.sf.net/nco.htlm/chk_chr
 
-A. ncks supports a new flag, --chk_mss, that reports which variables
+D. ncks supports a new flag, --chk_mss, that reports which variables
 (and groups) contain a missing_value attribute.
 NASA's Dataset Interoperability Working Group (DIWG) notes that the
 missing_value attribute has been semi-deprecated, and recommends that
@@ -66,7 +66,7 @@ ncks: INFO nco_chk_mss() reports total number of variables and/or groups with "m
 $
 http://nco.sf.net/nco.htlm/chk_mss
 
-A. ncremap and ncclimo now support paths and nodenames on DOE OLCF's
+E. ncremap and ncclimo now support paths and nodenames on DOE OLCF's
 Frontier supercomputer.
 
 BUG FIXES:

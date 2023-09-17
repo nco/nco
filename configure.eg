@@ -387,7 +387,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20230425 (use conda gcc/g++ compilers so new libnetcdf links to C++ to resolve libicuuc dependencies)
-# Personal recipe last used successfully: 20230512
+# Personal recipe last used successfully: 20230917
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # Default as of 20210924 is to build with Anaconda netCDF
 # Default as of 20230425 is to build with Anaconda gcc/g++
@@ -411,11 +411,9 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 20190525 ICS-40n99 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
 # Personal recipe borken: 20230904 Antlr2 linking
-# Personal recipe last modified: 20221222 (remove UDUNITS2_PATH)
-# Personal recipe last used successfully: 20230512
+# Personal recipe last modified: 20230917 (use conda gcc/g++ compilers so new libnetcdf links to C++ to resolve libicuuc dependencies)
+# Personal recipe last used successfully: 20230917
 module purge
-module load gcc/10.2.0
-#module load mvapich2/2.3.7 # Required for ncclimo/ncremap in MPI-mode
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
@@ -574,7 +572,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/lustr
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20230512 (udunits arguments to configure)
-# Personal recipe last used successfully: 20230512
+# Personal recipe last used successfully: 20230917
 module load PrgEnv-gnu
 module load gcc/11.2.0
 module load cray-hdf5/1.12.2.1
