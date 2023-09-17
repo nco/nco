@@ -851,12 +851,12 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <h3><a href="http://www.apple.com/macosx/">MacOS&nbsp;Darwin</a></h3>
 <ul>
 <!-- 
-# MacOS 13.4.1 (Ventura) systems (firn, sastrugi, spectral):
+# MacOS 13.5.2 (Ventura) systems (firn, sastrugi, spectral):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin;tar cvzf ${DATA}/nco-5.1.8.macos.13.4.tar.gz nc*;scp ${DATA}/nco-5.1.8.macos.13.4.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-5.1.8.macos.13.5.tar.gz nc*;scp ${DATA}/nco-5.1.8.macos.13.5.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date executables are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-5.1.8.macos.13.4.tar.gz">nco-5.1.8.macos.13.4.tar.gz</a> (<!--#fsize file="src/nco-5.1.8.macos.13.4.tar.gz"-->): Executables MacOS 13.4-compatible (last updated <!--#flastmod file="src/nco-5.1.8.macos.13.4.tar.gz"-->). Maintained by NCO Project.</li>
+<li><a href="src/nco-5.1.8.macos.13.5.tar.gz">nco-5.1.8.macos.13.5.tar.gz</a> (<!--#fsize file="src/nco-5.1.8.macos.13.5.tar.gz"-->): Executables MacOS 13.5-compatible (last updated <!--#flastmod file="src/nco-5.1.8.macos.13.5.tar.gz"-->). Maintained by NCO Project.</li>
 <li><a href="http://fink.sf.net">Fink</a> packages for <a href="http://fink.sf.net/pdb/package.php/nco">NCO</a>: Currently NCO 4.9.5. Maintained by Alexander Hansen.</li> 
 <li><a href="http://brew.sh">Homebrew</a> packages for <a href="https://formulae.brew.sh/formula/nco">NCO</a>: Currently NCO 5.1.5. Install with &lsquo;<tt>brew install nco</tt>&rsquo;. Maintained by Carlo Cabrera, Ian Lancaster, Alejandro Soto, and others over the years.</li> 
 <li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="https://ports.macports.org/port/nco">NCO</a>: <a href="https://ports.macports.org/port/nco">Portfile</a>: Currently NCO 5.1.1. Install with &lsquo;<tt>sudo port install nco</tt>&rsquo;. Maintained by Takeshi Enomoto.</li>
