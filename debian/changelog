@@ -1,3 +1,9 @@
+nco (5.1.9-1) unstable; urgency=low
+
+  * new upstream version fxm:
+
+ -- Charlie Zender <zender@uci.edu> Fri, 17 November 2023 12:26:06 -0700
+
 nco (5.1.8-1) unstable; urgency=low
 
   * new upstream version Cafe Pasqual's: all: NC_STRING atts ok, Frontier;ncremap mpas grd rdn, E3SMU 1.9.0;ncks chk_chr, chk_mss, diwg_chk

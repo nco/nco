@@ -10533,7 +10533,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  /* 20210411: From 2016 until today, nco_ccw_chk() overwrote fourth (UL) with first (LL) corner */
 	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr,idx_ccw,rcr_lvl);
 	  if(!flg_ccw && wrn_nbr < wrn_nbr_max){
-	    (void)fprintf(stdout,"%s: %s WARNING reports non-CCW gridcell at idx=%li, (lat,lon)_idx=(%li,%li), (lat,lon) = (%g, %g)\n",nco_prg_nm_get(),fnc_nm,idx_rl,lat_idx,lon_idx,lat_ctr[lat_idx],lon_ctr[lon_idx]);
+	    (void)fprintf(stdout,"%s: WARNING %s reports non-CCW gridcell at idx=%li, (lat,lon)_idx=(%li,%li), (lat,lon) = (%g, %g)\n",nco_prg_nm_get(),fnc_nm,idx_rl,lat_idx,lon_idx,lat_ctr[lat_idx],lon_ctr[lon_idx]);
 	    wrn_nbr++;
 	    if(wrn_nbr == wrn_nbr_max) (void)fprintf(stdout,"%s: %s INFO Number of non-CCW errors reached maximum = %li, not printing anymore\n",nco_prg_nm_get(),fnc_nm,wrn_nbr_max);
 	  } /* endif */

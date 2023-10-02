@@ -1,16 +1,16 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.8 make the scene
+netCDF Operators NCO version 5.1.9 make the scene
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.8 recognizes NC_STRING as valid alternatives to NC_CHAR
+Version 5.1.9 recognizes NC_STRING as valid alternatives to NC_CHAR
 attributes (consistent with CF Conventions), infers MPAS grids stored
 in radians when units attributes are not present, and support checks
 for adherence to NASA DIWG (and CF) recommendations for valid
-identiers, and for the missing_value attribute. It also recognizes
+identiers, and for the missing_value attribute. 
 Skip this release if these issues are of no import to you.
 
 Work on NCO 5.1.9 has commenced and aims to add support for Zarr S3
@@ -79,7 +79,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.1.8 built/tested under
+These problems occur with NCO 5.1.9 built/tested under
 MacOS 13.5.2 (c) with netCDF 4.9.3-dev on HDF5 1.14.2 and with
 Linux FC38 with netCDF 4.9.2 on HDF5 1.14.1.
 
