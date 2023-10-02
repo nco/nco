@@ -1,8 +1,12 @@
 2023-10-01  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.1.9-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.9-alpha02: Elk Rut';git push
+	git tag -a 5.1.9-alpha02 -m '';git push --tags
+
 	* NCO 5.1.9-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.9-alpha01: Bandelier';git push
-	git tag -a 5.1.9-alpha01 -m 'Functionally identical to 5.1.8';git push --tags
+	git tag -a 5.1.9-alpha01 -m 'Functionally identical to 5.1.8 (except ncremap)';git push --tags
 
 	* Add ncremap invocations for trbilin, trintbilin
 
