@@ -1940,7 +1940,7 @@ if [ "${prc_typ}" = 'cice' ]; then
     add_fll='Yes'
 fi # !cice
 if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpassi' ]; then 
-    # NB: 'mpasseaice' is an exact synonym for 'mpascice' (which should be deprecated)
+    # NB: 'mpasseaice' is an exact synonym for 'mpascice' (which is deprecated)
     # Set MPAS-SeaIce-specific options first, then change prc_typ to sgs
     # MPAS-SeaIce requires two modes, MPAS and SGS, so set prc_mpas to 'Yes'
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
