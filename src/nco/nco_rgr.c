@@ -5734,6 +5734,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* Add _FillValue to empty destination cells, if requested */
   nco_bool flg_add_fll=rgr->flg_add_fll; /* [flg] Add _FillValue to fields with empty destination cells */
   nco_bool flg_dst_mpt=False; /* [flg] At least one destination cell is empty */
+  nco_bool flg_mpt_mss=False; /* [flg] Set empty SGS cells to missing */
   size_t dst_idx; /* [idx] Index on destination grid */
   /* Determine whether any destination cells are, in fact, empty
      Logic here could be replaced by examining frac_b variable, if we trust input frac_b...
@@ -6382,27 +6383,27 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 #endif /* !__GNUG__ */
 #if defined( __clang__ ) && !defined(NCO_OPENMP_DEFINED)
   /* OpenMP clause to build NCO with Clang compilers */
-# pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
 # define NCO_OPENMP_DEFINED
 #endif /* !__clang__ */
 #if defined( __INTEL_COMPILER ) && !defined(NCO_OPENMP_DEFINED)
   /* OpenMP clause to build NCO with Intel compilers */
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
 # define NCO_OPENMP_DEFINED
 #endif /* !__INTEL_COMPILER */
 #if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION < 490) && !defined(NCO_OPENMP_DEFINED)
   /* Old OpenMP clause to build NCO with GCC compiler versions < 4.9.0 */
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 # define NCO_OPENMP_DEFINED
 #endif /* !GCC < 490 */
 #if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION >= 900) && !defined(NCO_OPENMP_DEFINED) && 0
   /* Experimental OpenMP clause to build NCO with modern OpenMP5 GPU options */
-# pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+# pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 # define NCO_OPENMP_DEFINED
 #endif /* !GCC with experimental GPU_SUPPORT */
 #if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION >= 490) && !defined(NCO_OPENMP_DEFINED)
   /* Standard OpenMP clause to build NCO on modern GCC versions >= 4.9.0 */
-# pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_msk_apl,flg_msk_out,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+# pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 # define NCO_OPENMP_DEFINED
 #endif /* !GCC >= 490 */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -6468,8 +6469,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	   ~7*sizeof(uncompressed var) for NC_FLOAT and ~3.5*sizeof(uncompressed var) for NC_DOUBLE.
 	   Traditionally has_mss_val answers "does this variable _have_ an explicit missing value (i.e., _FillValue attribute)?"
 	   As of 20210909, we expand the meaning of has_mss_val, though only in nco_rgr_wgt() 
-	   Now has_mss_val means does the variable use the explicitly defined missing value, or,
-	   failing that, does it use the implicitly defined missing value?
+	   Now has_mss_val means: does the variable use the explicitly defined missing value?
+	   Or, failing that, does the variable use the implicitly defined missing value?
 	   Only variables that _use_ a missing value need tally and wgt_vld_out arrays
 	   mss_val_dbl is what nco_mss_val_get_dbl() returns---its meaning has not changed
 	   However, it is no longer intended to be used
@@ -6703,7 +6704,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	       20190911: Reasons to copy sgs_frc_out into sgs_frc_nm data include speed, consistency, and well-definedness of sgs_frc_out. One reason to regrid sgs_frc_nm here is consistency with original, raw dataset: ELM landfrac is masked so regridding it here (rather than using sgs_frc_out) would produce a regridded dataset more identical to raw ELM output. The same can be said for CICE (I think). MPAS cellMask and timeMonthly_avg_iceAreaCell are not masked, and so should produce the same values as sgs_frc_out if regridded here. */
 	    memcpy(var_val_dbl_out,sgs_frc_out,grd_sz_out*nco_typ_lng(var_typ_rgr));
 	  }else if(sgs_msk_nm && !strcmp(var_nm,sgs_msk_nm)){
-	    /* Compute binary mask directly from shared sgs_frc_out (guaranteed to be all valid values) */
+	    /* Set output mask to true based on shared sgs_frc_out (which is guaranteed to be all valid values) */
 	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 	      if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]=1.0;
 	  }else{ /* !sgs_msk_nm */
@@ -6787,7 +6788,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		/* NB: Normalization clause is complex to support sgs_frc_out from both ELM and MPAS-Seaice
 		   20220615: Old normalization command fails (though rarely) if input sgs_frc is single-precision
 		   Solution is to use use precision-dependent thresholds for normalization
-		   if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out[dst_idx];} <--old normalization */
+		   if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out[dst_idx];} <--old (pre-20220615) normalization */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		  sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
 		  if(!tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
@@ -6819,8 +6820,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		    idx_out=dst_idx+val_out_fst;
 		    sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
-		    //if(!tally[idx_out]){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[idx_out]/=sub_sgs_frc_out[dst_idx];}
-		    if(!tally[idx_out] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[idx_out]/=sub_sgs_frc_out_crr;}
+		    if(!tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
 		  } /* !dst_idx */
 		  val_in_fst+=grd_sz_in;
 		  val_out_fst+=grd_sz_out;
@@ -6847,7 +6847,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	} /* !nco_typ_ntg() */
 
 	if(flg_add_fll && !has_mss_val){
-	  /* 20210604: Initialize fields without _FillValue in input file to default missing value in unmapped destination cells
+	  /* 20210604: Initialize fields that do not use _FillValue in input file to default missing value in unmapped destination cells
 	     Otherwise empty destination cells will be zero (not _FillValue) in output file
 	     Fields with input _FillValue are already _FillValue in output where tally is zero */
 	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
@@ -6860,26 +6860,31 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    } /* !frc_out */
 	  } /* !dst_idx */
 
-	  /* 20221018: Above clause successfully sets continental gridpoints fo _FillValue in MPAS output
+	  /* 20221018: Above clause successfully sets continental gridpoints to _FillValue in MPAS output
 	     However, it leaves cells with no local SGS contribution equal to zero instead of _FillValue
 	     In MPAS-Seaice output, for example, every ocean cell without sea ice is still 0.0 not _FillValue
 	     MPAS-Seaice datasets may contain the floating-point (not integer) ice-presence mask timeMonthly_avg_icePresentIntMask
 	     --msk_apl should help set to _FillValue any gridcells with timeMonthly_avg_icePresentIntMask == 0.0
 	     However, input SGS datasets that lack a mask variable cannot use --msk_apl to mask empty SGS cells
-	     Moreover, regridder still treats mask_b in map-file as msk_out, and never read-in sgs_msk_nm! Doh!
+	     Moreover, regridder still treats mask_b in map-file as msk_out, and never reads-in sgs_msk_nm! Doh!
 	     Clearly, if regridder is called with sgs_msk_nm then regridder should set msk_out == sgs_msk for all variables
-	     This is a high-priority feature for a future release
+	     This is a high-priority feature for a future release (meaning 202311?)
 	     Following clause additionally sets to _FillValue all gridcells with zero SGS fraction
 	     Once sgs_msk if fully supported following clause will likely be redundant with --msk_apl in datasets with sgs_msk */
 	  if(sgs_frc_out){
-	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-	      /* 20221018: Mask wherever sgs_frc_out is empty */
-	      if(sgs_frc_out[dst_idx] == 0.0){
-		for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-		  var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]=mss_val_cmp_dbl;
-		} /* !lvl_idx */
-	      } /* !frc_out */
-	    } /* !dst_idx */
+
+	    /* 20231019: Change zeroes to missing values
+	       When triggered, this sets, e.g., open-ocean areas in MPAS-Seaice data to missing values */
+	    if(flg_mpt_mss){ 
+	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+		/* 20221018: Mask where sgs_frc_out is empty */
+		if(sgs_frc_out[dst_idx] == 0.0){
+		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		    var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]=mss_val_cmp_dbl;
+		  } /* !lvl_idx */
+		} /* !frc_out */
+	      } /* !dst_idx */
+	    } /* !flg_mpt_mss */
 
 	    if(flg_rnr){
 	      /* 20221020: Also mask where sgs_frc_out < wgt_vld_thr */
@@ -6901,7 +6906,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	     NB: This is separate, and presumably independent, from above flg_add_fll loop
 	     Fields with flg_msk_apl will (harmlessly?) go through both loops */
 	  double mss_val_msk; /* [frc] Missing value to apply where mask is false */
-	  //if(has_mss_val) mss_val_msk=mss_val_dbl; else mss_val_msk=NC_FILL_DOUBLE;
 	  mss_val_msk=mss_val_cmp_dbl; /* [frc] Missing value to apply where mask is false */
 	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 	    if(msk_out[dst_idx] == 0){
@@ -6910,7 +6914,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      } /* !lvl_idx */
 	    } /* !frc_out */
 	  } /* !dst_idx */
-	} /* !flg_add_fll */
+	} /* !flg_msk_apl */
 	
 	if(nco_dbg_lvl_get() >= nco_dbg_var){
 	  tm_end=clock();

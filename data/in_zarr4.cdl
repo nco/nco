@@ -13,6 +13,7 @@
 // 8. 20220906 Re-test variables/attributes of string type after PR #2497 by D. Heimbigner fixed support for strings. Strings now work as advertised
 // 9. 20220907 Report "Unmatched untrace: fcn=ncz_get_var_meta expected=NCZ_inq_var_filter_info" issue
 // 10. Remove degenerate "scalar" dimension which NCZarr now supports
+// 11. Restore NC_UNLIMITED after PR #2744 by D. Heimbigner added support for unlimited dimensions
 
 // Usage:
 // netCDF4: ncgen arguments depend on version:
@@ -75,7 +76,9 @@ netcdf in_zarr4 {
 dimensions:
 //dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_int_udunits=1;time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,Lon=4,Lat=2,pck_crd=4,vrt_nbr=2,time=10;
 // 20220827: Eliminate Lat,Lon dimensions
-dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_int_udunits=1;time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,pck_crd=4,vrt_nbr=2,time=10;
+//dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_int_udunits=1;time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,pck_crd=4,vrt_nbr=2,time=10;
+// 20231019: Restore NC_UNLIMITED dimension
+dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_int_udunits=1;time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,pck_crd=4,vrt_nbr=2,time=unlimited;
  variables:
   :Conventions = "CF-1.5";
   :history = "History global attribute.\nTextual attributes like history often have embedded newlines like this.\nSuch newlines should serve as linebreaks on the screen to enhance legibility like this.\nFriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings where each embedded delimiter marks a linebreak. This makes poetry embedded in CDL much nicer to read (except for the printed literal \\n\'s---those are an eyesore):\n\nA POET by Hafiz\n\nA poet is someone\nWho can pour light into a cup,\nThen raise it to nourish\nYour beautiful parched, holy mouth\n";

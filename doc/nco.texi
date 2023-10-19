@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.9-alpha02
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 2 October 2023
+@set update-date 18 October 2023
 @set update-month October 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -26280,10 +26280,10 @@ sub-gridscale (@acronym{SGS}) fractions.
 All destination gridcells with @acronym{SGS} fraction equal to zero
 will always be empty.
 For example, sea-ice models often employ time-varying @acronym{SGS}
-fractions which are zero everywhere except where/when sea ice is
+fractions that are zero everywhere except where/when sea ice is
 present.
 These gridcells are disjoint from continental interior gridcells
-whose locations can be determined mapping weights alone.
+whose locations can be determined by mapping weights alone.
 
 When a contiguous geophysical field (e.g., air temperature) without a
 @code{_FillValue} is mapped to such a destination grid, the empty

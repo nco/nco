@@ -1,3 +1,11 @@
+2023-10-19  Charlie Zender  <zender@uci.edu>
+
+	* Implement flg_mpt_mss so MPAS-Seaice data remains, by default, zero in open-ocean regions
+
+	* Verify that ncgen produces, and ncks reads, NCZarr-format in_zarr4. Yay!
+
+	* Restore NC_UNLIMITED dimension to in_zarr4.cdl after PR #2744 added support
+
 2023-10-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.9-alpha02 release procedure:

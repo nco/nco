@@ -474,7 +474,7 @@ else (MSVC)
   endif()
 
   #//////////////////////////
-  # other gcc flags
+  # other GCC flags
   #//////////////////////////
 
   if(CMAKE_COMPILER_IS_GNUCC)
@@ -844,10 +844,9 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 
 #//////////////////////////
-#USER, HOSTNAME, NCO_BUILDENGINE
-#HOSTNAME is a variable that is set by some shells like bash only, 
-#but cmake for speed and consistency runs commands using the most basic unix shell (ie. sh), 
-#which does not set that variable by default.
+# USER, HOSTNAME, NCO_BUILDENGINE
+# HOSTNAME is a variable that is set by some shells like Bash, and not others
+# CMake for speed and consistency runs commands using the most basic UNIX shell, sh, which does not set HOSTNAME
 #//////////////////////////
 
 set(nco_user "$ENV{USER}")
