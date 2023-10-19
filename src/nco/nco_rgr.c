@@ -331,6 +331,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_dgn_bnd=False; /* [flg] Diagnose rather than copy inferred bounds */
   rgr->flg_erwg_units=True; /* [flg] Generate ERWG 7.1.0r-compliant SCRIP-format grid files */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
+  rgr->flg_mpt_mss=False; /* [flg] Apply msk_out to variables after regridding */
   rgr->flg_msk_apl=False; /* [flg] Apply msk_out to variables after regridding */
   rgr->flg_msk_out=False; /* [flg] Add mask to output */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
@@ -416,6 +417,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_msk_out=False;
       continue;
     } /* !msk */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"mpt_mss") || !strcmp(rgr_lst[rgr_var_idx].key,"sgs_zro_mss") || !strcmp(rgr_lst[rgr_var_idx].key,"empty_missing")){
+      rgr->flg_mpt_mss=True;
+      continue;
+    } /* !mpt_mss */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"msk_apl") || !strcmp(rgr_lst[rgr_var_idx].key,"mask_apply")){
       rgr->flg_msk_apl=True;
       /* Ensure masked fields regridded with TR maps have _FillValue to guarantee BFB arithmetic 
@@ -5734,7 +5739,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* Add _FillValue to empty destination cells, if requested */
   nco_bool flg_add_fll=rgr->flg_add_fll; /* [flg] Add _FillValue to fields with empty destination cells */
   nco_bool flg_dst_mpt=False; /* [flg] At least one destination cell is empty */
-  nco_bool flg_mpt_mss=False; /* [flg] Set empty SGS cells to missing */
+  nco_bool flg_mpt_mss=rgr->flg_mpt_mss; /* [flg] Set empty (sgs_frc=0.0) SGS cells to missing value */
   size_t dst_idx; /* [idx] Index on destination grid */
   /* Determine whether any destination cells are, in fact, empty
      Logic here could be replaced by examining frac_b variable, if we trust input frac_b...
@@ -6874,7 +6879,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	     Once sgs_msk if fully supported following clause will likely be redundant with --msk_apl in datasets with sgs_msk */
 	  if(sgs_frc_out){
 
-	    /* 20231019: Change zeroes to missing values
+	    /* 20231019: Set empty (sgs_frc=0.0) SGS cells to missing value
 	       When triggered, this sets, e.g., open-ocean areas in MPAS-Seaice data to missing values */
 	    if(flg_mpt_mss){ 
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){

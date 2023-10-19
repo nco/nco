@@ -577,6 +577,7 @@ mlt_map_flg='Yes' # [sng] Multi-map flag
 mpaso_var_zmid='timeMonthly_avg_zMid' # [sng] Name of MPAS-O 3D depth variable
 mpi_flg='No' # [sng] Parallelize over nodes
 mpi_nbr=1 # [sng] Number of tasks-per-node that MPI-enabled weight generators will request (should be factor of prt_nbr)
+mpt_mss='No' # [flg] Set empty (sgs_frc=0.0) SGS cells to missing value
 msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
 msh_fl='' # [sng] Mesh-file (for Tempest)
 msk_apl='No' # [flg] Apply msk_out to variables after regridding
@@ -704,6 +705,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
     echo " ${fnt_bld}--mpi_nbr${fnt_nrm}  Number of tasks-per-node that MPI-enabled weight generators will request (default ${fnt_bld}${mpi_nbr}${fnt_nrm}) [${fnt_tlc}mpi_nbr, mpi_number, tsk_nbr, task_number${fnt_nrm}]"
     echo " ${fnt_bld}--mpi_pfx${fnt_nrm}  Prefix for MPI-enabled weight generators (empty means weight generator is not MPI-enabled) (default ${fnt_bld}${mpi_pfx}${fnt_nrm}) [${fnt_tlc}mpi_pfx, mpi_prefix, srun_cmd, srun_command${fnt_nrm}]"
+    echo " ${fnt_bld}--mpt_mss${fnt_nrm}  Set empty (sgs_frc=0.0) SGS cells to missing value (default ${fnt_bld}${mpt_mss}${fnt_nrm}) [${fnt_tlc}mpt_mss, sgs_zro_mss$, empty_missing{fnt_nrm}]"
     echo " ${fnt_bld}--msh_fl${fnt_nrm}   Mesh-file for grid intersection (empty means generate internally or not at all) (default ${fnt_bld}${msh_fl}${fnt_nrm}) [${fnt_tlc}msh_fl, msh, mesh, mesh_file${fnt_nrm}]"
     echo " ${fnt_bld}--msk_apl${fnt_nrm}  Apply msk_out to variables after regridding (default ${fnt_bld}${msk_apl}${fnt_nrm}) [${fnt_tlc}msk_apl, mask_apply, msk_app${fnt_nrm}]"
     echo " ${fnt_bld}--msk_dst${fnt_nrm}  Mask-template variable in destination file (empty means none) (default ${fnt_bld}${msk_dst}${fnt_nrm}) [${fnt_tlc}msk_dst, dst_msk, mask_destination, mask_dst${fnt_nrm}]"
@@ -900,6 +902,8 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       mlt_map=?* | multimap=?* | no_multimap=?* | nomultimap=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -M # Multi-map flag
 	       mpi_nbr=?* | mpi_number=?* | tsk_nbr=?* | task_number=?* ) mpi_nbr_usr="${LONG_OPTARG}" ;; # # Number of tasks-per-node that MPI-enabled weight generators will request
 	       mpi_pfx=?* | mpi_prefix=?* | srun_cmd=?* | srun_command=?* ) mpi_pfx_usr="${LONG_OPTARG}" ;; # # Prefix for MPI-enabled weight generators
+	       mpt_mss | sgs_zro_mss | empty_missing ) mpt_mss='Yes' ;; # # Set empty (sgs_frc=0.0) SGS cells to missing value
+	       mpt_mss=?* | sgs_zro_mss=?* | empty_missing=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Set empty (sgs_frc=0.0) SGS cells to missing value
 	       msh_fl=?* | msh=?* | mesh=?* | mesh_file=?* ) msh_fl="${LONG_OPTARG}" ;; # # Mesh file
 	       msk_apl | mask_apply | msk_app ) msk_apl='Yes' ;; # # Apply msk_out to variables after regridding
 	       msk_apl=?* | mask_apply=?* | msk_app=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Apply msk_out to variables after regridding
@@ -1958,6 +1962,9 @@ if [ -n "${add_fll_usr}" ]; then add_fll="${add_fll_usr}"; fi
 if [ "${add_fll}" = 'Yes' ]; then 
     rgr_opt="${rgr_opt} --rgr add_fill_value"
 fi # !add_fll
+if [ "${mpt_mss}" = 'Yes' ]; then
+    rgr_opt="${rgr_opt} --rgr mpt_mss"
+fi # !mpt_mss
 if [ -n "${sgs_frc}" ] || [ -n "${sgs_frc_usr}" ] || [ "${prc_typ}" = 'sgs' ]; then 
     prc_sgs='Yes'
 fi # !sgs
@@ -2381,6 +2388,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
     printf "dbg: mpi_nbr  = ${mpi_nbr}\n"
     printf "dbg: mpi_pfx  = ${mpi_pfx}\n"
+    printf "dbg: mpt_mss  = ${mpt_mss}\n"
     printf "dbg: msh_fl   = ${msh_fl}\n"
     printf "dbg: msk_apl  = ${msk_apl}\n"
     printf "dbg: msk_dst  = ${msk_dst}\n"
