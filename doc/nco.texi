@@ -8024,17 +8024,14 @@ These annotations include
 @cindex infer
 @cindex @var{msk_nm}
 @item Gridcell Mask: @var{mask}
-    The variable @var{msk_nm} (which defaults to @code{mask}) can, if
+    The variable @var{msk_nm} (which defaults to @code{mask_b}) can, if
     present, be copied from the @var{map-file} to hold the gridcell mask 
     on the destination grid in @var{output-file}.
-    To store the mask in a different variable, use the option
-    @samp{--rgr msk_nm=@var{msk_nm}}.
+    To name the mask differently in the output file, use the option @samp{--rgr msk_nm=@var{msk_nm}}.
     Since @var{msk_nm} is a property of the grid, it is read directly
-    from the @var{map-file} rather than regridded itself. 
-    To include the mask variable in the output file, set the
-    @var{msk_out} flag.
-    To omit the mask variable from the output file, set the
-    @var{no_msk_out} flag.
+    from the @var{map-file} rather than regridded itself.
+    To include the mask variable in the output file, set the @var{msk_out} flag.
+    To omit the mask variable from the output file, set the @var{no_msk_out} flag.
     In grid inferral and map-generation modes, this option tells the
     regridder to generate an integer mask map from the variable
     @var{msk_nm}. 
@@ -14051,7 +14048,7 @@ tm5=!tm4;               // tm5=1, 1, 0, 1, 1, 0, 1, 1, 1, 1 double
 @end example
 	
 @noindent @strong{Regular Assign Operator}@*
-@noindent @emph{var1 '=' exp1} @*
+@emph{var1 '=' exp1} @*
 If var1 does not already exist in Input or Output then var1 is written to Output with the values, type and dimensions from expr1. If var1 is in Input only it is copied to Output first. Once the var is in Ouptut then the only reqirement on expr1 is that the number of elements must match the number already on disk. The type of expr1 is converted as necessary to the disk type.
 
 If you wish to change the type or shape of a variable in Input then you
@@ -14063,7 +14060,7 @@ three_dmn_var_dbl[time,lon,lat]=666L;
 @end example
 
 @noindent @strong{ Other Assign Operators +=,-=,*=./= }@*
-        @noindent  @emph{var1 'ass_op' exp1 }@*
+@emph{var1 'ass_op' exp1 }@*
 if exp1 is a variable and it doesn't conform to var1 then an attempt is made to make it conform to var1. If exp1 is an attribute it must have unity size or else have the same number of elements as var1. If expr1 has a different type to var1 the it is converted to the var1 type.
 @example
 z1=four+=one*=10 // z1=14 four=14 one=10;	
@@ -14082,7 +14079,7 @@ n4=--time;   n4=time=0.,1.,2.,3.,4.,5.,6.,7.,8.,9.;
 
 @noindent @strong{Conditional Operator ?:}@*
 @cindex conditional Operator
-@noindent @emph{exp1 ? exp2 : exp3 } @*
+@emph{exp1 ? exp2 : exp3 } @*
 The conditional operator (or ternary Operator) is a succinct way
 of writing an if/then/else. If exp1 evaluates to true then exp2 is
 returned else exp3 is returned. 
@@ -14197,7 +14194,7 @@ A1['$a--list.A']=30.0;
 @end example
 
 @noindent @strong{GOTCHA @*}
-@noindent It is not possible to manually define in Output any dimensions that exist in Input. When a variable from Input appears in an expression or statement its  dimensions in Input are  automagically copied to Output (if they are not already present)
+It is not possible to manually define in Output any dimensions that exist in Input. When a variable from Input appears in an expression or statement its  dimensions in Input are  automagically copied to Output (if they are not already present)
 
 @html
 <a name="lhc"></a> <!-- http://nco.sf.net/nco.html#lhc -->
@@ -14332,7 +14329,7 @@ four[]=four.int();
 @cindex indgen-equivalent
 Generating a regularly spaced n-dimensional array with @command{ncap2}
 is simple with the @code{array()} function. 
-@noindent The function comes in three (overloaded) forms
+The function comes in three (overloaded) forms
 @example
 (A) var_out=array(val_srt,val_inc,$dmn_nm); // One-dimensional output
 (B) var_out=array(val_srt,val_inc,var_tpl); // Multi-dimensional output
@@ -14402,7 +14399,6 @@ where each hyperslab argument is of the form
 start:end:stride 
 @end example
 and the arguments for different dimensions are separated by commas.
-@noindent 
 If @var{start} is omitted, it defaults to zero.
 If @var{end} is omitted, it defaults to dimension size minus one.
 If @var{stride} is omitted, it defaults to one.
@@ -14476,7 +14472,7 @@ th_nw[$lat,$lon_nw]=th(0,:,0:1)+th(9,:,0:1);
 @end example
 
 @noindent @strong{Hyperslabs on the Left Hand Side of an assign@*}
-@noindent When hyperslabing on the LHS, the expression on the RHS must 
+When hyperslabing on the LHS, the expression on the RHS must 
 evaluate to a scalar or a variable/attribute with the same number of 
 elements as the LHS hyperslab.
 Set all elements of the last record to zero:
@@ -14915,7 +14911,7 @@ The print statement comes in a variety of forms:
 @end example  
 
 @noindent @strong{print() @*@*}
-@noindent If the variable exists in I/O then it is printed in a similar fashion to @code{ncks -H}.
+If the variable exists in I/O then it is printed in a similar fashion to @code{ncks -H}.
 @example
 @verbatim
 print(lon);
@@ -15206,7 +15202,7 @@ three_avg=three_dmn_var_sht.double().avg().short();
 
 @sp 1
 @noindent @strong{Aggregate Methods @*} 
-@noindent These methods mirror the averaging types available in @command{ncwa}. The arguments to the methods are the dimensions to average over. Specifying no dimensions is equivalent to specifying all dimensions i.e., averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
+These methods mirror the averaging types available in @command{ncwa}. The arguments to the methods are the dimensions to average over. Specifying no dimensions is equivalent to specifying all dimensions i.e., averaging over all dimensions. A masking variable and a weighting variable can be manually created and applied as needed.
 
 @table @code
 @item avg()
@@ -15356,7 +15352,7 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 
 @sp 1
 @noindent @strong{Type Conversion Methods and Functions@*}
-@noindent These methods allow @command{ncap2} to convert variables and
+These methods allow @command{ncap2} to convert variables and
 attributes to the different netCDF types. 
 For more details on automatic and manual type conversion see
 (@pxref{Type Conversion}). 
@@ -16488,7 +16484,7 @@ print(var_out);
 @end example
 
 @noindent @strong{Wrapping and Extrapolation} @*
-@noindent The function @code{bilinear_interp_wrap()} takes the same
+The function @code{bilinear_interp_wrap()} takes the same
 arguments as @code{bilinear_interp()} but performs wrapping (@var{Y})
 and extrapolation (@var{X}) for points off the edge of the grid.
 If the given range of longitude is say (25-335) and we have a point at
@@ -16573,7 +16569,7 @@ us know if you find otherwise).
 @cindex gamma function
 @cindex @var{gsl_sf_gamma}
 @noindent Consider the gamma function.@*
-@noindent The @acronym{GSL} function prototype is @*
+The @acronym{GSL} function prototype is @*
 @code{int gsl_sf_gamma_e(const double x, gsl_sf_result * result)}
 The @command{ncap2} script would be:
 @example
@@ -17008,15 +17004,15 @@ print(y3);    // '_'
 @noindent Note in the above example y3 is set to 'missing value' because 0.0 isn't within the input X range.  
 
 @strong{@acronym{GSL} Interpolation Types}@*
-@noindent All the interpolation functions have been implemented. These are:@*
+All the interpolation functions have been implemented. These are:@*
 gsl_interp_linear() @* gsl_interp_polynomial() @* gsl_interp_cspline()@*
 gsl_interp_cspline_periodic()@* gsl_interp_akima() @* gsl_interp_akima_periodic() @*
 
 @* @*
 @strong{ Evaluation of Interpolating Types } @*
-@noindent @strong{Implemented} @*
+@strong{Implemented} @*
 gsl_spline_eval() @*
-@noindent @strong{Unimplemented} @*
+@strong{Not implemented} @*
 gsl_spline_deriv()@*
 gsl_spline_deriv2()@*
 gsl_spline_integ()@*
@@ -18122,7 +18118,7 @@ Quote a dimension: @*
 @sp 1
 The following comments are from the netCDF library definitions and
 detail the naming conventions for each release. 
-@noindent netcdf-3.5.1 @*
+netcdf-3.5.1 @*
 netcdf-3.6.0-p1 @*
 netcdf-3.6.1 @*
 netcdf-3.6.2 @*
@@ -18621,7 +18617,6 @@ attribute of type @code{NC_CHAR}.
 
 Note that @command{ncatted} interprets character attributes
 (i.e., attributes of type @code{NC_CHAR}) as strings.
-@noindent
 @html
 <a name="xmp_ncatted"></a> <!-- http://nco.sf.net/nco.html#xmp_ncatted -->
 @end html
@@ -27100,7 +27095,7 @@ This guarantees that all points in the inferred destination grid will be
 unmasked.  
 @var{msk_dst}, @var{msk_out}, and @var{msk_src} are related yet distinct:
 @var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
-@var{msk_out} is the name to give the destination mask in regridded data files, and 
+@var{msk_out} is the name to give the destination mask (usually @code{mask_b} in the map-file) in regridded data files, and 
 @var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
 @var{msk_src} and @var{msk_dst} only affect inferred grid files for
 the source and destination grids, respectively, whereas @var{msk_out}
@@ -27139,7 +27134,7 @@ destination mask, and so the @code{msk_out} option has no effect on
 files that Tempest regrids.
 @var{msk_dst}, @var{msk_out}, and @var{msk_src} are related yet distinct:
 @var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
-@var{msk_out} is the name to give the destination mask in regridded data files, and 
+@var{msk_out} is the name to give the destination mask (usually @code{mask_b} in the map-file) in regridded data files, and 
 @var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
 @var{msk_src} and @var{msk_dst} only affect inferred grid files for
 the source and destination grids, respectively, whereas @var{msk_out}
@@ -27176,7 +27171,7 @@ This guarantees that all points in the inferred source grid will be
 unmasked.  
 @var{msk_dst}, @var{msk_out}, and @var{msk_src} are related yet distinct:
 @var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
-@var{msk_out} is the name to give the destination mask in regridded data files, and
+@var{msk_out} is the name to give the destination mask (usually @code{mask_b} in the map-file) in regridded data files, and 
 @var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
 @var{msk_src} and @var{msk_dst} only affect inferred grid files for
 the source and destination grids, respectively, whereas @var{msk_out}

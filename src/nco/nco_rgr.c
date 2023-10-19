@@ -6820,7 +6820,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		    idx_out=dst_idx+val_out_fst;
 		    sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
-		    if(!tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
+		    //if(!tally[idx_out]){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[idx_out]/=sub_sgs_frc_out[dst_idx];}
+		    if(!tally[idx_out] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[idx_out]/=sub_sgs_frc_out_crr;}
 		  } /* !dst_idx */
 		  val_in_fst+=grd_sz_in;
 		  val_out_fst+=grd_sz_out;
