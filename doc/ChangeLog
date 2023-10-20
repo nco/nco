@@ -1,3 +1,13 @@
+2023-10-20  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.1.9-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.9-alpha03: Caring Bridge';git push
+	git tag -a 5.1.9-alpha03 -m '';git push --tags
+
+	* ncap2 main() return with EXIT_SUCCESS instead of antlr_ret (which was 133?)
+
+	* ncap2 add -v synonyms extract_defined_derived_variables, xtr_dfn_drv_var
+
 2023-10-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.9-alpha02 release procedure:

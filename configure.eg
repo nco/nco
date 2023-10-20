@@ -311,6 +311,7 @@ make install
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20230110
 # Personal recipe last used successfully: 20230512
+# Current build error: 20231019 "configure: error: cannot find netCDF library"
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
 export PATH=${MY_BIN_DIR}:'/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}

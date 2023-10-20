@@ -355,6 +355,8 @@ main(int argc,char **argv)
     {"thr_nbr",required_argument,0,'t'},
     {"units",no_argument,0,'u'},
     {"variable",no_argument,0,'v'},
+    {"extract_defined_derived_variables",no_argument,0,'v'},
+    {"xtr_dfn_drv_var",no_argument,0,'v'},
     {"exclude",no_argument,0,'x'},
     {"xcl",no_argument,0,'x'},
     {0,0,0,0}
@@ -1226,7 +1228,10 @@ main(int argc,char **argv)
   (void)fclose(stdout);
   (void)nco_free(nco_prg_nm_get());
 
-  nco_exit(antlr_ret);
+  // 20231020: antlr_ret from ~/sw/aca/swn_prf.sh appears to be 133. Why?
+  //nco_exit(antlr_ret);
+  // 20231020: return() here is considered a success, just as with other NCO operators
+  return EXIT_SUCCESS;
 } /* !main() */
 
 // Copy vector elements
@@ -1288,7 +1293,6 @@ ram_vars_add
 
   var1=ncap_sclr_var_mk(std::string("NC_STRING"),nco_int(NC_STRING));
   prs_arg->ncap_var_write(var1,true);
-
 #endif // !ENABLE_NETCDF4
   
 #ifdef INFINITY
