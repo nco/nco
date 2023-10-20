@@ -355,8 +355,8 @@ main(int argc,char **argv)
     {"thr_nbr",required_argument,0,'t'},
     {"units",no_argument,0,'u'},
     {"variable",no_argument,0,'v'},
-    {"extract_defined_derived_variables",no_argument,0,'v'},
-    {"xtr_dfn_drv_var",no_argument,0,'v'},
+    {"output_user_defined_variables",no_argument,0,'v'},
+    {"usr_dfn_var",no_argument,0,'v'},
     {"exclude",no_argument,0,'x'},
     {"xcl",no_argument,0,'x'},
     {0,0,0,0}
@@ -1222,15 +1222,15 @@ main(int argc,char **argv)
     var_fix_out=(var_sct **)nco_free(var_fix_out);
   } /* !flg_mmr_cln */
   
-  // nco_exit_gracefully();
-  (void)fclose(stderr);
-  (void)fclose(stdin);
-  (void)fclose(stdout);
-  (void)nco_free(nco_prg_nm_get());
-
   // 20231020: antlr_ret from ~/sw/aca/swn_prf.sh appears to be 133. Why?
+  //(void)fclose(stderr);
+  //(void)fclose(stdin);
+  //(void)fclose(stdout);
+  //(void)nco_free(nco_prg_nm_get());
   //nco_exit(antlr_ret);
-  // 20231020: return() here is considered a success, just as with other NCO operators
+
+  // 20231020: return() here just as with other NCO operators
+  nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* !main() */
 

@@ -13762,12 +13762,21 @@ possible.
 The results of the algebraic manipulations are called 
 @dfn{derived fields}. 
 
+@cindex @code{--usr_dfn_var}
+@cindex @code{--output_user_defined_variables}
 Unlike the other operators, @command{ncap2} does not accept a list of
-variables to be operated on as an argument to @samp{-v} 
+variables to be operated on as an argument to the @samp{-v} option
 (@pxref{Subsetting Files}).
-Rather, the @samp{-v} switch takes no arguments and indicates
-that @command{ncap2} should output @emph{only} user-defined variables.
+In @command{ncap2}, @samp{-v} is a switch that takes no arguments and
+indicates that @command{ncap2} should output @emph{only} user-defined
+variables (and coordinates associated with variables used in deriving
+them). 
 @command{ncap2} neither accepts nor understands the @var{-x} switch.
+We recommend making this distinction clear by using 
+@samp{--usr_dfn_var} (or its synonym,
+@samp{--output_user_defined_variables}, both introduced in
+@acronym{NCO} version 5.1.9 in October, 2023) instead of @samp{-v},
+which may be deprecated.
 @cindex appending variables
 NB: As of 20120515, @command{ncap2} is unable to append to files that
 already contain the appended dimensions. 

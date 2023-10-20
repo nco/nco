@@ -3566,7 +3566,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
     for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	if [ -n "${prc_elm}" ] && [ "${no_cll_msr}" != 'Yes' ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-		printf "SGS: Implement idiosyncratic CLM/CTSM/ELM characteristics in regridded file...\n"
+		printf "${spt_nm}: Implement idiosyncratic CLM/CTSM/ELM characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Convert area from [sr] to [km2]
 	    cmd_ppp[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2/1.0e6;area@long_name=\"Gridcell area\";area@units=\"km^2\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
@@ -3589,7 +3589,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 
 	if [ -n "${prc_cice}" ] && [ "${no_cll_msr}" != 'Yes' ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-		printf "SGS: Implement idiosyncratic CICE characteristics in regridded file...\n"
+		printf "${spt_nm}: Implement idiosyncratic CICE characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Convert area from [sr] to [m2], and aice from [frc] to [%]
 	    cmd_ppp[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2;area@long_name=\"Gridcell area\";area@units=\"m^2\";${sgs_frc}*=100;${sgs_frc}@units=\"%\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""

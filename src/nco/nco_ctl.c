@@ -530,7 +530,7 @@ nco_dfl_case_tmr_typ_err(void) /* [fnc] Print error and exit for illegal switch(
   const char fnc_nm[]="nco_dfl_case_tmr_typ_err()";
   (void)fprintf(stdout,"%s: ERROR switch(tmr_typ) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(tmr_typ) statements are fully enumerated. Exiting...\n",fnc_nm);
   nco_err_exit(0,fnc_nm);
-} /* end nco_dfl_case_tmr_typ_err() */
+} /* !nco_dfl_case_tmr_typ_err() */
 
 void
 nco_exit /* [fnc] Wrapper for exit() */
@@ -558,8 +558,8 @@ nco_exit /* [fnc] Wrapper for exit() */
     /* exit() does not create core files that annoy users */
     exit(rcd);
 #endif /* !NCO_ABORT_ON_ERROR */
-  } /* endif rcd */
-} /* nco_exit() */
+  } /* !rcd */
+} /* !nco_exit() */
 
 void 
 nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, memory, then exit */
