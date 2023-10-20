@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.9-alpha03: Caring Bridge';git push
 	git tag -a 5.1.9-alpha03 -m '';git push --tags
 
+	* in_zarr4.cdl: Temporarily eliminate NC_UNLIMITED dimension so NCO 5.1.9+ distribution does not break when building with netCDF <= 4.9.2
+
 	* ncap2 main() return with nco_exit_gracefully(), like other operators
 
 	* ncap2 main() return with EXIT_SUCCESS instead of antlr_ret (which was 133?)
