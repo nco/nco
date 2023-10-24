@@ -1,3 +1,7 @@
+2023-10-24  Charlie Zender  <zender@uci.edu>
+
+	* Cleanup ncap2 limits.nco test, which fails on MacOS and Linux
+
 2023-10-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.9-alpha03 release procedure:

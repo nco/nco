@@ -3,7 +3,7 @@
 // Purpose: Test parsing of naked numbers min/max
 
 /* Usage: 
-   ncap2 -4 -O -v -S ~/nco/data/limits.nco ~/nco/data/in4.nc ~/foo.nc
+   ncap2 -4 -O -v -S ~/nco/data/limits.nco ~/nco/data/in_4.nc ~/foo.nc
    ncks ~/foo.nc | /bin/more */
 
 // Check methods first
@@ -12,61 +12,44 @@
 nbr_err=0;
 nbr_err_ttl=0;
 {
- 
- byte_max=127b;
- byte_min= -128b; 
-
-
- if( -byte_max -1 != -128b ) {
-  print("ERROR: byte 1  min\n");
-  nbr_err++;
+  byte_max=127b;
+  byte_min= -128b; 
+  
+  if( -byte_max -1 != -128b ) {
+    print("ERROR: byte 1  min\n");
+    nbr_err++;
   }
-
- if( -byte_max -1 != byte_min ) {
-  print("ERROR: byte 2  min\n");
-  nbr_err++;
+  
+  if( -byte_max -1 != byte_min ) {
+    print("ERROR: byte 2  min\n");
+    nbr_err++;
   }
-
-
-
- short_max=32767s;
-
- if( -short_max -1 != -32768s ) {
-  print("ERROR: short min\n");
-  nbr_err++;
+  
+  short_max=32767s;
+  
+  if( -short_max -1 != -32768s ) {
+    print("ERROR: short min\n");
+    nbr_err++;
   }
-
-
-
- int_max=2147483647l;
-
- if( -int_max -1 != -2147483648l ) {
-  print("ERROR: int min\n");
-  nbr_err++;
+  
+  int_max=2147483647l;
+  
+  if( -int_max -1 != -2147483648l ) {
+    print("ERROR: int min\n");
+    nbr_err++;
   }
-
-
- llong_max=9223372036854775807ll;
-
- if( -llong_max -1 != -9223372036854775808ll ) {
-  print("ERROR: llong min\n");
-  nbr_err++;
+  
+  llong_max=9223372036854775807ll;
+  
+  if( -llong_max -1 != -9223372036854775808ll ) {
+    print("ERROR: llong min\n");
+    nbr_err++;
   }
-
-
+  
   print("RESULTS block 1  Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
   nbr_err=0;
-
-
 }
-
 
 // Results summany
 print("RESULTS SUMMARY: total errors=");print(nbr_err_ttl,"%d");
-
-
-
-
-
-

@@ -553,17 +553,16 @@ if($USER eq 'zender'){
    NCO_bm::tst_run(\@tst_cmd);
    $#tst_cmd=0; # Reset array
 
-
 # ncap2 #20
+# ncap2 -4 -h -O -v -S ~/nco/data/limits.nco ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H --trd -v nbr_err_ttl -s '%d' ~/foo.nc
    $dsc_sng="Run test limits script";
-   $tst_cmd[0]="ncap2 -4 -h -O $fl_fmt $nco_D_flg -v -S '../data/limits_tst.nco' $in_pth_arg in.nc %tmp_fl_00%";
+   $tst_cmd[0]="ncap2 -4 -h -O $fl_fmt $nco_D_flg -v -S '../data/limits.nco' $in_pth_arg in.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -H --trd -v nbr_err_ttl -s '%d' %tmp_fl_00%";
    $tst_cmd[2]="0";
    $tst_cmd[3]="SS_OK";
    NCO_bm::tst_run(\@tst_cmd);
    $#tst_cmd=0; # Reset array
-
-
     
     if($dodap eq "FALSE"){
 ####################
@@ -1716,7 +1715,6 @@ if($USER eq 'zender'){
 ####################
     $opr_nm='ncks';
 ####################
-
     
 #ncks #01   
     $dsc_sng="Create T42 variable named one, uniformly 1.0 over globe in %tmp_fl_03%. (FAILURE with netCDF4 ncrename nco821)";
