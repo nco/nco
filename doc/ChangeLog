@@ -1,12 +1,12 @@
 2023-10-24  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.1.9-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.9-alpha03: Caring Bridge';git push
+	git tag -a 5.1.9-alpha03 -m 'ncap2: refactor exit();';git push --tags
+
 	* Cleanup ncap2 limits.nco test, which fails on MacOS and Linux
 
 2023-10-20  Charlie Zender  <zender@uci.edu>
-
-	* NCO 5.1.9-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.1.9-alpha03: Caring Bridge';git push
-	git tag -a 5.1.9-alpha03 -m '';git push --tags
 
 	* in_zarr4.cdl: Temporarily eliminate NC_UNLIMITED dimension so NCO 5.1.9+ distribution does not break when building with netCDF <= 4.9.2
 
