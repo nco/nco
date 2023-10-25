@@ -1,17 +1,27 @@
 // $Header$ -*-C++-*-
 
-/* Purpose: Extrapolate Mean Sea-Level (MSL) Pressure from EAM input
+/* Purpose: Extrapolate Mean Sea-Level (MSL) Pressure from EAM/CAM input
 
    Usage: 
    drc_in=${DATA}/bm
    drc_out=${HOME}
-   ncap2 -v -O --fl_spt=${HOME}/nco/prs_msl_xtr.nco ${drc_in}/eamv2_ne30pg2l72.nc ${drc_out}/foo_lps.nc
-   ncks -m ${drc_out}/foo_lps.nc | m */
+   ncap2 -v -O --fl_spt=${HOME}/nco/data/prs_msl_xtr.nco ${drc_in}/eamv2_ne30pg2l72.nc ${drc_out}/foo_lps.nc
+   ncks -m ${drc_out}/foo_lps.nc | m
+
+   Requirements:
+   ESM input must contain following variables
+   hyam,hybm,PS,P0: Needed for mid-layer pressure
+   PHIS, PS, PSL, T, TS, TREFHT, Z3
+   */
 
 // Define physical constants
 gas_cst_dry_air=287.05;
 grv_std=9.80665;
 lps_std=0.0065;
+lps_std@long_name="Standard Tropospheric Lapse Rate";
+lps_std@units="K/m";
+tpt_thr_cld=255.0; // [K]
+tpt_thr_wrm=290.5; // [K]
 
 // Assumptions
 spn_idx=5;
@@ -22,7 +32,7 @@ idx_lwr=idx_btm=lev_nbr-1;
 idx_upr=lev_nbr-spn_idx;
 
 // Intialize plethora of new 2D fields
-gph_sfc=hgt_dff=lps_cmp=lps_xtr=prs_mdp_btm=tpt_dff=tpt_mdp_btm=tpt_msl_xtr=tpt_sfc_xtr=tpt_sfc_xtr_dff=0.0*FSDS;
+gph_sfc=hgt_dff=lps_cmp=lps_xtr=prs_mdp_btm=tpt_dff=tpt_mdp_btm=tpt_sfc_xtr_dff=0.0*PSL;
 
 // Derive (or rename) 2D fields
 gph_sfc=PHIS/grv_std;
@@ -33,11 +43,13 @@ prs_dff=PSL-PS;
 prs_dff@long_name="SLP - (atmospheric) Surface Pressure";
 
 prs_sfc=PS;
-prs_msl=PSL;
+prs_msl_esm=PSL;
 tpt_rfr=TREFHT;
 tpt_sfc=TS;
 
 hgt_btm=Z3(:,idx_btm,:);
+hgt_btm@long_name="Atmospheric Bottom Layer (midpoint) Geopotential Height";
+hgt_btm@units="gpm";
 
 hgt_dff=Z3(:,idx_upr,:)-Z3(:,idx_lwr,:);
 hgt_dff@long_name="Geopotential Height Difference (lowest five levels)";
@@ -53,9 +65,6 @@ tpt_dff@units="K";
 tpt_mdp_btm=T(:,idx_btm,:);
 tpt_mdp_btm@long_name="Atmospheric Bottom Layer (midpoint) Temperature";
 
-tpt_sfc_xtr_dff@long_name="Reference Height - Extrapolated Surface Temperature";
-tpt_sfc_xtr_dff@units="K";
-
 lps_cmp=tpt_dff/hgt_dff;
 lps_cmp@long_name="Lapse Rate (lowest five levels)";
 lps_cmp@units="K/m";
@@ -65,8 +74,10 @@ lps_xtr@long_name="Lapse Rate Used in Extrapolation";
 lps_xtr@units="K/m";
 
 alpha=lps_xtr*gas_cst_dry_air/grv_std;
-alpha@long_name="Lapse Rate * R_d / gravity";
-
+alpha@long_name="Temperature lapse rate in terms of pressure ratio (unitless)";
+alpha@definition="Lapse Rate * R_d / gravity";
+  
+*tpt_sfc_xtr[time,ncol]=0.0f;
 tpt_sfc_xtr=tpt_mdp_btm*(1.0+alpha*(prs_sfc/prs_mdp_btm-1.0));
 tpt_sfc_xtr@long_name="Extrapolated Surface Temperature";
 tpt_sfc_xtr@units="K";
@@ -75,6 +86,38 @@ tpt_sfc_xtr_dff=tpt_sfc_xtr-tpt_rfr;
 tpt_sfc_xtr_dff@long_name="Extrapolated Surface Temperature - Reference Height Temperature";
 tpt_sfc_xtr_dff@units="K";
 
+*tpt_msl_xtr[time,ncol]=0.0f;
 tpt_msl_xtr=tpt_sfc_xtr+lps_xtr*gph_sfc;
 tpt_msl_xtr@long_name="Extrapolated MSL Temperature";
 tpt_msl_xtr@units="K";
+
+*alph[time,ncol]=alpha;
+alph@long_name="Power to raise P/Ps to get rate of increase of T with pressure";
+alph@definition="Depends on thresholds";
+  
+*beta[time,ncol]=0.0;
+beta@long_name="alpha*phis/(R*T) term used in approximation of PSL";
+beta@definition="Depends on thresholds";
+
+*prs_msl_xtr[time,ncol]=0.0f;
+prs_msl_xtr@long_name="Extrapolated MSL Pressure";
+prs_msl_xtr@units="Pa";
+
+for(tm_idx=0;tm_idx<$time.size;tm_idx++){
+  for(col_idx=0;col_idx<$ncol.size;col_idx++){
+    if(abs(gph_sfc(tm_idx,col_idx)) < 1.0e-4){
+      prs_msl_xtr(tm_idx,col_idx)=PSL(tm_idx,col_idx);
+    }else{ // !gph_sfc
+      if(tpt_sfc_xtr <= tpt_thr_wrm && tpt_msl_xtr > tpt_thr_wrm){
+	alph(tm_idx,col_idx)=gas_cst_dry_air*(tpt_thr_wrm-tpt_sfc_xtr(tm_idx,col_idx))/PHIS(tm_idx,col_idx);
+      }else if(tpt_sfc_xtr > tpt_thr_wrm && tpt_msl_xtr > tpt_thr_wrm){
+	alph(tm_idx,col_idx)=0.0;
+      } // !tpt_sfc_xtr
+    } // !gph_sfc
+  } // !col_idx
+} // !tm_idx
+ram_write(alph);
+ram_write(beta);
+ram_write(prs_msl_xtr);
+ram_write(tpt_sfc_xtr);
+

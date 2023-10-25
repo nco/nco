@@ -15481,7 +15481,7 @@ The syntax of a @code{where()} statement is:
 @example
 @verbatim
 // Single assign ('elsewhere' is optional)
-where(mask) 
+where(mask)
    var1=expr1;
 elsewhere
    var1=expr2;	   	
