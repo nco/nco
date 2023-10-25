@@ -1,0 +1,80 @@
+// $Header$ -*-C++-*-
+
+/* Purpose: Extrapolate Mean Sea-Level (MSL) Pressure from EAM input
+
+   Usage: 
+   drc_in=${DATA}/bm
+   drc_out=${HOME}
+   ncap2 -v -O --fl_spt=${HOME}/nco/prs_msl_xtr.nco ${drc_in}/eamv2_ne30pg2l72.nc ${drc_out}/foo_lps.nc
+   ncks -m ${drc_out}/foo_lps.nc | m */
+
+// Define physical constants
+gas_cst_dry_air=287.05;
+grv_std=9.80665;
+lps_std=0.0065;
+
+// Assumptions
+spn_idx=5;
+
+// Derived scalars
+lev_nbr=lev.size();
+idx_lwr=idx_btm=lev_nbr-1;
+idx_upr=lev_nbr-spn_idx;
+
+// Intialize plethora of new 2D fields
+gph_sfc=hgt_dff=lps_cmp=lps_xtr=prs_mdp_btm=tpt_dff=tpt_mdp_btm=tpt_msl_xtr=tpt_sfc_xtr=tpt_sfc_xtr_dff=0.0*FSDS;
+
+// Derive (or rename) 2D fields
+gph_sfc=PHIS/grv_std;
+gph_sfc@long_name="Surface Geopotential Height";
+gph_sfc@units="gpm";
+
+prs_dff=PSL-PS;
+prs_dff@long_name="SLP - (atmospheric) Surface Pressure";
+
+prs_sfc=PS;
+prs_msl=PSL;
+tpt_rfr=TREFHT;
+tpt_sfc=TS;
+
+hgt_btm=Z3(:,idx_btm,:);
+
+hgt_dff=Z3(:,idx_upr,:)-Z3(:,idx_lwr,:);
+hgt_dff@long_name="Geopotential Height Difference (lowest five levels)";
+hgt_dff@units="gpm";
+
+prs_mdp_btm=hyam(idx_btm)*P0+hybm(idx_btm)*PS;
+prs_mdp_btm@long_name="Atmospheric Bottom Layer (midpoint) Pressure";
+
+tpt_dff=T(:,idx_lwr,:)-T(:,idx_upr,:);
+tpt_dff@long_name="Temperature Difference (lowest five levels)";
+tpt_dff@units="K";
+
+tpt_mdp_btm=T(:,idx_btm,:);
+tpt_mdp_btm@long_name="Atmospheric Bottom Layer (midpoint) Temperature";
+
+tpt_sfc_xtr_dff@long_name="Reference Height - Extrapolated Surface Temperature";
+tpt_sfc_xtr_dff@units="K";
+
+lps_cmp=tpt_dff/hgt_dff;
+lps_cmp@long_name="Lapse Rate (lowest five levels)";
+lps_cmp@units="K/m";
+
+lps_xtr=lps_std;
+lps_xtr@long_name="Lapse Rate Used in Extrapolation";
+lps_xtr@units="K/m";
+
+alpha=lps_xtr*gas_cst_dry_air/grv_std;
+alpha@long_name="Lapse Rate * R_d / gravity";
+
+tpt_sfc_xtr=tpt_mdp_btm*(1.0+alpha*(prs_sfc/prs_mdp_btm-1.0));
+tpt_sfc_xtr@long_name="Extrapolated Surface Temperature";
+tpt_sfc_xtr@units="K";
+
+tpt_sfc_xtr_dff=tpt_sfc_xtr-tpt_rfr;
+tpt_sfc_xtr_dff@long_name="Extrapolated Surface Temperature - Reference Height Temperature";
+tpt_sfc_xtr_dff@units="K";
+
+tpt_msl_xtr=tpt_sfc_xtr+lps_xtr*gph_sfc;
+tpt_msl_xtr@long_name="Extrapolated MSL Temperature";
+tpt_msl_xtr@units="K";
