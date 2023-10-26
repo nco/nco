@@ -7,6 +7,7 @@
    drc_out=${HOME}
    ncap2 -v -O --fl_spt=${HOME}/nco/data/prs_msl_xtr.nco ${drc_in}/eamv2_ne30pg2l72.nc ${drc_out}/foo_lps.nc
    ncks -m ${drc_out}/foo_lps.nc | m
+   ncremap -P eam --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_mono.20230301.nc ~/foo_lps.nc ~/foo_lps_rgr.nc
 
    Requirements:
    ESM input must contain following variables
@@ -24,15 +25,16 @@ tpt_thr_cld=255.0; // [K]
 tpt_thr_wrm=290.5; // [K]
 
 // Assumptions
-spn_idx=5;
+spn_nbr=1; // [idx] Number of levels spanned for lapse rate calculation
 
 // Derived scalars
 lev_nbr=lev.size();
-idx_lwr=idx_btm=lev_nbr-1;
-idx_upr=lev_nbr-spn_idx;
+idx_btm=lev_nbr-1; // [idx] Index of bottom level midpoint (0-based)
+idx_lwr=lev_nbr-1; // [idx] Index of lower level midpoint for lapse rate calculations
+idx_upr=lev_nbr-1-spn_nbr; // [idx] Index of upper level midpoint (0-based)
 
 // Intialize plethora of new 2D fields
-gph_sfc=hgt_dff=lps_cmp=lps_xtr=prs_mdp_btm=tpt_dff=tpt_mdp_btm=tpt_sfc_xtr_dff=0.0*PSL;
+gph_sfc=hgt_dff=lps_cmp=lps_xtr=prs_mdp_btm=tpt_dff=tpt_mdp_btm=tpt_msl_xtr=tpt_sfc_xtr_dff=0.0*PSL;
 
 // Derive (or rename) 2D fields
 gph_sfc=PHIS/grv_std;
@@ -44,7 +46,8 @@ prs_dff@long_name="SLP - (atmospheric) Surface Pressure";
 
 prs_sfc=PS;
 prs_msl_esm=PSL;
-tpt_rfr=TREFHT;
+prs_msl_esm@long_name="MSL Pressure Computed by ESM";
+tpt_rfr=TREFHT; // [K] EAM variable tref
 tpt_sfc=TS;
 
 hgt_btm=Z3(:,idx_btm,:);
@@ -52,72 +55,140 @@ hgt_btm@long_name="Atmospheric Bottom Layer (midpoint) Geopotential Height";
 hgt_btm@units="gpm";
 
 hgt_dff=Z3(:,idx_upr,:)-Z3(:,idx_lwr,:);
-hgt_dff@long_name="Geopotential Height Difference (lowest five levels)";
+hgt_dff@long_name="Geopotential Height Difference (lowest two levels)";
 hgt_dff@units="gpm";
 
 prs_mdp_btm=hyam(idx_btm)*P0+hybm(idx_btm)*PS;
 prs_mdp_btm@long_name="Atmospheric Bottom Layer (midpoint) Pressure";
 
 tpt_dff=T(:,idx_lwr,:)-T(:,idx_upr,:);
-tpt_dff@long_name="Temperature Difference (lowest five levels)";
+tpt_dff@long_name="Temperature Difference (lowest two levels)";
 tpt_dff@units="K";
 
 tpt_mdp_btm=T(:,idx_btm,:);
 tpt_mdp_btm@long_name="Atmospheric Bottom Layer (midpoint) Temperature";
 
-lps_cmp=tpt_dff/hgt_dff;
-lps_cmp@long_name="Lapse Rate (lowest five levels)";
+;lps_cmp=tpt_dff/hgt_dff;
+lps_cmp=(tpt_rfr-T(:,idx_btm,:))/gph_sfc;
+;lps_cmp@long_name="Temperature Lapse Rate (surface to lowest midpoint)";
 lps_cmp@units="K/m";
 
 lps_xtr=lps_std;
-lps_xtr@long_name="Lapse Rate Used in Extrapolation";
+lps_xtr@long_name="Temperature Lapse Rate Used in Extrapolation";
 lps_xtr@units="K/m";
 
 alpha=lps_xtr*gas_cst_dry_air/grv_std;
 alpha@long_name="Temperature lapse rate in terms of pressure ratio (unitless)";
 alpha@definition="Lapse Rate * R_d / gravity";
-  
-*tpt_sfc_xtr[time,ncol]=0.0f;
-tpt_sfc_xtr=tpt_mdp_btm*(1.0+alpha*(prs_sfc/prs_mdp_btm-1.0));
+alpha@units="1";
+
+*alpha_csz[time,ncol]=lps_cmp*gas_cst_dry_air/grv_std;
+alpha_csz@long_name="Spatio-temporally Varying Temperature Lapse Rate";
+alpha_csz@definition="Lapse Rate * R_d / gravity";
+alpha_csz@units="1";
+
+*tpt_sfc_xtr[time,ncol]=tpt_mdp_btm*(1.0+alpha*(prs_sfc/prs_mdp_btm-1.0));
 tpt_sfc_xtr@long_name="Extrapolated Surface Temperature";
 tpt_sfc_xtr@units="K";
+
+*tpt_sfc_xtr_csz[time,ncol]=tpt_mdp_btm*(1.0+alpha_csz*(prs_sfc/prs_mdp_btm-1.0));
+tpt_sfc_xtr_csz@long_name="Extrapolated Surface Temperature";
+tpt_sfc_xtr_csz@units="K";
 
 tpt_sfc_xtr_dff=tpt_sfc_xtr-tpt_rfr;
 tpt_sfc_xtr_dff@long_name="Extrapolated Surface Temperature - Reference Height Temperature";
 tpt_sfc_xtr_dff@units="K";
 
-*tpt_msl_xtr[time,ncol]=0.0f;
-tpt_msl_xtr=tpt_sfc_xtr+lps_xtr*gph_sfc;
+tpt_msl_xtr=tpt_sfc_xtr+lps_xtr*gph_sfc; // TBB93 eqn 13
 tpt_msl_xtr@long_name="Extrapolated MSL Temperature";
 tpt_msl_xtr@units="K";
+
+tpt_msl_xtr_csz=tpt_sfc_xtr_csz+lps_cmp*gph_sfc; // TBB93 eqn 13
+tpt_msl_xtr_csz@long_name="Extrapolated MSL Temperature";
+tpt_msl_xtr_csz@units="K";
 
 *alph[time,ncol]=alpha;
 alph@long_name="Power to raise P/Ps to get rate of increase of T with pressure";
 alph@definition="Depends on thresholds";
   
+*alph_csz[time,ncol]=alpha_csz;
+alph_csz@long_name="Power to raise P/Ps to get rate of increase of T with pressure";
+alph_csz@definition="Depends on thresholds";
+  
 *beta[time,ncol]=0.0;
 beta@long_name="alpha*phis/(R*T) term used in approximation of PSL";
 beta@definition="Depends on thresholds";
 
-*prs_msl_xtr[time,ncol]=0.0f;
-prs_msl_xtr@long_name="Extrapolated MSL Pressure";
-prs_msl_xtr@units="Pa";
+*beta_csz[time,ncol]=0.0f;
+beta_csz=PHIS/(gas_cst_dry_air*tpt_rfr);
+beta_csz@long_name="alpha*phis/(R*T) term used in approximation of PSL";
+beta_csz@definition="alpha_csz*phis/(R*T)";
 
+*prs_msl_xtr_tbb93[time,ncol]=0.0f;
+prs_msl_xtr_tbb93@long_name="Extrapolated MSL Pressure via TBB93 Method";
+prs_msl_xtr_tbb93@units="Pa";
+
+*prs_msl_xtr_csz[time,ncol]=0.0f;
+prs_msl_xtr_csz@long_name="Extrapolated MSL Pressure via CSZ Method";
+prs_msl_xtr_csz@units="Pa";
+
+*tm_idx=0;
+*col_idx=0;
 for(tm_idx=0;tm_idx<$time.size;tm_idx++){
   for(col_idx=0;col_idx<$ncol.size;col_idx++){
     if(abs(gph_sfc(tm_idx,col_idx)) < 1.0e-4){
-      prs_msl_xtr(tm_idx,col_idx)=PSL(tm_idx,col_idx);
+      prs_msl_xtr_tbb93(tm_idx,col_idx)=PS(tm_idx,col_idx);
     }else{ // !gph_sfc
-      if(tpt_sfc_xtr <= tpt_thr_wrm && tpt_msl_xtr > tpt_thr_wrm){
-	alph(tm_idx,col_idx)=gas_cst_dry_air*(tpt_thr_wrm-tpt_sfc_xtr(tm_idx,col_idx))/PHIS(tm_idx,col_idx);
-      }else if(tpt_sfc_xtr > tpt_thr_wrm && tpt_msl_xtr > tpt_thr_wrm){
+      if(tpt_sfc_xtr(tm_idx,col_idx) <= tpt_thr_wrm && tpt_msl_xtr(tm_idx,col_idx) > tpt_thr_wrm){
+	alph(tm_idx,col_idx)=gas_cst_dry_air*(tpt_thr_wrm-tpt_sfc_xtr(tm_idx,col_idx))/PHIS(tm_idx,col_idx); // TBB93 eqn 14.1
+      }else if(tpt_sfc_xtr(tm_idx,col_idx) > tpt_thr_wrm && tpt_msl_xtr(tm_idx,col_idx) > tpt_thr_wrm){
 	alph(tm_idx,col_idx)=0.0;
+	tpt_sfc_xtr(tm_idx,col_idx)=0.5*(tpt_thr_wrm+tpt_sfc_xtr(tm_idx,col_idx)); // TBB93 eqn 14.
+      }else{ // !tpt_sfc_xtr
+	if(tpt_sfc_xtr(tm_idx,col_idx) < tpt_thr_cld){
+	  tpt_sfc_xtr(tm_idx,col_idx)=0.5*(tpt_thr_cld+tpt_sfc_xtr(tm_idx,col_idx)); // TBB93 eqn 14.3
+	} // !tpt_sfc_xtr
       } // !tpt_sfc_xtr
+      beta(tm_idx,col_idx)=PHIS(tm_idx,col_idx)/(gas_cst_dry_air*tpt_sfc_xtr(tm_idx,col_idx));
+      prs_msl_xtr_tbb93(tm_idx,col_idx)=prs_sfc(tm_idx,col_idx)*exp(beta(tm_idx,col_idx)*(1.0-alph(tm_idx,col_idx)*beta(tm_idx,col_idx)/2.0+((alph(tm_idx,col_idx)*beta(tm_idx,col_idx))^2)/3.0));
     } // !gph_sfc
   } // !col_idx
 } // !tm_idx
+
+// CSZ method
+for(tm_idx=0;tm_idx<$time.size;tm_idx++){
+  for(col_idx=0;col_idx<$ncol.size;col_idx++){
+    if(abs(gph_sfc(tm_idx,col_idx)) > 2.0e2){
+      prs_msl_xtr_csz(tm_idx,col_idx)=prs_msl_xtr_tbb93(tm_idx,col_idx);
+    }else{ // !gph_sfc
+      if(tpt_sfc_xtr_csz(tm_idx,col_idx) <= tpt_thr_wrm && tpt_msl_xtr_csz(tm_idx,col_idx) > tpt_thr_wrm){
+	alph_csz(tm_idx,col_idx)=gas_cst_dry_air*(tpt_thr_wrm-tpt_sfc_xtr_csz(tm_idx,col_idx))/PHIS(tm_idx,col_idx); // TBB93 eqn 14.1
+      }else if(tpt_sfc_xtr_csz(tm_idx,col_idx) > tpt_thr_wrm && tpt_msl_xtr_csz(tm_idx,col_idx) > tpt_thr_wrm){
+	alph_csz(tm_idx,col_idx)=0.0;
+	tpt_sfc_xtr_csz(tm_idx,col_idx)=0.5*(tpt_thr_wrm+tpt_sfc_xtr_csz(tm_idx,col_idx)); // TBB93 eqn 14.
+      }else{ // !tpt_sfc_xtr_csz
+	if(tpt_sfc_xtr_csz(tm_idx,col_idx) < tpt_thr_cld){
+	  //	  tpt_sfc_xtr_csz(tm_idx,col_idx)=0.5*(tpt_thr_cld+tpt_sfc_xtr_csz(tm_idx,col_idx)); // TBB93 eqn 14.3
+	  ;
+	} // !tpt_sfc_xtr_csz
+      } // !tpt_sfc_xtr_csz
+      beta_csz(tm_idx,col_idx)=PHIS(tm_idx,col_idx)/(gas_cst_dry_air*tpt_sfc_xtr_csz(tm_idx,col_idx));
+      prs_msl_xtr_csz(tm_idx,col_idx)=prs_sfc(tm_idx,col_idx)*exp(beta_csz(tm_idx,col_idx)*(1.0-alph_csz(tm_idx,col_idx)*beta(tm_idx,col_idx)/2.0+((alph_csz(tm_idx,col_idx)*beta_csz(tm_idx,col_idx))^2)/3.0));
+    } // !gph_sfc
+  } // !col_idx
+} // !tm_idx
+
+prs_msl_xtr_dff=prs_msl_xtr_csz-prs_msl_xtr_tbb93;
+prs_msl_xtr_dff@long_name="Extrapolated CSZ - ESM MSL Pressure";
+prs_msl_xtr_dff@units="Pa";
+
 ram_write(alph);
 ram_write(beta);
-ram_write(prs_msl_xtr);
+ram_write(prs_msl_xtr_tbb93);
 ram_write(tpt_sfc_xtr);
 
+ram_write(alph_csz);
+ram_write(beta_csz);
+ram_write(prs_msl_xtr_csz);
+ram_write(tpt_sfc_xtr_csz);
+ 
