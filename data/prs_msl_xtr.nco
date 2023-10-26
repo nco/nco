@@ -12,8 +12,7 @@
    Requirements:
    ESM input must contain following variables
    hyam,hybm,PS,P0: Needed for mid-layer pressure
-   PHIS, PS, PSL, T, TS, TREFHT, Z3
-   */
+   PHIS, PS, PSL, T, TS, TREFHT, Z3 */
 
 // Define physical constants
 gas_cst_dry_air=287.05;
@@ -69,7 +68,8 @@ tpt_mdp_btm=T(:,idx_btm,:);
 tpt_mdp_btm@long_name="Atmospheric Bottom Layer (midpoint) Temperature";
 
 ;lps_cmp=tpt_dff/hgt_dff;
-lps_cmp=(tpt_rfr-T(:,idx_btm,:))/gph_sfc;
+lps_cmp=lps_std;
+where(gph_sfc > 1.0e-4) lps_cmp=(tpt_rfr-tpt_mdp_btm)/gph_sfc;
 ;lps_cmp@long_name="Temperature Lapse Rate (surface to lowest midpoint)";
 lps_cmp@units="K/m";
 
