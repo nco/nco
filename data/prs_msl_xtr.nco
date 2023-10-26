@@ -16,14 +16,15 @@
 
 // Define physical constants
 gas_cst_dry_air=287.05;
-grv_std=9.80665;
-lps_std=0.0065;
-lps_std@long_name="Standard Tropospheric Lapse Rate";
-lps_std@units="K/m";
+grv_msl_std=9.80665;
+lps_glb_std=0.0065;
+lps_glb_std@long_name="Standard Tropospheric Lapse Rate";
+lps_glb_std@units="K/m";
+
+// Tunable assumptions
+gph_sfc_thr=200.0; // [gpm] Height above which CSZ uses TBB93 formulation
 tpt_thr_cld=255.0; // [K]
 tpt_thr_wrm=290.5; // [K]
-
-// Assumptions
 spn_nbr=1; // [idx] Number of levels spanned for lapse rate calculation
 
 // Derived scalars
@@ -31,12 +32,16 @@ lev_nbr=lev.size();
 idx_btm=lev_nbr-1; // [idx] Index of bottom level midpoint (0-based)
 idx_lwr=lev_nbr-1; // [idx] Index of lower level midpoint for lapse rate calculations
 idx_upr=lev_nbr-1-spn_nbr; // [idx] Index of upper level midpoint (0-based)
+spc_heat_dry_air=7.0*gas_cst_dry_air/2.0; // (1004.697) [J kg-1 K-1] IrG81 p. 25
+
+// Doubly Derived scalars
+lps_dry=grv_msl_std/spc_heat_dry_air; // 0.0098 [K/m] 
 
 // Intialize plethora of new 2D fields
 gph_sfc=hgt_dff=lps_cmp=lps_xtr=prs_mdp_btm=tpt_dff=tpt_mdp_btm=tpt_msl_xtr=tpt_sfc_xtr_dff=0.0*PSL;
 
 // Derive (or rename) 2D fields
-gph_sfc=PHIS/grv_std;
+gph_sfc=PHIS/grv_msl_std;
 gph_sfc@long_name="Surface Geopotential Height";
 gph_sfc@units="gpm";
 
@@ -44,8 +49,10 @@ prs_dff=PSL-PS;
 prs_dff@long_name="SLP - (atmospheric) Surface Pressure";
 
 prs_sfc=PS;
+
 prs_msl_esm=PSL;
 prs_msl_esm@long_name="MSL Pressure Computed by ESM";
+
 tpt_rfr=TREFHT; // [K] EAM variable tref
 tpt_sfc=TS;
 
@@ -68,68 +75,75 @@ tpt_mdp_btm=T(:,idx_btm,:);
 tpt_mdp_btm@long_name="Atmospheric Bottom Layer (midpoint) Temperature";
 
 ;lps_cmp=tpt_dff/hgt_dff;
-lps_cmp=lps_std;
-where(gph_sfc > 1.0e-4) lps_cmp=(tpt_rfr-tpt_mdp_btm)/gph_sfc;
+lps_cmp=lps_glb_std;
+lps_max=lps_dry; // 0.0098 [K/m] 9.8 K/km
+lps_min=-0.01; // [K/m] -10 K/km
+where(gph_sfc > 2.0) lps_cmp=(tpt_rfr-tpt_mdp_btm)/gph_sfc;
+where(lps_cmp > lps_max) lps_cmp=lps_max;
+where(lps_cmp < lps_min) lps_cmp=lps_min;
 ;lps_cmp@long_name="Temperature Lapse Rate (surface to lowest midpoint)";
 lps_cmp@units="K/m";
 
-lps_xtr=lps_std;
-lps_xtr@long_name="Temperature Lapse Rate Used in Extrapolation";
+lps_xtr=lps_glb_std;
+lps_xtr@long_name="Temperature Lapse Rate Used in Extrapolation: Control";
 lps_xtr@units="K/m";
 
-alpha=lps_xtr*gas_cst_dry_air/grv_std;
-alpha@long_name="Temperature lapse rate in terms of pressure ratio (unitless)";
+alpha=lps_xtr*gas_cst_dry_air/grv_msl_std;
+alpha@long_name="Temperature lapse rate in terms of pressure ratio (unitless): Control";
 alpha@definition="Lapse Rate * R_d / gravity";
 alpha@units="1";
 
-*alpha_csz[time,ncol]=lps_cmp*gas_cst_dry_air/grv_std;
-alpha_csz@long_name="Spatio-temporally Varying Temperature Lapse Rate";
+*alpha_csz[time,ncol]=lps_cmp*gas_cst_dry_air/grv_msl_std;
+alpha_csz@long_name="Spatio-temporally Varying Temperature Lapse Rate: Experiment";
 alpha_csz@definition="Lapse Rate * R_d / gravity";
 alpha_csz@units="1";
 
 *tpt_sfc_xtr[time,ncol]=tpt_mdp_btm*(1.0+alpha*(prs_sfc/prs_mdp_btm-1.0));
-tpt_sfc_xtr@long_name="Extrapolated Surface Temperature";
+tpt_sfc_xtr@long_name="Extrapolated Surface Temperature: Control";
 tpt_sfc_xtr@units="K";
 
-*tpt_sfc_xtr_csz[time,ncol]=tpt_mdp_btm*(1.0+alpha_csz*(prs_sfc/prs_mdp_btm-1.0));
-tpt_sfc_xtr_csz@long_name="Extrapolated Surface Temperature";
+//*tpt_sfc_xtr_csz[time,ncol]=tpt_mdp_btm*(1.0+alpha_csz*(prs_sfc/prs_mdp_btm-1.0));
+*tpt_sfc_xtr_csz[time,ncol]=tpt_sfc_xtr;
+where(gph_sfc < gph_sfc_thr) tpt_sfc_xtr_csz[time,ncol]=tpt_rfr;
+tpt_sfc_xtr_csz@long_name="Extrapolated Surface Temperature: Experiment";
 tpt_sfc_xtr_csz@units="K";
 
-tpt_sfc_xtr_dff=tpt_sfc_xtr-tpt_rfr;
-tpt_sfc_xtr_dff@long_name="Extrapolated Surface Temperature - Reference Height Temperature";
+tpt_sfc_xtr_dff=tpt_sfc_xtr-tpt_sfc_xtr_csz;
+tpt_sfc_xtr_dff@long_name="Extrapolated MSL Temperature Difference: XPT - CTL";
 tpt_sfc_xtr_dff@units="K";
 
 tpt_msl_xtr=tpt_sfc_xtr+lps_xtr*gph_sfc; // TBB93 eqn 13
-tpt_msl_xtr@long_name="Extrapolated MSL Temperature";
+tpt_msl_xtr@long_name="Extrapolated MSL Temperature: Control";
 tpt_msl_xtr@units="K";
 
-tpt_msl_xtr_csz=tpt_sfc_xtr_csz+lps_cmp*gph_sfc; // TBB93 eqn 13
-tpt_msl_xtr_csz@long_name="Extrapolated MSL Temperature";
+tpt_msl_xtr_csz=tpt_msl_xtr;
+where(gph_sfc < gph_sfc_thr) tpt_msl_xtr_csz=tpt_sfc_xtr_csz+lps_cmp*gph_sfc; // TBB93 eqn 13
+tpt_msl_xtr_csz@long_name="Extrapolated MSL Temperature: Experiment";
 tpt_msl_xtr_csz@units="K";
 
 *alph[time,ncol]=alpha;
-alph@long_name="Power to raise P/Ps to get rate of increase of T with pressure";
+alph@long_name="Power to raise P/Ps to get rate of increase of T with pressure: Control";
 alph@definition="Depends on thresholds";
   
 *alph_csz[time,ncol]=alpha_csz;
-alph_csz@long_name="Power to raise P/Ps to get rate of increase of T with pressure";
+alph_csz@long_name="Power to raise P/Ps to get rate of increase of T with pressure: Experiment";
 alph_csz@definition="Depends on thresholds";
   
 *beta[time,ncol]=0.0;
-beta@long_name="alpha*phis/(R*T) term used in approximation of PSL";
+beta@long_name="alpha*phis/(R*T) term used in approximation of PSL: Control";
 beta@definition="Depends on thresholds";
 
 *beta_csz[time,ncol]=0.0f;
 beta_csz=PHIS/(gas_cst_dry_air*tpt_rfr);
-beta_csz@long_name="alpha*phis/(R*T) term used in approximation of PSL";
+beta_csz@long_name="alpha*phis/(R*T) term used in approximation of PSL: Experiment";
 beta_csz@definition="alpha_csz*phis/(R*T)";
 
 *prs_msl_xtr_tbb93[time,ncol]=0.0f;
-prs_msl_xtr_tbb93@long_name="Extrapolated MSL Pressure via TBB93 Method";
+prs_msl_xtr_tbb93@long_name="Extrapolated MSL Pressure: Control (TBB93 Method)";
 prs_msl_xtr_tbb93@units="Pa";
 
 *prs_msl_xtr_csz[time,ncol]=0.0f;
-prs_msl_xtr_csz@long_name="Extrapolated MSL Pressure via CSZ Method";
+prs_msl_xtr_csz@long_name="Extrapolated MSL Pressure: Experiment (CSZ Method)";
 prs_msl_xtr_csz@units="Pa";
 
 *tm_idx=0;
@@ -158,7 +172,7 @@ for(tm_idx=0;tm_idx<$time.size;tm_idx++){
 // CSZ method
 for(tm_idx=0;tm_idx<$time.size;tm_idx++){
   for(col_idx=0;col_idx<$ncol.size;col_idx++){
-    if(abs(gph_sfc(tm_idx,col_idx)) > 2.0e2){
+    if(abs(gph_sfc(tm_idx,col_idx)) > gph_sfc_thr){
       prs_msl_xtr_csz(tm_idx,col_idx)=prs_msl_xtr_tbb93(tm_idx,col_idx);
     }else{ // !gph_sfc
       if(tpt_sfc_xtr_csz(tm_idx,col_idx) <= tpt_thr_wrm && tpt_msl_xtr_csz(tm_idx,col_idx) > tpt_thr_wrm){
@@ -179,8 +193,21 @@ for(tm_idx=0;tm_idx<$time.size;tm_idx++){
 } // !tm_idx
 
 prs_msl_xtr_dff=prs_msl_xtr_csz-prs_msl_xtr_tbb93;
-prs_msl_xtr_dff@long_name="Extrapolated CSZ - ESM MSL Pressure";
+prs_msl_xtr_dff@long_name="Extrapolated MSL Pressure Difference: XPT - CTL";
 prs_msl_xtr_dff@units="Pa";
+
+dns_msl_tbb93=prs_msl_xtr_tbb93/(gas_cst_dry_air*tpt_msl_xtr);
+dns_msl_tbb93@long_name="Extrapolated MSL Density: Control";
+dns_msl_tbb93@units="kg/m3";
+
+dns_msl_csz=dns_msl_tbb93;
+where(gph_sfc < gph_sfc_thr) dns_msl_csz=prs_msl_xtr_csz/(gas_cst_dry_air*tpt_msl_xtr_csz);
+dns_msl_csz@long_name="Extrapolated MSL Density: Experiment";
+dns_msl_csz@units="kg/m3";
+
+dns_msl_dff=dns_msl_csz-dns_msl_tbb93;
+dns_msl_dff@long_name="Extrapolated MSL Density Difference: XPT - CTL";
+dns_msl_dff@units="kg/m3";
 
 ram_write(alph);
 ram_write(beta);
