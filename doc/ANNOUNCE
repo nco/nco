@@ -71,7 +71,18 @@ Frontier supercomputer.
 
 BUG FIXES:
    
-A. N/A
+A. NCO versions from 4.9.4--5.1.8 (September, 2020 through October,
+2023) contained a bug that affected the subcycle and interleave (SSC
+and ILV) hyperslab features.  The bug was triggered by invoking the
+SSC feature without explicitly providing an ILV parameter.  The
+software failed to initialize an internal flag that indicated whether
+ILV had been invoked.  The resulting behavior was compiler-dependent.
+Most compilers set the ILV flag to false (as it should have been), but
+some compilers set it to true.  The bug expressed itself by extracting
+only a single timestep, rather than the number of timesteps indicated
+by the SSC parameter.  This behavior was fixed in NCO version 5.1.9
+(November, 2023).
+http://nco.sf.net/nco.html#bug_ilv
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

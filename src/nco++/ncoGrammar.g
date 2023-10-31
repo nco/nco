@@ -2890,17 +2890,15 @@ out returns [var_sct *var]
 	|	val_uint:NCAP_UINT	
         {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~uint"),(nc_type)NC_UINT,false); else var=ncap_sclr_var_mk(SCS("~uint"),static_cast<nco_uint>(std::strtoul(val_uint->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end UINT
 	|	val_int64:NCAP_INT64
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~int64"),(nc_type)NC_INT64,false); else var=ncap_sclr_var_mk(SCS("~int64"),sng2nbr(val_int64->getText(),nco_int64_CEWI));} // end INT64
+        //{if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~int64"),(nc_type)NC_INT64,false); else var=ncap_sclr_var_mk(SCS("~int64"),sng2nbr(val_int64->getText(),nco_int64_CEWI));} // end INT64
         // std::strtoll() and std::strtoull() are not (yet) ISO C++ standard
-        //{if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~int64"),(nc_type)NC_INT64,false); else var=ncap_sclr_var_mk(SCS("~int64"),static_cast<nco_int64>(std::strtoll(val_int64->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end INT64
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~int64"),(nc_type)NC_INT64,false); else var=ncap_sclr_var_mk(SCS("~int64"),static_cast<nco_int64>(std::strtoll(val_int64->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end INT64
 	|	val_uint64:NCAP_UINT64
-        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(SCS("~uint64"),sng2nbr(val_uint64->getText(),nco_uint64_CEWI));} // end UINT64
+        //{if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(SCS("~uint64"),sng2nbr(val_uint64->getText(),nco_uint64_CEWI));} // end UINT64
         // std::strtoll() and std::strtoull() are not (yet) ISO C++ standard
-        // {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(SCS("~uint64"),static_cast<nco_uint64>(std::strtoull(val_uint64->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end UINT64
+        {if(prs_arg->ntl_scn) var=ncap_sclr_var_mk(SCS("~uint64"),(nc_type)NC_UINT64,false); else var=ncap_sclr_var_mk(SCS("~uint64"),static_cast<nco_uint64>(std::strtoull(val_uint64->getText().c_str(),(char **)NULL,NCO_SNG_CNV_BASE10)));} // end UINT64
 // #endif /* !ENABLE_NETCDF4 */
-
 ;
-
 
 // Return a var or att WITHOUT applying a cast 
 // and checks that the operand is a valid Lvalue

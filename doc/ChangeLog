@@ -1,8 +1,15 @@
-2023-10-30  Charlie Zender  <zender@uci.edu>
+2023-10-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.9-alpha03: Caring Bridge';git push
-	git tag -a 5.1.9-alpha03 -m 'ncap2: refactor exit();';git push --tags
+	git tag -a 5.1.9-alpha03 -m 'all: fix uninitialized flg_ilv to fix ncra, ncrcat bugs; ncap2: refactor exit();';git push --tags
+
+	* Try std::strtoll() and std::strtoull() in ncoGrammar.g to fix	limits.nco behavior (requires ISO C++ 2011)
+
+	* Initialize flg_ilv=False in nco_lmt_evl() to fix ncra bug reported by Chris G. and Jim Benedict
+	This eliminates ALL valgrind uninitialized value warnings when SSC specified without ILV
+
+2023-10-30  Charlie Zender  <zender@uci.edu>
 
 	* Henry fixed parsing of NC_MIN_INT64 so limits.nco now completes successfully
 

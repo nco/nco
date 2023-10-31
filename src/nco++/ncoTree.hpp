@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.7 (20220224): "ncoGrammar.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.7 (20231024): "ncoGrammar.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammar.g"

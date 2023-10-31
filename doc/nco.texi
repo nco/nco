@@ -6208,6 +6208,28 @@ Long options:
 @samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]}@*
 @samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]}@*
 @end cartouche
+
+@html
+<a name="bug_ilv"></a> <!-- http://nco.sf.net/nco.html#bug_ilv -->
+@end html
+@cartouche
+Caveat lector: Unforunately @acronym{NCO} versions from 4.9.4--5.1.8
+(September, 2020 through October, 2023) contained a bug that affected
+the subcycle and interleave (@acronym{SSC} and @acronym{ILV})
+hyperslab features.
+The bug was triggered by invoking the @acronym{SSC} feature without
+explicitly providing an @acronym{ILV} parameter.
+The software failed to initialize an internal flag that indicated
+whether @acronym{ILV} had been invoked.
+The resulting behavior was compiler-dependent.
+Most compilers set the flag to false (as it should have been), but
+occasionally it was set to true).
+The bug expressed itself by extracting only a single timestep,
+rather than the number of timesteps indicated by the SSC parameter.
+This behavior was fixed in @acronym{NCO} version 5.1.9 (November,
+2023). 
+@end cartouche
+
 As of version 4.9.4 (September, 2020), @acronym{NCO} allows both Multi-File,
 Multi-Record operators (@command{ncra} and @command{ncrcat}) to
 extract, interleave, and operate on multiple groups of records. 
