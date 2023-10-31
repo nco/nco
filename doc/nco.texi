@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.1.9-alpha03
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 18 October 2023
+@set update-date 31 October 2023
 @set update-month October 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6209,7 +6209,7 @@ Long options:
 @samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]}@*
 @end cartouche
 As of version 4.9.4 (September, 2020), @acronym{NCO} allows both Multi-File,
-Multi-Record operators, @command{ncra} and @command{ncrcat}, to
+Multi-Record operators (@command{ncra} and @command{ncrcat}) to
 extract, interleave, and operate on multiple groups of records. 
 Interleaving (or de-interleaving, depending on one's perspective)
 means altering the order of records in a group to be processed.
@@ -6220,14 +6220,14 @@ those that are separated by multiples of the specified
 
 The interleave feature sequences records with respect to their
 position relative to the beginning of each sub-cycle.
-Records a multiple of @var{interleave} from sub-cycle beginning
-are first extracted (@command{ncrcat}) or reduced (@command{ncra}),
-then records offset from these by one, two, et cetera up to
-@math{@var{interleave}-1}. 
+Records an integer multiple of @var{interleave} from the sub-cycle
+start are first extracted (@command{ncrcat}) or reduced
+(@command{ncra}), then records offset from these by one, two, et
+cetera up to @math{@var{interleave}-1}. 
 In this manner interleaving extracts an inner (intra-sub-cycle) loop  
 that preserves high-frequency signals relative to the longer
 stride between sub-cycles.
-Thus interleaving allows deconvolution of periodic phenomena within a 
+Thus interleaving allows deconvolution of periodic phenomena within a
 time-series.
 
 Processing simple arithmetic sequences is a helpful way to 
@@ -6237,12 +6237,12 @@ Let @file{in1.nc} contain the record-array [1..10],
 @file{in2.nc} contain [11..20], and @file{in12.nc} contain [1..20].
 @example
 @verbatim
-ncra   -d time,,,,10,5 in1.nc ~/foo.nc # 3.5, 4.5, 5.5, 6.5, 7.5
-ncrcat -d time,0,4,,6,2 in1.nc ~/foo.nc # 1, 3, 5, 2, 4, 6 (+WARNING)
-ncrcat -d time,2,,10,4,2 in12.nc ~/foo.nc # 3, 5, 4, 6, 13, 15, 14, 16
-ncra   -d time,2,,10,4,2 in12.nc ~/foo.nc # 4, 5, 14, 15
-ncra   -d time,,,,10,2 in1.nc in2.nc ~/foo.nc # 5, 6, 15, 16
-ncra   -d time,,,,10,2 in12.nc ~/foo.nc # 5, 6, 15, 16
+ncra   -O -d time,,,,10,5 ~/in1.nc ~/foo.nc # 3.5, 4.5, 5.5, 6.5, 7.5
+ncrcat -O -d time,0,4,,6,2 ~/in1.nc ~/foo.nc # 1, 3, 5, 2, 4, 6 (+WARNING)
+ncrcat -O -d time,2,,10,4,2 ~/in12.nc ~/foo.nc # 3, 5, 4, 6, 13, 15, 14, 16
+ncra   -O -d time,2,,10,4,2 ~/in12.nc ~/foo.nc # 4, 5, 14, 15
+ncra   -O -d time,,,,10,2 ~/in1.nc ~/in2.nc ~/foo.nc # 5, 6, 15, 16
+ncra   -O -d time,,,,10,2 ~/in12.nc ~/foo.nc # 5, 6, 15, 16
 @end verbatim
 @end example
 
@@ -6259,7 +6259,8 @@ Our goal is to extract a monthly mean diurnal cycle from this
 timeseries.
 
 Suppose a 150-year climate simulation produces 150 output files, each
-comprising 365 days of hourly data, or 8760 records, each record an hourly mean:
+comprising 365 days of hourly data, or 8760 records, each record an
+hourly mean: 
 @file{1850.nc}, @file{1851.nc}, ... @file{1999.nc}.
 Our goal is to create a single file that contains the climatological
 monthly mean diurnal cycle for, say, March, which contains @w{31 days}

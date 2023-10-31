@@ -309,16 +309,14 @@ make install
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on acme1:
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
-# Personal recipe last modified: 20230110
-# Personal recipe last used successfully: 20230512
+# Personal recipe last modified: 20231026 (Use ~/anaconda rather than E3SMU)
+# Personal recipe last used successfully: 20231026
 # Current build error: 20231019 "configure: error: cannot find netCDF library"
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
-export PATH=${MY_BIN_DIR}:'/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin':${PATH}
-#export LD_LIBRARY_PATH=${MY_LIB_DIR}:'/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib':${LD_LIBRARY_PATH}
 # NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
 # 20220104 NB: ANTLR_ROOT in ${HOME} is only used at compile-time, not run-time
-ANTLR_ROOT=${HOME} CC='gcc' CPPFLAGS='-I/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/include' CXX='g++' LDFLAGS='-L/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CPPFLAGS='-I/home/zender1/anaconda/include' CXX='g++' LDFLAGS='-L/home/zender1/anaconda/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
@@ -352,13 +350,14 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/gpfs/
 # Fails to link to system-installed udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
 cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/spack-0.10.0/opt/spack/linux-centos6-x86_64/gcc-5.3.0/netcdf-4.4.1.1-2dtwbu4ojkwj5tqd4uqvomnu6ecmh6tx' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/spack-0.10.0/opt/spack/linux-centos6-x86_64/gcc-5.3.0/netcdf-4.4.1.1-2dtwbu4ojkwj5tqd4uqvomnu6ecmh6tx' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
+# !Blues
 
 # gcc/g++ 20171013 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cheyenne:
 # Sysadmin upgrade request: cislhelp@ucar.edu # NCAR Maintainer = Pat Nichols
@@ -380,8 +379,9 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/
 cd ~/nco;/bin/rm -f *.foo;make distclean
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0' GSL_INC='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/include' SL_LIB='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib' NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib' OPTS=D allinone;cd -
+# !Cheyenne
 
-# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on chrysalis
+# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on Chrysalis
 # LCRC uses Spack module written and tested by Adam Stewart: https://github.com/LLNL/spack/pull/4370/files
 # spack install --run-tests nco%gcc ^netcdf@4.4.0
 # Sysadmin upgrade request: support@lcrc.anl.gov
@@ -392,7 +392,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # Default as of 20210924 is to build with Anaconda netCDF
 # Default as of 20230425 is to build with Anaconda gcc/g++
-ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+cd ~/nco;ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Older method:
 #module load gcc/9.2.0-ugetvbp
 #module load openmpi/4.0.4-hpcx-hghvhj5
@@ -404,6 +404,7 @@ make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
+# !Chrysalis
 
 # Compy with GNU compilers (default from 20221216--present)
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on compy using GCC
@@ -411,17 +412,19 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Sysadmin upgrade request: rc-support@pnnl.gov # PNNL Maintainer = Tim Carlson ?
 # Latest ticket to build NCO: 20190525 ICS-40n99 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
-# Personal recipe borken: 20230904 Antlr2 linking
+# Personal recipe borken: 20231031 unable to link to libnetcdf due to GLIBC_PRIVATE errors
 # Personal recipe last modified: 20230917 (use conda gcc/g++ compilers so new libnetcdf links to C++ to resolve libicuuc dependencies)
 # Personal recipe last used successfully: 20230917
 module purge
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CPPFLAGS="-I${HOME}/anaconda/include" CXX='g++' LDFLAGS="-L${HOME}/anaconda/lib" NETCDF_ROOT="${HOME}/anaconda" ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
+# !Compy (GNU)
 
 # Compy with Intel compilers (default from 20210104--20221215)
 # Personal recipe last modified: 20220919
@@ -433,13 +436,14 @@ module load intelmpi/2020 # Required for ncclimo/ncremap in MPI-mode
 module load netcdf/4.6.3
 #module load mkl/2020 # Does not hurt but not necessary?
 cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64 -limf -lirc' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # works
-ANTLR_ROOT=${HOME} CC='icx -static-intel -qopenmp-link=static' CXX='icx -static-intel -qopenmp-link=static' LDFLAGS='-L/usr/lib64 -L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # fails with ld: cannot find -lm but -lm is not necessary and removing it fixes the issue
+cd ~/nco;ANTLR_ROOT=${HOME} CC='icc' CXX='icpc' LDFLAGS='-L/lib64 -limf -lirc' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # works
+cd ~/nco;ANTLR_ROOT=${HOME} CC='icx -static-intel -qopenmp-link=static' CXX='icx -static-intel -qopenmp-link=static' LDFLAGS='-L/usr/lib64 -L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/intel/20.0.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/intel/20.0.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --disable-shared --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1 # fails with ld: cannot find -lm but -lm is not necessary and removing it fixes the issue
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
+# !Compy (Intel)
 
 # 20150901: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cooley:
 # Sysadmin upgrade request: support@alcf.anl.gov # ALCF Maintainer = 
@@ -449,104 +453,14 @@ make install >> nco.make.foo 2>&1
 # Personal recipe last used successfully: 20190420
 cd ~/nco;/bin/rm -f *.foo;make distclean
 cd ~/nco;git reset --hard origin/master
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/unsupported/netcdf-4.4.1.1' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/unsupported/netcdf-4.4.1.1' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-
-# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori with Intel:
-# Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
-# Latest ticket to build NCO: INC0118469 on 20180413
-# Latest sysadmin-compiled module usage: module load nco/5.0.1 # 20220701
-# Personal recipe last modified: 20221222 (deprecate UDUNITS_PATH)
-# Personal recipe last used successfully: 20221222
-module purge # After login, purge before load or risk this: "error while loading shared libraries: libiomp5.so: cannot open shared object file: No such file or directory"
-module load PrgEnv-intel
-module load cray-netcdf
-module load gsl/2.7
-module load antlr/2.7.7-intel
-module load udunits
-cd ~/nco;/bin/rm -f *.foo;make distclean
-CPPFLAGS="-I ${UDUNITS_DIR}/include" LDFLAGS="-L${UDUNITS_DIR}/lib -ludunits2" ANTLR_ROOT='/global/common/software/nersc/cori-2022q1/spack/cray-cnl7-haswell/antlr-2.7.7-qqi5ofz' CC='icc' CXX='icpc' NETCDF_ROOT="${CRAY_NETCDF_PREFIX}" ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
-/bin/cp -f config.log nco.config.log.foo
-/bin/cp -f libtool nco.libtool.foo
-make clean;make > nco.make.foo 2>&1
-make check >> nco.make.foo 2>&1
-make install >> nco.make.foo 2>&1
-scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-
-# 20200105 Try NERSC-recommended procedures:
-# https://www.nersc.gov/assets/Uploads/04-PE-Compilations-NewUserTraining-20190621.pdf
-module swap PrgEnv-Intel PrgEnv-cray
-unset NETCDF4_ROOT
-unset NETCDF_INC
-unset NETCDF_LIB
-unset NETCDF_ROOT
-module load cray-netcdf/4.7.4.0
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man 
-
-# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori with GNU:
-# Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
-# Latest ticket to build NCO: INC0118469 on 20180413
-# Latest sysadmin-compiled module usage: module load nco/5.0.1 # 20220701
-# Personal recipe last modified: 20220320 (updated to netCDF 4.8.1)
-# Personal recipe last used successfully: 20220202 (currently not linking ncap2 because needs -L${HOME}/lib_cori to find -lantlr. Moreover, ldd cannot find system libraries. also issues with HDF library mismatch)
-module load gcc
-export HDF5_DISABLE_VERSION_CHECK=1
-export HDF5_USE_FILE_LOCKING=FALSE
-#module load udunits
-cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='gcc' CXX='g++' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2' NETCDF_INC='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
-/bin/cp -f config.log nco.config.log.foo
-/bin/cp -f libtool nco.libtool.foo
-make clean;make > nco.make.foo 2>&1
-make check >> nco.make.foo 2>&1
-make install >> nco.make.foo 2>&1
-scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-# 20200131 Optimize build for Cori KNL (use NERSC compiler wrappers)
-# This "works" yet shows no weight-generation speed advantages compared to Haswell
-# 20200203: KNL-optimized binaries on login nodes (Haswell) cause "Illegal Instruction" errors
-# However, default (Haswell-optimized) binaries on compute nodes (KNL) do not cause "Illegal Instruction" errors
-# Until/unless speed advantage is demonstrated, avoid KNL-optimized environment for compilation
-module swap craype-haswell craype-mic-knl
-module swap PrgEnv-intel PrgEnv-gnu
-module load gcc # Activate GCC8
-cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_INC='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.foo 2>&1
-/bin/cp -f config.log nco.config.log.foo
-/bin/cp -f libtool nco.libtool.foo
-make clean;make > nco.make.foo 2>&1
-make check >> nco.make.foo 2>&1
-make install >> nco.make.foo 2>&1
-scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-
-# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori with NVidia:
-# Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
-# Latest ticket to build NCO: INC0118469 on 20180413
-# Latest sysadmin-compiled module usage: module load nco/5.0.1 # 20220701
-# Personal recipe last modified: 20201210 (attempting nvidia)
-# Personal recipe last used successfully: fxm 
-cd ~/nco;/bin/rm -f *.foo;make distclean
-#export rch_sfx='cori' 
-bsrc
-export rch_sfx='cgpu' 
-export MY_BIN_DIR=${HOME}/bin_${rch_sfx}
-export MY_LIB_DIR=${HOME}/lib_${rch_sfx}
-export MY_OBJ_DIR=${HOME}/obj_${rch_sfx}
-export PATH=${MY_BIN_DIR}:${PATH}
-export LD_LIBRARY_PATH=${MY_LIB_DIR}:${LD_LIBRARY_PATH}
-module purge && module load cgpu
-module load hpcsdk/20.11
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='nvc' CXX='nvc++' GSL_ROOT='/usr/common/software/gsl/2.1/intel' NETCDF_INC='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.8.1.1/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.8.1.1' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/intel' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/man > nco.configure.foo 2>&1
-/bin/cp -f config.log nco.config.log.foo
-/bin/cp -f libtool nco.libtool.foo
-make clean;make > nco.make.foo 2>&1
-make check >> nco.make.foo 2>&1
-make install >> nco.make.foo 2>&1
-scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
+# !Cooley
 
 # gcc/g++ 20201208 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on Frontier:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
@@ -567,29 +481,31 @@ export PATH=${PATH}:${HOME}/anaconda/bin
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make ANTLR_ROOT=${HOME}/anaconda ANTLR_LIB=${HOME}/anaconda NETCDF_ROOT=${HOME}/anaconda OPTS=D OMP=Y allinone;cd -
 cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
+# !Frontier
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on Perlmutter with GNU:
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: 
-# Personal recipe last modified: 20230512 (udunits arguments to configure)
-# Personal recipe last used successfully: 20230917
+# Personal recipe last modified: 20231030 (change to cray-netcdf 4.9.0.7)
+# Personal recipe last used successfully: 20231030
 module load PrgEnv-gnu
 module load gcc/11.2.0
-module load cray-hdf5/1.12.2.1
-module load cray-netcdf/4.9.0.1
+module load cray-hdf5/1.12.2.7
+module load cray-netcdf/4.9.0.7
 module load gsl
 export HDF5_DISABLE_VERSION_CHECK=1
 export HDF5_USE_FILE_LOCKING=FALSE
 #module load udunits
 cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_perlmutter CC='gcc' CXX='g++' NETCDF_DIR='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1' NETCDF_INC='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.9.0.1/gnu/9.1/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.9.0.1' UDUNITS2_ROOT=${HOME} ./configure --prefix=${HOME} --bindir=${HOME}/bin_perlmutter --datadir=${HOME}/nco/data --libdir=${HOME}/lib_perlmutter --mandir=${HOME}/man > nco.configure.foo 2>&1
+cd ~/nco;ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_perlmutter CC='gcc' CXX='g++' NETCDF_DIR='/opt/cray/pe/netcdf/4.9.0.7/gnu/9.1' NETCDF_INC='/opt/cray/pe/netcdf/4.9.0.7/gnu/9.1/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.9.0.7/gnu/9.1/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.9.0.7' UDUNITS2_ROOT=${HOME} ./configure --prefix=${HOME} --bindir=${HOME}/bin_perlmutter --datadir=${HOME}/nco/data --libdir=${HOME}/lib_perlmutter --mandir=${HOME}/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
+# !Perlmutter
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on greenplanet
 # Personal recipe last modified: 20190526
@@ -621,7 +537,7 @@ CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_I
 module load netcdf/4.4.0
 module load udunits
 cd ~/nco;/bin/rm -f *.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib CC='gcc' CXX='g++' UDUNITS2_PATH='/sw/udunits-2.1.24' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+cd ~/nco;ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib CC='gcc' CXX='g++' UDUNITS2_PATH='/sw/udunits-2.1.24' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1

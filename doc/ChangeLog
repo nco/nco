@@ -1,8 +1,12 @@
-2023-10-24  Charlie Zender  <zender@uci.edu>
+2023-10-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.9-alpha03: Caring Bridge';git push
 	git tag -a 5.1.9-alpha03 -m 'ncap2: refactor exit();';git push --tags
+
+	* Henry fixed parsing of NC_MIN_INT64 so limits.nco now completes successfully
+
+2023-10-24  Charlie Zender  <zender@uci.edu>
 
 	* Cleanup ncap2 limits.nco test, which fails on MacOS and Linux
 

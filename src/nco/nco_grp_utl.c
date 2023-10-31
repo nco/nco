@@ -7010,9 +7010,8 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
             /* Obtain group ID */
             (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
-            /* a) case where the dimension has coordinate variables */
             if(var_trv.var_dmn[idx_var_dmn].crd){
-
+	      /* a) Dimension is a coordinate */
               crd_sct *crd=var_trv.var_dmn[idx_var_dmn].crd;
 
               /* Create stand-alone limit structure for given dimension */
@@ -7022,9 +7021,8 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
               (*lmt_rec)[rec_nbr]->grp_nm_fll=(char *)strdup(crd->crd_grp_nm_fll);
               (*lmt_rec)[rec_nbr]->nm_fll=(char *)strdup(crd->dmn_nm_fll);
 
-              /* b) case of dimension only (there is no coordinate variable for this dimension */
-            }else{
-
+            }else{ /* !crd */
+              /* b) Dimension is non-coordinate (i.e., there is no coordinate variable for this dimension) */
               dmn_trv_sct *ncd=var_trv.var_dmn[idx_var_dmn].ncd;
 
               /* Create stand-alone limit structure for given dimension */
@@ -7034,7 +7032,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
               (*lmt_rec)[rec_nbr]->grp_nm_fll=(char *)strdup(ncd->grp_nm_fll);
               (*lmt_rec)[rec_nbr]->nm_fll=(char *)strdup(ncd->nm_fll);
 
-            } /* b) case of dimension only (there is no coordinate variable for this dimension */
+            } /* !crd */
             
             (*lmt_rec)[rec_nbr]->cln_typ=cln_nil; 
             (*lmt_rec)[rec_nbr]->origin=0.0;
@@ -7050,7 +7048,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
               cln_att_sng=nco_lmt_get_udu_att(grp_id,var_id,"calendar"); 
               (*lmt_rec)[rec_nbr]->cln_typ=nco_cln_get_cln_typ(cln_att_sng); 
               if(cln_att_sng) cln_att_sng=(char*)nco_free(cln_att_sng);  
-            } /* endif */
+            } /* !rcd */
 
             /* Store ID */
             (*lmt_rec)[rec_nbr]->id=dmn_id;
@@ -7060,7 +7058,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
               if((*lmt_rec)[rec_nbr]->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",
                 nco_prg_nm_get(),(*lmt_rec)[rec_nbr]->nm,nco_prg_nm_get());
               flg_prn=True;
-            }
+            } /* !dbg */
 #endif /* !ENABLE_UDUNITS */
 
             /* Increase array size */

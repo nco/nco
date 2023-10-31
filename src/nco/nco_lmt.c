@@ -54,8 +54,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
   lmt->is_usr_spc_max=False; /* [flg] True if user-specified, else False */
   lmt->is_usr_spc_min=False; /* [flg] True if user-specified, else False */
   lmt->cln_typ=cln_nil;      /* [enm] Used by ncra, ncrcat to store enum of calendar-type attribute */
-
-} /* end nco_lmt_init() */
+} /* !nco_lmt_init() */
 
 void
 nco_lmt_prn /* [fnc] Print a Limit structure */
@@ -285,8 +284,8 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
       if(lmt[idx]->ilv_sng) lmt_dim->ilv_sng=(char *)strdup(lmt[idx]->ilv_sng); else lmt_dim->ilv_sng=NULL;
       lmt_dim->nm=(char *)strdup(lmt[idx]->nm);
       break;
-    } /* end if */
-  } /* end loop over idx */
+    } /* !lmt[idx]->id */
+  } /* !idx */
 
   /* If this limit was not user-specified, then ... */
   if(idx == lmt_nbr){
@@ -345,7 +344,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
 
   return lmt_dim;
 
-} /* end nco_lmt_sct_mk() */
+} /* !nco_lmt_sct_mk() */
 
 lmt_sct ** /* O [sct] Structure list with user-specified strings for min and max limits */
 nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
@@ -514,7 +513,7 @@ nco_lmt_get_udu_att /* Returns specified attribute otherwise NULL */
     } /* !NC_CHAR */
   } /* endif */
   return fl_udu_sng;
-} /* end nco_lmt_get_udu_att() */
+} /* !nco_lmt_get_udu_att() */
 
 void
 nco_prn_lmt                    /* [fnc] Print limit information */
@@ -566,7 +565,7 @@ nco_prn_lmt                    /* [fnc] Print limit information */
   (void)fprintf(stderr,"MRO = %s\n",lmt.flg_mro ? "YES" : "NO");
   (void)fprintf(stderr,"MSO = %s\n",lmt.flg_mso ? "YES" : "NO");
   (void)fprintf(stderr,"ILV = %s\n\n",lmt.flg_ilv ? "YES" : "NO");
-} /* nco_prn_lmt() */
+} /* !nco_prn_lmt() */
 
 void
 nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
@@ -579,7 +578,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   /* Purpose: Take parsed list of dimension names, minima, and
      maxima strings and find appropriate indices into dimensions 
      for formulation of dimension start and count vectors, or fail trying. */
-
   const char fnc_nm[]="nco_lmt_evl()";
 
   char *fl_udu_sng=NULL_CEWI;   /* Store units attribute of coordinate dimension */
@@ -624,6 +622,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   lmt.srd=1L;
   lmt.ilv=1L;
   lmt.flg_input_complete=False;
+  /* 20231031: Explicitly initialize flg_ilv to False, to be over-ridden later iff lmt.ilv > 1 */
+  lmt.flg_ilv=False;
 
   /* Get dimension ID from name */
   rcd=nco_inq_dimid_flg(grp_id,lmt.nm,&lmt.id);
@@ -1393,7 +1393,7 @@ no_data_ok: /* end goto */
 
   if(nco_dbg_lvl_get() >= nco_dbg_fl && lmt.flg_ilv){
     (void)nco_prn_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
-  } /* end dbg */
+  } /* !dbg */
 
   if(lmt.srt > lmt.end && !flg_no_data_ok){
     if(nco_prg_id != ncks) (void)fprintf(stderr,"WARNING: Possible instance of Schweitzer data hole requiring better diagnostics TODO #148\n");
