@@ -1,8 +1,16 @@
 2023-10-31  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.1.9-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.9-beta01: ';git push
+	git tag -a 5.1.9-beta01 -m 'all: fix uninitialized flg_ilv; ncremap: trbilin, trintbilin, ncoaave, ...';git push --tags
+
 	* NCO 5.1.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.9-alpha03: Caring Bridge';git push
 	git tag -a 5.1.9-alpha03 -m 'all: fix uninitialized flg_ilv to fix ncra, ncrcat bugs; ncap2: refactor exit();';git push --tags
+
+	* ncremap/ncclimo: Update Perlmutter modules
+
+	* Add ncremap error messages for for esmfbilin, esmfaave, trbilin, trintbilin
 
 	* Try std::strtoll() and std::strtoull() in ncoGrammar.g to fix	limits.nco behavior (requires ISO C++ 2011)
 
@@ -11,7 +19,7 @@
 
 2023-10-30  Charlie Zender  <zender@uci.edu>
 
-	* Henry fixed parsing of NC_MIN_INT64 so limits.nco now completes successfully
+	* Henry tried to fix NC_MIN_INT64 parsing so limits.nco would complete successfully
 
 2023-10-24  Charlie Zender  <zender@uci.edu>
 

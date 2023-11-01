@@ -1,19 +1,19 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.9 make the scene
+netCDF Operators NCO version 5.1.9 strut their stuff
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.9 recognizes NC_STRING as valid alternatives to NC_CHAR
-attributes (consistent with CF Conventions), infers MPAS grids stored
-in radians when units attributes are not present, and support checks
-for adherence to NASA DIWG (and CF) recommendations for valid
-identiers, and for the missing_value attribute. 
-Skip this release if these issues are of no import to you.
+Version 5.1.9 updates ncremap to employ new TempestRemap
+weight-generation algorithms (bilinear and integrated bilinear),
+updates ncremap to recognize new names for existing algorithms,
+changes ncremap's default treatment of filling empty areas with
+missing values, and fixes a long-standing bug with ncra and ncrcat 
+subcycle and interleave options.
 
-Work on NCO 5.1.9 has commenced and aims to add support for Zarr S3
+Work on NCO 5.2.0 has commenced and aims to add support for Zarr S3 
 stores, and to polish support for new codecs..
 
 Enjoy,
@@ -21,35 +21,40 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. NCO operators are now much better, though not perfect,
-at recognizing NC_STRING attributes as equivalent and interchangeable
-with NC_CHAR attributes, as permitted by CF Conventions since ~2020.
-In particular, this prevents annoying WARNINGs when CF attributes
-like "bounds" are stored as NC_STRING. Thanks to Abel Aoun for
-reporting/suggesting this.
+A. ncremap supports new TempestRemap bilinear and integrated bilinear
+weight-generation algorithms. The algorithms sport the recommended
+names trbilin and trintbilin.
+ncremap --alg_typ=trbilin --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+ncremap --alg_typ=trintbilin --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+http://nco.sf.net/nco.html#tr
 
-B. ncremap can now infer SCRIP grid-files from MPAS datasets
-when the coordinates are in radians yet not marked as such in
-the units attribute. The algorithm simply assumes that if the
-bounding latitudes and longitudes are within +/-2*pi then the
-units are radians. Imperfect, yet unlikely to fail in most
-MPAS meshes.
-ncremap --dst_fl=AIS_4to20km.nc --grd_dst=ais4to20km_ismip6.nc
+A. ncremap supports new "standard" names for E3SM v3 regridding
+algorithms and for older algorithms. These new names are simply
+synonyms for the existing algorithm names. No algorithm names have 
+been deprecated (yet) so existing commands will still work.
+The new names are of the form ToolAlgorithm where Tool is esmf, nco,
+tr, or mbtr and Algorithm is the "classic" algorithm name, aave,
+bilin, etc. 
+ncremap --alg_typ=esmfaave --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+ncremap --alg_typ=ncoaave  --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+ncremap --alg_typ=traave   --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+https://acme-climate.atlassian.net/wiki/spaces/DOC/pages/1217757434/Mapping+file+algorithms+and+naming+convention
 
-C. ncks supports a new flag, --chk_chr, that prints any identifiers
-(dimension,group,variable,attribute names) that do not comply with
-the CF Conventions. CF-compliant identifiers must match this
-regular expression: [A-Za-z][A-Za-z0-9_]*
-This is much more restrictive than the NUG, as it eliminates most
-special characters.
-$ ncks --chk_chr ~/nco/data/in.nc
-...
-ncks: WARNING nco_chk_chr() reports variable att_var_spc_chr attribute name "at_in_name@" is not CF-compliant
-ncks: WARNING nco_chk_chr() reports variable name "var_nm-dash" is not CF-compliant
-ncks: WARNING nco_chk_chr() reports variable var_nm-dash attribute name "att_nm-dash" is not CF-compliant
-ncks: INFO nco_chk_chr() reports total number of identifiers with CF non-compliant names is 26
-$
-http://nco.sf.net/nco.htlm/chk_chr
+A. ncremap supports a new flag, --mpt_mss, to control the values
+placed in empty unmasked destination gridcells in sub-gridscale (SGS)
+mode. SGS mode interprets every gridcell as being fractionally covered 
+by an amount contained in sgs_var (e.g., landfrac, seaicefrac).
+Empty in this context means unmasked cells where sgs_var is zero,
+e.g., no land, or no sea ice. Since ~2020, ncremap has filled empty
+SGS cells with the missing value. NCO 5.1.9 changes that behavior so
+that, by default, empty SGS cells are filled with zeros. This makes
+maps of sea-ice variables, e.g., zero in open ocean and non-zero
+where sea ice exists. Users can explicitly request the previous
+behavior (missing values instead of zeros) with the --mpt_mss
+flag (which stands for "empty missing").
+ncremap -P mpasseaice           --map=map.nc in.nc out.nc # Empty = 0.0
+ncremap -P mpasseaice --mpt_mss --map=map.nc in.nc out.nc # Empty = _FillValue
+http://nco.sf.net/nco.html#mpt_mss
 
 D. ncks supports a new flag, --chk_mss, that reports which variables
 (and groups) contain a missing_value attribute.
@@ -65,9 +70,6 @@ ncks: WARNING nco_chk_mss() reports variable rec_var_int_mss_val_flt contains "m
 ncks: INFO nco_chk_mss() reports total number of variables and/or groups with "missing_value" attribute is 11
 $
 http://nco.sf.net/nco.htlm/chk_mss
-
-E. ncremap and ncclimo now support paths and nodenames on DOE OLCF's
-Frontier supercomputer.
 
 BUG FIXES:
    
