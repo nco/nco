@@ -1,8 +1,4 @@
-2023-11-01  Charlie Zender  <zender@uci.edu>
-
-	* Henry actually fixed NC_MIN_INT64 parsing so limits.nco completes successfully!
-
-2023-10-31  Charlie Zender  <zender@uci.edu>
+2023-11-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.9-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.9-beta01: ';git push
@@ -11,6 +7,14 @@
 	* NCO 5.1.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.9-alpha03: Caring Bridge';git push
 	git tag -a 5.1.9-alpha03 -m 'all: fix uninitialized flg_ilv to fix ncra, ncrcat bugs; ncap2: refactor exit(), parse NC_MIN_INT64;';git push --tags
+
+	* Replace WIN32 (archaic) with _MSC_VER
+
+2023-11-01  Charlie Zender  <zender@uci.edu>
+
+	* Henry fixex NC_MIN_INT64 parsing so limits.nco completes successfully!
+
+2023-10-31  Charlie Zender  <zender@uci.edu>
 
 	* ncremap/ncclimo: Update Perlmutter modules
 

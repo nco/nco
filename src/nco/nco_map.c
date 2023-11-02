@@ -602,11 +602,11 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     vrs_sng=vrs_cpp+1L;
   } /* endif */
   rcd=nco_char_att_put(out_id,NULL,"weight_generator_version",vrs_sng);
-#ifdef WIN32
+#ifdef _MSC_VER
   const char sls_chr='\\';   /* [chr] Slash character */
-#else /* !WIN32 */
+#else /* !_MSC_VER */
   const char sls_chr='/';   /* [chr] Slash character */
-#endif /* !WIN32 */
+#endif /* !_MSC_VER */
   rcd=nco_char_att_put(out_id,NULL,"grid_file_src",(sls_ptr=strrchr(fl_grd_src,sls_chr)) == NULL ? fl_grd_src : sls_ptr+1);
   rcd=nco_char_att_put(out_id,NULL,"grid_file_dst",(sls_ptr=strrchr(fl_grd_dst,sls_chr)) == NULL ? fl_grd_dst : sls_ptr+1);
   (void)nco_hst_att_cat(out_id,rgr->cmd_ln);

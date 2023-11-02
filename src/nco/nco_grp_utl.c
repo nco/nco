@@ -2496,11 +2496,11 @@ nco_chk_xtn /* [fnc] Check filename extension */
      DIWG Recommendation:
      https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=182297715 */
 
-#ifdef WIN32
+#ifdef _MSC_VER
   const char sls_chr='\\'; /* [chr] Slash character */
-#else /* !WIN32 */
+#else /* !_MSC_VER */
   const char sls_chr='/'; /* [chr] Slash character */
-#endif /* !WIN32 */
+#endif /* !_MSC_VER */
 
   const char fnc_nm[]="nco_chk_xtn()"; /* [sng] Function name */
 

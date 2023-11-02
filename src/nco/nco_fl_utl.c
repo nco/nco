@@ -382,11 +382,11 @@ nco_drc_ncz_rm /* [fnc] Safely remove valid NCZarr directory */
 
   const char fnc_nm[]="nco_drc_ncz_rm()"; /* [sng] Function name */
 
-#ifdef WIN32
+#ifdef _MSC_VER
   const char sls_sng[]="\\"; /* [chr] Slash string for path separator */
-#else /* !WIN32 */
+#else /* !_MSC_VER */
   const char sls_sng[]="/"; /* [chr] Slash string for path separator */
-#endif /* !WIN32 */
+#endif /* !_MSC_VER */
 
   const char fl_ncz_rqr[]=".zgroup"; /* [sng] Required file led to by NCZarr path (instead of useless nc_open() test) */
 
@@ -1200,12 +1200,12 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if(!rmt_cmd){
       if(FTP_URL){
 	/* fxm: use autoconf HAVE_XXX rather than WIN32 token TODO nco292 */
-#ifdef WIN32
+#ifdef _MSC_VER
 	/* #ifndef HAVE_NETWORK fxm */
 	/* I have no idea how FTP networking calls work in MS Windows, so just exit */
 	(void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported by this operating system\n",nco_prg_nm_get(),fl_nm_rmt);
 	nco_exit(EXIT_FAILURE);
-#else /* !WIN32 */
+#else /* !_MSC_VER */
 	char *usr_nm;
 	char *host_nm_lcl;
 	char *host_nm_rmt;
@@ -1318,7 +1318,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	if(!FTP_NETRC) usr_email=(char *)nco_free(usr_email);
 	/* Always free .netrc filename space */
 	fl_nm_netrc=(char *)nco_free(fl_nm_netrc);
-#endif /* !WIN32 */
+#endif /* !_MSC_VER */
       } /* !FTP_URL */
     } /* !rmt_cmd */
     
@@ -1904,11 +1904,11 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
 {
   /* Purpose: Find blocksize of filesystem that will or does contain this file */
   const char fnc_nm[]="nco_fl_blocksize()"; /* [sng] Function name */
-#ifdef WIN32
+#ifdef _MSC_VER
   const char sls_chr='\\'; /* [chr] Slash character for path separator */
-#else /* !WIN32 */
+#else /* !_MSC_VER */
   const char sls_chr='/'; /* [chr] Slash character for path separator */
-#endif /* !WIN32 */
+#endif /* !_MSC_VER */
   
   char *drc_out; /* [sng] Directory containing output file (use for stat()) */
   char *sls_ptr; /* [sng] Pointer to slash */
@@ -2552,11 +2552,11 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
     if(psx_stb) psx_stb_lcl=psx_stb_tmp+scm_pfx_lng;
 
     if(psx_stb || psx_drc){
-#ifdef WIN32
+#ifdef _MSC_VER
       const char sls_chr='\\'; /* [chr] Slash character for path separator */
-#else /* !WIN32 */
+#else /* !_MSC_VER */
       const char sls_chr='/'; /* [chr] Slash character for path separator */
-#endif /* !WIN32 */
+#endif /* !_MSC_VER */
       char *sls_ptr; /* [ptr] Location of last slash in fl_ncz_dpl */
       ptrdiff_t sls_fst=0; /* [nbr] Offset of final slash from beginning of POSIX portion of fl_ncz */
       /* The search for the POSIX directory slash could find the slashes in the scheme prefix

@@ -45,10 +45,10 @@
 typedef int pid_t;
 #endif /* !_MSC_VER */
 
-#ifndef WIN32
+#ifndef _MSC_VER
 # include <arpa/nameser.h> /* needed for _res */
 # include <resolv.h> /* Internet structures for _res */
-#endif /* !WIN32 */
+#endif /* !_MSC_VER */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
