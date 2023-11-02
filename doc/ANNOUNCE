@@ -83,8 +83,15 @@ Most compilers set the ILV flag to false (as it should have been), but
 some compilers set it to true.  The bug expressed itself by extracting
 only a single timestep, rather than the number of timesteps indicated
 by the SSC parameter.  This behavior was fixed in NCO version 5.1.9
-(November, 2023).
+(November, 2023). There is no workaround to this problem, the solution
+is to upgrade. 
 http://nco.sf.net/nco.html#bug_ilv
+
+B. ncap2 now successfully parses naked numeric constants with the
+value -9223372036854775808LL (i.e., NC_MIN_INT64). Previously, the
+C++ standard library functions failed when attempting this. Thanks to
+Henry Butowsky for hacking together a workable implementation. There
+is no workaround to this problem, the solution is to upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

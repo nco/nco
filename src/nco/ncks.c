@@ -249,6 +249,7 @@ main(int argc,char **argv)
   nco_bool CHK_MAP=False; /* [flg] Check map-file quality */
   nco_bool CHK_MSS=False; /* [flg] Check for missing_value attribute */
   nco_bool CHK_NAN=False; /* [flg] Check for NaNs */
+  nco_bool CHK_XTN=False; /* [flg] Check filename extension */
   nco_bool CPY_GRP_METADATA; /* [flg] Copy group metadata (attributes) */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option x */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
@@ -354,6 +355,8 @@ main(int argc,char **argv)
     {"check_nan",no_argument,0,0}, /* [flg] Check file for NaNs */
     {"nan",no_argument,0,0}, /* [flg] Check file for NaNs */
     {"NaN",no_argument,0,0}, /* [flg] Check file for NaNs */
+    {"chk_xtn",no_argument,0,0}, /* [flg] Check filename extension */
+    {"check_extension",no_argument,0,0}, /* [flg] Check filename extension */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
@@ -684,6 +687,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"chk_map") || !strcmp(opt_crr,"check_map")) CHK_MAP=True; /* [flg] Check map-file quality */
       if(!strcmp(opt_crr,"chk_mss") || !strcmp(opt_crr,"check_missing_value")) CHK_MSS=True; /* [fnc] Check variables+groups for missing_value attribute */
       if(!strcmp(opt_crr,"chk_nan") || !strcmp(opt_crr,"check_nan") || !strcmp(opt_crr,"nan") || !strcmp(opt_crr,"NaN")) CHK_NAN=True; /* [flg] Check for NaNs */
+      if(!strcmp(opt_crr,"chk_xtn") || !strcmp(opt_crr,"check_extension")) CHK_XTN=True; /* [flg] Check filename extension */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
         cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -1141,9 +1145,9 @@ main(int argc,char **argv)
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
   fl_in_dpl=strdup(fl_in);
 #ifdef WIN32
-  const char sls_chr='\\';   /* [chr] Slash character */
+  const char sls_chr='\\'; /* [chr] Slash character */
 #else /* !WIN32 */
-  const char sls_chr='/';   /* [chr] Slash character */
+  const char sls_chr='/'; /* [chr] Slash character */
 #endif /* !WIN32 */
   fl_in_stub=strrchr(fl_in_dpl,sls_chr);
   if(fl_in_stub) fl_in_stub++; else fl_in_stub=fl_in_dpl;
@@ -1379,7 +1383,7 @@ main(int argc,char **argv)
 
     nco_bool ALPHA_BY_FULL_GROUP=False; /* [flg] Print alphabetically by full group */
     nco_bool ALPHA_BY_STUB_GROUP=True; /* [flg] Print alphabetically by stub group */
-    char *sfx_ptr;
+    char *sfx_ptr; /* [sng] Filename extension/suffix, if any */
 
     /* Update all GTT dimensions with hyperslabbed size */
     (void)nco_dmn_trv_msa_tbl(in_id,rec_dmn_nm,trv_tbl);   
@@ -1523,6 +1527,12 @@ main(int argc,char **argv)
         brk_nbr=nco_chk_nan(in_id,trv_tbl);
 	if(brk_nbr) exit(EXIT_FAILURE); else nco_exit(EXIT_SUCCESS);
       } /* !CHK_NAN */
+
+      if(CHK_XTN){
+	/* Check filename extension */
+        brk_nbr=nco_chk_xtn(in_id,fl_in);
+	if(brk_nbr) exit(EXIT_FAILURE); else nco_exit(EXIT_SUCCESS);
+      } /* !CHK_XTN */
       /* End DIWG tests */
 
       if(CHK_MAP){

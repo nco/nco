@@ -2484,6 +2484,52 @@ nco_chk_nan /* [fnc] Check file for NaNs */
   return brk_nbr;
 } /* !nco_chk_nan() */
 
+int /* O [nbr] Number of non-compliant extensions */
+nco_chk_xtn /* [fnc] Check filename extension */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const char * const fl_in) /* I [sng] Filename */
+{
+  /* Purpose: Check filename extension
+     ncks --chk_xtn ~/nco/data/in.nc
+     ncks --dbg=1 --chk_xtn ~/nco/data/in_4.nc
+     
+     DIWG Recommendation:
+     https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=182297715 */
+
+#ifdef WIN32
+  const char sls_chr='\\'; /* [chr] Slash character */
+#else /* !WIN32 */
+  const char sls_chr='/'; /* [chr] Slash character */
+#endif /* !WIN32 */
+
+  const char fnc_nm[]="nco_chk_xtn()"; /* [sng] Function name */
+
+  char *fl_in_dpl=NULL; /* [sng] Duplicate of fl_in */
+  char *fl_in_stub=NULL; /* [sng] Filename component of fl_in */
+  char *sfx_sng; /* [sng] Filename extension/suffix, if any */
+
+  int brk_nbr; /* [nbr] Number of variables with NaN */
+
+  /* Initialize */
+  brk_nbr=0;
+
+  fl_in_dpl=strdup(fl_in);
+  fl_in_stub=strrchr(fl_in_dpl,sls_chr);
+  if(fl_in_stub) fl_in_stub++; else fl_in_stub=fl_in_dpl;
+  sfx_sng=strrchr(fl_in_stub,'.');
+  if(sfx_sng) sfx_sng++;
+
+  (void)fprintf(stderr,"%s: DEBUG %s reports fl_in=%s, fl_in_stub=%s, sfx_sng=%s\n",nco_prg_nm_get(),fnc_nm,fl_in,fl_in_stub,sfx_sng);
+
+  if(fl_in_dpl) fl_in_dpl=(char *)nco_free(fl_in_dpl);
+
+  if(brk_nbr > 0){
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of non-compliant filename extensions is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
+  } /* !brk_nbr */
+
+  return brk_nbr;
+} /* !nco_chk_xtn() */
+
 void
 nco_xtr_wrt                           /* [fnc] Write extracted data to output file */
 (const int nc_id_in,                  /* I [ID] netCDF input file ID */
@@ -10508,7 +10554,7 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
 } /* !nco_prc_rel_cmn_nm() */
 
 void                  
-nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */                                
+nco_chk_nsm                            /* [fnc] Check if ensembles are valid  */
 (const int in_id,                      /* I [id] netCDF input-file ID of current file, starting with first */
  const int fl_idx,                     /* I [nbr] Index of file loop  */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) of *first* file */

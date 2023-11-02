@@ -1,12 +1,16 @@
+2023-11-01  Charlie Zender  <zender@uci.edu>
+
+	* Henry actually fixed NC_MIN_INT64 parsing so limits.nco completes successfully!
+
 2023-10-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.1.9-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.9-beta01: ';git push
-	git tag -a 5.1.9-beta01 -m 'all: fix uninitialized flg_ilv; ncremap: trbilin, trintbilin, ncoaave, ...';git push --tags
+	git tag -a 5.1.9-beta01 -m 'all: fix uninitialized flg_ilv; ncremap: trbilin, trintbilin, ncoaave, ...; ncap2 parse	NC_MIN_INT64;';git push --tags
 
 	* NCO 5.1.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.9-alpha03: Caring Bridge';git push
-	git tag -a 5.1.9-alpha03 -m 'all: fix uninitialized flg_ilv to fix ncra, ncrcat bugs; ncap2: refactor exit();';git push --tags
+	git tag -a 5.1.9-alpha03 -m 'all: fix uninitialized flg_ilv to fix ncra, ncrcat bugs; ncap2: refactor exit(), parse NC_MIN_INT64;';git push --tags
 
 	* ncremap/ncclimo: Update Perlmutter modules
 
@@ -16,10 +20,6 @@
 
 	* Initialize flg_ilv=False in nco_lmt_evl() to fix ncra bug reported by Chris G. and Jim Benedict
 	This eliminates ALL valgrind uninitialized value warnings when SSC specified without ILV
-
-2023-10-30  Charlie Zender  <zender@uci.edu>
-
-	* Henry tried to fix NC_MIN_INT64 parsing so limits.nco would complete successfully
 
 2023-10-24  Charlie Zender  <zender@uci.edu>
 
