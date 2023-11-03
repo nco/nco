@@ -602,7 +602,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     vrs_sng=vrs_cpp+1L;
   } /* endif */
   rcd=nco_char_att_put(out_id,NULL,"weight_generator_version",vrs_sng);
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(WINOS)
   const char sls_chr='\\';   /* [chr] Slash character */
 #else /* !_MSC_VER */
   const char sls_chr='/';   /* [chr] Slash character */

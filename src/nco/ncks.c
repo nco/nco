@@ -1144,11 +1144,11 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
   fl_in_dpl=strdup(fl_in);
-#ifdef WIN32
+#if defined(_MSC_VER) || defined(WINOS)
   const char sls_chr='\\'; /* [chr] Slash character */
-#else /* !WIN32 */
+#else /* !WINOS */
   const char sls_chr='/'; /* [chr] Slash character */
-#endif /* !WIN32 */
+#endif /* !WINOS */
   fl_in_stub=strrchr(fl_in_dpl,sls_chr);
   if(fl_in_stub) fl_in_stub++; else fl_in_stub=fl_in_dpl;
   fl_in_frg=strstr(fl_in_stub,"#mode");

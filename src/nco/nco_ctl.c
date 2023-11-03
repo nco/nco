@@ -865,7 +865,7 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
 
   /* Get program name (use strrchr() first in case nm_in contains a path) */
   nm_out_orig=nm_out_tmp=(char *)strdup(nm_in);
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(WINOS)
   int len;
   if(strrchr(nm_out_tmp,'\\')) nm_out_tmp=strrchr(nm_out_tmp,'\\')+1;
   char *sfx=strstr(nm_out_tmp,".exe");
@@ -1031,7 +1031,7 @@ nco_usg_prn(void)
   } /* end if */
   if(strstr(opt_sng,"--area_wgt")) (void)fprintf(stdout,"    --area_wgt\t\tArea-weight map-file statistics\n");
   if(strstr(opt_sng,"[-B")){
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(WINOS)
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-B, --msk_cnd, mask_condition mask_cond\tMask condition (e.g., \"ORO < 1\")\n");
 #endif /* _MSC_VER */
   } /* end if -B */

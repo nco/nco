@@ -1,7 +1,7 @@
 # CMake build, Pedro Vicente
 
 #/////////////////////////////////////////////////////////////////////////////////////
-#mininum library dependencies: netCDF, HDF5, HDF5_HL, ZLIB (SZIP)
+# Mininum library dependencies: netCDF, HDF5, HDF5_HL, ZLIB (SZIP)
 #/////////////////////////////////////////////////////////////////////////////////////
 
 #-DNETCDF_INCLUDE:PATH=<some_path>
@@ -13,7 +13,7 @@
 #-DCURL_LIBRARY:FILE=<some_file>
 
 #/////////////////////////////////////////////////////////////////////////////////////
-#optional library dependencies (Antlr, UDUNITS, EXPAT, GSL)
+# Optional library dependencies (Antlr, UDUNITS, EXPAT, GSL)
 #/////////////////////////////////////////////////////////////////////////////////////
 
 #-DANTLR_INCLUDE:PATH=<some_path>
@@ -246,12 +246,12 @@ else()
 endif()
 
 #//////////////////////////
-#HDF5 can be optionally linked with the SZIP library (Science Data Lossless Compression Program) and ZLIB
-#Symbol to detect in ZLIB can be only H5Z_DEFLATE, a structure only defined in H5Zdeflate.c if the filter is enabled
-#For SZIP the structure can be only H5Z_SZIP, defined in H5Zszip.c if the filter is enabled
-#check_library_exists() tries to link a temporary program with these symbols
-#On MSVC for this detection to work, the HDF5 library MUST HAVE as additional dependencies the ZLIB and SZIP libraries,
-#which is not a requirement for the library to build successfully
+# HDF5 can be optionally linked with the SZIP library (Science Data Lossless Compression Program) and ZLIB
+# Symbol to detect in ZLIB can be only H5Z_DEFLATE, a structure only defined in H5Zdeflate.c if the filter is enabled
+# For SZIP the structure can be only H5Z_SZIP, defined in H5Zszip.c if the filter is enabled
+# check_library_exists() tries to link a temporary program with these symbols
+# On MSVC for this detection to work, the HDF5 library MUST HAVE as additional dependencies the ZLIB and SZIP libraries,
+# which is not a requirement for the library to build successfully
 #//////////////////////////
 
 set(HDF5_REQUIRED_LIBRARIES ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY})
@@ -445,7 +445,7 @@ if (MSVC)
   endif(MSVC_USE_STATIC_CRT)
 
   #//////////////////////////
-  #compile as C++ Code (/TP)
+  # Compile all of NCO as C++ Code (/TP)
   #//////////////////////////
   
   foreach(flag_var CMAKE_C_FLAGS_DEBUG 
@@ -454,7 +454,7 @@ if (MSVC)
   endforeach()
 
   #//////////////////////////
-  #visual studio defines math symbols in math.h, avoid duplicate definition
+  # Visual Studio defines math symbols in math.h, avoid duplicate definition
   #//////////////////////////
 
   add_definitions(-D_MATH_DEFINES_DEFINED)
@@ -462,7 +462,7 @@ if (MSVC)
 else (MSVC)
 
   #//////////////////////////
-  #compile as C99
+  # Compile NCO as C99
   #//////////////////////////
 
   if(CMAKE_VERSION VERSION_LESS "3.1")
@@ -486,7 +486,6 @@ else (MSVC)
   endif()
 
 endif(MSVC)
-
 
 #//////////////////////////
 #link with libraries
@@ -1037,10 +1036,10 @@ if (UNIX)
 endif()
 
 #//////////////////////////
-# compiler/linker warnings
+# Compiler/Linker Warnings
 #//////////////////////////
-
 if(MSVC)
+add_definitions(-DWINOS)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 set(MSVC_DEVELOPER ON CACHE BOOL "Disable MSVC warnings /wd4267 /wd4244 /wd4477")
@@ -1056,7 +1055,6 @@ endif()
 # disable .pdb not found warnings
 #//////////////////////////
 
-
 if (MSVC)
  set_target_properties(ncks PROPERTIES LINK_FLAGS "/ignore:4099")
  set_target_properties(ncbo PROPERTIES LINK_FLAGS "/ignore:4099")
@@ -1071,7 +1069,7 @@ if (MSVC)
 endif (MSVC)
 
 #//////////////////////////
-# use of strcasecmp and strncasecmp
+# Use of strcasecmp() and strncasecmp()
 # UDUNITS2 defines strcasecmp
 #//////////////////////////
 

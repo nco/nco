@@ -62,7 +62,7 @@ do {                                                                            
 } while(0)
 #endif
 
-/* a number of the hash function use uint32_t which isn't defined on win32 */
+/* Many hash functions use uint32_t which is not defined on win32 */
 #ifdef _MSC_VER
 typedef unsigned int uint32_t;
 typedef unsigned char uint8_t;

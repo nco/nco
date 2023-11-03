@@ -319,7 +319,7 @@ ifeq (${RPM},Y)
 # MDL_RPM_PRV_NM = $(shell rpm -qp foo) # Name of package provided by specified RPM
 endif # endif RPM
 
-ifeq (${PVM_ARCH},WIN32)
+ifeq (${PVM_ARCH},WINOS)
  BNR_SFX := .exe
 else
  BNR_SFX := ${null}
@@ -539,7 +539,7 @@ CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY
 ifneq (${PVM_ARCH},CRAY)
  CPP_TKN_OS += -DHAVE_MKSTEMP
 endif # CRAY
-ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWIN32))
+ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWINOS))
  CPP_TKN_OS += -DHAVE_GETOPT_H -DHAVE_GETOPT_LONG
 endif # !LINUX
 ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
@@ -1300,7 +1300,7 @@ endif
 endif
 # endif SunOS=SUN4SOL2,SUNMP
 
-ifeq (${PVM_ARCH},WIN32)
+ifeq (${PVM_ARCH},WINOS)
 CXX := g++
 CC := gcc -ansi
 CPP := cpp
@@ -1320,7 +1320,7 @@ ifeq (${OPTS},D)
  CFLAGS += -g
 endif
 endif
-# endif WIN32
+# endif WINOS
 
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 ifeq (${CCACHE},Y)

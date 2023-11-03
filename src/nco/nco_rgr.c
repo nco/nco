@@ -6259,7 +6259,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     sgs_id=in_id;
     if((rcd=nco_inq_varid_flg(sgs_id,var_nm,&var_id_in)) != NC_NOERR){
       /* If sgs_frc_nm is not in input file then search for it in external area file */
-#ifdef WIN32
+#if defined(_MSC_VER) || defined(WINOS)
   const char sls_chr='\\'; /* [chr] Slash character */
 #else /* !WIN32 */
   const char sls_chr='/'; /* [chr] Slash character */
@@ -12135,7 +12135,7 @@ nco_xtr_var_get /* [fnc] Obtain variable specified by [external_path]/var_nm */
   var_nm=*var_nm_in;
   if((rcd=nco_inq_varid_flg(*fl_xtr_id,var_nm,var_id)) != NC_NOERR){
     /* If var_nm is not in input file then search for it in external file */
-#ifdef WIN32
+#if defined(_MSC_VER) || defined(WINOS)
     const char sls_chr='\\'; /* [chr] Slash character */
 #else /* !WIN32 */
     const char sls_chr='/'; /* [chr] Slash character */

@@ -21,7 +21,7 @@
 # 08 Apr 1993  Robert Manchek  manchek@CS.UTK.EDU.
 # 24 Aug 1994  last revision
 # 28 Jul 1995  release 3.3.8
-#
+# 20231103: Replace WIN32 with WINOS (since Windows has 64bit now too)
 
 # begin section that may need to be tuned
 ARCH=UNKNOWN
@@ -172,7 +172,13 @@ if [ "$ARCH" = UNKNOWN ]; then
 		fi
 
 		case "$os,$ht" in
-		    CYGWIN*,x86_64) ARCH=WIN32 ;;
+#csz++
+#		    CYGWIN*,x86_64) ARCH=WINOS ;;
+		    CYGWIN*,* | cygwin*,*) ARCH=WINOS ;;
+# 20231103: Update to allow MINGW
+		    MINGW*,* | ming*,*) ARCH=WINOS ;;
+#csz--
+		    
                 esac
 
 		case "$os,$ht" in
@@ -181,7 +187,7 @@ if [ "$ARCH" = UNKNOWN ]; then
 #csz++
 # 20020708: Change SCO to WIN32
 #				*) ARCH=SCO ;;
-				*) ARCH=WIN32 ;;
+				*) ARCH=WINOS ;;
 #csz--
 				esac
 		esac

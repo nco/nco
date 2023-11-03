@@ -382,7 +382,7 @@ nco_drc_ncz_rm /* [fnc] Safely remove valid NCZarr directory */
 
   const char fnc_nm[]="nco_drc_ncz_rm()"; /* [sng] Function name */
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(WINOS)
   const char sls_sng[]="\\"; /* [chr] Slash string for path separator */
 #else /* !_MSC_VER */
   const char sls_sng[]="/"; /* [chr] Slash string for path separator */
@@ -1904,7 +1904,7 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
 {
   /* Purpose: Find blocksize of filesystem that will or does contain this file */
   const char fnc_nm[]="nco_fl_blocksize()"; /* [sng] Function name */
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(WINOS)
   const char sls_chr='\\'; /* [chr] Slash character for path separator */
 #else /* !_MSC_VER */
   const char sls_chr='/'; /* [chr] Slash character for path separator */
@@ -2552,7 +2552,7 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
     if(psx_stb) psx_stb_lcl=psx_stb_tmp+scm_pfx_lng;
 
     if(psx_stb || psx_drc){
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(WINOS)
       const char sls_chr='\\'; /* [chr] Slash character for path separator */
 #else /* !_MSC_VER */
       const char sls_chr='/'; /* [chr] Slash character for path separator */

@@ -287,7 +287,7 @@ slash := /
 MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
 MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
 
-ifeq (${PVM_ARCH},WIN32)
+ifeq (${PVM_ARCH},WINOS)
  BNR_SFX := .exe
 else
  BNR_SFX := ${null}
@@ -388,7 +388,7 @@ CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY
 ifneq (${PVM_ARCH},CRAY)
  CPP_TKN_OS += -DHAVE_MKSTEMP
 endif # CRAY
-ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWIN32))
+ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWINOS))
  CPP_TKN_OS += -DHAVE_GETOPT_H -DHAVE_GETOPT_LONG
 # UDUNITS_DAT OK to be empty for now
 endif # !LINUX
@@ -1121,7 +1121,7 @@ endif
 endif
 # endif SunOS=SUN4SOL2,SUNMP
 
-ifeq (${PVM_ARCH},WIN32)
+ifeq (${PVM_ARCH},WINOS)
 CXX := g++
 CC := gcc -ansi
 CPP := cpp
@@ -1141,7 +1141,7 @@ ifeq (${OPTS},D)
  CFLAGS += -g
 endif
 endif
-# endif WIN32
+# endif WINOS
 
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 ifeq (${CCACHE},Y)

@@ -381,7 +381,7 @@ ifeq (${RPM},Y)
 # MDL_RPM_PRV_NM = $(shell rpm -qp foo) # Name of package provided by specified RPM
 endif # endif RPM
 
-ifeq (${PVM_ARCH},WIN32)
+ifeq (${PVM_ARCH},WINOS)
  BNR_SFX := .exe
 else
  BNR_SFX := ${null}
@@ -696,7 +696,7 @@ endif # !grele
 ifneq (${PVM_ARCH},CRAY)
  CPP_TKN_OS += -DHAVE_MKSTEMP
 endif # CRAY
-ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWIN32))
+ifneq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWINOS))
  CPP_TKN_OS += -DHAVE_GETOPT_H -DHAVE_GETOPT_LONG
 endif # !LINUX
 ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
@@ -1545,7 +1545,7 @@ endif
 endif
 # endif SunOS=SUN4SOL2,SUNMP
 
-ifeq (${PVM_ARCH},WIN32)
+ifeq (${PVM_ARCH},WINOS)
 CXX := g++
 CC := gcc -std=c99 -pedantic -D_DEFAULT_SOURCE
 # NB: nameser.h needs -Di386, but gcc sends -Di586 (on pentiums)
@@ -1569,7 +1569,7 @@ ${MY_OBJ_DIR}/%.o : %.F
 ${MY_OBJ_DIR}/%.o : %.f
 	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 endif
-# endif WIN32
+# endif WINOS
 
 # Resolve nvcc CUDA run-time library functions
 ifeq (${CUDA},Y)
@@ -1974,7 +1974,7 @@ ifeq (${PVM_ARCH},MACOS)
 	ranlib ${libnco}.a
 endif # endif LINUX
 # If not using glibc, build Sittler's getopt() and getopt_long() functions
-ifeq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWIN32))
+ifeq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWINOS))
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_getopt.o)
 endif # endif not glibc
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \

@@ -2497,7 +2497,7 @@ nco_chk_xtn /* [fnc] Check filename extension */
      DIWG Recommendation:
      https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=182297715 */
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(WINOS)
   const char sls_chr='\\'; /* [chr] Slash character */
 #else /* !_MSC_VER */
   const char sls_chr='/'; /* [chr] Slash character */

@@ -56,7 +56,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOS will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[5.1.9-alpha03],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[5.1.9-beta01],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -125,11 +125,11 @@ case ${host} in
 	;;
     hppa*-hp-hpux* ) AC_DEFINE(HPUX,1,Compatibility pvmgetarch token for HPUX on PA RISC)
 	;;
-    i*86-pc-freebsd* ) AC_DEFINE(FREEBSD,1,Compatibility pvmgetarch token for FreeBSD on Intel x86)
+    *-pc-freebsd* ) AC_DEFINE(FREEBSD,1,Compatibility pvmgetarch token for FreeBSD on Intel x86)
 	;;
-    i*86-pc-linux* ) AC_DEFINE(LINUX,1,Compatibility pvmgetarch token for Linux on Intel x86) LINUX=1 ;
+    *-pc-linux* ) AC_DEFINE(LINUX,1,Compatibility pvmgetarch token for Linux on Intel x86) LINUX=1 ;
 	;;
-    i*86-pc-cygwin* ) AC_DEFINE(WIN32,1,Compatibility pvmgetarch token for Windows on Intel x86)
+    *-pc-cygwin* | *-pc-ming* | *-pc-msys* ) AC_DEFINE(WINOS,1,Compatibility pvmgetarch token for MS Windows OS)
 	;;
     mips*-sgi-irix* ) AC_DEFINE(SGIMP64,1,Compatibility pvmgetarch token for IRIX on SGI MIPS)
 	;;

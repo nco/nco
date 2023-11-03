@@ -653,6 +653,9 @@
 /* Compatibility pvmgetarch token for Windows on Intel-compatible x86_64 */
 #undef WIN32
 
+/* Compatibility pvmgetarch token for MS Windows OS */
+#undef WINOS
+
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */
 #undef YYTEXT_POINTER
