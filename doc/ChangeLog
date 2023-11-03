@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.1.9-beta01: ';git push
 	git tag -a 5.1.9-beta01 -m 'all: flg_ilv fix, WIN32 sls_chr; ncap2 parse NC_MIN_INT64; ncks: chk_xtn; ncremap: trbilin, trintbilin, ncoaave, ...;';git push --tags
 
+	* Use rsync rather than scp in NCO_rgr.pm (fixes many regression tests)
+
 	* Update config.guess, config.sub from GNU Savannah
 
 	* Determine sls_chr from _MSC_VER and (new) WINOS token instead of (old) WIN32 token

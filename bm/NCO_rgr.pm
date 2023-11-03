@@ -199,9 +199,9 @@ if($USER eq 'zender'){
 	# ncwa -O -y ttl -v area ~/foo.nc ~/foo3.nc
 	# ncks -H --trd -u -C -v area ~/foo3.nc
 	
-	$dsc_sng="ncks regrid FSNT 1D->2D to test conservation (does SSH/scp to dust.ess.uci.edu)";
-	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc .";
-	$tst_cmd[1]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
+	$dsc_sng="ncks regrid FSNT 1D->2D to test conservation (does rsync to dust.ess.uci.edu)";
+	$tst_cmd[0]="rsync dust.ess.uci.edu:data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc .";
+	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv129x256_aave.20150901.nc ne30_tst.nc %tmp_fl_00%";
 #	my $pwd=`pwd`; chomp $pwd; print $pwd;
 #	$dsc_sng="ncks regrid FSNT to regridding conservation (does wget to dust.ess.uci.edu)";
@@ -232,9 +232,9 @@ if($USER eq 'zender'){
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="ncks regrid FSNT 1D->2D to test bilinear remapping (does SSH/scp to dust.ess.uci.edu)";
-	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_ne30np4_to_fv257x512_bilin.20150901.nc .";
-	$tst_cmd[1]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
+	$dsc_sng="ncks regrid FSNT 1D->2D to test bilinear remapping (does rsync to dust.ess.uci.edu)";
+	$tst_cmd[0]="rsync dust.ess.uci.edu:data/maps/map_ne30np4_to_fv257x512_bilin.20150901.nc .";
+	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv257x512_bilin.20150901.nc ne30_tst.nc %tmp_fl_00%";
 	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w gw %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H --trd -u -C -v FSNT %tmp_fl_01%";
@@ -243,8 +243,8 @@ if($USER eq 'zender'){
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="ncks regrid FSNT 2D->1D to test conservation (does SSH/scp to dust.ess.uci.edu)";
-	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_fv129x256_to_ne30np4_aave.20150901.nc .";
+	$dsc_sng="ncks regrid FSNT 2D->1D to test conservation (does rsync to dust.ess.uci.edu)";
+	$tst_cmd[0]="rsync dust.ess.uci.edu:data/maps/map_fv129x256_to_ne30np4_aave.20150901.nc .";
 	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg --map=map_fv129x256_to_ne30np4_aave.20150901.nc ne30_2D.nc %tmp_fl_00%";
 	$tst_cmd[2]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[3]="ncks -O $fl_fmt $nco_D_flg -H --trd -u -C -v FSNT %tmp_fl_01%";
@@ -253,9 +253,9 @@ if($USER eq 'zender'){
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="ncks regrid FSNT 2D->2D to test conservation (does SSH/scp to dust.ess.uci.edu)";
-	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_fv129x256_to_fv257x512_aave.20150901.nc .";
-	$tst_cmd[1]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_2D.nc .";
+	$dsc_sng="ncks regrid FSNT 2D->2D to test conservation (does rsync to dust.ess.uci.edu)";
+	$tst_cmd[0]="rsync dust.ess.uci.edu:data/maps/map_fv129x256_to_fv257x512_aave.20150901.nc .";
+	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/rgr/ne30_2D.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_fv129x256_to_fv257x512_aave.20150901.nc ne30_2D.nc %tmp_fl_00%";
 	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H --trd -u -C -v FSNT %tmp_fl_01%";
@@ -264,9 +264,9 @@ if($USER eq 'zender'){
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="ncks regrid FSNT 1D->1D to test identity mapping and conservation (does SSH/scp to dust.ess.uci.edu)";
-	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_ne30np4_to_ne30np4_aave.20150603.nc .";
-	$tst_cmd[1]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
+	$dsc_sng="ncks regrid FSNT 1D->1D to test identity mapping and conservation (does rsync to dust.ess.uci.edu)";
+	$tst_cmd[0]="rsync dust.ess.uci.edu:data/maps/map_ne30np4_to_ne30np4_aave.20150603.nc .";
+	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_ne30np4_aave.20150603.nc ne30_tst.nc %tmp_fl_00%";
 	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H --trd -u -C -v FSNT %tmp_fl_01%";
@@ -299,8 +299,8 @@ if($USER eq 'zender'){
 # ncks -O --rgr nfr=y --rgr grid=~/foo_grid.nc ~/nco/data/ne30_2D.nc ~/foo.nc
 # ncks -O -H --trd -u -C -s %8.5f -d grid_size,256 -v grid_center_lat ~/foo_grid.nc
 # 20151205: using %tmp_fl_00% in arguments like "--rgr grid=%tmp_fl_00%" leads to epic fail, so hard-code filenames that are arguments
-	$dsc_sng="ncks infer 129x256 FV gridfile (does SSH/scp to dust.ess.uci.edu)";
-	$tst_cmd[0]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_2D.nc .";
+	$dsc_sng="ncks infer 129x256 FV gridfile (does rsync to dust.ess.uci.edu)";
+	$tst_cmd[0]="rsync dust.ess.uci.edu:data/ne30/rgr/ne30_2D.nc .";
 	$tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg --rgr nfr=y --rgr grid=foo_grid.nc ne30_2D.nc %tmp_fl_01%";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H --trd -u -C -s %8.5f -d grid_size,256 -v grid_center_lat foo_grid.nc";
 	$tst_cmd[3]="-88.59375";
@@ -308,9 +308,9 @@ if($USER eq 'zender'){
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
-	$dsc_sng="ncremap regrid FSNT 1D->2D to test conservation (depends on SSH/scp to dust.ess.uci.edu)";
-	$tst_cmd[0]="scp dust.ess.uci.edu:data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc .";
-	$tst_cmd[1]="scp dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
+	$dsc_sng="ncremap regrid FSNT 1D->2D to test conservation (depends on rsync to dust.ess.uci.edu)";
+	$tst_cmd[0]="rsync dust.ess.uci.edu:data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc .";
+	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/rgr/ne30_tst.nc .";
 	$tst_cmd[2]="ncremap -i ne30_tst.nc -m map_ne30np4_to_fv129x256_aave.20150901.nc -o %tmp_fl_00%";
 	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H --trd -u -C -v FSNT %tmp_fl_01%";
