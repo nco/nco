@@ -2190,7 +2190,7 @@ nco_char_att_get /* [fnc] Get a character string attribute from an open file */
 {
   /* Get a character string attribute from an open file
      Return NUL-terminated string if attribute exists and NULL otherwise
-     Memory allocated by this routine must be freed by calling routine */
+     NB: Memory allocated by this routine must be freed by calling routine! */
 
   char *att_val=NULL; /* O [sng] Attribute value */
   

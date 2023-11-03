@@ -1530,7 +1530,7 @@ main(int argc,char **argv)
 
       if(CHK_XTN){
 	/* Check filename extension */
-        brk_nbr=nco_chk_xtn(in_id,fl_in);
+        brk_nbr=nco_chk_xtn(in_id,fl_in,fl_in_fmt);
 	if(brk_nbr) exit(EXIT_FAILURE); else nco_exit(EXIT_SUCCESS);
       } /* !CHK_XTN */
       /* End DIWG tests */

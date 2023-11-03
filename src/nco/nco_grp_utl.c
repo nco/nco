@@ -2487,7 +2487,8 @@ nco_chk_nan /* [fnc] Check file for NaNs */
 int /* O [nbr] Number of non-compliant extensions */
 nco_chk_xtn /* [fnc] Check filename extension */
 (const int nc_id, /* I [ID] netCDF input file ID */
- const char * const fl_in) /* I [sng] Filename */
+ const char * const fl_nm, /* I [sng] Filename */
+ const int fl_fmt) /* I [enm] Input file format */
 {
   /* Purpose: Check filename extension
      ncks --chk_xtn ~/nco/data/in.nc
@@ -2504,24 +2505,85 @@ nco_chk_xtn /* [fnc] Check filename extension */
 
   const char fnc_nm[]="nco_chk_xtn()"; /* [sng] Function name */
 
-  char *fl_in_dpl=NULL; /* [sng] Duplicate of fl_in */
-  char *fl_in_stub=NULL; /* [sng] Filename component of fl_in */
-  char *sfx_sng; /* [sng] Filename extension/suffix, if any */
+  const char grp_he5[]="/HDFEOS INFORMATION"; /* [sng] Group where HDF5-EOS files store HDF5-EOS information */
+
+  const char sfx_h5[]="h5"; /* [sng] Suffix recommended for files created with HDF5 API */
+  const char sfx_he5[]="he5"; /* [sng] Suffix recommended for files created with HDF5-EOS API */
+  const char sfx_nc[]="nc"; /* [sng] Suffix recommended for files created with netCDF API */
+
+  char att_sng_he5[]="HDFEOSVersion"; /* [sng] HDF-EOS5 standard attribute string */
+  char att_sng_nc[]="_NCProperties"; /* [sng] netCDF standard attribute string */
+
+  char *att_xtn_val=NULL; /* [sng] Attribute value */
+  char *fl_nm_dpl=NULL; /* [sng] Duplicate of fl_nm */
+  char *fl_nm_stub=NULL; /* [sng] Filename component of fl_nm */
+  char *sfx_sng=NULL; /* [sng] Filename extension/suffix, if any */
 
   int brk_nbr; /* [nbr] Number of variables with NaN */
+  int grp_id; /* [id] ID of group containing standard attribute(s) */ 
+
+  nco_bool flg_h5=False; /* [sng] Suffix is "h5" */
+  nco_bool flg_he5=False; /* [sng] Suffix is "he5" */
+  nco_bool flg_nc=False; /* [sng] Suffix is "nc" */
+
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   /* Initialize */
   brk_nbr=0;
 
-  fl_in_dpl=strdup(fl_in);
-  fl_in_stub=strrchr(fl_in_dpl,sls_chr);
-  if(fl_in_stub) fl_in_stub++; else fl_in_stub=fl_in_dpl;
-  sfx_sng=strrchr(fl_in_stub,'.');
+  fl_nm_dpl=strdup(fl_nm);
+  fl_nm_stub=strrchr(fl_nm_dpl,sls_chr);
+  if(fl_nm_stub) fl_nm_stub++; else fl_nm_stub=fl_nm_dpl;
+  sfx_sng=strrchr(fl_nm_stub,'.');
   if(sfx_sng) sfx_sng++;
 
-  (void)fprintf(stderr,"%s: DEBUG %s reports fl_in=%s, fl_in_stub=%s, sfx_sng=%s\n",nco_prg_nm_get(),fnc_nm,fl_in,fl_in_stub,sfx_sng);
+  //(void)fprintf(stderr,"%s: DEBUG %s reports fl_nm=%s, fl_nm_stub=%s, sfx_sng=%s\n",nco_prg_nm_get(),fnc_nm,fl_nm,fl_nm_stub,sfx_sng);
 
-  if(fl_in_dpl) fl_in_dpl=(char *)nco_free(fl_in_dpl);
+  if(sfx_sng){
+    if(!strcmp(sfx_sng,sfx_h5)) flg_h5=True;
+    if(!strcmp(sfx_sng,sfx_he5)) flg_he5=True;
+    if(!strcmp(sfx_sng,sfx_nc)) flg_nc=True;
+  }else{
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s could not find extension (defined as the characters after the final '.', if any) in filename %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_stub);
+  } /* !sfx_sng */
+  
+  if(flg_he5){
+    rcd=nco_inq_grp_full_ncid_flg(nc_id,grp_he5,&grp_id);
+    if(rcd == NC_ENOGRP){
+      (void)fprintf(stdout,"%s: WARNING %s reports file with extension \"%s\" does not contain HDF-EOS5 standard group \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,grp_he5);
+    }else{ /* !rcd */
+      att_xtn_val=nco_char_att_get(grp_id,NC_GLOBAL,att_sng_he5);
+      if(!att_xtn_val) (void)fprintf(stdout,"%s: WARNING %s reports file with extension \"%s\" does not contain HDF-EOS5 standard global attribute \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,att_sng_he5);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports value of HDF-EOS5 standard global attribute \"%s\" is \"%s\"\n",nco_prg_nm_get(),fnc_nm,att_sng_he5,att_xtn_val);
+      if(att_xtn_val) att_xtn_val=(char *)nco_free(att_xtn_val);
+    } /* !rcd */
+  } /* !flg_he5 */
+
+  if(flg_nc){
+    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+      att_xtn_val=nco_char_att_get(nc_id,NC_GLOBAL,att_sng_nc);
+      if(!att_xtn_val){
+	(void)fprintf(stdout,"%s: WARNING %s reports %s file with extension \"%s\" does not contain netCDF standard global attribute \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_fmt_sng(fl_fmt),sfx_nc,att_sng_nc);
+	rcd=nco_inq_grp_full_ncid_flg(nc_id,grp_he5,&grp_id);
+	if(rcd == NC_NOERR){
+	  (void)fprintf(stdout,"%s: WARNING %s reports file with extension \"%s\" contains HDF-EOS5 standard group \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,grp_he5);
+	}else{ /* !rcd */
+	  rcd=NC_NOERR;
+	} /* !rcd */
+      } /* !att_xtn_val */
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports value of netCDF standard global attribute \"%s\" is \"%s\"\n",nco_prg_nm_get(),fnc_nm,att_sng_nc,att_xtn_val);
+      if(att_xtn_val) att_xtn_val=(char *)nco_free(att_xtn_val);
+    }else{ /* !fl_fmt */
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports input file format is %s. This format has no mandatory global attributes that can be checked.\n",nco_prg_nm_get(),fnc_nm,nco_fmt_sng(fl_fmt));
+    } /* !fl_fmt */
+  } /* !flg_nc */
+
+  if(!flg_h5 && !flg_he5 && !flg_nc){
+    brk_nbr++;
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s reports filename extension \"%s\" is non-compliant\n",nco_prg_nm_get(),fnc_nm,sfx_sng ? sfx_sng : "(null)");
+  } /* !flg_h5 */
+
+  if(fl_nm_dpl) fl_nm_dpl=(char *)nco_free(fl_nm_dpl);
 
   if(brk_nbr > 0){
     if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of non-compliant filename extensions is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);

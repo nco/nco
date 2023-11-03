@@ -70,7 +70,8 @@ nco_chk_nan /* [fnc] Check file for NaNs */
 int /* O [nbr] Number of non-compliant extensions */
 nco_chk_xtn /* [fnc] Check filename extension */
 (const int nc_id, /* I [ID] netCDF input file ID */
- const char * const fl_in); /* I [sng] Filename */
+ const char * const fl_in, /* I [sng] Filename */
+ const int fl_in_fmt); /* I [enm] Input file format */
 
 nm_id_sct *                           /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_sct from traversal table */
