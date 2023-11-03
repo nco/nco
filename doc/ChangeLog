@@ -2,7 +2,9 @@
 
 	* NCO 5.1.9-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.9-beta01: ';git push
-	git tag -a 5.1.9-beta01 -m 'all: flg_ilv fix, WIN32 sls_chr; ncap2 parse NC_MIN_INT64; ncks: chk_xtn; ncremap: trbilin, trintbilin, ncoaave, ...;';git push --tags
+	git tag -a 5.1.9-beta01 -m 'all: flg_ilv fix, WIN32 sls_chr; bm: rsync; ncap2 parse NC_MIN_INT64; ncks: chk_xtn; ncremap: trbilin, trintbilin, ncoaave, ...;';git push --tags
+
+	* Update ncclimo regression test to use v2 not v1 data
 
 	* Use rsync rather than scp in NCO_rgr.pm (fixes many regression tests)
 

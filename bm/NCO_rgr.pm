@@ -169,14 +169,14 @@ print "\n";
     $HOME=$ENV{'HOME'};
 if($USER =~ /zender/){
 # NB: area variable is not in ACME cube-sphere native output so this answer is not area-weighted
-# ncclimo -v FSNT,AODVIS -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
-# ncwa -O ${DATA}/ne30/clm/20180129.DECKv1b_piControl.ne30_oEC.edison_ANN_000101_000212_climo.nc ~/foo.nc
+# ncclimo -v FSNT,AODVIS -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
+# ncwa -O ${DATA}/ne30/clm/v2.LR.historical_0101_ANN_201301_201412_climo.nc ~/foo.nc
 # ncks -H --trd -u -C -v FSNT ~/foo.nc
 	$dsc_sng="ncclimo (depends on input files in ${DATA}/ne30/raw)";
-	$tst_cmd[0]="ncclimo -P cam -v FSNT,AODVIS -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm > ${HOME}/foo.ncclimo";
-	$tst_cmd[1]="ncwa -O $fl_fmt $nco_D_flg ${DATA}/ne30/clm/20180129.DECKv1b_piControl.ne30_oEC.edison_ANN_000101_000212_climo.nc %tmp_fl_00%";
+	$tst_cmd[0]="ncclimo -P eam -v FSNT,AODVIS -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm > ${HOME}/foo.ncclimo";
+	$tst_cmd[1]="ncwa -O $fl_fmt $nco_D_flg ${DATA}/ne30/clm/v2.LR.historical_0101_ANN_201301_201412_climo.nc %tmp_fl_00%";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg -H --trd -u -C -v FSNT %tmp_fl_00%";
-	$tst_cmd[3]="FSNT = 241.746 W/m2";
+	$tst_cmd[3]="FSNT = 240.308 W/m2";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
