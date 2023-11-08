@@ -1,5 +1,9 @@
 2023-11-07  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.1.9 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.1.9: Likanne o ka Moana';git push
+	git tag -a 5.1.9 -m 'all: flg_ilv fix, WIN32 sls_chr; bm: rsync; ncap2 parse NC_MIN_INT64; ncks: chk_xtn; ncremap: trbilin, trintbilin, ncoaave, ...;';git push --tags
+
 	* NCO 5.1.9-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.1.9-beta01: Likanne o ka Moana';git push
 	git tag -a 5.1.9-beta01 -m 'all: flg_ilv fix, WIN32 sls_chr; bm: rsync; ncap2 parse NC_MIN_INT64; ncks: chk_xtn; ncremap: trbilin, trintbilin, ncoaave, ...;';git push --tags
