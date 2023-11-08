@@ -2510,6 +2510,7 @@ nco_chk_xtn /* [fnc] Check filename extension */
   const char sfx_h5[]="h5"; /* [sng] Suffix recommended for files created with HDF5 API */
   const char sfx_he5[]="he5"; /* [sng] Suffix recommended for files created with HDF5-EOS API */
   const char sfx_nc[]="nc"; /* [sng] Suffix recommended for files created with netCDF API */
+  const char sfx_nc4[]="nc4"; /* [sng] Suffix NOT recommended for files created with netCDF API */
 
   char att_sng_he5[]="HDFEOSVersion"; /* [sng] HDF-EOS5 standard attribute string */
   char att_sng_nc[]="_NCProperties"; /* [sng] netCDF standard attribute string */
@@ -2525,6 +2526,7 @@ nco_chk_xtn /* [fnc] Check filename extension */
   nco_bool flg_h5=False; /* [sng] Suffix is "h5" */
   nco_bool flg_he5=False; /* [sng] Suffix is "he5" */
   nco_bool flg_nc=False; /* [sng] Suffix is "nc" */
+  nco_bool flg_nc4=False; /* [sng] Suffix is "nc4" */
 
   int rcd=NC_NOERR; /* [rcd] Return code */
 
@@ -2543,6 +2545,7 @@ nco_chk_xtn /* [fnc] Check filename extension */
     if(!strcmp(sfx_sng,sfx_h5)) flg_h5=True;
     if(!strcmp(sfx_sng,sfx_he5)) flg_he5=True;
     if(!strcmp(sfx_sng,sfx_nc)) flg_nc=True;
+    if(!strcmp(sfx_sng,sfx_nc4)) flg_nc4=True;
   }else{
     if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s could not find extension (defined as the characters after the final '.', if any) in filename %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_stub);
   } /* !sfx_sng */
@@ -2581,6 +2584,11 @@ nco_chk_xtn /* [fnc] Check filename extension */
   if(!flg_h5 && !flg_he5 && !flg_nc){
     brk_nbr++;
     if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s reports filename extension \"%s\" is non-compliant\n",nco_prg_nm_get(),fnc_nm,sfx_sng ? sfx_sng : "(null)");
+
+    if(flg_nc4){
+      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: HINT rename file with \"%s\" rather than \"%s\" extension\n",nco_prg_nm_get(),sfx_nc,sfx_sng);
+    } /* !flg_nc4 */
+    
   } /* !flg_h5 */
 
   if(fl_nm_dpl) fl_nm_dpl=(char *)nco_free(fl_nm_dpl);

@@ -270,7 +270,8 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories with CMake:
 # Generic when netCDF is in /usr (Ubuntu glace)
 # Personal recipe last modified: 20170814
-# Personal recipe last used successfully: 20171218
+# Personal recipe last borken: 20170814
+# Personal recipe last successful: 20171218
 cd ~/nco;/bin/rm -f *.foo;make distclean
 cd ~/nco;cmake/clean
 cd ~/nco/cmake;cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}
@@ -289,7 +290,8 @@ make install
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in system directories with CMake:
 # Generic when netCDF is in /usr (Ubuntu glace)
 # Personal recipe last modified: 20170814
-# Personal recipe last used successfully: 20200601
+# Personal recipe last borken: 20170814
+# Personal recipe last successful: 20200601
 cd ~/nco/cmake
 cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
 make
@@ -310,7 +312,8 @@ make install
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20231026 (Use ~/anaconda rather than E3SMU)
-# Personal recipe last used successfully: 20231026
+# Personal recipe last borken: 20231026
+# Personal recipe last successful: 20231026
 # Current build error: 20231019 "configure: error: cannot find netCDF library"
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
@@ -329,7 +332,8 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/4.9.3 # 20201208
 # Personal recipe last modified: 20221019 (link -lantlr from MY_LIB_DIR not HOME/lib)
-# Personal recipe last used successfully: 20230512
+# Personal recipe last borken: 20221019
+# Personal recipe last successful: 20230512
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -346,7 +350,8 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/gpfs/
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20200618
-# Personal recipe last used successfully: 20200905
+# Personal recipe last borken: 20200618
+# Personal recipe last successful: 20200905
 # Fails to link to system-installed udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
 cd ~/nco;/bin/rm -f *.foo;make distclean
@@ -364,8 +369,8 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 216373 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 module load nco/4.7.4 # 20180417
 # Personal recipe last modified: 20190813
-# Personal recipe last used successfully: 20230515
-# Personal recipe last failed: 20190812 (antlr needed GCC 9.1.0 recompile)
+# Personal recipe last borken: 20190812 (antlr needed GCC 9.1.0 recompile)
+# Personal recipe last successful: 20231103
 # Cheyenne GNU:
 module purge
 module load ncarenv gnu/9.1.0 ncarcompilers mpt netcdf/4.6.3
@@ -388,7 +393,8 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20230425 (use conda gcc/g++ compilers so new libnetcdf links to C++ to resolve libicuuc dependencies)
-# Personal recipe last used successfully: 20230917
+# Personal recipe last borken: 20231103 /usr/include/bits/floatn.h:86:20: error: redeclaration of C++ built-in type '_Float128' [-fpermissive]], breaks ncap2 only
+# Personal recipe last successful: 20230917
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # Default as of 20210924 is to build with Anaconda netCDF
 # Default as of 20230425 is to build with Anaconda gcc/g++
@@ -412,9 +418,9 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Sysadmin upgrade request: rc-support@pnnl.gov # PNNL Maintainer = Tim Carlson ?
 # Latest ticket to build NCO: 20190525 ICS-40n99 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
-# Personal recipe borken: 20231031 unable to link to libnetcdf due to GLIBC_PRIVATE errors
 # Personal recipe last modified: 20230917 (use conda gcc/g++ compilers so new libnetcdf links to C++ to resolve libicuuc dependencies)
-# Personal recipe last used successfully: 20230917
+# Personal recipe last borken: 20231031 unable to link to conda libnetcdf due to GLIBC_PRIVATE errors. Seems to use /usr/bin/ld instead of conda?
+# Personal recipe last successful: 20230917
 module purge
 cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
@@ -428,7 +434,8 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 
 # Compy with Intel compilers (default from 20210104--20221215)
 # Personal recipe last modified: 20220919
-# Personal recipe last used successfully: 20221128
+# Personal recipe last borken: 20220919
+# Personal recipe last successful: 20221128
 source /share/apps/intel/2020/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64 # Compy
 module purge
 module load intel/20.0.0
@@ -450,7 +457,8 @@ make install >> nco.make.foo 2>&1
 # Latest ticket to build NCO: alcf-support #367012 on 20180413
 # Latest sysadmin-compiled module usage: soft add +nco-4.6.8, soft add +netcdf-4.4.1.1
 # Personal recipe last modified: 20170825
-# Personal recipe last used successfully: 20190420
+# Personal recipe last borken: 20170825
+# Personal recipe last successful: 20190420
 cd ~/nco;/bin/rm -f *.foo;make distclean
 cd ~/nco;git reset --hard origin/master
 cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/unsupported/netcdf-4.4.1.1' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
@@ -467,7 +475,8 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/5.0.1 # 20230831
 # Personal recipe last modified: 20230831 (original version)
-# Personal recipe last used successfully: 20230831
+# Personal recipe last borken: N/A
+# Personal recipe last successful: 20230831
 module purge
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
@@ -488,7 +497,8 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/lustr
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20231030 (change to cray-netcdf 4.9.0.7)
-# Personal recipe last used successfully: 20231030
+# Personal recipe last borken: 20231103
+# Personal recipe last successful: 20231103
 module load PrgEnv-gnu
 module load gcc/11.2.0
 module load cray-hdf5/1.12.2.7
@@ -509,7 +519,8 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on greenplanet
 # Personal recipe last modified: 20190526
-# Personal recipe last used successfully: 20190526 (no antlr or ncap2)
+# Personal recipe last borken: 20190526
+# Personal recipe last successful: 20190526 (no antlr or ncap2)
 cd ~/nco;/bin/rm -f *.foo;make distclean
 CC='gcc' CXX='g++' LDFLAGS='-L/lib64' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -524,7 +535,8 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: never
 # Latest sysadmin-compiled module usage: module load nco/4.9.6/gcc.8.4.0 # 20210215
 # Personal recipe last modified: 20210215
-# Personal recipe last used successfully: 20210215
+# Personal recipe last borken: 20210215
+# Personal recipe last successful: 20210215
 cd ~/nco;git reset --hard origin/master
 module load gcc/8.4.0
 CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
@@ -533,7 +545,8 @@ CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_I
 # Sysadmin upgrade request: Yan Liu <yanliu@illinois.edu>
 # Latest sysadmin-compiled module usage: module load nco/4.6.5 # 20170315
 # Personal recipe last modified: 20170424
-# Personal recipe last used successfully: 20170424
+# Personal recipe last borken: 20170424
+# Personal recipe last successful: 20170424
 module load netcdf/4.4.0
 module load udunits
 cd ~/nco;/bin/rm -f *.foo;make distclean
@@ -761,7 +774,8 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 
 # gcc/g++ Zender uses this to debug NCO with custom-install netCDF (and ESMF) binaries in /usr/local (grele)
 # Personal recipe last modified: 20200601
-# Personal recipe last used successfully: 20200601
+# Personal recipe last borken: 20200601
+# Personal recipe last successful: 20200601
 # cd ~/nco/bld;make GSL=Y OMP=Y OPTS=D UDUNITS=Y allinone
 
 # gcc/g++ Zender uses this to debug NCO with pre-built netCDF binaries in /usr (skyglow, e3sm.ess.uci.edu)

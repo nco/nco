@@ -529,6 +529,7 @@ if(APPLE)
   set(LIB_DEP ${LIB_DEP} resolv)
 endif()
 
+# 20231107: Do these 32-bit libraries break compilation on 64-bit WINOS?
 if(MSVC)
   set(LIB_DEP ${LIB_DEP} ws2_32.lib winmm.lib wldap32.lib)
 endif()

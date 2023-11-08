@@ -142,7 +142,7 @@ rint /* [fnc] Round x to nearest even integer, raise exceptions */
      This hacked version does not */
   /* Source:  */
   return (x >= 0.0) ? floor(x+0.5) : ceil(x-0.5);
-} /* end rint() */
+} /* !rint() */
 #endif /* !NEED_RINT */ 
 
 #ifdef NEED_NEARBYINT
@@ -156,7 +156,7 @@ nearbyint /* [fnc] Round x to nearest even integer, do not raise exceptions */
      NB: POSIX version of nearbyint() does not set IEEE inexact exceptions (unlike rint()) */
   /* Source:  */
   return (x >= 0.0) ? floor(x+0.5) : ceil(x-0.5);
-} /* end nearbyint() */
+} /* !nearbyint() */
 #endif /* !NEED_NEARBYINT */ 
 
 #ifdef NEED_ROUND
@@ -171,7 +171,7 @@ round /* [fnc] Round x to nearest integer, half-way cases round away from zero *
      This hacked version does not */
   /* NB: function returns int and then implicit coercion turns receptor into floating point */
   return (x >= 0) ? (int)(x+0.5) : (int)(x-0.5);
-} /* end round() */
+} /* !round() */
 #endif /* !NEED_ROUND */ 
 
 #ifdef NEED_TRUNC
@@ -184,7 +184,7 @@ trunc /* [fnc] Truncate x to nearest integer not larger in absolute value */
      Truncation is the same thing as implicit conversion to int */
   /* NB: function returns int and then implicit coercion turns receptor into floating point */
   return (int)x;
-} /* end trunc() */
+} /* !trunc() */
 #endif /* !NEED_TRUNC */ 
 
 #ifdef NEED_RINTF

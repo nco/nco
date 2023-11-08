@@ -11,7 +11,9 @@ weight-generation algorithms (bilinear and integrated bilinear),
 updates ncremap to recognize new names for existing algorithms,
 changes ncremap's default treatment of filling empty areas with
 missing values, and fixes a long-standing bug with ncra and ncrcat 
-subcycle and interleave options.
+subcycle and interleave options. A notable fix for MS Windows OS
+is included as are a few other miscellaneous features and fixes
+described below.
 
 Work on NCO 5.2.0 has commenced and aims to add support for Zarr S3 
 stores, and to polish support for new codecs..
@@ -20,25 +22,6 @@ Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
-
-A. ncremap supports new TempestRemap bilinear and integrated bilinear
-weight-generation algorithms. The algorithms sport the recommended
-names trbilin and trintbilin.
-ncremap --alg_typ=trbilin --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
-ncremap --alg_typ=trintbilin --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
-http://nco.sf.net/nco.html#tr
-
-A. ncremap supports new "standard" names for E3SM v3 regridding
-algorithms and for older algorithms. These new names are simply
-synonyms for the existing algorithm names. No algorithm names have 
-been deprecated (yet) so existing commands will still work.
-The new names are of the form ToolAlgorithm where Tool is esmf, nco,
-tr, or mbtr and Algorithm is the "classic" algorithm name, aave,
-bilin, etc. 
-ncremap --alg_typ=esmfaave --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
-ncremap --alg_typ=ncoaave  --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
-ncremap --alg_typ=traave   --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
-https://acme-climate.atlassian.net/wiki/spaces/DOC/pages/1217757434/Mapping+file+algorithms+and+naming+convention
 
 A. ncremap supports a new flag, --mpt_mss, to control the values
 placed in empty unmasked destination gridcells in sub-gridscale (SGS)
@@ -56,18 +39,32 @@ ncremap -P mpasseaice           --map=map.nc in.nc out.nc # Empty = 0.0
 ncremap -P mpasseaice --mpt_mss --map=map.nc in.nc out.nc # Empty = _FillValue
 http://nco.sf.net/nco.html#mpt_mss
 
-D. ncks supports a new flag, --chk_mss, that reports which variables
-(and groups) contain a missing_value attribute.
-NASA's Dataset Interoperability Working Group (DIWG) notes that the
-missing_value attribute has been semi-deprecated, and recommends that
-it should not be used in new Earth Science data products. 
-To check a file for compliance with the DIWG recommendation: 
-$ ncks --chk_mss ~/nco/data/in.nc
-ncks: WARNING nco_chk_mss() reports variable fll_val_mss_val contains "missing_value" attribute
-ncks: WARNING nco_chk_mss() reports variable one_dmn_rec_var_missing_value contains "missing_value" attribute
-...
-ncks: WARNING nco_chk_mss() reports variable rec_var_int_mss_val_flt contains "missing_value" attribute
-ncks: INFO nco_chk_mss() reports total number of variables and/or groups with "missing_value" attribute is 11
+B. ncremap supports new TempestRemap bilinear and integrated bilinear
+weight-generation algorithms. The algorithms sport the recommended
+names trbilin and trintbilin.
+ncremap --alg_typ=trbilin --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+ncremap --alg_typ=trintbilin --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+http://nco.sf.net/nco.html#tr
+
+C. ncremap supports new "standard" names for E3SM v3 regridding
+algorithms and for older algorithms. These new names are simply
+synonyms for the existing algorithm names. No algorithm names have 
+been deprecated (yet) so existing commands will still work.
+The new names are of the form ToolAlgorithm where Tool is esmf, nco,
+tr, or mbtr and Algorithm is the "classic" algorithm name, aave,
+bilin, etc. 
+ncremap --alg_typ=esmfaave --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+ncremap --alg_typ=ncoaave  --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+ncremap --alg_typ=traave   --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+https://acme-climate.atlassian.net/wiki/spaces/DOC/pages/1217757434/Mapping+file+algorithms+and+naming+convention
+
+D. ncks supports a new flag, --chk_xtn, that reports whether filename
+extensions comply with NASA's Dataset Interoperability Working Group
+(DIWG) which recommends ".nc", ".h5", and ".he5", depending on the API
+used to write the file. To check a file's compliance with the DIWG
+recommendation:  
+$ ncks --chk_xtn ~/nco/data/in.nc
+$ ncks --chk_xtn ~/nco/data/in.nc4
 $
 http://nco.sf.net/nco.htlm/chk_mss
 
@@ -89,9 +86,16 @@ http://nco.sf.net/nco.html#bug_ilv
 
 B. ncap2 now successfully parses naked numeric constants with the
 value -9223372036854775808LL (i.e., NC_MIN_INT64). Previously, the
-C++ standard library functions failed when attempting this. Thanks to
-Henry Butowsky for hacking together a workable implementation. There
-is no workaround to this problem, the solution is to upgrade.
+C++ standard library functions failed when attempting this, and we
+still have no idea why. All hail Henry Butowsky for hacking together
+a workable implementation. There is no workaround to this problem, the
+solution is to upgrade. 
+
+C. Depending on how they were compiled, some recent NCO versions
+could have expected the wrong path separator on MS Windows OS.
+Your installation suffered from this bug if NCO on Windows expected
+'/' (the UNIX separator) instead of '\' (the Windows separator).
+There is no workaround to this problem, the solution is to upgrade.  
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
