@@ -156,11 +156,11 @@ and
 
 <ul>
 <li>2023 Dec&nbsp;??: 5.2.0 <i>In Progress...</i>
-<li>2023 Nov&nbsp;07: 5.1.9 Small features/fixes
-<li>2023 Sep&nbsp;17: 5.1.8 Small features/fixes
-<li>2023 Jul&nbsp;26: 5.1.7 Small features/fixes
-<li>2023 May&nbsp;12: 5.1.6 Small features/fixes
-<li>2023 Mar&nbsp;14: 5.1.5 Small features/fixes
+<li>2023 Nov&nbsp;07: 5.1.9 ncremap updates
+<li>2023 Sep&nbsp;17: 5.1.8 NC_STRING support
+<li>2023 Jul&nbsp;26: 5.1.7 ncremap/ncclimo compression
+<li>2023 May&nbsp;12: 5.1.6 Coupler regridding
+<li>2023 Mar&nbsp;14: 5.1.5 Native EAMXX vertical support
 <li>2023 Jan&nbsp;10: 5.1.4 Depth Interpolation
 <li>2022 Nov&nbsp;28: 5.1.3 EAMxx fix
 <li>2022 Nov&nbsp;18: 5.1.2 EAMxx
@@ -651,14 +651,20 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 5.1.9 http://github.com/nco/nco.git nco-5.1.9</tt></a>.
 <ul>
-<li><b>NCO 5.2.0</b>: (<i>Future</i>)
+<li><b>NCO 5.2.1</b>: (<i>Future</i>)
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> small-circle weights;</li>
-<li><b>NCO 5.1.9</b>: (<i>In Progress, features in-progress or complete include</i>)
+<li><b>NCO 5.2.0</b>: (<i>In Progress, features in-progress or complete include</i>)
 <tt>ncremap</tt> CF Convention for longitude vertices in map-files</li>
-<li><b>NCO 5.1.8</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 5.1.9</b>: (<i>Current Stable Release</i>)
+<tt>all</tt> Windows path separator fix;
+<tt>ncks --chk_xtn</tt> DIWG filename extension check;
+<tt>ncra/ncrcat</tt> interleave fix;
+<tt>ncremap --alg_typ</tt> supports TR bilin, intbilin;
+<tt>ncremap --mpt_mss</tt> option replaces default</li>
+<li><b>NCO 5.1.8</b>: 
 <tt>all</tt> NC_STRING attributes equivalent to NC_CHAR;
 <tt>ncks --chk_chr</tt> CF/DIWG identifier compliance check;
 <tt>ncks --chk_mss</tt> DIWG missing_value check;

@@ -29,7 +29,7 @@ mode. SGS mode interprets every gridcell as being fractionally covered
 by an amount contained in sgs_var (e.g., landfrac, seaicefrac).
 Empty in this context means unmasked cells where sgs_var is zero,
 e.g., no land, or no sea ice. Since ~2020, ncremap has filled empty
-SGS cells with the missing value. NCO 5.1.9 changes that behavior so
+SGS cells with the missing value. NCO 5.2.0 changes that behavior so
 that, by default, empty SGS cells are filled with zeros. This makes
 maps of sea-ice variables, e.g., zero in open ocean and non-zero
 where sea ice exists. Users can explicitly request the previous
@@ -79,7 +79,7 @@ ILV had been invoked.  The resulting behavior was compiler-dependent.
 Most compilers set the ILV flag to false (as it should have been), but
 some compilers set it to true.  The bug expressed itself by extracting
 only a single timestep, rather than the number of timesteps indicated
-by the SSC parameter.  This behavior was fixed in NCO version 5.1.9
+by the SSC parameter.  This behavior was fixed in NCO version 5.2.0
 (November, 2023). There is no workaround to this problem, the solution
 is to upgrade. 
 http://nco.sf.net/nco.html#bug_ilv
@@ -103,7 +103,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.1.9 built/tested under
+These problems occur with NCO 5.2.0 built/tested under
 MacOS 13.5.2 (c) with netCDF 4.9.3-dev on HDF5 1.14.2 and with
 Linux FC38 with netCDF 4.9.2 on HDF5 1.14.1.
 

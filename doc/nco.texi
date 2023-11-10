@@ -128,8 +128,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.1.9
-@set doc-edition 5.1.9
+@set nco-edition 5.2.0-alpha01
+@set doc-edition 5.2.0-alpha01
 @set copyright-years 1995--2023
 @set update-year 2023
 @set update-date 7 November 2023
@@ -22241,8 +22241,8 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 SYNTAX
 @example
 ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [--area_wgt] [-b @var{fl_bnr}]
-[-C] [-c] [--cdl] [--chk_chr] [--chk_map] [--chk_mss] [--chk_nan] [--cmp @var{cmp_sng}]
-[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
+[-C] [-c] [--cdl] [--chk_chr] [--chk_map] [--chk_mss] [--chk_nan] [--chk_xtn]
+[--cmp @var{cmp_sng}] [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [--fix_rec_dmn @var{dim}] [--fl_fmt @var{fl_fmt}] [--fmt_val @var{format}]
@@ -23005,6 +23005,40 @@ ncks: INFO nco_chk_nan() reports total number of floating-point variables with N
 @end example
 Thanks to Matthew Thompson of @acronym{NASA} for originally suggesting
 this feature.
+
+@html
+<a name="chk_xtn"></a> <!-- http://nco.sf.net/nco.html#chk_xtn -->
+<a name="check_extension"></a> <!-- http://nco.sf.net/nco.html#check_extension -->
+@end html
+@cindex @code{--chk_xtn}
+@cindex @code{--check_extension}
+@cindex @acronym{DIWG}
+@item --chk_xtn
+A filename @emph{extension} is the suffix that follows the final
+period @samp{.} in a filename.
+For example, the suffix of @samp{in.file.nc} is @samp{nc}.
+@acronym{NASA}'s Dataset Interoperability Working Group 
+(@uref{https://wiki.earthdata.nasa.gov/display/ESDSWG/Dataset+Interoperability+Working+Group,
+DIWG}) recommends that ``files created with the HDF5, HDF-EOS5, or netCDF
+APIs should have filename extensions \"h5\", \"he5\", or \"nc\",
+respectively.'' 
+As of @acronym{NCO} version 5.1.9 (November, 2023), @command{ncks}
+can report all filenames that violate this @acronym{DIWG}
+recommendation. 
+This option reports which filenames do not comply with this
+convention.
+If a file appears to be mis-labeled, e.g., the extension is @samp{.h5}
+but the file contents match @acronym{HDF5-EOS} structure, that will
+also be reported.
+@example
+@verbatim
+zender@spectral:~$ ncks --chk_xtn ~/nco/data/in.nc
+zender@spectral:~$ ncks --chk_xtn ~/in.nc4
+ncks: WARNING nco_chk_xtn() reports filename extension "nc4" is non-compliant
+ncks: HINT rename file with "nc" rather than "nc4" extension
+ncks: INFO nco_chk_xtn() reports total number of non-compliant filename extensions is 1
+@end verbatim
+@end example
 
 @html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->

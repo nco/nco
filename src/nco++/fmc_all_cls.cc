@@ -1870,59 +1870,36 @@ var_sct * bsc_cls::getdims_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &f
                              
 
             has_mss=False;         
-            if( var1->has_mss_val)
-	    {       
+            if( var1->has_mss_val){       
 	      has_mss=True; 
               mss_dbl=var1->mss_val.dp[0];  
-
-            }   
-            else if(var2->has_mss_val)
-	    { 
+            }else if(var2->has_mss_val){ 
               has_mss=True;       
               mss_dbl=var2->mss_val.dp[0];        
               nco_mss_val_cp(var2,var);
               // var->has_mss_val=True;   
-               
             }   
-
             sz=var1->sz;   
-              
-            if( has_mss)      
-	    {   
-              for(idx=0 ; idx<sz ; idx++)   
-                if( dp1[idx] == mss_dbl || dp2[idx]== mss_dbl ) 
+            if(has_mss){   
+              for(idx=0;idx < sz;idx++)   
+                if( dp1[idx] == mss_dbl || dp2[idx]== mss_dbl)
                   dp[idx]=mss_dbl;
                 else       
-		  dp[idx] = ( dp1[idx] - dp2[idx] ) /  ( dp1[idx] + dp2[idx] ) ;     
-
-	    }    
-            else
-	    {  
-              for(idx=0 ; idx<sz ; idx++)   
-		dp[idx]= ( dp1[idx] - dp2[idx] ) /  ( dp1[idx] + dp2[idx] ) ;     
-
-
-
-
+		  dp[idx]=(dp1[idx]-dp2[idx])/(dp1[idx]+dp2[idx]);
+	    }else{  
+              for(idx=0;idx < sz;idx++)   
+		dp[idx]=(dp1[idx]-dp2[idx])/(dp1[idx]+dp2[idx]);
             }
-       
-
 	  }       
-
             (void)cast_nctype_void(var->type,&var->val);      
             (void)cast_nctype_void(var1->type,&var1->val);      
             (void)cast_nctype_void(var2->type,&var2->val);    
             var1=nco_var_free(var1);  
 	    var2=nco_var_free(var2);
-
-
-
-
 	}  
         break;
 
-
-       case PSOLARZENITHANGLE:
+    case PSOLARZENITHANGLE:
 	 { 
            // convert all args to type double              
            var1=nco_var_cnf_typ( NC_FLOAT, var1);
@@ -1936,10 +1913,14 @@ var_sct * bsc_cls::getdims_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &f
              long sz; 
              float *z_fp; 
 	     float *tm_fp;   // array of times 
-             float  lat_flt; // latitude in degrees
+             float lat_flt; // latitude in degrees
              float cosSZA;      
-             char units_sng[200]={0};             
-             char units_new_sng[200]={0};
+	     // 20231109: deprecate sprintf(), use snprintf() instead
+#ifndef NCO_MAX_LEN_TMP_SNG
+# define NCO_MAX_LEN_TMP_SNG 27
+#endif /* !NCO_MAX_LEN_TMP_SNG */
+             char units_sng[NCO_MAX_LEN_TMP_SNG]={0};             
+             char units_new_sng[NCO_MAX_LEN_TMP_SNG]={0};
 
              //grab units atts for var1->nm
              // fixme:(2017-11-20)   for now not reading calendar type of var1->nm: assume it is cln_std            
@@ -1965,7 +1946,7 @@ var_sct * bsc_cls::getdims_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &f
 
 	       (void)cast_void_nctype(var_att->type,&var_att->val); 
   
-	       // copy string - no need for NULL as units_sng is all nulls     
+	       // Copy string---no need for NULL as units_sng is all nulls     
                if( var_att->type == NC_CHAR) 
 	          strncpy(units_sng,var_att->val.cp,var_att->sz); 
                else if(var_att->type==NC_STRING)
@@ -1974,68 +1955,54 @@ var_sct * bsc_cls::getdims_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &f
 	       (void)cast_nctype_void(var_att->type,&var_att->val);    
 	       var_att=nco_var_free(var_att); 
 
-               // we want the time coord to be "days since start of year" 
-               // need to parse the date string to extract the year
-               if( nco_cln_prs_tm(units_sng, &lcl_tm_sct) != NCO_NOERR)              
-                 err_prn(fnc_nm, "Error trying to parse the units string " + std::string(units_sng) + " \n"); 
-
-               // assemble new units string
-               sprintf(units_new_sng,"days since %d-01-01 00:00:00", lcl_tm_sct.year);           
- 
+               // We want the time coord to be "days since start of year" 
+               // Parse the date string to extract the year
+               if(nco_cln_prs_tm(units_sng,&lcl_tm_sct) != NCO_NOERR)              
+                 err_prn(fnc_nm, "Error trying to parse the units string "+std::string(units_sng)+"\n");
+	       // Assemble new units string
+	       // 20231109: deprecate sprintf(), use snprintf() instead
+#define NCO_MAX_LEN_DATE_SNG 27
+               snprintf(units_new_sng,NCO_MAX_LEN_DATE_SNG,"days since %d-01-01 00:00:00",lcl_tm_sct.year);
              }   
                  
              // convert var1 from units_sng  units_new_sng that is calendar_day_of_year; 
              // nb calendar is cln_std for now       
-             (void)nco_cln_clc_dbl_var_dff(units_sng,units_new_sng, cln_std, (double*)NULL, var1); 
+             (void)nco_cln_clc_dbl_var_dff(units_sng,units_new_sng,cln_std,(double *)NULL,var1); 
 
              (void)cast_void_nctype(var->type,&var->val);      
              (void)cast_void_nctype(var1->type,&var1->val);      
              (void)cast_void_nctype(var2->type,&var2->val);
-
 	  
              z_fp=var->val.fp;    
              tm_fp=var1->val.fp;    
 
              lat_flt=var2->val.fp[0];
         
-             // convert lat_dbl to radians    
-             lat_flt *=  (float)M_PI /180.0f;      
+             // Convert lat_dbl to radians    
+             lat_flt*=(float)M_PI/180.0f;
 
              sz=var1->sz;
     
-             for(idx=0;idx<sz;idx++)
-	     {                          
+             for(idx=0;idx<sz;idx++){                          
                cosSZA=-1;;
-	       (void)solar_geometry( lat_flt, tm_fp[idx], 1, (float *)NULL, &cosSZA, (float *)NULL);
-               // convert back to degree's 
-               z_fp[idx]=180.0f/ M_PI *  acos( cosSZA);                      
-
-             } 
-
+	       (void)solar_geometry( lat_flt,tm_fp[idx],1,(float *)NULL,&cosSZA,(float *)NULL);
+               // Convert back to degrees 
+               z_fp[idx]=180.0f/M_PI*acos(cosSZA);                      
+             } /* !idx */
 
             (void)cast_nctype_void(var->type,&var->val);      
             (void)cast_nctype_void(var1->type,&var1->val);      
             (void)cast_nctype_void(var2->type,&var2->val);      
-
-
-
            }  
            var1=nco_var_free(var1);   
            var2=nco_var_free(var2);   
-    
          } 
          break; 
-
-
     }
-      
     return var; 
-
   }
 
-
-
-void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, int num_long, float *local_time, float *cosSZA, float *eccentricity_factor)
+void mth2_cls::solar_geometry(float latitude_rad,float calendar_day_of_year,int num_long,float *local_time,float *cosSZA,float *eccentricity_factor)
 {
 
   float cos_lat;
@@ -2065,7 +2032,7 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
   cos_lat=cos(latitude_rad);
   cos_delta=cos(delta);
 
-  /* calendar_day_of_year is the calender day for greenwich, including fraction
+  /* calendar_day_of_year is the calender day for Greenwich, including fraction
      of day; the fraction of the day represents a local time at
      greenwich; to adjust this to produce a true instantaneous time
      for other longitudes, we must correct for the local time change: */
@@ -5959,27 +5926,19 @@ var_sct *udunits_cls::strftime_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cl
     {
       long idx;
       long sz;
-      char schar[200];
+      char schar[NCO_MAX_LEN_TMP_SNG];
       time_t sgmt;
       struct tm tp;  
       double *dp;
 
-
-      // make some space for strings
+      // Make space for strings
       var_ret->val.vp=(void *)nco_malloc(var_ret->sz*nco_typ_lng(var_ret->type));
-       
-       
       (void)cast_void_nctype(var->type,&var->val);     
       (void)cast_void_nctype(var_ret->type,&var->val);
-
-         
      
       dp=var->val.dp; 
-       
       sz=var->sz;
-
-      for(idx=0;idx<sz;idx++)
-      {
+      for(idx=0;idx<sz;idx++){
           
         sgmt=(time_t)dp[idx];  
 #ifdef _MSC_VER
@@ -5991,19 +5950,13 @@ var_sct *udunits_cls::strftime_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cl
         var_ret->val.sngp[idx]=strdup(schar);           
       }
 
-
       (void)cast_nctype_void(var->type,&var->val);
       (void)cast_nctype_void(var_ret->type,&var_ret->val);     
-
     }
-
-
     var=(var_sct*)nco_var_free(var);
 
     return var_ret;
-
  }
-
 
 var_sct *udunits_cls::regular_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
  {
