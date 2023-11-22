@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha01: Crown Princess';git push
 	git tag -a 5.2.0-alpha01 -m 'Functionally identical to 5.1.9';git push --tags
 
+	* ncap2 deprecate sprintf(), use snprintf() instead, to quiet Clang warnings
+
 	* Document ncks --chk_xtn
 
 2023-11-07  Charlie Zender  <zender@uci.edu>

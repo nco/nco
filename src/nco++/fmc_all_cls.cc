@@ -3523,12 +3523,16 @@ var_sct * srt_cls::mst_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_o
    //  the attribute propagation. If we used the coordinate var name then the RHS would
    //  get all the atts from coord name we only wish to get units, cal, and a custom
    nco_free(var_ret->nm);
-   var_ret->nm=(char*)nco_calloc(40, sizeof(char));
+   var_ret->nm=(char *)nco_calloc(40,sizeof(char));
    sprintf(var_ret->nm, "xyz%d", rand() );
 
-   // convert to type of first arg
-   var_ret=nco_var_cnf_typ(var1->type,var_ret);  
+	     // 20231109: deprecate sprintf(), use snprintf() instead
+#ifndef NCO_MAX_LEN_TMP_SNG
+# define NCO_MAX_LEN_TMP_SNG 27
+#endif /* !NCO_MAX_LEN_TMP_SNG */
 
+   // Convert to type of first arg
+   var_ret=nco_var_cnf_typ(var1->type,var_ret);  
   }
 
 
