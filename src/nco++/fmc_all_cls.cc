@@ -3519,22 +3519,22 @@ var_sct * srt_cls::mst_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_o
      
    var_ret=ncap_cst_mk(cst_vtr,prs_arg);
 
-   //  This a real hack - we use a random name for the var as we wish to control
-   //  the attribute propagation. If we used the coordinate var name then the RHS would
-   //  get all the atts from coord name we only wish to get units, cal, and a custom
+   // This a real hack - we use a random name for the var to control the attribute propagation
+   // If we used the coordinate var name then the RHS would get all the atts from coord name we only wish to get units, cal, and a custom
    nco_free(var_ret->nm);
-   var_ret->nm=(char *)nco_calloc(40,sizeof(char));
-   sprintf(var_ret->nm, "xyz%d", rand() );
-
-	     // 20231109: deprecate sprintf(), use snprintf() instead
-#ifndef NCO_MAX_LEN_TMP_SNG
-# define NCO_MAX_LEN_TMP_SNG 27
-#endif /* !NCO_MAX_LEN_TMP_SNG */
+   //   var_ret->nm=(char *)nco_calloc(40,sizeof(char));
+#ifndef NCO_RAND_MAX_SNG_LEN
+   // NB: UINT64 can be 20 characters wide
+# define NCO_RAND_MAX_SNG_LEN 25
+#endif /* !NCO_RAND_MAX_SNG_LEN */
+   var_ret->nm=(char *)nco_calloc(NCO_RAND_MAX_SNG_LEN,sizeof(char));
+   // 20231129: deprecate sprintf(), use snprintf() instead
+   //sprintf(var_ret->nm,40,"xyz%d",rand());
+   snprintf(var_ret->nm,NCO_RAND_MAX_SNG_LEN,"xyz%d",rand());
 
    // Convert to type of first arg
    var_ret=nco_var_cnf_typ(var1->type,var_ret);  
   }
-
 
   if(prs_arg->ntl_scn)
   {
@@ -3572,8 +3572,6 @@ var_sct * srt_cls::mst_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_o
 
   /* grab if they exist @units and @calendar from input var ( coordinate var) */
   {
-
-    char bnds_txt[100];
     nco_char ch=nco_char_CEWI;
 
     var_sct *att_units=NULL_CEWI;
@@ -3590,48 +3588,39 @@ var_sct * srt_cls::mst_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_o
 
     Nvar=prs_arg->var_vtr.find(att_nm_in);
 
-    if(Nvar !=NULL)
-      att_units=nco_var_dpl(Nvar->var);
-    else
-      att_units=ncap_att_init(att_nm_in,prs_arg);
+    if(Nvar != NULL) att_units=nco_var_dpl(Nvar->var); else att_units=ncap_att_init(att_nm_in,prs_arg);
 
-    if(att_units)
-    {
+    if(att_units){
       att_nm_out=var_ret->nm; att_nm_out+="@units";
       Nvar=new NcapVar(att_units,att_nm_out);
       prs_arg->var_vtr.push_ow(Nvar);
-
-
     }
-
 
     /* get @calendar from coordinate var */
     att_nm_in=var1->nm; att_nm_in+="@calendar";
 
     Nvar=prs_arg->var_vtr.find(att_nm_in);
 
-    if(Nvar !=NULL)
-      att_cal=nco_var_dpl(Nvar->var);
-    else
-      att_cal=ncap_att_init(att_nm_in,prs_arg);
+    if(Nvar != NULL) att_cal=nco_var_dpl(Nvar->var); else att_cal=ncap_att_init(att_nm_in,prs_arg);
 
-    if(att_cal)
-    {
+    if(att_cal){
       att_nm_out=var_ret->nm; att_nm_out+="@calendar";
       Nvar=new NcapVar(att_cal,att_nm_out);
       prs_arg->var_vtr.push_ow(Nvar);
-
-
     }
 
-    /* create a new @long_name */
-    att_long_name=ncap_sclr_var_mk("~zz@tmp", ch);
+    /* Create a new @long_name */
+    att_long_name=ncap_sclr_var_mk("~zz@tmp",ch);
 
-    sprintf(bnds_txt,"Bounds for $%s coordinate",var1->nm  );
+    //char bnds_txt[100];
+    char bnds_txt[NC_MAX_NAME+30L];
+    // 20231129: deprecate sprintf(), use snprintf() instead
+    //sprintf(bnds_txt,"Bounds for $%s coordinate",var1->nm);
+    snprintf(bnds_txt,NC_MAX_NAME+30L,"Bounds for $%s coordinate",var1->nm);
     att_long_name->sz=strlen(bnds_txt);
 
-    att_long_name->val.cp=(char*)nco_malloc(sizeof(char)*att_long_name->sz  );
-    strncpy(att_long_name->val.cp, bnds_txt, att_long_name->sz );
+    att_long_name->val.cp=(char*)nco_malloc(sizeof(char)*att_long_name->sz);
+    strncpy(att_long_name->val.cp,bnds_txt, att_long_name->sz);
     cast_nctype_void(att_long_name->type,&att_long_name->val);
 
     att_nm_out=var_ret->nm; att_nm_out+="@long_name";
@@ -4560,16 +4549,16 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
          cast_nctype_void(NC_DOUBLE,&var_arr[0]->mss_val);       
        }   
       
-      for(ldx=0; ldx<v_sz ; ldx++){
-        // set otuput to default -0.0 
+      for(ldx=0;ldx < v_sz;ldx++){
+        // set otuput to default = 0.0 
         dpo[ldx]=0.0;
 
-        if(dpi[ldx]==mss_dbl ){  
+        if(dpi[ldx] == mss_dbl){
           int cnt=0;  
           int jdx;
           long iX=ldx/y_sz;
           long iY= ldx -iX*y_sz;
-          double sum=0.0;
+          //double sum=0.0;
           double Q[4]={mss_dbl,mss_dbl,mss_dbl,mss_dbl};
           mcnt++; 
             
@@ -4581,7 +4570,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
            
           for(jdx=0 ; jdx<4 ;jdx++)
 	    if(Q[jdx] !=mss_dbl) {
-	      sum+=Q[jdx];              
+	      //sum+=Q[jdx];              
               cnt++; 
 	    }
        
@@ -4602,7 +4591,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
     } // end fdx  
 
 
-    if(fdx==PMISC3){
+    if(fdx == PMISC3){
       // recall input arguments in order
       // 0 - input var -2D INPUT GRID 
       // 1 - input mask 2D GRID (VARMASK these are the places we want to fill a value)
@@ -4623,9 +4612,6 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
       double *dpm;   // mask pointer;  
    
       // save in type; 
-      
-
-
       var_out=nco_var_dpl(var_arr[0]);         
       (void)cast_void_nctype(NC_DOUBLE,&var_out->val);
 
@@ -4637,7 +4623,6 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
       m_sz=var_arr[1]->sz; 
       x_sz=var_arr[2]->sz;
       y_sz=var_arr[3]->sz;
-      
     
       assert(v_sz==x_sz*y_sz); 
       // check mask size  
@@ -4645,7 +4630,6 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
      
       dpo=var_out->val.dp;
       dpi=var_arr[0]->val.dp;     
- 
  
       // grab missing value;  
       if( var_arr[0]->has_mss_val ){

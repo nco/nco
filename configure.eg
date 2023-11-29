@@ -332,7 +332,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/4.9.3 # 20201208
 # Personal recipe last modified: 20221019 (link -lantlr from MY_LIB_DIR not HOME/lib)
-# Personal recipe last borken: 20221019
+# Personal recipe last borken: 20231129 /gpfs/alpine/cli115/proj-shared/e3sm-unified/base/envs/e3sm_unified_1.9.1_login/lib/libnetcdf.so: undefined reference to `H5Pset_dxpl_mpio'
 # Personal recipe last successful: 20230512
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
@@ -342,6 +342,7 @@ export NETCDF_ROOT=/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_u
 export PATH=${PATH}:/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest/bin
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
+# !Andes
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
 # LCRC uses Spack module written and tested by Adam Stewart: https://github.com/LLNL/spack/pull/4370/files
@@ -476,7 +477,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/5.0.1 # 20230831
 # Personal recipe last modified: 20230831 (original version)
 # Personal recipe last borken: N/A
-# Personal recipe last successful: 20230831
+# Personal recipe last successful: 20231129
 module purge
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'

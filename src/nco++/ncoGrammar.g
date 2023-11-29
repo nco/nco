@@ -583,11 +583,13 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or function or attribut
             if(bDoSearch){   
                string fnc_nm=$getText; 
                std::vector<fmc_cls>::iterator we=std::lower_bound(prs_arg->fmc_vtr.begin(),prs_arg->fmc_vtr.end(),fmc_cls(fnc_nm));   
-               if(we!=prs_arg->fmc_vtr.end() && we->fnm()==fnc_nm){
+               if(we != prs_arg->fmc_vtr.end() && we->fnm() == fnc_nm){
                  int idx=we-prs_arg->fmc_vtr.begin();
-                 char buff[10]; 
-                 sprintf(buff,"%d",idx);
-                 // VERY IMPORTANT - append the index in fmc_vtr to the function name - (name#idx)
+                 char buff[10];
+                 // 20231129: deprecate sprintf(), use snprintf() instead
+                 //                 sprintf(buff,"%d",idx);
+                 snprintf(buff,10,"%d",idx);
+                 // VERY IMPORTANT: append index in fmc_vtr to function name in format "name#idx"
                  $setText(fnc_nm+"#"+buff);    
                  $setType(FUNC);
                }             
@@ -3491,13 +3493,11 @@ var_sct *var_rhs;
    (void)cast_nctype_void(NC_SHORT,&var_msk->val); 
 
    // free "local" copy of var_msk if necessary
-   if(bfr)
-      var_msk=nco_var_free(var_msk);           
+   if(bfr) var_msk=nco_var_free(var_msk);           
 
    // Do attribute propagation if LHS is new
    Nvar=prs_arg->var_vtr.find(var_nm);
-   if(!Nvar)
-      (void)ncap_att_cpy(var_nm,std::string(var_rhs->nm),prs_arg);
+   if(!Nvar) (void)ncap_att_cpy(var_nm,std::string(var_rhs->nm),prs_arg);
               
    var_rhs=nco_var_free(var_rhs);
 
