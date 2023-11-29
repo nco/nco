@@ -1,5 +1,7 @@
 2023-11-29  Charlie Zender  <zender@uci.edu>
 
+	* Move ${DATA}/ne30/rgr/ne30_tst.nc to ${DATA}/ne30/raw/ne30_tst.nc
+
 	* ncap2 deprecate more sprintf()'s, use snprintf() instead, to quiet Clang warnings
 
 2023-11-09  Charlie Zender  <zender@uci.edu>
