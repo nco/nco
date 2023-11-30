@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.0-alpha01
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 7 November 2023
+@set update-date 30 November 2023
 @set update-month November 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16229,7 +16229,6 @@ In this example vpointers are used to 'point' to attributes.
 @verbatim
 @all=get_vars_in();
 *sz=@all.size();
-
 for(*idx=0;idx<sz;idx++){
   @var_nm=@all(idx);
   if(*@var_nm.ndims() >= 3){
@@ -16241,26 +16240,25 @@ for(*idx=0;idx<sz;idx++){
 } 
 
 *sz=@prc.size();
-
 for(*idx=0;idx<sz;idx++){
   @var_nm=@prc(idx);
 
   // We can work with attribute pointers as well 
-  // sprint - ouptut is of type NC_CHAR
+  // sprint() ouptut is of type NC_CHAR
   @att_total=sprint(@var_nm,"%s@total"); 
   @att_range=sprint(@var_nm,"%s@range"); 
 
-  // If you are still confused then print out the atts 
+  // If you are still confused then print out the attributes 
   print(@att_total); 
   print(@att_range);
  
-  *@att_total= *@var_nm.total();
-  *@att_range={ min(*@var_nm), max(*@var_nm)}; 
+  *@att_total=*@var_nm.total();
+  *@att_range={min(*@var_nm),max(*@var_nm)};
 } 
 @end verbatim
 @end example
 
-@noindent This is an ncdump of one of the variables that has been processed by the above script
+@noindent This is the @acronym{CDL} dump of a variable processed by the above script:
 @example
 @verbatim
 float three_dmn_var_int(time, lat, lon) ;
@@ -25869,6 +25867,7 @@ Features common to many operators are described in
 @table @samp
 
 @html
+<a name="tr_alg"></a> <!-- http://nco.sf.net/nco.html#tr_alg -->
 <a name="alg_typ"></a> <!-- http://nco.sf.net/nco.html#alg_typ -->
 <a name="neareststod"></a> <!-- http://nco.sf.net/nco.html#neareststod -->
 <a name="nstod"></a> <!-- http://nco.sf.net/nco.html#nstod -->
@@ -25937,6 +25936,10 @@ change interpolation algorithms than other options
 generation algorithms, one @acronym{NCO} algorithm, and eight
 TempestRemap algorithms (with both @acronym{TR} and @acronym{MOAB}). 
 
+@html
+<a name="alg_esmf"></a> <!-- http://nco.sf.net/nco.html#alg_esmf -->
+<a name="alg_erwg"></a> <!-- http://nco.sf.net/nco.html#alg_erwg -->
+@end html
 The seven @acronym{ERWG} weight generation algorithms are:
 @code{bilinear} (default, acceptable abbreviations are @code{bilin}, @code{blin}, @code{bln}), 
 @code{conserve} (or @code{conservative}, @code{cns}, @code{c1}, or @code{aave}), 
@@ -25954,6 +25957,7 @@ for detailed descriptions of @acronym{ERWG} algorithms.
 @cindex @code{nco}
 
 @html
+<a name="alg_nco"></a> <!-- http://nco.sf.net/nco.html#alg_nco -->
 <a name="idw"></a> <!-- http://nco.sf.net/nco.html#idw -->
 <a name="dwe"></a> <!-- http://nco.sf.net/nco.html#dwe -->
 <a name="nco_idw"></a> <!-- http://nco.sf.net/nco.html#nco_idw -->
@@ -26184,6 +26188,11 @@ Always use the map-checker to test maps before use, e.g., with
 @samp{ncks --chk_map map.nc}.
 @end cartouche
 
+@html
+<a name="alg_tr"></a> <!-- http://nco.sf.net/nco.html#alg_tr -->
+<a name="alg_mbtr"></a> <!-- http://nco.sf.net/nco.html#alg_mbtr -->
+<a name="alg_moab"></a> <!-- http://nco.sf.net/nco.html#alg_moab -->
+@end html
 @table @asis
 @item @code{se2fv_flx} (synonyms @code{mono_se2fv}, @code{conservative_monotone_se2fv})
 @acronym{TR} options: @samp{--in_type cgll --in_np 4 --out_type fv --mono}@*

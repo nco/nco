@@ -1,3 +1,13 @@
+2023-11-30  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.2.0-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha01: Crown Princess';git push
+	git tag -a 5.2.0-alpha01 -m 'Functionally identical to 5.1.9 (except ncremap, ncremap: support fv2, fix mbtr alg_typ=tempest, deprecate sprintf(); ncks doc chk_xtn)';git push --tags
+
+	* ncremap implement alg_typ fv2, fvnp2
+
+	* Correct wgt_opt_mbt for alg_typ=tempest to use order = se_np_nbr == 4 by default (since TR uses order=4)
+
 2023-11-29  Charlie Zender  <zender@uci.edu>
 
 	* Move ${DATA}/ne30/rgr/ne30_tst.nc to ${DATA}/ne30/raw/ne30_tst.nc
@@ -5,10 +15,6 @@
 	* ncap2 deprecate more sprintf()'s, use snprintf() instead, to quiet Clang warnings
 
 2023-11-09  Charlie Zender  <zender@uci.edu>
-
-	* NCO 5.2.0-alpha01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha01: Crown Princess';git push
-	git tag -a 5.2.0-alpha01 -m 'Functionally identical to 5.1.9';git push --tags
 
 	* ncap2 deprecate sprintf(), use snprintf() instead, to quiet Clang warnings
 

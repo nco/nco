@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.1.9 strut their stuff
+netCDF Operators NCO version 5.2.0 strut their stuff
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.1.9 updates ncremap to employ new TempestRemap
+Version 5.2.0 updates ncremap to employ new TempestRemap
 weight-generation algorithms (bilinear and integrated bilinear),
 updates ncremap to recognize new names for existing algorithms,
 changes ncremap's default treatment of filling empty areas with
@@ -15,7 +15,7 @@ subcycle and interleave options. A notable fix for MS Windows OS
 is included as are a few other miscellaneous features and fixes
 described below.
 
-Work on NCO 5.2.0 has commenced and aims to add support for Zarr S3 
+Work on NCO 5.2.1 has commenced and aims to add support for Zarr S3 
 stores, and to polish support for new codecs..
 
 Enjoy,
@@ -39,11 +39,16 @@ ncremap -P mpasseaice           --map=map.nc in.nc out.nc # Empty = 0.0
 ncremap -P mpasseaice --mpt_mss --map=map.nc in.nc out.nc # Empty = _FillValue
 http://nco.sf.net/nco.html#mpt_mss
 
-B. ncremap supports new TempestRemap bilinear and integrated bilinear
-weight-generation algorithms. The algorithms sport the recommended
-names trbilin and trintbilin.
-ncremap --alg_typ=trbilin --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
-ncremap --alg_typ=trintbilin --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+B. ncremap directly supports the TempestRemap second order FV
+reconstruction algorithm known as FV2 or FVNP2. This algorithm is
+conservative though not monotone by default. The algorithm is
+monotonic when used in conjunction with the "Clip And Assured Sum"
+(CAAS) application method described at
+https://acme-climate.atlassian.net/wiki/spaces/COM/pages/3771301899/Coupler+High-order+property-preserving+maps
+CAAS utilizes two maps both of which NCO can generate. However,
+NCO does not itself apply the CAAS method.
+ncremap --alg_typ=fv2 --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
+ncremap --alg_typ=fvnp2 --grd_src=src.nc --grd_dst=dst.nc --map=map.nc
 http://nco.sf.net/nco.html#tr
 
 C. ncremap supports new "standard" names for E3SM v3 regridding
@@ -104,7 +109,7 @@ KNOWN PROBLEMS DUE TO NCO:
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
 These problems occur with NCO 5.2.0 built/tested under
-MacOS 14.1.1 with netCDF 4.9.3-dev on HDF5 1.14.2 and with
+MacOS 14.1.2 with netCDF 4.9.3-dev on HDF5 1.14.3 and with
 Linux FC38 with netCDF 4.9.2 on HDF5 1.14.1.
 
 A. NOT YET FIXED (NCO problem)

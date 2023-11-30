@@ -509,7 +509,7 @@ fmt_sng_nc7='NETCDF4_CLASSIC (netCDF4 classic HDF5)'
 # Modify these defaults to save typing later
 a2o_flg='No' # [flg] Atmosphere-to-ocean (only used by Tempest mesh generator)
 add_fll='No' # [flg] Add _FillValue to fields with empty destination cells
-alg_typ='nco_con' # [sng] Algorithm for remapping (bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|trbilin|trintbilin|nco_con|nco_idw)
+alg_typ='nco_con' # [sng] Algorithm for remapping (bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|traave|trbilin|trfv2|trintbilin|nco_con|nco_idw)
 att_flg='No' # [flg] Add/alter attributes (e.g., _FillValue) before regridding
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
@@ -677,7 +677,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "            CDO algorithms: cdo_bilinear|cdo_conservative (same as ESMF)"
     echo "            ESMF algorithms: bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch"
     echo "            NCO algorithms: nco, nco_con, ncoaave (1st order conservative algorithm similar to \"conserve\"), nco_idw, nco_dwe (inverse-distance-weighted interpolation/extrapolation)"
-    echo "            Tempest (and MOAB-Tempest) algorithms: fv2fv|fv2fv_flx|fv2fv_stt|fv2se_flx|fv2se_stt|fv2se_alt|se2fv_flx|se2fv_stt|se2fv_alt|se2se|tempest|trbilin|trintbilin"
+    echo "            Tempest (and MOAB-Tempest) algorithms: fv2fv|fv2fv_flx|fv2fv_stt|fv2se_flx|fv2se_stt|fv2se_alt|se2fv_flx|se2fv_stt|se2fv_alt|se2se|tempest|traave|trbilin|trfv2|trintbilin"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
     echo " ${fnt_bld}--add_fll${fnt_nrm}  Add _FillValue to fields with empty destination cells (default ${fnt_bld}${add_fll}${fnt_nrm}) [${fnt_tlc}add_fll, add_fill_value, fll_mpt, fill_empty${fnt_nrm}]"
     echo " ${fnt_bld}--area_dgn${fnt_nrm} Diagnose (rather than copy) grid_area to inferred grid-file (default ${fnt_bld}No${fnt_nrm}) [${fnt_tlc}area_diagnose, dgn_area, diagnose_area${fnt_nrm}]"
@@ -1202,7 +1202,7 @@ rgn_fl=${rgn_fl}${unq_sfx}
 tmp_out_fl=${tmp_out_fl}${unq_sfx}
 znl_fl=${znl_fl}${unq_sfx}
 
-# Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|trbilin|trintbilin|nco_con|nco_idw
+# Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|traave|trbilin|trfv2|trintbilin|nco_con|nco_idw
 if [ ${alg_typ} = 'cdo_con' ] || [ ${alg_typ} = 'cdo_cns' ] || [ ${alg_typ} = 'cdo_conserve' ] || [ ${alg_typ} = 'cdo' ]; then 
     alg_opt='gencon'
     wgt_typ='cdo'
@@ -1237,15 +1237,18 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     # 20200221 Add --correct_areas to many TR maps as per Transition to TR page
     # 20220928 Remove --correct_areas since TR 2.1.12 made this default and eliminated option
     # 20220928 Replace --mono3 by --method mono3 since TR 2.1.14, 2.1.15 changed option name
+    # 20231130 Correct wgt_opt_mbt for alg_typ=tempest to use order = ${se_np_nbr} == 4 by default (since TR uses order=4)
     # https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids
     # alg_sng in comments is for E3SM naming convention map_src_to_dst_${alg_sng}.${dt_sng}.nc
     cnv_opt_src="-B"
     cnv_opt_dst="-B"
-    wgt_opt_mbt='--method fv --order 2 --method fv'
+    wgt_opt_mbt='--method fv --order ${se_np_nbr} --method fv --order ${se_np_nbr}'
     alg_opt='tempest'
     wgt_typ='tempest'
-    if [ -n "${wgt_opt_usr}" ]; then 
-	printf "${spt_nm}: INFO Specifying the TempestRemap default algorithm '--alg_typ=tempest' without giving any additional options with -W (--wgt_opt) works only for the default TR configuration where both input and output grids are Finite Volume (FV) grids. The default TR algorithm is conservative and non-monotonic.\n"
+    if [ -z "${wgt_opt_usr}" ]; then 
+	printf "${spt_nm}: INFO Specifying the TempestRemap default algorithm '--alg_typ=tempest' without giving any additional options with -W (--wgt_opt) works only for the default TR configuration where both input and output grids are Finite Volume (FV) grids. The default TR algorithm is conservative and non-monotonic, and uses 4th order polynomials.\n"
+	printf "${spt_nm}: WARNING It is atypical this TempestRemap default algorithm to be the optimal algorithm for regridding. Be sure you know what you are doing.\n"
+	printf "${spt_nm}: HINT Use one of the (many) boutique TempestRemap algorithm options described here: http://nco.sf.net/nco.html#alg_tr\n"
     fi # !wgt_opt_usr    
 elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # alg_sng='mono'
 # NB: 20220922 TempestRemap began replacing the --mono* options with --method mono*
@@ -1321,6 +1324,18 @@ elif [ ${alg_typ} = 'fv2fv_flx' ] || [ ${alg_typ} = 'traave' ] || [ ${alg_typ} =
     wgt_opt_tps='--in_type fv --in_np 1 --out_type fv --out_np 1'
     alg_opt='fv2fv_flx'
     wgt_typ='tempest'
+elif [ ${alg_typ} = 'trfv2' ] || [ ${alg_typ} = 'trfvnp2' ] || [ ${alg_typ} = '' ]; then # alg_sng='trfv2'
+    cnv_opt_src="-B"
+    cnv_opt_dst="-B"
+    # 20231129: E3SMv3 recommended for fluxes when source grid resolution uniformly is _not_ >> target grid resolution (e.g., ne30pg2->r05), i.e., coarse->fine
+    # 20231129: E3SMv3 recommended for states when source grid resolution uniformly << target grid resolution (e.g., ne30pg2->r05), i.e., coarse->fine
+    # 2nd order FV reconstruction, cell integrated on target grid (conservative, though not monotone unless used with FV2+CAAS method)
+    # https://acme-climate.atlassian.net/wiki/spaces/DOC/pages/178848194/Recommended+Mapping+Procedures+for+E3SM+Atmosphere+Grids
+    # https://acme-climate.atlassian.net/wiki/spaces/COM/pages/3771301899/Coupler+High-order+property-preserving+maps
+    wgt_opt_mbt='--method fv --order 2 --method fv --order 1 --fvmethod normalize'
+    wgt_opt_tps='--in_type fv --in_np 2 --out_type fv --out_np 1 --method normalize'
+    alg_opt='trfv2'
+    wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2fv' ]; then # alg_sng='highorder'
     cnv_opt_src="-B"
     cnv_opt_dst="-B"
@@ -1357,7 +1372,7 @@ else
     echo "${spt_nm}: HINT Valid CDO weight-generation algorithms and synonyms are cdo_bil,cdo_bilin,cdo_bilinear | cdo_con,cdo_cns,cdo_conserve"
     echo "${spt_nm}: HINT Valid ESMF weight-generation algorithms and synonyms are bilinear,bilin,bln,esmfbilin | conserve,cns,c1,aave,esmfaave | conserve2nd,c2,c2nd | nearestdtos,nds,dtos | neareststod,nsd,stod | patch,pch"
     echo "${spt_nm}: HINT Valid NCO weight-generation algorithms and synonyms are nco_con,nco_cns,nco_conserve,nco,ncoaave | nco_idw,nco_dwe"
-    echo "${spt_nm}: HINT Valid TempestRemap (and MOAB-TempestRemap) weight-generation options and synonyms are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | se2se,cs2cs | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se | fv2fv,rll2rll | trbilin | trintbilin"
+    echo "${spt_nm}: HINT Valid TempestRemap (and MOAB-TempestRemap) weight-generation options and synonyms are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | se2se,cs2cs | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se | fv2fv,rll2rll | traave | trbilin | trfv2 | trintbilin"
     exit 1
 fi # !alg_typ
 

@@ -1210,7 +1210,7 @@ nco_xtr_lst /* [fnc] Print extraction list and exit */
   } /* !xtr_nbr_crr */
   
   return;
-} /* end nco_xtr_lst() */
+} /* !nco_xtr_lst() */
 
 void
 nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
