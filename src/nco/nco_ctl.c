@@ -539,7 +539,9 @@ nco_exit /* [fnc] Wrapper for exit() */
   /* Purpose: Wrapper for exit()
      https://stackoverflow.com/questions/397075/what-is-the-difference-between-exit-and-abort
      "abort() exits your program without calling functions registered using atexit() first, and without calling objects' destructors first. exit() does both before exiting your program. It does not call destructors for automatic objects though."
-     In other words, abort() allows debuggers to access memory at time of error while exit() does not */
+     In other words, abort() allows debuggers to access memory at time of error while exit() does not
+     When True, NCO_ABORT_ON_ERROR causes NCO to abort() not exit(rcd)
+     abort() returns no code to the system, so shell $? is ill-defined */
   const char fnc_nm[]="nco_exit()";
 #ifdef NCO_ABORT_ON_ERROR
   const char exit_nm[]="abort()";
@@ -627,6 +629,9 @@ nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code 
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '9' && lbr_sng[3] == '.' && lbr_sng[4] == '3'){rcd=493;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '9' && lbr_sng[3] == '.' && lbr_sng[4] == '4'){rcd=494;}
 #endif /* HAVE_NETCDF4_H */
+  /* Use exit() not nco_exit(), because behavior of latter depends on NCO_ABORT_ON_ERROR
+     When True, NCO_ABORT_ON_ERROR causes NCO to abort() not exit(rcd)
+     abort() returns no code to the system, so shell $? is ill-defined
   /* exit() with custom rcd for use by Perl regression tester nco_bm.pl/NCO_rgr.pm */
   rcd-=300;
   exit(rcd);

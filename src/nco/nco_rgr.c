@@ -835,7 +835,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       continue;
     } /* !xtr_xpn */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"wgt_typ") || !strcmp(rgr_lst[rgr_var_idx].key,"weight_type")){
-      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"con") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_con") || !strcasecmp(rgr_lst[rgr_var_idx].val,"conservative") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_con"))
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"con") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_con") || !strcasecmp(rgr_lst[rgr_var_idx].val,"ncoaave") || !strcasecmp(rgr_lst[rgr_var_idx].val,"conservative") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_con"))
         rgr->wgt_typ=nco_wgt_con;
       else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"idw") || !strcasecmp(rgr_lst[rgr_var_idx].val,"dwe") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_idw") || !strcasecmp(rgr_lst[rgr_var_idx].val,"distance_weighted") || !strcasecmp(rgr_lst[rgr_var_idx].val,"inverse_distance") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_idw"))
         rgr->wgt_typ=nco_wgt_idw;
