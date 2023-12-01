@@ -2,9 +2,11 @@
 
 	* NCO 5.2.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha02: Lysanne-a-thon';git push
-	git tag -a 5.2.0-alpha02 -m 'fxm';git push --tags
+	git tag -a 5.2.0-alpha02 -m 'ncks: nco_chk_bnd(); ncremap: trfv2';git push --tags
 
-	* ncremap: Give v3 algorithm names preference/precedence in listings
+	* ncks: nco_chk_bnd() stubs
+
+	* ncremap: Give v3 algorithm names preference/precedence in listings, docs
 
 	* Add ncoaave as legitimate map-type directly to nco_rgr.c
 

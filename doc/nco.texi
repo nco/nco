@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.0-alpha01
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 30 November 2023
-@set update-month November 2023
+@set update-date 1 December 2023
+@set update-month December 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -22239,7 +22239,7 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 SYNTAX
 @example
 ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [--area_wgt] [-b @var{fl_bnr}]
-[-C] [-c] [--cdl] [--chk_chr] [--chk_map] [--chk_mss] [--chk_nan] [--chk_xtn]
+[-C] [-c] [--cdl] [--chk_bnd] [--chk_chr] [--chk_map] [--chk_mss] [--chk_nan] [--chk_xtn]
 [--cmp @var{cmp_sng}] [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]

@@ -46,11 +46,16 @@
 typedef struct {
   int grp_nbr; /* [nbr] Number of items in stack = number of elements in grp_id array */
   int *grp_id; /* [ID] Group ID */
-} grp_stk_sct; 
+} grp_stk_sct;
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+int /* O [nbr] Number of naughty coordinates */
+nco_chk_bnd /* [fnc] Check coordinates for bounds attributes */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
 int /* O [nbr] Number of CF non-compliant identifiers */
 nco_chk_chr /* [fnc] Check identifiers for NUG-non-compliant characters */

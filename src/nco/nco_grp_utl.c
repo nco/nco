@@ -2173,6 +2173,82 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
 } /* !nco_xtr_dfn() */
 
+int /* O [nbr] Number of naughty coordinates */
+nco_chk_bnd /* [fnc] Check coordinates for bounds attributes */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Check coordinates for bounds attributes
+     ncks --chk_bnd ~/nco/data/in.nc
+     ncks -C --dbg=1 -v att_var_spc_chr --chk_bnd ~/nco/data/in.nc
+
+     Use CF Bounds Attributes
+     https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=182296291
+     Recommendation Details: The CF conventions are widely employed guidelines for Earth Science data and metadata storage. The purpose of the CF conventions is to require conforming datasets to contain sufficient metadata that they are self-describing in the following ways: Each variable in the file has an associated description of what it represents, including physical units if appropriate; and each value can be located in space (relative to Earth-based coordinates) and time. Thus, adhering to CF guidelines will increase completeness, consistency, and interoperability of conforming datasets.
+     CF conventions state: “When gridded data does not represent the point values of a field but instead represents some characteristic of the field within cells of finite ‘volume,’ a complete description of the variable should include metadata that describes the domain or extent of each cell, and the characteristic of the field that the cell values represent.” Bounds are implemented by adding a bounds  attribute to each applicable coordinate dimension, and the attribute specifies the name of the variable that contains the edges of the respective coordinate.
+     Example: Data representative of a time interval (rather than a specific time) might annotate the time  coordinate with a bounds  attribute with value "time_bounds". The time_bounds  variable would be a multi-dimensions array of the intervals for each value of “Time.”
+     Similar conventions apply to spatial and other coordinates." */
+
+  const char fnc_nm[]="nco_chk_bnd()"; /* [sng] Function name */
+  const char att_bnd[]="bounds"; /* [sng] Bounds attribute name */
+
+  char att_nm[NC_MAX_NAME+1]; /* [sng] Attribute name */
+
+  char *nm; /* [sng] Name of dimension/group/variable/attribute */
+  
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int att_nbr; /* [nbr] Number of attributes */
+  int brk_nbr; /* [nbr] Number of naughty coordinates */
+  int grp_id; /* [ID] Group ID */
+  int var_id; /* [id] Variable ID */
+
+  /* Initialize */
+  brk_nbr=0;
+
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking variable %s for \"%s\" attribute...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,att_bnd);
+      nm=var_trv.nm;
+      rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      rcd+=nco_inq_varid(grp_id,nm,&var_id);
+      att_nbr=var_trv.nbr_att;
+      for(int att_idx=0;att_idx < att_nbr;att_idx++){
+	rcd+=nco_inq_attname(grp_id,var_id,att_idx,att_nm);
+	nm=att_nm;
+	/* Is this a naughty attribute? */
+	if(!strcmp(nm,att_bnd)){
+	  (void)fprintf(stdout,"%s: WARNING %s reports variable %s contains \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,nm);
+	  brk_nbr++;
+	} /* !nm_cf_chk */
+      } /* !att_idx */
+    } /* !nco_obj_typ_var */
+    if(var_trv.nco_typ == nco_obj_typ_grp && var_trv.flg_xtr){ 
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking group %s for \"%s\" attribute...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,att_bnd);
+      nm=var_trv.nm;
+      att_nbr=var_trv.nbr_att;
+      rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      for(int att_idx=0;att_idx < att_nbr;att_idx++){
+	rcd+=nco_inq_attname(grp_id,(int)NC_GLOBAL,att_idx,att_nm);
+	nm=att_nm;
+	/* Is this a naughty attribute? */
+	if(!strcmp(nm,att_bnd)){
+	  (void)fprintf(stdout,"%s: WARNING %s reports group %s contains \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,nm);
+	  brk_nbr++;
+	} /* !nm_cf_chk */
+      } /* !att_idx */
+    } /* !nco_obj_typ_grp */
+  } /* !idx_tbl */
+
+  if(brk_nbr > 0){
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of variables and/or groups with \"%s\" attribute is %d\n",nco_prg_nm_get(),fnc_nm,att_bnd,brk_nbr);
+    //nco_exit(EXIT_FAILURE);
+  } /* !brk_nbr */
+
+  assert(rcd == NC_NOERR);
+  return brk_nbr;
+} /* !nco_chk_bnd() */
+
 int /* O [nbr] Number of CF non-compliant identifiers */
 nco_chk_chr /* [fnc] Check identifiers for NUG-non-compliant characters */
 (const int nc_id, /* I [ID] netCDF input file ID */
@@ -2289,7 +2365,7 @@ nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
      It is acceptable to continue to use the missing_value attribute in already published Earth Science data products, especially in cases where the downstream software specifically makes use of the missing_value attribute, though it would be a worthwhile improvement to include, in new releases of such products, the CF _FillValue attribute, and, where appropriate, flag variables with CF flag_meanings plus flag_values and/or flag_masks attributes attached." */
 
   const char fnc_nm[]="nco_chk_mss()"; /* [sng] Function name */
-  const char att_not[]="missing_value"; /* [sng] Naughty attribute name */
+  const char att_ngt[]="missing_value"; /* [sng] Naughty attribute name */
 
   char att_nm[NC_MAX_NAME+1]; /* [sng] Attribute name */
 
@@ -2307,7 +2383,7 @@ nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
-      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking variable %s for \"%s\" attribute...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,att_not);
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking variable %s for \"%s\" attribute...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,att_ngt);
       nm=var_trv.nm;
       rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
       rcd+=nco_inq_varid(grp_id,nm,&var_id);
@@ -2316,14 +2392,14 @@ nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
 	rcd+=nco_inq_attname(grp_id,var_id,att_idx,att_nm);
 	nm=att_nm;
 	/* Is this a naughty attribute? */
-	if(!strcmp(nm,att_not)){
+	if(!strcmp(nm,att_ngt)){
 	  (void)fprintf(stdout,"%s: WARNING %s reports variable %s contains \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,nm);
 	  brk_nbr++;
 	} /* !nm_cf_chk */
       } /* !att_idx */
     } /* !nco_obj_typ_var */
     if(var_trv.nco_typ == nco_obj_typ_grp && var_trv.flg_xtr){ 
-      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking group %s for \"%s\" attribute...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,att_not);
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking group %s for \"%s\" attribute...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,att_ngt);
       nm=var_trv.nm;
       att_nbr=var_trv.nbr_att;
       rcd+=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
@@ -2331,7 +2407,7 @@ nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
 	rcd+=nco_inq_attname(grp_id,(int)NC_GLOBAL,att_idx,att_nm);
 	nm=att_nm;
 	/* Is this a naughty attribute? */
-	if(!strcmp(nm,att_not)){
+	if(!strcmp(nm,att_ngt)){
 	  (void)fprintf(stdout,"%s: WARNING %s reports group %s contains \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,nm);
 	  brk_nbr++;
 	} /* !nm_cf_chk */
@@ -2340,7 +2416,7 @@ nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
   } /* !idx_tbl */
 
   if(brk_nbr > 0){
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of variables and/or groups with \"%s\" attribute is %d\n",nco_prg_nm_get(),fnc_nm,att_not,brk_nbr);
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of variables and/or groups with \"%s\" attribute is %d\n",nco_prg_nm_get(),fnc_nm,att_ngt,brk_nbr);
     //nco_exit(EXIT_FAILURE);
   } /* !brk_nbr */
 
