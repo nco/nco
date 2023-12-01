@@ -1,4 +1,14 @@
+2023-12-01  Charlie Zender  <zender@uci.edu>
+
+	* Compile by default with -UNCO_ABORT_ON_ERROR not -DNCO_ABORT_ON_ERROR
+
 2023-11-30  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.2.0-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha02: Lysanne-a-thon';git push
+	git tag -a 5.2.0-alpha02 -m 'fxm';git push --tags
+
+	* ncremap tweaks for new algorithm names, e.g., ncoaave, trfv2
 
 	* NCO 5.2.0-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha01: Crown Princess';git push

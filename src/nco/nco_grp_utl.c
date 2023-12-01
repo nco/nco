@@ -843,25 +843,25 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 	      (void)fprintf(stderr,"\n");
 	    } /* end if dbg */
 	    
-	  } /* endif strstr() */
-	} /* endif nco_obj_typ */
-      } /* end loop over tbl_idx */
+	  } /* !strstr() */
+	} /* !nco_obj_typ */
+      } /* !tbl_idx */
       
       if(!flg_usr_mch_obj && !EXCLUDE_INPUT_LIST){
 	(void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression \'%s\' is not in and/or does not match contents of input file\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
 	nco_exit(EXIT_FAILURE);
-      } /* flg_usr_mch_obj */
-        /* Free dynamic memory */
+      } /* !flg_usr_mch_obj */
+      /* Free dynamic memory */
       if(usr_sng) usr_sng=(char *)nco_free(usr_sng);
       
-    } /* obj_idx */
+    } /* !obj_idx */
     
     if(nco_dbg_lvl_get() >= nco_dbg_sbr && nco_dbg_lvl_get() != nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s reports following %s match sub-setting and regular expressions:\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "groups" : "variables");
       trv_tbl_prn_flg_mch(trv_tbl,obj_typ);
-    } /* endif dbg */
+    } /* !dbg */
     
-  } /* itr_idx */
+  } /* !itr_idx */
   
   /* Compute intersection of groups and variables if necessary
      Intersection criteria flag, flg_nsx, is satisfied by default. Unset later when necessary. */

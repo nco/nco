@@ -540,7 +540,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Personal recipe last successful: 20210215
 cd ~/nco;git reset --hard origin/master
 module load gcc/8.4.0
-CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+CC='gcc' CFLAGS='-Wall -UNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 
 # 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on roger:
 # Sysadmin upgrade request: Yan Liu <yanliu@illinois.edu>
@@ -732,15 +732,15 @@ CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' ./configure --prefix=${HOME} --bindir=$
 # Firn 20180729 (works)
 ANTLR_ROOT=${HOME} CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Sastrugi 20180729 (works with gcc, clang, and icc)
-ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Sastrugi 20201215 with CCR, 20210608 update: works with Hombrew, not with MacPorts
-ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Spectral 20220617 with netCDF-dev and no CCR
-ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CPPFLAGS='-I/opt/netcdf/include -I/opt/homebrew/include' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' LDFLAGS='-L/opt/netcdf/lib -L/opt/homebrew/lib' NETCDF_ROOT=/opt/netcdf ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CPPFLAGS='-I/opt/netcdf/include -I/opt/homebrew/include' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' LDFLAGS='-L/opt/netcdf/lib -L/opt/homebrew/lib' NETCDF_ROOT=/opt/netcdf ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Spectral 20220624 with netCDF-dev and CCR
-ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CPPFLAGS='-I/opt/netcdf/include -I/opt/homebrew/include' CXX=${LINUX_CXX} CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' LDFLAGS='-L/opt/netcdf/lib -L/opt/homebrew/lib' NETCDF_ROOT=/opt/netcdf ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CPPFLAGS='-I/opt/netcdf/include -I/opt/homebrew/include' CXX=${LINUX_CXX} CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' LDFLAGS='-L/opt/netcdf/lib -L/opt/homebrew/lib' NETCDF_ROOT=/opt/netcdf ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Spectral 20220713 old netCDF, no CCR
-ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Rigb 20190912 (fxm)
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='' CXX=${LINUX_CXX} CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Imua 20230509
@@ -784,15 +784,15 @@ cd ~/nco;/bin/rm -f *.foo;make distclean
 # Pre-20170810 GCC7 dies on nco_yyget_leng() prototype with --enable-debug-custom option
 #CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # 20170810 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
-#CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+#CC='gcc' CFLAGS='-Wall -UNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # 20191217 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
-CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+CC='gcc' CFLAGS='-Wall -UNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # 20210511 Use updated netCDF from Anaconda (failed to find UDUNITS then broke when upgrading anaconda from gcc 9.3 to 11.2, because system still stuck at 9.3?)
-CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda/include" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+CC=${LINUX_CC} CFLAGS='-Wall -UNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda/include" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # 20210511 with CCR: borken due to missing ccr.h
-CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda/include" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+CC=${LINUX_CC} CFLAGS='-Wall -UNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda/include" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # 20210520 with CCR: borken due to unresolved -lhdf5 -lhdf5_hl -lnetcdff which must be manually linked
-CC=${LINUX_CC} CFLAGS="-Wall -DNCO_ABORT_ON_ERROR -I${HOME}/include" CXX=${LINUX_CXX} CXXFLAGS="-Wall -I${HOME}/include" LDFLAGS="-lhdf5 -lhdf5_hl -lnetcdff" NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda/include" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+CC=${LINUX_CC} CFLAGS="-Wall -UNCO_ABORT_ON_ERROR -I${HOME}/include" CXX=${LINUX_CXX} CXXFLAGS="-Wall -I${HOME}/include" LDFLAGS="-lhdf5 -lhdf5_hl -lnetcdff" NETCDF_ROOT="${HOME}/anaconda" UDUNITS2_PATH="${HOME}/anaconda/include" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
@@ -803,7 +803,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # gcc/g++ Zender uses this to debug NCO with custom-built netCDF binaries in /usr/local with clang (frazil)
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # 20170810 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
-CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+CC=${LINUX_CC} CFLAGS='-Wall -UNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
@@ -813,7 +813,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 
 # gcc/g++ Zender uses this to debug NCO with system netCDF binaries with clang (frazil)
 cd ~/nco;/bin/rm -f *.foo;make distclean
-CC=${LINUX_CC} CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib64' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+CC=${LINUX_CC} CFLAGS='-Wall -UNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib64' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
@@ -823,7 +823,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 
 # g++/g++ Zender uses this to compile NCO with _g++_ (not recommended for normal use)
 cd ~/nco;/bin/rm -f *.foo;make distclean
-CC='g++' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+CC='g++' CFLAGS='-Wall -UNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
