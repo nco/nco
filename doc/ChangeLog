@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
 	git tag -a 5.2.0-alpha03 -m 'fxm';git push --tags
 
+	* configure.ac: Add *_INC diagnostics to trace mangling of CPPFLAGS
+
 	* NCO 5.2.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha02: Lysanne-a-thon';git push
 	git tag -a 5.2.0-alpha02 -m 'ncks: nco_chk_bnd(); ncremap: trfv2';git push --tags
