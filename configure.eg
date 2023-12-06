@@ -393,20 +393,13 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Sysadmin upgrade request: support@lcrc.anl.gov
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
-# Personal recipe last modified: 20230425 (use conda gcc/g++ compilers so new libnetcdf links to C++ to resolve libicuuc dependencies)
-# Personal recipe last borken: 20231103 /usr/include/bits/floatn.h:86:20: error: redeclaration of C++ built-in type '_Float128' [-fpermissive]], breaks ncap2 only
-# Problem is caused by -I/usr/include <--- eliminate this, and everything works
-# Personal recipe last successful: 20230917
+# Personal recipe last modified: 20231206 (define NETCDF_ROOT once, in configure.eg)
+# Personal recipe last borken: 20231103 (problem caused by -I/usr/include)
+# Personal recipe last successful: 20231206
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # Default as of 20210924 is to build with Anaconda netCDF
 # Default as of 20230425 is to build with Anaconda gcc/g++
-cd ~/nco;ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-# Older method:
-#module load gcc/9.2.0-ugetvbp
-#module load openmpi/4.0.4-hpcx-hghvhj5
-# This works until ncap2 fails to link to -lantlr because link path does not use MY_LIB_DIR for some reason
-#ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1

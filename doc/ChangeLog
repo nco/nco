@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
 	git tag -a 5.2.0-alpha03 -m 'fxm';git push --tags
 
+	* Assign NETCDF_ROOT in configure.eg instead of bashrc (fixes Chrysalis build)
+
 	* configure.ac: Add *_INC diagnostics to trace mangling of CPPFLAGS
 
 	* NCO 5.2.0-alpha02 release procedure:
