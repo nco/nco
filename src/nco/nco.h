@@ -1517,7 +1517,7 @@ typedef enum nco_xtr_typ_enm
     short is_rec_dmn; /* [flg] Is this the record dimension? */
     size_t cnk_sz; /* [nbr] Chunk size */
     struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
-  } dmn_sct; /* end dmn_sct_tag */
+  } dmn_sct; /* !dmn_sct_tag */
 
   /* Ensemble group structure (ncge). It contains a name for the group (e.g., /cesm/cesm_01) and a list of variables for the group */
   typedef struct{

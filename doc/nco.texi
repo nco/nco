@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.0-alpha01
 @set copyright-years 1995--2023
 @set update-year 2023
-@set update-date 1 December 2023
+@set update-date 6 December 2023
 @set update-month December 2023
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -403,8 +403,7 @@ Irvine, CA 92697-3100@*
 contains the complete NCO documentation.</b> 
 <br>This HTML documentation is equivalent except it refers you to the
 printed (i.e., DVI, PostScript, and PDF) documentation for description
-of complex mathematical expressions. Also, images appear only in the
-PDF document due to SourceForge limitations.
+of complex mathematical expressions.
 @end html
 @end cartouche
 @end ifhtml
@@ -415,8 +414,7 @@ PDF document due to SourceForge limitations.
 contains the complete @acronym{NCO} documentation.}
 This Info documentation is equivalent except it refers you to the 
 printed (i.e., DVI, PostScript, and PDF) documentation for description 
-of complex mathematical expressions. Also, images appear only in the
-PDF document due to SourceForge limitations.
+of complex mathematical expressions. 
 @end ifnothtml
 
 The netCDF Operators, or @acronym{NCO}, are a suite of programs known as 
