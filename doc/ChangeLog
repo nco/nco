@@ -1,5 +1,9 @@
 2023-12-06  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.0-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
+	git tag -a 5.2.0-alpha03 -m 'fxm';git push --tags
+
 	* NCO 5.2.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha02: Lysanne-a-thon';git push
 	git tag -a 5.2.0-alpha02 -m 'ncks: nco_chk_bnd(); ncremap: trfv2';git push --tags
