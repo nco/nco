@@ -72,8 +72,8 @@ nco_chk_nan /* [fnc] Check file for NaNs */
 (const int nc_id, /* I [ID] netCDF input file ID */
  const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
-int /* O [nbr] Number of naughty time coordinates */
-nco_chk_tm  /* [fnc] Check time coordinates for double precision */
+int /* O [nbr] Number of naughty time variables */
+nco_chk_tm  /* [fnc] Check that time variables are double precision */
 (const int nc_id, /* I [ID] netCDF input file ID */
  const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 

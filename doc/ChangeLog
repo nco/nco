@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
 	git tag -a 5.2.0-alpha03 -m 'fxm';git push --tags
 
+	* nco_chk_tm() successfully identifies violations via two methods
+
 	* Add nco_chk_tm() stubs to check time coordinates for double precision
 
 2023-12-06  Charlie Zender  <zender@uci.edu>

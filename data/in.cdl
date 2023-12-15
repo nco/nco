@@ -6,13 +6,13 @@
 // netCDF4: ncgen arguments depend on version:
 // "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
 // "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
-// /usr/local/bin/ncgen -k netCDF-4 -b -o in_4.nc in.cdl
-// /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc ${HOME}/nco/data/in.cdl
-// /usr/local/bin/ncgen -7 -lb -o "file://${HOME}/in#mode=nczarr,file" ${HOME}/nco/data/in.cdl
+// ncgen -k netCDF-4 -b -o in_4.nc in.cdl
+// ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc ${HOME}/nco/data/in.cdl
+// ncgen -7 -lb -o "file://${HOME}/in#mode=nczarr,file" ${HOME}/nco/data/in.cdl
 
 // NB: netCDF-classic files will be enormous unless/until _ChunkSizes attributes added to time
-// /usr/local/bin/ncgen -k hdf5-nc3 -b -o in_4c.nc in.cdl
-// /usr/local/bin/ncgen -k hdf5-nc3 -b -o ${HOME}/nco/data/in_4c.nc ${HOME}/nco/data/in.cdl
+// ncgen -k hdf5-nc3 -b -o in_4c.nc in.cdl
+// ncgen -k hdf5-nc3 -b -o ${HOME}/nco/data/in_4c.nc ${HOME}/nco/data/in.cdl
 
 // URL:
 // http://dust.ess.uci.edu/nco/in.nc
@@ -210,6 +210,14 @@ variables:
 	time:calendar = "gregorian";
 	time:bounds = "time_bnds";
 	time:climatology = "climatology_bounds";
+
+	float time_flt(time);
+	time_flt:long_name = "time";
+	time_flt:units = "days since 1964-03-12 12:09:00 -9:00"; 
+	time_flt:calendar = "gregorian";
+	time_flt:bounds = "time_bnds";
+	time_flt:climatology = "climatology_bounds";
+	time_flt:standard_name = "time";
 
 	float time_bnds(time,vrt_nbr);
 	time_bnds:purpose = "Cell boundaries for time coordinate";
@@ -1835,6 +1843,7 @@ data:
 	three_dmn_var_cf=0.,1.,2.,3.,12.,13.,14.,15.,4.,5.,6.,7.,16.,17.,18.,19.,8.,9.,10.,11.,20.,21.,22.,23.;
 	three_dmn_var_cf2=0.,1.,2.,3.,12.,13.,14.,15.,4.,5.,6.,7.,16.,17.,18.,19.,8.,9.,10.,11.,20.,21.,22.,23.;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+	time_flt=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
         time_rpt=1.,2.,3.,1.,2.,3.,1.,2.,3.,1.;
 	time_bnds=0.5,1.5,1.5,2.5,2.5,3.5,3.5,4.5,4.5,5.5,5.5,6.5,6.5,7.5,7.5,8.5,8.5,9.5,9.5,10.5;
 	climatology_bounds=0.5,1.5,1.5,2.5,2.5,3.5,3.5,4.5,4.5,5.5,5.5,6.5,6.5,7.5,7.5,8.5,8.5,9.5,9.5,10.5;
