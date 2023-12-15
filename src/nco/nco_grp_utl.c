@@ -2551,6 +2551,76 @@ nco_chk_nan /* [fnc] Check file for NaNs */
   return brk_nbr;
 } /* !nco_chk_nan() */
 
+int /* O [nbr] Number of naughty time coordinates */
+nco_chk_tm /* [fnc] Check time coordinates for double precision */
+(const int nc_id, /* I [ID] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Check time coordinates for double precision
+     ncks --chk_tm ~/nco/data/in.nc
+     ncks -C --dbg=1 -v lat,lon,lev,time --chk_tm ~/nco/data/in.nc
+
+     Use Double Precision When Archiving Time in Seconds Since a Specific Epoch
+     https://wiki.earthdata.nasa.gov/display/ESDSWG/Use+Double+Precision+When+Archiving+Time+in+Seconds+Since+a+Specific+Epoch
+     Recommendation Details: Earth Science data products must preserve time-related information with sufficient precision to resolve all timescales relevant to the data itself, to other data with which it may be intercompared, and to conventions for the numeric representation of time, such as Coordinated Universal Time (UTC).  Geoscientific datasets commonly report time in intervals (such as seconds) measured from a particular epoch.  Resolving one second on the 50+-year timescale from the UNIX/POSIX epoch (00:00:00 UTC on 1 January 1970) to the present day can require up to ten significant digits of temporal resolution, whereas the IEEE-754 single-precision (32 bit) floating point representations preserves at most seven significant digits.  Resolving time to the nearest microsecond can require up to six more digits, for a total of sixteen digits, approximately the maximum precision of an IEEE-754 double-precision (64-bit) floating point number.  Therefore, preserving sufficient temporal precision to label, store, and intercompare geoscientific data requires double-precision storage. 
+The most straight forward way of implementing this recommendation in an Earth Science data product is to make use of a double-precision time variable.
+A somewhat less straight forward, but perfectly legitimate, way of implementing this recommendation in an Earth Science data product is to
+1) include in each Earth Science data product file a double-precision reference time in seconds since a specific epoch
+and
+2) provide within the Earth Science data product file the time of each individual observation via a single-precision (perhaps scaled) integer w.r.t. the double-precision reference time.
+Combining 1) and 2) results in time in seconds since a specific epoch in double precision.  The limitation of this approach depends on how many digits to the right of the decimal place must be included.  If time is to be reported to the nearest 0.01 second, then a single-precision integer would require a scale factor of 0.01 for conversion to seconds, in which case a single-precision integer could only hold one day's worth of information w.r.t. the reference time, and would limit this approach to sub-daily and daily product files. */
+
+  const char fnc_nm[]="nco_chk_tm()"; /* [sng] Function name */
+  const char att_bnd[]="bounds"; /* [sng] Bounds attribute name */
+
+  char att_nm[NC_MAX_NAME+1]; /* [sng] Attribute name */
+
+  char *nm; /* [sng] Name of dimension/group/variable/attribute */
+  
+  int att_idx; /* [idx] Attribute index */
+  int att_nbr; /* [nbr] Number of attributes */
+  int brk_nbr; /* [nbr] Number of naughty coordinates */
+  int dmn_id; /* [id] Dimension ID */
+  int grp_id; /* [id] Group ID */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int var_id; /* [id] Variable ID */
+
+  /* Initialize */
+  brk_nbr=0;
+
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr && var_trv.nbr_dmn == 1){
+      if(rcd == NC_EBADDIM) rcd=NC_NOERR;
+      nm=var_trv.nm;
+      rcd=nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      rcd=nco_inq_varid(grp_id,nm,&var_id);
+      /* Is this a 1D coordinate variable? (dimension of same name exists in group scope?) */
+      rcd=nco_inq_dimid_flg(grp_id,nm,&dmn_id);
+      if(rcd != NC_NOERR) continue;
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking variable %s for \"%s\" attribute...\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,att_bnd);
+      att_nbr=var_trv.nbr_att;
+      for(att_idx=0;att_idx < att_nbr;att_idx++){
+	rcd+=nco_inq_attname(grp_id,var_id,att_idx,att_nm);
+	nm=att_nm;
+	if(!strcmp(nm,att_bnd)) break;
+      } /* !att_idx */
+      /* Is this a naughty coordinate? */
+      if(att_idx == att_nbr){
+	(void)fprintf(stdout,"%s: WARNING %s reports coordinate %s does not contain \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,att_bnd);
+	brk_nbr++;
+      } /* !nm_cf_chk */
+    } /* !nco_obj_typ_var */
+  } /* !idx_tbl */
+
+  if(brk_nbr > 0){
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of coordinates without \"%s\" attribute is %d\n",nco_prg_nm_get(),fnc_nm,att_bnd,brk_nbr);
+    //nco_exit(EXIT_FAILURE);
+  } /* !brk_nbr */
+
+  return brk_nbr;
+} /* !nco_chk_tm() */
+
 int /* O [nbr] Number of non-compliant extensions */
 nco_chk_xtn /* [fnc] Check filename extension */
 (const int nc_id, /* I [ID] netCDF input file ID */

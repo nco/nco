@@ -2466,7 +2466,7 @@ nco_fl_ncz2psx /* [fnc] Convert NCZarr filename to POSIX file path components */
 
      NCZarr filename examples:
      file://${HOME}/zarr#mode=nczarr,zarr
-     https:///  zarr#mode=nczarr,zarr
+     https:///Users/zender/zarr#mode=nczarr,zarr
 
      The output will be a local path or name that POSIX (e.g. stat()) understands
      The directory component will be as much of the directory path as is given

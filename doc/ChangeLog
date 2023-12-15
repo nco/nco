@@ -1,8 +1,12 @@
-2023-12-06  Charlie Zender  <zender@uci.edu>
+2023-12-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
 	git tag -a 5.2.0-alpha03 -m 'fxm';git push --tags
+
+	* Add nco_chk_tm() stubs to check time coordinates for double precision
+
+2023-12-06  Charlie Zender  <zender@uci.edu>
 
 	* Assign NETCDF_ROOT in configure.eg instead of bashrc (fixes Chrysalis build)
 

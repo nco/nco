@@ -250,6 +250,7 @@ main(int argc,char **argv)
   nco_bool CHK_MAP=False; /* [flg] Check map-file quality */
   nco_bool CHK_MSS=False; /* [flg] Check for missing_value attribute */
   nco_bool CHK_NAN=False; /* [flg] Check for NaNs */
+  nco_bool CHK_TM=False; /* [flg] Check time coordinates for double precision */
   nco_bool CHK_XTN=False; /* [flg] Check filename extension */
   nco_bool CPY_GRP_METADATA; /* [flg] Copy group metadata (attributes) */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option x */
@@ -358,6 +359,8 @@ main(int argc,char **argv)
     {"check_nan",no_argument,0,0}, /* [flg] Check file for NaNs */
     {"nan",no_argument,0,0}, /* [flg] Check file for NaNs */
     {"NaN",no_argument,0,0}, /* [flg] Check file for NaNs */
+    {"chk_tm",no_argument,0,0}, /* [flg] Check time coordinates for double precision */
+    {"check_extension",no_argument,0,0}, /* [flg] Check time coordinates for double precision */
     {"chk_xtn",no_argument,0,0}, /* [flg] Check filename extension */
     {"check_extension",no_argument,0,0}, /* [flg] Check filename extension */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
@@ -691,6 +694,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"chk_map") || !strcmp(opt_crr,"check_map")) CHK_MAP=True; /* [flg] Check map-file quality */
       if(!strcmp(opt_crr,"chk_mss") || !strcmp(opt_crr,"check_missing_value")) CHK_MSS=True; /* [fnc] Check variables+groups for missing_value attribute */
       if(!strcmp(opt_crr,"chk_nan") || !strcmp(opt_crr,"check_nan") || !strcmp(opt_crr,"nan") || !strcmp(opt_crr,"NaN")) CHK_NAN=True; /* [flg] Check for NaNs */
+      if(!strcmp(opt_crr,"chk_tm") || !strcmp(opt_crr,"check_time_double")) CHK_TM=True; /* [flg] Check time coordinates for double precision */
       if(!strcmp(opt_crr,"chk_xtn") || !strcmp(opt_crr,"check_extension")) CHK_XTN=True; /* [flg] Check filename extension */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
         cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
@@ -1537,6 +1541,12 @@ main(int argc,char **argv)
         brk_nbr=nco_chk_nan(in_id,trv_tbl);
 	if(brk_nbr) exit(EXIT_FAILURE); else nco_exit(EXIT_SUCCESS);
       } /* !CHK_NAN */
+
+      if(CHK_TM){
+	/* Check time coordinates for double precision */
+        brk_nbr=nco_chk_tm(in_id,trv_tbl);
+	if(brk_nbr) exit(EXIT_FAILURE); else nco_exit(EXIT_SUCCESS);
+      } /* !CHK_TM */
 
       if(CHK_XTN){
 	/* Check filename extension */
