@@ -1035,9 +1035,6 @@ if [ "${tms_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" 
 	ypf_max=${ypf_max_usr}
     fi # !ypf_max_usr
     wnt_md='jfd'
-    if [ -z "${mdl_nm_usr}" ]; then 
-	mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
-    fi # !mdl_nm_usr
     # Glob files in splitter mode if other input avenues were not used
     if [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
 	# 20220129 Determine whether to construct (use inp_aut) or glob files
@@ -1045,8 +1042,8 @@ if [ "${tms_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" 
 	# Monthly input filenames are constructable with caseid 
 	# Assume user wishes to glob unless both is provided caseid for monthly files
 	if [ ${clm_md} = 'mth' ] && [ -n "${caseid}" ]; then
-	    inp_glb='Yes' # 20220129 fxm remove after moving monthly filename creation block
-	    # inp_aut='Yes' # 20220129 fxm uncomment after moving monthly filename creation block
+	    # inp_glb='Yes' # 20220129 fxm remove after moving monthly filename creation block
+	    inp_aut='Yes' # 20220129 fxm uncomment after moving monthly filename creation block
 	else # !caseid
 	    inp_glb='Yes'
 	fi # !caseid
@@ -1055,6 +1052,9 @@ fi # !tms_flg
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
     inp_glb='Yes'
 fi # !clm_flg, !dly
+if [ "${inp_aut}" != 'Yes' ] && [ -z "${mdl_nm_usr}" ]; then 
+    mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
+fi # !inp_aut !mdl_nm_usr
 
 # Read files from stdin pipe, positional arguments, or directory glob
 #printf "dbg: inp_aut  = ${inp_aut}\n"
@@ -1430,6 +1430,53 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
 	inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
     fi # !caseid
 fi # !clm_flg
+
+# 20231221: Automatically construct input filename list based on command-line options    
+if [ ${inp_aut} = 'Yes' ]; then 
+    if [ ${clm_md} = 'mth' ]; then
+	fl_nbr=0
+	yr_srt_all=${yyyy_srt}
+	yr_end_all=${yyyy_end}
+	if [ ${wnt_md} = 'djf' ]; then 
+	    yr_srt_all=${yr_srtm1}
+	    yr_end_all=${yr_endm1}
+	fi # !wnt_md
+	for yr in `seq ${yr_srt_all} ${yr_end_all}`; do
+	    YYYY=`printf "%04d" ${yr}`
+	    clm_idx=0
+	    for mth in {01..12}; do
+		let clm_idx=${clm_idx}+1
+		MM=`printf "%02d" ${clm_idx}`
+		# Only construct filenames for months that are used
+		if [ ${wnt_md} = 'djf' ] && [ ${yr} = ${yr_srt_all} ] && [ ${MM} != '12' ] ; then continue; fi
+		if [ ${wnt_md} = 'djf' ] && [ ${yr} = ${yr_end_all} ] && [ ${MM} = '12' ] ; then continue; fi
+		if [ ${nm_typ} = 'cesm' ]; then
+		    fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
+		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
+		    if [ ${mdl_nm} = 'mali' ]; then 
+			fl_in[${fl_nbr}]="${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01_00000.nc"
+		    else # !mdl_nm
+			# 20161130: Old MPAS rule until today
+			# fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+			# Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
+ 			fl_in[${fl_nbr}]="${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
+		    fi # !mdl_nm
+		elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
+		    fl_in[${fl_nbr}]="${bs_nm}_${YYYY}${MM}.${bs_sfx}"
+		elif [ ${nm_typ} = 'yyyy-mm' ]; then # Generate from caseid + YYYY-MM
+		    fl_in[${fl_nbr}]="${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
+		elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
+		    fl_in[${fl_nbr}]="${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
+		elif [ ${nm_typ} = 'yyyy-mm-01-00000' ]; then # Generate from caseid + YYYY-MM-01-00000
+#		    fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
+		    fl_in[${fl_nbr}]="${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
+		fi # !cesm
+		let fl_nbr=${fl_nbr}+1
+	    done # !mth
+	done # !yr
+    fi # !clm_md
+fi # !inp_aut
+
 if [ ${inp_glb} = 'Yes' ]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [ -f "${fl}" ]; then
@@ -2026,6 +2073,14 @@ if [ ${dbg_lvl} -ge 2 ]; then
 	printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
     done # !psn_idx
 fi # !dbg
+if [ ${dbg_lvl} -ge 2 ]; then
+    if [ ${inp_aut} = 'Yes' ]; then
+	printf "dbg: Automatically generated ${fl_nbr} input files:\n"
+	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+	    printf "dbg: fl_in[${fl_idx}] = ${fl_in[${fl_idx}]}\n"
+	done # !fl_idx
+    fi # !inp_aut
+fi # !dbg
 
 # Human-readable summary
 date_srt=$(date +"%s")
@@ -2195,51 +2250,25 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     for mth in {01..12}; do
 	let clm_idx=${clm_idx}+1
 	MM=`printf "%02d" ${clm_idx}`
-	if [ ${clm_md} = 'mth' ] && [ ${inp_aut} = 'Yes' ]; then 
+
+	# 20231221 inp_aut creation block was here
+	
+	# Monthly filenames are every twelfth file from input list
+	if [ ${clm_md} = 'mth' ]; then 
 	    fl_all=''
-	    for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
-		YYYY=`printf "%04d" ${yr}`
-		if [ ${nm_typ} = 'cesm' ]; then
-		    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
-		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
-		    if [ ${mdl_nm} = 'mali' ]; then 
-			fl_all="${fl_all} ${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01_00000.nc"
-		    else # !mdl_nm
-			# 20161130: Old MPAS rule until today
-			# fl_all="${fl_all} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
-			# Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
- 			fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
-		    fi # !mdl_nm
-		elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
-		    fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
-		elif [ ${nm_typ} = 'yyyy-mm' ]; then # Generate from caseid + YYYY-MM
-		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
-		elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
-		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
-		elif [ ${nm_typ} = 'yyyy-mm-01-00000' ]; then # Generate from caseid + YYYY-MM-01-00000
-#		    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
-		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
-		fi # !cesm
-	    done # !yr
-	    if [ ${wnt_md} = 'djf' ] && [ ${MM} = '12' ]; then 
-		fl_all=''
-		for yr in `seq ${yr_srtm1} ${yr_endm1}`; do
-		    YYYY=`printf "%04d" ${yr}`
-		    if [ ${nm_typ} = 'cesm' ]; then
-			fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
-		    elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
- 			fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
-		    elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
-			fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
-		    elif [ ${nm_typ} = 'yyyy-mm' ]; then # Generate from caseid + YYYY-MM
-			fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
-		    elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
-			fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
-		    elif [ ${nm_typ} = 'yyyy-mm-01-00000' ]; then # Generate from caseid + YYYY-MM-01-00000
-			fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
-		    fi # !cesm
-		done # !yr
-	    fi # !wnt_md
+	    for ((yr_idx=0;yr_idx<yr_nbr;yr_idx++)); do
+		if [ ${wnt_md} = 'jfd' ]; then
+		    let fl_idx=$((yr_idx * 12 + clm_idx - 1))
+		else
+		    if [ ${MM} != '12' ]; then
+			let fl_idx=$((yr_idx * 12 + clm_idx))
+		    else # !dec
+			let fl_idx=$(((yr_idx - 1) * 12 + clm_idx))
+		    fi # !dec
+		fi # !wnt_md
+		fl_all="${fl_all} ${fl_in[${fl_idx}]}"
+	    done # !yr_idx
+
 	    # Check for existence of raw input only when file will be used
 	    if [ "${bnr_flg}" = 'No' ]; then
 		for fl_crr in ${fl_all} ; do
@@ -2254,26 +2283,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		drc_out="${drc_in}"
 	    fi # !bnr_flg
 
-	fi # !clm_md && !inp_aut
+	fi # !clm_md
 
-	# Monthly filenames are every twelfth file from input list
-	if [ ${clm_md} = 'mth' ] && [ ${inp_aut} = 'No' ]; then 
-	    fl_all=''
-	    for ((yr_idx=0;yr_idx<yr_nbr;yr_idx++)); do
-		if [ ${wnt_md} = 'jfd' ]; then
-		    let fl_idx=$((yr_idx * 12 + clm_idx - 1))
-		else
-		    if [ ${MM} != '12' ]; then
-			let fl_idx=$((yr_idx * 12 + clm_idx))
-		    else # !dec
-			let fl_idx=$(((yr_idx - 1) * 12 + clm_idx))
-		    fi # !dec
-		fi # !wnt_md
-		fl_all="${fl_all} ${fl_in[${fl_idx}]}"
-	    done # !yr_idx
-	fi # !clm_md && !inp_aut
-
-	# 20220129 fxm after moving climo mode filename creation block upwards and setting fl_in=fl_all so tms_flg can use it, start a new climo mode loop over years months and continue the climo code right here, indentation should not change
 	# Common to both high-frequency and monthly-input climos
 	if [ ${wnt_md} = 'djf' ] && [ ${MM} = '12' ]; then 
 	    yyyy_clm_srt=${yyyy_clm_srt_dec}
