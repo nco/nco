@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
 	git tag -a 5.2.0-alpha03 -m 'fxm';git push --tags
 
+	* Fix climatology bounds for climatological December in DJF mode for monthly climos
+
 	* Start branch csz_ncclimo with unified inp_aut filename generator for climos and timeseries
 
 2023-12-15  Charlie Zender  <zender@uci.edu>

@@ -587,6 +587,7 @@ mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indicates unlimited RAM)
 mpi_flg='No' # [sng] Parallelize over nodes
 mth_end='12' # [yr] End month
+mth_flg='No' # [flg] Timeseries is not from Jan->Dec
 mth_srt='1' # [yr] Start month
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
 ncr_flg='No' # [sng] Incremental method
@@ -1446,8 +1447,8 @@ if [ ${inp_aut} = 'Yes' ]; then
 		# Only construct filenames for months that are used
 		if [ ${wnt_md} = 'djf' ] && [ ${yr} = ${yr_srt_all} ] && [ ${MM} != '12' ]; then continue; fi
 		if [ ${wnt_md} = 'djf' ] && [ ${yr} = ${yr_end_all} ] && [ ${MM} = '12' ]; then continue; fi
-		if [ ${mth_flg} = 'Yes' ] && [ ${yr} = ${yr_srt_all} ] && [ ${MM} -lt ${mth_srt} ]; then continue; fi
-		if [ ${mth_flg} = 'Yes' ] && [ ${yr} = ${yr_end_all} ] && [ ${MM} -gt ${mth_end} ]; then continue; fi
+		if [ ${mth_flg} = 'Yes' ] && [ ${yr} = ${yr_srt_all} ] && [ ${MM} -lt ${mth_srt_rth} ]; then continue; fi
+		if [ ${mth_flg} = 'Yes' ] && [ ${yr} = ${yr_end_all} ] && [ ${MM} -gt ${mth_end_rth} ]; then continue; fi
 		if [ ${nm_typ} = 'cesm' ]; then
 		    fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
@@ -2372,7 +2373,9 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    cmd_mth2csn='nces'
 	    cmd_csn2ann='nces'
 	elif [ ${clm_md} = 'mth' ]; then 
-	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},0 -O ${nco_opt} ${gaa_sng} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
+	    clm_bnd[${clm_idx}]=${yyyy_clm_srt},${yyyy_clm_end},${clm_idx},${clm_idx},0
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${clm_bnd[${clm_idx}]} -O ${nco_opt} ${gaa_sng} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
+	    #	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},0 -O ${nco_opt} ${gaa_sng} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    # Combine monthly into seasonal and annual means with ncra
 	    cmd_mth2csn='ncra'
 	    cmd_csn2ann='ncra'
