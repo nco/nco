@@ -1048,20 +1048,6 @@ if [ "${tms_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" 
 	fi # !caseid
     fi # !inp_*
 fi # !tms_flg
-# clm_flg and tms_flg are now fixed so finalize input file options then gather input filenames
-if [ ${tms_flg} = 'Yes' ] && [ ${inp_aut} = 'No' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
-    echo "${spt_nm}: ERROR Specify input file(s) by providing -i \$drc_in with (for automatic construction) or without (for globbing) -c \$caseid, or provide names via positional argument(s) or stdin"
-    if [ ${bch_pbs} = 'Yes' ]; then
-	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
-    else # !bch_pbs
-	echo "${spt_nm}: HINT An easy way to create timeseries is to pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
-    fi # !bch_pbs
-    exit 1
-fi # !tms_flg
-if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
-    inp_aut='Yes'
-    inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
-fi # !clm_flg
 # 20211129 Allow splitter to use inp_aut?
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     # 20211118 Specifying caseid implies inp_aut, otherwise check stdin etc
@@ -1073,9 +1059,24 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
 	inp_aut='Yes'
     fi # !caseid
 fi # !clm_flg
+if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
+    inp_aut='Yes'
+    inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
+fi # !clm_flg
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
+    inp_aut='No'
     inp_glb='Yes'
 fi # !clm_flg, !dly
+# clm_flg and tms_flg are now fixed so finalize input file options then gather input filenames
+if [ ${inp_aut} = 'No' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
+    echo "${spt_nm}: ERROR Specify input file(s) by providing -i \$drc_in with (for automatic construction) or without (for globbing) -c \$caseid, or provide names via positional argument(s) or stdin"
+    if [ ${bch_pbs} = 'Yes' ]; then
+	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
+    else # !bch_pbs
+	echo "${spt_nm}: HINT An easy way to provide lengthy or complex filenames to pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+    fi # !bch_pbs
+    exit 1
+fi # !tms_flg
 if [ "${inp_aut}" != 'Yes' ] && [ -z "${mdl_nm_usr}" ]; then 
     mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
 fi # !inp_aut !mdl_nm_usr
@@ -1445,8 +1446,8 @@ if [ ${inp_aut} = 'Yes' ]; then
 		# Only construct filenames for months that are used
 		if [ ${wnt_md} = 'djf' ] && [ ${yr} = ${yr_srt_all} ] && [ ${MM} != '12' ]; then continue; fi
 		if [ ${wnt_md} = 'djf' ] && [ ${yr} = ${yr_end_all} ] && [ ${MM} = '12' ]; then continue; fi
-		if [ ${mth_flg} = 'Yes' ] && [ ${yr} = ${yr_srt_all} ] && [ ${mth} -lt ${mth_srt_rth} ]; then continue; fi
-		if [ ${mth_flg} = 'Yes' ] && [ ${yr} = ${yr_end_all} ] && [ ${mth} -gt ${mth_end_rth} ]; then continue; fi
+		if [ ${mth_flg} = 'Yes' ] && [ ${yr} = ${yr_srt_all} ] && [ ${MM} -lt ${mth_srt} ]; then continue; fi
+		if [ ${mth_flg} = 'Yes' ] && [ ${yr} = ${yr_end_all} ] && [ ${MM} -gt ${mth_end} ]; then continue; fi
 		if [ ${nm_typ} = 'cesm' ]; then
 		    fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
