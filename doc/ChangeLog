@@ -1,8 +1,12 @@
-2023-12-15  Charlie Zender  <zender@uci.edu>
+2023-12-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
 	git tag -a 5.2.0-alpha03 -m 'fxm';git push --tags
+
+	* Start branch csz_ncclimo with unified inp_aut filename generator for climos and timeseries
+
+2023-12-15  Charlie Zender  <zender@uci.edu>
 
 	* nco_chk_tm() successfully identifies violations via two methods
 
