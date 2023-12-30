@@ -93,9 +93,9 @@ fi # !$1
 
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
 if [ -z "${HOSTNAME}" ]; then
-    if [ -f /bin/hostname ] && [ -x /bin/hostname ]; then
+    if [ -e /bin/hostname ] && [ -x /bin/hostname ]; then
 	export HOSTNAME=`/bin/hostname`
-    elif [ -f /usr/bin/hostname ] && [ -x /usr/bin/hostname ]; then
+    elif [ -e /usr/bin/hostname ] && [ -x /usr/bin/hostname ]; then
 	export HOSTNAME=`/usr/bin/hostname`
     fi # !hostname
 fi # HOSTNAME
@@ -1200,10 +1200,8 @@ if [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Ye
     # Monthly input filenames are constructable with caseid 
     # Assume user wishes to glob unless both are provided caseid for monthly files
     # 20211207 Specifying mpas name type (like MPAS-Analysis does) also implies inp_aut
-    if [ ${clm_md} = 'mth' ]; then
-	if [ -n "${caseid}" ] || [ ${nm_typ} = 'mpas' ]; then
-	    inp_aut='Yes'
-	fi # !caseid, !nm_typ
+    if [[ ( ${clm_md} = 'mth' && -n "${caseid}" ) || ${nm_typ} = 'mpas' ]]; then
+	inp_aut='Yes'
     else # !mth
 	inp_glb='Yes'
     fi # !caseid
@@ -1219,7 +1217,7 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [
 fi # !clm_flg, !dly
 # clm_flg and tms_flg are now fixed so finalize input file options then gather input filenames
 if [ ${inp_aut} = 'No' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
-    echo "${spt_nm}: ERROR Specify input file(s) by providing -i \$drc_in with (for automatic construction) or without (for globbing) -c \$caseid, or provide names via positional argument(s) or stdin"
+    echo "${spt_nm}: ERROR Specify input file(s) by providing opttion \"-i \$drc_in\" with (for automatic filename construction) or without (for globbing entire directory) \"-c \$caseid\", or provide names via positional argument(s) or stdin"
     if [ ${bch_pbs} = 'Yes' ]; then
 	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
     else # !bch_pbs
@@ -1231,11 +1229,8 @@ if [ "${inp_aut}" != 'Yes' ] && [ -z "${mdl_nm_usr}" ]; then
     mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
 fi # !inp_aut !mdl_nm_usr
 
-# Read files from stdin pipe, positional arguments, or directory glob
-#printf "dbg: inp_aut  = ${inp_aut}\n"
-#printf "dbg: inp_glb  = ${inp_glb}\n"
-#printf "dbg: inp_psn  = ${inp_psn}\n"
-#printf "dbg: inp_std  = ${inp_std}\n"
+# Obtain filenames from automatic generation, directory glob, positional arguments, or stdin pipe
+#printf "dbg: inp_aut  = ${inp_aut}, inp_glb  = ${inp_glb}, inp_psn  = ${inp_psn}, inp_std  = ${inp_std}\n"
 # End input mode determination block
 
 if [ "${clm_flg}" = 'Yes' ] && [ -z "${out_nm}" ] && [ -z "${fml_nm}" ]; then 
@@ -1474,16 +1469,14 @@ if [ ${inp_aut} = 'Yes' ] && [ ${clm_md} = 'mth' ] || [ ${clm_md} = 'ann' ]; the
 	done # !mth
     done # !yr
 fi # !inp_aut
-
 if [ ${inp_glb} = 'Yes' ]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-	if [ -f "${fl}" ]; then
+	if [ -e "${fl}" ]; then
 	    fl_in[${fl_nbr}]=${fl}
 	    let fl_nbr=${fl_nbr}+1
 	fi # !file
     done
 fi # !inp_glb
-
 if [ ${inp_psn} = 'Yes' ]; then
     # Read any positional arguments
     for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
@@ -2072,8 +2065,8 @@ if [ ${dbg_lvl} -ge 2 ]; then
     done # !psn_idx
 fi # !dbg
 if [ ${dbg_lvl} -ge 2 ]; then
-    if [ ${inp_aut} = 'Yes' ]; then
-	printf "dbg: Automatically generated ${fl_nbr} input files:\n"
+    if [ ${inp_aut} = 'Yes' ] || [ ${inp_glb} = 'Yes' ] || [ ${inp_std} = 'Yes' ]; then
+	printf "dbg: Obtained or generated ${fl_nbr} input files:\n"
 	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	    printf "dbg: fl_in[${fl_idx}] = ${fl_in[${fl_idx}]}\n"
 	done # !fl_idx

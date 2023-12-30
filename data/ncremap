@@ -108,9 +108,9 @@ fi # !$1
 
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
 if [ -z "${HOSTNAME}" ]; then
-    if [ -f /bin/hostname ] && [ -x /bin/hostname ]; then
+    if [ -e /bin/hostname ] && [ -x /bin/hostname ]; then
 	export HOSTNAME=`/bin/hostname`
-    elif [ -f /usr/bin/hostname ] && [ -x /usr/bin/hostname ]; then
+    elif [ -e /usr/bin/hostname ] && [ -x /usr/bin/hostname ]; then
 	export HOSTNAME=`/usr/bin/hostname`
     fi # !hostname
 fi # HOSTNAME
@@ -2072,7 +2072,7 @@ else
     grd_sng_usr_flg='Yes'
 fi # !grd_sng
 if [ -n "${grd_dst}" ]; then 
-    if [ -f "${grd_dst}" ]; then
+    if [ -e "${grd_dst}" ]; then
 	if [ "${dst_usr_flg}" = 'Yes' ]; then
 	    printf "${spt_nm}: WARNING ${grd_dst} already exists and will be overwritten by newly inferred grid\n"
 	fi # !dst_usr_flg
@@ -2109,7 +2109,7 @@ if [ -n "${map_fl}" ]; then
     map_usr_flg='Yes'
     if [ "${map_mk}" = 'Yes' ]; then
 	# Confirm before overwriting maps
-        if [ -f "${map_fl}" ]; then
+        if [ -e "${map_fl}" ]; then
 	    # 20160803: fxm invoke iff in interactive shell (block hangs on read() in non-interactive shells)
 #	    if [ -t 0 ] || [ ! -p /dev/stdin ]; then
 #           if [ -n "${TERM}" ]; then
@@ -2189,7 +2189,7 @@ if [ ${inp_aut} = 'Yes' ]; then
 fi # !inp_aut
 if [ ${inp_glb} = 'Yes' ]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-	if [ -f "${fl}" ]; then
+	if [ -e "${fl}" ]; then
 	    fl_in[${fl_nbr}]=${fl}
 	    let fl_nbr=${fl_nbr}+1
 	fi # !file
@@ -2512,7 +2512,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     printf "NCO regridder invoked with command:\n"
     echo "${cmd_ln}"
 fi # !vrb_lvl
-if [ -f 'PET0.RegridWeightGen.Log' ]; then
+if [ -e 'PET0.RegridWeightGen.Log' ]; then
     if [ ${vrb_lvl} -ge ${vrb_4} ]; then
 	printf "${spt_nm}: Removing PET0.RegridWeightGen.Log file and any other PET0.* files from current directory before running\n"
     fi # !vrb_lvl
@@ -2855,12 +2855,12 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	rgn_opt=''
 	if [ -n "${hnt_src}" ]; then
 	    rgn_opt="${rgn_opt} ${hnt_src}"
-	elif [ -f "${hnt_src_fl}" ]; then
+	elif [ -e "${hnt_src_fl}" ]; then
 	    rgn_opt="${rgn_opt} `cat ${hnt_src_fl}`"
 	fi # !hnt_src_fl
 	if [ -n "${hnt_dst}" ]; then
 	    rgn_opt="${rgn_opt} ${hnt_dst}"
-	elif [ -f "${hnt_dst_fl}" ]; then
+	elif [ -e "${hnt_dst_fl}" ]; then
 	    rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
 	fi # !hnt_dst_fl
 	cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt}${devnull}"
@@ -3154,12 +3154,12 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    	rgn_opt=''
 		if [ -n "${hnt_src}" ]; then
 		    rgn_opt="${rgn_opt} ${hnt_src}"
-		elif [ -f "${hnt_src_fl}" ]; then
+		elif [ -e "${hnt_src_fl}" ]; then
 		    rgn_opt="${rgn_opt} `cat ${hnt_src_fl}`"
 		fi # !hnt_src_fl
 		if [ -n "${hnt_dst}" ]; then
 		    rgn_opt="${rgn_opt} ${hnt_dst}"
-		elif [ -f "${hnt_dst_fl}" ]; then
+		elif [ -e "${hnt_dst_fl}" ]; then
 		    rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
 		fi # !hnt_dst_fl
 		cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt}${devnull}"
