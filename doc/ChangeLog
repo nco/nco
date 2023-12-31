@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
 	git tag -a 5.2.0-alpha03 -m 'ncclimo: refactor for tms inp_aut,	fix Dec clm_bnd in djf mode';git push --tags
 
-	* ncclimo/ncremap: Use -e (true if file or link) instead of -f to test for file existance
+	* Verify globbing for input files works
+
+	* ncclimo/ncremap: Use test -f || test -L (true if file or link) instead of test -f to test for file existance
 
 2023-12-22  Charlie Zender  <zender@uci.edu>
 

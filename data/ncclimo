@@ -93,9 +93,9 @@ fi # !$1
 
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
 if [ -z "${HOSTNAME}" ]; then
-    if [ -e /bin/hostname ] && [ -x /bin/hostname ]; then
+    if [ -f /bin/hostname ] && [ -x /bin/hostname ]; then
 	export HOSTNAME=`/bin/hostname`
-    elif [ -e /usr/bin/hostname ] && [ -x /usr/bin/hostname ]; then
+    elif [ -f /usr/bin/hostname ] && [ -x /usr/bin/hostname ]; then
 	export HOSTNAME=`/usr/bin/hostname`
     fi # !hostname
 fi # HOSTNAME
@@ -1342,7 +1342,7 @@ if [ -n "${rgr_opt_usr}" ]; then
     rmp_opt="-R \'${rgr_opt_usr}\'"
 fi # !rgr_opt_usr
 if [ -n "${rgr_map}" ]; then 
-    if [ ! -f "${rgr_map}" ]; then
+    if [ ! -f "${rgr_map}" ] && [ ! -L "${rgr_map}" ]; then
 	echo "${spt_nm}: ERROR Unable to find specified regrid map ${rgr_map}"
 	echo "${spt_nm}: HINT Supply the full path-name for the regridding map"
 	exit 1
@@ -1380,7 +1380,7 @@ if [ -n "${tpd_usr}" ]; then
     tpd_out="${tpd_usr}"
 fi # !tpd_usr
 if [ -n "${vrt_out}" ]; then
-    if [ ! -f "${vrt_out}" ]; then
+    if [ ! -f "${vrt_out}" ] && [ ! -L "${vrt_out}" ]; then
 	echo "ERROR: Unable to find specified vertical coordinate file ${vrt_out}"
 	exit 1
     fi # ! -f
@@ -1471,8 +1471,8 @@ if [ ${inp_aut} = 'Yes' ] && [ ${clm_md} = 'mth' ] || [ ${clm_md} = 'ann' ]; the
 fi # !inp_aut
 if [ ${inp_glb} = 'Yes' ]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-	if [ -e "${fl}" ]; then
-	    fl_in[${fl_nbr}]=${fl}
+	if [ -f "${fl}" ] || [ -L "${fl}" ]; then
+	    fl_in[${fl_nbr}]=$(basename ${fl}) # NB: ncclimo uses ppn_opt and basename($fl), unlike ncremap
 	    let fl_nbr=${fl_nbr}+1
 	fi # !file
     done
@@ -1496,9 +1496,11 @@ fi # !inp_std
 ppn_opt="-p ${drc_in}"
 # 20220111 If input files include absolute path, then use fl_in as-is later on
 # 20220130 fl_in is defined here only for inp_[std,cmd,glb], do not test iff inp_aut
-if [ "${fl_in[0]}" ] && [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ]; then
-    ppn_opt=''
-fi # !basename
+if [ "${fl_in[0]}" ]; then
+    if [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ] || [ "${fl_in[0]:0:1}" = '/' ]; then
+	ppn_opt=''
+    fi # !basename
+fi # !fl_in[0]
 	
 if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
     if [ -z "${tpd_usr}" ]; then 
@@ -2260,7 +2262,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    # Check for existence of raw input only when file will be used
 	    if [ "${bnr_flg}" = 'No' ]; then
 		for fl_crr in ${fl_all} ; do
-		    if [ ! -f "${drc_in}/${fl_crr}" ]; then
+		    if [ ! -f "${drc_in}/${fl_crr}" ] && [ ! -L "${drc_in}/${fl_crr}" ]; then
 			echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 			echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
 			exit 1
@@ -2656,7 +2658,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 
 	# Sanity check that all files exist before wasting time and space on concatenation
 	for fl_crr in ${fl_sgm[${sgm_idx}]} ; do
-	    if [ ! -f "${drc_in}/${fl_crr}" ]; then
+	    if [ ! -f "${drc_in}/${fl_crr}" ] && [ ! -L "${drc_in}/${fl_crr}" ]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
@@ -2960,11 +2962,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
     # Check for existence of raw input only when file will be used (NB: next ~12 lines duplicate monthly code)
     if [ "${bnr_flg}" = 'No' ]; then
 	for fl_crr in ${fl_all} ; do
-	    if [ ! -e "${drc_in}/${fl_crr}" ]; then
+	    if [ ! -f "${drc_in}/${fl_crr}" ] && [ ! -L "${drc_in}/${fl_crr}" ]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
-	    fi # ! -e
+	    fi # ! -f
 	done # !fl_crr
     else # !bnr_flg
 	# In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
