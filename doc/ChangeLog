@@ -2,7 +2,7 @@
 
 	* NCO 5.2.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
-	git tag -a 5.2.0-alpha03 -m 'ncclimo: refactor for tms inp_aut,	fix Dec clm_bnd in djf mode';git push --tags
+	git tag -a 5.2.0-alpha03 -m 'ncclimo: refactor for tms inp_aut, fix Dec clm_bnd in djf mode, fix inp_glb;ncclimo/ncremap: [-f $fl] || [-L $fl]';git push --tags
 
 	* Verify globbing for input files works
 
