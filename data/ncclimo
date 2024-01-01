@@ -1215,9 +1215,9 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [
     inp_aut='No'
     inp_glb='Yes'
 fi # !clm_flg, !dly
-# clm_flg and tms_flg are now fixed so finalize input file options then gather input filenames
+# One of these input file options must be true, or else...
 if [ ${inp_aut} = 'No' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
-    echo "${spt_nm}: ERROR Specify input file(s) by providing opttion \"-i \$drc_in\" with (for automatic filename construction) or without (for globbing entire directory) \"-c \$caseid\", or provide names via positional argument(s) or stdin"
+    echo "${spt_nm}: ERROR Specify input file(s) by providing option \"-i \$drc_in\" with (for automatic filename construction) or without (for globbing entire directory) \"-c \$caseid\", or provide names via positional argument(s) or stdin"
     if [ ${bch_pbs} = 'Yes' ]; then
 	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
     else # !bch_pbs
@@ -1228,6 +1228,7 @@ fi # !tms_flg
 if [ "${inp_aut}" != 'Yes' ] && [ -z "${mdl_nm_usr}" ]; then 
     mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
 fi # !inp_aut !mdl_nm_usr
+# clm_flg and tms_flg and all input file pre-requisite parameters are now set. Ready to gather input filenames.
 
 # Obtain filenames from automatic generation, directory glob, positional arguments, or stdin pipe
 #printf "dbg: inp_aut  = ${inp_aut}, inp_glb  = ${inp_glb}, inp_psn  = ${inp_psn}, inp_std  = ${inp_std}\n"
@@ -1472,7 +1473,7 @@ fi # !inp_aut
 if [ ${inp_glb} = 'Yes' ]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [ -f "${fl}" ] || [ -L "${fl}" ]; then
-	    fl_in[${fl_nbr}]=$(basename ${fl}) # NB: ncclimo uses ppn_opt and basename($fl), unlike ncremap
+	    fl_in[${fl_nbr}]=$(basename ${fl}) # NB: ncclimo uses basename($fl) here, and ppn_opt later, unlike ncremap
 	    let fl_nbr=${fl_nbr}+1
 	fi # !file
     done
