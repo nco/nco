@@ -79,7 +79,7 @@
 /* Define to 1 if compiler finds external `atanhf' function */
 #undef HAVE_ATANHF
 
-/* Define to 1 if you have the `canonicalize_file_name' function. */
+/* Define to 1 if you have the 'canonicalize_file_name' function. */
 #undef HAVE_CANONICALIZE_FILE_NAME
 
 /* Define to 1 if <ccr.h> is present */
@@ -94,7 +94,7 @@
 /* Define to 1 if compiler finds external `coshf' function */
 #undef HAVE_COSHF
 
-/* Define to 1 if you have the `creat' function. */
+/* Define to 1 if you have the 'creat' function. */
 #undef HAVE_CREAT
 
 /* Define to 1 if you have the <cstdlib> header file. */
@@ -118,7 +118,7 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
-/* Define to 1 if you have the `floor' function. */
+/* Define to 1 if you have the 'floor' function. */
 #undef HAVE_FLOOR
 
 /* Define to 1 if compiler finds external `floorf' function */
@@ -130,7 +130,7 @@
 /* Define to 1 if compiler finds external `gammaf' function */
 #undef HAVE_GAMMAF
 
-/* Define to 1 if you have the `gethostname' function. */
+/* Define to 1 if you have the 'gethostname' function. */
 #undef HAVE_GETHOSTNAME
 
 /* Define to 1 if compiler finds external `getopt' function */
@@ -142,10 +142,10 @@
 /* Define to 1 if compiler finds external `getopt_long' function */
 #undef HAVE_GETOPT_LONG
 
-/* Define to 1 if you have the `getpagesize' function. */
+/* Define to 1 if you have the 'getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
-/* Define to 1 if you have the `getrusage' function. */
+/* Define to 1 if you have the 'getrusage' function. */
 #undef HAVE_GETRUSAGE
 
 /* Define to 1 if <gsl_sf_gamma.h> is present */
@@ -160,37 +160,37 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the `ccmalloc' library (-lccmalloc). */
+/* Define to 1 if you have the 'ccmalloc' library (-lccmalloc). */
 #undef HAVE_LIBCCMALLOC
 
-/* Define to 1 if you have the `dl' library (-ldl). */
+/* Define to 1 if you have the 'dl' library (-ldl). */
 #undef HAVE_LIBDL
 
-/* Define to 1 if you have the `gsl' library (-lgsl). */
+/* Define to 1 if you have the 'gsl' library (-lgsl). */
 #undef HAVE_LIBGSL
 
-/* Define to 1 if you have the `intl' library (-lintl). */
+/* Define to 1 if you have the 'intl' library (-lintl). */
 #undef HAVE_LIBINTL
 
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
 
-/* Define to 1 if you have the `netcdf' library (-lnetcdf). */
+/* Define to 1 if you have the 'netcdf' library (-lnetcdf). */
 #undef HAVE_LIBNETCDF
 
-/* Define to 1 if you have the `nsl' library (-lnsl). */
+/* Define to 1 if you have the 'nsl' library (-lnsl). */
 #undef HAVE_LIBNSL
 
-/* Define to 1 if you have the `resolv' library (-lresolv). */
+/* Define to 1 if you have the 'resolv' library (-lresolv). */
 #undef HAVE_LIBRESOLV
 
-/* Define to 1 if you have the `socket' library (-lsocket). */
+/* Define to 1 if you have the 'socket' library (-lsocket). */
 #undef HAVE_LIBSOCKET
 
-/* Define to 1 if you have the `sunmath' library (-lsunmath). */
+/* Define to 1 if you have the 'sunmath' library (-lsunmath). */
 #undef HAVE_LIBSUNMATH
 
-/* Define to 1 if you have the `thread' library (-lthread). */
+/* Define to 1 if you have the 'thread' library (-lthread). */
 #undef HAVE_LIBTHREAD
 
 /* Define to 1 if you have the <limits.h> header file. */
@@ -205,16 +205,16 @@
 /* Define to 1 if compiler finds external `logf' function */
 #undef HAVE_LOGF
 
-/* Define to 1 if you have the `memchr' function. */
+/* Define to 1 if you have the 'memchr' function. */
 #undef HAVE_MEMCHR
 
-/* Define to 1 if you have the `memmove' function. */
+/* Define to 1 if you have the 'memmove' function. */
 #undef HAVE_MEMMOVE
 
-/* Define to 1 if you have the `memset' function. */
+/* Define to 1 if you have the 'memset' function. */
 #undef HAVE_MEMSET
 
-/* Define to 1 if you have the `mkstemp' function. */
+/* Define to 1 if you have the 'mkstemp' function. */
 #undef HAVE_MKSTEMP
 
 /* Define to 1 if compiler finds external `nc_inq_format' function */
@@ -253,19 +253,19 @@
 /* Define to 1 if compiler finds external `ntohs' function */
 #undef HAVE_NTOHS
 
-/* Define to 1 if you have the `pow' function. */
+/* Define to 1 if you have the 'pow' function. */
 #undef HAVE_POW
 
 /* Define to 1 if compiler finds external `powf' function */
 #undef HAVE_POWF
 
-/* Define to 1 if the system has the type `ptrdiff_t'. */
+/* Define to 1 if the system has the type 'ptrdiff_t'. */
 #undef HAVE_PTRDIFF_T
 
-/* Define to 1 if you have the `readlink' function. */
+/* Define to 1 if you have the 'readlink' function. */
 #undef HAVE_READLINK
 
-/* Define to 1 if you have the `realpath' function. */
+/* Define to 1 if you have the 'realpath' function. */
 #undef HAVE_REALPATH
 
 /* Define to 1 if 'regcomp()' is present */
@@ -292,7 +292,7 @@
 /* Define to 1 if compiler finds external `roundf' function */
 #undef HAVE_ROUNDF
 
-/* Define to 1 if you have the `setlocale' function. */
+/* Define to 1 if you have the 'setlocale' function. */
 #undef HAVE_SETLOCALE
 
 /* Define to 1 if compiler finds external `sinf' function */
@@ -301,13 +301,13 @@
 /* Define to 1 if compiler finds external `sinhf' function */
 #undef HAVE_SINHF
 
-/* Define to 1 if you have the `sqrt' function. */
+/* Define to 1 if you have the 'sqrt' function. */
 #undef HAVE_SQRT
 
 /* Define to 1 if compiler finds external `sqrtf' function */
 #undef HAVE_SQRTF
 
-/* Define to 1 if `stat' has the bug that it succeeds when given the
+/* Define to 1 if 'stat' has the bug that it succeeds when given the
    zero-length file name argument. */
 #undef HAVE_STAT_EMPTY_STRING_BUG
 
@@ -326,13 +326,13 @@
 /* Define to 1 if compiler finds external `strcasestr' function */
 #undef HAVE_STRCASESTR
 
-/* Define to 1 if you have the `strchr' function. */
+/* Define to 1 if you have the 'strchr' function. */
 #undef HAVE_STRCHR
 
 /* Define to 1 if compiler finds external `strdup' function */
 #undef HAVE_STRDUP
 
-/* Define to 1 if you have the `strerror' function. */
+/* Define to 1 if you have the 'strerror' function. */
 #undef HAVE_STRERROR
 
 /* Define to 1 if you have the <strings.h> header file. */
@@ -341,19 +341,19 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* Define to 1 if you have the `strpbrk' function. */
+/* Define to 1 if you have the 'strpbrk' function. */
 #undef HAVE_STRPBRK
 
-/* Define to 1 if you have the `strrchr' function. */
+/* Define to 1 if you have the 'strrchr' function. */
 #undef HAVE_STRRCHR
 
 /* Define to 1 if compiler finds external `strsep' function */
 #undef HAVE_STRSEP
 
-/* Define to 1 if you have the `strstr' function. */
+/* Define to 1 if you have the 'strstr' function. */
 #undef HAVE_STRSTR
 
-/* Define to 1 if you have the `strtol' function. */
+/* Define to 1 if you have the 'strtol' function. */
 #undef HAVE_STRTOL
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
@@ -416,7 +416,7 @@
 /* Compatibility pvmgetarch token for Linux on Sun Sparc */
 #undef LINUXSPARC64
 
-/* Define to 1 if `lstat' dereferences a symlink specified with a trailing
+/* Define to 1 if 'lstat' dereferences a symlink specified with a trailing
    slash. */
 #undef LSTAT_FOLLOWS_SLASHED_SYMLINK
 
@@ -627,10 +627,10 @@
 /* Compatibility pvmgetarch token for IRIX on SGI MIPS */
 #undef SGIMP64
 
-/* The size of `int*', as computed by sizeof. */
+/* The size of 'int*', as computed by sizeof. */
 #undef SIZEOF_INTP
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
@@ -638,7 +638,7 @@
 /* Compatibility pvmgetarch token for Solaris 2.x on Sun Sparc */
 #undef SUNMP
 
-/* Define to 1 if your <sys/time.h> declares `struct tm'. */
+/* Define to 1 if your <sys/time.h> declares 'struct tm'. */
 #undef TM_IN_SYS_TIME
 
 /* User */
@@ -656,23 +656,29 @@
 /* Compatibility pvmgetarch token for MS Windows OS */
 #undef WINOS
 
-/* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
-   `char[]'. */
+/* Define to 1 if 'lex' declares 'yytext' as a 'char *' by default, not a
+   'char[]'. */
 #undef YYTEXT_POINTER
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS
 
-/* Define for large files, on AIX-style hosts. */
+/* Define to 1 on platforms where this makes off_t a 64-bit type. */
 #undef _LARGE_FILES
 
-/* Define to empty if `const' does not conform to ANSI C. */
+/* Number of bits in time_t, on hosts where this is settable. */
+#undef _TIME_BITS
+
+/* Define to 1 on platforms where this makes time_t a 64-bit type. */
+#undef __MINGW_USE_VC2005_COMPAT
+
+/* Define to empty if 'const' does not conform to ANSI C. */
 #undef const
 
-/* Define to `int' if <sys/types.h> doesn't define. */
+/* Define as 'int' if <sys/types.h> doesn't define. */
 #undef gid_t
 
-/* Define to `__inline__' or `__inline' if that's what the C compiler
+/* Define to '__inline__' or '__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
 #ifndef __cplusplus
 #undef inline
@@ -681,8 +687,8 @@
 /* Define as a signed integer type capable of holding a process identifier. */
 #undef pid_t
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* Define as 'unsigned int' if <stddef.h> doesn't define. */
 #undef size_t
 
-/* Define to `int' if <sys/types.h> doesn't define. */
+/* Define as 'int' if <sys/types.h> doesn't define. */
 #undef uid_t

@@ -399,7 +399,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/ne30.g --nm_src=oRRS30to10 --nm_dst=ne30np4 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --wgt_cmd='mpirun -np 12 ESMF_RegridWeightGen' --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # Add depth (201901):
-# ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
+# ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_L60.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
 # Vertical interpolation (201903):
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_ne30np4l72_ps.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc # PS in "fat" template file
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # skinny template file
@@ -1739,7 +1739,7 @@ if [ "${prc_mpas}" = 'Yes' ]; then
     # Add depth coordinate to MPAS file when requested to by specifying coordinate file, that file exists, and commmand is found
     if [ -n "${dpt_fl}" ] || [ "${dpt_flg}" = 'Yes' ]; then
 	if [ -n "${dpt_fl}" ]; then
-	    if [ ! -f "${dpt_fl}" ]; then
+	    if [ ! -f "${dpt_fl}" ] && [ ! -L "${dpt_fl}" ]; then
 		echo "ERROR: Unable to find specified MPAS depth coordinate file ${dpt_fl}"
 		exit 1
 	    fi # ! -f
@@ -1894,7 +1894,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
 	fl_in[0]=${dat_rgn}
     fi # !dat_glb
     if [ -n "${dat_glb}" ]; then 
-	if [ ! -f "${dat_glb}" ]; then
+	if [ ! -f "${dat_glb}" ] && [ ! -L "${dat_glb}" ]; then
 	    echo "ERROR: Unable to find specified global data file ${dat_glb}"
 	    exit 1
 	fi # ! -f
@@ -1903,7 +1903,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
 	exit 1
     fi # !dat_glb
     if [ -n "${grd_glb}" ]; then 
-	if [ ! -f "${grd_glb}" ]; then
+	if [ ! -f "${grd_glb}" ] && [ ! -L "${grd_glb}" ]; then
 	    echo "ERROR: Unable to find specified SCRIP-format global grid file ${grd_glb}"
 	    exit 1
 	fi # ! -f
@@ -1922,7 +1922,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
 	    exit 1
 	fi # !grd_dst
     fi # !grd_rgn
-    if [ ! -f "${grd_rgn}" ]; then
+    if [ ! -f "${grd_rgn}" ] && [ ! -L "${grd_rgn}" ]; then
 	echo "ERROR: Unable to find specified SCRIP-format regional grid file ${grd_rgn}"
 	exit 1
     fi # ! -f
@@ -2005,7 +2005,7 @@ if [ -n "${thr_usr}" ]; then
     thr_nbr="${thr_usr}"
 fi # !thr_usr
 if [ -n "${vrt_out}" ]; then
-    if [ ! -f "${vrt_out}" ]; then
+    if [ ! -f "${vrt_out}" ] && [ ! -L "${vrt_out}" ]; then
 	echo "ERROR: Unable to find specified vertical output grid file ${vrt_out}"
 	exit 1
     fi # ! -f
@@ -2020,7 +2020,7 @@ if [ -n "${vrt_out}" ]; then
 	vrt_opt="${vrt_opt} --rgr ps_rtn"
     fi # !ps_rtn
     if [ -n "${vrt_in}" ]; then
-	if [ ! -f "${vrt_in}" ]; then
+	if [ ! -f "${vrt_in}" ] && [ ! -L "${vrt_in}" ]; then
 	    echo "ERROR: Unable to find specified vertical input grid file ${vrt_in}"
 	    exit 1
 	fi # ! -f
@@ -2058,7 +2058,7 @@ if [ -n "${vrt_out}" ]; then
 fi # !vrt_out
 
 if [ -n "${dst_fl}" ]; then 
-    if [ ! -f "${dst_fl}" ]; then
+    if [ ! -f "${dst_fl}" ] && [ ! -L "${dst_fl}" ]; then
 	echo "ERROR: Unable to find specified destination-file ${dst_fl}"
 	echo "HINT: Supply the full path-name for the destination-file"
 	exit 1
@@ -2072,7 +2072,7 @@ else
     grd_sng_usr_flg='Yes'
 fi # !grd_sng
 if [ -n "${grd_dst}" ]; then 
-    if [ -f "${grd_dst}" ]; then
+    if [ -f "${grd_dst}" ] || [ -L "${grd_dst}" ]; then
 	if [ "${dst_usr_flg}" = 'Yes' ]; then
 	    printf "${spt_nm}: WARNING ${grd_dst} already exists and will be overwritten by newly inferred grid\n"
 	fi # !dst_usr_flg
@@ -2092,7 +2092,7 @@ else
 fi # !grd_dst
 if [ -n "${grd_src}" ]; then 
     if [ "${prc_typ}" != 'rrg' ]; then 
-	if [ ! -f "${grd_src}" ]; then
+	if [ ! -f "${grd_src}" ] && [ ! -L "${grd_src}" ]; then
 	    echo "ERROR: Unable to find specified source grid-file ${grd_src}"
 	    exit 1
 	fi # ! -f
@@ -2109,7 +2109,7 @@ if [ -n "${map_fl}" ]; then
     map_usr_flg='Yes'
     if [ "${map_mk}" = 'Yes' ]; then
 	# Confirm before overwriting maps
-        if [ -f "${map_fl}" ]; then
+        if [ -f "${map_fl}" ] || [ -L "${map_fl}" ]; then
 	    # 20160803: fxm invoke iff in interactive shell (block hangs on read() in non-interactive shells)
 #	    if [ -t 0 ] || [ ! -p /dev/stdin ]; then
 #           if [ -n "${TERM}" ]; then
@@ -2133,7 +2133,7 @@ if [ -n "${map_fl}" ]; then
 	    fi # !0
 	fi # !map_fl
     else # !map_mk
-        if [ ! -f "${map_fl}" ]; then
+        if [ ! -f "${map_fl}" ] && [ ! -L "${map_fl}" ]; then
 	    echo "ERROR: Unable to find specified regrid map ${map_fl}"
 	    echo "HINT: Supply a valid map-file (weight-file) name or supply the grid files or data files and let ncremap create a mapfile for you"
 	    exit 1
@@ -2189,8 +2189,8 @@ if [ ${inp_aut} = 'Yes' ]; then
 fi # !inp_aut
 if [ ${inp_glb} = 'Yes' ]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-	if [ -f "${fl}" ]; then
-	    fl_in[${fl_nbr}]=${fl}
+	if [ -f "${fl}" ] || [ -L "${fl}" ]; then
+	    fl_in[${fl_nbr}]=${fl} # NB: ncremap does not use basename($fl) like ncclimo
 	    let fl_nbr=${fl_nbr}+1
 	fi # !file
     done
@@ -3071,7 +3071,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    
 	    # Block 2: Source grid
 	    # Block 2 Loop 1: Source gridfile command
-	    if [ ! -f "${in_fl}" ]; then
+	    if [ ! -f "${in_fl}" ] && [ ! -L "${in_fl}" ]; then
 		echo "${spt_nm}: ERROR Unable to find input file ${in_fl}"
 		echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
 		exit 1

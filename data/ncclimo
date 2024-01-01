@@ -9,7 +9,7 @@
 # 3-Clause BSD License.
 
 # You are permitted to link NCO with the HDF, netCDF, OPeNDAP, and UDUnits
-# libraries and to distribute the resulting executables under the terms 
+# libraries and to distribute the resulting executables under the terms
 # of the BSD, but in addition obeying the extra stipulations of the 
 # HDF, netCDF, OPeNDAP, and UDUnits licenses.
 
@@ -587,6 +587,7 @@ mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indicates unlimited RAM)
 mpi_flg='No' # [sng] Parallelize over nodes
 mth_end='12' # [yr] End month
+mth_flg='No' # [flg] Timeseries is not from Jan->Dec
 mth_srt='1' # [yr] Start month
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
 ncr_flg='No' # [sng] Incremental method
@@ -1018,50 +1019,6 @@ else # !drc_in
     drc_in_usr_flg='Yes'
 fi # !drc_in
 
-# Determine whether to compute climos or to split
-# Original behavior:
-# Until 20211109, stdin and positional always indicated splitter even when ypf was not set
-# New ability to do monthly climos with filenames provided by stdin, positional, or globbing necessitated modifications to original algorithm to determine climo vs. splitter
-# As of 20211129, default behavior is to compute climo
-# One of three methods may be used to invoke the splitter:
-# 1) Use --split flag. 2) Select clm_md=hfs. 3) Set ypf_max.
-# NB: clm_md='mth' indicates only the averaging period of a single input file
-# clm_md='mth' is true for both monthly splitter and monthly climo :(
-# Rest of code relies on mutually exclusive clm_flg to compute climo and tms_flg to invoke splitter
-if [ "${tms_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" ]; then
-    tms_flg='Yes'
-    clm_flg='No'
-    if [ -n "${ypf_max_usr}" ]; then 
-	ypf_max=${ypf_max_usr}
-    fi # !ypf_max_usr
-    wnt_md='jfd'
-    if [ -z "${mdl_nm_usr}" ]; then 
-	mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
-    fi # !mdl_nm_usr
-    # Glob files in splitter mode if other input avenues were not used
-    if [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
-	# 20220129 Determine whether to construct (use inp_aut) or glob files
-	# Daily (or finer) resolution filenames are never constructible
-	# Monthly input filenames are constructable with caseid 
-	# Assume user wishes to glob unless both is provided caseid for monthly files
-	if [ ${clm_md} = 'mth' ] && [ -n "${caseid}" ]; then
-	    inp_glb='Yes' # 20220129 fxm remove after moving monthly filename creation block
-	    # inp_aut='Yes' # 20220129 fxm uncomment after moving monthly filename creation block
-	else # !caseid
-	    inp_glb='Yes'
-	fi # !caseid
-    fi # !inp_*
-fi # !tms_flg
-if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
-    inp_glb='Yes'
-fi # !clm_flg, !dly
-
-# Read files from stdin pipe, positional arguments, or directory glob
-#printf "dbg: inp_aut  = ${inp_aut}\n"
-#printf "dbg: inp_glb  = ${inp_glb}\n"
-#printf "dbg: inp_psn  = ${inp_psn}\n"
-#printf "dbg: inp_std  = ${inp_std}\n"
-
 # Derived variables
 if [ -n "${drc_out_usr}" ]; then
     # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
@@ -1216,6 +1173,67 @@ if [ -n "${fml_nm_usr}" ]; then
     fml_nm="${fml_nm_usr}"
     out_nm="${fml_nm}"
 fi # !fml_nm
+
+# Determine whether to compute climos or to split
+# Original behavior:
+# Until 20211109, stdin and positional always indicated splitter even when ypf was not set
+# New ability to do monthly climos with filenames provided by stdin, positional, or globbing necessitated modifications to original algorithm to determine climo vs. splitter
+# As of 20211129, default behavior is to compute climo
+# One of three methods may be used to invoke the splitter:
+# 1) Use --split flag. 2) Select clm_md=hfs. 3) Set ypf_max.
+# NB: clm_md='mth' indicates only the averaging period of a single input file
+# clm_md='mth' is true for both monthly splitter and monthly climo :(
+# Rest of code relies on mutually exclusive clm_flg to compute climo and tms_flg to invoke splitter
+if [ "${tms_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" ]; then
+    tms_flg='Yes'
+    clm_flg='No'
+    if [ -n "${ypf_max_usr}" ]; then 
+	ypf_max=${ypf_max_usr}
+    fi # !ypf_max_usr
+    wnt_md='jfd'
+fi # !tms_flg
+
+# Determine input method, if not already known
+if [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
+    # 20220129 Determine whether to construct (use inp_aut) or glob files
+    # Daily (or finer) resolution filenames are never constructible
+    # Monthly input filenames are constructable with caseid 
+    # Assume user wishes to glob unless both are provided caseid for monthly files
+    # 20211207 Specifying mpas name type (like MPAS-Analysis does) also implies inp_aut
+    if [[ ( ${clm_md} = 'mth' && -n "${caseid}" ) || ${nm_typ} = 'mpas' ]]; then
+	inp_aut='Yes'
+    else # !mth
+	inp_glb='Yes'
+    fi # !caseid
+fi # !inp_*
+if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
+    inp_aut='Yes'
+    inp_glb='No'
+    inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
+fi # !clm_flg
+if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
+    inp_aut='No'
+    inp_glb='Yes'
+fi # !clm_flg, !dly
+# One of these input file options must be true, or else...
+if [ ${inp_aut} = 'No' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
+    echo "${spt_nm}: ERROR Specify input file(s) by providing option \"-i \$drc_in\" with (for automatic filename construction) or without (for globbing entire directory) \"-c \$caseid\", or provide names via positional argument(s) or stdin"
+    if [ ${bch_pbs} = 'Yes' ]; then
+	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
+    else # !bch_pbs
+	echo "${spt_nm}: HINT An easy way to provide lengthy or complex filenames to pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+    fi # !bch_pbs
+    exit 1
+fi # !tms_flg
+if [ "${inp_aut}" != 'Yes' ] && [ -z "${mdl_nm_usr}" ]; then 
+    mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
+fi # !inp_aut !mdl_nm_usr
+# clm_flg and tms_flg and all input file pre-requisite parameters are now set. Ready to gather input filenames.
+
+# Obtain filenames from automatic generation, directory glob, positional arguments, or stdin pipe
+#printf "dbg: inp_aut  = ${inp_aut}, inp_glb  = ${inp_glb}, inp_psn  = ${inp_psn}, inp_std  = ${inp_std}\n"
+# End input mode determination block
+
 if [ "${clm_flg}" = 'Yes' ] && [ -z "${out_nm}" ] && [ -z "${fml_nm}" ]; then 
     printf "${spt_nm}: ERROR ${spt_nm} User requested climatology generation yet invoked neither \$caseid nor \$fml_nm options nor specified a supported automatic name-generation option (e.g., --mdl=mpaso for MPAS) so ${spt_nm} does not know what to name the output files\n"
     printf "${spt_nm}: HINT Use \"--caseid=name\" or \"--fml_nm=name\" to provide a name for the output files. If the input files are provided via stdin, positional arguments, or globbing then the name string will only be used for output names and need not be present in any of the input filenames\n"
@@ -1325,7 +1343,7 @@ if [ -n "${rgr_opt_usr}" ]; then
     rmp_opt="-R \'${rgr_opt_usr}\'"
 fi # !rgr_opt_usr
 if [ -n "${rgr_map}" ]; then 
-    if [ ! -f "${rgr_map}" ]; then
+    if [ ! -f "${rgr_map}" ] && [ ! -L "${rgr_map}" ]; then
 	echo "${spt_nm}: ERROR Unable to find specified regrid map ${rgr_map}"
 	echo "${spt_nm}: HINT Supply the full path-name for the regridding map"
 	exit 1
@@ -1363,7 +1381,7 @@ if [ -n "${tpd_usr}" ]; then
     tpd_out="${tpd_usr}"
 fi # !tpd_usr
 if [ -n "${vrt_out}" ]; then
-    if [ ! -f "${vrt_out}" ]; then
+    if [ ! -f "${vrt_out}" ] && [ ! -L "${vrt_out}" ]; then
 	echo "ERROR: Unable to find specified vertical coordinate file ${vrt_out}"
 	exit 1
     fi # ! -f
@@ -1403,42 +1421,63 @@ if [ ${wnt_md} = 'djf' ]; then
     let yr_cln=${yr_cln}+1
 fi # !djf
 
-# clm_flg and tms_flg are now fixed so finalize input file options then gather input filenames
-if [ ${tms_flg} = 'Yes' ] && [ ${inp_aut} = 'No' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
-    echo "${spt_nm}: ERROR Specify input file(s) by providing -i \$drc_in with (for automatic construction) or without (for globbing) -c \$caseid, or provide names via positional argument(s) or stdin"
-    if [ ${bch_pbs} = 'Yes' ]; then
-	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
-    else # !bch_pbs
-	echo "${spt_nm}: HINT An easy way to create timeseries is to pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
-    fi # !bch_pbs
-    exit 1
-fi # !tms_flg
-if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
-    inp_aut='Yes'
-    inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
-fi # !clm_flg
-# 20211129 Allow splitter to use inp_aut?
-if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
-    # 20211118 Specifying caseid implies inp_aut, otherwise check stdin etc
-    if [ -n "${caseid}" ] && [ ${inp_std} = 'No' ]; then 
-	inp_aut='Yes'
-	inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
-    fi # !caseid
-    # 20211207 Specifying mpas name type (like MPAS-Analysis does) also implies inp_aut
-    if [ ${nm_typ} = 'mpas' ] && [ ${inp_std} = 'No' ]; then 
-	inp_aut='Yes'
-	inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
-    fi # !caseid
-fi # !clm_flg
+# 20231221: Automatically generate input filename list based on command-line options    
+if [ ${inp_aut} = 'Yes' ] && [ ${clm_md} = 'mth' ] || [ ${clm_md} = 'ann' ]; then 
+    fl_nbr=0
+    yr_srt_all=${yyyy_srt}
+    yr_end_all=${yyyy_end}
+    if [ ${wnt_md} = 'djf' ]; then 
+	yr_srt_all=${yr_srtm1}
+    fi # !wnt_md
+    for yr in `seq ${yr_srt_all} ${yr_end_all}`; do
+	YYYY=`printf "%04d" ${yr}`
+	clm_idx=0
+	if [ "${clm_md}" = 'ann' ]; then
+	    fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${ann_sfx}.nc"
+	    let fl_nbr=${fl_nbr}+1;
+	    continue;
+	fi # !ann
+	for mth in {01..12}; do
+	    let clm_idx=${clm_idx}+1
+	    MM=`printf "%02d" ${clm_idx}`
+	    # Only construct filenames for months that are used
+	    if [ ${wnt_md} = 'djf' ] && [ ${yr} = ${yr_srt_all} ] && [ ${MM} != '12' ]; then continue; fi
+	    if [ ${wnt_md} = 'djf' ] && [ ${yr} = ${yr_end_all} ] && [ ${MM} = '12' ]; then continue; fi
+	    if [ ${mth_flg} = 'Yes' ] && [ ${yr} = ${yr_srt_all} ] && [ ${MM} -lt ${mth_srt_rth} ]; then continue; fi
+	    if [ ${mth_flg} = 'Yes' ] && [ ${yr} = ${yr_end_all} ] && [ ${MM} -gt ${mth_end_rth} ]; then continue; fi
+	    if [ ${nm_typ} = 'cesm' ]; then
+		fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
+	    elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
+		if [ ${mdl_nm} = 'mali' ]; then 
+		    fl_in[${fl_nbr}]="${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01_00000.nc"
+		else # !mdl_nm
+		    # 20161130: Old MPAS rule until today
+		    # fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+		    # Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
+ 		    fl_in[${fl_nbr}]="${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
+		fi # !mdl_nm
+	    elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
+		fl_in[${fl_nbr}]="${bs_nm}_${YYYY}${MM}.${bs_sfx}"
+	    elif [ ${nm_typ} = 'yyyy-mm' ]; then # Generate from caseid + YYYY-MM
+		fl_in[${fl_nbr}]="${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
+	    elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
+		fl_in[${fl_nbr}]="${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
+	    elif [ ${nm_typ} = 'yyyy-mm-01-00000' ]; then # Generate from caseid + YYYY-MM-01-00000
+		#		    fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
+		fl_in[${fl_nbr}]="${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
+	    fi # !cesm
+	    let fl_nbr=${fl_nbr}+1
+	done # !mth
+    done # !yr
+fi # !inp_aut
 if [ ${inp_glb} = 'Yes' ]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-	if [ -f "${fl}" ]; then
-	    fl_in[${fl_nbr}]=${fl}
+	if [ -f "${fl}" ] || [ -L "${fl}" ]; then
+	    fl_in[${fl_nbr}]=$(basename ${fl}) # NB: ncclimo uses basename($fl) here, and ppn_opt later, unlike ncremap
 	    let fl_nbr=${fl_nbr}+1
 	fi # !file
     done
 fi # !inp_glb
-
 if [ ${inp_psn} = 'Yes' ]; then
     # Read any positional arguments
     for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
@@ -1458,9 +1497,11 @@ fi # !inp_std
 ppn_opt="-p ${drc_in}"
 # 20220111 If input files include absolute path, then use fl_in as-is later on
 # 20220130 fl_in is defined here only for inp_[std,cmd,glb], do not test iff inp_aut
-if [ "${fl_in[0]}" ] && [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ]; then
-    ppn_opt=''
-fi # !basename
+if [ "${fl_in[0]}" ]; then
+    if [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ] || [ "${fl_in[0]:0:1}" = '/' ]; then
+	ppn_opt=''
+    fi # !basename
+fi # !fl_in[0]
 	
 if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
     if [ -z "${tpd_usr}" ]; then 
@@ -2026,6 +2067,14 @@ if [ ${dbg_lvl} -ge 2 ]; then
 	printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
     done # !psn_idx
 fi # !dbg
+if [ ${dbg_lvl} -ge 2 ]; then
+    if [ ${inp_aut} = 'Yes' ] || [ ${inp_glb} = 'Yes' ] || [ ${inp_std} = 'Yes' ]; then
+	printf "dbg: Obtained or generated ${fl_nbr} input files:\n"
+	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+	    printf "dbg: fl_in[${fl_idx}] = ${fl_in[${fl_idx}]}\n"
+	done # !fl_idx
+    fi # !inp_aut
+fi # !dbg
 
 # Human-readable summary
 date_srt=$(date +"%s")
@@ -2195,69 +2244,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     for mth in {01..12}; do
 	let clm_idx=${clm_idx}+1
 	MM=`printf "%02d" ${clm_idx}`
-	if [ ${clm_md} = 'mth' ] && [ ${inp_aut} = 'Yes' ]; then 
-	    fl_all=''
-	    for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
-		YYYY=`printf "%04d" ${yr}`
-		if [ ${nm_typ} = 'cesm' ]; then
-		    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
-		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
-		    if [ ${mdl_nm} = 'mali' ]; then 
-			fl_all="${fl_all} ${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01_00000.nc"
-		    else # !mdl_nm
-			# 20161130: Old MPAS rule until today
-			# fl_all="${fl_all} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
-			# Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
- 			fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
-		    fi # !mdl_nm
-		elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
-		    fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
-		elif [ ${nm_typ} = 'yyyy-mm' ]; then # Generate from caseid + YYYY-MM
-		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
-		elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
-		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
-		elif [ ${nm_typ} = 'yyyy-mm-01-00000' ]; then # Generate from caseid + YYYY-MM-01-00000
-#		    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
-		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
-		fi # !cesm
-	    done # !yr
-	    if [ ${wnt_md} = 'djf' ] && [ ${MM} = '12' ]; then 
-		fl_all=''
-		for yr in `seq ${yr_srtm1} ${yr_endm1}`; do
-		    YYYY=`printf "%04d" ${yr}`
-		    if [ ${nm_typ} = 'cesm' ]; then
-			fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
-		    elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
- 			fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
-		    elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
-			fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
-		    elif [ ${nm_typ} = 'yyyy-mm' ]; then # Generate from caseid + YYYY-MM
-			fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
-		    elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
-			fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
-		    elif [ ${nm_typ} = 'yyyy-mm-01-00000' ]; then # Generate from caseid + YYYY-MM-01-00000
-			fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
-		    fi # !cesm
-		done # !yr
-	    fi # !wnt_md
-	    # Check for existence of raw input only when file will be used
-	    if [ "${bnr_flg}" = 'No' ]; then
-		for fl_crr in ${fl_all} ; do
-		    if [ ! -f "${drc_in}/${fl_crr}" ]; then
-			echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
-			echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
-			exit 1
-		    fi # ! -f
-		done # !fl_crr
-	    else # !bnr_flg
-		# In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
-		drc_out="${drc_in}"
-	    fi # !bnr_flg
-
-	fi # !clm_md && !inp_aut
-
 	# Monthly filenames are every twelfth file from input list
-	if [ ${clm_md} = 'mth' ] && [ ${inp_aut} = 'No' ]; then 
+	if [ ${clm_md} = 'mth' ]; then 
 	    fl_all=''
 	    for ((yr_idx=0;yr_idx<yr_nbr;yr_idx++)); do
 		if [ ${wnt_md} = 'jfd' ]; then
@@ -2271,9 +2259,23 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		fi # !wnt_md
 		fl_all="${fl_all} ${fl_in[${fl_idx}]}"
 	    done # !yr_idx
-	fi # !clm_md && !inp_aut
 
-	# 20220129 fxm after moving climo mode filename creation block upwards and setting fl_in=fl_all so tms_flg can use it, start a new climo mode loop over years months and continue the climo code right here, indentation should not change
+	    # Check for existence of raw input only when file will be used
+	    if [ "${bnr_flg}" = 'No' ]; then
+		for fl_crr in ${fl_all} ; do
+		    if [ ! -f "${drc_in}/${fl_crr}" ] && [ ! -L "${drc_in}/${fl_crr}" ]; then
+			echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
+			echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
+			exit 1
+		    fi # ! -f
+		done # !fl_crr
+	    else # !bnr_flg
+		# In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
+		drc_out="${drc_in}"
+	    fi # !bnr_flg
+
+	fi # !clm_md
+
 	# Common to both high-frequency and monthly-input climos
 	if [ ${wnt_md} = 'djf' ] && [ ${MM} = '12' ]; then 
 	    yyyy_clm_srt=${yyyy_clm_srt_dec}
@@ -2363,7 +2365,9 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    cmd_mth2csn='nces'
 	    cmd_csn2ann='nces'
 	elif [ ${clm_md} = 'mth' ]; then 
-	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},0 -O ${nco_opt} ${gaa_sng} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
+	    clm_bnd[${clm_idx}]=${yyyy_clm_srt},${yyyy_clm_end},${clm_idx},${clm_idx},0
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${clm_bnd[${clm_idx}]} -O ${nco_opt} ${gaa_sng} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
+	    #	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},0 -O ${nco_opt} ${gaa_sng} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    # Combine monthly into seasonal and annual means with ncra
 	    cmd_mth2csn='ncra'
 	    cmd_csn2ann='ncra'
@@ -2653,10 +2657,10 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	let mm_endp1_sgm=${mm_end_sgm}+1
 	mm_endp1_sgm[${sgm_idx}]=`printf "%02d" ${mm_endp1_sgm}`
 
-	# Sanity check all files existence before wasting time and space on concatenation
+	# Sanity check that all files exist before wasting time and space on concatenation
 	for fl_crr in ${fl_sgm[${sgm_idx}]} ; do
-	    if [ ! -f "${fl_crr}" ]; then
-		echo "${spt_nm}: ERROR Unable to find required input file ${fl_crr}"
+	    if [ ! -f "${drc_in}/${fl_crr}" ] && [ ! -L "${drc_in}/${fl_crr}" ]; then
+		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
 	    fi # ! -f
@@ -2953,18 +2957,17 @@ fi # !tms_flg
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
     clm_idx=1
     fl_all=''
-    for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
-	YYYY=`printf "%04d" ${yr}`
-	fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${ann_sfx}.nc"
-    done # !yr
+    for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+	fl_all="${fl_all} ${fl_in[${fl_idx}]}"
+    done # !fl
     # Check for existence of raw input only when file will be used (NB: next ~12 lines duplicate monthly code)
     if [ "${bnr_flg}" = 'No' ]; then
 	for fl_crr in ${fl_all} ; do
-	    if [ ! -e "${drc_in}/${fl_crr}" ]; then
+	    if [ ! -f "${drc_in}/${fl_crr}" ] && [ ! -L "${drc_in}/${fl_crr}" ]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
-	    fi # ! -e
+	    fi # ! -f
 	done # !fl_crr
     else # !bnr_flg
 	# In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
@@ -3036,7 +3039,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    if [ ${tpd_out} -eq 1 ]; then
 		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},1 ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    else
-		# 20170619: Diurnal mode is really slow on MacOSX (UDUnits parsing sluggishness?)
+		# 20170619: Diurnal mode is really slow on MacOS (UDUnits parsing sluggishness?)
 		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${drn} ${ppn_opt} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
 	    fi # !tpd
 	    let clm_idx=${clm_idx}+1
