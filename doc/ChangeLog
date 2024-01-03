@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha04: Heritage BBQ';git push
 	git tag -a 5.2.0-alpha04 -m '';git push --tags
 
-	* ncclimo/ncremap Deprecate ALCF Cooley and Theta machines and Cobalt batch scheduler instructions
+	* ncclimo/ncremap Deprecate ALCF Cooley, Mira, Theta machines and Cobalt batch scheduler instructions
 
 2023-12-30  Charlie Zender  <zender@uci.edu>
 
