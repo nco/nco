@@ -60,7 +60,6 @@
 # scp ~/nco/data/ncclimo imua.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo perlmutter-p1.nersc.gov:bin_perlmutter
 # scp ~/nco/data/ncremap spectral.ess.uci.edu:bin
-# scp ~/nco/data/ncremap theta.alcf.anl.gov:bin_theta
 # scp dust.ess.uci.edu:bin/ncremap ~/bin
 # scp dust.ess.uci.edu:bin/ncremap ${MY_BIN_DIR}
 # scp zender@dust.ess.uci.edu:bin/ncremap ${MY_BIN_DIR}
@@ -124,7 +123,6 @@ if [ -z "${DATA}" ]; then
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	compy* | n[0123456789][0123456789][0123456789][0123456789] ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
-	cooley* | cc[0123456789][0123456789][0123456789] ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	frontier* ) DATA="/lustre/orion/cli115/world-shared/${USER}" ; ;; # OLCF frontier compute nodes named frontier01276 64|512 cores|GB/node
 	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
 	    if [ "${LMOD_SYSTEM_NAME}" = 'frontier' ]; then
@@ -205,13 +203,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    fi # !ncremap
 	    export PATH='/qfs/people/zender/bin:/qfs/people/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib:/qfs/people/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
-	cooley* | cc[0123456789][0123456789][0123456789] )
-	    # 20160421: Split cooley from mira binary locations to allow for different system libraries
-	    # http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
-	    soft add +mvapich2 
-            export PBS_NUM_PPN=12 # Spoof PBS on Soft (which knows nothing about node capabilities)
-	    export PATH='/home/zender/bin_cooley'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
 	e3sm* )
 	    export PATH='/home/zender/bin:/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
@@ -1397,7 +1388,6 @@ if [ -n "${mpi_nbr_usr}" ]; then
 	*cheyenne* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
 	compy* | n[0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun --mpi=pmi2 -n ${mpi_nbr}" ; ;; 
 	constance* | node* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
-	cooley* | cc[0123456789][0123456789][0123456789] ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;;
 	frontier* ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
 	login[0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
 	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
@@ -2313,13 +2303,6 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    export MPI_SHEPHERD=true
 #		    cmd_mpi[${fl_idx}]="mpiexec_mpt dplace ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
 		    cmd_mpi[${fl_idx}]="mpirun ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
-		cooley* | cc[0123456789][0123456789][0123456789] ) 
-		    # 20190310: Cooley mpirun now uses -hosts instead of -H for hostname option
-		    cmd_mpi[${fl_idx}]="mpirun -hosts ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # ALCF
-		theta* )
-		    # NB: ALCF Theta (not cooley or mira) uses aprun:
-		    # https://www.alcf.anl.gov/user-guides/example-program-and-makefile-xc40
-		    cmd_mpi[${fl_idx}]="aprun -L ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # ALCF Theta
 		* )
 		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
 #		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other

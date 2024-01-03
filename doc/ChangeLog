@@ -1,8 +1,10 @@
-2023-12-31  Charlie Zender  <zender@uci.edu>
+2024-01-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha04: Heritage BBQ';git push
 	git tag -a 5.2.0-alpha04 -m '';git push --tags
+
+	* ncclimo/ncremap Deprecate ALCF Cooley and Theta machines and Cobalt batch scheduler instructions
 
 2023-12-30  Charlie Zender  <zender@uci.edu>
 

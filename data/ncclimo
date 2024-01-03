@@ -48,7 +48,6 @@
 # scp ~/nco/data/ncclimo imua.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo perlmutter-p1.nersc.gov:bin_perlmutter
 # scp ~/nco/data/ncclimo spectral.ess.uci.edu:bin
-# scp ~/nco/data/ncclimo theta.alcf.anl.gov:bin_theta
 # scp dust.ess.uci.edu:bin/ncclimo ~/bin
 # scp dust.ess.uci.edu:bin/ncclimo ${MY_BIN_DIR}
 # scp zender@dust.ess.uci.edu:bin/ncclimo ${MY_BIN_DIR}
@@ -109,7 +108,6 @@ if [ -z "${DATA}" ]; then
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	compy* | n[0123456789][0123456789][0123456789][0123456789] ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
-	cooley* | cc[0123456789][0123456789][0123456789] ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	frontier* ) DATA="/lustre/orion/cli115/world-shared/${USER}" ; ;; # OLCF frontier compute nodes named frontier01276 64|512 cores|GB/node
 	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
 	    if [ "${LMOD_SYSTEM_NAME}" = 'frontier' ]; then
@@ -186,13 +184,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    fi # !ncremap
 	    export PATH='/qfs/people/zender/bin:/qfs/people/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib:/qfs/people/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
-	cooley* | cc[0123456789][0123456789][0123456789] )
-	    # 20160421: Split cooley from mira binary locations to allow for different system libraries
-	    # http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
-	    soft add +mvapich2 
-            export PBS_NUM_PPN=12 # Spoof PBS on Soft (which knows nothing about node capabilities)
-	    export PATH='/home/zender/bin_cooley'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
 	e3sm* )
 	    export PATH='/home/zender/bin:/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
@@ -345,14 +336,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # sbatch -A e3sm --nodes=4 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
-# Cobalt (cooley), SLURM (andes,compy,cori), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (other) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
+# SLURM (andes,compy,cori), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (other) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
 # ALCF Maui:
 # http://www.lcrc.anl.gov/for-users/using-lcrc/running-jobs
-# ALCF Cobalt:
-# softenv # lists available packages
-# http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
-# http://www.alcf.anl.gov/user-guides/using-cobalt-cooley
-# https://www.alcf.anl.gov/user-guides/cobalt-job-control
 # NCAR PBSPro:
 # https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/quick-start-cheyenne
 # https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/running-jobs/submitting-jobs-pbs
@@ -363,7 +349,6 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # https://docs.olcf.ornl.gov/systems/andes_user_guide.html
 # https://docs.olcf.ornl.gov/systems/frontier_user_guide.html
 # Requesting interactive nodes, Submitting non-interactive batch jobs, Monitoring queues, Deleting jobs:
-# Cobalt: qsub -I,   qsub,  qstat,    qdel, mpirun
 # LSF:    bsub -I,   bsub,jobstat,    qdel,  jsrun
 # PBS:    qsub -I,   qsub,  qstat,    qdel, mpirun
 # PBSPro: qsub -I,   qsub,  qstat,    qdel, mpirun
@@ -374,14 +359,13 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
 #   Chrysalis: salloc  -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # Use compute queue instead if debug is slow to grant resources
 #   Compy:  salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo
-#   Cooley: qsub -I -A ClimateEnergy_4 --nodecount=1 --time=00:30:00 --jobname=ncclimo
 #   Frontier:salloc -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo
 #   Perl:   salloc  -A e3sm --constraint=cpu --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
-# Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[cobalt|pbs|slurm] b) qsub ncclimo.[cobalt|pbs|slurm]
+# Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[pbs|slurm] b) qsub ncclimo.[pbs|slurm]
 # Non-interactive batch queue differences (besides argument syntax):
-# 1. Cobalt and SLURM require initial 'shebang' line to specify the shell interpreter (not required on PBS)
-# 2. Cobalt appends stdout/stderr to existing output files, if any, whereas PBS overwrites existing files
-# 3. Cobalt uses ${COBALT_NODEFILE} and (NA) whereas PBS (and PBSPro) use ${PBS_NODEFILE} and ${PBS_NUM_PPN}, respectively, and SLURM uses ${SLURM_NODELIST} and ${SLURM_CPUS_ON_NODE}, respectively
+# 1. SLURM requires initial 'shebang' line to specify the shell interpreter (not required on PBS)
+# 2. PBS overwrites existing files
+# 3. PBS (and PBSPro) use ${PBS_NODEFILE} and ${PBS_NUM_PPN}, respectively, and SLURM uses ${SLURM_NODELIST} and ${SLURM_CPUS_ON_NODE}, respectively
 # 4. SLURM automatically combines stdout and stderr, yet does not understand tilde (~ = home directory) expansion in error/output filenames
 # Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s
 #   Andes a): echo '#!/bin/bash' > ~/ncclimo.slurm
@@ -390,16 +374,12 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Cheye a): echo "ncclimo -a djf -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Compy a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #             echo "ncclimo -d 1 -p mpi -c 20180215.DECKv1b_H1.ne30_oEC.edison -s 2010 -e 2010 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
-#   Coole a): /bin/rm -f ~/ncclimo.err ~/ncclimo.out
-#             echo '#!/bin/bash' > ~/ncclimo.cobalt
-#             echo "ncclimo -d 1 -p mpi -c b1850c5_m2a -s 55 -e 58 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/ncclimo.cobalt;chmod a+x ~/ncclimo.cobalt
 #   Front a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #             echo "ncclimo -a djf -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1 -e 2 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Andes b): sbatch -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Blues b): qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cheye b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
-#   Coole b): qsub -A ClimateEnergy_4 --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
 #   Front b): sbatch -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Perlm b): sbatch -A e3sm --constraint=cpu --nodes=12 --time=00:30:00 --qos=debug --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 # NB: stdout/stderr files returned from batch jobs are read-protected, need 'chmod 644 ~/ncclimo.out' afterwards
@@ -1829,13 +1809,11 @@ if [ "${csn_flg}" = 'Yes' ]; then
 fi # !csn_flg
     
 if [ "${mpi_flg}" = 'Yes' ]; then
-    if [ -n "${COBALT_NODEFILE}" ]; then 
-	nd_fl="${COBALT_NODEFILE}"
     elif [ -n "${PBS_NODEFILE}" ]; then 
 	nd_fl="${PBS_NODEFILE}"
     elif [ -n "${SLURM_NODELIST}" ]; then 
 	# SLURM returns compressed lists (e.g., "nid00[076-078,559-567]")
-	# Convert this to file with uncompressed list (like Cobalt, PBS)
+	# Convert this to file with uncompressed list (like PBS)
 	# http://www.ceci-hpc.be/slurm_faq.html#Q12
 	# Save file in writable directory
 	nd_fl="${drc_out}/${spt_nm}.slurm_nodelist.pid${spt_pid}.tmp"
@@ -1843,7 +1821,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	echo ${nd_lst} > ${nd_fl}
     else
 	echo "${spt_nm}: ERROR MPI master process unable to find node-list for distributing jobs"
-	echo "${spt_nm}: ${spt_nm} uses first node-list found in \$COBALT_NODEFILE, \$PBS_NODEFILE, or \$SLURM_NODELIST"
+	echo "${spt_nm}: ${spt_nm} uses first node-list found in \$PBS_NODEFILE or \$SLURM_NODELIST"
 	echo "${spt_nm}: However, none of these environment variables are set so there is no node-list for distributing MPI jobs"
 	echo "${spt_nm}: HINT: Requesting MPI-parallelism (i.e., invoking ${spt_nm} with \"-p mpi\") in a non-MPI environment will trigger this error. Use \"-p mpi\" only when one of the preceding schedulers has allocated (for interactive use) or will allocate (for non-interactive use) the compute nodes. Otherwise use the default background parallelism (use \"-p bck\" or omit the option completely) or use serial mode (use \"-p serial\"). See http://nco.sf.net/nco.html#par_typ for more information on parallelism."
 	exit 1
@@ -1909,15 +1887,8 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    export MPI_SHEPHERD=true
 #		    cmd_mpi[${mpi_idx}]="mpiexec_mpt dplace ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
 		    cmd_mpi[${mpi_idx}]="mpirun ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
-		cooley* | cc[0123456789][0123456789][0123456789] ) 
-		    # 20190310: Cooley mpirun now uses -hosts instead of -H for hostname option
-		    cmd_mpi[${mpi_idx}]="mpirun -hosts ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # ALCF
-		theta* )
-		    # NB: ALCF Theta (not cooley or mira) uses aprun:
-		    # https://www.alcf.anl.gov/user-guides/example-program-and-makefile-xc40
-		    cmd_mpi[${mpi_idx}]="aprun -L ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # ALCF Theta
 		* )
-		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
+		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # Other (PBS)
 #		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
 	    case "${HOSTNAME}" in 
