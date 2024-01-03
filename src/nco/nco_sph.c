@@ -1650,7 +1650,10 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
       if(nco_sph_seg_int(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx],  p, q, (int*)NULL,0, codes)) {
 
         if (DEBUG_LCL) {
-          (void) fprintf(stderr, "%s():, idx=%d jdx=%d numIntersect=%d codes=%s\n", __FUNCTION__, idx, jdx, numIntersect, codes);
+	  // csz-- 20240101
+	  //          (void) fprintf(stderr, "%s():, idx=%d jdx=%d numIntersect=%d codes=%s\n", __FUNCTION__, idx, jdx, numIntersect, codes);
+          (void) fprintf(stderr, "%s():, idx=%d jdx=%d numIntersect=%d codes=%s\n", fnc_nm, idx, jdx, numIntersect, codes);
+	  // csz++ 20240101
           nco_sph_prn_pnt("intersect_pre()", p, 4, True);
         }
 
