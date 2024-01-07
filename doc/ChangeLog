@@ -6,7 +6,7 @@
 
 	* NCO 5.2.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
-	git tag -a 5.2.0-alpha03 -m 'ncclimo: refactor for tms inp_aut, fix Dec clm_bnd in djf mode, fix inp_glb;ncclimo/ncremap: [-f $fl] || [-L $fl], dpr ALCF mch';git push --tags
+	git tag -a 5.2.0-alpha03 -m 'all: 2024; ncclimo: refactor for tms inp_aut, fix Dec clm_bnd in djf mode, fix inp_glb;ncclimo/ncremap: [-f $fl] || [-L $fl], dpr ALCF mch';git push --tags
 
 2024-01-05  Charlie Zender  <zender@uci.edu>
 
