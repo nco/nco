@@ -1,16 +1,22 @@
-2024-01-03  Charlie Zender  <zender@uci.edu>
+2024-01-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha04: Heritage BBQ';git push
 	git tag -a 5.2.0-alpha04 -m '';git push --tags
 
+	* NCO 5.2.0-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
+	git tag -a 5.2.0-alpha03 -m 'ncclimo: refactor for tms inp_aut, fix Dec clm_bnd in djf mode, fix inp_glb;ncclimo/ncremap: [-f $fl] || [-L $fl], dpr ALCF mch';git push --tags
+
+2024-01-05  Charlie Zender  <zender@uci.edu>
+
+	* Update documentation dates and copyright notice to 2024
+
+2024-01-03  Charlie Zender  <zender@uci.edu>
+
 	* ncclimo/ncremap Deprecate ALCF Cooley, Mira, Theta machines and Cobalt batch scheduler instructions
 
 2023-12-30  Charlie Zender  <zender@uci.edu>
-
-	* NCO 5.2.0-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push
-	git tag -a 5.2.0-alpha03 -m 'ncclimo: refactor for tms inp_aut, fix Dec clm_bnd in djf mode, fix inp_glb;ncclimo/ncremap: [-f $fl] || [-L $fl]';git push --tags
 
 	* Verify globbing for input files works
 

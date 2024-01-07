@@ -874,7 +874,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     nco_poly_prn(pl_glb_out,0);
   } /* !dbg */
 
-  /* 20230716: nco_msh_lon_crr() is called here four time and implementation seems non-optimal because centers and corners done separately, lon_crn_in done twice, determination of longitude grid type (done above) is faulty
+  /* 20230716: nco_msh_lon_crr() is called here four times and implementation seems non-optimal because centers and corners done separately, lon_crn_in done twice, determination of longitude grid type (done above) is faulty
      Each call can modify longitude arrays to put all coordinates within 0,360 or -180,180
      This constraint was imposed by CZ during regridder development
      However, in 202307, CZ learned that CF prefers vertice boundaries to always be on same branch cut

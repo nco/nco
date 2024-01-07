@@ -130,10 +130,10 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 5.2.0-alpha03
 @set doc-edition 5.2.0-alpha03
-@set copyright-years 1995--2023
+@set copyright-years 1995--2024
 @set update-year 2023
-@set update-date 6 December 2023
-@set update-month December 2023
+@set update-date 5 January 2024
+@set update-month January 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -30527,9 +30527,15 @@ Single bug reports and fixes
 @cindex Wenshan Wang
 @item Wenshan Wang
 @acronym{CMIP5} and @acronym{MODIS} processing documentation, reference card
+@cindex Thomas Hornigold
+@cindex Ian McHugh
 @cindex Todd Mitchell
+@cindex Emily Wilbur
+@item Thomas Hornigold
+@item Ian McHugh
 @item Todd Mitchell
-Sustained acknowledgement via financial donations
+@item Emily Wilbur
+Acknowledgement via financial donations
 @end table
 Please let me know if your name was omitted!
 
