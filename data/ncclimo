@@ -40,9 +40,9 @@
 # scp ~/nco/data/ncclimo zender1@acme1.llnl.gov:bin
 # scp ~/nco/data/ncclimo andes.olcf.ornl.gov:bin_andes
 # scp ~/nco/data/ncclimo ac.zender@blues.lcrc.anl.gov:bin_blues
-# scp ~/nco/data/ncclimo cheyenne.ucar.edu:bin
 # scp ~/nco/data/ncclimo ac.zender@chrysalis.lcrc.anl.gov:bin_chrysalis
 # scp ~/nco/data/ncclimo compy.pnl.gov:bin
+# scp ~/nco/data/ncclimo derecho.hpc.ucar.edu:bin
 # scp ~/nco/data/ncclimo dust.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo e3sm.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo imua.ess.uci.edu:bin
@@ -105,9 +105,9 @@ if [ -z "${DATA}" ]; then
 	andes* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC blues compute nodes named bNNN, 36|64 cores|GB/node 
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
-	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	compy* | n[0123456789][0123456789][0123456789][0123456789] ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
+	derecho* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR derecho compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/256) cores|GB/node (derecho login nodes 512 GB)
 	frontier* ) DATA="/lustre/orion/cli115/world-shared/${USER}" ; ;; # OLCF frontier compute nodes named frontier01276 64|512 cores|GB/node
 	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
 	    if [ "${LMOD_SYSTEM_NAME}" = 'frontier' ]; then
@@ -161,17 +161,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    fi # !ncremap
 	    export PATH='/home/ac.zender/bin_chrysalis:/home/ac.zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis:/home/ac.zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
-	*cheyenne* )
-	    # 20180112: Cheyenne support not yet tested in batch mode
-	    if [ ${spt_nm} = 'ncremap' ]; then
-		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
-		module load ncl
-	    fi # !ncremap
-	    if [ -n "${NCARG_ROOT}" ]; then
-		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.6.2/gnu/8.3.0/bin"
-	    fi # !NCARG_ROOT
-            export PATH='/glade/u/home/zender/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0/lib:/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib:/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	compy* | n[0123456789][0123456789][0123456789][0123456789] )
 	    module purge
 	    module load gcc/10.2.0
@@ -183,6 +172,17 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    fi # !ncremap
 	    export PATH='/qfs/people/zender/bin:/qfs/people/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib:/qfs/people/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
+	derecho* )
+	    # 20240107: Derecho support not yet tested in batch mode
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
+		module load ncl
+	    fi # !ncremap
+	    if [ -n "${NCARG_ROOT}" ]; then
+		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.6.2/gnu/8.3.0/bin"
+	    fi # !NCARG_ROOT
+            export PATH='/glade/u/home/zender/bin'\:${PATH}
+            export LD_LIBRARY_PATH='/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t/lib:/glade/u/apps/derecho/23.06/spack/opt/spack/udunits/2.2.28/gcc/12.2.0/vls2/lib:/glade/u/apps/ch/opt/gsl/2.7/gnu/12.1.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	e3sm* )
 	    export PATH='/home/zender/bin:/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
@@ -336,8 +336,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ALCF Maui:
 # http://www.lcrc.anl.gov/for-users/using-lcrc/running-jobs
 # NCAR PBSPro:
+# https://arc.ucar.edu/knowledge_base/124518554
 # https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/quick-start-cheyenne
-# https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/running-jobs/submitting-jobs-pbs
 # NERSC SLURM:
 # https://slurm.schedmd.com/sbatch.html # sbatch man page
 # https://slurm.schedmd.com/salloc.html # salloc man page
@@ -352,9 +352,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute ncclimo command interactively
 #   Andes:  salloc  -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo # Bigmem: --partition=gpu
 #   Blues:  salloc  -A condo --nodes=1 --partition=acme-small --time=00:30:00 --job-name=ncclimo
-#   Cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
 #   Chrysalis: salloc  -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # Use compute queue instead if debug is slow to grant resources
 #   Compy:  salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo
+#   Derecho: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
 #   Frontier:salloc -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo
 #   Perl:   salloc  -A e3sm --constraint=cpu --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
 # Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[pbs|slurm] b) qsub ncclimo.[pbs|slurm]
@@ -1874,9 +1874,9 @@ if [ "${mpi_flg}" = 'Yes' ]; then
  		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
 		    # cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
 		    # cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=1" ; ;; # SLURM
-		*cheyenne* )
-		    # 20180120: Non-interactive batch jobs at NCAR return HOSTNAME as cheyenne?
-		    # Cheyenne prefers 'mpiexec_mpt dplace -s 1 ncclimo ...'
+		derecho* )
+		    # 20180120: Non-interactive batch jobs at NCAR return HOSTNAME as derecho?
+		    # Derecho prefers 'mpiexec_mpt dplace -s 1 ncclimo ...'
 		    # Unsure how to specify nd_nm to mpiexec_mpt
 		    # mpirun from SGI MPT does not accept '-H nd_nm', unlike regular PBS
 		    # PBSPro considers ncclimo a 'non-MPT application' so must set MPI_SHEPHERD=true

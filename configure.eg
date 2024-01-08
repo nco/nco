@@ -448,23 +448,24 @@ make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 # !Compy (Intel)
 
-# 20150901: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cooley:
-# Sysadmin upgrade request: support@alcf.anl.gov # ALCF Maintainer = 
-# Latest ticket to build NCO: alcf-support #367012 on 20180413
-# Latest sysadmin-compiled module usage: soft add +nco-4.6.8, soft add +netcdf-4.4.1.1
-# Personal recipe last modified: 20170825
-# Personal recipe last borken: 20170825
-# Personal recipe last successful: 20190420
+# gcc/g++ 20171013 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on derecho:
+# Sysadmin upgrade request: cislhelp@ucar.edu # NCAR Maintainer = Pat Nichols
+# Latest ticket to build NCO: 216373 on 20180413
+# Latest sysadmin-compiled module usage: module load netcdf/4.9.2 module load nco/5.1.6 # 20240107
+# Personal recipe last modified: 20240107
+# Personal recipe last borken: 20240107 (unable to complie antlr)
+# Personal recipe last successful: 20231103
+# Derecho GNU:
+module purge
+module load ncarenv gcc ncarcompilers netcdf udunits
+export LINUX_CXX='g++ -std=c++11'
+export PATH=${PATH}:/opt/pbs/bin # needed for qsub
+export PATH=${PATH}:/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t/bin # needed for ncgen
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t/lib:/glade/u/apps/derecho/23.06/spack/opt/spack/udunits/2.2.28/gcc/12.2.0/vls2/lib # needed to run NCO
 cd ~/nco;/bin/rm -f *.foo;make distclean
 cd ~/nco;git reset --hard origin/master
-cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/unsupported/netcdf-4.4.1.1' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-/bin/cp -f config.log nco.config.log.foo
-/bin/cp -f libtool nco.libtool.foo
-make clean;make > nco.make.foo 2>&1
-make check >> nco.make.foo 2>&1
-make install >> nco.make.foo 2>&1
-scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-# !Cooley
+cd ~/nco/bld;make ANTLR_ROOT=/glade/u/apps/derecho/23.06/opt GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.7/gnu/12.1.0' GSL_INC='/glade/u/apps/ch/opt/gsl/2.7/gnu/12.1.0/include' GSL_LIB='/glade/u/apps/ch/opt/gsl/2.7/gnu/12.1.0/lib' NETCDF_ROOT='/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t' UDUNITS_INC='/glade/u/apps/derecho/23.06/spack/opt/spack/udunits/2.2.28/gcc/12.2.0/vls2/include' UDUNITS_LIB='/glade/u/apps/derecho/23.06/spack/opt/spack/udunits/2.2.28/gcc/12.2.0/vls2/lib' OPTS=D allinone;cd -
+# !Derecho
 
 # gcc/g++ 20201208 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on Frontier:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
