@@ -1,10 +1,24 @@
-2024-01-07  Charlie Zender  <zender@uci.edu>
+2024-01-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha04: Heritage BBQ';git push
-	git tag -a 5.2.0-alpha04 -m '';git push --tags
+	git tag -a 5.2.0-alpha04 -m 'ncclimo/ncremap: dpr cheyenne, spp	derecho;ncremap: TR revert to --mono*, ncoidw, revamp MWF';git push --tags
 
-	* Support NCAR derecho
+	* ncremap revamp MWF mode to allow user-specifed alg_lst
+
+	* ncremap prefer 'ncoidw' to 'nco_idw'
+
+2024-01-10  Charlie Zender  <zender@uci.edu>
+
+	* Verify MWF mode works for TR with QU240 and ne11np4
+
+	* ncremap replace --method mono* by --mono* since MWF mode revealed some failures with --method mono*
+
+2024-01-08  Charlie Zender  <zender@uci.edu>
+
+	* Deprecate Cheyenne, support NCAR Derecho
+
+2024-01-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha03: Sunrise Snatchers';git push

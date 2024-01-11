@@ -837,7 +837,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"wgt_typ") || !strcmp(rgr_lst[rgr_var_idx].key,"weight_type")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"con") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_con") || !strcasecmp(rgr_lst[rgr_var_idx].val,"ncoaave") || !strcasecmp(rgr_lst[rgr_var_idx].val,"conservative") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_con"))
         rgr->wgt_typ=nco_wgt_con;
-      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"idw") || !strcasecmp(rgr_lst[rgr_var_idx].val,"dwe") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_idw") || !strcasecmp(rgr_lst[rgr_var_idx].val,"distance_weighted") || !strcasecmp(rgr_lst[rgr_var_idx].val,"inverse_distance") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_idw"))
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"idw") || !strcasecmp(rgr_lst[rgr_var_idx].val,"ncoidw") || !strcasecmp(rgr_lst[rgr_var_idx].val,"dwe") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_idw") || !strcasecmp(rgr_lst[rgr_var_idx].val,"distance_weighted") || !strcasecmp(rgr_lst[rgr_var_idx].val,"inverse_distance") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_idw"))
         rgr->wgt_typ=nco_wgt_idw;
       else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"bln") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_bln") || !strcasecmp(rgr_lst[rgr_var_idx].val,"bilinear") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_bln"))
         rgr->wgt_typ=nco_wgt_bln;
@@ -6517,7 +6517,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	} /* !has_mss_val */
 
 	/* Re-initialize Boolean to True and override with False if variable _uses_ missing values
-	   As of 20210909, "has_mss_val" should from here on be interpreted as "uses_mss_val" */
+	   As of 20210909, "has_mss_val" should from here on should be interpreted as "uses_mss_val" */
 	has_mss_val=True;
 	for(idx_in=0;idx_in<var_sz_in;idx_in++){
 	  if(var_val_dbl_in[idx_in] == mss_val_cmp_dbl) break;

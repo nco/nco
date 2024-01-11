@@ -294,7 +294,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Map-only, threading:
 # ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=5' --alg_typ=ncoaave --grd_src=${DATA}/grids/ne30np4_pentagons.20190501.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
 # ncks -O --dbg=5 --thr_nbr=6 --grd_src=${DATA}/grids/ne30np4_pentagons.20190501.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ~/nco/data/in.nc ~/foo.nc
-# ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=nco_idw --xtr_nsp=8 --xtr_xpn=2.0 --grd_src=${DATA}/grids/ne30np4_pentagons.20190501.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_idw.20200901.nc
+# ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=ncoidw --xtr_nsp=8 --xtr_xpn=2.0 --grd_src=${DATA}/grids/ne30np4_pentagons.20190501.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_ncoidw.20200901.nc
 # ncremap --dbg=1 --alg_typ=bilin   --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
 # ncremap --dbg=1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
 # ncremap --dbg=1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc
@@ -335,7 +335,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -P mpas --mss_val=-1.0e36 -s ${DATA}/grids/ais20km.150910.SCRIP.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/mpasLIoutput.nc ~/foo.nc
 # ncremap -P mali -m ${DATA}/maps/map_mali_gis_to_greenland_r025_105x401_aave.20210301.nc ${DATA}/mpas/raw/mali.hist.0001-01-01_00000.nc ~/foo.nc
 # E3SM benchmarks:
-# ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_idw.20200901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_ncoidw.20200901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_nco.20190601.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_mono.20190401.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
@@ -378,13 +378,14 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 0 --vrb=1 -a esmfaave --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a esmfaave --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a esmfaave --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
-# MWF (201807):
-# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/cmip6_180x360.g --grd_dst=${DATA}/grids/ne30.g --nm_src=cmip6_180x360 --nm_dst=ne30np4 --dt_sng=20190601 --drc_out=${DATA}/maps > ~/ncremap.out 2>&1 &
-# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/cmip6_720x1440.g --grd_dst=${DATA}/grids/ne120.g --nm_src=cmip6_720x1440 --nm_dst=ne120np4 --dt_sng=20190601 --drc_out=${DATA}/maps > ~/ncremap.out 2>&1 &
-# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/cmip6_180x360_scrip.nc --grd_dst=${DATA}/grids/ne30.g --nm_src=cmip6_180x360 --nm_dst=ne30np4 --dt_sng=20190601 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
-# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
-# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/ne30.g --nm_src=oRRS30to10 --nm_dst=ne30np4 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
-# ncremap -D 2 -P mwf --wgt_cmd='mpirun -np 12 ESMF_RegridWeightGen' --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
+# MWF (202401):
+# ncremap -D 1 -P mwf -s ${DATA}/grids/ocean.QU.240km.scrip.181106.nc -g ${DATA}/grids/ne11np4.g --nm_src=QU240 --nm_dst=ne11np4 --dt_sng=20240201 > ~/ncremap.out 2>&1 &
+# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/ne30pg2.g --nm_src=IcoswISC30E3r5 --nm_dst=ne30pg2 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
+# ncremap -D 2 -P mwf --alg_lst='traave trbilin trfv2' --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/ne30pg2.g --nm_src=IcoswISC30E3r5 --nm_dst=ne30pg2 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
+# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.nc --nm_src=IcoswISC30E3r5 --nm_dst=cmip6_180x360 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
+# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/cmip6_180x360.g --nm_src=IcoswISC30E3r5 --nm_dst=cmip6_180x360 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
+# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ne30pg2.g --grd_dst=${DATA}/grids/cmip6_180x360.g --nm_src=ne30pg2 --nm_dst=cmip6_180x360 --dt_sng=20240201 --drc_out=${DATA}/maps > ~/ncremap.out 2>&1 &
+# ncremap -D 2 -P mwf --wgt_cmd='mpirun -np 12 ESMF_RegridWeightGen' --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/cmip6_180x360.nc --nm_src=IcoswISC30E3r5 --nm_dst=cmip6_180x360 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # Add depth (201901):
 # ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_L60.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
 # Vertical interpolation (201903):
@@ -496,7 +497,8 @@ fmt_sng_nc7='NETCDF4_CLASSIC (netCDF4 classic HDF5)'
 # Modify these defaults to save typing later
 a2o_flg='No' # [flg] Atmosphere-to-ocean (only used by Tempest mesh generator)
 add_fll='No' # [flg] Add _FillValue to fields with empty destination cells
-alg_typ='ncoaave' # [sng] Algorithm for remapping (esmfaave|esmfbilin|bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|traave|trbilin|trfv2|trintbilin|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|ncoaave|nco_con|nco_idw)
+alg_lst='esmfaave esmfbilin ncoaave ncoidw traave trbilin trfv2' # [sng] Algorithm list for MWF mode
+alg_typ='ncoaave' # [sng] Algorithm for remapping (esmfaave|esmfbilin|bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|traave|trbilin|trfv2|trintbilin|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|ncoaave|nco_con|ncoidw|ncoidw)
 att_flg='No' # [flg] Add/alter attributes (e.g., _FillValue) before regridding
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
@@ -663,12 +665,13 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
     echo "            CDO algorithms: cdo_bilinear|cdo_conservative (same as ESMF)"
     echo "            ESMF algorithms: esmfbilin,bilinear|esmfaave,aave,conserve|conserve2nd|nearestdtos|neareststod|patch"
-    echo "            NCO algorithms: ncoaave,nco,nco_con|nco_idw,nco_dwe (inverse-distance-weighted interpolation/extrapolation)"
+    echo "            NCO algorithms: ncoaave,nco,nco_con|ncoidw,nco_dwe (inverse-distance-weighted interpolation/extrapolation)"
     echo "            Tempest (and MOAB-Tempest) algorithms: traave,fv2fv_flx|trbilin|trfv2|trintbilin|tempest|fv2fv|fv2fv_stt|fv2se_flx|fv2se_stt|fv2se_alt|se2fv_flx|se2fv_stt|se2fv_alt|se2se"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
     echo " ${fnt_bld}--add_fll${fnt_nrm}  Add _FillValue to fields with empty destination cells (default ${fnt_bld}${add_fll}${fnt_nrm}) [${fnt_tlc}add_fll, add_fill_value, fll_mpt, fill_empty${fnt_nrm}]"
     echo " ${fnt_bld}--area_dgn${fnt_nrm} Diagnose (rather than copy) grid_area to inferred grid-file (default ${fnt_bld}No${fnt_nrm}) [${fnt_tlc}area_diagnose, dgn_area, diagnose_area${fnt_nrm}]"
 # 20220524: Implement but do not yet advertise codecs/CCR in ncremap
+    echo "$ {fnt_bld}--alg_lst${fnt_nrm}  Algorithms to generate maps with in MWF mode (default ${fnt_bld}${alg_lst}${fnt_nrm}) [${fnt_tlc}alg_lst, algorithm_list${fnt_nrm}]"
     echo " ${fnt_bld}--cmp_sng${fnt_nrm}  Compression string (empty means none) (default ${fnt_bld}${cmp_sng}${fnt_nrm}) [${fnt_tlc}cmp, cmp_sng, compress, compression, cpr, cdc, codec ${fnt_nrm}]"
     echo " ${fnt_bld}--col_dmn${fnt_nrm}  Column (unstructured) dimension name for coupler files (empty means none) (default ${fnt_bld}${col_dmn}${fnt_nrm}) [${fnt_tlc}col_dmn, col_nm, column_dimension, unstructured_dimension${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
@@ -859,6 +862,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       add_fll=?* | add_fill_value=?* | fll_mpt=?* | fill_empty=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Add _FillValue to fields with empty destination cells
 	       no_add_fll | no_add_fill_value | no_fll_mpt | no_fill_empty ) add_fll_usr='No' ;; # # Do not add _FillValue to fields with empty destination cells
 	       no_add_fll=?* | no_add_fill_value=?* | no_fll_mpt=?* | fill_empty=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Do not add _FillValue to fields with empty destination cells
+	       alg_lst=?* | algorithm_list=?* ) alg_lst="${LONG_OPTARG}" ;; # # Algorithm list for MWF mode
 	       alg_typ=?* | algorithm=?* | regrid_algorithm=?* ) alg_typ="${LONG_OPTARG}" ;; # -a # Algorithm
 	       area_dgn | dgn_area | area_diagnose | diagnose_area ) area_dgn='Yes' ;; # # Diagnose (rather than copy) grid_area to inferred grid-file
 	       area_dgn=?* | dgn_area=?* | area_diagnose=?* | diagnose_area=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Diagnose (rather than copy) grid_area in inferred grids
@@ -1192,7 +1196,7 @@ rgn_fl=${rgn_fl}${unq_sfx}
 tmp_out_fl=${tmp_out_fl}${unq_sfx}
 znl_fl=${znl_fl}${unq_sfx}
 
-# Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|traave|trbilin|trfv2|trintbilin|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|ncoaave|nco_con|nco_idw
+# Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|traave|trbilin|trfv2|trintbilin|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|ncoaave|nco_con|ncoidw
 if [ ${alg_typ} = 'cdo_con' ] || [ ${alg_typ} = 'cdo_cns' ] || [ ${alg_typ} = 'cdo_conserve' ] || [ ${alg_typ} = 'cdo' ]; then 
     alg_opt='gencon'
     wgt_typ='cdo'
@@ -1228,6 +1232,7 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     # 20220928 Remove --correct_areas since TR 2.1.12 made this default and eliminated option
     # 20220928 Replace --mono3 by --method mono3 since TR 2.1.14, 2.1.15 changed option name
     # 20231130 Correct wgt_opt_mbt for alg_typ=tempest to use order = ${se_np_nbr} == 4 by default (since TR uses order=4)
+    # 20240110 Replace --method mono* by --mono* since MWF mode revealed some failures with --method mono*
     # https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids
     # alg_sng in comments is for E3SM naming convention map_src_to_dst_${alg_sng}.${dt_sng}.nc
     cnv_opt_src="-B"
@@ -1245,7 +1250,7 @@ elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_ty
     cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     cnv_opt_dst="-B"
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --global_id GLOBAL_DOFS --method fv --monotonic 1 --global_id GLOBAL_ID"
-    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --method mono"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono"
     alg_opt='se2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2fv' ]; then # alg_sng='highorder'
@@ -1259,7 +1264,7 @@ elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${al
     cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     cnv_opt_dst="-B"
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonic 3 --noconserve"
-    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --method mono3 --noconserve"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono3 --noconserve"
     alg_opt='se2fv_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'conservative_monotone_se2se' ]; then # alg_sng='se2se'
@@ -1267,7 +1272,7 @@ elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'con
     cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     # 20190227: Add mono for se2se per recommendation of Mark Taylor
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method cgll --order ${se_np_nbr} --monotonic 1"
-    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type cgll --out_np ${se_np_nbr} --method mono"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type cgll --out_np ${se_np_nbr} --mono"
     alg_opt='se2se'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # alg_sng='monotr'
@@ -1275,7 +1280,7 @@ elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_
     cnv_opt_src="-B"
     cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonic 1"
-    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --method mono"
+    wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono"
     alg_opt='fv2se_flx'
     wgt_typ='tempest'
     trn_map='Yes'
@@ -1292,7 +1297,7 @@ elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_ty
     cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     # 20200525: Remove "--volumetric" from fv2se_mono per Mark Taylor modifying Confluence instructions
     wgt_opt_mbt="--method fv --order 1 --method cgll --order ${se_np_nbr} --monotonic 1"
-    wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np ${se_np_nbr} --method mono"
+    wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np ${se_np_nbr} --mono"
     alg_opt='fv2se_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ]; then # alg_sng='highorder'
@@ -1354,8 +1359,8 @@ elif [ ${alg_typ} = 'trintbilin' ]; then # alg_sng='trintbilin'
 elif [ ${alg_typ} = 'nco_con' ] || [ ${alg_typ} = 'ncoaave' ] || [ ${alg_typ} = 'nco_cns' ] || [ ${alg_typ} = 'nco_conserve' ] || [ ${alg_typ} = 'nco' ]; then # alg_sng='ncoaave'
     alg_opt='ncoaave'
     wgt_typ='nco'
-elif [ ${alg_typ} = 'nco_idw' ] || [ ${alg_typ} = 'nco_dwe' ] || [ ${alg_typ} = 'dwe' ] || [ ${alg_typ} = 'idw' ] || [ ${alg_typ} = 'nco_distance_weighted' ] || [ ${alg_typ} = 'nco_nearest_neighbor' ]; then
-    alg_opt='nco_idw'
+elif [ ${alg_typ} = 'nco_idw' ] || [ ${alg_typ} = 'ncoidw' ] || [ ${alg_typ} = 'nco_dwe' ] || [ ${alg_typ} = 'dwe' ] || [ ${alg_typ} = 'idw' ] || [ ${alg_typ} = 'nco_distance_weighted' ] || [ ${alg_typ} = 'nco_nearest_neighbor' ]; then
+    alg_opt='ncoidw'
     wgt_typ='nco'
 else 
     echo "${spt_nm}: ERROR ${alg_typ} is not a valid weight-generation algorithm"
@@ -1765,16 +1770,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
     # 20210519: TR input files are increasingly used including .g FV files, so this assumption untenable
     # An independent option to distinguish FV from SE files would be useful
     # https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
-    if [[ ${grd_dst} == *.g ]]; then
-	alg_lst='fv2se_flx fv2se_stt fv2se_alt'
-    else
-	if [ -n "${wgt_opt_usr}" ] && [ "${wgt_opt_usr}" = 'tempest' ]; then
-	    alg_lst='fv2fv tempest'
-	else # !wgt_opt_usr
-	    alg_lst='aave blin ndtos nstod patc'
-	fi # !wgt_opt_usr
-    fi # !grd_dst
-    # Compute FV->SE maps
+    # Compute forward (src->dst) maps 
     if [ -n "${hnt_src}" ]; then
        hnt_src_sng="--hnt_src=${hnt_src}"
     fi # !hnt_src
@@ -1782,6 +1778,11 @@ if [ "${prc_typ}" = 'mwf' ]; then
        hnt_dst_sng="--hnt_dst=${hnt_dst}"
     fi # !hnt_dst	
     for alg_typ in ${alg_lst}; do
+	if [[ ${grd_src} == *.g ]] || [[ ${grd_dst} == *.g ]]; then
+	    if [ ${alg_typ} == 'ncoaave' ] || [ ${alg_typ} == 'ncoidw' ]; then
+		continue
+	    fi # !alg_typ
+	fi # !grd_src
 	alg_sng=${alg_typ}
 	[[ ${alg_typ} = 'fv2se_flx' ]] && alg_sng='monotr'
 	[[ ${alg_typ} = 'fv2se_stt' ]] && alg_sng='highorder'
@@ -1809,22 +1810,13 @@ if [ "${prc_typ}" = 'mwf' ]; then
 		exit 1
 	    fi # !err
 	fi # !dbg
-	if [ ${dbg_lvl} -ge 1 ]; then
+	if [ ${dbg_lvl} -ge 1 ] && [ ${dbg_lvl} -ne 2 ]; then
 	    date_crr=$(date +"%s")
 	    date_dff=$((date_crr-date_mwf))
 	    echo "Elapsed time to generate ${alg_typ} map $((date_dff/60))m$((date_dff % 60))s"
 	fi # !dbg
     done # !alg_typ
-    # Compute SE->FV maps
-    if [[ ${grd_dst} == *.g ]]; then 
-	alg_lst='se2fv_flx se2fv_stt se2fv_alt'
-    else
-	if [ -n "${wgt_opt_usr}" ] && [ "${wgt_opt_usr}" = 'tempest' ]; then
-	    alg_lst='fv2fv tempest'
-	else # !wgt_opt_usr
-	    alg_lst='aave blin ndtos nstod patc'
-	fi # !wgt_opt_usr
-    fi # !grd_dst
+    # Compute reverse (dst->src) maps
     if [ -n "${hnt_src}" ]; then 
        hnt_dst_sng="--hnt_dst=${hnt_src/src/dst}"
     fi # !hnt_src
@@ -1832,6 +1824,11 @@ if [ "${prc_typ}" = 'mwf' ]; then
        hnt_src_sng="--hnt_src=${hnt_dst/dst/src}"
     fi # !hnt_dst	
     for alg_typ in ${alg_lst}; do
+	if [[ ${grd_src} == *.g ]] || [[ ${grd_dst} == *.g ]]; then
+	    if [ ${alg_typ} == 'ncoaave' ] || [ ${alg_typ} == 'ncoidw' ]; then
+		continue
+	    fi # !alg_typ
+	fi # !grd_src
 	# Swap grd_src with grd_dst
 	alg_sng=${alg_typ}
 	[[ ${alg_typ} = 'se2fv_flx' ]] && alg_sng='mono'
@@ -1840,7 +1837,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	map_nm="${drc_out}/map_${nm_dst}_to_${nm_src}_${alg_sng}.${dt_sng}.nc"
 	# MWF-mode must be invoked with ocean as grd_src, atmosphere as grd_dst
 	a2o_sng=''
-	if [ "${alg_typ}" = 'se2fv_flx' ] || [ "${alg_typ}" = 'se2fv_stt' ] || [ "${alg_typ}" = 'se2fv_alt' ] || [ "${alg_typ}" = 'tempest' ]; then
+	if [ "${alg_typ}" = 'se2fv_flx' ] || [ "${alg_typ}" = 'se2fv_stt' ] || [ "${alg_typ}" = 'se2fv_alt' ] || [ "${alg_typ}" = 'tempest' ] || [ "${alg_typ}" = 'traave' ] || [ "${alg_typ}" = 'trbilin' ] || [ "${alg_typ}" = 'trfv2' ] || [ "${alg_typ}" = 'trintbilin' ]; then
 	    a2o_sng='--a2o'
 	fi # !alg_typ
 	wgt_sng=''
@@ -1865,7 +1862,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 		exit 1
 	    fi # !err
 	fi # !dbg
-	if [ ${dbg_lvl} -ge 1 ]; then
+	if [ ${dbg_lvl} -ge 1 ] && [ ${dbg_lvl} -ne 2 ]; then
 	    date_crr=$(date +"%s")
 	    date_dff=$((date_crr-date_mwf))
 	    echo "Elapsed time to generate ${alg_typ} map $((date_dff/60))m$((date_dff % 60))s"
@@ -1917,7 +1914,8 @@ fi # !rrg
 if [ "${prc_typ}" = 'eamxx' ]; then 
     if [ -z "${pdq_opt}" ] && [ "${pdq_flg}" = 'Yes' ]; then
 	# Permute horizontal dimensions to MRV
-	# dim2 is used in SCREAM SurfVars to store U,V components in horiz_winds, surf_mom_flux variables
+	# dim2 (= 2) is used in SCREAM SurfVars to store U,V components in horiz_winds, surf_mom_flux variables
+	# 20240110: EAMXX also uses dim2 dimension for time_bnds
 	#pdq_opt='-a ilev,lev,dim2,ncol'
 	# 20230304: EAMxx may have been vertically interpolated to pure-pressure levels prior to horizontal regridding
 	pdq_opt='-a ilev,lev,plev,dim2,ncol'
@@ -2335,6 +2333,7 @@ fi # !mpi_flg
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: a2o_flg  = ${a2o_flg}\n"
     printf "dbg: add_fll  = ${add_fll}\n"
+    printf "dbg: alg_lst  = ${alg_lst}\n"
     printf "dbg: alg_opt  = ${alg_opt}\n"
     printf "dbg: alg_typ  = ${alg_typ}\n"
     printf "dbg: att_flg  = ${att_flg}\n"
