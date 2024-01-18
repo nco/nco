@@ -1,8 +1,12 @@
-2024-01-12  Charlie Zender  <zender@uci.edu>
+2024-01-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha04: Heritage BBQ';git push
 	git tag -a 5.2.0-alpha04 -m 'ncclimo/ncremap: dpr cheyenne, spp	derecho;ncremap: TR revert to --mono*, ncoidw, revamp MWF';git push --tags
+
+	* Perlmutter remove gcc/11.2.0, update to cray-hdf5/1.12.2.9 cray-netcdf/4.9.0.9
+
+2024-01-12  Charlie Zender  <zender@uci.edu>
 
 	* Perlmutter remove GSL module
 
