@@ -1766,7 +1766,7 @@ if [ "${stg_grd}" = 'Yes' ]; then
 fi # !stg_grd
 if [ "${prc_typ}" = 'mwf' ]; then 
     [[ ${dbg_lvl} -ge 1 ]] && date_mwf=$(date +"%s")
-    # Assume destination grid-files that end in .nc are SCRIP (and thus FV), and .g means Exodus (and thus SE)
+    # Assume destination grid-files that end in .nc are SCRIP (and thus FV), and .g means Exodus (and possibly SE)
     # 20210519: TR input files are increasingly used including .g FV files, so this assumption untenable
     # An independent option to distinguish FV from SE files would be useful
     # https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script

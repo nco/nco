@@ -1,8 +1,12 @@
-2024-01-11  Charlie Zender  <zender@uci.edu>
+2024-01-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha04: Heritage BBQ';git push
 	git tag -a 5.2.0-alpha04 -m 'ncclimo/ncremap: dpr cheyenne, spp	derecho;ncremap: TR revert to --mono*, ncoidw, revamp MWF';git push --tags
+
+	* Perlmutter remove GSL module
+
+2024-01-11  Charlie Zender  <zender@uci.edu>
 
 	* ncremap revamp MWF mode to allow user-specifed alg_lst
 
@@ -50,7 +54,7 @@
 
 2023-12-15  Charlie Zender  <zender@uci.edu>
 
-	* nco_chk_tm() successfully identifies violations via two methods
+	* nco_chk_tm() for diwg_chk successfully identifies violations via two methods
 
 	* Add nco_chk_tm() stubs to check time coordinates for double precision
 

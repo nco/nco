@@ -600,9 +600,9 @@ if test "${enable_gsl}" = 'yes'; then
 
     if test "${GSL_ROOT}"; then
 	GSL_CONFIG="${GSL_ROOT}/bin/gsl-config"
-	else
+    else
 	GSL_CONFIG='gsl-config'
-	fi
+    fi
 
     if which ${GSL_CONFIG} > /dev/null; then
 	enable_gsl='yes'

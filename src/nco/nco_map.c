@@ -867,17 +867,18 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   grd_lon_typ_out=nco_poly_minmax_2_lon_typ(pl_glb_out);
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
-    (void)fprintf(stderr,"%s:%s mesh in statistics (grd_lon_typ=%s)\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(grd_lon_typ_in));
+    (void)fprintf(stderr,"%s: %s mesh in statistics (grd_lon_typ=%s)\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(grd_lon_typ_in));
     nco_poly_prn(pl_glb_in,0);
 
-    (void)fprintf(stderr,"\n%s:%s mesh out statistics (grd_lon_typ=%s)\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(grd_lon_typ_out));
+    (void)fprintf(stderr,"\n%s: %s mesh out statistics (grd_lon_typ=%s)\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(grd_lon_typ_out));
     nco_poly_prn(pl_glb_out,0);
   } /* !dbg */
 
   /* 20230716: nco_msh_lon_crr() is called here four times and implementation seems non-optimal because centers and corners done separately, lon_crn_in done twice, determination of longitude grid type (done above) is faulty
      Each call can modify longitude arrays to put all coordinates within 0,360 or -180,180
      This constraint was imposed by CZ during regridder development
-     However, in 202307, CZ learned that CF prefers vertice boundaries to always be on same branch cut
+     However, in 202307, CZ learned that CF prefers vertice boundaries to always be on same branch cut:
+     https://cfconventions.org/cf-conventions/cf-conventions.html#cell-boundaries
      CZ wrote nco_msh_lon_cf() to re-adjust vertices before writing to map-files
      That would have worked except the longitude centers (which nco_msh_lon_cf() uses to determine branch cut) are sometimes faulty
      Faulty in that nco_msh_lon_crr() sequence below leaves longitude centers for branch cut gridcells on Greenwich equal to dateline, i.e.,
