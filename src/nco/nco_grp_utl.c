@@ -2098,59 +2098,91 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         } /* !wrt */
       } /* !md5 */
 
+      /* 20240118: Write CF-Compliant PPC attribute per 
+	 https://github.com/cf-convention/cf-conventions/issues/403 */
+
       /* Write PPC attribute */
       if(var_trv.ppc != NC_MAX_INT){
-	aed_sct aed_ppc;
-	char att_nm_dsd[]="least_significant_digit";
-	char att_nm_btg[]="QuantizeBitGroomNumberOfSignificantDigits";
-	char att_nm_shv[]="QuantizeBitShaveNumberOfSignificantDigits";
-	char att_nm_set[]="QuantizeBitSetNumberOfSignificantDigits";
-	char att_nm_dgr[]="QuantizeDigitRoundNumberOfSignificantDigits";
-	char att_nm_gbr[]="QuantizeGranularBitRoundNumberOfSignificantDigits";
-	char att_nm_bgr[]="QuantizeBitGroomRoundNumberOfSignificantDigits";
-	char att_nm_sh2[]="QuantizeHalfShaveNumberOfSignificantDigits";
-	char att_nm_brt[]="QuantizeBruteForceNumberOfSignificantDigits";
-	char att_nm_btr[]="QuantizeBitRoundNumberOfSignificantBits";
+	aed_sct aed_ppc_alg;
+	aed_sct aed_ppc_cnt;
+	aed_sct aed_ppc_lvl;
+	char alg_nm_dsd[]="least_significant_digit";
+	char alg_nm_btg[]="BitGroom";
+	char alg_nm_shv[]="BitShave";
+	char alg_nm_set[]="BitSet";
+	char alg_nm_dgr[]="DigitRound";
+	char alg_nm_gbr[]="GranularBitRound";
+	char alg_nm_bgr[]="BitGroomRound";
+	char alg_nm_sh2[]="HalfShave";
+	char alg_nm_brt[]="BruteForce";
+	char alg_nm_btr[]="BitRound";
+	char cnt_nm_all[]="lossy_compression";
+	char cnt_val_all[]="compression_info";
+	char qnt_lvl_nsb_nm[]="lossy_compression_nsb";
+	char qnt_lvl_nsd_nm[]="lossy_compression_nsd";
 	int ppc_old;
 	int rcd;
 	if(var_trv.flg_nsd){
 	  switch(nco_baa_cnv_get()){
-	  case nco_baa_btg: aed_ppc.att_nm=att_nm_btg; break;
-	  case nco_baa_shv: aed_ppc.att_nm=att_nm_shv; break;
-	  case nco_baa_set: aed_ppc.att_nm=att_nm_set; break;
-	  case nco_baa_dgr: aed_ppc.att_nm=att_nm_dgr; break;
-	  case nco_baa_gbr: aed_ppc.att_nm=att_nm_gbr; break;
-	  case nco_baa_bgr: aed_ppc.att_nm=att_nm_bgr; break;
-	  case nco_baa_sh2: aed_ppc.att_nm=att_nm_sh2; break;
-	  case nco_baa_brt: aed_ppc.att_nm=att_nm_brt; break;
-	  case nco_baa_btr: aed_ppc.att_nm=att_nm_btr; break;
+	  case nco_baa_btg: aed_ppc_alg.att_nm=alg_nm_btg; break;
+	  case nco_baa_shv: aed_ppc_alg.att_nm=alg_nm_shv; break;
+	  case nco_baa_set: aed_ppc_alg.att_nm=alg_nm_set; break;
+	  case nco_baa_dgr: aed_ppc_alg.att_nm=alg_nm_dgr; break;
+	  case nco_baa_gbr: aed_ppc_alg.att_nm=alg_nm_gbr; break;
+	  case nco_baa_bgr: aed_ppc_alg.att_nm=alg_nm_bgr; break;
+	  case nco_baa_sh2: aed_ppc_alg.att_nm=alg_nm_sh2; break;
+	  case nco_baa_brt: aed_ppc_alg.att_nm=alg_nm_brt; break;
+	  case nco_baa_btr: aed_ppc_alg.att_nm=alg_nm_btr; break;
 	  default: 
-	    (void)fprintf(stdout,"%s: ERROR %s reports unknown quantization method\n",nco_prg_nm_get(),fnc_nm);
+	    (void)fprintf(stdout,"%s: ERROR %s reports unknown quantization algorithm\n",nco_prg_nm_get(),fnc_nm);
 	    nco_exit(EXIT_FAILURE);
 	    break;
 	  } /* !nco_baa_cnv_get() */
-	}else aed_ppc.att_nm=att_nm_dsd;
-	aed_ppc.var_nm=var_trv.nm;
-	aed_ppc.id=var_out_id;
-	aed_ppc.val.ip=&var_trv.ppc;
-	rcd=nco_inq_att_flg(grp_out_id,aed_ppc.id,aed_ppc.att_nm,&aed_ppc.type,&aed_ppc.sz);
+	  switch(nco_baa_cnv_get()){
+	  case nco_baa_btg: 
+	  case nco_baa_shv: 
+	  case nco_baa_set: 
+	  case nco_baa_dgr: 
+	  case nco_baa_gbr: 
+	  case nco_baa_bgr:
+	  case nco_baa_sh2: 
+	  case nco_baa_brt: 
+	    aed_ppc_lvl.att_nm=qnt_lvl_nsd_nm; break;
+	  case nco_baa_btr: 
+	    aed_ppc_lvl.att_nm=qnt_lvl_nsb_nm; break;
+	  default: 
+	    (void)fprintf(stdout,"%s: ERROR %s reports unknown quantization algorithm\n",nco_prg_nm_get(),fnc_nm);
+	    nco_exit(EXIT_FAILURE);
+	    break;
+	  } /* !nco_baa_cnv_get() */
+	}else aed_ppc_alg.att_nm=alg_nm_dsd;
+	aed_ppc_cnt.var_nm=aed_ppc_lvl.var_nm=var_trv.nm;
+	aed_ppc_cnt.id=aed_ppc_lvl.id=var_out_id;
+	aed_ppc_lvl.val.ip=&var_trv.ppc;
+	aed_ppc_cnt.att_nm=cnt_nm_all;
+	aed_ppc_cnt.val.cp=cnt_val_all;
+	rcd=nco_inq_att_flg(grp_out_id,aed_ppc_lvl.id,aed_ppc_lvl.att_nm,&aed_ppc_lvl.type,&aed_ppc_lvl.sz);
 	if(rcd != NC_NOERR){
 	  /* No PPC attribute yet exists */
-	  aed_ppc.sz=1L;
-	  aed_ppc.type=NC_INT;
-	  aed_ppc.mode=aed_create;
-	  (void)nco_aed_prc(grp_out_id,var_out_id,aed_ppc);
+	  aed_ppc_cnt.sz=strlen(aed_ppc_cnt.val.cp);
+	  aed_ppc_cnt.type=NC_CHAR;
+	  aed_ppc_cnt.mode=aed_create;
+	  aed_ppc_lvl.sz=1L;
+	  aed_ppc_lvl.type=NC_INT;
+	  aed_ppc_lvl.mode=aed_create;
+	  (void)nco_aed_prc(grp_out_id,var_out_id,aed_ppc_cnt);
+	  (void)nco_aed_prc(grp_out_id,var_out_id,aed_ppc_lvl);
 	}else{
-	  if(aed_ppc.sz == 1L && aed_ppc.type == NC_INT){
-	    /* Conforming PPC attribute already exists, only replace with new value if rounder */
-	    (void)nco_get_att(grp_out_id,aed_ppc.id,aed_ppc.att_nm,&ppc_old,NC_INT);
+	  if(aed_ppc_lvl.sz == 1L && aed_ppc_lvl.type == NC_INT){
+	    /* Conforming PPC attribute already exists, replace with new value only if rounder */
+	    (void)nco_get_att(grp_out_id,aed_ppc_lvl.id,aed_ppc_lvl.att_nm,&ppc_old,NC_INT);
 	    if(var_trv.ppc < ppc_old){
-	      aed_ppc.mode=aed_modify;
-	      (void)nco_aed_prc(grp_out_id,var_out_id,aed_ppc);
-	    } /* endif */
+	      aed_ppc_lvl.mode=aed_modify;
+	      (void)nco_aed_prc(grp_out_id,var_out_id,aed_ppc_lvl);
+	    } /* !aed_ppc_lvl.sz, !aed_ppc_lvl.type */
 	  }else{ /* !conforming */
-	    (void)fprintf(stderr,"%s: WARNING Non-conforming %s attribute found in variable %s, skipping...\n",nco_prg_nm_get(),aed_ppc.att_nm,var_trv.nm_fll);
-	  }  /* !conforming */
+	    (void)fprintf(stderr,"%s: WARNING Non-conforming %s attribute found in variable %s, skipping...\n",nco_prg_nm_get(),aed_ppc_lvl.att_nm,var_trv.nm_fll);
+	  } /* !conforming */
 	} /* !rcd */
       } /* !PPC */
 
@@ -4694,11 +4726,11 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
         (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",nco_prg_nm_get());
         nco_exit(EXIT_FAILURE);
         break;
-      } /* end case */
+      } /* !nco_op_typ */
 
       if(trv_1->ppc != NC_MAX_INT){
 	if(trv_1->flg_nsd) (void)nco_ppc_bitmask(trv_1->ppc,var_prc_1->type,var_prc_out->sz,var_prc_out->has_mss_val,var_prc_out->mss_val,var_prc_1->val); else (void)nco_ppc_around(trv_1->ppc,var_prc_1->type,var_prc_out->sz,var_prc_out->has_mss_val,var_prc_out->mss_val,var_prc_1->val);
-      } /* endif ppc */
+      } /* !ppc */
       if(nco_is_xcp(trv_1->nm)) nco_xcp_prc(trv_1->nm,var_prc_1->type,var_prc_out->sz,(char *)var_prc_1->val.vp);
 
       /* Copy result to output file */

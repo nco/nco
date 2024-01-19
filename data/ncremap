@@ -221,10 +221,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    elif [ "${LMOD_SYSTEM_NAME}" = 'perlmutter' ]; then
 		# 20221103 Add build environment modules
 		module load PrgEnv-gnu
-		module load gcc/11.2.0
 		module load cray-hdf5/1.12.2.9
 		module load cray-netcdf/4.9.0.9
-		module load gsl
 		if [ ${spt_nm} = 'ncremap' ]; then
 		    MOAB_ROOT=/project/projectdirs/e3sm/software/moab
 		    TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
@@ -237,13 +235,12 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		export PATH='/global/homes/z/zender/bin_perlmutter'\:${PATH}
 		export LD_LIBRARY_PATH='/global/homes/z/zender/lib_perlmutter'\:${LD_LIBRARY_PATH}
 	    fi # !LMOD_SYSTEM_NAME
-	    ;; # !login	
+	    ;; # !login
 	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] )
 	    # 20221103 Add build environment modules
 	    module load PrgEnv-gnu
-	    module load gcc/11.2.0
-	    module load cray-hdf5/1.12.2.1
-	    module load cray-netcdf/4.9.0.1
+	    module load cray-hdf5/1.12.2.9
+	    module load cray-netcdf/4.9.0.9
 	    module load gsl
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		MOAB_ROOT=/project/projectdirs/e3sm/software/moab

@@ -231,11 +231,13 @@ nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc def
 } /* !nco_ppc_set_dflt() */
 
 void
-nco_ppc_set_var
+nco_ppc_set_var /* Set PPC flag and value for all variables to be bitmasked/rounded */
 (const char * const var_nm, /* I [sng] Variable name to find */
  const char * const ppc_arg, /* I [sng] User input for precision-preserving compression */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
+  /* Purpose: Set PPC flag and value for all variables to be bitmasked/rounded */
+
   const char sls_chr='/'; /* [chr] Slash character */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   int mch_nbr=0;
@@ -548,9 +550,10 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
 
-  /* Purpose: Implement NCO NSD PPC algorithm from Zen16 by masking-out insignificant bits of op1 values */
+  /* Purpose: Implement NCO NSD PPC algorithm (BitGroom) from Zen16 by masking-out insignificant bits of op1 values
+     Also performs all other bitmasking algorithms, including BitRound, Granular BitGroom, BitSet, BitShave, ... */
   
-  /* Rounding is currently defined as op1:=bitmask(op1,ppc) */  
+  /* Bitmask is currently defined as op1:=bitmask(op1,ppc) */  
   
   /* This routine implements the BitGrooming Number of Significant Digits (NSD) algorithm
      NSD based on absolute precision, i.e., number of digits in significand and in decimal scientific notation

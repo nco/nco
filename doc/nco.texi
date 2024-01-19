@@ -131,8 +131,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set nco-edition 5.2.0-alpha04
 @set doc-edition 5.2.0-alpha04
 @set copyright-years 1995--2024
-@set update-year 2023
-@set update-date 11 January 2024
+@set update-year 2024
+@set update-date 18 January 2024
 @set update-month January 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -19356,7 +19356,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 SYNTAX
 @example
 ncclimo [-3] [-4] [-5] [-6] [-7] 
-[-a @var{wnt_md}] [-C @var{clm_md}] [-c @var{caseid}]
+[-a @var{wnt_md}] [-C @var{clm_md}] [-c @var{caseid}] [--cmp @var{cmp_sng}]
 [-d @var{dbg_lvl}] [--d2f] [--dpf=@var{dpf}] [--dpt_fl=@var{dpt_fl}] [-E @var{yr_prv}] [-e @var{yr_end}]
 [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [--glb_avg] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}]
@@ -25563,7 +25563,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 SYNTAX
 @example
 ncremap [-3] [-4] [-5] [-6] [-7]
-[-a @var{alg_typ}] [--a2o] [--add_fll] [--alg_lst] [--area_dgn] 
+[-a @var{alg_typ}] [--a2o] [--add_fll] [--alg_lst] [--area_dgn] [--cmp @var{cmp_sng}]
 [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f] [--dpt] [--dpt_fl=@var{dpt_fl}]
 [--dt_sng=@var{dt_sng}] [--esmf_typ=@var{esmf_typ}] 
 [--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}]

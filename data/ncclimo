@@ -202,10 +202,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    elif [ "${LMOD_SYSTEM_NAME}" = 'perlmutter' ]; then
 		# 20221103 Add build environment modules
 		module load PrgEnv-gnu
-		module load gcc/11.2.0
 		module load cray-hdf5/1.12.2.9
 		module load cray-netcdf/4.9.0.9
-		module load gsl
 		if [ ${spt_nm} = 'ncremap' ]; then
 		    MOAB_ROOT=/project/projectdirs/e3sm/software/moab
 		    TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
@@ -222,9 +220,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] )
 	    # 20221103 Add build environment modules
 	    module load PrgEnv-gnu
-	    module load gcc/11.2.0
-	    module load cray-hdf5/1.12.2.1
-	    module load cray-netcdf/4.9.0.1
+	    module load cray-hdf5/1.12.2.9
+	    module load cray-netcdf/4.9.0.9
 	    module load gsl
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
@@ -266,7 +263,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Debugging and Benchmarking:
 # E3SM v2:
-# ncclimo -7 --cmp='shf|gbr|zst' -P eam -v FSNT,AODVIS,TREFHT -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc # Compression!
+# ncclimo -7 --cmp='gbr|shf|zst' -P eam -v FSNT,AODVIS,TREFHT -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc # Compression!
 # ncclimo -P eam -v FSNT,AODVIS,TREFHT -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc
 # cd ${DATA}/ne30/raw;ls v2.LR*eam*201[34]-??*.nc | ncclimo --split --dbg=1 --rgn_avg -s 2013 -e 2014 --var=TREFHT,FSNT,AODVIS --drc_out=${DATA}/ne30/clm
 # cd ${DATA}/ne30/raw;ls v2.LR*elm*201[34]-??*.nc | ncclimo -P elm --split --dbg=1 --rgn_avg -s 2013 -e 2014 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm

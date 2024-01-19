@@ -2,7 +2,9 @@
 
 	* NCO 5.2.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha04: Heritage BBQ';git push
-	git tag -a 5.2.0-alpha04 -m 'ncclimo/ncremap: dpr cheyenne, spp	derecho;ncremap: TR revert to --mono*, ncoidw, revamp MWF';git push --tags
+	git tag -a 5.2.0-alpha04 -m 'all: cf lsy mtd; ncclimo/ncremap: dpr cheyenne, spp derecho, upd perlmutter;ncremap: TR revert to --mono*, ncoidw, revamp MWF';git push --tags
+
+	* Tweak nco_xtr_dfn() to output draft CF metadata attributes "lossy_compresssion" and "lossy_compression_nsb"
 
 	* Perlmutter remove gcc/11.2.0, update to cray-hdf5/1.12.2.9 cray-netcdf/4.9.0.9
 
