@@ -2107,21 +2107,27 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 	aed_sct aed_ppc_cnt;
 	aed_sct aed_ppc_lvl;
 	char alg_nm_dsd[]="least_significant_digit";
-	char alg_nm_btg[]="BitGroom";
+	char alg_nm_btg[]="BitGroom"; /* [sng] CV value per draft CF-Convention */
 	char alg_nm_shv[]="BitShave";
 	char alg_nm_set[]="BitSet";
 	char alg_nm_dgr[]="DigitRound";
-	char alg_nm_gbr[]="GranularBitRound";
+	char alg_nm_gbr[]="GranularBitRound"; /* [sng] CV value per draft CF-Convention */
 	char alg_nm_bgr[]="BitGroomRound";
 	char alg_nm_sh2[]="HalfShave";
 	char alg_nm_brt[]="BruteForce";
-	char alg_nm_btr[]="BitRound";
-	char cnt_nm_all[]="lossy_compression";
-	char cnt_val_all[]="compression_info";
-	char qnt_lvl_nsb_nm[]="lossy_compression_nsb";
-	char qnt_lvl_nsd_nm[]="lossy_compression_nsd";
+	char alg_nm_btr[]="BitRound"; /* [sng] CV value per draft CF-Convention */
+	char cnt_nm_all[]="lossy_compression"; /* [sng] Attribute name to hold lossy compression container name (per draft CF-Convention) */
+	char fml_val[]="quantize"; /* [sng] Container variable family value (CV per draft CF-Convention) (Optional) */
+	char mpl_val[]="NCO"; /* [sng] Container variable implementation attribute value (per draft CF-Convention) */
+	char qnt_lvl_nsb_nm[]="lossy_compression_nsb"; /* [sng] Attribute name to hold NSB (CV value per draft CF-Convention) */
+	char qnt_lvl_nsd_nm[]="lossy_compression_nsd"; /* [sng] Attribute name to hold NSD (CV value per draft CF-Convention) */
+	char var_cnt_nm[]="compression_info"; /* [sng] Container variable name */
+	char var_cnt_alg_nm[]="algorithm"; /* [sng] Container variable attribute name for algorithm type (per draft CF-Convention) */
+	char var_cnt_fml_nm[]="family"; /* [sng] Container variable attribute name for algorithm family type (per draft CF-Convention) */
+	char var_cnt_mpl_nm[]="implementation"; /* [sng] Container variable attribute name for algorithm implementation (per draft CF-Convention) */
 	int ppc_old;
 	int rcd;
+	int var_cnt_id; /* [id] Container variable ID */
 	if(var_trv.flg_nsd){
 	  switch(nco_baa_cnv_get()){
 	  case nco_baa_btg: aed_ppc_alg.att_nm=alg_nm_btg; break;
@@ -2156,11 +2162,11 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 	    break;
 	  } /* !nco_baa_cnv_get() */
 	}else aed_ppc_alg.att_nm=alg_nm_dsd;
+	aed_ppc_lvl.val.ip=&var_trv.ppc;
 	aed_ppc_cnt.var_nm=aed_ppc_lvl.var_nm=var_trv.nm;
 	aed_ppc_cnt.id=aed_ppc_lvl.id=var_out_id;
-	aed_ppc_lvl.val.ip=&var_trv.ppc;
 	aed_ppc_cnt.att_nm=cnt_nm_all;
-	aed_ppc_cnt.val.cp=cnt_val_all;
+	aed_ppc_cnt.val.cp=var_cnt_nm;
 	rcd=nco_inq_att_flg(grp_out_id,aed_ppc_lvl.id,aed_ppc_lvl.att_nm,&aed_ppc_lvl.type,&aed_ppc_lvl.sz);
 	if(rcd != NC_NOERR){
 	  /* No PPC attribute yet exists */
@@ -2183,6 +2189,31 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 	  }else{ /* !conforming */
 	    (void)fprintf(stderr,"%s: WARNING Non-conforming %s attribute found in variable %s, skipping...\n",nco_prg_nm_get(),aed_ppc_lvl.att_nm,var_trv.nm_fll);
 	  } /* !conforming */
+	} /* !rcd */
+	/* Does container variable already exist? */
+	rcd=nco_inq_varid_flg(grp_out_id,var_cnt_nm,&var_cnt_id);
+	if(rcd != NC_NOERR){
+	  aed_sct aed_cnt_alg;
+	  aed_sct aed_cnt_fml;
+	  aed_sct aed_cnt_mpl;
+	  /* If not, create and populate it */
+	  rcd=nco_def_var(grp_out_id,var_cnt_nm,NC_CHAR,(int)0,(int *)NULL,&var_cnt_id);
+	  aed_cnt_alg.var_nm=aed_cnt_mpl.var_nm=var_cnt_nm;
+	  aed_cnt_alg.id=aed_cnt_fml.id=aed_cnt_mpl.id=var_cnt_id;
+	  aed_cnt_alg.att_nm=var_cnt_alg_nm;
+	  aed_cnt_alg.val.cp=aed_ppc_alg.att_nm;
+	  aed_cnt_alg.sz=strlen(aed_cnt_alg.val.cp);
+	  aed_cnt_alg.type=aed_cnt_fml.type=aed_cnt_mpl.type=NC_CHAR;
+	  aed_cnt_alg.mode=aed_cnt_fml.mode=aed_cnt_mpl.mode=aed_create;
+	  aed_cnt_fml.att_nm=var_cnt_fml_nm;
+	  aed_cnt_fml.val.cp=fml_val;
+	  aed_cnt_fml.sz=strlen(aed_cnt_fml.val.cp);
+	  aed_cnt_mpl.att_nm=var_cnt_mpl_nm;
+	  aed_cnt_mpl.val.cp=mpl_val;
+	  aed_cnt_mpl.sz=strlen(aed_cnt_mpl.val.cp);
+	  (void)nco_aed_prc(grp_out_id,var_cnt_id,aed_cnt_fml);
+	  (void)nco_aed_prc(grp_out_id,var_cnt_id,aed_cnt_alg);
+	  (void)nco_aed_prc(grp_out_id,var_cnt_id,aed_cnt_mpl);
 	} /* !rcd */
       } /* !PPC */
 
