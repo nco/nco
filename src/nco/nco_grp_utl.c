@@ -2153,7 +2153,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 	    (void)fprintf(stderr,"%s: WARNING Non-conforming %s attribute found in variable %s, skipping...\n",nco_prg_nm_get(),aed_ppc.att_nm,var_trv.nm_fll);
 	  }  /* !conforming */
 	} /* !rcd */
-      } /* !PPC */
+      } /* !var_trv.ppc */
 
       /* 20240118: Write CF-Compliant PPC attribute per 
 	 https://github.com/cf-convention/cf-conventions/issues/403
