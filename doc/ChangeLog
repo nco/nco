@@ -1,8 +1,12 @@
-2024-01-19  Charlie Zender  <zender@uci.edu>
+2024-01-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha04: Heritage BBQ';git push
 	git tag -a 5.2.0-alpha04 -m 'all: cf lsy mtd; ncclimo/ncremap: dpr cheyenne, spp derecho, upd perlmutter;ncremap: TR revert to --mono*, ncoidw, revamp MWF';git push --tags
+
+	* nco_flt_mtd() finish draft implementation of quantization metadata for both NCO and libnetcdf algorithms
+
+2024-01-19  Charlie Zender  <zender@uci.edu>
 
 	* nco_xtr_dfn() output draft CF metadata container variable and	attributes "family", "algorithm", and "implementation"
 

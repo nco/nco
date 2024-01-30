@@ -682,7 +682,7 @@ extern "C" {
     ncwa, /* 11 [enm] */
     ncge, /* 12 [enm] */ /* 20131018: New operator */
     ncmv /* 13 [enm] */ /* 20131018: Potential new operator */
-  }; /* end nco_prg_id enum */
+  }; /* !nco_prg_id enum */
   
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
     /* List in increasing levels of verbosity */
@@ -701,7 +701,7 @@ extern "C" {
     nco_dbg_dev,   /* 12 [enm] NCO developer information; only useful for debugging */
     nco_dbg_sup,   /* 13 [enm] NCO extra developer information not usually used (debug memory leaks) */
     nco_dbg_nbr    /* 14 [enm] Number of debugging types (equals last enumerated value) */
-  }; /* end nco_dbg_typ_enm */
+  }; /* !nco_dbg_typ_enm */
 
   enum nco_op_typ{ /* [enm] Operation type */
     /* Types used in ncbo(): */
@@ -724,7 +724,7 @@ extern "C" {
     nco_op_mibs, /* [enm] Minimum absolute value */
     nco_op_tabs, /* [enm] Total absolute value */
     nco_op_nil /* [enm] Nil or undefined operation type */
-  }; /* end nco_op_typ enum */
+  }; /* !nco_op_typ enum */
 
   enum nco_rlt_opr{ /* [enm] Arithmetic relations (comparisons) for masking */
     nco_op_eq, /* Equality */
@@ -733,7 +733,7 @@ extern "C" {
     nco_op_gt, /* Greater than */
     nco_op_le, /* Less than or equal to */
     nco_op_ge /* Greater than or equal to */
-  }; /* end nco_rlt_opr enum */
+  }; /* !nco_rlt_opr enum */
   
   typedef enum nco_obj_typ_enm{ /* [enm] netCDF4 object type: group, variable */
     nco_obj_typ_err=-1, /* -1 Invalid type for initialization */
@@ -753,19 +753,19 @@ extern "C" {
     nco_fmt_xtn_dap4=NC_FORMAT_DAP4, /* 6 DAP4 */
     /* 20220713: Tokens defined as of netCDF 4.8.0 */
     nco_fmt_xtn_nczarr=NC_FORMATX_NCZARR, /* 10 NCZARR */
-  }; /* end nco_fmt_xtn */
+  }; /* !nco_fmt_xtn */
 
   enum nco_mrd_cnv{ /* [enm] Multiple Record Dimension convention: for ncecat and ncpdq */
     /* This currently could be implemented as a flag rather than an enum
        General case may need more than binary option so use enum */
     nco_mrd_restrict, /* 0 Fix some dimensions so as to avoid producing additional record dimensions */
     nco_mrd_allow  /* 1 Allow multiple record dimensions when operator produces them naturally */
-  }; /* end nco_mrd_cnv */
+  }; /* !nco_mrd_cnv */
 
   enum nco_rth_cnv{ /* [enm] Arithmetic convention to assume */
     nco_rth_flt_flt, /* 0 Keep single-precision floating point (NCO default through version 4.3.5 20130927) */
     nco_rth_flt_dbl  /* 1 Promote single-precision floating point to double before arithmetic (NCO default since version 4.3.6 20130927) */
-  }; /* end nco_rth_cnv */
+  }; /* !nco_rth_cnv */
 
   enum nco_baa_cnv{ /* [enm] Bit-Adjustment Algorithm to use */
     nco_baa_btg, /* 0 BitGroom (option since 201502XX, default 201502XX--20200717) */
@@ -777,12 +777,12 @@ extern "C" {
     nco_baa_sh2, /* 6 BitHalf-shave (option since 20200715) */
     nco_baa_brt, /* 7 BruteForce (option since 20210428) */
     nco_baa_btr, /* 8 BitRound (option since 20211215 */
-  }; /* end nco_baa_cnv */
+  }; /* !nco_baa_cnv */
 
   enum nco_bnr_cnv{ /* [enm] Binary byte-ordering convention to employ (native or byte-swapped) */
     nco_bnr_ntv, /* 0 Write native byte-order of host machine (write big- and little-endian on big- and little-endian machines, respectively) */
     nco_bnr_bsa, /* 1 Use byte-swap algorithm and write non-native order (write little- and big-endian on big- and little-endian machines, respectively) */
-  }; /* end nco_bnr_cnv */
+  }; /* !nco_bnr_cnv */
 
   enum nco_upk_cnv{ /* [enm] Unpacking convention to utilize */
     /* netCDF convention  : http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
@@ -790,7 +790,7 @@ extern "C" {
     nco_upk_netCDF, /* 0 netCDF unpack convention: unpacked=(scale_factor*packed)+add_offset */
     nco_upk_HDF_MOD10, /* 1 HDF MODIS MOD10 unpack convention: unpacked=scale_factor*(packed-add_offset) */
     nco_upk_HDF_MOD13, /* 2 HDF MODIS MOD13 unpack convention: unpacked=(packed-add_offset)/scale_factor */
-  }; /* end nco_upk_cnv */
+  }; /* !nco_upk_cnv */
 
   typedef enum aed{ /* [enm] Attribute editor mode */
     aed_append,
@@ -800,21 +800,21 @@ extern "C" {
     aed_nappend,
     aed_overwrite,
     aed_prepend
-  } aed_enm; /* end aed enum */
+  } aed_enm; /* !aed enum */
   
   typedef enum gpe{ /* [enm] Group Path Editing mode */
     gpe_append,
     gpe_delete,
     gpe_flatten,
     gpe_backspace
-  } gpe_enm; /* end gpe enum */
+  } gpe_enm; /* !gpe enum */
 
   typedef enum { /* [enm] Memory allocation type */
     nco_mmr_calloc, /* [enm] nco_calloc() */
     nco_mmr_free, /* [enm] nco_free() */
     nco_mmr_malloc, /* [enm] nco_malloc() */
     nco_mmr_realloc /* [enm] nco_realloc() */
-  } nco_mmr_typ_enm; /* end nco_mmr_typ enum */
+  } nco_mmr_typ_enm; /* !nco_mmr_typ enum */
 
   typedef enum { /* [enm] Arithmetic precision rank */
     /* Ranked ordering of "arithmetic precision" from lowest to highest */
@@ -830,7 +830,7 @@ extern "C" {
     nco_rth_prc_rnk_int64, /* [enm] */
     nco_rth_prc_rnk_float, /* [enm] */
     nco_rth_prc_rnk_double /* [enm] */ /* Most precise */
-  } nco_rth_prc_rnk_enm; /* end nco_rth_prc_rnk enum */
+  } nco_rth_prc_rnk_enm; /* !nco_rth_prc_rnk enum */
 
   typedef enum { /* [enm] Timer flag */
     nco_tmr_srt, /* [enm] Initialize timer (first timer call) */
@@ -1645,7 +1645,7 @@ typedef enum nco_xtr_typ_enm
     short is_rec_var; /* [flg] Is this a record variable? */
     size_t *cnk_sz; /* [id] Contiguous vector of chunk sizes */
     struct var_sct_tag *xrf; /* [sct] Cross-reference to associated variable structure (usually structure for variable on output) fxm: deprecate! TODO nco226 */
-  } var_sct; /* end var_sct_tag */
+  } var_sct; /* !var_sct_tag */
 
   /* Utility structure to share dimension common fields; used in nco_cnk_sz_set_trv() */
   typedef struct{

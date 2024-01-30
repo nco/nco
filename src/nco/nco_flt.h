@@ -33,6 +33,7 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_ppc.h" /* Precision-Preserving Compression */
 #include "nco_var_utl.h" /* Variable utilities */
 
 #if ENABLE_CCR
@@ -121,7 +122,7 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_bls_zst=18, /* 18 [enm] BLOSC Zstandard */
   nco_flt_dns=19, /* 19 [enm] DEFLATE No Shuffle */
   nco_flt_unk=20, /* 20 [enm] Unknown filter (reference by ID not name) */
-} nco_flt_typ_enm; /* end nco_flt_typ_enm */
+} nco_flt_typ_enm; /* !nco_flt_typ_enm */
 
 /* Filter flags */
 typedef enum nco_flt_flg_enm{ /* [enm] Filter policies */
@@ -154,6 +155,10 @@ void
 nco_dfl_case_flt_enm_err /* [fnc] Print error and exit for illegal switch(nco_flt_enm) case */
 (nco_flt_typ_enm nco_flt_enm, /* [enm] Unrecognized enum */
  char *fnc_err); /* [sng] Function where error occurred */
+
+int /* O [enm] Return code */
+nco_cdc_lst_bld
+(const int nc_out_id); /* I [id] netCDF output file/group ID */
 
 int /* O [enm] Return code */
 nco_cmp_prs /* [fnc] Parse user-provided compression specification */
@@ -231,8 +236,12 @@ nco_inq_var_blk_sz
  unsigned int * const blk_szp); /* O [B] Block size in bytes */
 
 int /* O [enm] Return code */
-nco_cdc_lst_bld
-(const int nc_out_id); /* I [id] netCDF output file/group ID */
+nco_qnt_mtd /* [fnc] Define output filters based on input filters */
+(const int nc_id, /* I [id] netCDF file/group ID */
+ const int var_id, /* I [id] Variable ID */
+ const nco_flt_typ_enm nco_flt_baa_enm, /* [nbr] NCO BAA filter enum */
+ const nco_flt_typ_enm nco_flt_hdf_enm, /* [nbr] NCO HDF5 filter enum */
+ const int qnt_lvl); /* I [enm] NSD/NSB level */
 
 #ifdef __cplusplus
 } /* !extern "C" */

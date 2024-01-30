@@ -38,6 +38,7 @@
 #include "nco_grp_trv.h" /* Group traversal */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_msa.h" /* Multi-slabbing algorithm */
+#include "nco_ppc.h" /* Precision-Preserving Compression */
 #include "nco_prn.h" /* Print variables, attributes, metadata */
 #include "nco_var_lst.h" /* Variable list utilities */
 #include "nco_cnv_csm.h" /* CCM/CCSM/CF conventions */

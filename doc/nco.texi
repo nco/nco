@@ -3405,7 +3405,7 @@ The second example shows how to use the optional fourth and fifth
 elements of the @samp{-n} option to specify a wrap value.
 The fourth argument to @samp{-n}, when present, specifies the maximum
 integer value of @var{numeric_suffix}.
-In the example the maximum value @w{is 12,} and will be formatted as
+In the example the maximum value @w{is 12,} which will be formatted as
 @file{12} in the filename string. 
 The fifth argument to @samp{-n}, when present, specifies the minimum
 integer value of @var{numeric_suffix}.
@@ -3426,7 +3426,7 @@ The full (six-argument) @samp{-n} usage takes the form
 The @samp{yyyymm} string is a clunky way (can you think of a clearer
 way?) to tell @acronym{NCO} to enumerate files in year-month mode.
 When present, @samp{yyyymm} string causes @acronym{NCO} to automatically
-generate series of filenames whose right-most two digits increment from
+generate a filename series whose right-most two digits increment from
 @var{min_month} by @var{month_increment} up to @var{max_month} and then
 the leftmost digits (i.e., the year) increment by one, and the whole
 process is repeated until the @var{file_number} filenames are
@@ -30405,7 +30405,9 @@ Original UDUnits support.
 Debianization.
 Numerous bug-fixes.
 @cindex Joe Hamman
+@cindex Suizer
 @item Joe Hamman
+@item Suizer
 Python bindings (PyNCO).
 @cindex Milan Klower
 @cindex Rostislav Kouznetsov

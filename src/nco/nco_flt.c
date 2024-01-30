@@ -1271,6 +1271,19 @@ nco_flt_def_out /* [fnc]  */
       rcd=NC_NOERR;
     } /* !rcd */
       
+    /* 20240122 Add draft CF-Compliant lossy compression metadata */
+    switch(flt_alg[flt_idx]){
+    case nco_flt_btg: /* BitGroom */
+    case nco_flt_btr: /* BitRound */
+    case nco_flt_gbr: /* Granular BitRound */
+      if(lsy_flt_ok && cdc_has_flt){
+	(void)nco_qnt_mtd(nc_out_id,var_out_id,(nco_flt_typ_enm)0,flt_alg[flt_idx],flt_lvl[flt_idx]);
+      } /* !lsy_flt_ok */
+      break;
+    default:
+      break;
+    } /* !flt_alg */
+
   } /* !flt_idx */
   
   /* Free compression string */
@@ -1427,3 +1440,185 @@ nco_inq_var_blk_sz
   return rcd;
 } /* !nco_inq_var_blk_sz() */
 
+int /* O [enm] Return code */
+nco_qnt_mtd /* [fnc] Define output filters based on input filters */
+(const int nc_id, /* I [id] netCDF file/group ID */
+ const int var_id, /* I [id] Variable ID */
+ const nco_flt_typ_enm nco_flt_baa_enm, /* [nbr] NCO BAA filter enum */
+ const nco_flt_typ_enm nco_flt_hdf_enm, /* [nbr] NCO HDF5 filter enum */
+ const int qnt_lvl) /* I [enm] NSD/NSB level */
+{
+  /* Purpose: */
+  
+  /* Test CF algorithm:
+     ncks -O -7 -v one_dmn_rec_var_flt --cmp='shf|zst,3' --baa=8 --ppc default=9 --ppc one_dmn_rec_var_flt=6 ~/nco/data/in.nc ~/foo.nc
+     ncks -m --hdn ~/foo.nc
+     Controlled Vocabularies (CVs): 
+     Family (optional): quantize
+     Algorithm: BitGroom, BitRound, Granular BitGroom
+     Implementation: libnetcdf 4.9.2 */
+
+  const char fnc_nm[]="nco_qnt_mtd()";
+
+  aed_sct aed_ppc_alg;
+  aed_sct aed_ppc_cnt;
+  aed_sct aed_ppc_lvl;
+
+  char alg_nm_dsd[]="least_significant_digit";
+  char alg_nm_btg[]="BitGroom"; /* [sng] CV value per draft CF-Convention */
+  char alg_nm_shv[]="BitShave";
+  char alg_nm_set[]="BitSet";
+  char alg_nm_dgr[]="DigitRound";
+  char alg_nm_gbr[]="GranularBitRound"; /* [sng] CV value per draft CF-Convention */
+  char alg_nm_bgr[]="BitGroomRound";
+  char alg_nm_sh2[]="HalfShave";
+  char alg_nm_brt[]="BruteForce";
+  char alg_nm_btr[]="BitRound"; /* [sng] CV value per draft CF-Convention */
+  char cnt_nm_all[]="lossy_compression"; /* [sng] Attribute name to hold lossy compression container name (per draft CF-Convention) */
+  char fml_val[]="quantize"; /* [sng] Container variable family value (CV per draft CF-Convention) (Optional) */
+  char mpl_val_libnetcdf[]="libnetcdf"; /* [sng] Container variable implementation attribute value (per draft CF-Convention) */
+  char mpl_val_nco[]="NCO"; /* [sng] Container variable implementation attribute value (per draft CF-Convention) */
+  char qnt_lvl_nsb_nm[]="lossy_compression_nsb"; /* [sng] Attribute name to hold NSB (CV value per draft CF-Convention) */
+  char qnt_lvl_nsd_nm[]="lossy_compression_nsd"; /* [sng] Attribute name to hold NSD (CV value per draft CF-Convention) */
+  char var_cnt_nm[]="compression_info"; /* [sng] Container variable name */
+  char var_cnt_alg_nm[]="algorithm"; /* [sng] Container variable attribute name for algorithm type (per draft CF-Convention) */
+  char var_cnt_fml_nm[]="family"; /* [sng] Container variable attribute name for algorithm family type (per draft CF-Convention) */
+  char var_cnt_mpl_nm[]="implementation"; /* [sng] Container variable attribute name for algorithm implementation (per draft CF-Convention) */
+  char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
+
+  char *lbr_sng; /* [sng] Version string */
+
+  int qnt_lvl_dpl; /* [enm] Duplicate of const NSD/NSB level */
+  int qnt_lvl_old; /* [enm] Existing NSD/NSB level, if any */
+  int rcd=NC_NOERR;
+  int var_cnt_id; /* [id] Container variable ID */
+
+  nco_bool flg_baa=False; /* [flg] Write metadata for internal NCO-generated bit adjustment */
+  nco_bool flg_hdf=False; /* [flg] Write metadata for external libnetCDF-generated quantization */
+
+  /* Determine whether filter is applied by NCO or by libnetCDF */
+  if(nco_flt_hdf_enm != nco_flt_nil) flg_hdf=True; else flg_baa=True;
+  
+  rcd=nco_inq_varname(nc_id,var_id,var_nm);
+
+  if(flg_hdf){
+    switch(nco_flt_hdf_enm){
+    case nco_flt_btg: aed_ppc_alg.att_nm=alg_nm_btg; break; /* 8 [enm] BitGroom */
+    case nco_flt_dgr: aed_ppc_alg.att_nm=alg_nm_dgr; break; /* 9 [enm] DigitRound */
+    case nco_flt_gbr: aed_ppc_alg.att_nm=alg_nm_gbr; break; /* 10 [enm] Granular BitRound */
+    case nco_flt_btr: aed_ppc_alg.att_nm=alg_nm_btr; break; /* 11 [enm] BitRound */
+    default: 
+      (void)fprintf(stdout,"%s: ERROR %s reports unknown libnetCDF quantization algorithm\n",nco_prg_nm_get(),fnc_nm);
+      nco_exit(EXIT_FAILURE);
+      break;
+    } /* !nco_flt_hdf_enm */
+    switch(nco_flt_hdf_enm){
+    case nco_flt_btg: 
+    case nco_flt_dgr: 
+    case nco_flt_gbr: 
+      aed_ppc_lvl.att_nm=qnt_lvl_nsd_nm; break;
+    case nco_flt_btr: 
+      aed_ppc_lvl.att_nm=qnt_lvl_nsb_nm; break;
+    default: 
+      (void)fprintf(stdout,"%s: ERROR %s reports unknown libnetCDF quantization algorithm\n",nco_prg_nm_get(),fnc_nm);
+      nco_exit(EXIT_FAILURE);
+      break;
+    } /* !nco_flt_hdf_enm */
+  } /* !flg_hdf */
+      
+  if(flg_baa){
+    switch(nco_flt_baa_enm){
+    case nco_baa_btg: aed_ppc_alg.att_nm=alg_nm_btg; break;
+    case nco_baa_shv: aed_ppc_alg.att_nm=alg_nm_shv; break;
+    case nco_baa_set: aed_ppc_alg.att_nm=alg_nm_set; break;
+    case nco_baa_dgr: aed_ppc_alg.att_nm=alg_nm_dgr; break;
+    case nco_baa_gbr: aed_ppc_alg.att_nm=alg_nm_gbr; break;
+    case nco_baa_bgr: aed_ppc_alg.att_nm=alg_nm_bgr; break;
+    case nco_baa_sh2: aed_ppc_alg.att_nm=alg_nm_sh2; break;
+    case nco_baa_brt: aed_ppc_alg.att_nm=alg_nm_brt; break;
+    case nco_baa_btr: aed_ppc_alg.att_nm=alg_nm_btr; break;
+    default: 
+      (void)fprintf(stdout,"%s: ERROR %s reports unknown NCO bit-adjustment algorithm\n",nco_prg_nm_get(),fnc_nm);
+      nco_exit(EXIT_FAILURE);
+      break;
+    } /* !nco_flt_baa_enm */
+    switch(nco_flt_baa_enm){
+    case nco_baa_btg: 
+    case nco_baa_shv: 
+    case nco_baa_set: 
+    case nco_baa_dgr: 
+    case nco_baa_gbr: 
+    case nco_baa_bgr:
+    case nco_baa_sh2: 
+    case nco_baa_brt: 
+      aed_ppc_lvl.att_nm=qnt_lvl_nsd_nm; break;
+    case nco_baa_btr: 
+      aed_ppc_lvl.att_nm=qnt_lvl_nsb_nm; break;
+    default: 
+      (void)fprintf(stdout,"%s: ERROR %s reports unknown NCO bit-adjustment algorithm\n",nco_prg_nm_get(),fnc_nm);
+      nco_exit(EXIT_FAILURE);
+      break;
+    } /* !nco_flt_baa_enm */
+  } /* !flg_baa */
+
+#define NCO_MAX_LEN_VRS_SNG 100
+  char mpl_val_sng[NCO_MAX_LEN_VRS_SNG];
+  if(flg_baa) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_VRS_SNG,"%s version %s",mpl_val_nco,NCO_VERSION);
+  if(flg_hdf) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_VRS_SNG,"%s version %s",mpl_val_libnetcdf,NC_VERSION);
+
+  qnt_lvl_dpl=qnt_lvl;
+  aed_ppc_lvl.val.ip=&qnt_lvl_dpl;
+  aed_ppc_cnt.var_nm=aed_ppc_lvl.var_nm=var_nm;
+  aed_ppc_cnt.id=aed_ppc_lvl.id=var_id;
+  aed_ppc_cnt.att_nm=cnt_nm_all;
+  aed_ppc_cnt.val.cp=var_cnt_nm;
+  rcd=nco_inq_att_flg(nc_id,aed_ppc_lvl.id,aed_ppc_lvl.att_nm,&aed_ppc_lvl.type,&aed_ppc_lvl.sz);
+  if(rcd != NC_NOERR){
+    /* No PPC attribute yet exists */
+    aed_ppc_cnt.sz=strlen(aed_ppc_cnt.val.cp);
+    aed_ppc_cnt.type=NC_CHAR;
+    aed_ppc_cnt.mode=aed_create;
+    aed_ppc_lvl.sz=1L;
+    aed_ppc_lvl.type=NC_INT;
+    aed_ppc_lvl.mode=aed_create;
+    (void)nco_aed_prc(nc_id,var_id,aed_ppc_cnt);
+    (void)nco_aed_prc(nc_id,var_id,aed_ppc_lvl);
+  }else{
+    if(aed_ppc_lvl.sz == 1L && aed_ppc_lvl.type == NC_INT){
+      /* Conforming PPC attribute already exists, replace with new value only if rounder */
+      (void)nco_get_att(nc_id,aed_ppc_lvl.id,aed_ppc_lvl.att_nm,&qnt_lvl_old,NC_INT);
+      if(qnt_lvl < qnt_lvl_old){
+	aed_ppc_lvl.mode=aed_modify;
+	(void)nco_aed_prc(nc_id,var_id,aed_ppc_lvl);
+      } /* !aed_ppc_lvl.sz, !aed_ppc_lvl.type */
+    }else{ /* !conforming */
+      (void)fprintf(stderr,"%s: WARNING Non-conforming %s attribute found in variable %s, skipping...\n",nco_prg_nm_get(),aed_ppc_lvl.att_nm,var_nm);
+    } /* !conforming */
+  } /* !rcd */
+  /* Does container variable already exist? */
+  rcd=nco_inq_varid_flg(nc_id,var_cnt_nm,&var_cnt_id);
+  if(rcd != NC_NOERR){
+    aed_sct aed_cnt_alg;
+    aed_sct aed_cnt_fml;
+    aed_sct aed_cnt_mpl;
+    /* If not, create and populate it */
+    rcd=nco_def_var(nc_id,var_cnt_nm,NC_CHAR,(int)0,(int *)NULL,&var_cnt_id);
+    aed_cnt_alg.var_nm=aed_cnt_mpl.var_nm=var_cnt_nm;
+    aed_cnt_alg.id=aed_cnt_fml.id=aed_cnt_mpl.id=var_cnt_id;
+    aed_cnt_alg.att_nm=var_cnt_alg_nm;
+    aed_cnt_alg.val.cp=aed_ppc_alg.att_nm;
+    aed_cnt_alg.sz=strlen(aed_cnt_alg.val.cp);
+    aed_cnt_alg.type=aed_cnt_fml.type=aed_cnt_mpl.type=NC_CHAR;
+    aed_cnt_alg.mode=aed_cnt_fml.mode=aed_cnt_mpl.mode=aed_create;
+    aed_cnt_fml.att_nm=var_cnt_fml_nm;
+    aed_cnt_fml.val.cp=fml_val;
+    aed_cnt_fml.sz=strlen(aed_cnt_fml.val.cp);
+    aed_cnt_mpl.att_nm=var_cnt_mpl_nm;
+    aed_cnt_mpl.val.cp=mpl_val_sng;
+    aed_cnt_mpl.sz=strlen(aed_cnt_mpl.val.cp);
+    (void)nco_aed_prc(nc_id,var_cnt_id,aed_cnt_fml);
+    (void)nco_aed_prc(nc_id,var_cnt_id,aed_cnt_alg);
+    (void)nco_aed_prc(nc_id,var_cnt_id,aed_cnt_mpl);
+  } /* !rcd */
+
+} /* !nco_qnt_mtd() */
