@@ -1,8 +1,14 @@
 2024-01-30  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.0-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha05: Sandflower';git push
+	git tag -a 5.2.0-alpha05 -m '';git push --tags
+
 	* NCO 5.2.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha04: Heritage BBQ';git push
 	git tag -a 5.2.0-alpha04 -m 'all: cf lsy mtd; ncclimo/ncremap: dpr cheyenne, spp derecho, upd perlmutter;ncremap: TR revert to --mono*, ncoidw, revamp MWF';git push --tags
+
+	* Unbreak ~six regression tests by restoring old quantization metadata until CF approves draft convention
 
 	* nco_flt_mtd() finish draft implementation of quantization metadata for both NCO and libnetcdf algorithms
 

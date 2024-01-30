@@ -2098,6 +2098,63 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         } /* !wrt */
       } /* !md5 */
 
+      /* Write PPC attribute
+	 20240130: Old quantize metadata convention, superceded by nco_qnt_mtd() below */
+      if(var_trv.ppc != NC_MAX_INT){
+	aed_sct aed_ppc;
+	char att_nm_dsd[]="least_significant_digit";
+	char att_nm_btg[]="QuantizeBitGroomNumberOfSignificantDigits";
+	char att_nm_shv[]="QuantizeBitShaveNumberOfSignificantDigits";
+	char att_nm_set[]="QuantizeBitSetNumberOfSignificantDigits";
+	char att_nm_dgr[]="QuantizeDigitRoundNumberOfSignificantDigits";
+	char att_nm_gbr[]="QuantizeGranularBitRoundNumberOfSignificantDigits";
+	char att_nm_bgr[]="QuantizeBitGroomRoundNumberOfSignificantDigits";
+	char att_nm_sh2[]="QuantizeHalfShaveNumberOfSignificantDigits";
+	char att_nm_brt[]="QuantizeBruteForceNumberOfSignificantDigits";
+	char att_nm_btr[]="QuantizeBitRoundNumberOfSignificantBits";
+	int ppc_old;
+	int rcd;
+	if(var_trv.flg_nsd){
+	  switch(nco_baa_cnv_get()){
+	  case nco_baa_btg: aed_ppc.att_nm=att_nm_btg; break;
+	  case nco_baa_shv: aed_ppc.att_nm=att_nm_shv; break;
+	  case nco_baa_set: aed_ppc.att_nm=att_nm_set; break;
+	  case nco_baa_dgr: aed_ppc.att_nm=att_nm_dgr; break;
+	  case nco_baa_gbr: aed_ppc.att_nm=att_nm_gbr; break;
+	  case nco_baa_bgr: aed_ppc.att_nm=att_nm_bgr; break;
+	  case nco_baa_sh2: aed_ppc.att_nm=att_nm_sh2; break;
+	  case nco_baa_brt: aed_ppc.att_nm=att_nm_brt; break;
+	  case nco_baa_btr: aed_ppc.att_nm=att_nm_btr; break;
+	  default: 
+	    (void)fprintf(stdout,"%s: ERROR %s reports unknown quantization method\n",nco_prg_nm_get(),fnc_nm);
+	    nco_exit(EXIT_FAILURE);
+	    break;
+	  } /* !nco_baa_cnv_get() */
+	}else aed_ppc.att_nm=att_nm_dsd;
+	aed_ppc.var_nm=var_trv.nm;
+	aed_ppc.id=var_out_id;
+	aed_ppc.val.ip=&var_trv.ppc;
+	rcd=nco_inq_att_flg(grp_out_id,aed_ppc.id,aed_ppc.att_nm,&aed_ppc.type,&aed_ppc.sz);
+	if(rcd != NC_NOERR){
+	  /* No PPC attribute yet exists */
+	  aed_ppc.sz=1L;
+	  aed_ppc.type=NC_INT;
+	  aed_ppc.mode=aed_create;
+	  (void)nco_aed_prc(grp_out_id,var_out_id,aed_ppc);
+	}else{
+	  if(aed_ppc.sz == 1L && aed_ppc.type == NC_INT){
+	    /* Conforming PPC attribute already exists, only replace with new value if rounder */
+	    (void)nco_get_att(grp_out_id,aed_ppc.id,aed_ppc.att_nm,&ppc_old,NC_INT);
+	    if(var_trv.ppc < ppc_old){
+	      aed_ppc.mode=aed_modify;
+	      (void)nco_aed_prc(grp_out_id,var_out_id,aed_ppc);
+	    } /* endif */
+	  }else{ /* !conforming */
+	    (void)fprintf(stderr,"%s: WARNING Non-conforming %s attribute found in variable %s, skipping...\n",nco_prg_nm_get(),aed_ppc.att_nm,var_trv.nm_fll);
+	  }  /* !conforming */
+	} /* !rcd */
+      } /* !PPC */
+
       /* 20240118: Write CF-Compliant PPC attribute per 
 	 https://github.com/cf-convention/cf-conventions/issues/403
 	 20240130 fxm nco_qnt_mtd() does not yet write metadata for DSD algorithm (rounding) */
