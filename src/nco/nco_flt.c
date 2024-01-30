@@ -1464,7 +1464,7 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
   aed_sct aed_ppc_cnt;
   aed_sct aed_ppc_lvl;
 
-  char alg_nm_dsd[]="least_significant_digit";
+  //  char alg_nm_dsd[]="least_significant_digit";
   char alg_nm_btg[]="BitGroom"; /* [sng] CV value per draft CF-Convention */
   char alg_nm_shv[]="BitShave";
   char alg_nm_set[]="BitSet";
@@ -1485,8 +1485,6 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
   char var_cnt_fml_nm[]="family"; /* [sng] Container variable attribute name for algorithm family type (per draft CF-Convention) */
   char var_cnt_mpl_nm[]="implementation"; /* [sng] Container variable attribute name for algorithm implementation (per draft CF-Convention) */
   char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
-
-  char *lbr_sng; /* [sng] Version string */
 
   int qnt_lvl_dpl; /* [enm] Duplicate of const NSD/NSB level */
   int qnt_lvl_old; /* [enm] Existing NSD/NSB level, if any */
@@ -1561,10 +1559,10 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
     } /* !nco_flt_baa_enm */
   } /* !flg_baa */
 
-#define NCO_MAX_LEN_VRS_SNG 100
-  char mpl_val_sng[NCO_MAX_LEN_VRS_SNG];
-  if(flg_baa) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_VRS_SNG,"%s version %s",mpl_val_nco,NCO_VERSION);
-  if(flg_hdf) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_VRS_SNG,"%s version %s",mpl_val_libnetcdf,NC_VERSION);
+#define NCO_MAX_LEN_MPL_SNG 100
+  char mpl_val_sng[NCO_MAX_LEN_MPL_SNG];
+  if(flg_baa) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_MPL_SNG,"%s version %s",mpl_val_nco,NCO_VERSION);
+  if(flg_hdf) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_MPL_SNG,"%s version %s",mpl_val_libnetcdf,NC_VERSION);
 
   qnt_lvl_dpl=qnt_lvl;
   aed_ppc_lvl.val.ip=&qnt_lvl_dpl;
@@ -1621,4 +1619,6 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
     (void)nco_aed_prc(nc_id,var_cnt_id,aed_cnt_mpl);
   } /* !rcd */
 
+  return rcd;
+  
 } /* !nco_qnt_mtd() */
