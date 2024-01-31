@@ -1,8 +1,12 @@
-2024-01-30  Charlie Zender  <zender@uci.edu>
+2024-01-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha05: Sandflower';git push
 	git tag -a 5.2.0-alpha05 -m '';git push --tags
+
+	* S1D: fix spatial dimension addition in nco_s1d_unpack()
+
+2024-01-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha04: Heritage BBQ';git push

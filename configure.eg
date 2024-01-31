@@ -495,7 +495,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/lustr
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20240118 (remove gcc/11.2.0, update to cray-hdf5/1.12.2.9 cray-netcdf/4.9.0.9)
 # Personal recipe last borken: 20231103
-# Personal recipe last successful: 20240118
+# Personal recipe last successful: 20240130
 module load PrgEnv-gnu
 module load cray-hdf5/1.12.2.9
 module load cray-netcdf/4.9.0.9

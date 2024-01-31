@@ -81,7 +81,7 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   if(flg_tps) rcd=nco_rgr_tps(rgr);
 
   return rcd;
-} /* end nco_rgr_ctl() */
+} /* !nco_rgr_ctl() */
 
 rgr_sct * /* O [sct] Pointer to free'd regridding structure */
 nco_rgr_free /* [fnc] Deallocate regridding structure */
@@ -157,7 +157,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr) rgr=(rgr_sct *)nco_free(rgr);
 
   return rgr;
-} /* end nco_rgr_free() */
+} /* !nco_rgr_free() */
   
 rgr_sct * /* O [sct] Regridding structure */
 nco_rgr_ini /* [fnc] Initialize regridding structure */
@@ -909,7 +909,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   if(rgr_lst) rgr_lst=nco_kvm_lst_free(rgr_lst,rgr_var_nbr);
 
   return rgr;
-} /* end nco_rgr_ini() */
+} /* !nco_rgr_ini() */
   
 int /* O [enm] Return code */
 nco_ntp_vrt /* [fnc] Interpolate vertically */
@@ -4063,7 +4063,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
        This is done many other times throughout the code, though explained only once, here */
     return NCO_ERR;
     break;
-  } /* end switch */
+  } /* !switch */
 
   /* Use dimension IDs to get dimension sizes */
   rcd+=nco_inq_dimlen(in_id,num_links_id,&mpf.num_links);
@@ -4211,7 +4211,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
        This is done many other times throughout the code, though explained only once, here */
     return NCO_ERR;
     break;
-  } /* end switch */
+  } /* !switch */
 
   /* Obtain fields whose presence depends on mapfile type */
   nco_bool flg_msk_out=rgr->flg_msk_out; /* [flg] Add mask to output */
@@ -4269,7 +4269,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  lat_psn_src=0;
 	} /* !lat */
 	if(att_val) att_val=(char *)nco_free(att_val);
-      } /* end rcd && att_typ */
+      } /* !rcd && att_typ */
     } /* !Tempest */
   } /* !flg_grd_in_2D */
   if(flg_grd_out_2D){
@@ -4283,7 +4283,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  lat_psn_dst=0;
 	} /* !lat */
 	if(att_val) att_val=(char *)nco_free(att_val);
-      } /* end rcd && att_typ */
+      } /* !rcd && att_typ */
     } /* !Tempest */
   } /* !flg_grd_out_2D */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
@@ -4391,7 +4391,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     /* Match "radian" and "radians" */
     if(strstr(att_val,"radian")) flg_crd_rdn=True;
     if(att_val) att_val=(char *)nco_free(att_val);
-  } /* end rcd && att_typ */
+  } /* !rcd && att_typ */
 
   nco_bool flg_grd_out_crv=False; /* [flg] Curvilinear coordinates */
   nco_bool flg_grd_out_rct=False; /* [flg] Rectangular coordinates */
@@ -4507,12 +4507,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	(void)fprintf(stdout,"lat[%li] = %g, vertices = ",idx,lat_ctr_out[idx]);
 	for(bnd_idx=0;bnd_idx<bnd_nbr_out;bnd_idx++)
 	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lat_bnd_out[bnd_nbr_out*idx+bnd_idx],bnd_idx == bnd_nbr_out-1 ? "]\n" : ", ");
-      } /* end loop over lat */
+      } /* !idx */
       for(idx=0;idx<lon_nbr_out;idx++){
 	(void)fprintf(stdout,"lon[%li] = %g, vertices = ",idx,lon_ctr_out[idx]);
 	for(bnd_idx=0;bnd_idx<bnd_nbr_out;bnd_idx++)
 	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lon_bnd_out[bnd_nbr_out*idx+bnd_idx],bnd_idx == bnd_nbr_out-1 ? "]\n" : ", ");
-      } /* end loop over lon */
+      } /* !idx */
     } /* !dbg */
   } /* !flg_grd_out_1D */
 
@@ -4725,7 +4725,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       break;
     default:
       nco_dfl_case_generic_err(); break;
-    } /* end nco_grd_lat_typ switch */
+    } /* !nco_grd_lat_typ switch */
     
     /* Fuzzy test of latitude weight normalization */
     lat_wgt_ttl=0.0;
@@ -5471,8 +5471,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
       trv=trv_tbl->lst[idx_tbl];
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)fprintf(stderr,"Regrid %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");
-    } /* end idx_tbl */
-  } /* end dbg */
+    } /* !idx_tbl */
+  } /* !dbg */
 
   /* Lay-out regridded file */
   aed_sct aed_mtd;
@@ -7036,7 +7036,7 @@ nco_bsl_zro /* Return Bessel function zeros */
   } /* !dbg */
 
   return;
-} /* end nco_bsl_zro() */
+} /* !nco_bsl_zro() */
 
 void
 nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their weights */
@@ -7111,14 +7111,14 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     if(++itr_cnt > itr_nbr_max){
       (void)fprintf(stdout,"%s: ERROR %s reports convergence only %g after %d iterations for lat_idx = %d\n",nco_prg_nm_get(),fnc_nm,fabs(sp),itr_nbr_max,lat_idx);
       nco_exit(EXIT_FAILURE);
-    } /* endif */
+    } /* !itr_cnt */
     /* Compute Legendre polynomial */
     for(lat_nnr_idx=2;lat_nnr_idx<=lat_nbr;lat_nnr_idx++){
       lat_nnr_idx_dbl=lat_nnr_idx;
       pk=((2.0*lat_nnr_idx_dbl-1.0)*xz*pkm1-(lat_nnr_idx_dbl-1.0)*pkm2)/lat_nnr_idx_dbl;
       pkm2=pkm1;
       pkm1=pk;
-    } /* end inner loop over lat_nnr */
+    } /* !latnnr_idx */
     pkm1=pkm2;
     pkmrk=(lat_nbr_dbl*(pkm1-xz*pk))/(1.0-xz*xz);
     sp=pk/pkmrk;
@@ -7127,7 +7127,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     if(fabs(sp) > eps_rlt) goto label_73;
     lat_sin_p1[lat_idx]=xz;
     wgt_Gss_p1[lat_idx]=(2.0*(1.0-xz*xz))/((lat_nbr_dbl*pkm1)*(lat_nbr_dbl*pkm1));
-  } /* end outer loop over lat */
+  } /* !lat_idx */
   if(lat_nbr != lat_nbr_rcp2*2){
     /* When lat_nbr is odd, compute weight at Equator */
     lat_sin_p1[lat_nbr_rcp2+1]=0.0;
@@ -7135,16 +7135,16 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     for(lat_idx=2;lat_idx<=lat_nbr;lat_idx+=2){
       lat_idx_dbl=lat_idx;
       pk=pk*lat_idx_dbl*lat_idx_dbl/((lat_idx_dbl-1.0)*(lat_idx_dbl-1.0));
-    } /* end loop over lat */
+    } /* !lat_idx */
     wgt_Gss_p1[lat_nbr_rcp2+1]=pk;
-  } /* endif lat_nbr is odd */
+  } /* !lat_nbr is odd */
     
   /* Complete sets of abscissas and weights, using symmetry properties */
   for(lat_idx=1;lat_idx<=lat_nbr_rcp2;lat_idx++){
     lat_sym_idx=lat_nbr-lat_idx+1;
     lat_sin_p1[lat_sym_idx]=-lat_sin_p1[lat_idx];
     wgt_Gss_p1[lat_sym_idx]=wgt_Gss_p1[lat_idx];
-  } /* end loop over lat */
+  } /* !lat_idx */
     
   /* Shift by one to remove Fortran offset in p1 arrays */
   //memcpy(lat_sin,lat_sin_p1,lat_nbr*sizeof(double));
@@ -7156,12 +7156,12 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
       lat_sin[lat_idx]=lat_sin_p1[lat_nbr-lat_idx];
       wgt_Gss[lat_idx]=wgt_Gss_p1[lat_nbr-lat_idx];
-    } /* end loop over lat */
+    } /* !lat_idx */
   }else{
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
       lat_sin[lat_idx]=lat_sin_p1[lat_idx+1];
       wgt_Gss[lat_idx]=wgt_Gss_p1[lat_idx+1];
-    } /* end loop over lat */
+    } /* !lat_idx */
   } /* !flg_s2n */
     
   if(nco_dbg_lvl_get() == nco_dbg_old){
@@ -7174,7 +7174,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   if(wgt_Gss_p1) wgt_Gss_p1=(double *)nco_free(wgt_Gss_p1);
   if(lat_sin_p1) lat_sin_p1=(double *)nco_free(lat_sin_p1);
   return;
-} /* end nco_lat_wgt_gss() */
+} /* !nco_lat_wgt_gss() */
   
 void
 nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
@@ -7916,7 +7916,7 @@ nco_rgr_tps /* [fnc] Regrid using TempestRemap library */
   if(rcd_sys == -1){
     (void)fprintf(stdout,"%s: ERROR %s unable to complete TempestRemap regridding command \"%s\"\n",nco_prg_nm_get(),fnc_nm,cmd_rgr);
     nco_exit(EXIT_FAILURE);
-  } /* end if */
+  } /* !rcd_sys */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
 
   /* Clean-up memory */
@@ -8623,10 +8623,10 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     for(idx=0L;idx<lat_nbr;idx++){
-    (void)fprintf(stdout,"lat[%li] = %g, vertices = ",idx,lat_ctr[idx]);
-    for(int bnd_idx=0L;bnd_idx<bnd_nbr;bnd_idx++)
-      (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lat_bnd[bnd_nbr*idx+bnd_idx],bnd_idx == bnd_nbr-1 ? "]\n" : ", ");
-    } /* end loop over lat */
+      (void)fprintf(stdout,"lat[%li] = %g, vertices = ",idx,lat_ctr[idx]);
+      for(int bnd_idx=0L;bnd_idx<bnd_nbr;bnd_idx++)
+	(void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lat_bnd[bnd_nbr*idx+bnd_idx],bnd_idx == bnd_nbr-1 ? "]\n" : ", ");
+    } /* !idx */
   } /* !dbg */
 
   /* Use centers and boundaries to diagnose latitude weights */
@@ -10907,12 +10907,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	(void)fprintf(stdout,"lat[%li] = %g, vertices = ",idx,lat_ctr[idx]);
 	for(bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++)
 	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lat_bnd[bnd_nbr*idx+bnd_idx],bnd_idx == bnd_nbr-1 ? "]\n" : ", ");
-      } /* end loop over lat */
+      } /* !idx */
       for(idx=0;idx<lon_nbr;idx++){
 	(void)fprintf(stdout,"lon[%li] = %g, vertices = ",idx,lon_ctr[idx]);
 	for(bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++)
 	  (void)fprintf(stdout,"%s%g%s",bnd_idx == 0 ? "[" : "",lon_bnd[bnd_nbr*idx+bnd_idx],bnd_idx == bnd_nbr-1 ? "]\n" : ", ");
-      } /* end loop over lon */
+      } /* !idx */
     } /* !dbg */
     
     /* Fuzzy test of latitude weight normalization */
@@ -11086,7 +11086,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if((fp_hnt=fopen(fl_hnt,fl_mode)) == NULL){
       (void)fprintf(stderr,"%s: ERROR unable to open hint output file %s\n",nco_prg_nm_get(),fl_hnt);
       nco_exit(EXIT_FAILURE);
-    } /* end if */
+    } /* !fp_hnt */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: Opened hint file %s\n",nco_prg_nm_get(),fl_hnt);
     if(fl_hnt_src) (void)fprintf(fp_hnt,"--src_regional");
     if(fl_hnt_dst) (void)fprintf(fp_hnt,"--dst_regional");
@@ -11094,7 +11094,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(rcd != 0){
       (void)fprintf(stderr,"%s: ERROR unable to close hint output file %s\n",nco_prg_nm_get(),fl_hnt);
       nco_exit(EXIT_FAILURE);
-    } /* end if */
+    } /* !rcd */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: Closed hint file %s\n",nco_prg_nm_get(),fl_hnt);
   } /* !nco_grd_xtn */
   

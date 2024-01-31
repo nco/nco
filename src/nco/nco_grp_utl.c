@@ -2099,7 +2099,11 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       } /* !md5 */
 
       /* Write PPC attribute
-	 20240130: Old quantize metadata convention, superceded by nco_qnt_mtd() below */
+	 20240130: Original quantize metadata implementation, superceded by nco_qnt_mtd() below
+	 This block can be deleted on CF finalizes support for new lossy compression metadata
+	 However, deleting this block will cause ~six regression tests to fail 
+	 Would need to re-write those tests to work for CF metadata
+	 Also would need to revamp documentation */
       if(var_trv.ppc != NC_MAX_INT){
 	aed_sct aed_ppc;
 	char att_nm_dsd[]="least_significant_digit";
@@ -2155,7 +2159,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 	} /* !rcd */
       } /* !var_trv.ppc */
 
-      /* 20240118: Write CF-Compliant PPC attribute per 
+      /* 20240118: Write CF-Compliant PPC attribute per
 	 https://github.com/cf-convention/cf-conventions/issues/403
 	 20240130 fxm nco_qnt_mtd() does not yet write metadata for DSD algorithm (rounding) */
       if(var_trv.ppc != NC_MAX_INT && var_trv.flg_nsd){
