@@ -964,7 +964,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
 	/* The Hard Work */
 	if(nco_s1d_typ == nco_s1d_pft){
-	  /* Turn GPP(time,pft) into GPP(time,pft,lndgrid) */
+	  /* Turn GPP(time,pft) into GPP(time,pft,lndgrid)
+	     20240131: This curently works only for single-timestpe files
+	     In general, must enclose this in outer loop over (time x level) */
 	  for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
 	    pft_typ=pfts1d_ityp_veg[pft_idx]; /* [1 <= pft_typ <= pft_nbr_out] */
 	    /* Skip bare ground, output array contains only vegetated types */

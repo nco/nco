@@ -2,7 +2,9 @@
 
 	* NCO 5.2.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha05: Sandflower';git push
-	git tag -a 5.2.0-alpha05 -m '';git push --tags
+	git tag -a 5.2.0-alpha05 -m 'ncks: s1d dmn rdr';git push --tags
+
+	* S1D: verify that decoding ELM unstructured history file for PFT variable GPP works fine
 
 	* S1D: fix spatial dimension addition in nco_s1d_unpack()
 
