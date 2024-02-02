@@ -1191,19 +1191,19 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(lnd_nm_out) lnd_nm_out=(char *)nco_free(lnd_nm_out);
   if(pft_nm_out) pft_nm_out=(char *)nco_free(pft_nm_out);
 
-  if(levcan_nm_in) levcan_nm_in=nco_free(levcan_nm_in);
-  if(levgrnd_nm_in) levgrnd_nm_in=nco_free(levgrnd_nm_in);
-  if(levlak_nm_in) levlak_nm_in=nco_free(levlak_nm_in);
-  if(levsno_nm_in) levsno_nm_in=nco_free(levsno_nm_in);
-  if(levsno1_nm_in) levsno1_nm_in=nco_free(levsno1_nm_in);
-  if(levtot_nm_in) levtot_nm_in=nco_free(levtot_nm_in);
+  if(levcan_nm_in) levcan_nm_in=(char *)nco_free(levcan_nm_in);
+  if(levgrnd_nm_in) levgrnd_nm_in=(char *)nco_free(levgrnd_nm_in);
+  if(levlak_nm_in) levlak_nm_in=(char *)nco_free(levlak_nm_in);
+  if(levsno_nm_in) levsno_nm_in=(char *)nco_free(levsno_nm_in);
+  if(levsno1_nm_in) levsno1_nm_in=(char *)nco_free(levsno1_nm_in);
+  if(levtot_nm_in) levtot_nm_in=(char *)nco_free(levtot_nm_in);
 
-  if(levcan_nm_out) levcan_nm_out=nco_free(levcan_nm_out);
-  if(levgrnd_nm_out) levgrnd_nm_out=nco_free(levgrnd_nm_out);
-  if(levlak_nm_out) levlak_nm_out=nco_free(levlak_nm_out);
-  if(levsno_nm_out) levsno_nm_out=nco_free(levsno_nm_out);
-  if(levsno1_nm_out) levsno1_nm_out=nco_free(levsno1_nm_out);
-  if(levtot_nm_out) levtot_nm_out=nco_free(levtot_nm_out);
+  if(levcan_nm_out) levcan_nm_out=(char *)nco_free(levcan_nm_out);
+  if(levgrnd_nm_out) levgrnd_nm_out=(char *)nco_free(levgrnd_nm_out);
+  if(levlak_nm_out) levlak_nm_out=(char *)nco_free(levlak_nm_out);
+  if(levsno_nm_out) levsno_nm_out=(char *)nco_free(levsno_nm_out);
+  if(levsno1_nm_out) levsno1_nm_out=(char *)nco_free(levsno1_nm_out);
+  if(levtot_nm_out) levtot_nm_out=(char *)nco_free(levtot_nm_out);
 
   return rcd;
 } /* !nco_s1d_unpack() */
