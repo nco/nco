@@ -1,8 +1,12 @@
-2024-01-31  Charlie Zender  <zender@uci.edu>
+2024-02-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha05: Sandflower';git push
-	git tag -a 5.2.0-alpha05 -m 'ncks: s1d dmn rdr';git push --tags
+	git tag -a 5.2.0-alpha05 -m 'ncks: s1d dmn rdr, s1d vrt';git push --tags
+
+	* S1D: Add legions code to improve MEC column output capabilities, including vertical fields
+
+2024-01-31  Charlie Zender  <zender@uci.edu>
 
 	* S1D: verify that decoding ELM unstructured history file for PFT variable GPP works fine
 

@@ -1587,7 +1587,7 @@ nco_rename_grp(int grp_id,const char * const grp_nm)
   rcd=nc_rename_grp(grp_id,grp_nm);
   if(rcd == NC_ENAMEINUSE){
     (void)fprintf(stdout,"ERROR: %s cannot define group name \"%s\" which is already in use\n",fnc_nm,grp_nm);
-  } /* endif */
+  } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_grp()");
   return rcd;
 } /* !nco_rename_grp() */
@@ -1807,11 +1807,15 @@ int
 nco_inq_dimlen(const int nc_id,const int dmn_id,long *dmn_sz)
 {
   /* Purpose: Wrapper for nc_inq_dimlen() */
+  const char fnc_nm[]="nco_inq_dimlen()";
   int rcd;
   size_t dmn_sz_t; /* 20171115: WIN64 workaround: sizeof(long) = 4 != 8 = sizeof(size_t) */
   if(dmn_sz) dmn_sz_t=*dmn_sz;
   rcd=nc_inq_dimlen(nc_id,dmn_id,&dmn_sz_t);
   if(dmn_sz) *dmn_sz=(long)dmn_sz_t;
+  if(rcd == NC_EBADDIM){
+    (void)fprintf(stdout,"ERROR: %s cannot find dimension ID %d in file\n",fnc_nm,dmn_id);
+  } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimlen()");
   return rcd;
 } /* !nco_inq_dimlen */
