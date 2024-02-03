@@ -62,6 +62,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   char *levsno_nm_in=(char *)strdup("levsno");
   char *levsno1_nm_in=(char *)strdup("levsno1");
   char *levtot_nm_in=(char *)strdup("levtot");
+  char *numrad_nm_in=(char *)strdup("numrad");
     
   char *mec_nm_out=(char *)strdup("mec");
 
@@ -315,12 +316,14 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   nco_bool has_levsno=False; /* [flg] Variable contains levsno dimension */
   nco_bool has_levsno1=False; /* [flg] Variable contains levsno1 dimension */
   nco_bool has_levtot=False; /* [flg] Variable contains levtot dimension */
+  nco_bool has_numrad=False; /* [flg] Variable contains numrad dimension */
   nco_bool need_levcan=False; /* [flg] At least one variable to unpack needs levcan dimension */
   nco_bool need_levgrnd=False; /* [flg] At least one variable to unpack needs levgrnd dimension */
   nco_bool need_levlak=False; /* [flg] At least one variable to unpack needs levlak dimension */
   nco_bool need_levsno=False; /* [flg] At least one variable to unpack needs levsno dimension */
   nco_bool need_levsno1=False; /* [flg] At least one variable to unpack needs levsno1 dimension */
   nco_bool need_levtot=False; /* [flg] At least one variable to unpack needs levtot dimension */
+  nco_bool need_numrad=False; /* [flg] At least one variable to unpack needs numrad dimension */
 
   trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
   /* Define unpacking flag for each variable */
@@ -329,7 +332,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       dmn_nbr_in=trv_tbl->lst[idx_tbl].nbr_dmn;
       has_clm=has_grd=has_lnd=has_pft=False;
-      has_levcan=has_levgrnd=has_levlak=has_levsno=has_levsno1=has_levtot=False;
+      has_levcan=has_levgrnd=has_levlak=has_levsno=has_levsno1=has_levtot=has_numrad=False;
       for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	/* Pre-determine flags necessary during next loop */
 	dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
@@ -344,6 +347,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	if(!has_levsno && levsno_nm_in) has_levsno=!strcmp(dmn_nm_cp,levsno_nm_in);
 	if(!has_levsno1 && levsno1_nm_in) has_levsno1=!strcmp(dmn_nm_cp,levsno1_nm_in);
 	if(!has_levtot && levtot_nm_in) has_levtot=!strcmp(dmn_nm_cp,levtot_nm_in);
+	if(!has_numrad && numrad_nm_in) has_numrad=!strcmp(dmn_nm_cp,numrad_nm_in);
       } /* !dmn_idx */
       /* Unpack variables that contain a sparse-1D dimension */
       if(has_clm || has_grd || has_lnd || has_pft){
@@ -360,6 +364,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	if(has_levsno) need_levsno=True;
 	if(has_levsno1) need_levsno1=True;
 	if(has_levtot) need_levtot=True;
+	if(has_numrad) need_numrad=True;
       } /* !has_clm... */
       /* Copy all variables that are not regridded or omitted */
       if(!trv_tbl->lst[idx_tbl].flg_rgr) var_cpy_nbr++;
@@ -393,6 +398,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int dmn_id_levsno_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_levsno1_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_levtot_in=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_numrad_in=NC_MIN_INT; /* [id] Dimension ID */
 
   long levcan_nbr_in=NC_MIN_INT; /* [nbr] Number of canopy layers in input data */
   long levgrnd_nbr_in=NC_MIN_INT; /* [nbr] Number of soil layers in input data */
@@ -400,13 +406,15 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   long levsno_nbr_in=NC_MIN_INT; /* [nbr] Number of snow layers in input data */
   long levsno1_nbr_in=NC_MIN_INT; /* [nbr] Number of snow layers plus one in input data */
   long levtot_nbr_in=NC_MIN_INT; /* [nbr] Number of snow+soil layers in input data */
+  long numrad_nbr_in=NC_MIN_INT; /* [nbr] Number of snow+soil layers in input data */
   long levcan_nbr_out=NC_MIN_INT; /* [nbr] Number of canopy layers in output data */
   long levgrnd_nbr_out=NC_MIN_INT; /* [nbr] Number of soil layers in output data */
   long levlak_nbr_out=NC_MIN_INT; /* [nbr] Number of lake layers in output data */
   long levsno_nbr_out=NC_MIN_INT; /* [nbr] Number of snow layers in output data */
   long levsno1_nbr_out=NC_MIN_INT; /* [nbr] Number of snow layers plus one in output data */
   long levtot_nbr_out=NC_MIN_INT; /* [nbr] Number of snow+soil layers in output data */
-  (void)fprintf(stdout,"%s: DEBUG quark1\n",nco_prg_nm_get());
+  long numrad_nbr_out=NC_MIN_INT; /* [nbr] Number of snow+soil layers in output data */
+  //(void)fprintf(stdout,"%s: DEBUG quark1\n",nco_prg_nm_get());
   if(need_levcan){
     rcd=nco_inq_dimid(in_id,levcan_nm_in,&dmn_id_levcan_in);
     rcd=nco_inq_dimlen(in_id,dmn_id_levcan_in,&levcan_nbr_in);
@@ -437,7 +445,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_inq_dimlen(in_id,dmn_id_levtot_in,&levtot_nbr_in);
     levtot_nbr_out=levtot_nbr_in;
   } /* !need_levtot */
-  (void)fprintf(stdout,"%s: DEBUG quark2\n",nco_prg_nm_get());
+  if(need_numrad){
+    rcd=nco_inq_dimid(in_id,numrad_nm_in,&dmn_id_numrad_in);
+    rcd=nco_inq_dimlen(in_id,dmn_id_numrad_in,&numrad_nbr_in);
+    numrad_nbr_out=numrad_nbr_in;
+  } /* !need_numrad */
   
   int hrz_id; /* [id] Horizontal grid netCDF file ID */
   long bnd_nbr=int_CEWI; /* [nbr] Number of boundaries for output time and rectangular grid coordinates, and number of vertices for output non-rectangular grid coordinates */
@@ -460,6 +472,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_inq_dimlen(hrz_id,dmn_id_lon_in,&lon_nbr);
   } /* !flg_grd_2D */
   if(dmn_id_bnd_in != NC_MIN_INT) rcd=nco_inq_dimlen(hrz_id,dmn_id_bnd_in,&bnd_nbr);
+  int dmn_nbr_hrz_crd; /* [nbr] Number of horizontal dimensions in output grid */
+  if(flg_grd_2D) dmn_nbr_hrz_crd=2; else dmn_nbr_hrz_crd=1;
   
   if(grd_nbr_in != NC_MIN_INT){
     grd_sz_in=grd_nbr_in;
@@ -516,18 +530,21 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   char *levsno_nm_out=NULL;
   char *levsno1_nm_out=NULL;
   char *levtot_nm_out=NULL;
+  char *numrad_nm_out=NULL;
   if(need_levcan) levcan_nm_out=(char *)strdup(levcan_nm_in);
   if(need_levgrnd) levgrnd_nm_out=(char *)strdup(levgrnd_nm_in);
   if(need_levlak) levlak_nm_out=(char *)strdup(levlak_nm_in);
   if(need_levsno) levsno_nm_out=(char *)strdup(levsno_nm_in);
   if(need_levsno1) levsno1_nm_out=(char *)strdup(levsno1_nm_in);
   if(need_levtot) levtot_nm_out=(char *)strdup(levtot_nm_in);
+  if(need_numrad) numrad_nm_out=(char *)strdup(numrad_nm_in);
   int dmn_id_levcan_out=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_levgrnd_out=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_levlak_out=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_levsno_out=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_levsno1_out=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_levtot_out=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_numrad_out=NC_MIN_INT; /* [id] Dimension ID */
   
   /* fxm: make an ilun enumerated type? */
   int ilun_vegetated_or_bare_soil; /* 1 [enm] */
@@ -656,6 +673,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(need_levsno && levsno_nbr_out > 0L) rcd=nco_def_dim(out_id,levsno_nm_out,levsno_nbr_out,&dmn_id_levsno_out);
   if(need_levsno1 && levsno1_nbr_out > 0L) rcd=nco_def_dim(out_id,levsno1_nm_out,levsno1_nbr_out,&dmn_id_levsno1_out);
   if(need_levtot && levtot_nbr_out > 0L) rcd=nco_def_dim(out_id,levtot_nm_out,levtot_nbr_out,&dmn_id_levtot_out);
+  if(need_numrad && numrad_nbr_out > 0L) rcd=nco_def_dim(out_id,numrad_nm_out,numrad_nbr_out,&dmn_id_numrad_out);
 
   /* Pre-allocate dimension ID and cnt/srt space */
   char *var_nm; /* [sng] Variable name */
@@ -935,7 +953,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  if(dmn_nbr_out > 0)
 	    rcd=nco_flt_def_wrp(in_id,var_id_in,(char *)NULL,out_id,var_id_out);
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
-	/* 20240131: This _FillValue block is copied from vertical interpolation, and is not yet needed
+	/* 20240131: This _FillValue block is copied from vertical interpolation, and is not yet (and may never be) needed
 	   Variables with subterranean levels and missing-value extrapolation must have _FillValue attribute */
 	nco_bool flg_add_msv_att; /* [flg] Extrapolation requires _FillValue */
 	flg_add_msv_att=False;
@@ -993,11 +1011,20 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   //int dmn_idx_col=int_CEWI; /* [idx] Index of column dimension */
   //int dmn_idx_lat=int_CEWI; /* [idx] Index of latitude dimension */
   //int dmn_idx_lon=int_CEWI; /* [idx] Index of longitude dimension */
+  int lvl_idx; /* [idx] Level index */
+  int mrv_idx; /* [idx] MRV index */
+  int nrl_idx; /* [idx] Unrolled index */
   int thr_idx; /* [idx] Thread index */
   //int var_id; /* [id] Current variable ID */
 
+  long lvl_nbr; /* [nbr] Number of levels */
+  long mrv_nbr; /* [nbr] Product of sizes of dimensions following (thus MRV) column|gridcell|landunit|pft dimension */
+  long nrl_nbr; /* [nbr] Number of elements in "unrolled" dimension (e.g., lev*|numrad) */
+
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
   size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
+  size_t val_in_fst; /* [nbr] Number of elements by which current N-D slab input values are offset from origin */
+  size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab output values are offset from origin */
 
   ptr_unn var_val_in;
   ptr_unn var_val_out;
@@ -1007,7 +1034,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
 #ifdef __GNUG__
-# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,has_clm,has_grd,has_lnd,has_pft,has_mss_val,idx_out,idx_tbl,in_id,mss_val_dbl,pft_typ,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ) shared(clm_nbr_in,clm_nbr_out,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_pft_in,dmn_id_pft_out,flg_s1d_clm,flg_s1d_pftlat_nbr,ilun_landice_multiple_elevation_classes,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy)
+# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,has_clm,has_grd,has_lnd,has_pft,has_mss_val,idx_out,idx_tbl,in_id,lvl_idx,lvl_nbr,mrv_idx,mrv_nbr,mss_val_dbl,nrl_idx,nrl_nbr,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ) shared(clm_nbr_in,clm_nbr_out,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pftlat_nbr,ilun_landice_multiple_elevation_classes,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy)
 #endif /* !__GNUG__ */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -1041,8 +1068,42 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
 	  var_sz_in*=dmn_cnt_in[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
+
+	  /* 20240202: Identify special dimensions in input variable
+	     mrv_nbr is product of sizes of dimensions following (thus MRV) S1D dimenssion column|gridcell|landunit|pft */
+	  mrv_nbr=1L;
+	  if(dmn_ids_in[dmn_idx] == dmn_id_levcan_in) mrv_nbr=levcan_nbr_in;
+	  else if(dmn_ids_in[dmn_idx] == dmn_id_levgrnd_in) mrv_nbr=levgrnd_nbr_in;
+	  else if(dmn_ids_in[dmn_idx] == dmn_id_levlak_in) mrv_nbr=levlak_nbr_in;
+	  else if(dmn_ids_in[dmn_idx] == dmn_id_levsno_in) mrv_nbr=levsno_nbr_in;
+	  else if(dmn_ids_in[dmn_idx] == dmn_id_levsno1_in) mrv_nbr=levsno1_nbr_in;
+	  else if(dmn_ids_in[dmn_idx] == dmn_id_levtot_in) mrv_nbr=levtot_nbr_in;
+	  else if(dmn_ids_in[dmn_idx] == dmn_id_numrad_in) mrv_nbr=numrad_nbr_in;
+	  (void)fprintf(fp_stdout,"%s: INFO %s dmn_idx = %d, dmn_id = %d, mrv_nbr = %ld\n",fnc_nm,var_nm,dmn_idx,dmn_ids_in[dmn_idx],mrv_nbr);
 	} /* !dmn_idx */
 	
+	/* Compute number and size of non-lat/lon or non-col dimensions (e.g., level, time, species, wavelength)
+	   Denote their convolution by level or 'lvl' for shorthand
+	   There are lvl_nbr elements for each lat/lon or col position
+	   Dimensions CLM/ELM dimensions that count in "lvl_nbr" include all lev* dimensions, time, numrad */
+	lvl_nbr=1L;
+	/* Restart files are generally ordered (column|gridcell|landunit|pft,lev*|numrad)
+	   Restart files unroll the MEC dimension into the column dimension
+	   Restart files unroll the PFT dimension into the pft dimension
+	   Restart files explicitly retain all lev*,numrad dimensions
+	   NB: lev* and numrad are mutually exclusive (never both appear in same variable)
+	   
+	   History files are generally ordered (time,lev*,[column|pft]|[lat,lon|lndgrid])
+	   Most history file fields contain MRV horizontal spatial dimensions
+	   However Beth Drewniak's beth_in.nc fields have no horizontal spatial dimensions,
+	   and place lev* as LRV (like normal history fields) not MRV (like normal "vanilla" restart files) */
+	if(flg_nm_hst)
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++)
+	    lvl_nbr*=dmn_cnt_out[dmn_idx];
+	if(flg_nm_rst)
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++)
+	    lvl_nbr*=1L;
+
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	  rcd=nco_inq_dimlen(out_id,dmn_ids_out[dmn_idx],dmn_cnt_out+dmn_idx);
 	  if(dmn_cnt_out[dmn_idx] == 0L){
@@ -1092,54 +1153,75 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
 	/* The Hard Work */
 	if(nco_s1d_typ == nco_s1d_pft){
-	  /* Turn GPP(time,pft) into GPP(time,pft,lndgrid)
+	  /* Turn GPP(time,pft) into GPP(time,pft,lndgrid) or GPP(time,pft,lat,lon)
+	     Turn tlai_z(time,pft,levcan) into tlai_z(time,pft,levcan,lndgrid) or tlai_z(time,pft,levcan,lat,lon)
+	     Turn fabd_sun(time,pft,numrad) into fabd_sun(time,pft,numrad,lndgrid) or fabd_sun(time,pft,numrad,lat,lon)
 	     20240131: This curently works only for single-timestep files
 	     In general, must enclose this in outer loop over (time x level) */
-	  for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
-	    pft_typ=pfts1d_ityp_veg[pft_idx]; /* [1 <= pft_typ <= pft_nbr_out] */
-	    /* Skip bare ground, output array contains only vegetated types */
-	    if(!pft_typ) continue;
-	    /* grd_idx is the index relative to the origin of the horizontal grid for a given level
-	       [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= pfts1d_ixy <= col_nbr_out] */
-	    grd_idx_out= flg_grd_1D ? pfts1d_ixy[pft_idx]-1L : (pfts1d_ixy[pft_idx]-1L)*lat_nbr+(pfts1d_jxy[pft_idx]-1L);
-	    idx_out=(pft_typ-1)*grd_sz_out+grd_idx_out;
-	    /* memcpy() would allow next statement to work for generic types
-	       However, memcpy() is a system call and could be expensive in an innermost loop */
-	    switch(var_typ){
-	    case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[pft_idx]; break;
-	    case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[pft_idx]; break;
-	    case NC_INT: var_val_out.ip[idx_out]=var_val_in.ip[pft_idx]; break;
-	    default:
-	      (void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported type\n",nco_prg_nm_get(),fnc_nm);
-	      nco_dfl_case_nc_type_err();
-	      break;
-	    } /* !var_typ */
-	  } /* !pft_idx */
-	} /* !nco_s1d_typ */
-
-	//if(False && nco_s1d_typ == nco_s1d_clm){
-	if(nco_s1d_typ == nco_s1d_clm){
-	  /* Turn, e.g., SNOW_DEPTH(column) into SNOW_DEPTH(mec,lat,lon) or DZSNO(column,levsno) into DZSNO(mec,levsno,lat,lon)
-	     Support will start for MECs only */
-	  mec_idx=0;
-	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
-	    clm_typ=cols1d_ityplun[clm_idx]; /* [1 <= clm_typ <= clm_nbr_out] */
-
-	    if(clm_typ == ilun_landice_multiple_elevation_classes){
-	      /* Process MEC fields */
+	  val_in_fst=0L;
+	  val_out_fst=0L;
+	  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+	    /* PFT variable dimension ordering, from LRV to MRV:
+	       Restart input: PFT, lev*|numrad, e.g., fabd_sun(pft,numrad), tlai_z(pft,levcan)
+	       History input: time, PFT, lev*|numrad, spatial
+	       NCO Output   : time, PFT, lev*|numrad, spatial */
+	    for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
+	      pft_typ=pfts1d_ityp_veg[pft_idx]; /* [1 <= pft_typ <= pft_nbr_out] */
+	      /* Skip bare ground, output array contains only vegetated types */
+	      if(!pft_typ) continue;
 	      /* grd_idx is the index relative to the origin of the horizontal grid for a given level
-		 [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= cols1d_ixy <= col_nbr_out] */
-	      grd_idx_out= flg_grd_1D ? cols1d_ixy[clm_idx]-1L : (cols1d_ixy[clm_idx]-1L)*lat_nbr+(cols1d_jxy[clm_idx]-1L);
-	      idx_out=mec_idx*grd_sz_out+grd_idx_out;
+		 [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= pfts1d_ixy <= col_nbr_out] */
+	      grd_idx_out= flg_grd_1D ? pfts1d_ixy[pft_idx]-1L : (pfts1d_ixy[pft_idx]-1L)*lat_nbr+(pfts1d_jxy[pft_idx]-1L);
+	      idx_out=(pft_typ-1)*grd_sz_out+grd_idx_out;
+	      /* memcpy() would allow next statement to work for generic types
+		 However, memcpy() is a system call and could be expensive in an innermost loop */
 	      switch(var_typ){
-	      case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[clm_idx]; break;
-	      case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[clm_idx]; break;
-	      case NC_INT: var_val_out.ip[idx_out]=var_val_in.ip[clm_idx]; break;
+	      case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[pft_idx]; break;
+	      case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[pft_idx]; break;
+	      case NC_INT: var_val_out.ip[idx_out]=var_val_in.ip[pft_idx]; break;
 	      default:
 		(void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported type\n",nco_prg_nm_get(),fnc_nm);
 		nco_dfl_case_nc_type_err();
 		break;
 	      } /* !var_typ */
+	    } /* !pft_idx */
+	    val_in_fst+=grd_sz_in; /* fxm */
+	    val_out_fst+=grd_sz_out;
+	  } /* !lvl_idx */
+	} /* !nco_s1d_typ */
+	
+	//if(False && nco_s1d_typ == nco_s1d_clm){
+	if(nco_s1d_typ == nco_s1d_clm){
+	  /* Turn SNOW_DEPTH(column) into SNOW_DEPTH(mec,lndgrid) or SNOW_DEPTH(mec,lat,lon) 
+	     Turn DZSNO(column,levsno) into DZSNO(mec,levsno,lndgrid) or DZSNO(mec,levsno,lat,lon)
+	     Support will start for MECs only */
+	    /* MEC variable dimension ordering, from LRV to MRV:
+	       Restart input: MEC, lev*, e.g., DZSNO(column,levsno), H2OSOI_ICE(column,levtot), T_SOISNO(column,levtot), ZSNO(column,levsno), flx_absdn(column,levsno1), qflx_snofrz_lyr(column,levsno), snw_rds(column,levsno)
+	       History input: time, lev*, spatial, e.g., SNO_BW(time,levsno,lat,lon)
+	       NCO Output   : time, MEC, lev*, spatial
+	       ncks --trd -C -d column,0,11 -v DZSNO,cols1d_gridcell_index ${DATA}/bm/elm_mali_rst.nc | m */
+	  mec_idx=0;
+	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
+	    clm_typ=cols1d_ityplun[clm_idx]; /* [1 <= clm_typ <= clm_nbr_out] */
+	    
+	    if(clm_typ == ilun_landice_multiple_elevation_classes){
+	      /* Process MEC fields */
+	      /* grd_idx is the index relative to the origin of the horizontal grid for a given level
+		 [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= cols1d_ixy <= col_nbr_out] */
+	      grd_idx_out= flg_grd_1D ? cols1d_ixy[clm_idx]-1L : (cols1d_ixy[clm_idx]-1L)*lat_nbr+(cols1d_jxy[clm_idx]-1L);
+	      for(mrv_idx=0;mrv_idx<mrv_nbr;mrv_idx++){
+		/* Recall that lev*|numrad are MRV in restart input, and are LRV in output where lev*|numrad precedes column,[lat,lon|lndgrid] */
+		idx_out=mec_idx*mrv_nbr*grd_sz_out+mrv_idx*grd_sz_out+grd_idx_out;
+		switch(var_typ){
+		case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[clm_idx]; break;
+		case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[clm_idx]; break;
+		case NC_INT: var_val_out.ip[idx_out]=var_val_in.ip[clm_idx]; break;
+		default:
+		  (void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported type\n",nco_prg_nm_get(),fnc_nm);
+		  nco_dfl_case_nc_type_err();
+		  break;
+		} /* !var_typ */
+	      } /* !mrv_idx */
 	      /* Increment MEC counter and reset to zero if topmost MEC */
 	      if(++mec_idx == mec_nbr_out) mec_idx=0;
 	    } /* !MEC */
@@ -1197,6 +1279,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(levsno_nm_in) levsno_nm_in=(char *)nco_free(levsno_nm_in);
   if(levsno1_nm_in) levsno1_nm_in=(char *)nco_free(levsno1_nm_in);
   if(levtot_nm_in) levtot_nm_in=(char *)nco_free(levtot_nm_in);
+  if(numrad_nm_in) numrad_nm_in=(char *)nco_free(numrad_nm_in);
 
   if(levcan_nm_out) levcan_nm_out=(char *)nco_free(levcan_nm_out);
   if(levgrnd_nm_out) levgrnd_nm_out=(char *)nco_free(levgrnd_nm_out);
@@ -1204,6 +1287,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(levsno_nm_out) levsno_nm_out=(char *)nco_free(levsno_nm_out);
   if(levsno1_nm_out) levsno1_nm_out=(char *)nco_free(levsno1_nm_out);
   if(levtot_nm_out) levtot_nm_out=(char *)nco_free(levtot_nm_out);
+  if(numrad_nm_out) numrad_nm_out=(char *)nco_free(numrad_nm_out);
 
   return rcd;
 } /* !nco_s1d_unpack() */
