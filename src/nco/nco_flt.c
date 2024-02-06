@@ -527,11 +527,10 @@ nco_flt_sbc2nm /* [fnc] Convert Blosc sub-compressor ID to name */
   case BLOSC_ZSTD: return "ZStandard"; break; /* 5 */
   default:
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG Blosc sub-compressor ID = %u is unknown. Default case reached in nco_flt_sbc2nm()\n",nco_prg_nm_get(),sbc_id);
-    nco_dfl_case_generic_err(); break;
+    nco_dfl_case_generic_err((int)sbc_id); break;
   } /* !sbc_id */
 
   return (char *)NULL;
-  
 } /* !nco_flt_sbc2nm() */
 
 nco_flt_typ_enm /* O [enm] Filter enum */

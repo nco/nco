@@ -287,7 +287,7 @@ nco_mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
     var2->has_mss_val=True;
   } /* endif var1 has mss_val */
 
-} /* end nco_mss_val_cp() */
+} /* !nco_mss_val_cp() */
   
 int /* O [flg] Variable has missing value on output */
 nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable */
@@ -403,7 +403,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
 
   return var->has_mss_val;
 
-} /* end nco_mss_val_get() */
+} /* !nco_mss_val_get() */
 
 nco_bool /* O [flg] Variable has missing value */
 nco_mss_val_get_dbl /* [fnc] Return missing value of variable, if any, as double precision number */
@@ -420,7 +420,7 @@ nco_mss_val_get_dbl /* [fnc] Return missing value of variable, if any, as double
   
   char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
-  int idx;
+  int att_idx;
   int var_nbr_att;
   long att_sz;
   nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
@@ -431,8 +431,8 @@ nco_mss_val_get_dbl /* [fnc] Return missing value of variable, if any, as double
   (void)nco_inq_varnatts(nc_id,var_id,&var_nbr_att);
   (void)nco_inq_varname(nc_id,var_id,var_nm);
   
-  for(idx=0;idx<var_nbr_att;idx++){
-    (void)nco_inq_attname(nc_id,var_id,idx,att_nm);
+  for(att_idx=0;att_idx<var_nbr_att;att_idx++){
+    (void)nco_inq_attname(nc_id,var_id,att_idx,att_nm);
     if(WRN_FIRST && !(int)strcasecmp(att_nm,nco_not_mss_val_sng_get())) has_fll_val=True;
     
     if((int)strcasecmp(att_nm,nco_mss_val_sng_get())) continue;
@@ -474,5 +474,60 @@ nco_mss_val_get_dbl /* [fnc] Return missing value of variable, if any, as double
 
   return has_mss_val;
   
-} /* end nco_mss_val_get_dbl() */
+} /* !nco_mss_val_get_dbl() */
+
+nco_bool /* O [flg] Variable has missing value */
+nco_mss_val_get_unn /* [fnc] Return missing value of variable, if any, as double precision number */
+(const int nc_id, /* I [id] netCDF input-file ID */
+ const int var_id, /* I [id] netCDF variable ID */
+ ptr_unn *mss_val_unn) /* O [frc] Missing value pointer union */
+{
+  /* Purpose: Return missing_value of variable, if any, as double precision number
+     Basically this is a stripped-down, fast version of nco_mss_val_get()
+     Created for use in regridding
+     No matter what type missing_value is on disk, this routine returns a double precision value */
+  
+  static nco_bool WRN_FIRST=True; /* [flg] No warnings yet for _FillValue/missing_value mismatch */
+  
+  char att_nm[NC_MAX_NAME];
+  char var_nm[NC_MAX_NAME];
+  int att_idx;
+  int var_nbr_att;
+  long att_sz;
+  nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
+  nco_bool has_mss_val=False; /* [flg] Has missing value attribute */
+  nc_type att_typ;
+  
+  /* Refresh number of attributes for variable */
+  (void)nco_inq_varnatts(nc_id,var_id,&var_nbr_att);
+  (void)nco_inq_varname(nc_id,var_id,var_nm);
+  
+  for(att_idx=0;att_idx<var_nbr_att;att_idx++){
+    (void)nco_inq_attname(nc_id,var_id,att_idx,att_nm);
+    if(WRN_FIRST && !(int)strcasecmp(att_nm,nco_not_mss_val_sng_get())) has_fll_val=True;
+    
+    if((int)strcasecmp(att_nm,nco_mss_val_sng_get())) continue;
+    (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
+    if(att_sz != 1L){
+      (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s has %li elements and so will not be used\n",nco_prg_nm_get(),att_nm,var_nm,att_sz);
+      continue;
+    } /* !att_sz */
+    if(att_typ == NC_CHAR || att_typ == NC_STRING){
+      (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s has type %s and so will not be used\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ));
+      continue;
+    } /* !att_typ */
+    /* If we got this far then retrieve attribute */
+    has_mss_val=True;
+    /* Only retrieve value when pointer is non-NULL
+       This prevents excessive retrievals and (potentially) printing of lengthy WARNINGS below */
+    if(mss_val_unn){
+      /* Oddly, ARM uses NC_CHAR for type of missing_value, so make allowances for this */
+      (void)nco_get_att(nc_id,var_id,att_nm,mss_val_unn,att_typ);
+    } /* !mss_val_unn */
+    break;
+  } /* !att */
+
+  return has_mss_val;
+  
+} /* !nco_mss_val_get_unn() */
 

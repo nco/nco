@@ -1,8 +1,16 @@
-2024-02-01  Charlie Zender  <zender@uci.edu>
+2024-02-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha05: Sandflower';git push
 	git tag -a 5.2.0-alpha05 -m 'ncks: s1d dmn rdr, s1d vrt';git push --tags
+
+	* Struggling to automatically identify dimensions in non-MEC fields
+
+	* Modify nco_dfl_case_generic_err() to print bad case arguments
+
+	* S1D: Add remaining PFT, landunit enums and string functions
+
+2024-02-01  Charlie Zender  <zender@uci.edu>
 
 	* S1D: Add legions code to improve MEC column output capabilities, including vertical fields
 

@@ -457,7 +457,7 @@ nco_trr_ntl_sng /* [fnc] Convert interleave-type enum to string */
   case nco_trr_ntl_bsq: return "band_sequential (BSQ format)";
   case nco_trr_ntl_bip: return "band_interleaved_by_pixel (BIP format)";
   case nco_trr_ntl_bil: return "band_interleaved_by_line (BIL format)";
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_trr_ntl_typ); break;
   } /* end switch */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -478,7 +478,7 @@ nco_esmf_fl_fmt_sng /* [fnc] Convert ESMF file format to string */
   case ESMC_FILEFORMAT_ESMCGRID: return "ESMC_FILEFORMAT_ESMCGRID";
   case ESMC_FILEFORMAT_UGRID: return "ESMC_FILEFORMAT_UGRID";
   case ESMC_FILEFORMAT_GRIDSPEC: return "ESMC_FILEFORMAT_GRIDSPEC";
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_esmf_fl_fmt)); break;
   } /* end switch */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -497,7 +497,7 @@ nco_esmf_stg_lcn_sng /* [fnc] Convert ESMF stagger location enum to string */
   case ESMC_STAGGERLOC_EDGE1: return "ESMC_STAGGERLOC_EDGE1";
   case ESMC_STAGGERLOC_EDGE2: return "ESMC_STAGGERLOC_EDGE2";
   case ESMC_STAGGERLOC_CORNER: return "ESMC_STAGGERLOC_CORNER";
-  default: abort(); break;
+  default: nco_dfl_case_generic_err((int)nco_esmf_stg_lcn)); break;
   } /* end switch */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -514,7 +514,7 @@ nco_esmf_grd_itm_sng /* [fnc] Convert ESMF grid item enum to string */
   case ESMC_GRIDITEM_UNINIT: return "ESMC_GRIDITEM_UNINIT";
   case ESMC_GRIDITEM_MASK: return "ESMC_GRIDITEM_MASK";
   case ESMC_GRIDITEM_AREA: return "ESMC_GRIDITEM_AREA";
-  default: abort(); break;
+  default: nco_dfl_case_generic_err((int)nco_esmf_grd_itm)); break;
   } /* end switch */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */

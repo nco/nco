@@ -4057,13 +4057,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     break;
   default:
     (void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unknown map-file type\n",nco_prg_nm_get(),fnc_nm);
-    nco_dfl_case_generic_err();
+    nco_dfl_case_generic_err((int)nco_rgr_mpf_typ);
     /* NB: This return never executes because nco_dfl_case_generic_err() calls exit()
        Return placed here to suppress clang -Wsometimes-uninitialized warnings
        This is done many other times throughout the code, though explained only once, here */
     return NCO_ERR;
     break;
-  } /* !switch */
+  } /* !nco_rgr_mpf_typ */
 
   /* Use dimension IDs to get dimension sizes */
   rcd+=nco_inq_dimlen(in_id,num_links_id,&mpf.num_links);
@@ -4205,13 +4205,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     break;
   default:
     (void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unknown map file type\n",nco_prg_nm_get(),fnc_nm);
-    nco_dfl_case_generic_err();
+    nco_dfl_case_generic_err((int)nco_rgr_mpf_typ);
     /* NB: This return never executes because nco_dfl_case_generic_err() calls exit()
        Return placed here to suppress clang -Wsometimes-uninitialized warnings
        This is done many other times throughout the code, though explained only once, here */
     return NCO_ERR;
     break;
-  } /* !switch */
+  } /* !nco_rgr_mpf_typ */
 
   /* Obtain fields whose presence depends on mapfile type */
   nco_bool flg_msk_out=rgr->flg_msk_out; /* [flg] Add mask to output */
@@ -4233,7 +4233,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       break;
     default:
       (void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unknown map-file type\n",nco_prg_nm_get(),fnc_nm);
-      nco_dfl_case_generic_err();
+      nco_dfl_case_generic_err((int)nco_rgr_mpf_typ);
     } /* !nco_rgr_mpf_typ */
     if(rcd == NC_ENOTVAR){
       if(flg_msk_apl){
@@ -4724,7 +4724,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING %s reports unknown output latitude grid-type. Unable to guess what latitude weights should be.\n",nco_prg_nm_get(),fnc_nm);
       break;
     default:
-      nco_dfl_case_generic_err(); break;
+      nco_dfl_case_generic_err((int)nco_grd_lat_typ); break;
     } /* !nco_grd_lat_typ switch */
     
     /* Fuzzy test of latitude weight normalization */
@@ -6513,7 +6513,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  case NC_UINT64: mss_val_cmp_dbl=NC_FILL_UINT64; break;
 	  case NC_STRING:
 	  default: nco_dfl_case_nc_type_err(); break;
-	  } /* !var_typ_in */
+	  } /* !var_typ_out */
 	} /* !has_mss_val */
 
 	/* Re-initialize Boolean to True and override with False if variable _uses_ missing values
@@ -7936,7 +7936,7 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
   case nco_grd_2D_gss: return "Gaussian latitude grid. Used by spectral transform models, e.g., CCM 1-3, CAM 1-3, ECMWF Forecast, LSM, MATCH, NCEP (R1, R2), UCICTM.";
   case nco_grd_2D_fv: return "Cap-latitude grid, aka FV-scalar grid (in Lin-Rood representation). When global (not regional) in extent and with odd number of latitudes, poles are considered at (and labeled as) centers of first and last gridcells. For example lat_ctr=-90,-89,-88,... and lat_crn=-89.5,-88.5,-87.5,... Thus pole-gridcells span half the equi-angular latitude increment of the rest of the grid. Used by CAM FV (i.e., CAM 4-6), ECMWF (ERA-I, ERA40, ERA5), GEOS-CHEM, UCICTM, UKMO.";
   case nco_grd_2D_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent and with even number of latitudes, poles are at corners/edges of first and last gridcells. For example lat_ctr=-89.5,-88.5,-87.5,... and lat_crn=-90,-89,-88,.... When global, forms valid FV-staggered (aka FV-velocity, aka offset) grid (for Lin-Rood representation). Used by CIESIN/SEDAC, IGBP-DIS, NASA CMG, TOMS AAI, WOCE.";
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_grd_2D_typ); break;
   } /* !nco_grd_2D_typ */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -7953,7 +7953,7 @@ nco_grd_lat_sng /* [fnc] Convert latitude grid-type enum to string */
   case nco_grd_lat_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, ECMWF Forecast, LSM, MATCH, NCEP (R1, R2), UCICTM.";
   case nco_grd_lat_fv: return "Cap-latitude grid, aka FV-scalar grid (in Lin-Rood representation). When global (not regional) in extent and with odd number of latitudes, poles are considered at (and labeled as) centers of first and last gridcells. For example lat_ctr=-90,-89,-88,... and lat_crn=-89.5,-88.5,-87.5,... Thus pole-gridcells span half the equi-angular latitude increment of the rest of the grid. Used by CAM FV (i.e., CAM 4-6), ECMWF (ERA-I, ERA40, ERA5), GEOS-CHEM, UCICTM, UKMO.";
   case nco_grd_lat_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent and with even number of latitudes, poles are at corners/edges of first and last gridcells. For example lat_ctr=-89.5,-88.5,-87.5,... and lat_crn=-90,-89,-88,.... When global, forms valid FV-staggered (aka FV-velocity, aka offset) grid (for Lin-Rood representation). Used by CIESIN/SEDAC, IGBP-DIS, NASA CMG, TOMS AAI, WOCE.";
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_grd_lat_typ); break;
   } /* !nco_grd_lat_typ */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -7972,7 +7972,7 @@ nco_vrt_grd_sng /* [fnc] Convert vertical grid-type enum to string */
   case nco_vrt_grd_sgm: return "Sigma coordinate grid";
   case nco_vrt_grd_dpt: return "Geometric depth coordinate grid";
   case nco_vrt_grd_hgt: return "Geometric height coordinate grid";
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_vrt_grd_typ); break;
   } /* !nco_vrt_grd_typ */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -7991,7 +7991,7 @@ nco_grd_lon_sng /* [fnc] Convert longitude grid-type enum to string */
   case nco_grd_lon_Grn_wst: return "Greenwich at west edge of first longitude cell";
   case nco_grd_lon_Grn_ctr: return "Greenwich at center of first longitude cell";
   case nco_grd_lon_bb: return "Longitude grid determined by bounding box (lon_wst/lon_est) and gridcell number (lon_nbr)";
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_grd_lon_typ); break;
   } /* !nco_grd_lon_typ */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -8007,7 +8007,7 @@ nco_grd_xtn_sng /* [fnc] Convert two-dimensional grid-extent enum to string */
   case nco_grd_xtn_nil: return "Unknown";
   case nco_grd_xtn_glb: return "Global";
   case nco_grd_xtn_rgn: return "Regional"; 
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_grd_xtn); break;
   } /* !nco_grd_xtn */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -8024,7 +8024,7 @@ nco_rgr_grd_sng /* [fnc] Convert grid conversion enum to string */
   case nco_rgr_grd_1D_to_2D: return "1D_to_2D";
   case nco_rgr_grd_2D_to_1D: return "2D_to_1D";
   case nco_rgr_grd_2D_to_2D: return "2D_to_2D";
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_rgr_typ); break;
   } /* !nco_rgr_typ */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -8041,7 +8041,7 @@ nco_rgr_mth_sng /* [fnc] Convert regridding method enum to string */
   case nco_rgr_mth_bilinear: return "Bilinear remapping";
   case nco_rgr_mth_none: return "none";
   case nco_rgr_mth_unknown: return "Unknown (TempestRemap or ESMF_weight_only)";
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_rgr_mth_typ); break;
   } /* !nco_rgr_mth_typ */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -8061,7 +8061,7 @@ nco_rgr_mpf_sng /* [fnc] Convert mapfile generator enum to string */
   case nco_rgr_mpf_NCO: return "netCDF Operators (NCO) Offline Regridding Weight Generator";
   case nco_rgr_mpf_MBTR: return "MOAB-TempestRemap Online Regridding Weight Generator";
   case nco_rgr_mpf_unknown: return "Unknown Weight Generator";
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_rgr_mpf_typ); break;
   } /* !nco_rgr_mpf_typ */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -8078,7 +8078,7 @@ nco_rgr_nrm_sng /* [fnc] Convert regridding normalization enum to string */
   case nco_rgr_nrm_destarea: return "destarea";
   case nco_rgr_nrm_none: return "none";
   case nco_rgr_nrm_unknown: return "Unknown (possibilities include ESMF_weight_only, NCO, and TempestRemap)";
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_rgr_nrm_typ); break;
   } /* !nco_rgr_nrm_typ */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -8115,7 +8115,7 @@ nco_tps_cmd_fmt_sng /* [fnc] Convert TempestRemap command enum to command string
     return "MeshToTxt";
   case nco_rgr_AAA_nil:
   case nco_rgr_ZZZ_last:
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_tps_cmd); break;
   } /* !nco_tps_cmd */
   
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -8141,7 +8141,7 @@ nco_tps_cmd_sng /* [fnc] Convert TempestRemap command enum to command name */
   case nco_rgr_MeshToTxt: return "MeshToTxt";
   case nco_rgr_AAA_nil:
   case nco_rgr_ZZZ_last:
-  default: nco_dfl_case_generic_err(); break;
+  default: nco_dfl_case_generic_err((int)nco_tps_cmd); break;
   } /* !nco_tps_cmd */
 
   /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
@@ -8458,7 +8458,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       lon_wst=-180.0;
       break;
     default:
-      nco_dfl_case_generic_err(); break;
+      nco_dfl_case_generic_err((int)lon_typ); break;
     } /* !lon_typ */
   } /* !lon */
 
@@ -8475,7 +8475,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       lon_est=180.0;
       break;
     default:
-      nco_dfl_case_generic_err(); break;
+      nco_dfl_case_generic_err((int)lon_typ); break;
     } /* !lon_typ */
   } /* !lon */
 
@@ -8576,7 +8576,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     } /* !flg_lat_evn */
     break;
   default:
-    nco_dfl_case_generic_err(); break;
+    nco_dfl_case_generic_err((int)lat_typ); break;
   } /* !lat_typ */
   /* Ensure rounding errors do not produce unphysical grid */
   lat_ntf[lat_nbr]=lat_nrt;
@@ -8639,7 +8639,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=wgt_Gss[lat_idx];
     break;
   default:
-    nco_dfl_case_generic_err(); break;
+    nco_dfl_case_generic_err((int)lat_typ); break;
   } /* !lat_typ */
 
   /* Fuzzy test of latitude weight normalization
@@ -10844,7 +10844,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	/* No generic formula exists so use interfaces already read or diagnosed as midpoints between centers */
 	break;
       default:
-	nco_dfl_case_generic_err(); break;
+	nco_dfl_case_generic_err((int)lat_typ); break;
       } /* !lat_typ */
 
       if(lat_typ == nco_grd_lat_gss){
@@ -10879,7 +10879,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING %s reports unknown input latitude grid-type. Guessing that weights for grid of rectangles is OK.\n",nco_prg_nm_get(),fnc_nm);
       break;
     default:
-      nco_dfl_case_generic_err(); break;
+      nco_dfl_case_generic_err((int)lat_typ); break;
     } /* !lat_typ */
     
     /* Diagnose type of longitude grid by testing second longitude center against formulae */
@@ -11208,7 +11208,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       break;
     default:
       (void)fprintf(stderr,"%s: ERROR %s mask variable \"%s\" has unsupported type = %s\n",nco_prg_nm_get(),fnc_nm,msk_nm_in,nco_typ_sng(msk_typ));
-      nco_dfl_case_generic_err();
+      nco_dfl_case_generic_err((int)msk_typ);
       return NCO_ERR;
       break;
     } /* !msk_typ */
@@ -11482,7 +11482,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       case nco_grd_lat_unk:
       case nco_grd_lat_nil:
       default:
-	nco_dfl_case_generic_err(); break;
+	nco_dfl_case_generic_err((int)lat_typ); break;
       } /* !lat_typ */
     }else if(flg_grd_crv){
       (void)fprintf(stdout,"%s: ERROR %s UGRID output does not yet support curvilinear grids\n",nco_prg_nm_get(),fnc_nm);

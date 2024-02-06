@@ -741,7 +741,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     prc_bnr_xpl_rqr=nesb;
     break;
   default: 
-    nco_dfl_case_generic_err();
+    nco_dfl_case_generic_err((int)nco_baa_cnv_typ);
     break;
   } /* !nco_baa_cnv_typ */
 
@@ -806,7 +806,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     } /* !NC_FLOAT */
     break;
   default: 
-    nco_dfl_case_generic_err();
+    nco_dfl_case_generic_err((int)nco_baa_cnv_typ);
     break;
   } /* !nco_baa_cnv_typ */
 

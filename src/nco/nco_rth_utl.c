@@ -92,9 +92,9 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
         (void)nco_var_tll_zro_mss_val(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
         break;
       default:
-	nco_dfl_case_generic_err();
+	nco_dfl_case_generic_err((int)nco_op_typ_cpy);
         break;
-      } /* end switch */
+      } /* !nco_op_typ_cpy */
       /* A few operations require additional processing */
       switch(nco_op_typ_cpy) {
       case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
@@ -116,13 +116,13 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
       case nco_op_avgsqr:
         break;
       default:
-	nco_dfl_case_generic_err();
+	nco_dfl_case_generic_err((int)nco_op_typ_cpy);
         break;
-      } /* end switch */
+      } /* !nco_op_typ_cpy */
     } /* !var_prc[idx]->is_crd_var */
   } /* end (OpenMP parallel for) loop over variables */
 
-} /* end nco_opr_nrm() */
+} /* !nco_opr_nrm() */
 
 void 
 nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces */
@@ -218,10 +218,10 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
     (void)nco_var_add_tll_ncra(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->wgt_crr,var_prc->wgt_sum,var_prc->val,var_prc_out->val);
     break;
   default:
-    nco_dfl_case_generic_err();
+    nco_dfl_case_generic_err((int)nco_op_typ);
     break; /* [enm] Nil or undefined operation type */
-  } /* end switch */
-} /* end nco_opr_drv() */
+  } /* !nco_op_typ */
+} /* !nco_opr_drv() */
 
 const char * /* O [enm] Arithmetic operation */
 nco_op_typ_cf_sng /* [fnc] Convert arithmetic operation type enum to string */
@@ -249,11 +249,11 @@ nco_op_typ_cf_sng /* [fnc] Convert arithmetic operation type enum to string */
   case nco_op_dvd:
   case nco_op_nil:
   default:
-    nco_dfl_case_generic_err();
+    nco_dfl_case_generic_err((int)nco_op_typ);
     return "BROKEN"; /* CEWI */
     break; /* [enm] Nil or undefined operation type */
-  } /* end switch */
-} /* end nco_op_typ_cf_sng() */
+  } /* !nco_op_typ */
+} /* !nco_op_typ_cf_sng() */
 
 int /* O [enm] Arithmetic operation */
 nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */

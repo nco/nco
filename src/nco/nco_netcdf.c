@@ -726,12 +726,13 @@ nco_dfl_case_flt_err(void) /* [fnc] Print error and exit for illegal switch(nco_
 } /* !nco_dfl_case_flt_err() */
 
 void
-nco_dfl_case_generic_err(void) /* [fnc] Print error and exit for illegal switch case */
+nco_dfl_case_generic_err /* [fnc] Print error and exit for illegal switch case */
+(const int case_arg_int) /* I [enm] Value of case argument that fell through to default case */
 {
   /* Purpose: Print error and exit when switch statement reaches illegal default case
      Routine reduces bloat because many switch() statements invoke this functionality */
   const char fnc_nm[]="nco_dfl_case_generic_err()";
-  (void)fprintf(stdout,"%s: ERROR switch statement fell through to default case, which is unsafe. This generic error handler ensures all switch statements are fully enumerated. Exiting...\n",fnc_nm);
+  (void)fprintf(stdout,"%s: ERROR switch statement received case argument (cast to integer) of %d, which fell through to default case, which is uncool. This generic error handler ensures switch statements are fully enumerated. Exiting...\n",fnc_nm,case_arg_int);
   nco_err_exit(0,fnc_nm);
 } /* !nco_dfl_case_generic_err() */
 

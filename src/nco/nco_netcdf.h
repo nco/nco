@@ -353,7 +353,8 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
 (const nc_type type); /* I [enm] netCDF type */
 
 void
-nco_dfl_case_generic_err(void); /* [fnc] Print error and exit for illegal switch case */
+nco_dfl_case_generic_err /* [fnc] Print error and exit for illegal switch case */
+(const int case_arg_int); /* I [enm] Value of case argument that fell through to default case */
 
 void
 nco_dfl_case_flt_err(void); /* [fnc] Print error and exit for illegal switch(nco_flt_enm) case */
