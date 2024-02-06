@@ -685,7 +685,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int *cols1d_ityplun=NULL; /* [enm] Column landunit type */
   int *cols1d_ixy=NULL; /* [idx] Column 2D longitude index */
   int *cols1d_jxy=NULL; /* [idx] Column 2D latitude index */
-  int clm_typ; /* [enm] Column landunit type */
+  nco_clm_typ_enm clm_typ; /* [enm] Column landunit type */
   if(need_clm){
     if(cols1d_active_id != NC_MIN_INT) cols1d_active=(int *)nco_malloc(clm_nbr_in*sizeof(int));
     if(cols1d_active_id != NC_MIN_INT) rcd=nco_get_var(in_id,cols1d_active_id,cols1d_active,NC_INT);
@@ -727,7 +727,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int *land1d_active=NULL; /* [flg] Landunit active flag (1=active, 0=inactive) */
   int *land1d_ityp=NULL; /* [enm] Landunit type */
   int *land1d_ityplun=NULL; /* [enm] Landunit type */
-  int lnd_typ; /* [enm] Landunit type */
+  nco_lnd_typ_enm lnd_typ; /* [enm] Landunit type */
   if(need_lnd){
     if(land1d_active_id != NC_MIN_INT) land1d_active=(int *)nco_malloc(lnd_nbr_in*sizeof(int));
     if(land1d_active_id != NC_MIN_INT) rcd=nco_get_var(in_id,land1d_active_id,land1d_active,NC_INT);
@@ -746,7 +746,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int *pfts1d_ityplun=NULL; /* [enm] PFT landunit type */
   int *pfts1d_ixy=NULL; /* [idx] PFT 2D longitude index */
   int *pfts1d_jxy=NULL; /* [idx] PFT 2D latitude index */
-  int pft_typ; /* [enm] PFT type */
+  nco_pft_typ_enm pft_typ; /* [enm] PFT type */
   if(need_pft){
     
     if(pfts1d_active_id != NC_MIN_INT) pfts1d_active=(int *)nco_malloc(pft_nbr_in*sizeof(int));
