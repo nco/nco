@@ -11,7 +11,7 @@
 
 const char * /* O [sng] String describing landunit type */
 nco_clm_typ_sng /* [fnc] Convert landunit-type enum to string */
-(const nco_clm_typ_enm nco_clm_typ) /* I [enm] landunit type enum */
+(const int nco_clm_typ) /* I [enm] landunit type enum */
 {
   /* Purpose: Convert landunit-type enum to string */
   switch(nco_clm_typ){
@@ -22,6 +22,15 @@ nco_clm_typ_sng /* [fnc] Convert landunit-type enum to string */
   case nco_clm_icol_crop_noncompete_02: return "Crop noncompete type 02";
   case nco_clm_icol_landice: return "Landice (plain, no MEC)";
   case nco_clm_icol_landice_multiple_elevation_class_01: return "Landice multiple elevation class 01";
+  case nco_clm_icol_landice_multiple_elevation_class_02: return "Landice multiple elevation class 02";
+  case nco_clm_icol_landice_multiple_elevation_class_03: return "Landice multiple elevation class 03";
+  case nco_clm_icol_landice_multiple_elevation_class_04: return "Landice multiple elevation class 04";
+  case nco_clm_icol_landice_multiple_elevation_class_05: return "Landice multiple elevation class 05";
+  case nco_clm_icol_landice_multiple_elevation_class_06: return "Landice multiple elevation class 06";
+  case nco_clm_icol_landice_multiple_elevation_class_07: return "Landice multiple elevation class 07";
+  case nco_clm_icol_landice_multiple_elevation_class_08: return "Landice multiple elevation class 08";
+  case nco_clm_icol_landice_multiple_elevation_class_09: return "Landice multiple elevation class 09";
+  case nco_clm_icol_landice_multiple_elevation_class_10: return "Landice multiple elevation class 10";
   case nco_clm_icol_deep_lake: return "Deep lake";
   case nco_clm_icol_wetland: return "Wetland";
   case nco_clm_icol_urban_roof: return "Urban roof";
@@ -38,7 +47,7 @@ nco_clm_typ_sng /* [fnc] Convert landunit-type enum to string */
 
 const char * /* O [sng] String describing landunit type */
 nco_lnd_typ_sng /* [fnc] Convert landunit-type enum to string */
-(const nco_lnd_typ_enm nco_lnd_typ) /* I [enm] landunit type enum */
+(const int nco_lnd_typ) /* I [enm] landunit type enum */
 {
   /* Purpose: Convert landunit-type enum to string */
   switch(nco_lnd_typ){
@@ -61,7 +70,7 @@ nco_lnd_typ_sng /* [fnc] Convert landunit-type enum to string */
 
 const char * /* O [sng] String describing PFT type */
 nco_pft_typ_sng /* [fnc] Convert PFT-type enum to string */
-(const nco_pft_typ_enm nco_pft_typ) /* I [enm] PFT type enum */
+(const int nco_pft_typ) /* I [enm] PFT type enum */
 {
   /* Purpose: Convert PFT-type enum to string */
   switch(nco_pft_typ){
@@ -99,7 +108,7 @@ nco_pft_typ_sng /* [fnc] Convert PFT-type enum to string */
 
 const char * /* O [sng] String describing sparse-type */
 nco_s1d_sng /* [fnc] Convert sparse-1D type enum to string */
-(const nco_s1d_typ_enm nco_s1d_typ) /* I [enm] Sparse-1D type enum */
+(const int nco_s1d_typ) /* I [enm] Sparse-1D type enum */
 {
   /* Purpose: Convert sparse-type enum to string */
   switch(nco_s1d_typ){
@@ -685,7 +694,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int *cols1d_ityplun=NULL; /* [enm] Column landunit type */
   int *cols1d_ixy=NULL; /* [idx] Column 2D longitude index */
   int *cols1d_jxy=NULL; /* [idx] Column 2D latitude index */
-  nco_clm_typ_enm clm_typ; /* [enm] Column landunit type */
+  int clm_typ; /* [enm] Column landunit type */
   if(need_clm){
     if(cols1d_active_id != NC_MIN_INT) cols1d_active=(int *)nco_malloc(clm_nbr_in*sizeof(int));
     if(cols1d_active_id != NC_MIN_INT) rcd=nco_get_var(in_id,cols1d_active_id,cols1d_active,NC_INT);
@@ -727,7 +736,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int *land1d_active=NULL; /* [flg] Landunit active flag (1=active, 0=inactive) */
   int *land1d_ityp=NULL; /* [enm] Landunit type */
   int *land1d_ityplun=NULL; /* [enm] Landunit type */
-  nco_lnd_typ_enm lnd_typ; /* [enm] Landunit type */
+  int lnd_typ; /* [enm] Landunit type */
   if(need_lnd){
     if(land1d_active_id != NC_MIN_INT) land1d_active=(int *)nco_malloc(lnd_nbr_in*sizeof(int));
     if(land1d_active_id != NC_MIN_INT) rcd=nco_get_var(in_id,land1d_active_id,land1d_active,NC_INT);
@@ -746,7 +755,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int *pfts1d_ityplun=NULL; /* [enm] PFT landunit type */
   int *pfts1d_ixy=NULL; /* [idx] PFT 2D longitude index */
   int *pfts1d_jxy=NULL; /* [idx] PFT 2D latitude index */
-  nco_pft_typ_enm pft_typ; /* [enm] PFT type */
+  int pft_typ; /* [enm] PFT type */
+  nco_pft_typ_enm pft_enm; /* [enm] PFT type */
   if(need_pft){
     
     if(pfts1d_active_id != NC_MIN_INT) pfts1d_active=(int *)nco_malloc(pft_nbr_in*sizeof(int));
@@ -973,9 +983,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   double mss_val_dbl;
   double mss_val_cmp_dbl; /* Missing value for comparison to double precision values */
   int flg_pck; /* [flg] Variable is packed on disk  */
+  int nco_s1d_typ; /* [enm] Sparse-1D type of input variable */
   nco_bool flg_add_spt_crd; /* [flg] Add spatial coordinates to S1D variable */
   nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
-  nco_s1d_typ_enm nco_s1d_typ; /* [enm] Sparse-1D type of input variable */
 
   /* From vertical interpolation...Maybe not needed? */
   float mss_val_flt;
@@ -1381,8 +1391,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	case nco_s1d_pft: lnd_typ=pfts1d_ityplun[idx_in]; break;
 	case nco_s1d_grd: 
 	default: nco_dfl_case_generic_err((int)nco_s1d_typ); break;
-	} /* !nco_s1d_typ_enm */
-	(void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d, s1d_typ = %s, lnd_typ = %d, landunit type = %s\n",nco_prg_nm_get(),var_nm,idx_in,nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ,nco_lnd_typ_sng(lnd_typ));
+	} /* !nco_s1d_typ */
+	(void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d, s1d_typ = %s, lnd_typ = %d, landunit type = %s\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ,nco_lnd_typ_sng(lnd_typ));
 	  
 	//	if(nco_s1d_typ == nco_s1d_clm || nco_s1d_typ == nco_s1d_grd || nco_s1d_typ == nco_s1d_lnd){
 	//	  (void)fprintf(stderr,"%s: WARNING %s reports variable %s is sparse type %s.\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_s1d_sng(nco_s1d_typ));

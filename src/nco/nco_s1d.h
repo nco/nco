@@ -114,15 +114,15 @@ extern "C" {
 
   const char * /* O [sng] String describing landunit type */
   nco_lnd_typ_sng /* [fnc] Convert landunit type enum to string */
-  (const nco_lnd_typ_enm nco_lnd_typ); /* I [enm] landunit type enum */
+  (const int nco_lnd_typ); /* I [enm] landunit type enum */
 
   const char * /* O [sng] String describing PFT type */
   nco_pft_typ_sng /* [fnc] Convert PFT-type enum to string */
-  (const nco_pft_typ_enm nco_pft_typ); /* I [enm] PFT type enum */
+  (const int nco_pft_typ); /* I [enm] PFT type enum */
 
   const char * /* O [sng] String describing sparse-type */
   nco_s1d_sng /* [fnc] Convert sparse-type enum to string */
-  (const nco_s1d_typ_enm nco_s1d_typ); /* I [enm] Sparse-type enum */
+  (const int nco_s1d_typ); /* I [enm] Sparse-type enum */
 
   int /* O [rcd] Return code */
   nco_s1d_unpack /* [fnc] Unpack contents of sparse-1D CLM/ELM file into full file */
