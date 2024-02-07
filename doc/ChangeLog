@@ -1,10 +1,18 @@
-2024-02-06  Charlie Zender  <zender@uci.edu>
+2024-02-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha05: Sandflower';git push
 	git tag -a 5.2.0-alpha05 -m 'ncks: s1d dmn rdr, s1d vrt';git push --tags
 
-	* Struggling to automatically identify dimensions in non-MEC fields
+	* Decode has_mec, has_lev* et al. before variable definition block, and within OpenMP variable read/write block
+
+2024-02-06  Charlie Zender  <zender@uci.edu>
+
+	* Progress in dimension identificaion, aka, inverting unrolling
+
+	* Add MEC coordinate to output
+
+	* Struggling to automatically identify dimensions in non-MEC fields!
 
 	* Modify nco_dfl_case_generic_err() to print bad case arguments
 

@@ -453,13 +453,14 @@ make install >> nco.make.foo 2>&1
 # Latest ticket to build NCO: 216373 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.9.2 module load nco/5.1.6 # 20240107
 # Personal recipe last modified: 20240107
-# Personal recipe last borken: 20240107 (unable to complie antlr)
+# Personal recipe last borken: 20240107 (unable to compile antlr)
 # Personal recipe last successful: 20231103
 # Derecho GNU:
 module purge
 module load ncarenv gcc ncarcompilers netcdf udunits
 export LINUX_CXX='g++ -std=c++11'
 export PATH=${PATH}:/opt/pbs/bin # needed for qsub
+# 20240207 Derecho paths may all need to be changed from 23.06 to 23.09
 export PATH=${PATH}:/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t/lib:/glade/u/apps/derecho/23.06/spack/opt/spack/udunits/2.2.28/gcc/12.2.0/vls2/lib # needed to run NCO
 cd ~/nco;/bin/rm -f *.foo;make distclean
