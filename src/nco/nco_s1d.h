@@ -112,9 +112,13 @@ extern "C" {
     nco_s1d_pft, /* Sparse-1D PFT (pfts1d) format */
   } nco_s1d_typ_enm;
 
+  const char * /* O [sng] String describing column type */
+  nco_clm_typ_sng /* [fnc] Convert column-type enum to string */
+  (const int nco_clm_typ); /* I [enm] Column type enum */
+
   const char * /* O [sng] String describing landunit type */
   nco_lnd_typ_sng /* [fnc] Convert landunit type enum to string */
-  (const int nco_lnd_typ); /* I [enm] landunit type enum */
+  (const int nco_lnd_typ); /* I [enm] Landunit type enum */
 
   const char * /* O [sng] String describing PFT type */
   nco_pft_typ_sng /* [fnc] Convert PFT-type enum to string */
