@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha05: Sandflower';git push
 	git tag -a 5.2.0-alpha05 -m 'ncks: s1d dmn rdr, s1d vrt';git push --tags
 
+	* Major breakthrough: S1D now defines MEC and MRV dimensions correctly
+
 	* Decode has_mec, has_lev* et al. before variable definition block, and within OpenMP variable read/write block
 
 2024-02-06  Charlie Zender  <zender@uci.edu>

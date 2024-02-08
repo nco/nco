@@ -529,7 +529,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   long levsno1_nbr_out=NC_MIN_INT; /* [nbr] Number of snow layers plus one in output data */
   long levtot_nbr_out=NC_MIN_INT; /* [nbr] Number of snow+soil layers in output data */
   long numrad_nbr_out=NC_MIN_INT; /* [nbr] Number of snow+soil layers in output data */
-  //(void)fprintf(stdout,"%s: DEBUG quark1\n",nco_prg_nm_get());
   if(need_levcan){
     rcd=nco_inq_dimid(in_id,levcan_nm_in,&dmn_id_levcan_in);
     rcd=nco_inq_dimlen(in_id,dmn_id_levcan_in,&levcan_nbr_in);
@@ -742,6 +741,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int *land1d_active=NULL; /* [flg] Landunit active flag (1=active, 0=inactive) */
   int *land1d_ityplun=NULL; /* [enm] Landunit type */
   int lnd_typ; /* [enm] Landunit type */
+  int lnd_typ_crr; /* [enm] Landunit type of current column|landunit|pft */
+  int lnd_typ_nxt; /* [enm] Landunit type of next column|landunit|pft */
   if(need_lnd){
     if(land1d_active_id != NC_MIN_INT) land1d_active=(int *)nco_malloc(lnd_nbr_in*sizeof(int));
     if(land1d_active_id != NC_MIN_INT) rcd=nco_get_var(in_id,land1d_active_id,land1d_active,NC_INT);
@@ -1045,6 +1046,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  has_levcan=has_levgrnd=has_levlak=has_levsno=has_levsno1=has_levtot=has_mec=has_numrad=False;
 	  var_sz_in=1L;
 	  mrv_nbr=1L;
+	  flg_add_spt_crd=False;
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    dmn_id=dmn_ids_in[dmn_idx];
 	    rcd=nco_inq_dimlen(in_id,dmn_id,dmn_cnt_in+dmn_idx);
@@ -1074,7 +1076,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  } /* !dmn_idx */
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    dmn_id=dmn_ids_in[dmn_idx];
-	    flg_add_spt_crd=False;
 	    rcd=nco_inq_dimname(in_id,dmn_id,dmn_nm);
 	    if(dmn_id == dmn_id_clm_in){
 	      if(need_mec){
@@ -1092,16 +1093,31 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		  default: nco_dfl_case_nc_type_err(); break;
 		  } /* !var_typ_out */
 		} /* !has_mss_val */
-		/* Determine what landunit this variable is defined on */
+		/* Determine what landunit this variable is defined on
+		   Ratio of idx_in (an element counter) by mrv_nbr yields a clm/lnd/pft index
+		   For MEC check only, add one since some (all?) MEC variables (like DZSNO) are also defined on lnd_typ=1 
+		   (presumably to be used for non-ice sheet gridcells) and very next column is actual MEC */
 		switch(var_typ_in){
 		case NC_FLOAT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-		    if(var_val_in.fp[idx_in] != mss_val_cmp_dbl) break;
+		    if(var_val_in.fp[idx_in] != mss_val_cmp_dbl){
+		      lnd_typ_crr=cols1d_ityplun[idx_in/mrv_nbr];
+		      if(var_val_in.fp[idx_in+mrv_nbr] != mss_val_cmp_dbl) lnd_typ_nxt=cols1d_ityplun[(idx_in+mrv_nbr)/mrv_nbr]; else lnd_typ_nxt=nco_lnd_ilun_nil;
+		      break;
+		    } /* !var_val_in.fp[idx_in] */
 		  break;
 		case NC_DOUBLE: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-		    if(var_val_in.dp[idx_in] != mss_val_cmp_dbl) break;
+		    if(var_val_in.dp[idx_in] != mss_val_cmp_dbl){
+		      lnd_typ_crr=cols1d_ityplun[idx_in/mrv_nbr];
+		      if(var_val_in.dp[idx_in+mrv_nbr] != mss_val_cmp_dbl) lnd_typ_nxt=cols1d_ityplun[(idx_in+mrv_nbr)/mrv_nbr]; else lnd_typ_nxt=nco_lnd_ilun_nil;
+		      break;
+		    } /* !var_val_in.dp[idx_in] */
 		  break;
 		case NC_INT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-		    if(var_val_in.ip[idx_in] != mss_val_cmp_dbl) break;
+		    if(var_val_in.ip[idx_in] != mss_val_cmp_dbl){
+		      lnd_typ_crr=cols1d_ityplun[idx_in/mrv_nbr];
+		      if(var_val_in.ip[idx_in+mrv_nbr] != mss_val_cmp_dbl) lnd_typ_nxt=cols1d_ityplun[(idx_in+mrv_nbr)/mrv_nbr]; else lnd_typ_nxt=nco_lnd_ilun_nil;
+		      break;
+		    } /* !var_val_in.ip[idx_in] */
 		  break;
 		default:
 		  (void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported type\n",nco_prg_nm_get(),fnc_nm);
@@ -1112,9 +1128,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		  (void)fprintf(fp_stdout,"%s: ERROR %s reports %s has no valid values\n",nco_prg_nm_get(),fnc_nm,var_nm);
 		  nco_exit(EXIT_FAILURE);
 		} /* !idx_in */
-		/* Ratio of idx_in (an element counter) by mrv_nbr yields a clm/lnd/pft index */
-		lnd_typ=cols1d_ityplun[idx_in/mrv_nbr]; break;
-		if(lnd_typ == ilun_landice_multiple_elevation_classes) has_mec=True;
+		if(lnd_typ_nxt == ilun_landice_multiple_elevation_classes) has_mec=True;
 		if(var_val_in.vp) var_val_in.vp=(void *)nco_free(var_val_in.vp);
 	      } /* !need_mec */
 	      if(has_mec){
@@ -1152,7 +1166,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    }else{
 	      /* Dimensions [clm/lnd/pft]_nm_in were pre-defined above as [clm/lnd/pft]_nm_out, replicate all other explicit dimensions (e.g., time|lev*|numrad) */
 	      rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_ids_out+dmn_idx);
-	    } /* !clm */
+	    } /* !dmn_id */
 	    if(rcd != NC_NOERR){
 	      /* Current input dimension is not yet in output file */
 	      rcd=nco_inq_dimlen(in_id,dmn_id,dmn_cnt_out+dmn_idx);
@@ -1162,40 +1176,37 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		  dmn_cnt_out[dmn_idx]=NC_UNLIMITED;
 	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
 	    } /* !rcd */
-	    if(dmn_nbr_out != dmn_nbr_in){
-	      assert(dmn_nbr_in-dmn_nbr_out <= 1);
-	      dmn_idx_swp=0;
-	      for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
-		if(dmn_ids_out[dmn_idx] != NC_MIN_INT){
-		  dmn_ids_swp[dmn_idx_swp]=dmn_ids_out[dmn_idx];
-		  dmn_cnt_swp[dmn_idx_swp]=dmn_cnt_out[dmn_idx];
-		  dmn_idx_swp++;
-		} /* !dmn_ids_out */
-	      } /* !dmn_idx */
-	      if(dmn_ids_out) dmn_ids_out=(int *)nco_free(dmn_ids_out);
-	      if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
-	      dmn_ids_out=dmn_ids_swp;
-	      dmn_cnt_out=dmn_cnt_swp;
-	      dmn_ids_swp=NULL;
-	      dmn_cnt_swp=NULL;
-	    } /* !dmn_nbr_out */
-	    if(flg_add_spt_crd){
-	      /* Add trailing spatial dimension(s) (i.e., [lat,lon] or [lndgrid], in MRV position(s) */ 
-	      if(flg_grd_1D){
-		dmn_ids_out[dmn_nbr_out]=dmn_id_col_out;
-		dmn_cnt_out[dmn_nbr_out]=col_nbr;
-		dmn_nbr_out++;
-	      } /* !flg_grd_1D */
-	      if(flg_grd_2D){
-		dmn_ids_out[dmn_nbr_out]=dmn_id_lat_out;
-		dmn_cnt_out[dmn_nbr_out]=lat_nbr;
-		dmn_ids_out[dmn_nbr_out+1]=dmn_id_lon_out;
-		dmn_cnt_out[dmn_nbr_out+1]=lon_nbr;
-		dmn_nbr_out+=2;
-	      } /* !flg_grd_2D */
-	      assert(dmn_nbr_out <= dmn_nbr_max);
-	    } /* !flg_add_spt_crd */
 	  } /* !dmn_idx */
+	  /* Repack output dimension arrays if rank shrank */
+	  if(dmn_nbr_out != dmn_nbr_in){
+	    assert(dmn_nbr_in-dmn_nbr_out <= 1);
+	    dmn_idx_swp=0;
+	    for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	      if(dmn_ids_out[dmn_idx] != NC_MIN_INT){
+		dmn_ids_swp[dmn_idx_swp]=dmn_ids_out[dmn_idx];
+		dmn_cnt_swp[dmn_idx_swp]=dmn_cnt_out[dmn_idx];
+		dmn_idx_swp++;
+	      } /* !dmn_ids_out */
+	    } /* !dmn_idx */
+	    memcpy(dmn_ids_out,dmn_ids_swp,dmn_nbr_out*sizeof(int));
+	    memcpy(dmn_cnt_out,dmn_cnt_swp,dmn_nbr_out*sizeof(int));
+	  } /* !dmn_nbr_out */
+	  /* Add trailing spatial dimension(s) (i.e., [lat,lon] or [lndgrid], in MRV position(s) */ 
+	  if(flg_add_spt_crd){
+	    if(flg_grd_1D){
+	      dmn_ids_out[dmn_nbr_out]=dmn_id_col_out;
+	      dmn_cnt_out[dmn_nbr_out]=col_nbr;
+	      dmn_nbr_out++;
+	    } /* !flg_grd_1D */
+	    if(flg_grd_2D){
+	      dmn_ids_out[dmn_nbr_out]=dmn_id_lat_out;
+	      dmn_cnt_out[dmn_nbr_out]=lat_nbr;
+	      dmn_ids_out[dmn_nbr_out+1]=dmn_id_lon_out;
+	      dmn_cnt_out[dmn_nbr_out+1]=lon_nbr;
+	      dmn_nbr_out+=2;
+	    } /* !flg_grd_2D */
+	    assert(dmn_nbr_out <= dmn_nbr_max);
+	  } /* !flg_add_spt_crd */
 	}else{ /* !flg_rgr */
 	  /* Replicate non-S1D variables */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_ids_in);
@@ -1313,8 +1324,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     } /* !need_clm */
   } /* !dbg */
   
+  (void)fprintf(stdout,"%s: DEBUG quark2\n",nco_prg_nm_get());
+
 #ifdef __GNUG__
-# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_pft,has_mss_val,has_numrad,idx_in,idx_out,idx_tbl,in_id,lnd_typ,lvl_idx,lvl_nbr,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pftlat_nbr,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy)
+# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_pft,has_mss_val,has_numrad,idx_in,idx_out,idx_tbl,in_id,lnd_typ,lnd_typ_crr,lvl_idx,lvl_nbr,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pftlat_nbr,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy)
 #endif /* !__GNUG__ */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -1490,6 +1503,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  (void)fprintf(stderr,"%s: INFO %s reports variable %s is sparse type %s\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_s1d_sng(nco_s1d_typ));
 	} /* !dbg */
 
+	(void)fprintf(stdout,"%s: DEBUG quark3\n",nco_prg_nm_get());
+
 	/* Determine what landunit this variable is defined on */
 	switch(var_typ_in){
 	case NC_FLOAT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
@@ -1576,11 +1591,12 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	     NCO Output   : time, MEC, lev*, spatial
 	     ncks --trd -C -d column,0,11 -v DZSNO,cols1d_gridcell_index ${DATA}/bm/elm_mali_rst.nc | m */
 	  mec_idx=0;
-	  clm_idx=0;
 	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO %s clm_nbr = %ld, mec_nbr = %ld, mrv_nbr = %ld\n",fnc_nm,var_nm,clm_nbr_in,mec_nbr_out,mrv_nbr);
-	  //	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
-	  while(clm_idx<clm_nbr_in){
-	    lnd_typ=cols1d_ityplun[clm_idx]; /* [1 <= lnd_typ <= lnd_nbr_out] */
+	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
+	  //	  while(clm_idx<clm_nbr_in){
+	    lnd_typ_crr=cols1d_ityplun[clm_idx]; /* [1 <= lnd_typ <= lnd_nbr_out] */
+
+	    if(lnd_typ_crr != lnd_typ) continue;
 	    
 	    /* grd_idx is 0-based index relative to the origin of the horizontal grid, cols1d is 1-based
 	       [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= cols1d_ixy <= col_nbr_out]
@@ -1623,7 +1639,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		} /* !var_typ_out */
 	      } /* !mrv_idx */
 	    } /* !ilun_deep_lake */
-	    clm_idx++;
 	  } /* !clm_idx */
 	} /* !nco_s1d_typ */
 	
