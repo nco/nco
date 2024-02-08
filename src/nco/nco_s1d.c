@@ -1645,7 +1645,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
 	    lnd_typ=cols1d_ityplun[clm_idx]; /* [1 <= lnd_typ <= lnd_nbr_out] */
 
-	    /* Skip columns with LUTs for which this variable is undefined */
+	    /* Skip columns with LUTs for which this variable is undefined
+	       The !has_mec exception is subtle---it ensures MEC fields alway pass through 
+	       NB: LUT=1 values for MEC fields (e.g., DZSNO) are written into MEC=1 slot by non-MEC block
+	       The MEC=1 value for the same gridcell overwrites the LUT=1 value in the MEC=1 slot */
 	    if(lnd_typ != lnd_typ_crr && !has_mec) continue;
 	    
 	    /* grd_idx is 0-based index relative to the origin of the horizontal grid, cols1d is 1-based
