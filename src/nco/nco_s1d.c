@@ -370,7 +370,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_inq_varid(in_id,"land1d_lon",&land1d_lon_id);
     rcd=nco_inq_varid_flg(in_id,"land1d_active",&land1d_active_id);
     rcd=nco_inq_varid_flg(in_id,"land1d_gridcell_index",&land1d_gridcell_index_id);
-    if(flg_nm_hst) rcd=nco_inq_varid(in_id,"land1d_itype_lunit",&land1d_ityplun_id); else rcd=nco_inq_varid(in_id,"land1d_ityplun",&land1d_ityplun_id);
+    /* beth_in.nc does not contain land1d_itype_lunit, whose presence should therefore be optional */
+    if(flg_nm_hst) rcd=nco_inq_varid(in_id,"land1d_ityplunit",&land1d_ityplun_id); else rcd=nco_inq_varid(in_id,"land1d_ityplun",&land1d_ityplun_id);
   } /* !flg_s1d_lnd */
      
   rcd=nco_inq_varid_flg(in_id,"pfts1d_lat",&pfts1d_lat_id);
@@ -751,8 +752,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     if(land1d_active_id != NC_MIN_INT) land1d_active=(int *)nco_malloc(lnd_nbr_in*sizeof(int));
     if(land1d_active_id != NC_MIN_INT) rcd=nco_get_var(in_id,land1d_active_id,land1d_active,NC_INT);
 
-    land1d_ityplun=(int *)nco_malloc(lnd_nbr_in*sizeof(int));
-    rcd=nco_get_var(in_id,land1d_ityplun_id,land1d_ityplun,NC_INT);
+    if(land1d_ityplun_id != NC_MIN_INT) land1d_ityplun=(int *)nco_malloc(lnd_nbr_in*sizeof(int));
+    if(land1d_ityplun_id != NC_MIN_INT) rcd=nco_get_var(in_id,land1d_ityplun_id,land1d_ityplun,NC_INT);
 
     lnd_nbr_out=9; /* fxm: determine this automagically? */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO lnd_nbr_out = %ld\n",nco_prg_nm_get(),lnd_nbr_out);
@@ -781,10 +782,12 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     
     pft_nbr_out=0;
     for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
-      if((pfts1d_ityplun[pft_idx] != ilun_vegetated_or_bare_soil) && (pfts1d_ityplun[pft_idx] != ilun_crop)) continue;
-      /* Skip bare ground, skip MECs */
-      while(pfts1d_ityp_veg[++pft_idx] != 0) pft_nbr_out++;
-      break;
+      if(pfts1d_ityp_veg[pft_idx] > pft_nbr_out) pft_nbr_out=pfts1d_ityp_veg[pft_idx];
+      // Slight more convoluted method that works on beth_in.nc 
+      //      if((pfts1d_ityplun[pft_idx] != ilun_vegetated_or_bare_soil) && (pfts1d_ityplun[pft_idx] != ilun_crop)) continue;
+      //      /* Skip bare ground, skip MECs */
+      //while(pfts1d_ityp_veg[++pft_idx] != 0) pft_nbr_out++;
+      //      break;
     } /* !pft_idx */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %ld\n",nco_prg_nm_get(),pft_nbr_out);
 
@@ -1600,25 +1603,31 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  val_out_fst=0L;
 	  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 	    /* PFT variable dimension ordering, from LRV to MRV:
-	       Restart input: PFT, lev*|numrad, e.g., fabd_sun(pft,numrad), tlai_z(pft,levcan)
+	       Restart input: PFT, lev*|numrad, e.g., T_REF2M_MIN_INST(pft), fabd_sun(pft,numrad), tlai_z(pft,levcan)
 	       History input: time, PFT, lev*|numrad, spatial
 	       NCO Output   : time, PFT, lev*|numrad, spatial */
 	    for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
+
 	      pft_typ=pfts1d_ityp_veg[pft_idx]; /* [1 <= pft_typ <= pft_nbr_out] */
-	      /* Skip bare ground, output array contains only vegetated types */
+	      /* Skip bare ground so output array contains only vegetated types */
 	      if(!pft_typ) continue;
+
 	      /* grd_idx is 0-based index relative to the origin of the horizontal grid, pfts1d is 1-based
 		 [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= pfts1d_ixy <= col_nbr_out]
 		 Storage order for history fields (Beth's GPP, anyway) is lon,lat
 		 Storage order for restart fields (e.g., DZSNO) is lat,lon */
-	      grd_idx_out= flg_grd_1D ? pfts1d_ixy[pft_idx]-1L : (pfts1d_ixy[pft_idx]-1L)*lat_nbr+(pfts1d_jxy[pft_idx]-1L);
+	      if(flg_nm_hst) grd_idx_out= flg_grd_1D ? pfts1d_ixy[pft_idx]-1L : (pfts1d_ixy[pft_idx]-1L)*lat_nbr+(pfts1d_jxy[pft_idx]-1L);
+	      if(flg_nm_rst) grd_idx_out= flg_grd_1D ? pfts1d_ixy[pft_idx]-1L : (pfts1d_jxy[pft_idx]-1L)*lon_nbr+(pfts1d_ixy[pft_idx]-1L);
+
+	      if(flg_nm_hst) idx_in=pft_idx;
+	      if(flg_nm_rst) idx_in=pft_idx*mrv_nbr+mrv_idx;
 	      idx_out=(pft_typ-1)*grd_sz_out+grd_idx_out;
 	      /* memcpy() would allow next statement to work for generic types
 		 However, memcpy() is a system call and could be expensive in an innermost loop */
 	      switch(var_typ_out){
-	      case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[pft_idx]; break;
-	      case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[pft_idx]; break;
-	      case NC_INT: var_val_out.ip[idx_out]=var_val_in.ip[pft_idx]; break;
+	      case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[idx_in]; break;
+	      case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[idx_in]; break;
+	      case NC_INT: var_val_out.ip[idx_out]=var_val_in.ip[idx_in]; break;
 	      default:
 		(void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported type\n",nco_prg_nm_get(),fnc_nm);
 		nco_dfl_case_nc_type_err();
