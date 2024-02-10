@@ -189,6 +189,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   long int mec_idx;
   long int pft_idx;
 
+  nco_bool flg_var_mpt; /* [flg] Variable has no valid values */
+
   size_t idx_dbg=rgr->idx_dbg; /* [idx] User-specifiable debugging location */
   size_t idx_in; /* [idx] Input grid index */
   size_t idx_out; /* [idx] Output grid index */
@@ -783,7 +785,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     pft_nbr_out=0;
     for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
       if(pfts1d_ityp_veg[pft_idx] > pft_nbr_out) pft_nbr_out=pfts1d_ityp_veg[pft_idx];
-      // Slight more convoluted method that works on beth_in.nc 
+      // Slightly more convoluted method originally used on beth_in.nc (to count only crops, I think
       //      if((pfts1d_ityplun[pft_idx] != ilun_vegetated_or_bare_soil) && (pfts1d_ityplun[pft_idx] != ilun_crop)) continue;
       //      /* Skip bare ground, skip MECs */
       //while(pfts1d_ityp_veg[++pft_idx] != 0) pft_nbr_out++;
@@ -1054,6 +1056,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  var_sz_in=1L;
 	  mrv_nbr=1L;
 	  flg_add_spt_crd=False;
+	  flg_var_mpt=False;
 	  nco_s1d_typ=nco_s1d_nil;
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    dmn_id=dmn_ids_in[dmn_idx];
@@ -1142,28 +1145,28 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	      nco_dfl_case_nc_type_err();
 	      break;
 	    } /* !var_typ_in */
-	    if(idx_in == var_sz_in){
-	      (void)fprintf(fp_stdout,"%s: ERROR %s reports %s has no valid values\n",nco_prg_nm_get(),fnc_nm,var_nm);
-	      nco_exit(EXIT_FAILURE);
-	    } /* !idx_in */
+	      //(void)fprintf(stdout,"%s: DEBUG quark1\n",nco_prg_nm_get());
+	    if(idx_in == var_sz_in) (void)fprintf(fp_stdout,"%s: INFO %s reports %s has no valid values in input, so will be all missing values in output too...\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	    lnd_typ_crr=NC_MIN_INT;
 	    lnd_typ_nxt=NC_MIN_INT;
-	    switch(nco_s1d_typ){
-	    case nco_s1d_clm:
-	      lnd_typ_crr=cols1d_ityplun[idx_s1d_crr];
-	      if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=cols1d_ityplun[idx_s1d_nxt];
-	      break;
-	    case nco_s1d_lnd:
-	      lnd_typ_crr=land1d_ityplun[idx_s1d_crr];
-	      if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=land1d_ityplun[idx_s1d_nxt];
-	      break;
-	    case nco_s1d_pft:
-	      lnd_typ_crr=pfts1d_ityplun[idx_s1d_crr];
-	      if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=pfts1d_ityplun[idx_s1d_nxt];
-	      break;
-	    case nco_s1d_grd:
-	    default: break;
-	    } /* !nco_s1d_typ */
+	    if(idx_s1d_crr != NC_MIN_INT){
+	      switch(nco_s1d_typ){
+	      case nco_s1d_clm:
+		lnd_typ_crr=cols1d_ityplun[idx_s1d_crr];
+		if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=cols1d_ityplun[idx_s1d_nxt];
+		break;
+	      case nco_s1d_lnd:
+		lnd_typ_crr=land1d_ityplun[idx_s1d_crr];
+		if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=land1d_ityplun[idx_s1d_nxt];
+		break;
+	      case nco_s1d_pft:
+		lnd_typ_crr=pfts1d_ityplun[idx_s1d_crr];
+		if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=pfts1d_ityplun[idx_s1d_nxt];
+		break;
+	      case nco_s1d_grd:
+	      default: break;
+	      } /* !nco_s1d_typ */
+	    } /* !idx_s1d_crr */
 	    if(lnd_typ_nxt == ilun_landice_multiple_elevation_classes) has_mec=True;
 	    if(var_val_in.vp) var_val_in.vp=(void *)nco_free(var_val_in.vp);
 	  } /* !need_mec */
@@ -1251,6 +1254,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  /* Replicate non-S1D variables */
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_ids_in);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	    dmn_id=dmn_ids_in[dmn_idx];
 	    rcd=nco_inq_dimname(in_id,dmn_id,dmn_nm);
 	    rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_ids_out+dmn_idx);
 	    if(rcd != NC_NOERR){
@@ -1365,7 +1369,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   } /* !dbg */
   
 #ifdef __GNUG__
-# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_pft,has_mss_val,has_numrad,idx_in,idx_out,idx_s1d_crr,idx_s1d_nxt,idx_tbl,in_id,lnd_typ,lnd_typ_crr,lnd_typ_nxt,lvl_idx,lvl_nbr,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pftlat_nbr,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy)
+# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,flg_var_mpt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_pft,has_mss_val,has_numrad,idx_in,idx_out,idx_s1d_crr,idx_s1d_nxt,idx_tbl,in_id,lnd_typ,lnd_typ_crr,lnd_typ_nxt,lvl_idx,lvl_nbr,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pftlat_nbr,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy)
 #endif /* !__GNUG__ */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -1566,31 +1570,30 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  nco_dfl_case_nc_type_err();
 	  break;
 	} /* !var_typ_in */
-	if(idx_in == var_sz_in){
-	  (void)fprintf(fp_stdout,"%s: ERROR %s reports %s has no valid values\n",nco_prg_nm_get(),fnc_nm,var_nm);
-	  nco_exit(EXIT_FAILURE);
-	} /* !idx_in */
+	if(idx_in == var_sz_in) flg_var_mpt=True;
 	lnd_typ_crr=NC_MIN_INT;
 	lnd_typ_nxt=NC_MIN_INT;
-	switch(nco_s1d_typ){
-	case nco_s1d_clm:
-	  lnd_typ_crr=cols1d_ityplun[idx_s1d_crr];
-	  if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=cols1d_ityplun[idx_s1d_nxt];
-	  break;
-	case nco_s1d_lnd:
-	  lnd_typ_crr=land1d_ityplun[idx_s1d_crr];
-	  if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=land1d_ityplun[idx_s1d_nxt];
-	  break;
-	case nco_s1d_pft:
-	  lnd_typ_crr=pfts1d_ityplun[idx_s1d_crr];
-	  if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=pfts1d_ityplun[idx_s1d_nxt];
-	  break;
-	case nco_s1d_grd:
-	default: break;
-	} /* !nco_s1d_typ */
+	if(idx_s1d_crr != NC_MIN_INT){
+	  switch(nco_s1d_typ){
+	  case nco_s1d_clm:
+	    lnd_typ_crr=cols1d_ityplun[idx_s1d_crr];
+	    if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=cols1d_ityplun[idx_s1d_nxt];
+	    break;
+	  case nco_s1d_lnd:
+	    lnd_typ_crr=land1d_ityplun[idx_s1d_crr];
+	    if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=land1d_ityplun[idx_s1d_nxt];
+	    break;
+	  case nco_s1d_pft:
+	    lnd_typ_crr=pfts1d_ityplun[idx_s1d_crr];
+	    if(idx_s1d_nxt != NC_MIN_INT) lnd_typ_nxt=pfts1d_ityplun[idx_s1d_nxt];
+	    break;
+	  case nco_s1d_grd:
+	  default: break;
+	  } /* !nco_s1d_typ */
+	} /* !idx_s1d_crr */
 	if(lnd_typ_crr == ilun_vegetated_or_bare_soil && lnd_typ_nxt == ilun_landice_multiple_elevation_classes) has_mec=True;
 	
-	(void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d, s1d_typ = %s, lnd_typ = %d, landunit type = %s\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ,nco_lnd_typ_sng(lnd_typ));
+	if(!flg_var_mpt) (void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d, s1d_typ = %s, lnd_typ = %d, landunit type = %s\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ,nco_lnd_typ_sng(lnd_typ));
 	  
 	/* The Hard Work */
 	if(nco_s1d_typ == nco_s1d_pft){
@@ -1619,20 +1622,23 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	      if(flg_nm_hst) grd_idx_out= flg_grd_1D ? pfts1d_ixy[pft_idx]-1L : (pfts1d_ixy[pft_idx]-1L)*lat_nbr+(pfts1d_jxy[pft_idx]-1L);
 	      if(flg_nm_rst) grd_idx_out= flg_grd_1D ? pfts1d_ixy[pft_idx]-1L : (pfts1d_jxy[pft_idx]-1L)*lon_nbr+(pfts1d_ixy[pft_idx]-1L);
 
-	      if(flg_nm_hst) idx_in=pft_idx;
-	      if(flg_nm_rst) idx_in=pft_idx*mrv_nbr+mrv_idx;
-	      idx_out=(pft_typ-1)*grd_sz_out+grd_idx_out;
-	      /* memcpy() would allow next statement to work for generic types
-		 However, memcpy() is a system call and could be expensive in an innermost loop */
-	      switch(var_typ_out){
-	      case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[idx_in]; break;
-	      case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[idx_in]; break;
-	      case NC_INT: var_val_out.ip[idx_out]=var_val_in.ip[idx_in]; break;
-	      default:
-		(void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported type\n",nco_prg_nm_get(),fnc_nm);
-		nco_dfl_case_nc_type_err();
-		break;
-	      } /* !var_typ_out */
+	      for(mrv_idx=0;mrv_idx<mrv_nbr;mrv_idx++){
+		/* Recall that lev*|numrad are MRV in restart input, and are LRV in output where lev*|numrad precedes column,[lat,lon|lndgrid] */
+		if(flg_nm_hst) idx_in=pft_idx;
+		if(flg_nm_rst) idx_in=pft_idx*mrv_nbr+mrv_idx;
+		idx_out=(pft_typ-1)*grd_sz_out+grd_idx_out;
+		/* memcpy() would allow next statement to work for generic types
+		   However, memcpy() is a system call and could be expensive in an innermost loop */
+		switch(var_typ_out){
+		case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[idx_in]; break;
+		case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[idx_in]; break;
+		case NC_INT: var_val_out.ip[idx_out]=var_val_in.ip[idx_in]; break;
+		default:
+		  (void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported type\n",nco_prg_nm_get(),fnc_nm);
+		  nco_dfl_case_nc_type_err();
+		  break;
+		} /* !var_typ_out */
+	      } /* !mrv_idx */
 	    } /* !pft_idx */
 	    val_in_fst+=grd_sz_in; /* fxm */
 	    val_out_fst+=grd_sz_out;
