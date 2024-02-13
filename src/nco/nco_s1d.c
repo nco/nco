@@ -1350,20 +1350,20 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       for(clm_idx=0;clm_idx<idx_dbg;clm_idx++){
 	clm_typ=cols1d_ityp[clm_idx];      
 	lnd_typ=cols1d_ityplun[clm_idx];      
-	(void)fprintf(fp_stdout,"%s: clm_idx = %ld, lnd_typ = %d, landunit = %s, clm_typ = %d, column = %s, column active = %d\n",nco_prg_nm_get(),clm_idx,lnd_typ,nco_lnd_typ_sng(lnd_typ),clm_typ,nco_clm_typ_sng(clm_typ),cols1d_active[clm_idx]);
+	(void)fprintf(fp_stdout,"%s: clm_idx = %ld, lnd_typ = %d %s, clm_typ = %d = %s, active = %d\n",nco_prg_nm_get(),clm_idx,lnd_typ,nco_lnd_typ_sng(lnd_typ),clm_typ,nco_clm_typ_sng(clm_typ),cols1d_active[clm_idx]);
       } /* !clm_idx */
     } /* !need_clm */
     if(need_lnd){
       for(lnd_idx=0;lnd_idx<idx_dbg;lnd_idx++){
 	lnd_typ=land1d_ityplun[lnd_idx];      
-	(void)fprintf(fp_stdout,"%s: lnd_idx = %ld, lnd_typ = %d, landunit = %s, landunit active = %d\n",nco_prg_nm_get(),lnd_idx,lnd_typ,nco_lnd_typ_sng(lnd_typ),land1d_active[lnd_idx]);
+	(void)fprintf(fp_stdout,"%s: lnd_idx = %ld, lnd_typ = %d = %s, active = %d\n",nco_prg_nm_get(),lnd_idx,lnd_typ,nco_lnd_typ_sng(lnd_typ),land1d_active[lnd_idx]);
       } /* !clm_idx */
     } /* !need_clm */
     if(need_pft){
       for(pft_idx=0;pft_idx<idx_dbg;pft_idx++){
 	pft_typ=pfts1d_ityp_veg[pft_idx];      
 	lnd_typ=pfts1d_ityplun[pft_idx];      
-	(void)fprintf(fp_stdout,"%s: pft_idx = %ld, lnd_typ = %d, landunit = %s, pft_typ = %d, PFT = %s, PFT active = %d\n",nco_prg_nm_get(),pft_idx,lnd_typ,nco_lnd_typ_sng(lnd_typ),pft_typ,nco_pft_typ_sng(pft_typ),pfts1d_active[pft_idx]);
+	(void)fprintf(fp_stdout,"%s: pft_idx = %ld, lnd_typ = %d = %s, pft_typ = %d = %s, active = %d\n",nco_prg_nm_get(),pft_idx,lnd_typ,nco_lnd_typ_sng(lnd_typ),pft_typ,nco_pft_typ_sng(pft_typ),pfts1d_active[pft_idx]);
       } /* !clm_idx */
     } /* !need_clm */
   } /* !dbg */
@@ -1401,6 +1401,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	rcd=nco_inq_vardimid(in_id,var_id_in,dmn_ids_in);
 	rcd=nco_inq_vardimid(out_id,var_id_out,dmn_ids_out);
 	has_levcan=has_levgrnd=has_levlak=has_levsno=has_levsno1=has_levtot=has_mec=has_numrad=False;
+	flg_var_mpt=False;
 	/* 20240202: Identify special dimensions in input variable
 	   mrv_nbr is product of sizes of dimensions following (thus MRV) column|gridcell|landunit|pft */
 	mrv_nbr=1L;
@@ -1533,9 +1534,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  else if(dmn_id == dmn_id_lnd_in) nco_s1d_typ=nco_s1d_lnd;
 	  else if(dmn_id == dmn_id_pft_in) nco_s1d_typ=nco_s1d_pft;
 	} /* !dmn_idx */
-	if(nco_dbg_lvl_get() >= nco_dbg_std){
-	  (void)fprintf(stderr,"%s: INFO %s reports variable %s is sparse type %s\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_s1d_sng(nco_s1d_typ));
-	} /* !dbg */
 
 	/* Determine what landunit this variable is defined on
 	   Ratio of idx_in (an element counter) by mrv_nbr yields a clm/lnd/pft index
@@ -1593,7 +1591,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	} /* !idx_s1d_crr */
 	if(lnd_typ_crr == ilun_vegetated_or_bare_soil && lnd_typ_nxt == ilun_landice_multiple_elevation_classes) has_mec=True;
 	
-	if(!flg_var_mpt) (void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d, s1d_typ = %s, lnd_typ = %d, landunit type = %s\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ,nco_lnd_typ_sng(lnd_typ));
+	if(!flg_var_mpt) (void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d = %s, lnd_typ = %d = %s\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ,nco_lnd_typ_sng(lnd_typ));
 	  
 	/* The Hard Work */
 	if(nco_s1d_typ == nco_s1d_pft){
