@@ -1,5 +1,11 @@
 2024-02-13  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.0-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha06: Mahomes';git push
+	git tag -a 5.2.0-alpha06 -m '';git push --tags
+
+	* S1D Value must not equal zero or missing value when determining landunit type
+
 	* NCO 5.2.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha05: Sandflower';git push
 	git tag -a 5.2.0-alpha05 -m 'ncks: s1d dmn rdr, mec, vrt, mss_val';git push --tags

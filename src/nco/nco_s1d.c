@@ -1122,21 +1122,21 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    idx_s1d_nxt=NC_MIN_INT;
 	    switch(var_typ_in){
 	      case NC_FLOAT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-		if(var_val_in.fp[idx_in] != mss_val_cmp_dbl){
+		if(var_val_in.fp[idx_in] != 0.0f && var_val_in.fp[idx_in] != mss_val_cmp_dbl){
 		  idx_s1d_crr=idx_in/mrv_nbr;
 		  if(idx_in+mrv_nbr < var_sz_in && var_val_in.fp[idx_in+mrv_nbr] != mss_val_cmp_dbl) idx_s1d_nxt=idx_s1d_crr+1L;
 		  break;
 		} /* !var_val_in.fp */
 	      break;
 	    case NC_DOUBLE: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-		if(var_val_in.dp[idx_in] != mss_val_cmp_dbl){
+		if(var_val_in.dp[idx_in] != 0.0 && var_val_in.dp[idx_in] != mss_val_cmp_dbl){
 		  idx_s1d_crr=idx_in/mrv_nbr;
 		  if(idx_in+mrv_nbr < var_sz_in && var_val_in.dp[idx_in+mrv_nbr] != mss_val_cmp_dbl) idx_s1d_nxt=idx_s1d_crr+1L;
 		  break;
 		} /* !var_val_in.dp */
 	      break;
 	    case NC_INT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-		if(var_val_in.ip[idx_in] != mss_val_cmp_dbl){
+		if(var_val_in.ip[idx_in] != 0 && var_val_in.ip[idx_in] != mss_val_cmp_dbl){
 		  idx_s1d_crr=idx_in/mrv_nbr;
 		  if(idx_in+mrv_nbr < var_sz_in && var_val_in.ip[idx_in+mrv_nbr] != mss_val_cmp_dbl) idx_s1d_nxt=idx_s1d_crr+1L;
 		  break;
@@ -1568,21 +1568,21 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	idx_s1d_nxt=NC_MIN_INT;
 	switch(var_typ_in){
 	case NC_FLOAT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-	    if(var_val_in.fp[idx_in] != mss_val_cmp_dbl){
+	    if(var_val_in.fp[idx_in] != 0.0f && var_val_in.fp[idx_in] != mss_val_cmp_dbl){
 	      idx_s1d_crr=idx_in/mrv_nbr;
 	      if(idx_in+mrv_nbr < var_sz_in && var_val_in.fp[idx_in+mrv_nbr] != mss_val_cmp_dbl) idx_s1d_nxt=idx_s1d_crr+1L;
 	      break;
 	    } /* !var_val_in.fp */
 	  break;
 	case NC_DOUBLE: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-	    if(var_val_in.dp[idx_in] != mss_val_cmp_dbl){
+	    if(var_val_in.dp[idx_in] != 0.0 && var_val_in.dp[idx_in] != mss_val_cmp_dbl){
 	      idx_s1d_crr=idx_in/mrv_nbr;
 	      if(idx_in+mrv_nbr < var_sz_in && var_val_in.dp[idx_in+mrv_nbr] != mss_val_cmp_dbl) idx_s1d_nxt=idx_s1d_crr+1L;
 	      break;
 	    } /* !var_val_in.dp */
 	  break;
 	case NC_INT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-	    if(var_val_in.ip[idx_in] != mss_val_cmp_dbl){
+	    if(var_val_in.ip[idx_in] != 0 && var_val_in.ip[idx_in] != mss_val_cmp_dbl){
 	      idx_s1d_crr=idx_in/mrv_nbr;
 	      if(idx_in+mrv_nbr < var_sz_in && var_val_in.ip[idx_in+mrv_nbr] != mss_val_cmp_dbl) idx_s1d_nxt=idx_s1d_crr+1L;
 	      break;
@@ -1679,7 +1679,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	     NCO Output   : time, MEC, lev*, spatial
 	     ncks --trd -C -d column,0,11 -v DZSNO,cols1d_gridcell_index ${DATA}/bm/elm_mali_rst.nc | m */
 	  mec_idx=0;
-	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO %s clm_nbr = %ld, mec_nbr = %ld, mrv_nbr = %ld\n",fnc_nm,var_nm,clm_nbr_in,mec_nbr_out,mrv_nbr);
+	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO %s clm_nbr = %ld, mec_nbr = %ld, mrv_nbr = %ld\n",fnc_nm,var_nm,clm_nbr_in,(has_mec) ? mec_nbr_out : 0,mrv_nbr);
 	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
 	    lnd_typ=cols1d_ityplun[clm_idx]; /* [1 <= lnd_typ <= lnd_nbr_out] */
 
