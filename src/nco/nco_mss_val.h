@@ -74,7 +74,7 @@ nco_bool /* O [flg] Variable has missing value */
 nco_mss_val_get_unn /* [fnc] Return missing value of variable, if any, as double precision number */
 (const int nc_id, /* I [id] netCDF input-file ID */
  const int var_id, /* I [id] netCDF variable ID */
- ptr_unn *mss_val_unn); /* O [frc] Missing value pointer union */
+ val_unn *mss_val_unn); /* O [frc] Missing value union */
 
 #ifdef __cplusplus
 } /* !extern "C" */

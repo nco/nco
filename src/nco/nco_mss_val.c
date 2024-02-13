@@ -480,11 +480,10 @@ nco_bool /* O [flg] Variable has missing value */
 nco_mss_val_get_unn /* [fnc] Return missing value of variable, if any, as double precision number */
 (const int nc_id, /* I [id] netCDF input-file ID */
  const int var_id, /* I [id] netCDF variable ID */
- ptr_unn *mss_val_unn) /* O [frc] Missing value pointer union */
+ val_unn *mss_val_unn) /* O [frc] Missing value union */
 {
-  /* Purpose: Return missing_value of variable, if any, as double precision number
+  /* Purpose: Return missing_value of variable, if any
      Basically this is a stripped-down, fast version of nco_mss_val_get()
-     Created for use in regridding
      No matter what type missing_value is on disk, this routine returns a double precision value */
   
   static nco_bool WRN_FIRST=True; /* [flg] No warnings yet for _FillValue/missing_value mismatch */
@@ -522,7 +521,7 @@ nco_mss_val_get_unn /* [fnc] Return missing value of variable, if any, as double
        This prevents excessive retrievals and (potentially) printing of lengthy WARNINGS below */
     if(mss_val_unn){
       /* Oddly, ARM uses NC_CHAR for type of missing_value, so make allowances for this */
-      (void)nco_get_att(nc_id,var_id,att_nm,mss_val_unn,att_typ);
+      (void)nco_get_att(nc_id,var_id,att_nm,(void *)mss_val_unn,att_typ);
     } /* !mss_val_unn */
     break;
   } /* !att */

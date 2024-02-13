@@ -1028,6 +1028,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
   size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
 
+  val_unn mss_val_unn; /* [frc] Missing value union */
+
   /* From vertical interpolation...Maybe not needed? */
   float mss_val_flt;
   aed_sct aed_mtd_fll_val;
@@ -1369,7 +1371,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   } /* !dbg */
   
 #ifdef __GNUG__
-# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,flg_var_mpt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_pft,has_mss_val,has_numrad,idx_in,idx_out,idx_s1d_crr,idx_s1d_nxt,idx_tbl,in_id,lnd_typ,lnd_typ_crr,lnd_typ_nxt,lvl_idx,lvl_nbr,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pftlat_nbr,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy)
+# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,flg_var_mpt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_pft,has_mss_val,has_numrad,idx_in,idx_out,idx_s1d_crr,idx_s1d_nxt,idx_tbl,in_id,lnd_typ,lnd_typ_crr,lnd_typ_nxt,lvl_idx,lvl_nbr,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,mss_val_unn,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pftlat_nbr,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy)
 #endif /* !__GNUG__ */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -1473,12 +1475,23 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
 	var_val_in.vp=(void *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_in),fnc_nm,"Unable to malloc() input value buffer");
 	var_val_out.vp=(void *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_out),fnc_nm,"Unable to malloc() output value buffer");
-	/* Initialize output */
-	(void)memset(var_val_out.vp,0,var_sz_out*nco_typ_lng(var_typ_out));
 	
 	/* Obtain input variable */
 	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_in.vp,var_typ_in);
 
+	/* 20240213: Get missing value of appropriate type */
+	has_mss_val=nco_mss_val_get_unn(in_id,var_id_in,&mss_val_unn);
+	if(!has_mss_val){
+	  switch(var_typ_in){
+	  case NC_FLOAT: mss_val_unn.f=NC_FILL_FLOAT; break;
+	  case NC_DOUBLE: mss_val_unn.d=NC_FILL_DOUBLE; break;
+	  case NC_INT: mss_val_unn.i=NC_FILL_INT; break;
+	  default:
+	    (void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported type\n",nco_prg_nm_get(),fnc_nm);
+	    nco_dfl_case_nc_type_err();
+	    break;
+	  } /* !var_typ_in */
+	} /* !has_mss_val */
 	/* 20210909: Begin new missing value treatment */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 	if(has_mss_val) mss_val_cmp_dbl=mss_val_dbl; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
@@ -1525,6 +1538,18 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	if(idx_in == var_sz_in) has_mss_val=False;
 	/* 20210909: End new missing value treatment */
 	
+	/* Initialize output to missing value (so ocean values are missing not 0.0) */
+	(void)memset(var_val_out.vp,0,var_sz_out*nco_typ_lng(var_typ_out));
+	switch(var_typ_in){
+	case NC_FLOAT: for(idx_out=0;idx_out<var_sz_out;idx_out++) var_val_out.fp[idx_out]=mss_val_unn.f; break;
+	case NC_DOUBLE: for(idx_out=0;idx_out<var_sz_out;idx_out++) var_val_out.dp[idx_out]=mss_val_unn.d; break;
+	case NC_INT: for(idx_out=0;idx_out<var_sz_out;idx_out++) var_val_out.ip[idx_out]=mss_val_unn.i; break;
+	default:
+	  (void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported type\n",nco_prg_nm_get(),fnc_nm);
+	  nco_dfl_case_nc_type_err();
+	  break;
+	} /* !var_typ_in */
+
 	has_clm=has_grd=has_lnd=has_pft=False;
 	nco_s1d_typ=nco_s1d_nil;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){

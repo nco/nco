@@ -1,8 +1,12 @@
-2024-02-07  Charlie Zender  <zender@uci.edu>
+2024-02-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha05: Sandflower';git push
-	git tag -a 5.2.0-alpha05 -m 'ncks: s1d dmn rdr, s1d vrt';git push --tags
+	git tag -a 5.2.0-alpha05 -m 'ncks: s1d dmn rdr, mec, vrt, mss_val';git push --tags
+
+	* S1D initialize all output fields to missing value
+
+2024-02-07  Charlie Zender  <zender@uci.edu>
 
 	* S1D now defines MEC and MRV dimensions correctly
 
@@ -14,7 +18,7 @@
 
 	* Add MEC coordinate to output
 
-	* Struggling to automatically identify dimensions in non-MEC fields!
+	* Struggle to automatically identify dimensions in non-MEC fields!
 
 	* Modify nco_dfl_case_generic_err() to print bad case arguments
 
@@ -22,7 +26,7 @@
 
 2024-02-01  Charlie Zender  <zender@uci.edu>
 
-	* S1D: Add legions code to improve MEC column output capabilities, including vertical fields
+	* S1D: Add legions of code to improve MEC column output capabilities, including vertical fields
 
 2024-01-31  Charlie Zender  <zender@uci.edu>
 
