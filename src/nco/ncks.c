@@ -842,7 +842,7 @@ main(int argc,char **argv)
         flg_rgr=True;
 	rgr_map=(char *)strdup(optarg);
       } /* endif rgr_map */
-      if(!strcmp(opt_crr,"hrz_fl") || !strcmp(opt_crr,"hrz_crd") || !strcmp(opt_crr,"rgr_hrz")){
+      if(!strcmp(opt_crr,"hrz_fl") || !strcmp(opt_crr,"hrz_s1d") || !strcmp(opt_crr,"hrz_crd")){
 	flg_s1d=flg_rgr=True;
 	rgr_hrz=(char *)strdup(optarg);
       } /* !hrz_fl */

@@ -1,8 +1,12 @@
-2024-02-13  Charlie Zender  <zender@uci.edu>
+2024-02-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.0-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha06: Mahomes';git push
 	git tag -a 5.2.0-alpha06 -m '';git push --tags
+
+	* S1D appears to work well for most variables. Remaining issues	include: icol_crop_noncompete, icol_urban_*
+
+2024-02-13  Charlie Zender  <zender@uci.edu>
 
 	* S1D implement new has_mec determination algorithm
 

@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.0-alpha05
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 13 February 2024
+@set update-date 14 February 2024
 @set update-month February 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22243,13 +22243,13 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [--area_wgt] [-b @var{fl_bnr}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [--fix_rec_dmn @var{dim}] [--fl_fmt @var{fl_fmt}] [--fmt_val @var{format}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [--grp_xtr_var_xcl]
-[-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--hpss] [--jsn] [--jsn_fmt @var{lvl}] 
+[-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--hpss] [--hrz @var{fl_hrz}] [--jsn] [--jsn_fmt @var{lvl}] 
 [-L @var{dfl_lvl}] [-l @var{path}]
 [-M] [-m] [--map @var{map-file}] [--md5] [--mk_rec_dmn @var{dim}]
 [--no_blank] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...] [--prn_fl @var{print-file}]
 [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rgr ...] [--rnr=wgt]
-[-s @var{format}] [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [--vrt @var{vrt-file}] 
+[-s @var{format}] [--s1d] [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [--vrt @var{vrt-file}] 
 [-X ...] [-x] [--xml] @var{input-file} [[@var{output-file}]]
 @end example
 

@@ -15,29 +15,29 @@ nco_clm_typ_sng /* [fnc] Convert column-type enum to string */
 {
   /* Purpose: Convert column-type enum to string */
   switch(nco_clm_typ){
-  case nco_clm_icol_nil: return "Unknown, unset, or unclassified landunit type";
-  case nco_clm_icol_vegetated_or_bare_soil: return "Vegetated or bare soil";
-  case nco_clm_icol_crop: return "Crop icol_crop_noncompete: 2*100+m, m=cft_lb,cft_ub";
-  case nco_clm_icol_crop_noncompete_01: return "Crop noncompete type 01";
-  case nco_clm_icol_crop_noncompete_02: return "Crop noncompete type 02";
-  case nco_clm_icol_landice: return "Landice (plain, no MEC)";
-  case nco_clm_icol_landice_multiple_elevation_class_01: return "Landice multiple elevation class 01";
-  case nco_clm_icol_landice_multiple_elevation_class_02: return "Landice multiple elevation class 02";
-  case nco_clm_icol_landice_multiple_elevation_class_03: return "Landice multiple elevation class 03";
-  case nco_clm_icol_landice_multiple_elevation_class_04: return "Landice multiple elevation class 04";
-  case nco_clm_icol_landice_multiple_elevation_class_05: return "Landice multiple elevation class 05";
-  case nco_clm_icol_landice_multiple_elevation_class_06: return "Landice multiple elevation class 06";
-  case nco_clm_icol_landice_multiple_elevation_class_07: return "Landice multiple elevation class 07";
-  case nco_clm_icol_landice_multiple_elevation_class_08: return "Landice multiple elevation class 08";
-  case nco_clm_icol_landice_multiple_elevation_class_09: return "Landice multiple elevation class 09";
-  case nco_clm_icol_landice_multiple_elevation_class_10: return "Landice multiple elevation class 10";
-  case nco_clm_icol_deep_lake: return "Deep lake";
-  case nco_clm_icol_wetland: return "Wetland";
-  case nco_clm_icol_urban_roof: return "Urban roof";
-  case nco_clm_icol_urban_sunwall: return "Urban sunwall";
-  case nco_clm_icol_urban_shadewall: return "Urban shadewall";
-  case nco_clm_icol_urban_impervious_road: return "Urban impervious road";
-  case nco_clm_icol_urban_pervious_road: return "Urban pervious road";
+  case nco_clm_icol_nil: return "Unknown, unset, or unclassified landunit type"; /* 0 */
+  case nco_clm_icol_vegetated_or_bare_soil: return "Vegetated or bare soil"; /* 1 */
+  case nco_clm_icol_crop: return "Crop icol_crop_noncompete: 2*100+m, m=cft_lb,cft_ub"; /* 2 */
+  case nco_clm_icol_crop_noncompete_01: return "Crop noncompete type 01"; /* 201 */
+  case nco_clm_icol_crop_noncompete_02: return "Crop noncompete type 02"; /* 202 */
+  case nco_clm_icol_landice: return "Landice (plain, no MEC)"; /* 3 */
+  case nco_clm_icol_landice_multiple_elevation_class_01: return "Landice multiple elevation class 01"; /* 401 */
+  case nco_clm_icol_landice_multiple_elevation_class_02: return "Landice multiple elevation class 02"; /* 402 */
+  case nco_clm_icol_landice_multiple_elevation_class_03: return "Landice multiple elevation class 03"; /* 403 */
+  case nco_clm_icol_landice_multiple_elevation_class_04: return "Landice multiple elevation class 04"; /* 404 */
+  case nco_clm_icol_landice_multiple_elevation_class_05: return "Landice multiple elevation class 05"; /* 405 */
+  case nco_clm_icol_landice_multiple_elevation_class_06: return "Landice multiple elevation class 06"; /* 406 */
+  case nco_clm_icol_landice_multiple_elevation_class_07: return "Landice multiple elevation class 07"; /* 407 */
+  case nco_clm_icol_landice_multiple_elevation_class_08: return "Landice multiple elevation class 08"; /* 408 */
+  case nco_clm_icol_landice_multiple_elevation_class_09: return "Landice multiple elevation class 09"; /* 409 */
+  case nco_clm_icol_landice_multiple_elevation_class_10: return "Landice multiple elevation class 10"; /* 410 */
+  case nco_clm_icol_deep_lake: return "Deep lake"; /* 5 */
+  case nco_clm_icol_wetland: return "Wetland"; /* 6 */
+  case nco_clm_icol_urban_roof: return "Urban roof"; /* 71 */
+  case nco_clm_icol_urban_sunwall: return "Urban sunwall"; /* 72 */
+  case nco_clm_icol_urban_shadewall: return "Urban shadewall"; /* 73 */
+  case nco_clm_icol_urban_impervious_road: return "Urban impervious road"; /* 74 */
+  case nco_clm_icol_urban_pervious_road: return "Urban pervious road"; /* 75 */
   default: nco_dfl_case_generic_err((int)nco_clm_typ); break;
   } /* !nco_clm_typ_enm */
 
@@ -601,7 +601,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     grd_sz_in= flg_grd_1D ? col_nbr : lat_nbr*lon_nbr;
   } /* !grd_nbr_in */
   grd_sz_out= flg_grd_1D ? col_nbr : lat_nbr*lon_nbr;
-
+  grd_sz_in+=0*grd_sz_in; /* CEWI */
+  
   /* Lay-out unpacked file */
   char *bnd_nm_out=NULL;
   char *col_nm_out=NULL;
@@ -1350,17 +1351,13 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(dmn_cnt_swp) dmn_cnt_swp=(long *)nco_free(dmn_cnt_swp);
 
   /* Unpack and copy data from input file */
-  //int dmn_idx_col=int_CEWI; /* [idx] Index of column dimension */
-  //int dmn_idx_lat=int_CEWI; /* [idx] Index of latitude dimension */
-  //int dmn_idx_lon=int_CEWI; /* [idx] Index of longitude dimension */
   int thr_idx; /* [idx] Thread index */
-  //int var_id; /* [id] Current variable ID */
 
   long lvl_idx; /* [idx] Level index */
   long lvl_nbr; /* [nbr] Number of levels */
 
-  size_t val_in_fst; /* [nbr] Number of elements by which current N-D slab input values are offset from origin */
-  size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab output values are offset from origin */
+  //size_t val_in_fst; /* [nbr] Number of elements by which current N-D slab input values are offset from origin */
+  //size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab output values are offset from origin */
 
   if(idx_dbg == 0L) idx_dbg=11;
   if(nco_dbg_lvl_get() >= nco_dbg_var){
@@ -1620,6 +1617,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
 	if(!flg_var_mpt && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d = %s, lnd_typ_crr = %d = %s, has_mec = %d\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ_crr,nco_lnd_typ_sng(lnd_typ_crr),has_mec);
 	  
+	if(flg_var_mpt) goto skp_upk;
+
 	/* The Hard Work */
 	if(nco_s1d_typ == nco_s1d_pft){
 	  /* Turn GPP(time,pft) into GPP(time,pft,lndgrid) or GPP(time,pft,lat,lon)
@@ -1627,8 +1626,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	     Turn fabd_sun(time,pft,numrad) into fabd_sun(time,pft,numrad,lndgrid) or fabd_sun(time,pft,numrad,lat,lon)
 	     20240131: This curently works only for single-timestep files
 	     In general, must enclose this in outer loop over (time x level) */
-	  val_in_fst=0L;
-	  val_out_fst=0L;
+	  //val_in_fst=0L;
+	  //val_out_fst=0L;
 	  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 	    /* PFT variable dimension ordering, from LRV to MRV:
 	       Restart input: PFT, lev*|numrad, e.g., T_REF2M_MIN_INST(pft), fabd_sun(pft,numrad), tlai_z(pft,levcan)
@@ -1665,8 +1664,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		} /* !var_typ_out */
 	      } /* !mrv_idx */
 	    } /* !pft_idx */
-	    val_in_fst+=grd_sz_in; /* fxm */
-	    val_out_fst+=grd_sz_out;
+	    //val_in_fst+=grd_sz_in; /* fxm */
+	    //val_out_fst+=grd_sz_out;
 	  } /* !lvl_idx */
 	} /* !nco_s1d_pft */
 	
@@ -1743,7 +1742,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		} /* !mrv_idx */
 		break; /* !ilun_deep_lake */
 	      case nco_lnd_ilun_landice_multiple_elevation_classes:
-		(void)fprintf(fp_stdout,"%s: ERROR %s reports MEC LUT in non-MEC variable\n",nco_prg_nm_get(),fnc_nm);
+		(void)fprintf(fp_stdout,"%s: ERROR %s reports MEC LUT in non-MEC variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 		nco_exit(EXIT_FAILURE);
 		break; /* !ilun_landice_multiple_elevation_classes */
 	      default:
@@ -1755,6 +1754,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  } /* !clm_idx */
 	} /* !nco_s1d_typ */
 	  
+	/* goto skp_upk */
+      skp_upk: 
+
 #pragma omp critical
 	{ /* begin OpenMP critical */
 	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_out.vp,var_typ_out);
