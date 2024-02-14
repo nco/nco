@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.0-alpha06: Mahomes';git push
 	git tag -a 5.2.0-alpha06 -m '';git push --tags
 
+	* S1D implement new has_mec determination algorithm
+
 	* S1D Value must not equal zero or missing value when determining landunit type
 
 	* NCO 5.2.0-alpha05 release procedure:

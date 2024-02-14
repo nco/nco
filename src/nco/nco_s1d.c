@@ -1001,7 +1001,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int mec_out_id=NC_MIN_INT; /* [id] Variable ID for MEC */
   if(need_mec){
     dmn_ids_out[0]=dmn_id_mec_out;
-    rcd+=nco_def_var(out_id,mec_nm_out,crd_typ_out,dmn_nbr_1D,dmn_ids_out,&mec_out_id);
+    rcd+=nco_def_var(out_id,mec_nm_out,NC_DOUBLE,dmn_nbr_1D,dmn_ids_out,&mec_out_id);
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,mec_out_id,NULL,nco_flt_flg_prc_fll);
     var_crt_nbr++;
     rcd=nco_char_att_put(out_id,mec_nm_out,"long_name","Lowest elevation");
@@ -1183,7 +1183,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		  if(val_vld) break;
 		} /* !clm_idx */
 		if(val_vld) has_mec=trv_tbl->lst[idx_tbl].has_mec=True;
-		if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG %s %s exited MEC search at mrv_idx = %ld, clm_idx = %ld, idx_in = %ld, has_mec=%d\n",nco_prg_nm_get(),fnc_nm,var_nm,mrv_idx,clm_idx,idx_in,has_mec);
+		if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG %s exited MEC search at mrv_idx = %ld, clm_idx = %ld, idx_in = %ld, has_mec = %d\n",nco_prg_nm_get(),var_nm,mrv_idx,clm_idx,idx_in,has_mec);
 	      } /* !nco_s1d_typ */
 	    } /* !idx_s1d_crr */
 	    if(var_val_in.vp) var_val_in.vp=(void *)nco_free(var_val_in.vp);
@@ -1337,7 +1337,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_tpl);
   } /* !flg_grd_tpl */
 
-  if(need_mec) rcd=nco_put_var(out_id,mec_out_id,(void *)mec,crd_typ_out);
+  if(need_mec) rcd=nco_put_var(out_id,mec_out_id,(void *)mec,NC_DOUBLE);
 
   /* Free pre-allocated array space */
   if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
@@ -1363,7 +1363,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab output values are offset from origin */
 
   if(idx_dbg == 0L) idx_dbg=11;
-  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+  if(nco_dbg_lvl_get() >= nco_dbg_var){
     if(need_clm){
       for(clm_idx=0;clm_idx<idx_dbg;clm_idx++){
 	clm_typ=cols1d_ityp[clm_idx];      
@@ -1451,7 +1451,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    has_numrad=True;
 	    mrv_nbr*=numrad_nbr_in;
 	  } /* !dmn_id */
-	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO define block for %s dmn_idx = %d, dmn_id = %d, mrv_nbr = %ld\n",fnc_nm,var_nm,dmn_idx,dmn_id,mrv_nbr);	  
+	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO define block for %s dmn_idx = %d, dmn_id = %d, mrv_nbr = %ld\n",nco_prg_nm_get(),var_nm,dmn_idx,dmn_id,mrv_nbr);
 	} /* !dmn_idx */
 	
 	/* Compute number and size of non-lat/lon or non-col dimensions (e.g., level, time, species, wavelength)
@@ -1618,7 +1618,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  } /* !nco_s1d_typ */
 	} /* !idx_s1d_crr */
 
-	if(!flg_var_mpt) (void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d = %s, lnd_typ = %d = %s\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ,nco_lnd_typ_sng(lnd_typ));
+	if(!flg_var_mpt && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d = %s, lnd_typ_crr = %d = %s, has_mec = %d\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ_crr,nco_lnd_typ_sng(lnd_typ_crr),has_mec);
 	  
 	/* The Hard Work */
 	if(nco_s1d_typ == nco_s1d_pft){
@@ -1681,7 +1681,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	     NCO Output   : time, MEC, lev*, spatial
 	     ncks --trd -C -d column,0,11 -v DZSNO,cols1d_gridcell_index ${DATA}/bm/elm_mali_rst.nc | m */
 	  mec_idx=0;
-	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO unpack block for %s clm_nbr = %ld, mec_nbr = %ld, mrv_nbr = %ld\n",fnc_nm,var_nm,clm_nbr_in,(has_mec) ? mec_nbr_out : 0,mrv_nbr);
+	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO unpack block for %s clm_nbr = %ld, mec_nbr = %ld, mrv_nbr = %ld\n",nco_prg_nm_get(),var_nm,clm_nbr_in,(has_mec) ? mec_nbr_out : 0,mrv_nbr);
 	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
 	    lnd_typ=cols1d_ityplun[clm_idx]; /* [1 <= lnd_typ <= lnd_nbr_out] */
 
