@@ -1478,6 +1478,9 @@ typedef enum nco_xtr_typ_enm
     nco_bool flg_std_att_lat;         /* [flg] Variable contains 'standard_name' attribute "latitude" */ 
     nco_bool flg_std_att_lon;         /* [flg] Variable contains 'standard_name' attribute "longitude" */ 
 
+    /* Following members used exclusively by S1D code */
+    nco_bool has_mec;                 /* [flg] Variable defined on Multiple-Elevation-Classes (MEC) */
+
     /* Following are members only used by transformation operators (non-ncks) */
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator */
     nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint) (ncpdq) */  

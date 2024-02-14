@@ -3175,6 +3175,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_aux=False;                /* [flg] Variable contains auxiliary coordinates */
   trv_tbl->lst[idx].flg_std_att_lat=False;        /* [flg] Variable contains 'standard_name' attribute "latitude" */ 
   trv_tbl->lst[idx].flg_std_att_lon=False;        /* [flg] Variable contains 'standard_name' attribute "longitude" */ 
+  trv_tbl->lst[idx].has_mec=False;                /* [flg] Variable defined on Multiple-Elevation-Classes (MEC) */
 
   trv_tbl->lst[idx].rec_dmn_nm_out=NULL;          /* [sng] Record dimension name, re-ordered */ 
   trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
@@ -3294,6 +3295,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_std_att_lat=False;   
     trv_tbl->lst[idx].flg_std_att_lon=False; 
 
+    trv_tbl->lst[idx].has_mec=False;
+    
     trv_tbl->lst[idx].rec_dmn_nm_out=NULL;                     
     trv_tbl->lst[idx].grp_dpt=grp_dpt; 
     trv_tbl->lst[idx].nbr_att=nbr_att;
