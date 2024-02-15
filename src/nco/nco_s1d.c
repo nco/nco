@@ -116,6 +116,7 @@ nco_s1d_sng /* [fnc] Convert sparse-1D type enum to string */
   case nco_s1d_grd: return "Sparse Gridcell (grid1d) format";
   case nco_s1d_lnd: return "Sparse Landunit (land1d) format";
   case nco_s1d_pft: return "Sparse PFT (pfts1d) format" ;
+  case nco_s1d_tpo: return "Sparse Topounit (topo1d) format" ;
   default: nco_dfl_case_generic_err((int)nco_s1d_typ); break;
   } /* !nco_s1d_typ_enm */
 

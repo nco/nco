@@ -110,6 +110,7 @@ extern "C" {
     nco_s1d_grd, /* Sparse-1D Gridcell (grid1d) format */
     nco_s1d_lnd, /* Sparse-1D Landunit (land1d) format */
     nco_s1d_pft, /* Sparse-1D PFT (pfts1d) format */
+    nco_s1d_tpo, /* Sparse-1D Topounit (topo1d) format */
   } nco_s1d_typ_enm;
 
   const char * /* O [sng] String describing column type */
