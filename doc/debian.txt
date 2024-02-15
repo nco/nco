@@ -29,18 +29,18 @@ apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy develo
 
 2. Debian build procedure recommends placing entire package source in
    subdirectory of main package. 
-   For starters, we wish to create .debs of tagged releases, e.g., nco-5.1.9
-   First we create a clean source distribution of nco and place it in nco-5.1.9
+   For starters, we wish to create .debs of tagged releases, e.g., nco-5.2.0
+   First we create a clean source distribution of nco and place it in nco-5.2.0
    Until we know what is necessary, however, we just copy a snapshot
    
    2.1 Clean all build files from development directory
 
 cd ~/nco;make distclean;cd bld;make clean;cd ~
 tar cvzf ./nco/nco.tar.gz ./nco/*
-cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-5.1.9
-/bin/rm nco.tar.gz;tar cvzf nco-5.1.9.tar.gz ./nco-5.1.9/*
-cd ~/nco/nco-5.1.9
-dh_make -e zender@uci.edu -f ../nco-5.1.9.tar.gz
+cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-5.2.0
+/bin/rm nco.tar.gz;tar cvzf nco-5.2.0.tar.gz ./nco-5.2.0/*
+cd ~/nco/nco-5.2.0
+dh_make -e zender@uci.edu -f ../nco-5.2.0.tar.gz
 
     2.2 The preceding steps created template debian files for a .deb,
     Those files now reside in ~/nco/debian.
@@ -55,7 +55,7 @@ dh_make -e zender@uci.edu -f ../nco-5.1.9.tar.gz
    from previous build
 
    cd ~/nco;/bin/rm *.gz
-   cd ~/nco/nco-5.1.9
+   cd ~/nco/nco-5.2.0
    dpkg-buildpackage -rfakeroot > foo 2>&1
    dpkg-buildpackage -rsudo > foo 2>&1
 
@@ -84,25 +84,25 @@ patch -p0 < nco_X.Y.Z-3.diff   # Patch destination with Debian diff
    make tags
 # Put cute version-specific string in nco_ctl.c:nco_nmn_get()
 # Install correct version numbers before updating Debian
-# tags-query replace 5.1.9 with X.Y.Z+1
+# tags-query replace 5.2.0 with X.Y.Z+1
 # If tags-query replace does not work, be sure to manually change
 # versions in configure.ac, debian/files, doc/ANNOUNCE, doc/debian.txt,
 # doc/index.shtml, doc/nco.texi, bld/nco_dst.pl, doc/VERSION
 # 20141201: Change NCO_VERSION_PATCH in src/nco.h!!!!!!!!!!!!!!!!!!!!!!
-   cd ~/nco/debian;dch -b --force-distribution --distribution=unstable -v 5.1.9-1 # Update changelog (-b forces this version number)
+   cd ~/nco/debian;dch -b --force-distribution --distribution=unstable -v 5.2.0-1 # Update changelog (-b forces this version number)
    emacs ~/nco/bld/nco.spec # Update changelog
 # For unknown reason rules file may lose its executable bit
    chmod a+x ~/nco/debian/rules
 # Rebuild autotools so new version # propagates
    cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
 # Save all files in emacs before tagging
-   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-5.1.9
+   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-5.2.0
 # Upload tarball to SF https://sourceforge.net/projects/nco/files 
-   cd;scp dust.ess.uci.edu:/var/www/html/nco/src/nco-5.1.9.tar.gz .
+   cd;scp dust.ess.uci.edu:/var/www/html/nco/src/nco-5.2.0.tar.gz .
 
 7. Ubuntu PPA
 https://help.launchpad.net/Packaging/PPA
-dput NCO nco_5.1.9-2~ppa1_source.changes
+dput NCO nco_5.2.0-2~ppa1_source.changes
 sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com
 
 # Location of build diagnostics for mentors to help 
