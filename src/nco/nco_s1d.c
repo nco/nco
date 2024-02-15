@@ -1045,10 +1045,34 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     } /* !flg_sgs_msk_out */
   } /* !flg_grd_2D */
 
-  /* clm5.pdf: "The default is to have 10 elevation classes whose lower limits are 0, 200, 400, 700, 1000, 1300, 1600, 2000, 2500, and 3000 m." */
+  /* levgrnd coordinate: ncks -v lev.? ${DATA}/bm/elmv3_r05l15.nc */
+  const double levgrnd[15]={0.007100635,0.027925,0.06225858,0.1188651,0.2121934,0.3660658,0.6197585,1.038027,1.727635,2.864607,4.739157,7.829766,12.92532,21.32647,35.17762}; /* [m] Coordinate lake levels */
+  int levgrnd_out_id=NC_MIN_INT; /* [id] Variable ID for levgrnd */
+  if(need_levgrnd){
+    dmn_ids_out[0]=dmn_id_levgrnd_out;
+    rcd+=nco_def_var(out_id,levgrnd_nm_out,NC_DOUBLE,dmn_nbr_1D,dmn_ids_out,&levgrnd_out_id);
+    if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,levgrnd_out_id,NULL,nco_flt_flg_prc_fll);
+    var_crt_nbr++;
+    rcd=nco_char_att_put(out_id,levgrnd_nm_out,"long_name","Coordinate lake levels");
+    rcd=nco_char_att_put(out_id,levgrnd_nm_out,"units","meter");
+  } /* !need_levgrnd */
+    
+  /* levlak coordinate: ncks -v lev.? ${DATA}/bm/elmv3_r05l15.nc */
+  const double levlak[10]={0.05,0.6,2.1,4.6,8.1,12.6,18.6,25.6,34.325,44.775}; /* [m] Coordinate lake levels */
+  int levlak_out_id=NC_MIN_INT; /* [id] Variable ID for levlak */
+  if(need_levlak && levlak_nbr_out == 10){
+    dmn_ids_out[0]=dmn_id_levlak_out;
+    rcd+=nco_def_var(out_id,levlak_nm_out,NC_DOUBLE,dmn_nbr_1D,dmn_ids_out,&levlak_out_id);
+    if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,levlak_out_id,NULL,nco_flt_flg_prc_fll);
+    var_crt_nbr++;
+    rcd=nco_char_att_put(out_id,levlak_nm_out,"long_name","Coordinate lake levels");
+    rcd=nco_char_att_put(out_id,levlak_nm_out,"units","meter");
+  } /* !need_levlak */
+
+  /* MEC coordinate clm5.pdf: "The default is to have 10 elevation classes whose lower limits are 0, 200, 400, 700, 1000, 1300, 1600, 2000, 2500, and 3000 m." */
   const double mec[10]={0,200,400,700,1000,1300,1600,2000,2500,3000}; /* [frc] Lowest elevation in each MEC */
   int mec_out_id=NC_MIN_INT; /* [id] Variable ID for MEC */
-  if(need_mec){
+  if(need_mec && mec_nbr_out == 10){
     dmn_ids_out[0]=dmn_id_mec_out;
     rcd+=nco_def_var(out_id,mec_nm_out,NC_DOUBLE,dmn_nbr_1D,dmn_ids_out,&mec_out_id);
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,mec_out_id,NULL,nco_flt_flg_prc_fll);
@@ -1398,7 +1422,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_tpl);
   } /* !flg_grd_tpl */
 
-  if(need_mec) rcd=nco_put_var(out_id,mec_out_id,(void *)mec,NC_DOUBLE);
+  if(need_levgrnd && levgrnd_out_id != NC_MIN_INT) rcd=nco_put_var(out_id,levgrnd_out_id,(void *)levgrnd,NC_DOUBLE);
+  if(need_levlak && levlak_out_id != NC_MIN_INT) rcd=nco_put_var(out_id,levlak_out_id,(void *)levlak,NC_DOUBLE);
+  if(need_mec && mec_out_id != NC_MIN_INT) rcd=nco_put_var(out_id,mec_out_id,(void *)mec,NC_DOUBLE);
 
   /* Free pre-allocated array space */
   if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);

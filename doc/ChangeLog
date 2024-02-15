@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.0-beta01: Mahomes';git push
 	git tag -a 5.2.0-beta01 -m 'all: cf lsy mtd; ncclimo: tms inp_aut, fix inp_glb, fix djf-mode clm_bnd; ncclimo/ncremap: dpr cheyenne+ALCF mch, spp derecho, upd perlmutter; ncks: --chk_bnd/xtn, S1D works; ncremap: TR --mono*, ncoidw, MWF alg_lst, trfv2';git push --tags
 
+	* S1D add levlak and levgrnd coordinates from elmv3_r05l15.nc
+
 	* S1D add topounit support
 
 	* NCO 5.2.0-alpha06 release procedure:
