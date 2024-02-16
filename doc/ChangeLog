@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.0: Fast Car';git push
 	git tag -a 5.2.0-beta01 -m 'all: cf lsy mtd; ncclimo: tms inp_aut, fix inp_glb, fix djf-mode clm_bnd; ncclimo/ncremap: dpr cheyenne+ALCF mch, spp derecho, upd perlmutter; ncks: --chk_bnd, S1D works; ncremap: TR --mono*, ncoidw, MWF alg_lst, trfv2';git push --tags
 
+	* Add lossy_compression to list of attributes that cause variable to be treated as associated coordinate
+
 	* ncremap change alg_lst from space-separated to comma-separated
 
 	* nco.texi document chk_bnd, S1D, --alg_lst

@@ -1376,7 +1376,7 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
  int *cf_var_id) /* O [id] CF Variable ID */
 {
   /* Purpose: Is variable specified in an associated attribute?
-     Associated attributes include "ancillary_variables", "bounds", "climatology", "coordinates", "grid_mapping"
+     Associated attributes include "ancillary_variables", "bounds", "climatology", "coordinates", "grid_mapping", "lossy_compression"
      One of these ("ancillary_variables") can contain "non-grid" variables
      The others contain variables that should, more or less, be treated as coordinates
      However this function does not care about such distinctions
@@ -1489,7 +1489,7 @@ nco_lst_cf_att /* [fnc] look in all vars for att cf_nm */
  int *nbr_lst) /* O [nbr] number of ragged arrays returned */
 {
   /* Purpose: Is variable specified in an associated attribute?
-     Associated attributes include "ancillary_variables", "bounds", "climatology", "coordinates", "grid_mapping"
+     Associated attributes include "ancillary_variables", "bounds", "climatology", "coordinates", "grid_mapping", "lossy_compression"
      One of these ("ancillary_variables") can contain "non-grid" variables
      The others contain variables that should, more or less, be treated as coordinates
      However this function does not care about such distinctions
@@ -2124,12 +2124,13 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
   
-  /* 20130112: Variables associated with "bounds", "climatology", "coordinates", and "grid_mapping" attributes should,
+  /* 20130112: Variables associated with "bounds", "climatology", "coordinates", "grid_mapping", and "lossy_compression" attributes should,
      in most cases, be treated as coordinates */
   if(nco_is_spc_in_cf_att(var->nc_id,"bounds",var->id,NULL)) var->is_crd_var=True;
   if(nco_is_spc_in_cf_att(var->nc_id,"climatology",var->id,NULL)) var->is_crd_var=True;
   if(nco_is_spc_in_cf_att(var->nc_id,"coordinates",var->id,NULL)) var->is_crd_var=True;
   if(nco_is_spc_in_cf_att(var->nc_id,"grid_mapping",var->id,NULL)) var->is_crd_var=True;
+  if(nco_is_spc_in_cf_att(var->nc_id,"lossy_compression",var->id,NULL)) var->is_crd_var=True;
   
   /* Portions of variable structure depend on packing properties, e.g., typ_upk
      nco_pck_dsk_inq() fills in these portions harmlessly */

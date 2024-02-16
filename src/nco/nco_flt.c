@@ -993,7 +993,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
   /* Prevent quantization of non-floating-point variables */
   nco_flt_flg_enm flt_flg=nco_flt_flg_all_ok; /* [enm] Enumerated flag for fine-grained compression control */
   if(var_typ != NC_FLOAT && var_typ != NC_DOUBLE) flt_flg=nco_flt_flg_qnt_no;
-  if(nco_is_crd_var(nc_out_id,var_out_id) || nco_is_spc_in_cf_att(nc_out_id,"bounds",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"climatology",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"coordinates",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"grid_mapping",var_out_id,NULL)) flt_flg=nco_flt_flg_prc_fll;
+  if(nco_is_crd_var(nc_out_id,var_out_id) || nco_is_spc_in_cf_att(nc_out_id,"bounds",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"climatology",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"coordinates",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"grid_mapping",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"lossy_compression",var_out_id,NULL)) flt_flg=nco_flt_flg_prc_fll;
 
   if(nco_dbg_lvl_get() >= nco_dbg_var){
     if(flt_flg != nco_flt_flg_all_ok) (void)fprintf(stdout,"%s: DEBUG %s reports variable type or NCO guidelines (based on coordinate-like variables and CF rules) prevent variable %s from using lossy compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
