@@ -117,6 +117,11 @@ ncks: WARNING nco_chk_bnd() reports coordinate Lon does not contain "bounds" att
 ncks: INFO nco_chk_bnd() reports total number of coordinates without "bounds" attribute is 2
 http://nco.sf.net/nco.htlm/chk_bnd
 
+F. ncremap supports the TempestRemap trfv2 algorithm, a 2nd order FV
+reconstruction, that is cell-integrated on the target grid.
+ncremap --alg_typ=trfv2 -s grd_src.nc -g grd_dst.nc --map=map.nc
+http://nco.sf.net/nco.htlm/trfv2
+
 BUG FIXES:
    
 A. ncclimo fixes an error in the climatology_bounds variable
