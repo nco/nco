@@ -2197,8 +2197,8 @@ nco_chk_bnd /* [fnc] Check coordinates for bounds attributes */
      Use CF Bounds Attributes
      https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=182296291
      Recommendation Details: The CF conventions are widely employed guidelines for Earth Science data and metadata storage. The purpose of the CF conventions is to require conforming datasets to contain sufficient metadata that they are self-describing in the following ways: Each variable in the file has an associated description of what it represents, including physical units if appropriate; and each value can be located in space (relative to Earth-based coordinates) and time. Thus, adhering to CF guidelines will increase completeness, consistency, and interoperability of conforming datasets.
-     CF conventions state: “When gridded data does not represent the point values of a field but instead represents some characteristic of the field within cells of finite ‘volume,’ a complete description of the variable should include metadata that describes the domain or extent of each cell, and the characteristic of the field that the cell values represent.” Bounds are implemented by adding a bounds  attribute to each applicable coordinate dimension, and the attribute specifies the name of the variable that contains the edges of the respective coordinate.
-     Example: Data representative of a time interval (rather than a specific time) might annotate the time  coordinate with a bounds  attribute with value "time_bounds". The time_bounds  variable would be a multi-dimensions array of the intervals for each value of “Time.”
+     CF conventions state: "When gridded data does not represent the point values of a field but instead represents some characteristic of the field within cells of finite 'volume', a complete description of the variable should include metadata that describes the domain or extent of each cell, and the characteristic of the field that the cell values represent." Bounds are implemented by adding a bounds attribute to each applicable coordinate dimension, and the attribute specifies the name of the variable that contains the edges of the respective coordinate.
+     Example: Data representative of a time interval (rather than a specific time) might annotate the time  coordinate with a bounds  attribute with value "time_bounds". The time_bounds  variable would be a multi-dimensions array of the intervals for each value of "Time."
      Similar conventions apply to spatial and other coordinates." */
 
   const char fnc_nm[]="nco_chk_bnd()"; /* [sng] Function name */
@@ -2238,7 +2238,7 @@ nco_chk_bnd /* [fnc] Check coordinates for bounds attributes */
       } /* !att_idx */
       /* Is this a naughty coordinate? */
       if(att_idx == att_nbr){
-	(void)fprintf(stdout,"%s: WARNING %s reports coordinate %s does not contain \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,att_bnd);
+	(void)fprintf(stdout,"%s: WARNING %s reports coordinate %s lacks \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,att_bnd);
 	brk_nbr++;
       } /* !nm_cf_chk */
     } /* !nco_obj_typ_var */
@@ -2753,10 +2753,10 @@ nco_chk_xtn /* [fnc] Check filename extension */
   if(flg_he5){
     rcd=nco_inq_grp_full_ncid_flg(nc_id,grp_he5,&grp_id);
     if(rcd == NC_ENOGRP){
-      (void)fprintf(stdout,"%s: WARNING %s reports file with extension \"%s\" does not contain HDF-EOS5 standard group \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,grp_he5);
+      (void)fprintf(stdout,"%s: WARNING %s reports file with extension \"%s\" lacks HDF-EOS5 standard group \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,grp_he5);
     }else{ /* !rcd */
       att_xtn_val=nco_char_att_get(grp_id,NC_GLOBAL,att_sng_he5);
-      if(!att_xtn_val) (void)fprintf(stdout,"%s: WARNING %s reports file with extension \"%s\" does not contain HDF-EOS5 standard global attribute \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,att_sng_he5);
+      if(!att_xtn_val) (void)fprintf(stdout,"%s: WARNING %s reports file with extension \"%s\" lacks HDF-EOS5 standard global attribute \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,att_sng_he5);
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports value of HDF-EOS5 standard global attribute \"%s\" is \"%s\"\n",nco_prg_nm_get(),fnc_nm,att_sng_he5,att_xtn_val);
       if(att_xtn_val) att_xtn_val=(char *)nco_free(att_xtn_val);
     } /* !rcd */
@@ -2766,7 +2766,7 @@ nco_chk_xtn /* [fnc] Check filename extension */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
       att_xtn_val=nco_char_att_get(nc_id,NC_GLOBAL,att_sng_nc);
       if(!att_xtn_val){
-	(void)fprintf(stdout,"%s: WARNING %s reports %s file with extension \"%s\" does not contain netCDF standard global attribute \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_fmt_sng(fl_fmt),sfx_nc,att_sng_nc);
+	(void)fprintf(stdout,"%s: WARNING %s reports %s file with extension \"%s\" lacks netCDF standard global attribute \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_fmt_sng(fl_fmt),sfx_nc,att_sng_nc);
 	rcd=nco_inq_grp_full_ncid_flg(nc_id,grp_he5,&grp_id);
 	if(rcd == NC_NOERR){
 	  (void)fprintf(stdout,"%s: WARNING %s reports file with extension \"%s\" contains HDF-EOS5 standard group \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,grp_he5);

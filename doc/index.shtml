@@ -663,7 +663,7 @@ netCDF4 user-defined types support;
 <tt>all</tt> CF Convention for lossy compression metadata;
 <tt>ncclimo</tt> automatically generate monthly filenames for timeseries;
 <tt>ncclimo</tt> fix globbing, fix Dec. <tt>climatology_bounds</tt> in DJF-mode;
-<tt>ncks --chk_bnd, --chk_xtn</tt> CF/DIWG checking;
+<tt>ncks --chk_bnd</tt> CF/DIWG bounds-variable checking;
 <tt>ncremap</tt> TR --mono*, ncoidw, MWF alg_lst, trfv2</li>
 <li><b>NCO 5.1.9</b>: 
 <tt>all</tt> Windows path separator fix;

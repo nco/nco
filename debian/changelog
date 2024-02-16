@@ -1,6 +1,6 @@
 nco (5.2.0-1) unstable; urgency=low
 
-  * new upstream version Fast Car: all: cf lsy mtd; ncclimo: tms inp_aut, fix inp_glb, fix djf-mode clm_bnd; ncclimo/ncremap: dpr cheyenne+ALCF mch, spp derecho, upd perlmutter; ncks: --chk_bnd/xtn, S1D works; ncremap: TR --mono*, ncoidw, MWF alg_lst, trfv2
+  * new upstream version Fast Car: all: cf lsy mtd; ncclimo: tms inp_aut, fix inp_glb, fix djf-mode clm_bnd; ncclimo/ncremap: dpr cheyenne+ALCF mch, spp derecho, upd perlmutter; ncks: --chk_bnd, S1D works; ncremap: TR --mono*, ncoidw, MWF alg_lst, trfv2
 
  -- Charlie Zender <zender@uci.edu> Fri, 15 December 2023 12:26:07 -0700
 

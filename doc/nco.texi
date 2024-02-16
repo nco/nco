@@ -128,11 +128,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.2.0-beta01
-@set doc-edition 5.2.0-beta01
+@set nco-edition 5.2.0
+@set doc-edition 5.2.0
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 14 February 2024
+@set update-date 16 February 2024
 @set update-month February 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22901,6 +22901,39 @@ alter @file{map.nc} in-xsplace, so backup the original file first.
 @end example
 
 @html
+<a name="chk_bnd"></a> <!-- http://nco.sf.net/nco.html#chk_bnd -->
+<a name="check_bounds"></a> <!-- http://nco.sf.net/nco.html#check_bounds -->
+@end html
+@cindex @code{--chk_bnd}
+@cindex @code{--check_bounds}
+@cindex @code{bounds}
+@cindex @acronym{CF}
+@cindex @acronym{DIWG}
+@item --chk_bnd
+As of @acronym{NCO} version 5.2.0 (February, 2022), @command{ncks}
+can report all coordinates that lack a corresponding
+@code{bounds} attribute.
+This check complies with @acronym{CF} Conventions and with
+@acronym{NASA}'s Dataset Interoperability Working Group 
+(@uref{https://wiki.earthdata.nasa.gov/display/ESDSWG/Dataset+Interoperability+Working+Group,
+DIWG}).
+@acronym{CF} requires that coordinate variables that describe
+a continuous (not discrete) axis contain a ``bounds'' attribute
+that points to a variable marking the edges of each gridcell
+(in time, space, or other dimensions).
+This option reports which coordinates lack the required
+@code{bounds} attribute, so that a file can be easily
+checked for compliance with the convention:
+@example
+@verbatim
+$ ncks --chk_bnd in.nc
+ncks: WARNING nco_chk_bnd() reports coordinate Lat does not contain "bounds" attribute
+ncks: WARNING nco_chk_bnd() reports coordinate Lon does not contain "bounds" attribute
+ncks: INFO nco_chk_bnd() reports total number of coordinates without "bounds" attribute is 2
+@end verbatim
+@end example
+
+@html
 <a name="chk_chr"></a> <!-- http://nco.sf.net/nco.html#chk_chr -->
 <a name="check_char"></a> <!-- http://nco.sf.net/nco.html#check_char -->
 @end html
@@ -23545,8 +23578,6 @@ like @command{jsonlint}.
 Please let us know how to improve @acronym{JSON} features for your
 application.  
 
-There 
-
 @html
 <a name="Metadata"></a> <!-- http://nco.sf.net/nco.html#Metadata -->
 <a name="M"></a> <!-- http://nco.sf.net/nco.html#M -->
@@ -23808,6 +23839,61 @@ We would appreciate your feedback on whether and how to extend this
 feature to make it more useful. 
 
 @html
+<a name="hrz"></a> <!-- http://nco.sf.net/nco.html#hrz -->
+<a name="hrz_crd"></a> <!-- http://nco.sf.net/nco.html#hrz_crd -->
+<a name="hrz_fl"></a> <!-- http://nco.sf.net/nco.html#hrz_fl -->
+<a name="fl_hrz"></a> <!-- http://nco.sf.net/nco.html#fl_hrz -->
+<a name="s1d"></a> <!-- http://nco.sf.net/nco.html#s1d -->
+<a name="restart"></a> <!-- http://nco.sf.net/nco.html#restart -->
+<a name="sparse"></a> <!-- http://nco.sf.net/nco.html#sparse -->
+<a name="unpack_sparse"></a> <!-- http://nco.sf.net/nco.html#unpack_sparse -->
+@end html
+@cindex restart files
+@cindex sparse format
+@cindex @acronym{S1D} format
+@cindex @code{--unpack_sparse}
+@cindex @code{--s1d}
+@cindex @code{--sparse}
+@cindex @code{--hrz}
+@cindex @code{--hrz_fl}
+@cindex @code{--hrz_crd}
+@cindex @acronym{PFT}
+@cindex @acronym{MEC}
+@cindex multiple elevation classes
+@cindex elevation classes
+@cindex landunit
+@cindex topounit
+@cindex plant functional type
+@item --s1d, --sparse, --unpack_sparse, --hrz @file{file}
+As of @acronym{NCO} @w{version 5.2.0}, released in February, 2024,
+@command{ncks} can help analyze initial condition and restart datasets 
+produced by the @acronym{E3SM ELM} and @acronym{CESM CLM/CTSM}
+land-surface models. 
+Whereas gridded history datasets from these @acronym{ESM}s use a
+standard gridded data format, land-surface "restart files" employ a  
+custom packing format that unwinds multi-dimensional data into
+sparse, 1-D (@acronym{S1D}) arrays that are not easily
+visualized.
+@command{ncks} can convert @acronym{S1D} files into gridded datasets
+where all dimensions are explicitly declared, rather than unrolled or 
+"packed".  
+Invoke this conversion feature with the @code{--s1d} option
+(or long option equivalents, @code{--sparse} or @code{--unpacksparse}) 
+and, with @samp{--hrz_crd @var{fl_hrz}} (e.g.,
+@samp{--hrz_crd @file{hrz.nc}}), point to the file that contains the 
+horizontal coordinates (that restart files usually omit).
+The output file is the fully gridded input file, with no loss
+of information:
+@example
+@verbatim
+ncks --s1d --hrz=elmv3_history.nc elmv3_restart.nc out.nc
+@end verbatim
+@end example
+The output file contains all input variables placed on a lat-lon or 
+unstructured grid, with new dimensions for Plant Funtional Type
+(@acronym{PFT}) and multiple elevation classes (@acronym{MEC}s).
+
+@html
 <a name="ssh"></a> <!-- http://nco.sf.net/nco.html#ssh -->
 <a name="scr"></a> <!-- http://nco.sf.net/nco.html#scr -->
 <a name="secret"></a> <!-- http://nco.sf.net/nco.html#secret -->
@@ -23816,7 +23902,7 @@ feature to make it more useful.
 @cindex @code{--scr}
 @cindex @code{--secret}
 @cindex hidden features
-@item --secret
+@item --ssh, --secret
 Print summary of @command{ncks} hidden features.
 These hidden or secret features are used mainly by developers.
 They are not supported for general use and may change at any time.
@@ -23852,7 +23938,7 @@ Traditional printing mode is accessed via the @samp{--trd} option.
 @end html
 @cindex @code{-u}
 @cindex @code{--units}
-@item -u 
+@item -u, --units
 Toggle the printing of a variable's @code{units} attribute, if any, 
 with its values.
 Also @samp{--units}.
@@ -26399,27 +26485,45 @@ with map-files generated by @acronym{ESMF} and @acronym{NCO}.
 @cindex @code{--alg_lst}
 @cindex @code{--algorithm_list}
 @item --alg_lst=@var{alg_lst} (@code{--alg_lst}, @code{--algorithm_list})
-A space-separated list of the algorithms that @acronym{MWF}-mode 
-uses to create map-files.
-The default list is @code{'esmfaave esmfbilin ncoaave ncoidw traave
-trbilin trfv2' }
+As of @acronym{NCO} version 5.2.0 (February, 2024), @command{ncremap}
+supports @samp{--alg_lst=@var{alg_lst}}, a comma-separated list of the
+algorithms that @acronym{MWF}-mode uses to create map-files.
+The default list is
+@code{esmfaave,esmfbilin,ncoaave,ncoidw,traave,trbilin,trfv2,trintbilin}.
 Each name in the list should be the primary name of an algorithm,
 not a synonym.
-For example, use @code{'esmfaave, traave'} not
-@code{'aave, fv2fv_flx'} (which are synonyms for the former).
-Note that the algorithm list must be consistent with grid-types
-supplied:
-@acronym{ESMF} algorithms only work with meshes in @acronym{ESMF},
+For example, use @code{esmfaave,traave} not
+@code{aave,fv2fv_flx} (the latter are backward-compatible synonyms
+for the former). 
+The algorithm list must be consistent with grid-types supplied:
+@acronym{ESMF} algorithms work with meshes in @acronym{ESMF},
 @acronym{SCRIP}, or @acronym{UGRID} formats.
 @acronym{NCO} algorithms only work with meshes in @acronym{SCRIP}
 format.
-TempestRemaps algorithms work with meshes in @acronym{ESMF},
+TempestRemap algorithms work with meshes in @acronym{ESMF},
 @acronym{Exodus}, @acronym{SCRIP}, or @acronym{UGRID} formats. 
-
-Whereas TempestRemap accepts
-@command{ncremap} inserts each algorithm names into the output
-map-file name in this format:   
+On output, @command{ncremap} inserts each algorithm name into the
+output map-file name in this format:   
 @code{map_@var{nm_src}_to_@var{nm_dst}_@var{alg_typ}.@var{dt_sng}.nc}.
+@example
+@verbatim
+% ncremap -P mwf --alg_lst=esmfnstod,ncoaave,ncoidw,traave,trbilin \
+  -s ocean.QU.240km.scrip.181106.nc -g ne11pg2.nc \
+  --nm_src=QU240 --nm_dst=ne11pg2 --dt_sng=20240201
+...
+% ls map*
+map_QU240_to_ne11pg2_esmfnstod.20240201.nc
+map_QU240_to_ne11pg2_ncoaave.20240201.nc
+map_QU240_to_ne11pg2_ncoidw.20240201.nc
+map_QU240_to_ne11pg2_traave.20240201.nc
+map_QU240_to_ne11pg2_trbilin.20240201.nc
+map_ne11pg2_to_QU240_esmfnstod.20240201.nc
+map_ne11pg2_to_QU240_ncoaave.20240201.nc
+map_ne11pg2_to_QU240_ncoidw.20240201.nc
+map_ne11pg2_to_QU240_traave.20240201.nc
+map_ne11pg2_to_QU240_trbilin.20240201.nc
+@end verbatim
+@end example
 
 @html
 <a name="area_dgn"></a> <!-- http://nco.sf.net/nco.html#area_dgn -->
