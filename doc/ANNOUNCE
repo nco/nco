@@ -94,7 +94,7 @@ that contain the level of quantization and that point to a
 container variable that describes the algorithm:
 
 % ncks -O -7 --cmp='btr|shf|zst' in.nc foo.nc
-% ncks -m -v ts,compression_info foo.nc
+% ncks -m -v ts foo.nc
  char compression_info ;
    char compression_info ;
    compression_info:family = "quantize" ;
