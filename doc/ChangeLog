@@ -1,8 +1,12 @@
-2024-02-16  Charlie Zender  <zender@uci.edu>
+2024-02-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.1-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.1-alpha01: Engoron';git push
-	git tag -a 5.2.1-alpha01 -m 'Functionally identical to 5.2.0 (except compiles with bld/Makefile)';git push --tags
+	git tag -a 5.2.1-alpha01 -m 'Functionally identical to 5.2.0 (except compiles with bld/Makefile, fixes ncclimo/ncremap syntax)';git push --tags
+
+	* ncclimo/ncremap: fix script errors caused during deprecation of COBALT
+
+2024-02-16  Charlie Zender  <zender@uci.edu>
 
 	* nco_qnt_mtd() implement workaround to compiler-dependent behavior at tokenization
 	Prevents error on too many decimal points in number in expansion of macro ‘NCO_VERSION’	when version is purely numeric, e.g., 5.2.0
