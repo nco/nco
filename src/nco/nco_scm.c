@@ -242,7 +242,7 @@ nco_vrs_prn /* [fnc] Print NCO version */
   if(vrs_cpp[0L] == '"'){
     vrs_cpp[strlen(vrs_cpp)-1L]='\0';
     vrs_sng=vrs_cpp+1L;
-  } /* endif */
+  } /* !vrs_cpp */
 
   if(strlen(CVS_Id) > strlen("*Id*")){
     /* CVS_Id is defined */
@@ -283,5 +283,5 @@ nco_vrs_prn /* [fnc] Print NCO version */
   if(date_cvs) date_cvs=(char *)nco_free(date_cvs);
   if(vrs_rcs) vrs_rcs=(char *)nco_free(vrs_rcs);
   if(vrs_cvs) vrs_cvs=(char *)nco_free(vrs_cvs);
-} /* end nco_vrs_prn() */
+} /* !nco_vrs_prn() */
 
