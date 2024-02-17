@@ -1802,7 +1802,7 @@ if [ "${csn_flg}" = 'Yes' ]; then
 fi # !csn_flg
     
 if [ "${mpi_flg}" = 'Yes' ]; then
-    elif [ -n "${PBS_NODEFILE}" ]; then 
+    if [ -n "${PBS_NODEFILE}" ]; then 
 	nd_fl="${PBS_NODEFILE}"
     elif [ -n "${SLURM_NODELIST}" ]; then 
 	# SLURM returns compressed lists (e.g., "nid00[076-078,559-567]")

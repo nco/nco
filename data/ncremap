@@ -2227,13 +2227,11 @@ if [ "${prc_typ}" = 'mpaso' ] || [ "${prc_typ}" = 'mpasocean' ]; then
 fi # !mpaso
 
 if [ "${mpi_flg}" = 'Yes' ]; then
-    if [ -n "${COBALT_NODEFILE}" ]; then 
-	nd_fl="${COBALT_NODEFILE}"
-    elif [ -n "${PBS_NODEFILE}" ]; then 
+    if [ -n "${PBS_NODEFILE}" ]; then 
 	nd_fl="${PBS_NODEFILE}"
     elif [ -n "${SLURM_NODELIST}" ]; then 
 	# SLURM returns compressed lists (e.g., "nid00[076-078,559-567]")
-	# Convert this to file with uncompressed list (like Cobalt, PBS)
+	# Convert this to file with uncompressed list (like PBS)
 	# http://www.ceci-hpc.be/slurm_faq.html#Q12
 	# Ensure file is in writable directory
 	nd_fl="${drc_out}/${spt_nm}.slurm_nodelist.pid${spt_pid}.tmp"
@@ -2241,7 +2239,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	echo ${nd_lst} > ${nd_fl}
     else
 	echo "${spt_nm}: ERROR MPI master process unable to find node-list for distributing jobs"
-	echo "${spt_nm}: ${spt_nm} uses first node-list found in \$COBALT_NODEFILE, \$PBS_NODEFILE, or \$SLURM_NODELIST"
+	echo "${spt_nm}: ${spt_nm} uses first node-list found in \$PBS_NODEFILE or \$SLURM_NODELIST"
 	echo "${spt_nm}: However, none of these environment variables are set so there is no node-list for distributing MPI jobs"
 	echo "${spt_nm}: HINT: Requesting MPI-parallelism (i.e., invoking ${spt_nm} with \"-p mpi\") in a non-MPI environment will trigger this error. Use \"-p mpi\" only when one of the preceding schedulers has allocated (for interactive use) or will allocate (for non-interactive use) the compute nodes. Otherwise use the default background parallelism (use \"-p bck\" or omit the option completely) or use serial mode (use \"-p serial\"). See http://nco.sf.net/nco.html#par_typ for more information on parallelism."
 	exit 1
@@ -2296,7 +2294,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 #		    cmd_mpi[${fl_idx}]="mpiexec_mpt dplace ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
 		    cmd_mpi[${fl_idx}]="mpirun ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
 		* )
-		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
+		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # Other (PBS)
 #		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
 	    case "${HOSTNAME}" in 
