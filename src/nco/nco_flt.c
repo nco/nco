@@ -1560,6 +1560,14 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
 
 #define NCO_MAX_LEN_MPL_SNG 100
   char mpl_val_sng[NCO_MAX_LEN_MPL_SNG];
+  /* 20240216: Naked tokens for exact versions, e.g., 5.2.0, cause issues with some compilers
+     Apparently these compilers attempt to convert numeric-looking versions into numbers not strings
+     This leads to errors like:
+     error: too many decimal points in number
+     ../src/nco/nco_flt.c:1563:90: note: in expansion of macro ‘NCO_VERSION’
+     One alternative is to replace NCO_VERSION by TKN2SNG(NCO_VERSION) 
+     However, this adds an undesirable extra pair of quotes to the output, e.g.,
+     compression_info:implementation = "libnetcdf version \"4.9.3-development\"" ; */
   if(flg_baa) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_MPL_SNG,"%s version %s",mpl_val_nco,NCO_VERSION);
   if(flg_hdf) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_MPL_SNG,"%s version %s",mpl_val_libnetcdf,NC_VERSION);
 

@@ -1,8 +1,12 @@
 2024-02-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.1-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.1-alpha01: Engoron';git push
+	git tag -a 5.2.1-alpha01 -m 'Functionally identical to 5.2.0';git push --tags
+
 	* NCO 5.2.0 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.0: Fast Car';git push
-	git tag -a 5.2.0-beta01 -m 'all: cf lsy mtd; ncclimo: tms inp_aut, fix inp_glb, fix djf-mode clm_bnd; ncclimo/ncremap: dpr cheyenne+ALCF mch, spp derecho, upd perlmutter; ncks: --chk_bnd, S1D works; ncremap: TR --mono*, ncoidw, MWF alg_lst, trfv2';git push --tags
+	git tag -a 5.2.0 -m 'all: cf lsy mtd; ncclimo: tms inp_aut, fix inp_glb, fix djf-mode clm_bnd; ncclimo/ncremap: dpr cheyenne+ALCF mch, spp derecho, upd perlmutter; ncks: --chk_bnd, S1D works; ncremap: TR --mono*, ncoidw, MWF alg_lst, trfv2';git push --tags
 
 	* Add lossy_compression to list of attributes that cause variable to be treated as associated coordinate
 
