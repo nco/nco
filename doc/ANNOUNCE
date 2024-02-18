@@ -1,28 +1,25 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.0 puffs its feathers
+netCDF Operators NCO version 5.2.1 sheepishly steps forward
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.2.0 includes four major new features and various fixes.
-The features: 1) All operators append draft CF Convention behavior
-for metadata to encode lossy compression. 2) ncclimo timeseries mode
-now supports all input methods (including automatic filename
-generation) long-supported by climo mode. 3) ncremap Make-Weight-File
-(MWF) mode has been revamped and now support specifiable lists of
-algorithms. Last but not least, 4) ncks --s1d now converts CLM/ELM
-restart files from their native, inscrutable sparse 1-D (S1D) format
-to normal-looking files, without loss of information.
+Version 5.2.1 fixes an issue with ncremap and ncclimo in MPI mode.
+Another small fix to enables GCC compilation in pedantic mode.
+No new features are implemented, but it was too late to recall 5.2.0.
+My apologies and thanks to the package maintainers.
 
-Work on NCO 5.2.1 has commenced and aims to add support for Zarr S3 
+Work on NCO 5.2.2 has commenced and aims to add support for Zarr S3 
 stores, and to polish support for new codecs..
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
+
+[These just repeat the changes in 5.2.0 since most peopld never used it]
 
 A. ncks can now help analyze initial condition and restart datasets
 produced by the E3SM ELM and CESM CLM/CTSM land-surface models.
