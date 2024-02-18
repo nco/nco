@@ -1,10 +1,16 @@
+2024-02-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.2.1 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.1: Shabu Shabu';git push
+	git tag -a 5.2.1 -m 'Functionally identical to 5.2.0 (except compiles with bld/Makefile, fixes ncclimo/ncremap syntax)';git push --tags
+
 2024-02-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.1-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.1-alpha01: Engoron';git push
 	git tag -a 5.2.1-alpha01 -m 'Functionally identical to 5.2.0 (except compiles with bld/Makefile, fixes ncclimo/ncremap syntax)';git push --tags
 
-	* ncclimo/ncremap: fix script errors caused during deprecation of COBALT
+	* ncclimo/ncremap: fix script errors caused during deprecation of COBALT batch scheduler
 
 2024-02-16  Charlie Zender  <zender@uci.edu>
 
