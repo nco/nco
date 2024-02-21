@@ -339,7 +339,7 @@ else
  GSL_INC_FLG := $(shell ${GSL_CONFIG} --cflags)
 endif # endif GSL_INC
 ifdef GSL_LIB
- GSL_LIB_FLG := -L${GSL_LIB} -lgsl
+ GSL_LIB_FLG := -L${GSL_LIB} -lgsl -lgslcblas
 else
  GSL_LIB_FLG := $(shell ${GSL_CONFIG} --libs)
 endif # endif GSL_LIB

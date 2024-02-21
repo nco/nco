@@ -416,7 +416,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest ticket to build NCO: 20190525 ICS-40n99 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
 # Personal recipe last modified: 20230917 (use conda gcc/g++ compilers so new libnetcdf links to C++ to resolve libicuuc dependencies)
-# Personal recipe last borken: 20231031 unable to link to conda libnetcdf due to GLIBC_PRIVATE errors. Seems to use /usr/bin/ld instead of conda?
+# Personal recipe last borken: 20231031 unable to link to conda libnetcdf due to GLIBC_PRIVATE errors. Seems to use /usr/bin/ld instead of conda? 20240221 error: cannot find netCDF library
 # Personal recipe last successful: 20230917
 module purge
 cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
