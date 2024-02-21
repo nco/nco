@@ -333,16 +333,16 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/4.9.3 # 20201208
 # Personal recipe last modified: 20221019 (link -lantlr from MY_LIB_DIR not HOME/lib)
 # Personal recipe last borken: 20231129 /gpfs/alpine/cli115/proj-shared/e3sm-unified/base/envs/e3sm_unified_1.9.1_login/lib/libnetcdf.so: undefined reference to `H5Pset_dxpl_mpio'
-# ../src/nco/nco_flt.c: In function ‘nco_qnt_mtd’: error: too many decimal points in number in expansion of macro ‘NCO_VERSION’
 # Personal recipe last successful: 20230512
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest/lib
-export NETCDF_ROOT=/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest
-export PATH=${PATH}:/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest/bin
+/ccs/proj/cli115/software/e3sm-unified
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/lib
+export NETCDF_ROOT=/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest
+export PATH=${PATH}:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/bin
 cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
 # !Andes
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
@@ -453,8 +453,8 @@ make install >> nco.make.foo 2>&1
 # Sysadmin upgrade request: cislhelp@ucar.edu # NCAR Maintainer = Pat Nichols
 # Latest ticket to build NCO: 216373 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.9.2 module load nco/5.1.6 # 20240107
-# Personal recipe last modified: 20240107
-# Personal recipe last borken: 20240107 (unable to compile antlr)
+# Personal recipe last modified: 20240107 (add -lgslcblas to bld/Makefile)
+# Personal recipe last borken: 20240107 (NCO base works, ncap2 unable to link to antlr)
 # Personal recipe last successful: 20231103
 # Derecho GNU:
 module purge
@@ -484,12 +484,12 @@ export LINUX_FC='gfortran'
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/anaconda/lib
 export NETCDF_ROOT=${HOME}/anaconda
 export PATH=${PATH}:${HOME}/anaconda/bin
-#export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest/lib
-#export NETCDF_ROOT=/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest
-#export PATH=${PATH}:/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest/bin
+#export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/lib
+#export NETCDF_ROOT=/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest
+#export PATH=${PATH}:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/bin
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make ANTLR_ROOT=${HOME}/anaconda ANTLR_LIB=${HOME}/anaconda NETCDF_ROOT=${HOME}/anaconda OPTS=D OMP=Y allinone;cd -
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/lustre/orion/cli115/world-shared/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
 # !Frontier
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on Perlmutter with GNU:

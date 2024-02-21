@@ -162,7 +162,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		E3SMU_ROOT='/gpfs/alpine/proj-shared/cli115/e3sm-unified/base/envs/e3sm_unified_latest'
+		E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_andes'\:${PATH}
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes'\:${LD_LIBRARY_PATH} ; ;;

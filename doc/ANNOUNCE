@@ -1,17 +1,17 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.1 sheepishly step forward
+netCDF Operators NCO version 5.2.2 sheepishly step forward
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.2.1 fixes an issue with ncremap and ncclimo in MPI mode.
+Version 5.2.2 fixes an issue with ncremap and ncclimo in MPI mode.
 Another small fix to enables GCC compilation in pedantic mode.
 No new features are implemented, but it was too late to recall 5.2.0.
 My apologies and thanks to the package maintainers.
 
-Work on NCO 5.2.2 has commenced and aims to add support for Zarr S3 
+Work on NCO 5.2.3 has commenced and aims to add support for Zarr S3 
 stores, and to polish support for new codecs..
 
 Enjoy,
