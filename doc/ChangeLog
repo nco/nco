@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha01: IRS 1040';git push
 	git tag -a 5.2.2-alpha01 -m 'Functionally identical to 5.2.1 (adds -lgslcblas, fix andes paths)';git push --tags
 
-	* ncremap/ncclimo/configure.eg change E3SMU paths to /ccs/proj/cli115/software/e3sm-unified
+	* ncremap/ncclimo/configure.eg change Andes E3SMU paths to /ccs/proj/cli115/software/e3sm-unified
 
 	* bld/Makefile, nco++/Makefile add -lgslcblas for Derecho
 

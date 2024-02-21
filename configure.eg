@@ -313,7 +313,7 @@ make install
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20231026 (Use ~/anaconda rather than E3SMU)
 # Personal recipe last borken: 20231026
-# Personal recipe last successful: 20231026
+# Personal recipe last successful: 20240221
 # Current build error: 20231019 "configure: error: cannot find netCDF library"
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
@@ -331,18 +331,18 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket to build NCO: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/4.9.3 # 20201208
-# Personal recipe last modified: 20221019 (link -lantlr from MY_LIB_DIR not HOME/lib)
+# Personal recipe last modified: 20240221 (fix E3SMU paths, use anaconda, not bld/Makefile)
 # Personal recipe last borken: 20231129 /gpfs/alpine/cli115/proj-shared/e3sm-unified/base/envs/e3sm_unified_1.9.1_login/lib/libnetcdf.so: undefined reference to `H5Pset_dxpl_mpio'
-# Personal recipe last successful: 20230512
+# Personal recipe last successful: 20240220
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
-/ccs/proj/cli115/software/e3sm-unified
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/lib
 export NETCDF_ROOT=/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest
 export PATH=${PATH}:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/bin
 cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
+cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+# cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT=${NETCDF_ROOT} OPTS=D OMP=Y allinone;cd -
 # !Andes
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
@@ -419,7 +419,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Personal recipe last borken: 20231031 unable to link to conda libnetcdf due to GLIBC_PRIVATE errors. Seems to use /usr/bin/ld instead of conda? 20240221 error: cannot find netCDF library
 # Personal recipe last successful: 20230917
 module purge
-cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT="${HOME}/anaconda" ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
