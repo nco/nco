@@ -1246,7 +1246,7 @@ elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_ty
 # NB: 20220922 TempestRemap began replacing the --mono* options with --method mono*
     cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     cnv_opt_dst="-B"
-    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --global_id GLOBAL_DOFS --method fv --monotonic 1 --global_id GLOBAL_ID"
+    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --global_id GLOBAL_DOFS --method fv --monotonicity 1 --global_id GLOBAL_ID"
     wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono"
     alg_opt='se2fv_flx'
     wgt_typ='tempest'
@@ -1260,7 +1260,7 @@ elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${a
 elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_se2fv' ]; then # alg_sng='intbilin'
     cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     cnv_opt_dst="-B"
-    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonic 3 --noconserve"
+    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonicity 3 --noconserve"
     wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono3 --noconserve"
     alg_opt='se2fv_alt'
     wgt_typ='tempest'
@@ -1268,7 +1268,7 @@ elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'con
     cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     # 20190227: Add mono for se2se per recommendation of Mark Taylor
-    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method cgll --order ${se_np_nbr} --monotonic 1"
+    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method cgll --order ${se_np_nbr} --monotonicity 1"
     wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type cgll --out_np ${se_np_nbr} --mono"
     alg_opt='se2se'
     wgt_typ='tempest'
@@ -1276,7 +1276,7 @@ elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_
     # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
     cnv_opt_src="-B"
     cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
-    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonic 1"
+    wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonicity 1"
     wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono"
     alg_opt='fv2se_flx'
     wgt_typ='tempest'
@@ -1293,7 +1293,7 @@ elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_ty
     cnv_opt_src="-B"
     cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     # 20200525: Remove "--volumetric" from fv2se_mono per Mark Taylor modifying Confluence instructions
-    wgt_opt_mbt="--method fv --order 1 --method cgll --order ${se_np_nbr} --monotonic 1"
+    wgt_opt_mbt="--method fv --order 1 --method cgll --order ${se_np_nbr} --monotonicity 1"
     wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np ${se_np_nbr} --mono"
     alg_opt='fv2se_alt'
     wgt_typ='tempest'
