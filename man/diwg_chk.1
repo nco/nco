@@ -1,0 +1,108 @@
+.\" $Header$ -*-nroff-*-
+.\" Purpose: ROFF man page for diwg_chk
+.\" Usage:
+.\" nroff -man ~/nco/man/diwg_chk.1 | less
+.TH DIWG_CHK 1
+.SH NAME
+diwg_chk \- NASA Dataset Interoperability Working Group Compliance Checker
+.SH SYNTAX
+diwg_chk
+[\-d
+.IR dbg_lvl ] 
+[\-v
+.IR var_lst ] 
+[\--version ]
+.I input-files
+
+.SH DESCRIPTION
+.PP
+.B diwg_chk
+checks files for compliance with NASA Dataset Interoperability Working
+Group (DIWG) recommendations.
+It reads 
+.I input-files
+from
+.B stdin,
+or the command, performs all checks, and writes the results to
+.B stdout.
+Some standard
+.B NCO
+options are supported, including variable subsetting with .
+[\-v
+.IR var_lst ],
+increasing the verbosity level with
+[\-D
+.IR dbg_lvl ],
+and printing the version with 
+[\--version].
+
+.\" NB: Append man_end.txt here
+.\" $Header$ -*-nroff-*-
+.\" Purpose: Trailer file for common ending to NCO man pages
+.\" Usage: 
+.\" Append this file to end of NCO man pages immediately after marker
+.\" that says "Append man_end.txt here"
+.SH AUTHOR
+.B NCO
+manual pages written by Charlie Zender.
+
+.SH "REPORTING BUGS"
+Report bugs to <http://sf.net/bugs/?group_id=3331>.
+
+.SH COPYRIGHT
+Copyright \(co 2023-present Charlie Zender
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+.SH "SEE ALSO"
+The full documentation for
+.B NCO
+is maintained as a Texinfo manual called the 
+.B NCO Users Guide.
+Because 
+.B NCO
+is mathematical in nature, the documentation includes TeX-intensive
+portions not viewable on character-based displays. 
+Hence the only complete and authoritative versions of the 
+.B NCO Users Guide 
+are the PDF (recommended), DVI, and Postscript versions at
+<http://nco.sf.net/nco.pdf>, <http://nco.sf.net/nco.dvi>,
+and <http://nco.sf.net/nco.ps>, respectively.
+HTML and XML versions
+are available at <http://nco.sf.net/nco.html> and
+<http://nco.sf.net/nco.xml>, respectively.
+
+If the
+.B info
+and
+.B NCO
+programs are properly installed at your site, the command
+.IP
+.B info nco
+.PP
+should give you access to the complete manual, except for the
+TeX-intensive portions.
+
+.BR ncap (1), 
+.BR ncap2 (1), 
+.BR ncatted (1), 
+.BR ncbo (1), 
+.BR ncclimo (1), 
+.BR nces (1), 
+.BR ncecat (1), 
+.BR ncflint (1), 
+.BR ncz2psx (1), 
+.BR ncks (1), 
+.BR nco (1), 
+.BR ncpdq (1), 
+.BR ncra (1), 
+.BR ncrcat (1), 
+.BR ncremap (1), 
+.BR ncrename (1), 
+.BR ncwa (1) 
+
+.SH HOMEPAGE
+The 
+.B NCO
+homepage at <http://nco.sf.net> contains more information.

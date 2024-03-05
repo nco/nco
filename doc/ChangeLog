@@ -1,8 +1,12 @@
-2024-02-27  Charlie Zender  <zender@uci.edu>
+2024-03-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha02: Broken Molar';git push
-	git tag -a 5.2.2-alpha02 -m 'ncremap: --monotonicity';git push --tags
+	git tag -a 5.2.2-alpha02 -m 'diwg_chk; ncremap: --monotonicity';git push --tags
+
+	* Add diwg_chk
+
+2024-02-27  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: Walter Hannah changed mbtempest argument name from "monotonic" to "monotonicity"
 
