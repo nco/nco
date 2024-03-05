@@ -354,127 +354,14 @@ for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
     
     printf "\nChecking file #${fl_idx}: ${fl_in[${fl_idx}]} ...\n"
     
-    printf "\nTest 1: Check all floating-point variables for presence of NaN values...\n"
-    printf "Recommendation: Earth Science data products should avoid using Not-a-Number (NaN) in any field values or as an indicator of missing or invalid data\n"
-    echo "URL: https://wiki.earthdata.nasa.gov/display/ESDSWG/Not-a-Number+%28NaN%29+Value"
-    [[ ${dbg_lvl} -ge 0 ]] && date_nan=$(date +"%s")
-    cmd_nan[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_nan ${fl_in[${fl_idx}]}"
-
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_nan[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -le 1 ]; then
-	if [ -z "${par_opt}" ]; then
-	    eval ${cmd_nan[${fl_idx}]}
-	    if [ "$?" -ne 0 ]; then
-		printf "Result: FAILURE NaN-check failed. Reproduce this single check with:\n${cmd_nan[${fl_idx}]}\n"
-	    else # !err
-		printf "Result: SUCCESS NaN-check passed.\n"
-	    fi # !err
-	else # !par_opt
-	    eval ${cmd_nan[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
-	    nan_pid[${fl_idx}]=$!
-	fi # !par_opt
-    fi # !dbg
-
-    if [ ${dbg_lvl} -ge 1 ]; then
-	date_crr=$(date +"%s")
-	date_dff=$((date_crr-date_nan))
-	echo "Elapsed time for NaN-check = $((date_dff/60))m$((date_dff % 60))s"
-    fi # !dbg
-
-    printf "\nTest 2: Check character set of group, dimension, variable, and attribute names ...\n"
-    printf "Recommendation: Such names shall comply with this regular expression: [A-Za-z][A-Za-z0-9_]*\n"
-    echo "URL: https://wiki.earthdata.nasa.gov/display/ESDSWG/Character+Set+for+User-Defined+Group%2C+Variable%2C+and+Attribute+names"
-    [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
-
-    cmd_chr[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_chr ${fl_in[${fl_idx}]}"
-
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_chr[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -le 1 ]; then
-	if [ -z "${par_opt}" ]; then
-	    eval ${cmd_chr[${fl_idx}]}
-	    if [ "$?" -ne 0 ]; then
-		printf "Result: FAILURE character-set check failed. Reproduce this single check with:\n${cmd_chr[${fl_idx}]}\n"
-	    else # !err
-		printf "Result: SUCCESS character-set check passed.\n"
-	    fi # !err
-	else # !par_opt
-	    eval ${cmd_chr[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
-	    chr_pid[${fl_idx}]=$!
-	fi # !par_opt
-    fi # !dbg
-
-    printf "\nTest 3: Check variables and groups for presence of \"missing_value\" attribute ...\n"
-    printf "Recommendation: Avoid use of the missing_value attribute in new Earth Science data products.\n"
-    echo "URL: https://wiki.earthdata.nasa.gov/display/ESDSWG/Avoid+Use+of+the+missing_value+Attribute"
-    [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
-
-    cmd_mss[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_mss ${fl_in[${fl_idx}]}"
-
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_mss[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -le 1 ]; then
-	if [ -z "${par_opt}" ]; then
-	    eval ${cmd_mss[${fl_idx}]}
-	    if [ "$?" -ne 0 ]; then
-		printf "Result: FAILURE missing_value check failed. Reproduce this single check with:\n${cmd_mss[${fl_idx}]}\n"
-	    else # !err
-		printf "Result: SUCCESS missing_value check passed.\n"
-	    fi # !err
-	else # !par_opt
-	    eval ${cmd_mss[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
-	    mss_pid[${fl_idx}]=$!
-	fi # !par_opt
-    fi # !dbg
-
-    if [ ${dbg_lvl} -ge 1 ]; then
-	date_crr=$(date +"%s")
-	date_dff=$((date_crr-date_chr))
-	echo "Elapsed time for character-set check = $((date_dff/60))m$((date_dff % 60))s"
-    fi # !dbg
-    
-    printf "\nTest 4: Check that filename extension matches recommended list ...\n"
-    printf "Recommendation: Files created with the HDF5, HDF-EOS5, or netCDF APIs should have filename extensions \"h5\", \"he5\", or \"nc\", respectively.\n"
-    echo "URL: https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=182297715"
-    [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
-
-    cmd_xtn[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_xtn ${fl_in[${fl_idx}]}"
-
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_xtn[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -le 1 ]; then
-	if [ -z "${par_opt}" ]; then
-	    eval ${cmd_xtn[${fl_idx}]}
-	    if [ "$?" -ne 0 ]; then
-		printf "Result: FAILURE filename extension failed. Reproduce this single check with:\n${cmd_xtn[${fl_idx}]}\n"
-	    else # !err
-		printf "Result: SUCCESS filename extension check passed.\n"
-	    fi # !err
-	else # !par_opt
-	    eval ${cmd_xtn[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
-	    xtn_pid[${fl_idx}]=$!
-	fi # !par_opt
-    fi # !dbg
-
-    if [ ${dbg_lvl} -ge 1 ]; then
-	date_crr=$(date +"%s")
-	date_dff=$((date_crr-date_chr))
-	echo "Elapsed time for filename extension check = $((date_dff/60))m$((date_dff % 60))s"
-    fi # !dbg
-    
-    printf "\nTest 5: Check that coordinates have bounds attributes ...\n"
-    printf "Recommendation: Use CF Bounds Attributes\n"
+    printf "\nTest 1: Check that coordinates have bounds attributes ...\n"
+    printf "Recommendation 2.3: Use CF Bounds Attributes\n"
     echo "URL: https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=182296291"
     [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
 
     cmd_bnd[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_bnd ${fl_in[${fl_idx}]}"
 
-    if [ ${dbg_lvl} -ge 1 ]; then
+    if [ ${dbg_lvl} -ge 2 ]; then
 	echo ${cmd_bnd[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -le 1 ]; then
@@ -497,14 +384,127 @@ for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	echo "Elapsed time for coordinate bounds check = $((date_dff/60))m$((date_dff % 60))s"
     fi # !dbg
 
+    printf "\nTest 2: Check character set of group, dimension, variable, and attribute names ...\n"
+    printf "Recommendation 3.1: Such names shall comply with this regular expression: [A-Za-z][A-Za-z0-9_]*\n"
+    echo "URL: https://wiki.earthdata.nasa.gov/display/ESDSWG/Character+Set+for+User-Defined+Group%2C+Variable%2C+and+Attribute+names"
+    [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
+
+    cmd_chr[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_chr ${fl_in[${fl_idx}]}"
+
+    if [ ${dbg_lvl} -ge 2 ]; then
+	echo ${cmd_chr[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	if [ -z "${par_opt}" ]; then
+	    eval ${cmd_chr[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "Result: FAILURE character-set check failed. Reproduce this single check with:\n${cmd_chr[${fl_idx}]}\n"
+	    else # !err
+		printf "Result: SUCCESS character-set check passed.\n"
+	    fi # !err
+	else # !par_opt
+	    eval ${cmd_chr[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+	    chr_pid[${fl_idx}]=$!
+	fi # !par_opt
+    fi # !dbg
+
+    printf "\nTest 3: Check all floating-point variables for presence of NaN values...\n"
+    printf "Recommendation 3.7: Earth Science data products should avoid using Not-a-Number (NaN) in any field values or as an indicator of missing or invalid data\n"
+    echo "URL: https://wiki.earthdata.nasa.gov/display/ESDSWG/Not-a-Number+%28NaN%29+Value"
+    [[ ${dbg_lvl} -ge 0 ]] && date_nan=$(date +"%s")
+    cmd_nan[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_nan ${fl_in[${fl_idx}]}"
+
+    if [ ${dbg_lvl} -ge 2 ]; then
+	echo ${cmd_nan[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	if [ -z "${par_opt}" ]; then
+	    eval ${cmd_nan[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "Result: FAILURE NaN-check failed. Reproduce this single check with:\n${cmd_nan[${fl_idx}]}\n"
+	    else # !err
+		printf "Result: SUCCESS NaN-check passed.\n"
+	    fi # !err
+	else # !par_opt
+	    eval ${cmd_nan[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+	    nan_pid[${fl_idx}]=$!
+	fi # !par_opt
+    fi # !dbg
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	date_crr=$(date +"%s")
+	date_dff=$((date_crr-date_nan))
+	echo "Elapsed time for NaN-check = $((date_dff/60))m$((date_dff % 60))s"
+    fi # !dbg
+
+    printf "\nTest 4: Check that filename extension matches recommended list ...\n"
+    printf "Recommendation 3.8: Files created with the HDF5, HDF-EOS5, or netCDF APIs should have filename extensions \"h5\", \"he5\", or \"nc\", respectively.\n"
+    echo "URL: https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=182297715"
+    [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
+
+    cmd_xtn[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_xtn ${fl_in[${fl_idx}]}"
+
+    if [ ${dbg_lvl} -ge 2 ]; then
+	echo ${cmd_xtn[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	if [ -z "${par_opt}" ]; then
+	    eval ${cmd_xtn[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "Result: FAILURE filename extension failed. Reproduce this single check with:\n${cmd_xtn[${fl_idx}]}\n"
+	    else # !err
+		printf "Result: SUCCESS filename extension check passed.\n"
+	    fi # !err
+	else # !par_opt
+	    eval ${cmd_xtn[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+	    xtn_pid[${fl_idx}]=$!
+	fi # !par_opt
+    fi # !dbg
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	date_crr=$(date +"%s")
+	date_dff=$((date_crr-date_chr))
+	echo "Elapsed time for filename extension check = $((date_dff/60))m$((date_dff % 60))s"
+    fi # !dbg
+    
+    printf "\nTest 5: Check variables and groups for presence of \"missing_value\" attribute ...\n"
+    printf "Recommendation 4.2: Avoid use of the missing_value attribute in new Earth Science data products.\n"
+    echo "URL: https://wiki.earthdata.nasa.gov/display/ESDSWG/Avoid+Use+of+the+missing_value+Attribute"
+    [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
+
+    cmd_mss[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_mss ${fl_in[${fl_idx}]}"
+
+    if [ ${dbg_lvl} -ge 2 ]; then
+	echo ${cmd_mss[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	if [ -z "${par_opt}" ]; then
+	    eval ${cmd_mss[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "Result: FAILURE missing_value check failed. Reproduce this single check with:\n${cmd_mss[${fl_idx}]}\n"
+	    else # !err
+		printf "Result: SUCCESS missing_value check passed.\n"
+	    fi # !err
+	else # !par_opt
+	    eval ${cmd_mss[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+	    mss_pid[${fl_idx}]=$!
+	fi # !par_opt
+    fi # !dbg
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	date_crr=$(date +"%s")
+	date_dff=$((date_crr-date_chr))
+	echo "Elapsed time for character-set check = $((date_dff/60))m$((date_dff % 60))s"
+    fi # !dbg
+    
     printf "\nTest 6: Check that time variables are double precision ...\n"
-    printf "Recommendation: Use Double Precision When Archiving Time in Seconds Since a Specific Epoch\n"
+    printf "Recommendation 4.11: Use Double Precision When Archiving Time in Seconds Since a Specific Epoch\n"
     echo "URL: https://wiki.earthdata.nasa.gov/display/ESDSWG/Use+Double+Precision+When+Archiving+Time+in+Seconds+Since+a+Specific+Epoch"
     [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
 
     cmd_tm[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_tm ${fl_in[${fl_idx}]}"
 
-    if [ ${dbg_lvl} -ge 1 ]; then
+    if [ ${dbg_lvl} -ge 2 ]; then
 	echo ${cmd_tm[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -le 1 ]; then

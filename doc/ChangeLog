@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha03: Monkeybaut IPA';git push
 	git tag -a 5.2.2-alpha03 -m 'diwg_chk; ncremap: --monotonicity';git push --tags
 
+	* diwg_chk: Add RFC recommendation numbers, sort tests in that order
+
 	* NCO 5.2.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha02: Broken Molar';git push
 	git tag -a 5.2.2-alpha02 -m 'diwg_chk; ncremap: --monotonicity';git push --tags
