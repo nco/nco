@@ -1,0 +1,539 @@
+#!/usr/bin/env bash
+
+# Purpose: Check data file against DIWG recommendations
+
+# Copyright (C) 2023--present Charlie Zender, ... (Contribuing DIWG members---Add your names!)
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+# See the 3-Clause BSD License for more details.
+
+# Prerequisites: Bash, NCO
+# Script could use other shells, e.g., dash (Debian default) after rewriting function definitions and loops
+# Debug with 'bash -x diwg_chk --dbg=dbg_lvl' where 0 <= dbg_lvl <= 5
+
+# Insta-install:
+# scp ~/diwg/diwg_chk dust.ess.uci.edu:bin
+# scp dust.ess.uci.edu:bin/diwg_chk ${MY_BIN_DIR}
+
+# Set script name, directory, PID, run directory
+drc_pwd=${PWD}
+# Security: Explicitly unset IFS before wordsplitting, so Bash uses default IFS=<space><tab><newline>
+unset IFS
+# Set these before 'module' command which can overwrite ${BASH_SOURCE[0]}
+# NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
+# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+spt_src="${BASH_SOURCE[0]}"
+[[ -z "${spt_src}" ]] && spt_src="${0}" # Use ${0} when BASH_SOURCE is unavailable (e.g., dash)
+while [ -h "${spt_src}" ]; do # Recursively resolve ${spt_src} until file is no longer a symlink
+  drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
+  spt_src="$(readlink "${spt_src}")"
+  [[ ${spt_src} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
+done
+cmd_ln="${spt_src} ${@}"
+drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
+spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
+spt_pid=$$ # [nbr] Script PID (process ID)
+
+# Setup:
+# git clone git@github.com:diwg/diwg ~/diwg
+# ln -s ~/diwg/diwg_chk ~/bin/diwg_chk
+# ln -s ~/diwg/diwg_chk ~/sh/diwg_chk
+
+# Debugging and Benchmarking:
+# diwg_chk ~/nco/data/in.nc ~/nco/data/in_4.nc 
+# diwg_chk ~/data/bm/elmv2_ne30pg2l15.nc
+# diwg_chk ~/data/hdf/MODIS_L2N_20140304T1120.nc > ~/diwg.txt 2>&1 &
+# diwg_chk ~/data/hdf/OMI-Aura_L2-OMAERUV_2013m1004t2338-o49057_v003-2013m1005t053932.nc
+
+# Production usage:
+# diwg_chk --dbg=1 ~/nco/data/in_4.nc > ~/diwg.txt 2>&1 &
+# screen # Start screen
+# diwg_chk --dbg=1 ~/nco/data/in_4.nc > ~/diwg.txt 2>&1 &
+# Ctl-A D # Detach screen
+# tail ~/diwg.txt # Monitor progress
+# screen -ls # List screens
+# screen -r <ID> # Re-attach screen
+
+# Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
+if [ -z "${HOSTNAME}" ]; then
+    if [ -f /bin/hostname ] && [ -x /bin/hostname ]; then
+	export HOSTNAME=`/bin/hostname`
+    elif [ -f /usr/bin/hostname ] && [ -x /usr/bin/hostname ]; then
+	export HOSTNAME=`/usr/bin/hostname`
+    fi # !hostname
+fi # HOSTNAME
+
+# Set NCO version and directory
+nco_exe=`which ncks`
+if [ -z "${nco_exe}" ]; then
+    echo "${spt_nm}: ERROR Unable to find NCO, \${nco_exe} = ${nco_exe}"
+    echo "${spt_nm}: HINT Carefully examine your environment setup (e.g., .bashrc) to avoid inadvertently overriding (with, e.g., conda-initialization) paths intended to be provided by an analysis-package environment (e.g., Anaconda)"
+    exit 1
+fi # !nco_exe
+# StackOverflow method finds NCO directory
+while [ -h "${nco_exe}" ]; do
+  drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
+  nco_exe="$(readlink "${nco_exe}")"
+  [[ ${nco_exe} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
+done
+drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
+nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
+nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk -F '"' '{print $2}')
+
+# 20190218: Die quickly when NCO is found yet cannot run, e.g., due to linker errors
+if [ -z "${nco_vrs}" ]; then
+    echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
+    $(ncks --version)
+    exit 1
+fi # !nco_vrs
+lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
+
+# When running in a terminal window (not in an non-interactive batch queue)...
+if [ -n "${TERM}" ]; then
+    # Set fonts for legibility
+    if [ -x /usr/bin/tput ] && tput setaf 1 &> /dev/null; then
+	fnt_bld=`tput bold` # Bold
+	fnt_nrm=`tput sgr0` # Normal
+	fnt_rvr=`tput smso` # Reverse
+	fnt_tlc=`tput sitm` # Italic
+    else
+	fnt_bld="\e[1m" # Bold
+	fnt_nrm="\e[0m" # Normal
+	fnt_rvr="\e[07m" # Reverse
+	fnt_tlc="\e[3m" # Italic
+    fi # !tput
+fi # !TERM
+    
+# Defaults for command-line options and some derived variables
+# Modify these defaults to save typing later
+caseid='elmforc.ERA5.c2018.0.25d' # [sng] Case ID
+dbg_lvl=0 # [nbr] Debugging level
+drc_in='' # [sng] Input file directory
+drc_in_xmp="${DATA}/era5/data_raw/1979" # [sng] Input file directory for examples
+drc_out='' # [sng] Output file directory
+drc_out_xmp="${DATA}/era5/data_out" # [sng] Output file directory for examples
+inp_aut='No' # [sng] Input file list automatically generated
+inp_glb='No' # [sng] Input file list from globbing directory 
+inp_psn='No' # [sng] Input file list from positional arguments
+inp_std='No' # [sng] Input file list from stdin
+nco_opt='' # [sng] NCO options (e.g., '-6 -t 1')
+vrs_prn='No' # [sng] Print version information
+
+# NCO filters documented in http://nco.sf.net/nco.html#filter
+function ncvarlst { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
+function ncdmnlst { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
+
+function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
+    # Print usage
+    printf "${fnt_rvr}Basic usage:\n${fnt_nrm}${fnt_bld}${spt_nm} in.nc${fnt_nrm} # Default settings\n"
+    printf "${fnt_bld}${spt_nm} -t tst_nm${fnt_nrm} # Short options with pre-defined types\n"
+    printf "${fnt_bld}${spt_nm} --tst=tst_nm${fnt_nrm} # Long options with pre-defined types\n"
+    echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
+    echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic CDF1) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
+    echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
+    echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (netCDF3/PnetCDF CDF5) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
+    echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
+    echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
+    echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string to generate output filenames (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
+    echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
+    echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
+    echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
+    echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
+    echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}] [${fnt_tlc}serial | background | mpi${fnt_nrm}]"
+    echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
+    echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
+    echo " ${fnt_bld}--version${fnt_nrm}  Version and configuration information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
+    echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}--xcl_var${fnt_nrm}  Exclude rather than extract var_lst [${fnt_tlc}xcl_var, xcl, exclude, exclude_variables${fnt_nrm}]"
+    printf "\n"
+    printf "${fnt_rvr}Examples:${fnt_nrm}\n"
+    printf "${fnt_bld}ls *.nc | ${spt_nm}${fnt_nrm} # Default settings\n"
+    printf "${fnt_bld}ls *.nc | ${spt_nm} -o ${drc_out_xmp}${fnt_nrm} # Explicit output directory\n"
+    printf "${fnt_bld}/bin/ls ${drc_in_xmp}/*.nc | ${spt_nm} --dbg=2${fnt_nrm} # Debug ${spt_nm}\n"
+    printf "${fnt_bld}/bin/ls ${drc_in_xmp}/*.nc | ${spt_nm}${fnt_nrm} # Default parallelism\n"
+    printf "${fnt_bld}/bin/ls ${drc_in_xmp}/*.nc | ${spt_nm} --par=serial${fnt_nrm} # Serial parallelism\n"
+    printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
+    exit 1
+} # !fnc_usg_prn()
+
+# Check argument number and complain accordingly
+arg_nbr=$#
+#printf "\ndbg: Number of arguments: ${arg_nbr}"
+if [ ${arg_nbr} -eq 0 ]; then
+  fnc_usg_prn
+fi # !arg_nbr
+
+# Parse command-line options:
+# http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options (see method by Adam Katz)
+# http://tuxtweaks.com/2014/05/bash-getopts
+while getopts :34567c:d:f:i:o:p:s:v:x-: OPT; do
+    case ${OPT} in
+	3) fl_fmt='3' ;; # File format
+	4) fl_fmt='4' ;; # File format
+	5) fl_fmt='5' ;; # File format
+	6) fl_fmt='6' ;; # File format
+	7) fl_fmt='7' ;; # File format
+	c) caseid="${OPTARG}" ;; # CASEID
+	d) dbg_lvl="${OPTARG}" ;; # Debugging level
+	f) fml_nm_usr="${OPTARG}" ;; # Family name
+	i) drc_in="${OPTARG}" ;; # Input directory
+	o) drc_out_usr="${OPTARG}" ;; # Output directory
+	p) par_typ="${OPTARG}" ;; # Parallelism type
+	v) var_lst="${OPTARG}" ;; # Variables
+	x) xcl_flg='Yes' ;; # Exclude variable list
+	-) LONG_OPTARG="${OPTARG#*=}"
+	   case ${OPTARG} in
+	       # Hereafter ${OPTARG} is long argument key, and ${LONG_OPTARG}, if any, is long argument value
+	       # Long options with no argument, no short option counterpart
+	       # Long options with argument, no short option counterpart
+	       # Long options with short counterparts, ordered by short option key
+	       caseid=?* | case_id=?* | case=?* ) caseid="${LONG_OPTARG}" ;; # -c # CASEID
+	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
+	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
+	       drc_out=?* | out_drc=?* | dir_out=?* | out_dir=?* | output=?* ) drc_out_usr="${LONG_OPTARG}" ;; # -o # Output directory
+	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
+	       fml_nm=?* | fml=?* | family_name=?* | family=?* ) fml_nm_usr="${LONG_OPTARG}" ;; # -f # Family name
+	       hrd_pth | hard_path | npo | nco_path_override ) hrd_pth='Yes' ;; # # Use hard-coded paths on known machines (intentional no-op because already handled prior to getopt())
+	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
+	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
+	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
+	       tpd_out=?* | tpd=?* | timesteps_per_day=?* ) tpd_usr="${LONG_OPTARG}" ;; # # Timesteps-per-day in output
+	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
+	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
+	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Print version information
+	       xcl_var | xcl | exclude | exclude_variables ) xcl_flg='Yes' ;; # # Exclude rather than extract variable list
+	       xcl_var=?* | xcl=?* | exclude=?* | exclude_variables=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Exclude rather than extract variable list
+               '' ) break ;; # "--" terminates argument processing
+               * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
+	   esac ;; # !OPTARG
+	\?) # Unrecognized option
+	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not recognized\n" >&2
+	    fnc_usg_prn ;;
+    esac # !OPT
+done # !getopts
+shift $((OPTIND-1)) # Advance one argument
+psn_nbr=$#
+if [ ${psn_nbr} -ge 1 ]; then
+    inp_psn='Yes'
+    # 20200430 Input files on command-line mean we need not check standard-input
+    std_chk='No'
+fi # !psn_nbr
+
+if [ ${vrs_prn} = 'Yes' ]; then
+    printf "${spt_nm}, runs DIWG recommendation compliance checks, version ${nco_vrs} \"${nco_sng}\"\n"
+    printf "Authors: \n"
+    printf "Config: ${spt_nm} script located in directory ${drc_spt}\n"
+    printf "Config: NCO binaries located in directory ${drc_nco}, linked to netCDF library version ${lbr_vrs}\n"
+    if [ "${hrd_pth_fnd}" = 'Yes' ]; then
+	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
+    else
+	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
+    fi # !hrd_pth_fnd
+    exit 0
+fi # !vrs_prn
+
+# Determine mode first (this helps determine other defaults)
+if [ -z "${drc_in}" ]; then
+    drc_in="${drc_pwd}"
+else # !drc_in
+    if [ ! -d "${drc_in}" ]; then
+	echo "${spt_nm}: ERROR specified input directory \"${drc_in}\" does not exist"
+	exit 1
+    fi # !drc_in
+    drc_in_usr='Yes'
+fi # !drc_in
+
+# Read files from stdin pipe, positional arguments, or directory glob
+#printf "dbg: inp_aut  = ${inp_aut}\n"
+#printf "dbg: inp_glb  = ${inp_glb}\n"
+#printf "dbg: inp_psn  = ${inp_psn}\n"
+#printf "dbg: inp_std  = ${inp_std}\n"
+
+# Derived variables
+if [ -n "${drc_out_usr}" ]; then
+    chr_fst=${drc_out_usr:0:1}
+    if [ "${chr_fst}" = '-' ]; then
+	printf "${spt_nm}: WARNING first character of user-specified output directory drc_out is \"${chr_fst}\", which looks like an option itself. Be sure the ${spt_nm} '-O' option is followed by an argument that specifies the output directory for processed files. The '-O' option requires a pathname argument, and should not be confused with the '-O' flag (which takes no argument) used in the rest of NCO to force overwriting files (${spt_nm} automatically overwrites existing output files).\n"
+    fi # !chr_fst
+    # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
+    drc_out="${drc_out_usr%/}"
+fi # !drc_out_usr
+
+# Doubly-derived variables
+
+if [ ${inp_glb} = 'Yes' ]; then 
+    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
+	if [ -f "${fl}" ]; then
+	    fl_in[${fl_nbr}]=${fl}
+	    let fl_nbr=${fl_nbr}+1
+	fi # !file
+    done
+fi # !inp_glb
+if [ ${inp_psn} = 'Yes' ]; then
+    # Read any positional arguments
+    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+	fl_in[(${psn_idx}-1)]=${!psn_idx}
+	fl_nbr=${psn_nbr}
+    done # !psn_idx
+fi # !inp_psn
+if [ ${inp_std} = 'Yes' ]; then
+    # Input awaits on unit 0, i.e., on stdin
+    while read -r line; do # NeR05 p. 179
+	fl_in[${fl_nbr}]=${line}
+	let fl_nbr=${fl_nbr}+1
+    done < /dev/stdin
+fi # !inp_std
+
+# Create output directory
+if [ -n "${drc_out}" ] && [ ! -d "${drc_out}" ]; then 
+    chr_fst=${drc_out:0:1}
+    if [ "${chr_fst}" = '-' ]; then
+	echo "${spt_nm}: ERROR Attempting to mkdir user-specified output directory \"${drc_out}\" will fail because directory name begins with '-' which is an option indicator"
+	echo "${spt_nm}: HINT Specify an output directory name that does not begin with '-'"
+	exit 1
+    fi # !chr_fst
+    cmd_mkd="mkdir -p ${drc_out}"
+    eval ${cmd_mkd}
+    if [ "$?" -ne 0 ]; then
+	printf "${spt_nm}: ERROR Failed to create output directory. Debug this:\n${cmd_mkd}\n"
+	printf "${spt_nm}: HINT Creating a directory requires proper write permissions\n"
+	exit 1
+    fi # !err
+fi # !drc_out
+
+# Print initial state
+if [ ${dbg_lvl} -ge 2 ]; then
+    printf "dbg: dbg_lvl = ${dbg_lvl}\n"
+    printf "dbg: drc_in  = ${drc_in}\n"
+    printf "dbg: drc_out = ${drc_out}\n"
+    printf "dbg: hrd_pth = ${hrd_pth}\n"
+    printf "dbg: job_nbr = ${job_nbr}\n"
+    printf "dbg: mpi_flg = ${mpi_flg}\n"
+    printf "dbg: mpi_nbr = ${mpi_nbr}\n"
+    printf "dbg: nco_opt = ${nco_opt}\n"
+    printf "dbg: var_lst = ${var_lst}\n"
+    printf "dbg: xcl_flg = ${xcl_flg}\n"
+fi # !dbg
+if [ ${dbg_lvl} -ge 2 ]; then
+    psn_nbr=$#
+    if [ ${psn_nbr} -ge 1 ]; then
+	printf "dbg: Found ${psn_nbr} positional parameters (besides \$0):\n"
+	for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+	    printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
+	done # !psn_idx
+    fi # !psn_nbr
+    if [ "${fl_nbr}" -ge 1 ]; then
+	printf "dbg: Processing ${fl_nbr} raw input files:\n"
+	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+	    printf "dbg: fl_in[${fl_idx}] = ${fl_in[${fl_idx}]}\n"
+	done # !fl_idx
+    fi # !fl_nbr
+fi # !dbg
+
+# Human-readable summary
+date_srt=$(date +"%s")
+if [ ${dbg_lvl} -ge 0 ]; then
+    printf "diwg_chk, a DIWG compliance checker, invoked with command:\n"
+    echo "${cmd_ln}"
+    printf "Started DIWG checker at `date`\n"
+fi # !dbg
+
+if [ "${fl_nbr}" -lt 1 ]; then
+    echo "${spt_nm}: ERROR Checker did not receive any input files, fl_nbr = ${fl_nbr}"
+    exit 1
+fi # fl_nbr
+
+# Main Loop
+
+# Prepend directory string to filename
+for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+    fl_out[${fl_idx}]="${drc_out}/$(basename ${fl_in[${fl_idx}]})"
+    #printf "fl_in[${fl_idx}]  = ${fl_in[${fl_idx}]}\n"
+    #printf "fl_out[${fl_idx}] = ${fl_out[${fl_idx}]}\n"
+    
+    printf "\nChecking file #${fl_idx}: ${fl_in[${fl_idx}]} ...\n"
+    
+    printf "\nTest 1: Check all floating-point variables for presence of NaN values...\n"
+    printf "Recommendation: Earth Science data products should avoid using Not-a-Number (NaN) in any field values or as an indicator of missing or invalid data\n"
+    echo "URL: https://wiki.earthdata.nasa.gov/display/ESDSWG/Not-a-Number+%28NaN%29+Value"
+    [[ ${dbg_lvl} -ge 0 ]] && date_nan=$(date +"%s")
+    cmd_nan[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_nan ${fl_in[${fl_idx}]}"
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_nan[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	if [ -z "${par_opt}" ]; then
+	    eval ${cmd_nan[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "Result: FAILURE NaN-check failed. Reproduce this single check with:\n${cmd_nan[${fl_idx}]}\n"
+	    else # !err
+		printf "Result: SUCCESS NaN-check passed.\n"
+	    fi # !err
+	else # !par_opt
+	    eval ${cmd_nan[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+	    nan_pid[${fl_idx}]=$!
+	fi # !par_opt
+    fi # !dbg
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	date_crr=$(date +"%s")
+	date_dff=$((date_crr-date_nan))
+	echo "Elapsed time for NaN-check = $((date_dff/60))m$((date_dff % 60))s"
+    fi # !dbg
+
+    printf "\nTest 2: Check character set of group, dimension, variable, and attribute names ...\n"
+    printf "Recommendation: Such names shall comply with this regular expression: [A-Za-z][A-Za-z0-9_]*\n"
+    echo "URL: https://wiki.earthdata.nasa.gov/display/ESDSWG/Character+Set+for+User-Defined+Group%2C+Variable%2C+and+Attribute+names"
+    [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
+
+    cmd_chr[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_chr ${fl_in[${fl_idx}]}"
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_chr[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	if [ -z "${par_opt}" ]; then
+	    eval ${cmd_chr[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "Result: FAILURE character-set check failed. Reproduce this single check with:\n${cmd_chr[${fl_idx}]}\n"
+	    else # !err
+		printf "Result: SUCCESS character-set check passed.\n"
+	    fi # !err
+	else # !par_opt
+	    eval ${cmd_chr[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+	    chr_pid[${fl_idx}]=$!
+	fi # !par_opt
+    fi # !dbg
+
+    printf "\nTest 3: Check variables and groups for presence of \"missing_value\" attribute ...\n"
+    printf "Recommendation: Avoid use of the missing_value attribute in new Earth Science data products.\n"
+    echo "URL: https://wiki.earthdata.nasa.gov/display/ESDSWG/Avoid+Use+of+the+missing_value+Attribute"
+    [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
+
+    cmd_mss[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_mss ${fl_in[${fl_idx}]}"
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_mss[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	if [ -z "${par_opt}" ]; then
+	    eval ${cmd_mss[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "Result: FAILURE missing_value check failed. Reproduce this single check with:\n${cmd_mss[${fl_idx}]}\n"
+	    else # !err
+		printf "Result: SUCCESS missing_value check passed.\n"
+	    fi # !err
+	else # !par_opt
+	    eval ${cmd_mss[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+	    mss_pid[${fl_idx}]=$!
+	fi # !par_opt
+    fi # !dbg
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	date_crr=$(date +"%s")
+	date_dff=$((date_crr-date_chr))
+	echo "Elapsed time for character-set check = $((date_dff/60))m$((date_dff % 60))s"
+    fi # !dbg
+    
+    printf "\nTest 4: Check that filename extension matches recommended list ...\n"
+    printf "Recommendation: Files created with the HDF5, HDF-EOS5, or netCDF APIs should have filename extensions \"h5\", \"he5\", or \"nc\", respectively.\n"
+    echo "URL: https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=182297715"
+    [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
+
+    cmd_xtn[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_xtn ${fl_in[${fl_idx}]}"
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_xtn[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	if [ -z "${par_opt}" ]; then
+	    eval ${cmd_xtn[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "Result: FAILURE filename extension failed. Reproduce this single check with:\n${cmd_xtn[${fl_idx}]}\n"
+	    else # !err
+		printf "Result: SUCCESS filename extension check passed.\n"
+	    fi # !err
+	else # !par_opt
+	    eval ${cmd_xtn[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+	    xtn_pid[${fl_idx}]=$!
+	fi # !par_opt
+    fi # !dbg
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	date_crr=$(date +"%s")
+	date_dff=$((date_crr-date_chr))
+	echo "Elapsed time for filename extension check = $((date_dff/60))m$((date_dff % 60))s"
+    fi # !dbg
+    
+    printf "\nTest 5: Check that coordinates have bounds attributes ...\n"
+    printf "Recommendation: Use CF Bounds Attributes\n"
+    echo "URL: https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=182296291"
+    [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
+
+    cmd_bnd[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_bnd ${fl_in[${fl_idx}]}"
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_bnd[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	if [ -z "${par_opt}" ]; then
+	    eval ${cmd_bnd[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "Result: FAILURE coordinate bounds check failed. Reproduce this single check with:\n${cmd_bnd[${fl_idx}]}\n"
+	    else # !err
+		printf "Result: SUCCESS coordinate bounds check passed.\n"
+	    fi # !err
+	else # !par_opt
+	    eval ${cmd_bnd[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+	    bnd_pid[${fl_idx}]=$!
+	fi # !par_opt
+    fi # !dbg
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	date_crr=$(date +"%s")
+	date_dff=$((date_crr-date_chr))
+	echo "Elapsed time for coordinate bounds check = $((date_dff/60))m$((date_dff % 60))s"
+    fi # !dbg
+
+    printf "\nTest 6: Check that time variables are double precision ...\n"
+    printf "Recommendation: Use Double Precision When Archiving Time in Seconds Since a Specific Epoch\n"
+    echo "URL: https://wiki.earthdata.nasa.gov/display/ESDSWG/Use+Double+Precision+When+Archiving+Time+in+Seconds+Since+a+Specific+Epoch"
+    [[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
+
+    cmd_tm[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} --chk_tm ${fl_in[${fl_idx}]}"
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_tm[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -le 1 ]; then
+	if [ -z "${par_opt}" ]; then
+	    eval ${cmd_tm[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "Result: FAILURE precision of time variables check failed. Reproduce this single check with:\n${cmd_tm[${fl_idx}]}\n"
+	    else # !err
+		printf "Result: SUCCESS precision of time variables check passed.\n"
+	    fi # !err
+	else # !par_opt
+	    eval ${cmd_tm[${fl_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+	    bnd_pid[${fl_idx}]=$!
+	fi # !par_opt
+    fi # !dbg
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	date_crr=$(date +"%s")
+	date_dff=$((date_crr-date_chr))
+	echo "Elapsed time for precision of time variables check = $((date_dff/60))m$((date_dff % 60))s"
+    fi # !dbg
+    
+done # !fl_idx
+
+date_end=$(date +"%s")
+if [ ${dbg_lvl} -ge 0 ]; then
+    printf "\nCompleted DIWG Compliance Checker at `date`\n"
+    date_dff=$((date_end-date_srt))
+    echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
+fi # !dbg
+
+exit 0
