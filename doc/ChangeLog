@@ -1,10 +1,16 @@
 2024-03-05  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.2-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha03: Monkeybaut IPA';git push
+	git tag -a 5.2.2-alpha03 -m 'diwg_chk; ncremap: --monotonicity';git push --tags
+
 	* NCO 5.2.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha02: Broken Molar';git push
 	git tag -a 5.2.2-alpha02 -m 'diwg_chk; ncremap: --monotonicity';git push --tags
 
-	* Add diwg_chk
+	* Let it be known that ncap2 started linking correctly with MacOS again today
+
+	* Add diwg_chk, support distribution in autotools and CMake
 
 2024-02-27  Charlie Zender  <zender@uci.edu>
 
