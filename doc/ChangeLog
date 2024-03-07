@@ -1,8 +1,12 @@
-2024-03-05  Charlie Zender  <zender@uci.edu>
+2024-03-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha03: Monkeybaut IPA';git push
 	git tag -a 5.2.2-alpha03 -m 'diwg_chk RFC #s;';git push --tags
+
+	* Rename diwg_chk to ncchecker
+
+2024-03-05  Charlie Zender  <zender@uci.edu>
 
 	* diwg_chk: Add RFC recommendation numbers, sort tests in that order
 
