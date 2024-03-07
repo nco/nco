@@ -551,7 +551,7 @@ CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 # Variables having to do with binary executables created by module
 MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
 MDL_BIN_SYM_LNK := ncdiff ncea nces ncrcat # Symbolic links
-MDL_BIN_SPT := ncclimo ncremap ncz2psx diwg_chk # Scripts
+MDL_BIN_SPT := ncclimo ncremap ncz2psx ncchecker # Scripts
 ifeq (${MPI},Y)
 # MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa # MPI binary targets
  MDL_MPI_TRG := # MPI binary targets
@@ -1772,9 +1772,9 @@ endif
 ncz2psx:   ${MY_BIN_DIR}/ncz2psx
 ${MY_BIN_DIR}/ncz2psx:	${MY_DAT_DIR}/ncz2psx
 	/bin/cp -f ${MY_DAT_DIR}/ncz2psx ${MY_BIN_DIR}
-diwg_chk:   ${MY_BIN_DIR}/diwg_chk
-${MY_BIN_DIR}/diwg_chk:	${MY_DAT_DIR}/diwg_chk
-	/bin/cp -f ${MY_DAT_DIR}/diwg_chk ${MY_BIN_DIR}
+ncchecker:   ${MY_BIN_DIR}/ncchecker
+${MY_BIN_DIR}/ncchecker:	${MY_DAT_DIR}/ncchecker
+	/bin/cp -f ${MY_DAT_DIR}/ncchecker ${MY_BIN_DIR}
 bin: ${MDL_BIN_TRG} ${MDL_BIN_SPT}
 binclean: bin_cln
 bin_cln: 

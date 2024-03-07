@@ -848,7 +848,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       } /* !tbl_idx */
       
       if(!flg_usr_mch_obj && !EXCLUDE_INPUT_LIST){
-	(void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression \'%s\' is not in and/or does not match contents of input file\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
+	(void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name (or regular expression) \'%s\' is not in (or rx does not match any) contents of input file\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
 	nco_exit(EXIT_FAILURE);
       } /* !flg_usr_mch_obj */
       /* Free dynamic memory */
@@ -2238,14 +2238,14 @@ nco_chk_bnd /* [fnc] Check coordinates for bounds attributes */
       } /* !att_idx */
       /* Is this a naughty coordinate? */
       if(att_idx == att_nbr){
-	(void)fprintf(stdout,"%s: WARNING %s reports coordinate %s lacks \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,att_bnd);
+	(void)fprintf(stdout,"%s: WARNING %s coordinate %s lacks \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,att_bnd);
 	brk_nbr++;
       } /* !nm_cf_chk */
     } /* !nco_obj_typ_var */
   } /* !idx_tbl */
 
   if(brk_nbr > 0){
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of coordinates without \"%s\" attribute is %d\n",nco_prg_nm_get(),fnc_nm,att_bnd,brk_nbr);
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s total number of coordinates without \"%s\" attribute is %d\n",nco_prg_nm_get(),fnc_nm,att_bnd,brk_nbr);
     //nco_exit(EXIT_FAILURE);
   } /* !brk_nbr */
 
@@ -2285,7 +2285,7 @@ nco_chk_chr /* [fnc] Check identifiers for NUG-non-compliant characters */
       nm=var_trv.nm;
       /* Is variable name CF-compliant? */
       if(!nm_cf_chk(nm)){
-	(void)fprintf(stdout,"%s: WARNING %s reports variable name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
+	(void)fprintf(stdout,"%s: WARNING %s variable name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
 	brk_nbr++;
       } /* !nm_cf_chk */
 	
@@ -2297,7 +2297,7 @@ nco_chk_chr /* [fnc] Check identifiers for NUG-non-compliant characters */
 	nm=att_nm;
 	/* Is attribute name CF-compliant? */
 	if(!nm_cf_chk(nm)){
-	  (void)fprintf(stdout,"%s: WARNING %s reports variable %s attribute name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,nm);
+	  (void)fprintf(stdout,"%s: WARNING %s variable %s attribute name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,nm);
 	  brk_nbr++;
 	} /* !nm_cf_chk */
       } /* !att_idx */
@@ -2309,7 +2309,7 @@ nco_chk_chr /* [fnc] Check identifiers for NUG-non-compliant characters */
       if(strcmp(var_trv.nm_fll,"/")){
 	/* Is group name CF-compliant? */
 	if(!nm_cf_chk(nm)){
-	  (void)fprintf(stdout,"%s: WARNING %s reports group name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
+	  (void)fprintf(stdout,"%s: WARNING %s group name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
 	  brk_nbr++;
 	} /* !nm_cf_chk */
       } /* !root group */
@@ -2320,7 +2320,7 @@ nco_chk_chr /* [fnc] Check identifiers for NUG-non-compliant characters */
 	nm=att_nm;
 	/* Is global or group attribute name CF-compliant? */
 	if(!nm_cf_chk(nm)){
-	  (void)fprintf(stdout,"%s: WARNING %s reports group %s attribute name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,nm);
+	  (void)fprintf(stdout,"%s: WARNING %s group %s attribute name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,nm);
 	  brk_nbr++;
 	} /* !nm_cf_chk */
       } /* !att_idx */
@@ -2332,13 +2332,13 @@ nco_chk_chr /* [fnc] Check identifiers for NUG-non-compliant characters */
     nm=trv_tbl->lst_dmn[idx_tbl].nm;
     /* Is dimension name CF-compliant? */
     if(!nm_cf_chk(nm)){
-      (void)fprintf(stdout,"%s: WARNING %s reports dimension name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
+      (void)fprintf(stdout,"%s: WARNING %s dimension name \"%s\" is not CF-compliant\n",nco_prg_nm_get(),fnc_nm,nm);
       brk_nbr++;
     } /* !nm_cf_chk */
   } /* !idx_tbl */
 
   if(brk_nbr > 0){
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of identifiers with CF non-compliant names is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s total number of identifiers with CF non-compliant names is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
     //nco_exit(EXIT_FAILURE);
   } /* !brk_nbr */
 
@@ -2396,7 +2396,7 @@ nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
 	nm=att_nm;
 	/* Is this a naughty attribute? */
 	if(!strcmp(nm,att_ngt)){
-	  (void)fprintf(stdout,"%s: WARNING %s reports variable %s contains \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nm);
+	  (void)fprintf(stdout,"%s: WARNING %s variable %s contains \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nm);
 	  brk_nbr++;
 	} /* !nm_cf_chk */
       } /* !att_idx */
@@ -2411,7 +2411,7 @@ nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
 	nm=att_nm;
 	/* Is this a naughty attribute? */
 	if(!strcmp(nm,att_ngt)){
-	  (void)fprintf(stdout,"%s: WARNING %s reports group %s contains \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nm);
+	  (void)fprintf(stdout,"%s: WARNING %s group %s contains \"%s\" attribute\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nm);
 	  brk_nbr++;
 	} /* !nm_cf_chk */
       } /* !att_idx */
@@ -2419,7 +2419,7 @@ nco_chk_mss /* [fnc] Check variables+groups for missing_value attribute */
   } /* !idx_tbl */
 
   if(brk_nbr > 0){
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of variables and/or groups with \"%s\" attribute is %d\n",nco_prg_nm_get(),fnc_nm,att_ngt,brk_nbr);
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s total number of variables and/or groups with \"%s\" attribute is %d\n",nco_prg_nm_get(),fnc_nm,att_ngt,brk_nbr);
     //nco_exit(EXIT_FAILURE);
   } /* !brk_nbr */
 
@@ -2512,13 +2512,13 @@ nco_chk_nan /* [fnc] Check file for NaNs */
 	  case FP_INFINITE: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative infinity\n",var->nm,lmn,var->val.fp[lmn]); break; /* x is either positive infinity or negative infinity */
 	  case FP_SUBNORMAL: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is subnormal\n",var->nm,lmn,var->val.fp[lmn]); break; /* x is too small to be represented in normalized format */
 	  default:
-	    (void)fprintf(stdout,"%s: ERROR %s reports invalid return code for fpclassify() on variable %s element %ld\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,lmn);
+	    (void)fprintf(stdout,"%s: ERROR %s invalid return code for fpclassify() on variable %s element %ld\n",nco_prg_nm_get(),fnc_nm,var_trv.nm,lmn);
 	    nco_exit(EXIT_FAILURE);
 	    break;
 	  } /* !rcd */
 	  if(isnan(var->val.fp[lmn])){
 	    flg_crr_var_has_nan=True;
-	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has first NaNf at hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,lmn);
+	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s variable %s has first NaNf at hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,lmn);
 	    //nco_exit(EXIT_FAILURE);
 	    /* Quit loop over elements, move on to next variable... */
 	    break; 
@@ -2536,13 +2536,13 @@ nco_chk_nan /* [fnc] Check file for NaNs */
 	  case FP_INFINITE: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is positive or negative infinity\n",var->nm,lmn,var->val.dp[lmn]); break; /* x is either positive infinity or negative infinity */
 	  case FP_SUBNORMAL: if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s[%ld]=%g is subnormal\n",var->nm,lmn,var->val.dp[lmn]); break; /* x is too small to be represented in normalized format */
 	  default:
-	    (void)fprintf(stdout,"%s: ERROR %s reports invalid return code for fpclassify() on variable %s element %ld\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,lmn);
+	    (void)fprintf(stdout,"%s: ERROR %s invalid return code for fpclassify() on variable %s element %ld\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,lmn);
 	    nco_exit(EXIT_FAILURE);
 	    break;
 	  } /* !rcd */
 	  if(isnan(var->val.dp[lmn])){
 	    flg_crr_var_has_nan=True;
-	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has first NaN at hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,lmn);
+	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s variable %s has first NaN at hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,lmn);
 	    //nco_exit(EXIT_FAILURE);
 	    /* Quit loop over elements, move on to next variable... */
 	    break; 
@@ -2556,7 +2556,7 @@ nco_chk_nan /* [fnc] Check file for NaNs */
   } /* !idx_tbl */
 
   if(brk_nbr > 0){
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of floating-point variables with NaN elements is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s total number of floating-point variables with NaN elements is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
     //nco_exit(EXIT_FAILURE);
   } /* !brk_nbr */
 
@@ -2621,7 +2621,7 @@ nco_chk_tm /* [fnc] Check that time variables are double precision */
 	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s type of variable %s is %s\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nco_typ_sng(var_trv.var_typ));
 	/* Is this a naughty time variable? */
 	if(var_trv.var_typ != NC_DOUBLE){
-	  (void)fprintf(stdout,"%s: WARNING %s reports variable %s is type %s not %s\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nco_typ_sng(var_trv.var_typ),"NC_DOUBLE");
+	  (void)fprintf(stdout,"%s: WARNING %s variable %s is type %s not %s\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nco_typ_sng(var_trv.var_typ),"NC_DOUBLE");
 	  brk_nbr++;
 	} /* !var_trv.var_typ */
 	/* Avoid double-counting, jump to next variable */
@@ -2649,14 +2649,14 @@ nco_chk_tm /* [fnc] Check that time variables are double precision */
 	att_val[att_sz]='\0';
       }else if(att_typ == NC_STRING){
 	if(att_sz != 1L){
-	  (void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is an %s array of size %ld. This violates the CF Conventions which requires a single string for this attribute. Will skip this variable.\n",nco_prg_nm_get(),fnc_nm,att_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nco_typ_sng(att_typ),att_sz);
+	  (void)fprintf(stderr,"%s: WARNING %s \"%s\" attribute for variable %s is an %s array of size %ld. This violates the CF Conventions which requires a single string for this attribute. Will skip this variable.\n",nco_prg_nm_get(),fnc_nm,att_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nco_typ_sng(att_typ),att_sz);
 	  continue;
 	} /* !att_sz */
 	rcd+=nco_get_att(grp_id,var_id,att_nm,(void *)att_val_sngp,att_typ);
 	/* De-reference the char ** NC_STRING array, a list now known to be of size one, into a normal char * string */
 	att_val=att_val_sngp[0];
       }else{
-	(void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute for variable %s is type %s. This violates the CF Conventions which allow only datatypes %s and %s for attribute %s. NCO will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),att_nm);
+	(void)fprintf(stderr,"%s: WARNING %s \"%s\" attribute for variable %s is type %s. This violates the CF Conventions which allow only datatypes %s and %s for attribute %s. NCO will skip this attribute.\n",nco_prg_nm_get(),fnc_nm,att_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),att_nm);
 	continue;
       } /* !att_typ */
       
@@ -2665,7 +2665,7 @@ nco_chk_tm /* [fnc] Check that time variables are double precision */
       
       /* Is this a naughty time variable? */
       if(var_trv.var_typ != NC_DOUBLE){
-	(void)fprintf(stdout,"%s: WARNING %s reports variable %s is type %s not %s\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nco_typ_sng(var_trv.var_typ),"NC_DOUBLE");
+	(void)fprintf(stdout,"%s: WARNING %s variable %s is type %s not %s\n",nco_prg_nm_get(),fnc_nm,(var_trv.grp_dpt == 0) ? var_trv.nm : var_trv.nm_fll,nco_typ_sng(var_trv.var_typ),"NC_DOUBLE");
 	brk_nbr++;
       } /* !var_trv.var_typ */
       
@@ -2673,7 +2673,7 @@ nco_chk_tm /* [fnc] Check that time variables are double precision */
   } /* !idx_tbl */
   
   if(brk_nbr > 0){
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of time variables not stored in double precision is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s total number of time variables not stored in double precision is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
     //nco_exit(EXIT_FAILURE);
   } /* !brk_nbr */
 
@@ -2753,11 +2753,11 @@ nco_chk_xtn /* [fnc] Check filename extension */
   if(flg_he5){
     rcd=nco_inq_grp_full_ncid_flg(nc_id,grp_he5,&grp_id);
     if(rcd == NC_ENOGRP){
-      (void)fprintf(stdout,"%s: WARNING %s reports file with extension \"%s\" lacks HDF-EOS5 standard group \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,grp_he5);
+      (void)fprintf(stdout,"%s: WARNING %s file with extension \"%s\" lacks HDF-EOS5 standard group \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,grp_he5);
     }else{ /* !rcd */
       att_xtn_val=nco_char_att_get(grp_id,NC_GLOBAL,att_sng_he5);
-      if(!att_xtn_val) (void)fprintf(stdout,"%s: WARNING %s reports file with extension \"%s\" lacks HDF-EOS5 standard global attribute \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,att_sng_he5);
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports value of HDF-EOS5 standard global attribute \"%s\" is \"%s\"\n",nco_prg_nm_get(),fnc_nm,att_sng_he5,att_xtn_val);
+      if(!att_xtn_val) (void)fprintf(stdout,"%s: WARNING %s file with extension \"%s\" lacks HDF-EOS5 standard global attribute \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,att_sng_he5);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s value of HDF-EOS5 standard global attribute \"%s\" is \"%s\"\n",nco_prg_nm_get(),fnc_nm,att_sng_he5,att_xtn_val);
       if(att_xtn_val) att_xtn_val=(char *)nco_free(att_xtn_val);
     } /* !rcd */
   } /* !flg_he5 */
@@ -2766,24 +2766,24 @@ nco_chk_xtn /* [fnc] Check filename extension */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
       att_xtn_val=nco_char_att_get(nc_id,NC_GLOBAL,att_sng_nc);
       if(!att_xtn_val){
-	(void)fprintf(stdout,"%s: WARNING %s reports %s file with extension \"%s\" lacks netCDF standard global attribute \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_fmt_sng(fl_fmt),sfx_nc,att_sng_nc);
+	(void)fprintf(stdout,"%s: WARNING %s %s file with extension \"%s\" lacks netCDF standard global attribute \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_fmt_sng(fl_fmt),sfx_nc,att_sng_nc);
 	rcd=nco_inq_grp_full_ncid_flg(nc_id,grp_he5,&grp_id);
 	if(rcd == NC_NOERR){
-	  (void)fprintf(stdout,"%s: WARNING %s reports file with extension \"%s\" contains HDF-EOS5 standard group \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,grp_he5);
+	  (void)fprintf(stdout,"%s: WARNING %s file with extension \"%s\" contains HDF-EOS5 standard group \"%s\"\n",nco_prg_nm_get(),fnc_nm,sfx_he5,grp_he5);
 	}else{ /* !rcd */
 	  rcd=NC_NOERR;
 	} /* !rcd */
       } /* !att_xtn_val */
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports value of netCDF standard global attribute \"%s\" is \"%s\"\n",nco_prg_nm_get(),fnc_nm,att_sng_nc,att_xtn_val);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s value of netCDF standard global attribute \"%s\" is \"%s\"\n",nco_prg_nm_get(),fnc_nm,att_sng_nc,att_xtn_val);
       if(att_xtn_val) att_xtn_val=(char *)nco_free(att_xtn_val);
     }else{ /* !fl_fmt */
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports input file format is %s. This format has no mandatory global attributes that can be checked.\n",nco_prg_nm_get(),fnc_nm,nco_fmt_sng(fl_fmt));
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s input file format is %s. This format has no mandatory global attributes that can be checked.\n",nco_prg_nm_get(),fnc_nm,nco_fmt_sng(fl_fmt));
     } /* !fl_fmt */
   } /* !flg_nc */
 
   if(!flg_h5 && !flg_he5 && !flg_nc){
     brk_nbr++;
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s reports filename extension \"%s\" is non-compliant\n",nco_prg_nm_get(),fnc_nm,sfx_sng ? sfx_sng : "(null)");
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: WARNING %s filename extension \"%s\" is non-compliant\n",nco_prg_nm_get(),fnc_nm,sfx_sng ? sfx_sng : "(null)");
 
     if(flg_nc4){
       if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: HINT rename file with \"%s\" rather than \"%s\" extension\n",nco_prg_nm_get(),sfx_nc,sfx_sng);
@@ -2794,7 +2794,7 @@ nco_chk_xtn /* [fnc] Check filename extension */
   if(fl_nm_dpl) fl_nm_dpl=(char *)nco_free(fl_nm_dpl);
 
   if(brk_nbr > 0){
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports total number of non-compliant filename extensions is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s total number of non-compliant filename extensions is %d\n",nco_prg_nm_get(),fnc_nm,brk_nbr);
   } /* !brk_nbr */
 
   return brk_nbr;

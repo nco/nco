@@ -1,12 +1,12 @@
 .\" $Header$ -*-nroff-*-
-.\" Purpose: ROFF man page for diwg_chk
+.\" Purpose: ROFF man page for ncchecker
 .\" Usage:
-.\" nroff -man ~/nco/man/diwg_chk.1 | less
-.TH DIWG_CHK 1
+.\" nroff -man ~/nco/man/ncchecker.1 | less
+.TH NCCHECKER 1
 .SH NAME
-diwg_chk \- NASA Dataset Interoperability Working Group Compliance Checker
+ncchecker \- Compliance Checker for NASA Dataset Interoperability Working Group Recommendations
 .SH SYNTAX
-diwg_chk
+ncchecker
 [\-d
 .IR dbg_lvl ] 
 [\-v
@@ -16,7 +16,7 @@ diwg_chk
 
 .SH DESCRIPTION
 .PP
-.B diwg_chk
+.B ncchecker
 checks files for compliance with NASA Dataset Interoperability Working
 Group (DIWG) recommendations.
 It reads 
@@ -27,7 +27,7 @@ or the command, performs all checks, and writes the results to
 .B stdout.
 Some standard
 .B NCO
-options are supported, including variable subsetting with .
+options are supported, including variable subsetting with
 [\-v
 .IR var_lst ],
 increasing the verbosity level with

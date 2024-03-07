@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Purpose: Check data file against DIWG recommendations
+# Purpose: Check data file against DIWG (and, eventually, other) recommendations
 
 # Copyright (C) 2023--present Charlie Zender, ... (Contribuing DIWG members---Add your names!)
 
@@ -11,11 +11,11 @@
 
 # Prerequisites: Bash, NCO
 # Script could use other shells, e.g., dash (Debian default) after rewriting function definitions and loops
-# Debug with 'bash -x diwg_chk --dbg=dbg_lvl' where 0 <= dbg_lvl <= 5
+# Debug with 'bash -x ncchecker --dbg=dbg_lvl' where 0 <= dbg_lvl <= 5
 
 # Insta-install:
-# scp ~/diwg/diwg_chk dust.ess.uci.edu:bin
-# scp dust.ess.uci.edu:bin/diwg_chk ${MY_BIN_DIR}
+# scp ~/diwg/ncchecker dust.ess.uci.edu:bin
+# scp dust.ess.uci.edu:bin/ncchecker ${MY_BIN_DIR}
 
 # Set script name, directory, PID, run directory
 drc_pwd=${PWD}
@@ -36,21 +36,21 @@ drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
 spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
 spt_pid=$$ # [nbr] Script PID (process ID)
 
-# Setup:
+# Original Setup (prior to merger with NCO):
 # git clone git@github.com:diwg/diwg ~/diwg
 # ln -s ~/diwg/diwg_chk ~/bin/diwg_chk
 # ln -s ~/diwg/diwg_chk ~/sh/diwg_chk
 
 # Debugging and Benchmarking:
-# diwg_chk ~/nco/data/in.nc ~/nco/data/in_4.nc 
-# diwg_chk ~/data/bm/elmv2_ne30pg2l15.nc
-# diwg_chk ~/data/hdf/MODIS_L2N_20140304T1120.nc > ~/diwg.txt 2>&1 &
-# diwg_chk ~/data/hdf/OMI-Aura_L2-OMAERUV_2013m1004t2338-o49057_v003-2013m1005t053932.nc
+# ncchecker ~/nco/data/in.nc ~/nco/data/in_4.nc 
+# ncchecker ~/data/bm/elmv2_ne30pg2l15.nc
+# ncchecker ~/data/hdf/MODIS_L2N_20140304T1120.nc > ~/diwg.txt 2>&1 &
+# ncchecker ~/data/hdf/OMI-Aura_L2-OMAERUV_2013m1004t2338-o49057_v003-2013m1005t053932.nc
 
 # Production usage:
-# diwg_chk --dbg=1 ~/nco/data/in_4.nc > ~/diwg.txt 2>&1 &
+# ncchecker --dbg=1 ~/nco/data/in_4.nc > ~/diwg.txt 2>&1 &
 # screen # Start screen
-# diwg_chk --dbg=1 ~/nco/data/in_4.nc > ~/diwg.txt 2>&1 &
+# ncchecker --dbg=1 ~/nco/data/in_4.nc > ~/diwg.txt 2>&1 &
 # Ctl-A D # Detach screen
 # tail ~/diwg.txt # Monitor progress
 # screen -ls # List screens
@@ -334,7 +334,7 @@ fi # !dbg
 # Human-readable summary
 date_srt=$(date +"%s")
 if [ ${dbg_lvl} -ge 0 ]; then
-    printf "diwg_chk, a DIWG compliance checker, invoked with command:\n"
+    printf "ncchecker, a DIWG recommendation compliance checker, invoked with command:\n"
     echo "${cmd_ln}"
     printf "Started DIWG checker at `date`\n"
 fi # !dbg
