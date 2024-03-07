@@ -119,6 +119,8 @@ inp_glb='No' # [sng] Input file list from globbing directory
 inp_psn='No' # [sng] Input file list from positional arguments
 inp_std='No' # [sng] Input file list from stdin
 nco_opt='' # [sng] NCO options (e.g., '-6 -t 1')
+tst_flg='Yes' # [flg] Trigger test-selection code
+tst_lst='nan' # [sng] Tests to conduct (subset of fxm)
 vrs_prn='No' # [sng] Print version information
 
 # NCO filters documented in http://nco.sf.net/nco.html#filter
@@ -131,18 +133,19 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_bld}${spt_nm} -t tst_nm${fnt_nrm} # Short options with pre-defined types\n"
     printf "${fnt_bld}${spt_nm} --tst=tst_nm${fnt_nrm} # Long options with pre-defined types\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
-    echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic CDF1) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
-    echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
-    echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (netCDF3/PnetCDF CDF5) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
-    echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
-    echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
+#    echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic CDF1) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
+#    echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
+#    echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (netCDF3/PnetCDF CDF5) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
+#    echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
+#    echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string to generate output filenames (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}] [${fnt_tlc}serial | background | mpi${fnt_nrm}]"
-    echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
+#    echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
+    echo " ${fnt_bld}--tests${fnt_nrm}  Tests to conduct ('none' means none) (default ${fnt_bld}${tst_lst}${fnt_nrm}, also available: fxm) [${fnt_tlc}tst_lst, tst, test_list${fnt_nrm}]"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
     echo " ${fnt_bld}--version${fnt_nrm}  Version and configuration information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}--xcl_var${fnt_nrm}  Exclude rather than extract var_lst [${fnt_tlc}xcl_var, xcl, exclude, exclude_variables${fnt_nrm}]"
@@ -198,6 +201,7 @@ while getopts :34567c:d:f:i:o:p:s:v:x-: OPT; do
 	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
+	       tests=?* | tst_lst=?* | tst=?* | test_list=?* ) tst_lst="${LONG_OPTARG}" ;; # # Tests to conduct
 	       tpd_out=?* | tpd=?* | timesteps_per_day=?* ) tpd_usr="${LONG_OPTARG}" ;; # # Timesteps-per-day in output
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
 	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
@@ -234,6 +238,11 @@ if [ ${vrs_prn} = 'Yes' ]; then
 fi # !vrs_prn
 
 # Determine mode first (this helps determine other defaults)
+if [ ${tst_lst} = 'none' ]; then
+    tst_nbr=0
+    tst_flg='No'
+fi # !tst_lst
+
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
 else # !drc_in
@@ -243,6 +252,85 @@ else # !drc_in
     fi # !drc_in
     drc_in_usr='Yes'
 fi # !drc_in
+
+# 20170807 Custom tests (code borrowed from ncremap seasons (csn) treatment)
+if [ "${tst_flg}" = 'Yes' ]; then
+
+    # Standard test enumeration
+    # Index into test option-definition table
+    tst_idx_srt=0 # [idx] Starting index for test enumeration
+    tst_bnd=0
+    tst_chr=1
+    tst_mss=2
+    tst_nan=3
+    tst_tm=4
+    tst_xtn=5
+    tst_nbr_max=6 # [nbr] Maximum number of tests in definitions database
+
+    # Test abbreviations, uppercase
+    tst_abb[${tst_bnd}]='BND'
+    tst_abb[${tst_chr}]='CHR'
+    tst_abb[${tst_mss}]='MSS'
+    tst_abb[${tst_nan}]='NAN'
+    tst_abb[${tst_tm}]='TM'
+    tst_abb[${tst_xtn}]='XTN'
+
+    # Test abbreviations, lowercase
+    tst_abb_lc[${tst_bnd}]='bnd'
+    tst_abb_lc[${tst_chr}]='chr'
+    tst_abb_lc[${tst_mss}]='mss'
+    tst_abb_lc[${tst_nan}]='nan'
+    tst_abb_lc[${tst_tm}]='tm'
+    tst_abb_lc[${tst_xtn}]='xtn'
+
+    # Test names (complete phrase "Test checks that ___")
+    tst_nm[${tst_bnd}]='Coordinates have bounds attributes'
+    tst_nm[${tst_chr}]='Identifier names comprised on legal characters'
+    tst_nm[${tst_mss}]='Variables do not have missing_value attributes'
+    tst_nm[${tst_nan}]='Data values do not contain NaN (or NaNf)'
+    tst_nm[${tst_tm}]='Time variables are stored in double precision'
+    tst_nm[${tst_xtn}]='Filename extension matches recommended list'
+    
+    # ESDS RFC Recommendation Number
+    tst_rfc[${tst_bnd}]='2.3'
+    tst_rfc[${tst_chr}]='3.1'
+    tst_rfc[${tst_mss}]='4.2'
+    tst_rfc[${tst_nan}]='3.7'
+    tst_rfc[${tst_tm}]='4.11'
+    tst_rfc[${tst_xtn}]='3.8'
+    
+    # Test invocation options to ncks
+    tst_opt[${tst_bnd}]='--chk_bnd'
+    tst_opt[${tst_chr}]='--chk_chr'
+    tst_opt[${tst_mss}]='--chk_mss'
+    tst_opt[${tst_nan}]='--chk_nan'
+    tst_opt[${tst_tm}]='--chk_tm'
+    tst_opt[${tst_xtn}]='--chk_xtn'
+
+    # Which tests are requested?
+    # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
+    tst_nbr=0 # [sng] Number of tests to conduct
+    for tst in ${tst_lst//,/ }; do
+	tst_rqs[${tst_nbr}]=${tst}
+	# NB: Requested seasons are 0-based, defined seasons are 0-based
+	for ((tst_dfn_idx=${tst_idx_srt};tst_dfn_idx<${tst_nbr_max};tst_dfn_idx++)); do
+	    if [[ "${tst}" =~ "${tst_abb[${tst_dfn_idx}]}" ]] || [[ "${tst}" =~ "${tst_abb_lc[${tst_dfn_idx}]}" ]]; then
+		# Map requested to defined (r2d) tests and inverse (d2r)
+		# map_r2d[0]=3 means first test that user requested (i.e., in tst_lst) is fourth defined in table
+		# map_d2r[3]=0 means fourth defined test is first requested
+		map_r2d[${tst_nbr}]=${tst_dfn_idx}
+		map_d2r[${tst_dfn_idx}]=${tst_nbr}
+		let tst_nbr=${tst_nbr}+1
+		break
+	    fi # !match
+	done # !tst_dfn_idx
+	if [ "${tst_dfn_idx}" -eq "${tst_nbr_max}" ]; then
+	    printf "${spt_nm}: ERROR Requested test ${tst} not defined\n"
+	    exit 1
+	fi # !match
+    done # !tst_lst
+
+fi # !tst_flg
 
 # Read files from stdin pipe, positional arguments, or directory glob
 #printf "dbg: inp_aut  = ${inp_aut}\n"

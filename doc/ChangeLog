@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha03: Monkeybaut IPA';git push
 	git tag -a 5.2.2-alpha03 -m 'diwg_chk RFC #s;';git push --tags
 
+	* ncchecker implement flexible test selection logic
+
 	* Rename diwg_chk to ncchecker
 
 2024-03-05  Charlie Zender  <zender@uci.edu>

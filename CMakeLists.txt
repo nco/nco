@@ -914,8 +914,8 @@ endif()
 set(PERMISSIONS_DEFAULT OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 message("-- Building ${nco_targets}")
 install(TARGETS ${nco_targets} RUNTIME DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
-install(FILES data/ncremap data/ncclimo data/ncz2psx data/diwg_chk DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
-message("-- Installing data/ncremap, data/ncclimo, data/ncz2psx, data/diwg_chk to: " ${CMAKE_INSTALL_PREFIX})
+install(FILES data/ncremap data/ncclimo data/ncz2psx data/ncchecker DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
+message("-- Installing data/ncremap, data/ncclimo, data/ncz2psx, data/ncchecker to: " ${CMAKE_INSTALL_PREFIX})
 
 #//////////////////////////
 # ncea->ncra
