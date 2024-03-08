@@ -390,7 +390,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
   /* Warn when NCO looks for _FillValue and file has missing_value, and/or
      warn when NCO looks for missing_value and file has _FillValue.
      20101129: This is a long warning, only print when nco_dbg_lvl > 0 */
-  if(nco_dbg_lvl_get() >= nco_dbg_std && has_fll_val && !var->has_mss_val && WRN_FIRST){
+  if(nco_dbg_lvl_get() >= nco_dbg_fl && has_fll_val && !var->has_mss_val && WRN_FIRST){
     char sa[1000];
     char sa1[1000];
     char sa2[1000]; 
@@ -461,7 +461,7 @@ nco_mss_val_get_dbl /* [fnc] Return missing value of variable, if any, as double
   /* Warn when NCO looks for _FillValue but file has missing_value, and/or
      warn when NCO looks for missing_value but file has _FillValue.
      20101129: This is a long warning, only print when nco_dbg_lvl > 0 */
-  if(nco_dbg_lvl_get() >= nco_dbg_std && has_fll_val && !has_mss_val && WRN_FIRST){
+  if(nco_dbg_lvl_get() >= nco_dbg_fl && has_fll_val && !has_mss_val && WRN_FIRST){
     char sa[1000];
     char sa1[1000];
     char sa2[1000]; 
@@ -493,7 +493,7 @@ nco_mss_val_get_unn /* [fnc] Return missing value of variable, if any, as double
   int att_idx;
   int var_nbr_att;
   long att_sz;
-  nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
+  //  nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
   nco_bool has_mss_val=False; /* [flg] Has missing value attribute */
   nc_type att_typ;
   
@@ -503,7 +503,7 @@ nco_mss_val_get_unn /* [fnc] Return missing value of variable, if any, as double
   
   for(att_idx=0;att_idx<var_nbr_att;att_idx++){
     (void)nco_inq_attname(nc_id,var_id,att_idx,att_nm);
-    if(WRN_FIRST && !(int)strcasecmp(att_nm,nco_not_mss_val_sng_get())) has_fll_val=True;
+    //if(WRN_FIRST && !(int)strcasecmp(att_nm,nco_not_mss_val_sng_get())) has_fll_val=True;
     
     if((int)strcasecmp(att_nm,nco_mss_val_sng_get())) continue;
     (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);

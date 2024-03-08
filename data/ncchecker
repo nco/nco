@@ -130,19 +130,19 @@ function ncdmnlst { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
     printf "${fnt_rvr}Basic usage:\n${fnt_nrm}${fnt_bld}${spt_nm} in.nc${fnt_nrm} # Default settings\n"
-    printf "${fnt_bld}${spt_nm} -t tst_nm${fnt_nrm} # Short options with pre-defined types\n"
-    printf "${fnt_bld}${spt_nm} --tst=tst_nm${fnt_nrm} # Long options with pre-defined types\n"
+    printf "${fnt_bld}${spt_nm} -t bnd,nan${fnt_nrm} # Short option syntax with explicit tests\n"
+    printf "${fnt_bld}${spt_nm} --tst=bnd,nan${fnt_nrm} # Long options with with explicit tests\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
 #    echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic CDF1) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
 #    echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
 #    echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (netCDF3/PnetCDF CDF5) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
 #    echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
 #    echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
-    echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string to generate output filenames (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
+#    echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string to generate output filenames (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
-    echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
-    echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
+#    echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
+#    echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}] [${fnt_tlc}serial | background | mpi${fnt_nrm}]"
 #    echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
     echo " ${fnt_bld}--tests${fnt_nrm}    Tests to conduct ('none' means none) (default ${fnt_bld}${tst_lst}${fnt_nrm} [${fnt_tlc}tst_lst, tst, test_list${fnt_nrm}]"
@@ -151,11 +151,9 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}--xcl_var${fnt_nrm}  Exclude rather than extract var_lst [${fnt_tlc}xcl_var, xcl, exclude, exclude_variables${fnt_nrm}]"
     printf "\n"
     printf "${fnt_rvr}Examples:${fnt_nrm}\n"
-    printf "${fnt_bld}ls *.nc | ${spt_nm}${fnt_nrm} # Default settings\n"
-    printf "${fnt_bld}ls *.nc | ${spt_nm} -o ${drc_out_xmp}${fnt_nrm} # Explicit output directory\n"
-    printf "${fnt_bld}/bin/ls ${drc_in_xmp}/*.nc | ${spt_nm} --dbg=2${fnt_nrm} # Debug ${spt_nm}\n"
-    printf "${fnt_bld}/bin/ls ${drc_in_xmp}/*.nc | ${spt_nm}${fnt_nrm} # Default parallelism\n"
-    printf "${fnt_bld}/bin/ls ${drc_in_xmp}/*.nc | ${spt_nm} --par=serial${fnt_nrm} # Serial parallelism\n"
+    printf "${fnt_bld}${spt_nm} *.nc${fnt_nrm} # Wildcard input files\n"
+    printf "${fnt_bld}ls *.nc | ${spt_nm}${fnt_nrm} # Input files via stdin\n"
+    printf "${fnt_bld}${spt_nm} --dbg=2 *.nc${fnt_nrm} # Debug ${spt_nm}\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
     exit 1
 } # !fnc_usg_prn()
@@ -451,6 +449,13 @@ if [ ${dbg_lvl} -ge 0 ]; then
     printf "ncchecker, a DIWG recommendation compliance checker, invoked with command:\n"
     echo "${cmd_ln}"
     printf "Started DIWG checker at `date`\n"
+    printf "# of recommendations that will be checked: ${tst_nbr}/${tst_nbr_max}\n"
+    printf "Recommendations that will be checked: "
+    for ((tst_idx=0;tst_idx<tst_nbr;tst_idx++)); do
+	idx_dfn=${map_r2d[${tst_idx}]}
+	printf "${tst_rfc[${idx_dfn}]} (${tst_sht[${idx_dfn}]}) "
+    done # !tst_idx
+    printf "\n"
 fi # !dbg
 
 if [ "${fl_nbr}" -lt 1 ]; then
