@@ -1,8 +1,12 @@
 2024-03-21  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.2-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha04: Farewell ESC';git push
+	git tag -a 5.2.2-alpha04 -m '';git push --tags
+
 	* NCO 5.2.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha03: Monkeybaut IPA';git push
-	git tag -a 5.2.2-alpha03 -m 'ncchecker RFC #s, tst_lst;	ncclimo: elm rgn_avg time_bounds; ncremap: xcl level';git push --tags
+	git tag -a 5.2.2-alpha03 -m 'ncchecker RFC #s, tst_lst; ncclimo: elm rgn_avg time_bounds; ncremap: xcl level';git push --tags
 
 	* ncclimo: add "time_bounds" to ELM regional timeseries generated with --rgn_avg
 
