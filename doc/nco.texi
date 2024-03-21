@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.2-alpha02
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 15 March 2024
+@set update-date 21 March 2024
 @set update-month March 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16064,7 +16064,7 @@ print(timeNew);
 // -25, -1, 23, 47, 71, 95, 119, 143, 167, 191 ;
 
 tOld=time;
-// nb in this calendar NO Leap year
+// NB: Calendar=365_day has NO Leap year
 tOld@calendar="365_day";
 tOld@units="minutes since 2012-02-28 23:58:00.00";
 
