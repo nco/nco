@@ -38,8 +38,8 @@ M-x texinfo-multiple-files-update
 Usage:
 export TEX='tex --src-specials'
 cd ~/nco/doc;texi2dvi nco.texi;makeinfo --html --ifinfo --no-split --output=nco.html nco.texi;makeinfo nco.texi;dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --ifinfo --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco_rfr_crd.pdf ../README ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco_rfr_crd.pdf ../README ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:Sites/nco;cd -
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../README ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../README ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:Sites/nco;cd -
 dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi
 makeinfo --html --ifinfo --no-split --output=nco.html nco.texi
@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.2-alpha02
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 21 February 2024
-@set update-month February 2024
+@set update-date 15 March 2024
+@set update-month March 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -19605,6 +19605,7 @@ The @samp{.cam.} and @samp{.h0.} bits are added internally to produce
 the input filenames.
 Modify these via the @option{-m @var{mdl_nm}} and @option{-h
 @var{hst_nm}} options if needed.   
+
 For input files named slightly differently than standard
 @acronym{CESM}'ish names, supply the filename (excluding the path
 component) as the @var{caseid} and then @command{ncclimo} will attempt
@@ -19624,7 +19625,14 @@ digits that precede the suffix are @var{YYYYMM}-format), specify
 @samp{-c merra2_198001.nc} and the prefix (@code{merra2}) will be
 automatically abstracted and used to template and generate all the
 filenames based on the specified @var{yr_srt} and @var{yr_end}. 
-Please tell us any dataset filename regular expressions that you would
+@example
+@verbatim
+ncclimo --c merra2_198001.nc --start=1980 --end=1999 
+ncclimo --c cesm_1980-01.nc --start=1980 --end=1999 
+ncclimo --c eamxx_1980-01-00000.nc --start=1980 --end=1999 
+@end verbatim
+@end example
+Please tell us any common dataset filename regular expressions that you would
 like added to @command{ncclimo}'s internal database.
 
 The @samp{--caseid=@var{caseid}} option is not mandatory in

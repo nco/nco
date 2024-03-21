@@ -1706,7 +1706,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(flg_grd_in_prs){
     rcd=nco_inq_varid(vrt_in_id,plev_nm_in,&lev_id);
     if((rcd=nco_inq_varid_flg(in_id,ps_nm_in,&ps_id)) == NC_NOERR){ /* NB: Use in_id not vrt_in_id to search for PS in pure-pressure files since the surface pressure field is likely to be in the data file */
-      /* Output file creation procedure discriminates between input surface pressure dimensioned as CAM/EAM vs. ECMWF */
+      /* Output file-creation procedure discriminates between input surface pressure dimensioned as CAM/EAM vs. ECMWF */
       flg_grd_hyb_cameam=True;
       if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field %s in pure-pressure input data file. %s will be copied directly from pure-pressure grid input dataset to, and used to construct the pressures of, the output hybrid-coordinate data file, where it will be named %s.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_in,ps_nm_out);
       if(flg_grd_out_hyb && (ps_id_tpl != NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field in both vertical-grid file as %s, and in pure-pressure input data file as %s. The vertical grid-file takes precedence. %s will be copied directly from vertical-grid file to, and used to construct the pressures of, the output hybrid-coordinate data file, where it will be named %s. %s in input pure-pressure file will be ignored.\n",nco_prg_nm_get(),fnc_nm,ps_nm_tpl,ps_nm_in,ps_nm_tpl,ps_nm_out,ps_nm_in);
@@ -2628,6 +2628,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      ARGO: PRESSURE
      CAM/EAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
      ECMWF: hyai, hyam, hybi, hybm, lev, lnsp
+     ERA5: level
      MPAS-O: layerThickness, maxLevelCell, timeMonthly_avg_layerThickness, timeMonthly_avg_zMid, zMid
      MPAS-O: refBottomDepth, vertCoordMovementWeights (derived 1D-profiles, no horizontal dimensions) 
      NCEP: plev
@@ -2635,7 +2636,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      SOSE: z
      WOA: depth, depth_bnds, volume, zBroadcast
      Run-time: dpt_nm_in, dpt_nm_out, plev_nm_in, plev_nm_out, ps_nm_in, ps_nm_tpl */
-  const char *var_xcl_lst_fix[]={"/depth","/depth_bnds","/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/layerThickness","/lnsp","/maxLevelCell","/P0","/plev","/PRESSURE","/refBottomDepth","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/vertCoordMovementWeights","/volume","/z","/zBroadcast","/zMid"};
+  const char *var_xcl_lst_fix[]={"/depth","/depth_bnds","/hyai","/hyam","/hybi","/hybm","/ilev","/layerThickness","/lev","/level","/lnsp","/maxLevelCell","/P0","/plev","/PRESSURE","/refBottomDepth","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/vertCoordMovementWeights","/volume","/z","/zBroadcast","/zMid"};
   int var_xcl_fix_nbr=sizeof(var_xcl_lst_fix)/sizeof(char *); /* [nbr] Number of variables in fixed (compile-time) exclusion list */
   /* Create list to hold both compile- and run-time exclusion variables */
   char **var_xcl_lst=NULL; /* [sng] List of variables to exclude */
