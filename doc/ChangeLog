@@ -2,7 +2,7 @@
 
 	* NCO 5.2.2 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.2: Bambino';git push
-	git tag -a 5.2.2 -m '';git push --tags
+	git tag -a 5.2.2 -m 'ncchecker; ncclimo: elm rgn_avg time_bounds; ncremap: xcl level, mbtr --monotonicity';git push --tags
 
 	* ncchecker tidy manpage, add to homepage, add to nco.texi
 

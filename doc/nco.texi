@@ -19390,6 +19390,8 @@ increasing the verbosity level with @samp{-D @var{dbg_lvl}},
 excluding variables with @samp{-x -v @var{var_lst}}, variable
 subsetting with @samp{-v @var{var_lst}}, and printing the 
 version with @samp{--version}. 
+The output contains counts of the location and number of failed tests,
+or prints ``SUCCESS'' for tests with no failures.
 
 @noindent
 @html
@@ -19405,8 +19407,8 @@ ncchecker *.nc # Glob input files via wildcard
 ls *.nc | ncchecker # Input files via stdin
 ncchecker --dbg=2 *.nc # Debug ncchecker
 ncchecker --tests=nan,mss *.nc # Select only two tests
-ncchecker --tests=xtn,tm,nan,mss,chr,bnd *.nc # Change order of all tests
-ncchecker file:///Users/zender/in_zarr4#mode=nczarr,file # Run checks on Zarr object(s)
+ncchecker --tests=xtn,tm,nan,mss,chr,bnd *.nc # Change test ordering
+ncchecker file:///Users/zender/in_zarr4#mode=nczarr,file # Check Zarr object(s)
 @end verbatim
 @end example
 

@@ -1,131 +1,60 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.2 sheepishly step forward
+netCDF Operators NCO version 5.2.2 kangeroo forward
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.2.2 fixes an issue with ncremap and ncclimo in MPI mode.
-Another small fix to enables GCC compilation in pedantic mode.
-No new features are implemented, but it was too late to recall 5.2.0.
-My apologies and thanks to the package maintainers.
+Version 5.2.2 introduces a new operator, ncchecker, that checks
+dataset compliance with a small yet growing number of
+recommendations. ncclimo no longer omits time_bounds from ELM/CLM
+regional averages. No new features are implemented.
+Skip this release if these changes are not important to you.
 
 Work on NCO 5.2.3 has commenced and aims to add support for Zarr S3 
-stores, and to polish support for new codecs..
+stores, and to polish support for new codecs.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-[These just repeat the changes in 5.2.0 since most peopld never used it]
+A. The new ncchecker command checks netCDF files for compliance with
+select best practices rules and recommendations from various data and
+metadata standards bodies. These include the Climate & Forecast (CF)
+Metadata Conventions and the NASA Dataset Interoperability Working Group
+(DIWG) recommendations. Only a small subset (six tests) of CF and
+DIWG recommendations are currently supported. The number of tests
+implemented, or, equivalently, of recommendations checked, is expected
+to grow. 
 
-A. ncks can now help analyze initial condition and restart datasets
-produced by the E3SM ELM and CESM CLM/CTSM land-surface models.
-Whereas gridded history datasets from these ESMs use a standard
-gridded data format, these land-surface "restart files" employ a
-custom packing format that unwinds multi-dimensional data into
-sparse, 1-D (S1D) arrays that are not easily visualized. ncks can
-now convert these S1D files into gridded datasets where all dimensions
-are explicitly declared (rather than unrolled or "packed"). 
-Invoke this conversion feature with the --s1d option and point
-ncks to a file that contains the horizontal coordinates (which
-restart files do not explicitly contain) and the restart file.
-The output file is the fully gridded input file, with no loss
-of information:
-ncks --s1d --hrz=elmv3_history.nc elmv3_restart.nc out.nc
-The output file contains all input variables placed on a lat-lon or 
-unstructured grid, with new dimensions for Plant Funtional Type (PFT)
-and multiple elevation class (MEC).
-http://nco.sf.net/nco.html#s1d
+ncchecker in1.nc in2.nc # Run all tests on two files
+ncchecker -v var1,var2 in1.nc # Check only two variables
+ncchecker *.nc # Glob input files via wildcard
+ls *.nc | ncchecker # Input files via stdin
+ncchecker --dbg=2 *.nc # Debug ncchecker
+ncchecker --tests=nan,mss *.nc # Select only two tests
+ncchecker --tests=xtn,tm,nan,mss,chr,bnd *.nc # Change test ordering
+ncchecker file:///Users/zender/in_zarr4#mode=nczarr,file # Check Zarr object(s)
 
-B. ncclimo timeseries mode now supports all input methods (including
-automatic filename generation) long-supported by climo mode. Previously
-ncclimo (in timeseries mode) had to receive explicit lists of input
-files, either from stdin or from the command line. Now ncclimo will
-automatically generate the input file list for files that adhere to
-common CESM/E3SM naming conventions (usually for monthly average
-files). The syntax is identical to that long used in climo mode:
-% ncclimo --split -c $caseid -s 2000 -e 2024 -i $drc_in -o $drc_out
-http://nco.sf.net/nco.html#ncclimo
-
-C. ncremap supports --alg_lst=alg_lst, a comma-separated list of the
-algorithms that MWF-mode uses to create map-files. This option can
-be used to shorten or alter the default list, which is 
-'esmfaave,esmfbilin,ncoaave,ncoidw,traave,trbilin,trfv2,trintbilin'.
-Each name in the list should be the primary name of an algorithm,
-not a synonym. For example, use 'esmfaave,traave' not
-'aave,fv2fv_flx' (the latter are backward-compatible synonyms
-for the former). The algorithm list must be consistent with grid-types
-supplied: ESMF algorithms work with meshes in ESMF, SCRIP, or UGRID
-formats. NCO algorithms only work with meshes in SCRIP format.
-TempestRemap algorithms work with meshes in ESMF, Exodus, SCRIP, or
-UGRID formats. On output, ncremap inserts each algorithm name into the 
-output map-file name in this format: map_src_to_dst_alg.date.nc.
-For example,
-% ncremap -P mwf --alg_lst=esmfnstod,ncoaave,ncoidw,traave,trbilin \
-  -s ocean.QU.240km.scrip.181106.nc -g ne11pg2.nc --nm_src=QU240 \
-  --nm_dst=ne11pg2 --dt_sng=20240201
-...
-% ls map*
-map_QU240_to_ne11pg2_esmfnstod.20240201.nc
-map_QU240_to_ne11pg2_ncoaave.20240201.nc
-map_QU240_to_ne11pg2_ncoidw.20240201.nc
-map_QU240_to_ne11pg2_traave.20240201.nc
-map_QU240_to_ne11pg2_trbilin.20240201.nc
-map_ne11pg2_to_QU240_esmfnstod.20240201.nc
-map_ne11pg2_to_QU240_ncoaave.20240201.nc
-map_ne11pg2_to_QU240_ncoidw.20240201.nc
-map_ne11pg2_to_QU240_traave.20240201.nc
-map_ne11pg2_to_QU240_trbilin.20240201.nc
-
-http://nco.sf.net/nco.html#alg_lst
-http://nco.sf.net/nco.html#ncremap
-
-D. All NCO operators now support the draft CF Convention on encoding
-metadata that describes lossy compression applied to the dataset.
-See https://github.com/cf-convention/cf-conventions/issues/403.
-For example, all variables quantized by NCO now receive attributes
-that contain the level of quantization and that point to a
-container variable that describes the algorithm:
-
-% ncks -O -7 --cmp='btr|shf|zst' in.nc foo.nc
-% ncks -m -v ts foo.nc
- char compression_info ;
-   char compression_info ;
-   compression_info:family = "quantize" ;
-   compression_info:algorithm = "BitRound" ;
-   compression_info:implementation = "libnetcdf version 4.9.3-development" ;
- float ts(time,lat,lon) ;
-      ts:standard_name = "surface_temperature" ;
-      ts:lossy_compression = "compression_info" ;
-      ts:lossy_compression_nsb = 9 ;
-
-http://nco.sf.net/nco.html#qnt
-
-E. ncks supports a new flag, --chk_bnd, that reports whether all
-coordinate variables in a file contain associated "bounds" variables. 
-This check complies with CF Conventions and with NASA's Dataset
-Interoperability Working Group (DIWG) recommendations:
-$ ncks --chk_bnd ~/nco/data/in.nc
-ncks: WARNING nco_chk_bnd() reports coordinate Lat does not contain "bounds" attribute
-ncks: WARNING nco_chk_bnd() reports coordinate Lon does not contain "bounds" attribute
-ncks: INFO nco_chk_bnd() reports total number of coordinates without "bounds" attribute is 2
-http://nco.sf.net/nco.htlm/chk_bnd
-
-F. ncremap supports the TempestRemap trfv2 algorithm, a 2nd order FV
-reconstruction, that is cell-integrated on the target grid.
-ncremap --alg_typ=trfv2 -s grd_src.nc -g grd_dst.nc --map=map.nc
-http://nco.sf.net/nco.htlm/trfv2
+The output contains counts of the location and number of failed tests,
+or prints "SUCCESS" for tests with no failures.
+http://nco.sf.net/nco.html#ncchecker
 
 BUG FIXES:
    
-A. ncclimo fixes an error in the climatology_bounds variable
-output for the climatological December file in DJF-winter mode
-climos. JFD-winter mode climos (used by most people) are unaffected.
-There is no workaround. The solution is to upgrade. 
-ncclimo --wnt_md=djf -c $caseid -s 2000 -e 2024 ...
+A. ncclimo fixes an error where it omitted the time_bounds variable
+from regional averages of ELM/CLM timeseries. The workaround is to
+manually append the variable. The solution is to upgrade. 
+ncclimo --split --rgn_avg -c $caseid -s 2000 -e 2024 ...
+
+B. ncremap fixes an error where it used the wrong option to
+mbtempest to invoke monotonicity. Instead of "--monotonicity"
+it used "--monotonic", which is unknown to mbtempest.
+The workaround is to supply the correct option with ncremap
+--wgt_opt. The solution is to upgrade. Thanks to Walter Hannah of
+LLNL for reporting this mistake.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
