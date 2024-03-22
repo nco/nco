@@ -13,7 +13,7 @@ regional averages. No new features are implemented.
 Skip this release if these changes are not important to you.
 
 Work on NCO 5.2.3 has commenced and aims to add support for Zarr S3 
-stores, and to polish support for new codecs.
+stores, and to enhance the vertical regridder.
 
 Enjoy,
 Charlie
