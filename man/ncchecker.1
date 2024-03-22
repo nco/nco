@@ -4,7 +4,7 @@
 .\" nroff -man ~/nco/man/ncchecker.1 | less
 .TH NCCHECKER 1
 .SH NAME
-ncchecker \- Compliance Checker for NASA Dataset Interoperability Working Group Recommendations
+ncchecker \- netCDF Compliance Checker
 .SH SYNTAX
 ncchecker
 [\-d
@@ -13,7 +13,7 @@ ncchecker
 .IR drc_in ] 
 [\--tests=
 .IR tst_lst ]
-[\-v
+[\-x] [\-v
 .IR var_lst ] 
 [\--version ]
 .I input-files
@@ -21,13 +21,19 @@ ncchecker
 .SH DESCRIPTION
 .PP
 .B ncchecker
-checks files for compliance with NASA Dataset Interoperability Working
-Group (DIWG) recommendations.
+checks files for compliance with best practices rules and
+recommendations from various data and metadata standards bodies.
+These include the Climate & Forecast (CF) Metadata Conventions
+and the NASA Dataset Interoperability Working Group (DIWG)
+recommendations. 
 It reads 
 .I input-files
 from
 .B stdin,
-or the command, performs all checks, and writes the results to
+or the command, performs checks requested in the
+.IR tests
+option, if any (otherwise it performs all tests), and writes the
+results to 
 .B stdout.
 Some standard
 .B NCO

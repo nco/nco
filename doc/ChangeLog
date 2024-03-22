@@ -1,8 +1,12 @@
-2024-03-21  Charlie Zender  <zender@uci.edu>
+2024-03-22  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.2.2-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha04: Farewell ESC';git push
-	git tag -a 5.2.2-alpha04 -m '';git push --tags
+	* NCO 5.2.2 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.2: Bambino';git push
+	git tag -a 5.2.2 -m '';git push --tags
+
+	* ncchecker tidy manpage, add to homepage, add to nco.texi
+
+2024-03-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.2-alpha03: Monkeybaut IPA';git push

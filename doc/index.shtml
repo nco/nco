@@ -230,6 +230,7 @@ techniques for climate data analysis:
 <li><a href="./nco.html#ncap2"><tt>ncap2</tt></a> netCDF Arithmetic Processor (<a href="./nco.html#xmp_ncap">examples</a>)</li>
 <li><a href="./nco.html#ncatted"><tt>ncatted</tt></a> netCDF ATTribute EDitor (<a href="./nco.html#xmp_ncatted">examples</a>)</li>
 <li><a href="./nco.html#ncbo"><tt>ncbo</tt></a> netCDF Binary Operator (addition, multiplication...) (<a href="./nco.html#xmp_ncbo">examples</a>)</li>
+<li><a href="./nco.html#ncchecker"><tt>ncchecker</tt></a> netCDF Compliance CHECKER (<a href="./nco.html#xmp_ncchecker">examples</a>)</li>
 <li><a href="./nco.html#ncclimo"><tt>ncclimo</tt></a> netCDF CLIMatOlogy Generator (<a href="./nco.html#xmp_ncclimo">examples</a>)</li>
 <li><a href="./nco.html#nces"><tt>nces</tt></a> netCDF Ensemble Statistics (<a href="./nco.html#xmp_nces">examples</a>)</li>
 <li><a href="./nco.html#ncecat"><tt>ncecat</tt></a> netCDF Ensemble conCATenator (<a href="./nco.html#xmp_ncecat">examples</a>)</li>

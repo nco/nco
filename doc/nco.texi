@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.2-alpha03
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 21 March 2024
+@set update-date 22 March 2024
 @set update-month March 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -318,7 +318,7 @@ notice identical to this one except for the removal of this paragraph
 @html
 <meta name="Author" content="Charlie Zender">
 <meta name="Keywords" content="NCO documentation, NCO User Guide,
-netCDF, operator, GCM, CCM, scientific data, ncbo, ncclimo, ncfe, ncecat,
+netCDF, operator, GCM, CCM, scientific data, ncbo, ncchecker, ncclimo, ncfe, ncecat,
 ncflint, ncks, ncra, ncrcat, ncremap, ncrename, ncwa">
 @end html
 @html
@@ -13700,6 +13700,7 @@ described in any detail in the sections below.
 * ncap2 netCDF Arithmetic Processor::
 * ncatted netCDF Attribute Editor::
 * ncbo netCDF Binary Operator::
+* ncchecker netCDF Compliance Checker::
 * ncclimo netCDF Climatology Generator::
 * ncecat netCDF Ensemble Concatenator::
 * nces netCDF Ensemble Statistics::
@@ -18905,7 +18906,7 @@ pre-processing using other tools such as Awk, Perl, or Python.
 <a name="ncmultiply"></a> <!-- http://nco.sf.net/nco.html#ncmultiply -->
 <a name="ncdivide"></a> <!-- http://nco.sf.net/nco.html#ncdivide -->
 @end html
-@node ncbo netCDF Binary Operator, ncclimo netCDF Climatology Generator, ncatted netCDF Attribute Editor, Reference Manual
+@node ncbo netCDF Binary Operator, ncchecker netCDF Compliance Checker, ncatted netCDF Attribute Editor, Reference Manual
 @section @command{ncbo} netCDF Binary Operator
 @findex ncbo
 @findex ncdiff
@@ -19343,11 +19344,79 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 
 @page
 @html
+<a name="ncchecker"></a> <!-- http://nco.sf.net/nco.html#ncchecker -->
+@end html
+@node ncchecker netCDF Compliance Checker, ncclimo netCDF Climatology Generator, ncbo netCDF Binary Operator, Reference Manual
+@section @command{ncchecker} netCDF Compliance Checker
+@cindex @acronym{CF}
+@findex ncchecker
+
+@noindent
+SYNTAX
+@example
+ncchecker 
+[-D @var{dbg}] [-i @var{drc_in}]
+[--tests=@var{tst_lst}]
+[-x] [-v @var{var}[,@dots{}]] [--version]
+[@var{input-files}]
+@end example
+
+@noindent
+DESCRIPTION
+
+@html
+<a name="DIWG"></a> <!-- http://nco.sf.net/nco.html#DIWG -->
+@end html
+@cindex @acronym{DIWG}
+As of version 5.2.2 (March, 2024), @acronym{NCO} comes with the
+@command{ncchecker} script.
+This command checks files for compliance with best practices rules and 
+recommendations from various data and metadata standards bodies.
+These include the Climate & Forecast (@acronym{CF}) Metadata
+Conventions and the NASA Dataset Interoperability Working Group
+(@acronym{DIWG}) recommendations.
+Only a small subset (six tests) of @acronym{CF} or
+@acronym{DIWG} recommendations are currently supported.
+The number of tests implemented, or, equivalently, of recommendations
+checked, is expected to grow.
+
+@command{ncchecker} reads each data file in @var{input-files}, in
+@var{drc_in}, or piped through standard input.
+It performs the checks requested in the @samp{--tests=@var{tst_lst}}
+option, if any (otherwise it performs all tests), and writes the
+results to @code{stdout}.
+The command supports some standard @acronym{NCO} options, including
+increasing the verbosity level with @samp{-D @var{dbg_lvl}},
+excluding variables with @samp{-x -v @var{var_lst}}, variable
+subsetting with @samp{-v @var{var_lst}}, and printing the 
+version with @samp{--version}. 
+
+@noindent
+@html
+<a name="xmp_ncchecker"></a> <!-- http://nco.sf.net/nco.html#xmp_ncchecker -->
+@end html
+EXAMPLES
+
+@example
+@verbatim
+ncchecker in1.nc in2.nc # Run all tests on two files
+ncchecker -v var1,var2 in1.nc # Check only two variables
+ncchecker *.nc # Glob input files via wildcard
+ls *.nc | ncchecker # Input files via stdin
+ncchecker --dbg=2 *.nc # Debug ncchecker
+ncchecker --tests=nan,mss *.nc # Select only two tests
+ncchecker --tests=xtn,tm,nan,mss,chr,bnd *.nc # Change order of all tests
+ncchecker file:///Users/zender/in_zarr4#mode=nczarr,file # Run checks on Zarr object(s)
+@end verbatim
+@end example
+
+@page
+@html
 <a name="ncclimo"></a> <!-- http://nco.sf.net/nco.html#ncclimo -->
 <a name="ncsplit"></a> <!-- http://nco.sf.net/nco.html#ncsplit -->
 <a name="ncsplit"></a> <!-- http://nco.sf.net/nco.html#splitter -->
 @end html
-@node ncclimo netCDF Climatology Generator, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Reference Manual
+@node ncclimo netCDF Climatology Generator, ncecat netCDF Ensemble Concatenator, ncchecker netCDF Compliance Checker, Reference Manual
 @section @command{ncclimo} netCDF Climatology Generator
 @cindex climo
 @cindex climatology
@@ -19370,6 +19439,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [--vrt_out=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}]
 [-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
+[@var{input-files}]
 @end example
 
 @noindent
@@ -25676,7 +25746,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}] [--uio]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
-[--vrt_in=@var{vrt_fl}] [--vrt_out=@var{vrt_fl}] [--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
+[--vrt_in=@var{vrt_fl}] [--vrt_out=@var{vrt_fl}] [--vrt_nm=@var{vrt_nm}] [--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
 [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] [--xcl_var]
 [--xtr_nsp=@var{xtr_nsp}] [--xtr_xpn=@var{xtr_xpn}]
 [@var{input-files}] [@var{output-file}]
