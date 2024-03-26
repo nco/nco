@@ -1,12 +1,18 @@
-2024-03-22  Charlie Zender  <zender@uci.edu>
+2024-03-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.3-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.3-alpha01: Sleepover';git push
 	git tag -a 5.2.3-alpha01 -m 'Functionally identical to 5.2.2';git push --tags
 
+	* Add out_fl synonym to --output, --fl_out for symmetry with ncremap
+
+2024-03-22  Charlie Zender  <zender@uci.edu>
+
 	* NCO 5.2.2 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.2: Bambino';git push
 	git tag -a 5.2.2 -m 'ncchecker; ncclimo: elm rgn_avg time_bounds; ncremap: xcl level, mbtr --monotonicity';git push --tags
+
+	* Let it be known that ncap2 stopped working correctly with MacOS again today
 
 	* ncchecker tidy manpage, add to homepage, add to nco.texi
 

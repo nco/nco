@@ -356,6 +356,7 @@ main(int argc,char **argv)
     {"ovr",no_argument,0,'O'},
     {"output",required_argument,0,'o'},
     {"fl_out",required_argument,0,'o'},
+    {"out_fl",required_argument,0,'o'},
     {"path",required_argument,0,'p'},
     {"retain",no_argument,0,'R'},
     {"rtn",no_argument,0,'R'},

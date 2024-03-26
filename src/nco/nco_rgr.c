@@ -2832,6 +2832,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd+=nco_def_var(out_id,"P0",crd_typ_out,dmn_nbr_0D,(int *)NULL,&p0_id);
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,p0_id,NULL,nco_flt_flg_prc_fll);
     var_crt_nbr++;
+    
     if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,ps_nm_out,crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
     if(flg_grd_hyb_ecmwf){
       /* Remove degenerate ECMWF vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions */
