@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.3-alpha01: Sleepover';git push
 	git tag -a 5.2.3-alpha01 -m 'Functionally identical to 5.2.2';git push --tags
 
+	* ncremap use vrt_crd as synonym for vrt_nm, not for vrt_fl
+
 	* Add out_fl synonym to --output, --fl_out for symmetry with ncremap
 
 2024-03-22  Charlie Zender  <zender@uci.edu>

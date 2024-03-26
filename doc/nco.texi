@@ -28735,18 +28735,42 @@ Note that @var{vrb_lvl} is distinct from @var{dbg_lvl} which is
 passed to the regridder (@command{ncks}) for additional diagnostics.
 
 @html
+<a name="vrt_crd"></a> <!-- http://nco.sf.net/nco.html#vrt_crd -->
+<a name="plev_nm"></a> <!-- http://nco.sf.net/nco.html#plev_nm -->
+<a name="vrt_nm"></a> <!-- http://nco.sf.net/nco.html#vrt_nm -->
+<a name="vertical_coordinate_name"></a> <!-- http://nco.sf.net/nco.html#vertical_coordinate_name -->
+@end html
+@cindex @code{--vrt_crd} 
+@cindex @code{--plev_nm}
+@cindex @code{--vertical_coordinate_name}
+@cindex @code{--vrt_nm=@var{vrt_fl}}
+@cindex @var{vrt_crd}
+@cindex Vertical coordinate
+@cindex @acronym{MPAS}
+@item --vrt_nm=@var{vrt_nm} (@code{--vrt_nm}, @code{--plev_nm}, @code{--vrt_crd}, @code{--vertical_coordinate_name})
+The @samp{--vrt_nm=@var{vrt_nm}} option instructs @command{ncremap}
+to use @var{vrt_nm}, instead of the default @code{plev}, as the vertical
+coordinate name for pure pressure grids.
+This option first appeared in @acronym{NCO} @w{version 4.8.0},
+released in May, 2019.
+The vertical coordinate @var{vrt_nm} is usually, though not
+necessarily, specified in millibars.
+
+@html
 <a name="vrt"></a> <!-- http://nco.sf.net/nco.html#vrt -->
 <a name="vrt_fl"></a> <!-- http://nco.sf.net/nco.html#vrt_fl -->
+<a name="vrt_grd_out"></a> <!-- http://nco.sf.net/nco.html#vrt_grd_out -->
+<a name="vrt_out"></a> <!-- http://nco.sf.net/nco.html#vrt_out -->
 @end html
 @cindex @code{vrt}
 @cindex @code{--vrt}
-@cindex @code{--vrt_crd}
 @cindex @code{--vrt_fl_out}
+@cindex @code{--vrt_grd_out}
 @cindex @code{--vrt_out=@var{vrt_fl}}
 @cindex @var{vrt_fl}
 @cindex Vertical coordinate
 @cindex @acronym{MPAS}
-@item --vrt_out=@var{vrt_fl} (@code{--vrt_out}, @code{--vrt_fl}, @code{--vrt}, @code{--vrt_crd}, @code{--vrt_grd_out})
+@item --vrt_out=@var{vrt_fl} (@code{--vrt_out}, @code{--vrt_fl}, @code{--vrt}, @code{--vrt_grd_out})
 The @samp{--vrt_out=@var{vrt_fl}} option instructs @command{ncremap}
 to vertically interpolate the input file to the vertical coordinate
 grid contained in the file @var{vrt_fl}.
