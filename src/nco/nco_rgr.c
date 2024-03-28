@@ -1172,7 +1172,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   long tm_idx=0L; /* [idx] Current timestep */
   long tm_nbr=1L; /* [idx] Number of timesteps in vertical grid */
   long tm_nbr_in=1L; /* [nbr] Number of timesteps in input vertical grid definition */
-  long tm_nbr_out=1L; /* [nbr] Number of timesetps in output vertical grid definition */
+  long tm_nbr_out=1L; /* [nbr] Number of timesteps in output vertical grid definition */
   nco_bool flg_grd_hrz_0D=False; /* [flg] Input data is single vertical column */
   nco_bool flg_grd_hrz_1D=False; /* [flg] Input data is 1D (unstructured) array of vertical columns */
   nco_bool flg_grd_hrz_2D=False; /* [flg] Input data is 2D (structured) array of vertical columns */
@@ -2047,9 +2047,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
 
     /* Sanity checks */
-    if(grd_sz_in != grd_sz_out || tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: ERROR %s reports that temporal or horizontal spatial dimensions differ: grd_sz_in = %ld != %ld = grd_sz_out, and/or tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,grd_sz_in,grd_sz_out,tm_nbr_in,tm_nbr_out);
+    if(grd_sz_in != grd_sz_out) (void)fprintf(stdout,"%s: ERROR %s reports that horizontal spatial dimensions of input and output grids differ: grd_sz_in = %ld != %ld = grd_sz_out\n",nco_prg_nm_get(),fnc_nm,grd_sz_in,grd_sz_out);
     assert(grd_sz_in == grd_sz_out);
-    assert(tm_nbr_in == tm_nbr_out);
+    if(tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: INFO %s reports that temporal dimensions of input and output vertical grids: tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,tm_nbr_in,tm_nbr_out);
+    // 20240329: following lines prevents single pure pressure grid ERA5 timeseries from interpolating to hybrid PS timeseries
+    //assert(tm_nbr_in == tm_nbr_out);
 
     dpt_mdp_in=(double *)nco_malloc_dbg(tm_nbr_in*lev_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() dpt_mdp_in value buffer");
 
@@ -2321,7 +2323,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
        These are not necessarily the same as the number of timesteps in either file
        Time-invariant hybrid or pure-pressure coordinates are valid vertical grids for timeseries
        Usually hybrid grids have as many timesteps in the grids as in the timeseries 
-       Usually pressure grids are time-invariant (as of 20190511 time-varying pure pressure grids are still not supported)
+       Usually pressure grids are time-invariant (time-varying pure pressure grids have never been supported)
+       20240326:
+       ERA5 time-invariant pure pressure grid input file with timeseries variables 
        This implementation interpolates timeseries to/from time-invariant vertical grids in one OpenMP call! */
     if(tm_nbr_in > 1L || tm_nbr_out > 1L){
       if(tm_nbr_in > tm_nbr_out) assert((float)tm_nbr_in/(float)tm_nbr_out == tm_nbr_in/tm_nbr_out); else assert((float)tm_nbr_out/(float)tm_nbr_in == tm_nbr_out/tm_nbr_in);
@@ -2329,9 +2333,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
 
     /* Sanity checks */
-    if(grd_sz_in != grd_sz_out || tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: ERROR %s reports that temporal or horizontal spatial dimensions differ: grd_sz_in = %ld != %ld = grd_sz_out, and/or tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,grd_sz_in,grd_sz_out,tm_nbr_in,tm_nbr_out);
+    if(grd_sz_in != grd_sz_out) (void)fprintf(stdout,"%s: ERROR %s reports that horizontal spatial dimensions of input and output grids differ: grd_sz_in = %ld != %ld = grd_sz_out\n",nco_prg_nm_get(),fnc_nm,grd_sz_in,grd_sz_out);
     assert(grd_sz_in == grd_sz_out);
-    assert(tm_nbr_in == tm_nbr_out);
+    if(tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: INFO %s reports that temporal dimensions of input and output vertical grids: tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,tm_nbr_in,tm_nbr_out);
+    // 20240329: following lines prevents single pure pressure grid ERA5 timeseries from interpolating to hybrid PS timeseries
+    //assert(tm_nbr_in == tm_nbr_out);
 
     ps_in=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
 

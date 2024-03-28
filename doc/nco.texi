@@ -26085,8 +26085,10 @@ Features common to many operators are described in
 @cindex @code{pch}
 @cindex @code{bilinear}
 @cindex @code{bilin}
+@cindex @code{esmfbilin}
 @cindex @code{blin}
 @cindex @code{aave}
+@cindex @code{esmfaave}
 @cindex @code{conserve}
 @cindex @code{conserve2nd}
 @item -a @var{alg_typ} (@code{--alg_typ}, @code{--algorithm}, @code{--regrid_algorithm})
@@ -26106,8 +26108,8 @@ TempestRemap algorithms (with both @acronym{TR} and @acronym{MOAB}).
 <a name="alg_erwg"></a> <!-- http://nco.sf.net/nco.html#alg_erwg -->
 @end html
 The seven @acronym{ERWG} weight generation algorithms are:
-@code{bilinear} (default, acceptable abbreviations are @code{bilin}, @code{blin}, @code{bln}), 
-@code{conserve} (or @code{conservative}, @code{cns}, @code{c1}, or @code{aave}), 
+@code{bilinear} (acceptable abbreviations are: @code{esmfbilin} (preferred), @code{bilin}, @code{blin}, @code{bln}), 
+@code{conserve} (or @code{esmfaave} (preferred), @code{conservative}, @code{cns}, @code{c1}, or @code{aave}), 
 @code{conserve2nd} (or @code{conservative2nd}, @code{c2}, or @code{c2nd})
 (@acronym{NCO} supports @code{conserve2nd} as of version 4.7.4 (April, 2018)), 
 @code{nearestdtos} (or @code{nds} or @code{dtos} or @code{ndtos}), 
@@ -26116,10 +26118,6 @@ and @code{patch} (or @code{pch} or @code{patc}).
 See @acronym{ERWG} documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03020000000000000000, here}
 for detailed descriptions of @acronym{ERWG} algorithms.
-@cindex @code{nco_con}
-@cindex @code{nco_cns}
-@cindex @code{nco_conserve}
-@cindex @code{nco}
 
 @html
 <a name="alg_nco"></a> <!-- http://nco.sf.net/nco.html#alg_nco -->
@@ -26132,6 +26130,12 @@ for detailed descriptions of @acronym{ERWG} algorithms.
 <a name="distance_weighted"></a> <!-- http://nco.sf.net/nco.html#distance_weighted -->
 <a name="nearest_neighbor"></a> <!-- http://nco.sf.net/nco.html#nearest_neighbor -->
 @end html
+@cindex @code{ncoaave}
+@cindex @code{nco_con}
+@cindex @code{nco_cns}
+@cindex @code{nco_conserve}
+@cindex @code{nco}
+@cindex @code{ncoidw}
 @cindex @code{nco_idw}
 @cindex @code{nco_dwe}
 @cindex @code{idw}
@@ -26147,11 +26151,11 @@ for detailed descriptions of @acronym{ERWG} algorithms.
 @command{ncremap} implements its own internal weight-generation
 algorithm as of @acronym{NCO} version 4.8.0 (May, 2019).
 The first @acronym{NCO}-native algorithm is a first-order conservative
-algorithm that competes well in accuracy with similar algorithms
-(e.g., @acronym{ERWG}'s conservative algorithm).
+algorithm @code{ncoaave} that competes well in accuracy with similar
+algorithms (e.g., @acronym{ERWG}'s conservative algorithm @code{esmfaave}).
 This algorithm is built-in to @acronym{NCO} and requires no external
-software so it is the default weight generation algorithm and is
-recommended for everyday use. 
+software so it is @acronym{NCO}'s default weight generation algorithm.
+It works well for everyday use. 
 The algorithm may also be explicitly invoked with @code{nco_con} (or
 @code{nco_cns}, @code{nco_conservative}, or simply @code{nco}).
 

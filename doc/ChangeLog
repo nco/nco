@@ -1,8 +1,14 @@
-2024-03-26  Charlie Zender  <zender@uci.edu>
+2024-03-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.3-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.3-alpha01: Sleepover';git push
 	git tag -a 5.2.3-alpha01 -m 'Functionally identical to 5.2.2';git push --tags
+
+	* nco_vrt_ntp() allow, though print INFO when, tm_nbr_in != tm_nbr_out
+
+	* nco_inq_varname() print dataset name on NC_ENOTVAR
+
+2024-03-26  Charlie Zender  <zender@uci.edu>
 
 	* ncremap use vrt_crd as synonym for vrt_nm, not for vrt_fl
 

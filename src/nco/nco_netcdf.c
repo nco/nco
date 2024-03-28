@@ -2487,7 +2487,13 @@ nco_inq_varname(const int nc_id,const int var_id,char * const var_nm)
   int rcd;
   rcd=nc_inq_varname(nc_id,var_id,var_nm);
   if(rcd == NC_ENOTVAR){
-    (void)fprintf(stdout,"ERROR: %s reports specified dataset %d has no variable ID %d\n",fnc_nm,nc_id,var_id);
+    char *path=NULL;
+    size_t pathlen;
+    rcd=nc_inq_path(nc_id,&pathlen,NULL);
+    path=(char *)malloc(pathlen*sizeof(char));
+    rcd=nc_inq_path(nc_id,NULL,path);
+    (void)fprintf(stdout,"ERROR: %s reports specified dataset %s has no variable ID %d\n",fnc_nm,path,var_id);
+    if(path) free(path);
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varname()");
   return rcd;

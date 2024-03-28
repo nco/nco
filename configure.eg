@@ -313,8 +313,8 @@ make install
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20231026 (Use ~/anaconda rather than E3SMU)
 # Personal recipe last borken: 20231026
-# Personal recipe last successful: 20240221
-# Current build error: 20231019 "configure: error: cannot find netCDF library"
+# Most recent build error: 20231019 "configure: error: cannot find netCDF library"
+# Personal recipe last successful: 20240328
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
@@ -395,7 +395,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20231206 (define NETCDF_ROOT once, in configure.eg)
-# Personal recipe last borken: 20231103 (problem caused by -I/usr/include)
+# Personal recipe last borken: 2024326 "checking for netcdf.h... yes; checking for nc_open in -lnetcdf... no"
 # Personal recipe last successful: 20231206
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # Default as of 20210924 is to build with Anaconda netCDF
