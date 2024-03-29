@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.3-alpha01: Sleepover';git push
 	git tag -a 5.2.3-alpha01 -m 'Functionally identical to 5.2.2';git push --tags
 
-	* nco_vrt_ntp() allow, though print INFO when, tm_nbr_in != tm_nbr_out
+	* nco_vrt_ntp() set hybrid grid output temporal size tm_nbr_out to size of PS "time" dimension if it exists and there are no record dimensions
+
+	* nco_vrt_ntp() allow, though print INFO or WARNING when, tm_nbr_in != tm_nbr_out
 
 	* nco_inq_varname() print dataset name on NC_ENOTVAR
 

@@ -8,11 +8,12 @@
    3-Clause BSD License with exceptions described in the LICENSE file */
 
 #include "nco_rgr.h" /* Regridding */
-
 extern double min_dbl(double a, double b);
 extern double max_dbl(double a, double b);
 inline double min_dbl(double a, double b){return (a < b) ? a : b;}
 inline double max_dbl(double a, double b){return (a > b) ? a : b;}
+extern int max_int(int a, int b);
+inline int max_int(int a, int b){return (a > b) ? a : b;}
 
 int /* O [enm] Return code */
 nco_rgr_ctl /* [fnc] Control regridding logic */
@@ -1271,9 +1272,21 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       dmn_srt=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
       rcd=nco_inq_vardimid(tpl_id,ps_id,dmn_ids_out);
       rcd=nco_inq_unlimdims(tpl_id,&dmn_nbr_rec,(int *)NULL);
+      /* Time dimension (if any) of PS is normally a record dimension */
+      rcd=nco_inq_unlimdims(tpl_id,&dmn_nbr_rec,NULL);
+      dmn_ids_rec=(int *)nco_malloc(max_int(dmn_nbr_rec,1)*sizeof(int));
       if(dmn_nbr_rec > 0){
-	dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
-	rcd=nco_inq_unlimdims(tpl_id,&dmn_nbr_rec,dmn_ids_rec);
+	rcd=nco_inq_unlimdims(tpl_id,NULL,dmn_ids_rec);
+      }else if(dmn_nbr_rec == 0){
+	/* 20240329: Unfortunately some important datasets like ERA5 have time as a fixed not record dimension
+	   nco_inq_unlimdims() approach above for getting tm_nbr_out fails in this case
+	   Instead for "time" dimension, if any, and, if found, spoof it (and its size) as a record dimension */
+	int dmn_id_tm_out=NC_MIN_INT; /* [id] Dimension ID for time in output hybrid coordinate PS grid */
+	rcd=nco_inq_dimid_flg(tpl_id,"time",&dmn_id_tm_out);
+	if(rcd == NC_NOERR){
+	  dmn_nbr_rec=1;
+	  dmn_ids_rec[0]=dmn_id_tm_out;
+	} /* !rcd */
       } /* !dmn_nbr_rec */
       for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	rcd=nco_inq_dimlen(tpl_id,dmn_ids_out[dmn_idx],dmn_cnt_out+dmn_idx);
@@ -2049,7 +2062,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     /* Sanity checks */
     if(grd_sz_in != grd_sz_out) (void)fprintf(stdout,"%s: ERROR %s reports that horizontal spatial dimensions of input and output grids differ: grd_sz_in = %ld != %ld = grd_sz_out\n",nco_prg_nm_get(),fnc_nm,grd_sz_in,grd_sz_out);
     assert(grd_sz_in == grd_sz_out);
-    if(tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: INFO %s reports that temporal dimensions of input and output vertical grids: tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,tm_nbr_in,tm_nbr_out);
+    if(tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: WARNING %s reports that temporal dimensions of input and output vertical grids differ, results unpredictable: tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,tm_nbr_in,tm_nbr_out);
     // 20240329: following lines prevents single pure pressure grid ERA5 timeseries from interpolating to hybrid PS timeseries
     //assert(tm_nbr_in == tm_nbr_out);
 
@@ -2335,7 +2348,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     /* Sanity checks */
     if(grd_sz_in != grd_sz_out) (void)fprintf(stdout,"%s: ERROR %s reports that horizontal spatial dimensions of input and output grids differ: grd_sz_in = %ld != %ld = grd_sz_out\n",nco_prg_nm_get(),fnc_nm,grd_sz_in,grd_sz_out);
     assert(grd_sz_in == grd_sz_out);
-    if(tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: INFO %s reports that temporal dimensions of input and output vertical grids: tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,tm_nbr_in,tm_nbr_out);
+    if(tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: INFO %s reports that temporal dimensions of input and output vertical grids differ: tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,tm_nbr_in,tm_nbr_out);
     // 20240329: following lines prevents single pure pressure grid ERA5 timeseries from interpolating to hybrid PS timeseries
     //assert(tm_nbr_in == tm_nbr_out);
 
@@ -2362,7 +2375,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !ps_id_tpl */
   } /* !flg_grd_in_hyb, !flg_grd_out_hyb */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO temporal and spatial dimensions: grd_sz_in = grd_sz_out = %ld, tm_nbr_in = tm_nbr_out = %ld\n",nco_prg_nm_get(),grd_sz_in,tm_nbr_in);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO temporal and spatial dimensions of horizontal and vertical grids: grd_sz_in = grd_sz_out = %ld, tm_nbr_in = %ld, tm_nbr_out = %ld\n",nco_prg_nm_get(),grd_sz_in,tm_nbr_in,tm_nbr_out);
 
   /* Compare input and output surface pressure fields to determine whether subterranean extrapolation required */
   nco_bool flg_add_msv_att; /* [flg] Extrapolation requires _FillValue */
