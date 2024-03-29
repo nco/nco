@@ -1,8 +1,10 @@
 2024-03-28  Charlie Zender  <zender@uci.edu>
 
+	* ncremap fix/update documentation of supported/default regridding algorithms
+
 	* NCO 5.2.3-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.3-alpha01: Sleepover';git push
-	git tag -a 5.2.3-alpha01 -m 'Functionally identical to 5.2.2';git push --tags
+	git tag -a 5.2.3-alpha01 -m 'Functionally identical to 5.2.2 (except for slight vrt_ntp fixes)';git push --tags
 
 	* nco_vrt_ntp() set hybrid grid output temporal size tm_nbr_out to size of PS "time" dimension if it exists and there are no record dimensions
 
