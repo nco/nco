@@ -2,7 +2,9 @@
 
 	* NCO 5.2.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.3-alpha02: Grandparent Promotion';git push
-	git tag -a 5.2.3-alpha02 -m '';git push --tags
+	git tag -a 5.2.3-alpha02 -m 'all: mss_val wrn; ncclimo: rgn_avg fix elm';git push --tags
+
+	* ncclimo: much progress ELM rgn_avg completes yet normalization needs work
 
 	* nco_mss_val.c: Clarify nco_mss_val_cnf() WARNING message when missing values of binary operation differ
 
