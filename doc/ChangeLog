@@ -6,6 +6,8 @@
 
 	* ncclimo: much progress ELM rgn_avg completes yet normalization needs work
 
+	* ncclimo: Simplify life by automatically determining hrz_dmn from area_nm in first file, remove hrz_dmn input option
+
 	* nco_mss_val.c: Clarify nco_mss_val_cnf() WARNING message when missing values of binary operation differ
 
 	* ncclimo: delete_miss(msk_[nrt,sth]) to eliminate "WARNING Input variables have different NCO_MSS_VAL_SNG's" errors
