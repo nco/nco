@@ -92,6 +92,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
      2. Change missing_value of var1 to missing_value of var2 when only var2 has a missing_value
      3. Change missing_value of var2 to missing_value of var1 when only var1 has a missing_value
      4. Return false when neither operand has missing value */
+  const char fnc_nm[]="nco_mss_val_cnf()"; /* [sng] Function name */
   int has_mss_val=False; /* [flg] One or both operands have missing value */
   nco_bool MSS_VAL_EQL=False; /* [flg] Missing values of input operands are identical */
   long idx;
@@ -122,7 +123,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
     case NC_UINT64: MSS_VAL_EQL=(*var1->mss_val.ui64p == *var2->mss_val.ui64p); break;
     case NC_STRING: MSS_VAL_EQL=(*var1->mss_val.sngp == *var2->mss_val.sngp); break;
     default: nco_dfl_case_nc_type_err(); break;
-    } /* end switch */
+    } /* !var_typ */
     if(!MSS_VAL_EQL){
       char mss_val_1_sng[NCO_MAX_LEN_FMT_SNG];
       char mss_val_2_sng[NCO_MAX_LEN_FMT_SNG];
@@ -142,7 +143,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
       case NC_UINT64: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.ui64p[0]); break;
       case NC_STRING: (void)sprintf(mss_val_1_sng,fmt_sng,var1->mss_val.sngp[0]); break;
       default: nco_dfl_case_nc_type_err(); break;
-      } /* end switch */
+      } /* !var_typ */
       fmt_sng=nco_typ_fmt_sng(var2->type);
       switch(var2->type){
       case NC_FLOAT: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.fp[0]); break;
@@ -158,9 +159,9 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
       case NC_UINT64: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.ui64p[0]); break;
       case NC_STRING: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.sngp[0]); break;
       default: nco_dfl_case_nc_type_err(); break;
-      } /* end switch */
+      } /* !var_typ */
       /* World's most anally formatted warning message... */
-      (void)fprintf(stderr,"%s: WARNING Input variables have different NCO_MSS_VAL_SNG's:\nVariable #1 = %s has NCO_MSS_VAL_SNG type = %s, value = %s\nVariable #2 = %s has NCO_MSS_VAL_SNG type = %s, value = %s\nVariable #3 = output = %s will have NCO_MSS_VAL_SNG type = %s, value = %s\nWill translate values of var2 equaling mss_val2 to mss_val1 before evaluating arithmetic operation to compute var3\n",nco_prg_nm_get(),var1->nm,nco_typ_sng(var1->type),mss_val_1_sng,var2->nm,nco_typ_sng(var2->type),mss_val_2_sng,var1->nm,nco_typ_sng(var1->type),mss_val_1_sng);
+      (void)fprintf(stderr,"%s: WARNING %s reports input variables to binary operand have different missing values (i.e., _FillValue's differ):\nVariable #1 = %s has _FillValue type = %s, value = %s\nVariable #2 = %s has _FillValue type = %s, value = %s\nVariable #3 = output = %s will have _FillValue type = %s, value = %s\nWill translate values of var2 equaling mss_val2 to mss_val1 before evaluating arithmetic operation to compute var3\n",nco_prg_nm_get(),fnc_nm,var1->nm,nco_typ_sng(var1->type),mss_val_1_sng,var2->nm,nco_typ_sng(var2->type),mss_val_2_sng,var1->nm,nco_typ_sng(var1->type),mss_val_1_sng);
     } /* MSS_VAL_EQL */
     (void)cast_nctype_void(var_typ,&var1->mss_val);
     (void)cast_nctype_void(var_typ,&var2->mss_val);
@@ -486,7 +487,7 @@ nco_mss_val_get_unn /* [fnc] Return missing value of variable, if any, as double
      Basically this is a stripped-down, fast version of nco_mss_val_get()
      No matter what type missing_value is on disk, this routine returns a double precision value */
   
-  static nco_bool WRN_FIRST=True; /* [flg] No warnings yet for _FillValue/missing_value mismatch */
+  //  static nco_bool WRN_FIRST=True; /* [flg] No warnings yet for _FillValue/missing_value mismatch */
   
   char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];

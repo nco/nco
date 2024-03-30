@@ -1342,6 +1342,10 @@ if [ "${tms_flg}" = 'Yes' ]; then
     # Users can override this splitter-only default by explicitly requesting multiple threads
     thr_nbr=1 # [nbr] Thread number for regridder
 fi # !tms_flg
+if [ -n "${hrz_dmn}" ]; then
+    # 20240329 Prepend string literal '$' to each horizontal dimension for use in argument to ncap2 avg() function  (e.g., 'lat,lon' -> '$lat,$lon')
+    hrz_arg="\$${hrz_dmn/,/,\$}"
+fi # !hrz_dmn
 if [ -n "${sgs_frc}" ]; then
     sgs_opt="--rgr sgs_frc_nm=${sgs_frc}"
     rgr_opt="${rgr_opt} ${sgs_opt}"
@@ -1962,6 +1966,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
     printf "dbg: hrd_pth  = ${hrd_pth}\n"
+    printf "dbg: hrz_arg  = ${hrz_arg}\n"
     printf "dbg: hrz_dmn  = ${hrz_dmn}\n"
     printf "dbg: hst_nm   = ${hst_nm}\n"
     printf "dbg: inp_aut  = ${inp_aut}\n"
@@ -2532,6 +2537,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    area_wgt="${area_nm}"
 	fi # !sgs_frc
 
+
     fi # !rgn_avg
 	
     # Populate input file arguments fl_sgm with all files necessary to bracket each segment
@@ -2793,7 +2799,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    
 	    if [ "${rgn_avg}" = 'Yes' ]; then 
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
-		    cmd_rgn="*rgn_nbr=3;defdim(\"rgn\",rgn_nbr);*${var_sbs[${var_idx}]}_tmp=0.0f*${var_sbs[${var_idx}]}.avg(\$${hrz_dmn});*${var_sbs[${var_idx}]}_rgn[time,rgn]=${var_sbs[${var_idx}]}_tmp;${var_sbs[${var_idx}]}_rgn@coordinates=\"region_name\";*${lat_nm}_area=${lat_nm}+0.0*${area_nm};*msk_sth=0*${lat_nm}_area.int();*msk_nrt=0*${lat_nm}_area.int();*idx_glb=0;*idx_nrt=1;*idx_sth=2;*rgn_len=19;defdim(\"rgn_len\",rgn_len);region_name[rgn,rgn_len]=\" \";region_name(idx_glb,0:5)=\"Global\";region_name(idx_nrt,:)=\"Northern Hemisphere\";region_name(idx_sth,:)=\"Southern Hemisphere\";region_name@long_name=\"${var_sbs[${var_idx}]} timeseries array contains area-weighted averages over these regions\";where(${lat_nm}_area < 0.0) msk_sth=1; elsewhere msk_nrt=1;${var_sbs[${var_idx}]}_rgn(:,idx_nrt)=((${var_sbs[${var_idx}]}*${area_wgt}*msk_nrt).avg(\$${hrz_dmn})/(${area_wgt}*msk_nrt).avg(\$${hrz_dmn})).float();${var_sbs[${var_idx}]}_rgn(:,idx_sth)=((${var_sbs[${var_idx}]}*${area_wgt}*msk_sth).avg(\$${hrz_dmn})/(${area_wgt}*msk_sth).avg(\$${hrz_dmn})).float();${var_sbs[${var_idx}]}_rgn(:,idx_glb)=((${var_sbs[${var_idx}]}*${area_wgt}).avg(\$${hrz_dmn})/${area_wgt}.avg(\$${hrz_dmn})).float();${var_sbs[${var_idx}]}=${var_sbs[${var_idx}]}_rgn;push(&${var_sbs[${var_idx}]}@cell_methods,\" area: mean\");if(exists(time_bnds)) time_bnds=time_bnds;if(exists(time_bounds)) time_bounds=time_bounds;"
+		    cmd_rgn="*rgn_nbr=3;defdim(\"rgn\",rgn_nbr);*${var_sbs[${var_idx}]}_tmp=0.0f*${var_sbs[${var_idx}]}.avg(${hrz_arg});*${var_sbs[${var_idx}]}_rgn[time,rgn]=${var_sbs[${var_idx}]}_tmp;${var_sbs[${var_idx}]}_rgn@coordinates=\"region_name\";*${lat_nm}_area=${lat_nm}+0.0*${area_nm};*msk_sth=0*${lat_nm}_area.int();delete_miss(msk_sth);*msk_nrt=0*${lat_nm}_area.int();delete_miss(msk_nrt);*idx_glb=0;*idx_nrt=1;*idx_sth=2;*rgn_len=19;defdim(\"rgn_len\",rgn_len);region_name[rgn,rgn_len]=\" \";region_name(idx_glb,0:5)=\"Global\";region_name(idx_nrt,:)=\"Northern Hemisphere\";region_name(idx_sth,:)=\"Southern Hemisphere\";region_name@long_name=\"${var_sbs[${var_idx}]} timeseries array contains area-weighted averages over these regions\";where(${lat_nm}_area < 0.0) msk_sth=1; elsewhere msk_nrt=1;${var_sbs[${var_idx}]}_rgn(:,idx_nrt)=((${var_sbs[${var_idx}]}*${area_wgt}*msk_nrt).avg(${hrz_arg})/(${area_wgt}*msk_nrt).avg(${hrz_arg})).float();${var_sbs[${var_idx}]}_rgn(:,idx_sth)=((${var_sbs[${var_idx}]}*${area_wgt}*msk_sth).avg(${hrz_arg})/(${area_wgt}*msk_sth).avg(${hrz_arg})).float();${var_sbs[${var_idx}]}_rgn(:,idx_glb)=((${var_sbs[${var_idx}]}*${area_wgt}).avg(${hrz_arg})/(${area_wgt}).avg(${hrz_arg})).float();${var_sbs[${var_idx}]}=${var_sbs[${var_idx}]}_rgn;push(&${var_sbs[${var_idx}]}@cell_methods,\" area: mean\");if(exists(time_bnds)) time_bnds=time_bnds;if(exists(time_bounds)) time_bounds=time_bounds;"
 		    cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncap2 -O -v -s '${cmd_rgn}' ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
 		    # 20220817: Prior to today, --glb_avg used ncwa for global average
 		    # As of NCO 5.1.1, --glb_avg is a deprecated synonym for --rgn_avg

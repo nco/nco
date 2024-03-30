@@ -1,3 +1,15 @@
+2024-03-29  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.2.3-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.3-alpha02: Grandparent Promotion';git push
+	git tag -a 5.2.3-alpha02 -m '';git push --tags
+
+	* nco_mss_val.c: Clarify nco_mss_val_cnf() WARNING message when missing values of binary operation differ
+
+	* ncclimo: delete_miss(msk_[nrt,sth]) to eliminate "WARNING Input variables have different NCO_MSS_VAL_SNG's" errors
+
+	* ncclimo: Add parentheses to enclose global area_wgt before .avg()
+
 2024-03-28  Charlie Zender  <zender@uci.edu>
 
 	* ncremap fix/update documentation of supported/default regridding algorithms
