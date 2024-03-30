@@ -1523,7 +1523,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	job_nbr=${var_nbr}
     fi # !job_usr
 
-    # Input files per year
+# Input files per year
     flg_dct='Yes' # [flg] Double-check time in years against file count
     if [ "${clm_md}" = 'ann' ]; then
 	fpy=1
@@ -1619,7 +1619,8 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	# 20240329 Simplify life by automatically determining hrz_dmn from area_nm in first file
 	# Works for EAM, ELM, unstructured, structured, ...
 	# https://unix.stackexchange.com/questions/108250/print-the-string-between-two-parentheses
-	hrz_dmn=`ncks -C -m -v ${area_nm} ${fl_in[0]} | grep "${area_nm}\(" | sed 's/^.*(//;s/) ;$//'`
+	#hrz_dmn=`ncks -C -m -v ${area_nm} ${fl_in[0]} | grep "${area_nm}\(" | sed 's/^.*(//;s/) ;$//'`
+	hrz_dmn=`ncks -C -m -v ${area_nm} ${fl_in[0]} | grep -E "float.*${area_nm}|double.*${area_nm}" | sed 's/^.*(//;s/) ;$//'`
 	if [ -n "${hrz_dmn}" ]; then
 	    # 20240329 Prepend string literal '$' to each horizontal dimension for use in argument to ncap2 avg() function  (e.g., 'lat,lon' -> '$lat,$lon')
 	    hrz_arg="\$${hrz_dmn/,/,\$}"
