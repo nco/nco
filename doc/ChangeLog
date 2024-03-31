@@ -1,5 +1,9 @@
 2024-03-30  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.3-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.3-alpha03: Stormy Saturday';git push
+	git tag -a 5.2.3-alpha03 -m '';git push --tags
+
 	* NCO 5.2.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.3-alpha02: Grandparent Promotion';git push
 	git tag -a 5.2.3-alpha02 -m 'all: mss_val wrn; ncclimo: rgn_avg	fix elm, hrz_dmn, hrz_arg, area_wgt';git push --tags
