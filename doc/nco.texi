@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.3-alpha02
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 30 March 2024
+@set update-date 31 March 2024
 @set update-month March 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -20118,6 +20118,15 @@ The three timeseries are now saved in a two-dimensional (time
 by region) array with a ``region dimension'' named @code{rgn}.
 The region names are stored in the variable named @code{region_name}.
 
+As of @acronym{NCO} version 5.2.3 (released March, 2024), this switch
+works with sub-gridscale fractions, such as are common in surface
+models like @acronym{ELM} and @acronym{CLM}.
+The correct weights for (@acronym{SGS}) fraction will automatically be
+applied so long as @command{ncclimo} is invoked with
+@samp{-P @var{prc_typ}}.
+Otherwise the field containing the (@acronym{SGS}) fraction must be
+supplied with @samp{--sgs_frc=@var{sgs_frc}}.
+
 This switch only has effect in timeseries splitting mode.
 This is useful, for example, to quickly diagnose the behavior of ongoing
 model simulations prior to a full-blown analysis. 
@@ -26045,10 +26054,16 @@ Features common to many operators are described in
 <a name="patc"></a> <!-- http://nco.sf.net/nco.html#patc -->
 <a name="pch"></a> <!-- http://nco.sf.net/nco.html#pch -->
 <a name="bilinear"></a> <!-- http://nco.sf.net/nco.html#bilinear -->
+<a name="esmfbilin"></a> <!-- http://nco.sf.net/nco.html#esmfbilin -->
 <a name="bilin"></a> <!-- http://nco.sf.net/nco.html#bilin -->
 <a name="blin"></a> <!-- http://nco.sf.net/nco.html#blin -->
 <a name="conserve"></a> <!-- http://nco.sf.net/nco.html#conserve -->
 <a name="aave"></a> <!-- http://nco.sf.net/nco.html#aave -->
+<a name="esmfaave"></a> <!-- http://nco.sf.net/nco.html#esmfaave -->
+<a name="traave"></a> <!-- http://nco.sf.net/nco.html#traave -->
+<a name="trbilin"></a> <!-- http://nco.sf.net/nco.html#trbilin -->
+<a name="trintbilin"></a> <!-- http://nco.sf.net/nco.html#trintbilin -->
+<a name="trfv2"></a> <!-- http://nco.sf.net/nco.html#trfv2 -->
 <a name="fv2se_flx"></a> <!-- http://nco.sf.net/nco.html#fv2se_flx -->
 <a name="se2fv_flx"></a> <!-- http://nco.sf.net/nco.html#se2fv_flx -->
 <a name="fv2se_stt"></a> <!-- http://nco.sf.net/nco.html#fv2se_stt -->
@@ -26061,6 +26076,7 @@ Features common to many operators are described in
 <a name="fv2fv_flx"></a> <!-- http://nco.sf.net/nco.html#fv2fv_flx -->
 <a name="fv2fv_stt"></a> <!-- http://nco.sf.net/nco.html#fv2fv_stt -->
 <a name="rll2rll"></a> <!-- http://nco.sf.net/nco.html#rll2rll -->
+<a name="ncoaave"></a> <!-- http://nco.sf.net/nco.html#ncoaave -->
 <a name="nco_con"></a> <!-- http://nco.sf.net/nco.html#nco_con -->
 <a name="nco_dwe"></a> <!-- http://nco.sf.net/nco.html#nco_dwe -->
 <a name="nco_idw"></a> <!-- http://nco.sf.net/nco.html#nco_idw -->
@@ -26237,6 +26253,18 @@ synonyms (shown below).
 As of @acronym{NCO} version 4.9.0 (December, 2019), @command{ncremap} 
 added two further boutique mappings (@code{fv2fv_flx} and
 @code{fv2fv_stt}). 
+As of @acronym{NCO} version 5.1.9 (November, 2023), @command{ncremap} 
+added support for two brand new TempestRemap bilinear interpolation
+algorithms for @acronym{FV} grids.
+These are (@code{trbilin} for traditional bilinear interpolation,
+and @code{trintbilin}), for integrated bilinear or barycentric
+interpolation. 
+As of @acronym{NCO} version 5.2.0 (February, 2024), @command{ncremap} 
+added support for @code{trfv2}, a new second-order conservative
+algorithm.
+These newer TempestRemap algorithms are briefly described at
+@url{https://acme-climate.atlassian.net/wiki/spaces/DOC/pages/1217757434/Mapping+file+algorithms+and+naming+convention}.
+
 The @samp{-a tempest} algorithm can be specified with the precise
 TempestRemap options as arguments to the @samp{-W} (or
 @samp{--wgt_opt}) option.  
@@ -26260,7 +26288,7 @@ Generate and use the recommended weights to remap fluxes from
 @acronym{FV} to @acronym{FV} grids, for example, with
 @example
 @verbatim
-ncremap -a fv2fv_flx --src_grd=src.g --dst_grd=dst.nc -m map.nc
+ncremap -a traave --src_grd=src.g --dst_grd=dst.nc -m map.nc
 ncremap -m map.nc in.nc out.nc
 @end verbatim
 @end example
@@ -26273,7 +26301,7 @@ Invoke @acronym{MOAB} to compute these weights by adding the
 @samp{--mpi_nbr=@var{mpi_nbr}} option:
 @example
 @verbatim
-ncremap --mpi_nbr=8 -a fv2fv_flx --src_grd=src.g --dst_grd=dst.nc -m map.nc
+ncremap --mpi_nbr=8 -a traave --src_grd=src.g --dst_grd=dst.nc -m map.nc
 @end verbatim
 @end example
 This causes @command{ncremap} to automatically invoke multiple
@@ -26299,7 +26327,7 @@ ncatted -O --gaa <command lines> map.nc map.nc
 The @acronym{MOAB} toolchain should produce a map-file identical, to
 rounding precision, to one produced by @acronym{TR}.
 When speed matters (i.e., large grids), and the algorithm is supported
-(i.e., @code{fv2fv_flx}), invoke @acronym{MOAB}, otherwise invoke
+(e.g., @code{traave}), invoke @acronym{MOAB}, otherwise invoke
 @acronym{TR}. 
 
 @cindex Galerkin methods
@@ -26309,7 +26337,7 @@ When speed matters (i.e., large grids), and the algorithm is supported
 @cindex @code{--mono}
 TempestRemap options have the following meanings:
 @code{mono} specifies a monotone remapping, i.e., one that does not
-generate any new extrema in the field variables.a
+generate any new extrema in the field variables.
 @code{cgll} indicates the input or output are represented by a
 continuous Galerkin method on Gauss-Lobatto-Legendre nodes.
 This is appropriate for spectral element datasets.
@@ -26327,7 +26355,7 @@ Specifying @samp{-a tempest} without additional options in the
 @samp{-W} clause causes TempestRemap to employ defaults.
 The default configuration requires both input and output grids to be
 @acronym{FV}, and produces a conservative, non-monotonic mapping.
-The @samp{-a fv2fv} option described below may produce more desirable
+The @samp{-a traave} option described below may produce more desirable
 results than this default for many users.
 Using @samp{-a tempest} alone without other options for spectral
 element grids will lead to undefined and likely unintentional
@@ -26347,7 +26375,7 @@ and boutique options passed to @command{GenerateOfflineMap} or to
 @cartouche
 Caveat lector:
 As of September, 2021 @acronym{MOAB}-generated weights are only
-trustworthy for the @code{fv2fv_flx} algorithm. 
+trustworthy for the @code{traave} algorithm (synonym for @code{fv2fv_flx}). 
 The options for all other algorithms are implemented as indicated
 though they should be invoked for testing purposes only.
 High order and spectral element maps are completely unsupported.
@@ -26363,6 +26391,19 @@ Always use the map-checker to test maps before use, e.g., with
 <a name="alg_moab"></a> <!-- http://nco.sf.net/nco.html#alg_moab -->
 @end html
 @table @asis
+@item @code{traave} (synonyms @code{fv2fv_flx}, @code{fv2fv_mono}, @code{conservative_monotone_fv2fv}),
+@acronym{TR} options: @samp{--in_type fv --in_np 1 --out_type fv --out_np 1}@*
+@acronym{MOAB} options: @samp{--method fv --order 1 --method fv --order 1}
+@item @code{trbilin} (no synonyms),
+@acronym{TR} options: @samp{--in_type fv --out_type fv --method bilin}@*
+@acronym{MOAB} options: @samp{--method fv --method fv --order 1 --order 1 --fvmethod bilin}
+@item @code{trintbilin} (no synonyms),
+@acronym{TR} options: @samp{--in_type fv --out_type fv --method intbilin}@*
+@acronym{MOAB} options: @samp{--method fv --method fv --order 1 --order 1 --fvmethod intbilin}
+@item @code{trfv2} (synonyms @code{trfvnp2}),
+@acronym{TR} options: @samp{--in_type fv --in_np 2 --out_type fv --out_np 1 --method normalize}@*
+@acronym{MOAB} options: @samp{--method fv --order 2 --method fv --order 1 --fvmethod normalize}
+
 @item @code{se2fv_flx} (synonyms @code{mono_se2fv}, @code{conservative_monotone_se2fv})
 @acronym{TR} options: @samp{--in_type cgll --in_np 4 --out_type fv --mono}@*
 @acronym{MOAB} options: @samp{--method cgll --order 4 --global_id GLOBAL_DOFS --method fv --monotonic 1 --global_id GLOBAL_ID}
@@ -26390,12 +26431,14 @@ is employed.@*
 @item @code{fv2fv} (synonyms @code{rll2rll}),
 @acronym{TR} options: @samp{--in_type fv --in_np 2 --out_type fv}@*
 @acronym{MOAB} options: @samp{--method fv --order 2 --method fv}
-@item @code{fv2fv_flx} (synonyms @code{fv2fv_mono}, @code{conservative_monotone_fv2fv}),
+@item @code{fv2fv_flx} (synonyms @code{traave} @code{fv2fv_mono}, @code{conservative_monotone_fv2fv}),
 @acronym{TR} options: @samp{--in_type fv --in_np 1 --out_type fv --out_np 1}@*
 @acronym{MOAB} options: @samp{--method fv --order 1 --method fv --order 1}
 @item @code{fv2fv_stt} (synonyms @code{fv2fv_highorder}, @code{accurate_conservative_nonmonotone_fv2fv}),
 @acronym{TR} options: @samp{--in_type fv --in_np 2 --out_type fv}@*
 @acronym{MOAB} options: @samp{--method fv --order 2 --method fv}
+
+
 @end table
 Thus these boutique options are specialized for @acronym{SE} grids with
 fourth order resolution (@math{@var{np} = 4}).

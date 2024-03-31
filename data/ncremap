@@ -1316,7 +1316,7 @@ elif [ ${alg_typ} = 'fv2fv_flx' ] || [ ${alg_typ} = 'traave' ] || [ ${alg_typ} =
     wgt_opt_tps='--in_type fv --in_np 1 --out_type fv --out_np 1'
     alg_opt='fv2fv_flx'
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'trfv2' ] || [ ${alg_typ} = 'trfvnp2' ] || [ ${alg_typ} = '' ]; then # alg_sng='trfv2'
+elif [ ${alg_typ} = 'trfv2' ] || [ ${alg_typ} = 'trfvnp2' ]; then # alg_sng='trfv2'
     cnv_opt_src="-B"
     cnv_opt_dst="-B"
     # 20231129: E3SMv3 recommended for fluxes when source grid resolution uniformly is _not_ >> target grid resolution (e.g., ne30pg2->r05), i.e., coarse->fine
