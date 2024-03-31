@@ -2,7 +2,11 @@
 
 	* NCO 5.2.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.3-alpha02: Grandparent Promotion';git push
-	git tag -a 5.2.3-alpha02 -m 'all: mss_val wrn; ncclimo: rgn_avg fix elm, hrz_dmn, hrz_arg';git push --tags
+	git tag -a 5.2.3-alpha02 -m 'all: mss_val wrn; ncclimo: rgn_avg	fix elm, hrz_dmn, hrz_arg, area_wgt';git push --tags
+
+	* ncclimo: Verify that ELM glb_avg is accurate
+
+	* ncclimo: automatically determine sgs_frc, area_wgt from prc_typ, now no var_xtr necessary for rgn_avg
 
 	* ncclimo: Simplify life--automatically determine hrz_dmn from area_nm, remove hrz_dmn input option
 
