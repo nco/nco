@@ -652,7 +652,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_rvr}Basic usage:\n"
     printf "${fnt_nrm} ${fnt_bld}${spt_nm} --map=map.nc in_fl out_fl${fnt_nrm} # Apply existing map from in->out\n"
     printf "${fnt_nrm} ${fnt_bld}${spt_nm} -d dst_fl in_fl out_fl${fnt_nrm} # Construct map in->dst, regrid to out\n"
-    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --destination=dst_fl --input_file=in_fl --output_file=out_fl${fnt_nrm} # As above, with long options\n\n"
+    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --destination=dst_fl --input_file=in_fl --output_file=out_fl${fnt_nrm} # Long options (NB: '='is REQUIRED)\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
     echo "${fnt_rvr}-3${fnt_nrm}          Output file format ${fmt_sng_nc3} [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
     echo "${fnt_rvr}-4${fnt_nrm}          Output file format ${fmt_sng_nc4} [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"

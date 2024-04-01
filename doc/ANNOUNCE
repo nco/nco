@@ -1,18 +1,18 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.2 kangeroo forward
+netCDF Operators NCO version 5.2.3 kangeroo forward
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.2.2 introduces a new operator, ncchecker, that checks
-dataset compliance with a small yet growing number of
-recommendations. ncclimo no longer omits time_bounds from ELM/CLM
-regional averages. No new features are implemented.
+Version 5.2.3 introduces ...
+ncclimo now automates the correct options for regional averages
+of timeseries of subgridscale fields (useful for ELM/CLM).)
+No major new features are implemented.
 Skip this release if these changes are not important to you.
 
-Work on NCO 5.2.3 has commenced and aims to add support for Zarr S3 
+Work on NCO 5.2.4 has commenced and aims to add support for Zarr S3 
 stores, and to enhance the vertical regridder.
 
 Enjoy,
@@ -20,41 +20,23 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. The new ncchecker command checks netCDF files for compliance with
-select best practices rules and recommendations from various data and
-metadata standards bodies. These include the Climate & Forecast (CF)
-Metadata Conventions and the NASA Dataset Interoperability Working Group
-(DIWG) recommendations. Only a small subset (six tests) of CF and
-DIWG recommendations are currently supported. The number of tests
-implemented, or, equivalently, of recommendations checked, is expected
-to grow. 
-
-ncchecker in1.nc in2.nc # Run all tests on two files
-ncchecker -v var1,var2 in1.nc # Check only two variables
-ncchecker *.nc # Glob input files via wildcard
-ls *.nc | ncchecker # Input files via stdin
-ncchecker --dbg=2 *.nc # Debug ncchecker
-ncchecker --tests=nan,mss *.nc # Select only two tests
-ncchecker --tests=xtn,tm,nan,mss,chr,bnd *.nc # Change test ordering
-ncchecker file:///Users/zender/in_zarr4#mode=nczarr,file # Check Zarr object(s)
-
-The output contains counts of the location and number of failed tests,
-or prints "SUCCESS" for tests with no failures.
-http://nco.sf.net/nco.html#ncchecker
+A. ncclimo automatically supports ELM/CLM regional averages.
+Previously, ncclimo required non-obvious options to correctly invoke
+regional averages of timeseries with sub-gridscale (SGS) fractions,
+like surface models often have. Now, when ncclimo is invoked with the
+surface model name as the processing type, e.g., ncclimo -P elm ...,
+the command internally selects the correct SGS field (landfrac, in
+this case) for weighting spatial averages. 
+ncclimo -P elm --split -v TBOT -s 1 -e 9 -o $out in*.nc
+ncclimo --sgs_frc=landfrac --split -v TBOT -s 1 -e 9 -o $out in*.nc
+http://nco.sf.net/nco.html#rgn_avg
 
 BUG FIXES:
    
-A. ncclimo fixes an error where it omitted the time_bounds variable
-from regional averages of ELM/CLM timeseries. The workaround is to
-manually append the variable. The solution is to upgrade. 
-ncclimo --split --rgn_avg -c $caseid -s 2000 -e 2024 ...
-
-B. ncremap fixes an error where it used the wrong option to
-mbtempest to invoke monotonicity. Instead of "--monotonicity"
-it used "--monotonic", which is unknown to mbtempest.
-The workaround is to supply the correct option with ncremap
---wgt_opt. The solution is to upgrade. Thanks to Walter Hannah of
-LLNL for reporting this mistake.
+A. ncclimo fixes an error where it would output, without warning,
+unvarying, time-constant timeseries regional averages.
+There is no workaround. The solution is to upgrade.
+Thanks to Sha Feng (PNNL) and Ryan Forsyth (LLNL) for reporting this.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

@@ -1,8 +1,16 @@
-2024-03-30  Charlie Zender  <zender@uci.edu>
+2024-04-01  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.2.3-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.2.3-alpha03: Stormy Saturday';git push
-	git tag -a 5.2.3-alpha03 -m '';git push --tags
+	* NCO 5.2.3 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.3: Cowboy Carter';git push
+	git tag -a 5.2.3 -m '';git push --tags
+
+	* NCO 5.2.3-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.3-beta01: Stormy Saturday';git push
+	git tag -a 5.2.3-beta01 -m 'ncclimo: rgn_avg fix elm, hrz_dmn, hrz_arg, area_wgt';git push --tags
+
+	* ncclimo/ncremap: Clarify that '=' is REQUIRED for long options
+
+2024-03-30  Charlie Zender  <zender@uci.edu>
 
 	* nco.texi: more documentation fixes/updates on supported/default regridding algorithms
 

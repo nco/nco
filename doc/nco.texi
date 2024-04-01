@@ -30726,6 +30726,7 @@ Large work-load testing
 @cindex Philip Cameron-Smith
 @cindex Martin Dix
 @cindex Mark Flanner
+@cindex Ryan Forsyth
 @cindex Chris Golaz
 @cindex Barron Henderson
 @cindex Ben Hillman
@@ -30751,7 +30752,8 @@ Large work-load testing
 @cindex George White
 @cindex Min Xu
 @cindex Remik Ziemlinski
-@item Xylar Asay-Davis, Sterling Baldwin, Dave Blodgett, Peter Caldwell, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Chris Golaz, Barron Henderson, Ben Hillman, Aleksandar Jelenak, Markus Liebig, Keith Lindsay, Daniel Macks, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Mark Taylor, Matthew Thompson, Qi Tang, Adrian Tompkins, Paul Ullrich, George White, Andrew Wittenberg, Min Xu, Remik Ziemlinski
+@cindex Jill Zhang
+@item Xylar Asay-Davis, Sterling Baldwin, Dave Blodgett, Peter Caldwell, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Ryan Forsyth, Chris Golaz, Barron Henderson, Ben Hillman, Aleksandar Jelenak, Markus Liebig, Keith Lindsay, Daniel Macks, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Mark Taylor, Matthew Thompson, Qi Tang, Adrian Tompkins, Paul Ullrich, George White, Andrew Wittenberg, Min Xu, Remik Ziemlinski, Jill Zhang
 Excellent bug reports and feature requests.
 @cindex Xylar Asay-Davis
 @cindex Filipe Fernandes
@@ -30808,11 +30810,12 @@ RHEL and CentOS build scripts and bug reports.
 @cindex Andrea Cimatoribus
 @item Andrea Cimatoribus
 @acronym{NCO} Spiral Logo
+@cindex Sha Feng
 @cindex Walter Hannah
 @cindex Martin Otte
 @cindex Etienne Tourigny
-@item Walter Hannah, Martin Otte, Etienne Tourigny
-Single bug reports and fixes
+@item Sha Feng, Walter Hannah, Martin Otte, Etienne Tourigny
+Miscellaneous bug reports and fixes
 @cindex Wenshan Wang
 @item Wenshan Wang
 @acronym{CMIP5} and @acronym{MODIS} processing documentation, reference card

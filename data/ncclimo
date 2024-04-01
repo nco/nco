@@ -598,8 +598,8 @@ yr_srt='1' # [yr] Start year
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
     printf "${fnt_rvr}Basic usage:\n${fnt_nrm}${fnt_bld}${spt_nm} -c caseid -s yr_srt -e yr_end -i drc_in -o drc_out -r rgr_map${fnt_nrm} # Generate & regrid climatology\n"
-    printf "${fnt_bld}${spt_nm} -v var_lst -s yr_srt -e yr_end -o drc_out -r rgr_map in1.nc in2.nc ... inN.nc${fnt_nrm} # Split, reshape, & regrid timeseries\n"
-    printf "${fnt_bld}${spt_nm} --case=caseid --start=yr_srt --end=yr_end --input=drc_in --output=drc_out --map=rgr_map${fnt_nrm} # Long options\n\n"
+    printf "${fnt_bld}${spt_nm} --split -v var_lst -s yr_srt -e yr_end -o drc_out -r rgr_map in1.nc in2.nc ... inN.nc${fnt_nrm} # Split, reshape, & regrid timeseries\n"
+    printf "${fnt_bld}${spt_nm} --case=caseid --start=yr_srt --end=yr_end --input=drc_in --output=drc_out --map=rgr_map${fnt_nrm} # Long options (NB: '=' is REQUIRED)\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
     echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic CDF1) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
     echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
