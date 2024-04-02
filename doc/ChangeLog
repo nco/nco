@@ -8,6 +8,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.3-beta01: Stormy Saturday';git push
 	git tag -a 5.2.3-beta01 -m 'ncclimo: rgn_avg fix elm, hrz_dmn, hrz_arg, area_wgt';git push --tags
 
+	* ncclimo: Add ppn_opt to ncks/ncap2 calls so operators find files when cwd != drc_in
+
 	* ncclimo/ncremap: Clarify that '=' is REQUIRED for long options
 
 2024-03-30  Charlie Zender  <zender@uci.edu>
