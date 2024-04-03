@@ -1,12 +1,14 @@
-2024-04-01  Charlie Zender  <zender@uci.edu>
+2024-04-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.3 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.3: Cowboy Carter';git push
-	git tag -a 5.2.3 -m '';git push --tags
+	git tag -a 5.2.3 -m 'all: mss_val wrn; ncclimo: rgn_avg fix elm, hrz_dmn, hrz_arg, area_wgt, ppn_opt; ncremap: upd doc';git push --tags
 
 	* NCO 5.2.3-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.3-beta01: Stormy Saturday';git push
-	git tag -a 5.2.3-beta01 -m 'ncclimo: rgn_avg fix elm, hrz_dmn, hrz_arg, area_wgt';git push --tags
+	git tag -a 5.2.3-beta01 -m 'all: mss_val wrn; ncclimo: rgn_avg fix elm, hrz_dmn, hrz_arg, area_wgt, ppn_opt; ncremap: upd doc';git push --tags
+
+2024-04-01  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo: Add ppn_opt to ncks/ncap2 calls so operators find files when cwd != drc_in
 
