@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.3 kangeroo forward
+netCDF Operators NCO version 5.2.3 paddle imua
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
@@ -9,6 +9,7 @@ What's new?
 Version 5.2.3 introduces ...
 ncclimo now automates the correct options for regional averages
 of timeseries of subgridscale fields (useful for ELM/CLM).)
+Other fixes to ncclimo splitter behavior are included.
 No major new features are implemented.
 Skip this release if these changes are not important to you.
 
@@ -50,7 +51,8 @@ http://nco.sf.net/nco.html#alg_typ
 BUG FIXES:
    
 A. ncclimo fixes an error where it would output, without warning,
-unvarying, time-constant timeseries regional averages.
+unvarying, time-constant timeseries regional averages for ELM.
+Those averages are incorrect, and they should vary with time.
 There is no workaround. The solution is to upgrade.
 Thanks to Sha Feng (PNNL) and Ryan Forsyth (LLNL) for reporting this.
 
@@ -67,7 +69,7 @@ KNOWN PROBLEMS DUE TO NCO:
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
 These problems occur with NCO 5.2.0 built/tested under
-MacOS 14.2.1 with netCDF 4.9.3-dev on HDF5 1.14.3 and with
+MacOS 14.4.1 with netCDF 4.9.3-dev on HDF5 1.14.3 and with
 Linux FC38 with netCDF 4.9.2 on HDF5 1.14.1.
 
 A. NOT YET FIXED (NCO problem)
