@@ -2304,11 +2304,12 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    # https://docs.nersc.gov/jobs/examples/#multiple-parallel-jobs-while-sharing-nodes
 		    # These options are only expected to work on NERSC Cori
 		    # craynetwork:0 (instead of, e.g., :1) allows any number of MPI jobs to run
+		    # 20240406 Deprecate --gres=craynetwork:0 since not available on Perlmutter, and keep --mem option
 		    # Argument to --mem is requested number of MB RAM per job so 96 GB Cori node with 4 MPI processes can use ~20000 MB RAM per job, and, I think, jobs in excess of that will queue until more RAM becomes available as old jobs finish
 		    # 20210319: --zonesort=off tested by me does eliminate zonesort messages like these:
 		    # slurmstepd: error: Detected zonesort setup failure: zonesort interface write failure (40558186.7)
 		    # However, using zonesort option appears to slow-down throughput considerably
-		    cmd_mpi[${fl_idx}]="${cmd_mpi[${fl_idx}]} --gres=craynetwork:0 --mem=${mem_mb}" ; ;; # SLURM    
+		    cmd_mpi[${fl_idx}]="${cmd_mpi[${fl_idx}]} --mem=${mem_mb}" ; ;; # SLURM    
 		    # cmd_mpi[${fl_idx}]="${cmd_mpi[${fl_idx}]} --nodes=1 --gres=craynetwork:0 --mem=${mem_mb} --zonesort=off" ; ;; # SLURM
 	    esac # !HOSTNAME
 	done # !fl_idx
