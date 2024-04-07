@@ -2100,10 +2100,10 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
       /* Write PPC attribute
 	 20240130: Original quantize metadata implementation, superceded by nco_qnt_mtd() below
-	 This block can be deleted on CF finalizes support for new lossy compression metadata
+	 This block can be deleted if/when CF finalizes support for new lossy compression metadata
 	 However, deleting this block will cause ~six regression tests to fail 
-	 Would need to re-write those tests to work for CF metadata
-	 Also would need to revamp documentation */
+	 Must first re-write those tests to work for CF metadata
+	 Also will need to revamp documentation */
       if(var_trv.ppc != NC_MAX_INT){
 	aed_sct aed_ppc;
 	char att_nm_dsd[]="least_significant_digit";

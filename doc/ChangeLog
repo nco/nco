@@ -1,3 +1,11 @@
+2024-04-07  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.2.4-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.4-alpha02: Goat Cheese Hamburguesa';git push
+	git tag -a 5.2.4-alpha02 -m 'ncclimo: tm_bnds err dgn';git push --tags
+
+	* ncclimo add sanity check to inferred value of tm_bnds. Print meaningful error and workaround then exit.
+
 2024-04-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.4-alpha01 release procedure:
