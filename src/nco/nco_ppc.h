@@ -27,6 +27,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_flt.h" /* Compression filters, nco_qnt_mtd() */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_mta.h" /* Multi-argument parsing */
 #include "nco_sng_utl.h" /* String utilities */
@@ -82,7 +83,9 @@ extern "C" {
 
   void
   nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
-  (const int nsd, /* I [nbr] Number of significant digits, i.e., arithmetic precision */
+  (const int nc_out_id, /* I [id] Output netCDF file ID */
+   const int var_out_id, /* I [id] Variable ID in output file */
+   const int nsd, /* I [nbr] Number of significant digits, i.e., arithmetic precision */
    const nc_type type, /* I [enm] netCDF type of operand */
    const long sz, /* I [nbr] Size (in elements) of operand */
    const int has_mss_val, /* I [flg] Flag for missing values */

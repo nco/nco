@@ -121,14 +121,14 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   if(dmn_nbr == 0){
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
     if(flg_ppc){
-      if(flg_nsd) (void)nco_ppc_bitmask(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_ppc_around(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+      if(flg_nsd) (void)nco_ppc_bitmask(out_id,var_out_id,ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_ppc_around(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
     } /* !PPC */
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
   }else{ /* end if variable is scalar */
     if(var_sz > 0){ /* Allow for zero-size record variables */
       nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       if(flg_ppc){
-	if(flg_nsd) (void)nco_ppc_bitmask(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_ppc_around(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+	if(flg_nsd) (void)nco_ppc_bitmask(out_id,var_out_id,ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_ppc_around(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
       } /* !PPC */
       if(flg_xcp) nco_xcp_prc(var_nm,var_typ,var_sz,(char *)void_ptr);
       nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
@@ -452,7 +452,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       if(var_sz > 0){ /* Allow for zero-size record variables */
         rcd+=nco_get_vara(var_lst[var_idx]->grp_id_in,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
 	if(flg_ppc){
-	  if(flg_nsd) (void)nco_ppc_bitmask(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_ppc_around(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
+ 	  if(flg_nsd) (void)nco_ppc_bitmask(var_lst[var_idx]->grp_id_out,var_out_id,ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val); else (void)nco_ppc_around(ppc,var_out.type,var_out.sz,var_out.has_mss_val,var_out.mss_val,var_out.val);
 	} /* !PPC */
 	if(nco_is_xcp(var_lst[var_idx]->nm)) nco_xcp_prc(var_lst[var_idx]->nm,var_typ,var_sz,(char *)void_ptr);
         rcd+=nco_put_vara(var_lst[var_idx]->grp_id_out,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);

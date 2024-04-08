@@ -8,7 +8,7 @@
    3-Clause BSD License with exceptions described in the LICENSE file */
 
 /* Usage:
-   #include "nco_flt.h" *//* Compression filters */
+   #include "nco_flt.h" *//* Compression filters, nco_qnt_mtd() */
 
 #ifndef NCO_FLT_H
 #define NCO_FLT_H

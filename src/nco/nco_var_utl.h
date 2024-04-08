@@ -34,7 +34,7 @@
 #include "nco_bnr.h" /* Binary file utilities */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_dmn_utl.h" /* Dimension utilities */
-#include "nco_flt.h" /* Compression filters */
+#include "nco_flt.h" /* Compression filters, nco_qnt_mtd() */
 #include "nco_grp_trv.h" /* Group traversal */
 #include "nco_md5.h" /* MD5 digests */
 #include "nco_mmr.h" /* Memory management */

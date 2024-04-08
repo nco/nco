@@ -541,7 +541,9 @@ nco_ppc_around /* [fnc] Replace op1 values by their values rounded to decimal pr
 
 void
 nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
-(const int nsd, /* I [nbr] Number of significant digits, i.e., arithmetic precision */
+(const int nc_out_id, /* I [id] Output netCDF file ID */
+ const int var_out_id, /* I [id] Variable ID in output file */
+ const int nsd, /* I [nbr] Number of significant digits, i.e., arithmetic precision */
  const nc_type type, /* I [enm] netCDF type of operand */
  const long sz, /* I [nbr] Size (in elements) of operand */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -551,8 +553,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Threads: Routine is thread safe and calls no unsafe routines */
 
   /* Purpose: Implement NCO NSD PPC algorithm (BitGroom) from Zen16 by masking-out insignificant bits of op1 values
-     Also performs all other bitmasking algorithms, including BitRound, Granular BitGroom, BitSet, BitShave, ... */
-  
+     Also performs all other bitmasking algorithms, including BitRound, Granular BitGroom, BitSet, BitShave, ... 
+     As of 20240408 (total solar eclipse day!), also calls nco_qnt_mtd() to write CF-compliant lossy metadata */
+
   /* Bitmask is currently defined as op1:=bitmask(op1,ppc) */  
   
   /* This routine implements the BitGrooming Number of Significant Digits (NSD) algorithm
@@ -1261,7 +1264,35 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     nco_dfl_case_nc_type_err();
     break;
   } /* !type */
-  
+
+  /* 20240408 Write CF-compliant metadata for all variables that were lossily transformed
+     This switch() is a bit redundant since function has already returned for non-floating-point types 
+     And for float point types with invalid quantization levels, for that matter 
+     Thus if this following switch() is reached at all, then losssy metadata should be written
+     This is the only place where the output variable IDs are used
+     To keep things simple, we pass nsd to the nco_qnt_mtd() routine
+     Whether GTT nsd refers to either NSD or NSB depends on the algorithm
+     Careful readers and nco_qnt_mtd() know how to determine that */
+  switch(type){
+  case NC_FLOAT: 
+  case NC_DOUBLE: 
+    (void)nco_qnt_mtd(nc_out_id,var_out_id,nco_baa_cnv_typ,(nco_flt_typ_enm)0,nsd);
+  break;
+  case NC_INT: /* Do nothing for non-floating point types ...*/
+  case NC_SHORT:
+  case NC_CHAR:
+  case NC_BYTE:
+  case NC_UBYTE:
+  case NC_USHORT:
+  case NC_UINT:
+  case NC_INT64:
+  case NC_UINT64:
+  case NC_STRING: break;
+  default: 
+    nco_dfl_case_nc_type_err();
+    break;
+  } /* !type */
+
   /* 20150126: fxm casting pointers is tricky with this routine. Avoid for now. */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */

@@ -1618,7 +1618,15 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
   } /* !rcd */
   /* Does container variable already exist? */
   rcd=nco_inq_varid_flg(nc_id,var_cnt_nm,&var_cnt_id);
-  if(rcd != NC_NOERR){
+  if(rcd == NC_NOERR){
+    /* If container variable already exists, nothing more to do
+       Unless existing container variable is for different algorithm 
+       Note that NCO can only handle writing one algorithm type per-invocation
+       Hence we consider having an existing container for a different algorithm to be a corner case 
+       We do not yet support changing the container name for a second algorith type (e.g., "compression_info2")
+       However, this is something to consider for the future */
+    ;
+  }else if(rcd != NC_NOERR){
     aed_sct aed_cnt_alg;
     aed_sct aed_cnt_fml;
     aed_sct aed_cnt_mpl;

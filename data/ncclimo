@@ -1154,7 +1154,7 @@ fi # !fml_nm
 # 1) Use --split flag. 2) Select clm_md=hfs. 3) Set ypf_max.
 # NB: clm_md='mth' indicates only the averaging period of a single input file
 # clm_md='mth' is true for both monthly splitter and monthly climo :(
-# Rest of code relies on mutually exclusive clm_flg to compute climo and tms_flg to invoke splitter
+# Rest of code relies on (mutually exclusive) clm_flg to compute climo and tms_flg to invoke splitter
 if [ "${tms_flg}" = 'Yes' ] || [ "${clm_md}" = 'hfs' ] || [ -n "${ypf_max_usr}" ]; then
     tms_flg='Yes'
     clm_flg='No'

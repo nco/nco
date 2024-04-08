@@ -4712,7 +4712,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
       } /* !nco_op_typ */
 
       if(trv_1->ppc != NC_MAX_INT){
-	if(trv_1->flg_nsd) (void)nco_ppc_bitmask(trv_1->ppc,var_prc_1->type,var_prc_out->sz,var_prc_out->has_mss_val,var_prc_out->mss_val,var_prc_1->val); else (void)nco_ppc_around(trv_1->ppc,var_prc_1->type,var_prc_out->sz,var_prc_out->has_mss_val,var_prc_out->mss_val,var_prc_1->val);
+	if(trv_1->flg_nsd) (void)nco_ppc_bitmask(grp_out_id,var_prc_out->id,trv_1->ppc,var_prc_1->type,var_prc_out->sz,var_prc_out->has_mss_val,var_prc_out->mss_val,var_prc_1->val); else (void)nco_ppc_around(trv_1->ppc,var_prc_1->type,var_prc_out->sz,var_prc_out->has_mss_val,var_prc_out->mss_val,var_prc_1->val);
       } /* !ppc */
       if(nco_is_xcp(trv_1->nm)) nco_xcp_prc(trv_1->nm,var_prc_1->type,var_prc_out->sz,(char *)var_prc_1->val.vp);
 
