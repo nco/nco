@@ -2,7 +2,9 @@
 
 	* NCO 5.2.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.4-alpha03: Seminario';git push
-	git tag -a 5.2.4-alpha03 -m '';git push --tags
+	git tag -a 5.2.4-alpha03 -m 'all: --qnt; ncclimo: dbg';git push --tags
+
+	* all: Add --qnt as synonym for --ppc, --quantize
 
 	* ncclimo: Add DEBUG output for issue of Tony B.
 

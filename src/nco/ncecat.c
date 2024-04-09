@@ -311,9 +311,10 @@ main(int argc,char **argv)
     {"header_pad",required_argument,0,0},
     {"log_lvl",required_argument,0,0}, /* [enm] netCDF library debugging verbosity [0..5] */
     {"log_level",required_argument,0,0}, /* [enm] netCDF library debugging verbosity [0..5] */
-    {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
-    {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
-    {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+    {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
+    {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
+    {"qnt",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
+    {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
     /* Long options with short counterparts */
     {"3",no_argument,0,'3'},
     {"4",no_argument,0,'4'},
@@ -471,7 +472,7 @@ main(int argc,char **argv)
       } /* endif "md5_dgs" */
       if(!strcmp(opt_crr,"mrd") || !strcmp(opt_crr,"multiple_record_dimension")) nco_mrd_cnv=nco_mrd_allow; /* [enm] Multiple Record Dimension convention */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")){
+      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"qnt") || !strcmp(opt_crr,"quantize")){
         ppc_arg[ppc_nbr]=(char *)strdup(optarg);
         ppc_nbr++;
       } /* endif "ppc" */

@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.4-alpha02
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 6 April 2024
+@set update-date 9 April 2024
 @set update-month April 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9463,6 +9463,7 @@ variables.
 @cindex @code{--ppc}
 @cindex @code{--precision_preserving_compression}
 @cindex @code{--quantize}
+@cindex @code{--qnt}
 @cindex lossy compression
 @cindex quantization
 @cindex rounding
@@ -9476,6 +9477,7 @@ Availability: @command{ncbo}, @command{ncecat}, @command{nces},
 Short options: None@*
 Long options: @samp{--ppc @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
 @samp{--precision_preserving_compression @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
+@samp{--qnt @var{var1}[,@var{var2}[,...]]=@var{prc}}@*
 @samp{--quantize @var{var1}[,@var{var2}[,...]]=@var{prc}}@*
 @samp{--cmp cmp_sng}@*
 @samp{--cmp @var{codec1}[,@var{params1}[|@var{codec2}[,@var{params2}[|...]]]]}@*
@@ -10158,14 +10160,15 @@ Users may wish to express the precision to be preserved as either
 @acronym{NSD} or @acronym{DSD}.
 Invoke @acronym{PPC} with the long option @samp{--ppc var=prc}, or give
 the same arguments to the synonyms
-@samp{--precision_preserving_compression}, or to @samp{--quantize}. 
+@samp{--precision_preserving_compression}, @samp{--qnt}, or
+@samp{--quantize}.
 Here @var{var} is the variable to quantize, and @var{prc} is its
 precision.
 @cindex indicator option
 @cindex multi-arguments
 The option @samp{--ppc} (and its long option equivalents such
-as @samp{--quantize}) indicates the argument syntax will be
-@var{key}=@var{val}.
+as @samp{--qnt} and @samp{--quantize}) indicates the argument syntax
+will be @var{key}=@var{val}.
 As such, @samp{--ppc} and its synonyms are indicator options that accept
 arguments supplied one-by-one like 
 @samp{--ppc @var{key1}=@var{val1} --ppc @var{key2}=@var{val2}}, or
@@ -20228,8 +20231,9 @@ See discussion below under Memory Considerations.
 @cindex @code{--ppc}
 @cindex @code{--ppc_prc}
 @cindex @code{--precision}
+@cindex @code{--qnt}
 @cindex @code{--quantize}
-@item --ppc=@var{ppc_prc} (@code{--ppc}, @code{--ppc_prc}, @code{--precision}, @code{--quantize})
+@item --ppc=@var{ppc_prc} (@code{--ppc}, @code{--ppc_prc}, @code{--precision}, @code{--qnt}, @code{--quantize})
 @cindex Decimal Significant Digits
 @cindex Number of Significant Digits
 @cindex Bit-Grooming

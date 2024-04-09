@@ -507,9 +507,10 @@ main(int argc,char **argv)
     {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
     {"mta_dlm",required_argument,0,0}, /* [sng] Multi-argument delimiter */
     {"dlm_mta",required_argument,0,0}, /* [sng] Multi-argument delimiter */
-    {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
-    {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
-    {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+    {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
+    {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
+    {"qnt",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
+    {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
     {"rgr",required_argument,0,0}, /* [sng] Regridding */
     {"regridding",required_argument,0,0}, /* [sng] Regridding */
     {"rgr_in",required_argument,0,0}, /* [sng] File containing fields to be regridded */
@@ -817,7 +818,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
       if(!strcmp(opt_crr,"no_nm_prn") || !strcmp(opt_crr,"no_dmn_var_nm")) PRN_DMN_VAR_NM=False; /* endif "no_nm_prn" */
       if(!strcmp(opt_crr,"ntm") || !strcmp(opt_crr,"nonatomic") || !strcmp(opt_crr,"udt") || !strcmp(opt_crr,"user_defined_types")) PRN_UDT=True; /* [flg] Print non-atomic variables */
-      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")) ppc_arg[ppc_nbr++]=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"qnt") || !strcmp(opt_crr,"quantize")) ppc_arg[ppc_nbr++]=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True;
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Create (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Open (netCDF3) file(s) in RAM */

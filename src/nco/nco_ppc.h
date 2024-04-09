@@ -74,7 +74,7 @@ extern "C" {
 
   void
   nco_ppc_around /* [fnc] Replace op1 values by their values rounded to decimal precision prc */
-  (const int prc, /* I [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+  (const int prc, /* I [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
    const nc_type type, /* I [enm] netCDF type of operand */
    const long sz, /* I [nbr] Size (in elements) of operand */
    const int has_mss_val, /* I [flg] Flag for missing values */

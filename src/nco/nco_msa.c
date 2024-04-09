@@ -1401,7 +1401,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
   /* Write */
   if(flg_write){
-    int ppc; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+    int ppc; /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
     nco_bool flg_nsd; /* [flg] PPC algorithm is NSD */
     ppc=var_trv->ppc;
     flg_nsd=var_trv->flg_nsd;

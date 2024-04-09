@@ -1101,9 +1101,9 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-i var,val]")) (void)fprintf(stdout,"-i, --ntp, interpolate var,val\tInterpolant and value\n");
   if(strstr(opt_sng,"[-I]")) (void)fprintf(stdout,"-I, --wgt_msk_crd_var\tDo not weight or mask coordinate variables\n");
   if(strstr(opt_sng,"--jsn")) (void)fprintf(stdout,"    --jsn, json\tPrint JSON (JavaScript Object Notation)\n");
-  if(strstr(opt_sng,"--jsn_fmt lvl")) (void)fprintf(stdout,"    --jsn_fmt lvl\tVerbosity of JSON format [0 = least verbose, 2 = most pedantic, add 4 to remove brackets]\n");
+  if(strstr(opt_sng,"--jsn_fmt lvl")) (void)fprintf(stdout,"    --jsn_fmt lvl\tJSON verbosity [0 = least, 2 = most, +4 removes brackets]\n");
 #ifdef ENABLE_NETCDF4
-  if(strstr(opt_sng,"[-L")) (void)fprintf(stdout,"-L, --dfl_lvl, deflate lvl\tLempel-Ziv deflation/compression (lvl=0..9) for netCDF4 output\n");
+  if(strstr(opt_sng,"[-L")) (void)fprintf(stdout,"-L, --dfl_lvl, deflate lvl\tLempel-Ziv deflation/compression (lvl=0..9) for netCDF4\n");
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-l")) (void)fprintf(stdout,"-l, --lcl, local path\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"[-M")){
@@ -1116,7 +1116,7 @@ nco_usg_prn(void)
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-m, --msk_nm, msk_var, mask-variable, mask_variable mask_var\tMasking variable name\n");
     if(prg_lcl == ncks) (void)fprintf(stdout,"-m, --mtd, metadata\tToggle printing variable metadata\n");
   } /* end if */
-  if(strstr(opt_sng,"--map")) (void)fprintf(stdout,"    --map, rgr_map map.nc\tFile containing (ESMF- or SCRIP-format) weights to regrid input to output grid\n");
+  if(strstr(opt_sng,"--map")) (void)fprintf(stdout,"    --map, rgr_map map.nc\tRegridding weights\n");
   if(strstr(opt_sng,"--md5_dgs")) (void)fprintf(stdout,"    --md5_dgs, md5_digest\tPerform MD5 digests\n");
   if(strstr(opt_sng,"--md5_wrt")) (void)fprintf(stdout,"    --md5_wrt, md5_write\tWrite MD5 digests as attributes\n");
   if(strstr(opt_sng,"--mk_rec_dmn")) (void)fprintf(stdout,"    --mk_rec_dmn dim\tDefine dim as record dimension in output file\n");
@@ -1129,7 +1129,7 @@ nco_usg_prn(void)
   } /* !-N */
   if(strstr(opt_sng,"[-n ...]")){
     /*    if(prg_lcl == ncwa) (void)fprintf(stdout,"-n\t\tNormalize by tally but not weight\n");*/
-    if(prg_lcl != ncwa) (void)fprintf(stdout,"-n, --nintap nbr_files,[nbr_numeric_chars[,increment]] NINTAP-style abbreviation of file list\n");
+    if(prg_lcl != ncwa) (void)fprintf(stdout,"-n, --nintap nbr_files,[nbr_numeric_chars[,increment]] NINTAP-style file list abbrev.\n");
   } /* !-n */
   if(strstr(opt_sng,"--no_blank")) (void)fprintf(stdout,"    --no_blank\t\tPrint numeric missing values instead of blanks (underscores)\n");
   if(strstr(opt_sng,"--no_cll_msr")) (void)fprintf(stdout,"    --no_cll_msr\tDo not extract cell_measures variables\n");
@@ -1142,11 +1142,11 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-O]")) (void)fprintf(stdout,"-O, --ovr, overwrite\tOverwrite existing output file, if any\n");
   if(strstr(opt_sng,"[-o")) (void)fprintf(stdout,"-o, --output, fl_out \tOutput file name (or use last positional argument)\n");
   if(strstr(opt_sng,"[-P")){
-    if(prg_lcl == ncks) (void)fprintf(stdout,"-P, --prn, print\tPrint data, metadata, and units. Abbreviation for -C -H -M -m -u.\n");
+    if(prg_lcl == ncks) (void)fprintf(stdout,"-P, --prn, print\tPrint data, metadata, and units. Abbrev. for -C -H -M -m -u.\n");
     if(prg_lcl == ncpdq) (void)fprintf(stdout,"-P, --pck_plc, pack_policy pck_plc\tPacking policy [all_new,all_xst,xst_new,upk]\n");
   } /* end if -P */
   if(strstr(opt_sng,"[-p")) (void)fprintf(stdout,"-p, --pth, path path\tPath prefix for all input filenames\n");
-  if(strstr(opt_sng,"--ppc")) (void)fprintf(stdout,"    --ppc v1[,v2[,...]]=prc\tPrecision-Preserving Compression: Number of total or decimal significant digits\n");
+  if(strstr(opt_sng,"--ppc")) (void)fprintf(stdout,"    --ppc v1[,v2[,...]]=prc\tPrecision-Preserving Compression: number of sig. digits/bits\n");
   if(strstr(opt_sng,"--prm_int")) (void)fprintf(stdout,"    --prm_int, prm_ntg\tPromote integers to floating-point in output\n");
   if(strstr(opt_sng,"--prw")) (void)fprintf(stdout,"    --prw, per_recor...\tPer-Record Weights\n");
   if(strstr(opt_sng,"[-Q]")) (void)fprintf(stdout,"-Q, --quiet\t\tQuiet printing of dimension indices and coordinate values\n");

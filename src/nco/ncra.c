@@ -421,9 +421,10 @@ main(int argc,char **argv)
     {"interleave_srd",required_argument,0,0}, /* [flg] Interleave stride */
     {"log_lvl",required_argument,0,0}, /* [enm] netCDF library debugging verbosity [0..5] */
     {"log_level",required_argument,0,0}, /* [enm] netCDF library debugging verbosity [0..5] */
-    {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
-    {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
-    {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+    {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
+    {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
+    {"qnt",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
+    {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
     {"nsm_sfx",required_argument,0,0},
     {"ensemble_suffix",required_argument,0,0},
     /* Long options with short counterparts */
@@ -626,7 +627,7 @@ main(int argc,char **argv)
       } /* endif nsm_grp */
       if(!strcmp(opt_crr,"nsm_sfx") || !strcmp(opt_crr,"ensemble_suffix")) nsm_sfx=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"per_record_weights") || !strcmp(opt_crr,"prw")) flg_wgt_by_rec_not_by_fl=True; /* [flg] Weight each record (not file) by command-line numeric weights, if any */
-      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")){
+      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"qnt") || !strcmp(opt_crr,"quantize")){
         ppc_arg[ppc_nbr]=(char *)strdup(optarg);
         ppc_nbr++;
       } /* endif "ppc" */

@@ -84,7 +84,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
 
   /* 20150114: Keep PPC code in single block for easier reuse */
-  int ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+  int ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
   nco_bool flg_ppc=False; /* [flg] Activate PPC with this variable and output file */
   nco_bool flg_nsd; /* [flg] PPC algorithm is NSD */
   var_sct var_out; /* [sct] Variable structure */
@@ -418,7 +418,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
 
       /* 20150114: Keep PPC code in single block for easier reuse */
-      int ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+      int ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
       nco_bool flg_ppc=False; /* [sct] Activate PPC with this variable and output file */
       nco_bool flg_nsd; /* [flg] PPC algorithm is NSD */
       var_sct var_out; /* [sct] Variable structure */

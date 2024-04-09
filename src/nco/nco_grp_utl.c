@@ -3188,7 +3188,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].nbr_rec=nbr_rec;              /* [nbr] Number of record dimensions */
   trv_tbl->lst[idx].nbr_typ=nbr_typ;              /* [nbr] Number of types (for group) */
   trv_tbl->lst[idx].nbr_var=nbr_var;              /* [nbr] Number of variables (for group) */
-  trv_tbl->lst[idx].ppc=NC_MAX_INT;               /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+  trv_tbl->lst[idx].ppc=NC_MAX_INT;               /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
   trv_tbl->lst[idx].flg_nsd=True;                 /* [flg] PPC is NSD */
 
   trv_tbl->lst[idx].is_crd_lk_var=nco_obj_typ_err; /* [flg] Is a coordinate-like variable (same as var_sct is_crd_var: crd, 2D, bounds...) */
@@ -3308,7 +3308,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
     trv_tbl->lst[idx].nbr_typ=nco_obj_typ_err; /* NB: Could eventually be number of user-defined types in variable */
     trv_tbl->lst[idx].nbr_var=nco_obj_typ_err;
-    trv_tbl->lst[idx].ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
+    trv_tbl->lst[idx].ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
     trv_tbl->lst[idx].flg_nsd=True; /* [flg] PPC is NSD */
     
     trv_tbl->lst[idx].is_crd_lk_var=False;             
