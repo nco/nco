@@ -1482,6 +1482,9 @@ if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
 	tm_var='time'
 	# 20240407 This step appears to cause failure experienced by Tony B. in https://acmeclimate.slack.com/archives/C02LCQ38YV8/p1712345304709289?thread_ts=1711642857.535499&cid=C02LCQ38YV8
 	# Hypothesis is that tm_bnds evaluates to empty string, then use of empty tm_bnds in following ncks command causes "-d" to be interpreted as variable name and  "time,0" to be interpreted as filename
+	# 20240408 Hypothesis confirmed. Following command results in ncks WARNING "nco_fl_lst_stdin() tried and failed to get input filename(s) from stdin"
+	echo "DEBUG: quark remove me"
+	echo "DEBUG: tm_var=${tm_var}, ppn_opt=${ppn_opt}, fl_in[0]=${fl_in[0]}"
 	tm_bnds=`ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
 	if [ -z "${tm_bnds}" ]; then
 	    printf "${spt_nm}: ERROR High-frequency mode needs but failed find bounds variable for record coordinate named \"${time}\". CF requires bounds variable to be specified as value of \"bounds\" attribute of coordinate. Typically record bounds variable is named \"time_bnds\" or \"time_bounds\".\nHINT: A workaround to this is to explicitly specify the number of timesteps-per-day in every input file with the --tpd option.\n"
