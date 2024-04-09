@@ -1,5 +1,9 @@
 2024-04-09  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.4-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.4-alpha03: Seminario';git push
+	git tag -a 5.2.4-alpha03 -m '';git push --tags
+
 	* NCO 5.2.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.4-alpha02: Goat Cheese Hamburguesa';git push
 	git tag -a 5.2.4-alpha02 -m 'all: NCO client nco_qnt_mtd(); ncclimo: tm_bnds err dgn';git push --tags
