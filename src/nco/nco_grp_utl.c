@@ -2144,7 +2144,10 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 	  aed_ppc.sz=1L;
 	  aed_ppc.type=NC_INT;
 	  aed_ppc.mode=aed_create;
-	  (void)nco_aed_prc(grp_out_id,var_out_id,aed_ppc);
+	  /* 20240409 As of today, only write "old" (libnetcdf-emulating) attributes for DSD method
+	     Rely on CF convention for all quantization algorithms because...it's cooler
+	     ...And rounding is not the same as quantization, so that could/should be a new CF "family" */
+	  if(aed_ppc.att_nm == att_nm_dsd) (void)nco_aed_prc(grp_out_id,var_out_id,aed_ppc);
 	}else{
 	  if(aed_ppc.sz == 1L && aed_ppc.type == NC_INT){
 	    /* Conforming PPC attribute already exists, only replace with new value if rounder */

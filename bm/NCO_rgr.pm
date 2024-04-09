@@ -2844,12 +2844,15 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 #ncks #101
 # Test attribute writing for NSD compression 
+# 20240409 Change from old (libnetCDF-emulating) notation to new CF convention by searching for lossy_compression_nsd in attribute 4 instead of QuantizeBitGroomNumberOfSignificantDigits in attribute 3
 # ncks -4 -O -C --baa=0 -v ppc_dbl --ppc ppc_dbl=3 ~/nco/data/in.nc ~/foo.nc
 # ncks -m --trd -v ppc_dbl ~/foo.nc
     $dsc_sng="Test attribute writing for NSD compression";
     $tst_cmd[0]="ncks -O $nco_D_flg -4 -C --baa=0 -v ppc_dbl --ppc ppc_dbl=3 $in_pth_arg in.nc %tmp_fl_00";
-    $tst_cmd[1]="ncks -m --trd -v ppc_dbl %tmp_fl_00 | grep 'QuantizeBitGroomNumberOfSignificantDigits'";
-    $tst_cmd[2]="ppc_dbl attribute 3: QuantizeBitGroomNumberOfSignificantDigits, size = 1 NC_INT, value = 3";
+#    $tst_cmd[1]="ncks -m --trd -v ppc_dbl %tmp_fl_00 | grep 'QuantizeBitGroomNumberOfSignificantDigits'";
+    $tst_cmd[1]="ncks -m --trd -v ppc_dbl %tmp_fl_00 | grep 'lossy_compression_nsd'";
+#    $tst_cmd[2]="ppc_dbl attribute 3: lossy_compression_nsd, size = 1 NC_INT, value = 3";
+    $tst_cmd[2]="ppc_dbl attribute 4: lossy_compression_nsd, size = 1 NC_INT, value = 3";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
@@ -2874,8 +2877,8 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $dsc_sng="Test NSD attribute does not overwrite pre-existing rounder values";
     $tst_cmd[0]="ncks -O $nco_D_flg -4 -C --baa=0 -v ppc_dbl,ppc_big --ppc .?=4 --ppc ppc_big=3 $in_pth_arg in.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -O $nco_D_flg -4 -C --baa=0 -v ppc_dbl,ppc_big --ppc ppc_big,ppc_dbl=4 %tmp_fl_00 %tmp_fl_01";
-    $tst_cmd[2]="ncks -m --trd -v ppc_big %tmp_fl_01 | grep 'QuantizeBitGroomNumberOfSignificantDigits'";
-    $tst_cmd[3]="ppc_big attribute 3: QuantizeBitGroomNumberOfSignificantDigits, size = 1 NC_INT, value = 3";
+    $tst_cmd[2]="ncks -m --trd -v ppc_big %tmp_fl_01 | grep 'lossy_compression_nsd'";
+    $tst_cmd[3]="ppc_big attribute 4: lossy_compression_nsd, size = 1 NC_INT, value = 3";
     $tst_cmd[4]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
@@ -2888,8 +2891,8 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $dsc_sng="Test NSD attribute does overwrite pre-existing sharper values";
     $tst_cmd[0]="ncks -O $nco_D_flg -4 -C --baa=0 -v ppc_dbl,ppc_big --ppc .?=4 --ppc ppc_big=4 $in_pth_arg in.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -O $nco_D_flg -4 -C --baa=0 -v ppc_dbl,ppc_big --ppc ppc_big,ppc_dbl=3 %tmp_fl_00 %tmp_fl_01";
-    $tst_cmd[2]="ncks -m --trd -v ppc_dbl %tmp_fl_01 | grep 'QuantizeBitGroomNumberOfSignificantDigits'";
-    $tst_cmd[3]="ppc_dbl attribute 3: QuantizeBitGroomNumberOfSignificantDigits, size = 1 NC_INT, value = 3";
+    $tst_cmd[2]="ncks -m --trd -v ppc_dbl %tmp_fl_01 | grep 'lossy_compression_nsd'";
+    $tst_cmd[3]="ppc_dbl attribute 4: lossy_compression_nsd, size = 1 NC_INT, value = 3";
     $tst_cmd[4]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
