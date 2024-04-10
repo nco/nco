@@ -1,10 +1,14 @@
 2024-04-10  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.4-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.4-beta01: Seminario';git push
+	git tag -a 5.2.4-beta01 -m 'all: --qnt, NCO client nco_qnt_mtd(); ncclimo/ncremap: dbg';git push --tags
+
 	* NCO 5.2.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.4-alpha03: Seminario';git push
 	git tag -a 5.2.4-alpha03 -m 'all: --qnt; ncclimo/ncremap: dbg';git push --tags
 
-	* ncclimo/ncremap: Print IMPORTANT notice about DEBUGGING run when dbg_lvel >= 2
+	* ncclimo/ncremap: Print IMPORTANT notice about SIMULATION vs. PRODUCTION run when dbg_lvel >= 2
 
 	* ncclimo: Add sanity check that fl_nbr > 0
 
