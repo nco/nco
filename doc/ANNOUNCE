@@ -1,19 +1,18 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.3 paddle imua
+netCDF Operators NCO version 5.2.4 tip the spear
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.2.3 introduces ...
-ncclimo now automates the correct options for regional averages
-of timeseries of subgridscale fields (useful for ELM/CLM).)
-Other fixes to ncclimo splitter behavior are included.
+Version 5.2.4 fully implements the CF lossy metadata convention
+for its own internal quantization algorithms (of which there are
+eight!), improves ncclimo diagnostics, fxm.
 No major new features are implemented.
 Skip this release if these changes are not important to you.
 
-Work on NCO 5.2.4 has commenced and aims to add support for Zarr S3 
+Work on NCO 5.2.5 has commenced and will add support for Zarr S3 
 stores, and to enhance the vertical regridder.
 
 Enjoy,
@@ -21,46 +20,19 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo automatically supports ELM/CLM regional averages.
-Previously, ncclimo required non-obvious options to correctly invoke
-regional averages of timeseries with sub-gridscale (SGS) fractions,
-like surface models often have. Now, when ncclimo is invoked with the
-surface model name as the processing type, e.g., ncclimo -P elm ...,
-the command internally selects the correct SGS field (landfrac, in
-this case) for weighting spatial averages. 
-ncclimo -P elm --split -v TBOT -s 1 -e 9 -o $out in*.nc
-ncclimo --sgs_frc=landfrac --split -v TBOT -s 1 -e 9 -o $out in*.nc
-http://nco.sf.net/nco.html#rgn_avg
-
-B. ncremap's documentation has been updated to include newer weight
-generation algotihms and naming conventions. In particular, three
-new TempestRemap algorithms are supported and described. Moreover,
-the preferred names of about eight algorithms have changed to align
-with E3SM conventions. The older names are still supported to ensure
-back-compatibility.
-ncremap -a ncoaave --map=map.nc in.nc out.nc # New name
-ncremap -a esmfaave --map=map.nc in.nc out.nc # New name
-ncremap -a esmfbilin --map=map.nc in.nc out.nc # New name
-ncremap -a traave --map=map.nc in.nc out.nc # New name
-ncremap -a traave --map=map.nc in.nc out.nc # New name
-ncremap -a trbilin --map=map.nc in.nc out.nc # New algorithm
-ncremap -a trintbilin --map=map.nc in.nc out.nc # New algorithm
-ncremap -a trfv2 --map=map.nc in.nc out.nc # New algorithm
-http://nco.sf.net/nco.html#alg_typ
+A. All numeric operators now support --qnt as a synonym for --ppc.
+Previous one could only use --quantize as a synonym, and --qnt
+just seemed like it needed to be one too. These are the same:
+ncks --ppc default=3 --ppc prs_sfc=5 in.nc out.nc
+ncks --qnt default=3 --qnt prs_sfc=5 in.nc out.nc
+ncks --quantize default=3 --quantize prs_sfc=5 in.nc out.nc
+http://nco.sf.net/nco.html#qnt
+http://nco.sf.net/nco.html#ppc
+http://nco.sf.net/nco.html#quantize
 
 BUG FIXES:
    
-A. ncclimo fixes an error where it would output, without warning,
-unvarying, time-constant timeseries regional averages for ELM.
-Those averages are incorrect, and they should vary with time.
-There is no workaround. The solution is to upgrade.
-Thanks to Sha Feng (PNNL) and Ryan Forsyth (LLNL) for reporting this.
-
-B. ncclimo fixes a recently introduced bug where, when clm_md=hfc
-or clm_md=hfs, ncclimo could fail to find input files when run from a 
-working directory distinct from the specified input directory.
-There is no workaround. The solution is to upgrade.
-Thanks to Tony Bartoletti (PNNL) for reporting this.
+A. Hi
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

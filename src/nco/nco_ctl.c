@@ -1017,7 +1017,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-4]")) (void)fprintf(stdout,"-4, --4, netcdf4\tOutput file in netCDF4 (HDF5) storage format\n");
 #endif /* !ENABLE_NETCDF4 */
   if(NC_LIB_VERSION >= 440){
-    if(strstr(opt_sng,"[-5]")) (void)fprintf(stdout,"-5, --5, 64bit_data\tOutput file in netCDF3 64-bit data (i.e., CDF5, PnetCDF) storage format\n");
+    if(strstr(opt_sng,"[-5]")) (void)fprintf(stdout,"-5, --5, 64bit_data\tOutput file in netCDF3 64-bit data (aka CDF5, PnetCDF) storage format\n");
   } /* !NC_LIB_VERSION */
   if(strstr(opt_sng,"[-6]")) (void)fprintf(stdout,"-6, --6, 64, 64bit_offset\tOutput file in netCDF3 64-bit offset storage format\n");
 #ifdef ENABLE_NETCDF4
@@ -1046,15 +1046,15 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-C]")) (void)fprintf(stdout,"-C, --no_crd, xcl_ass_var\tExclude coordinates, CF-associated variables (ancillary, bounds, ...)\n");
   if(strstr(opt_sng,"[-c]")) (void)fprintf(stdout,"-c, --crd, xtr_ass_var\tExtract coordinates, CF-associated variables (ancillary, bounds, ...)\n");
   if(strstr(opt_sng,"--cb")) (void)fprintf(stdout,"    --cb, clm_bnd\tCF Climatology and bounds information as yr_srt,yr_end,mth_srt,mth_end,tpd\n");
-  if(strstr(opt_sng,"--cal")) (void)fprintf(stdout,"    --cal,--cln\tPrint UDUnits-compatible dates/times in human-legible calendar format\n");
+  if(strstr(opt_sng,"--cal")) (void)fprintf(stdout,"    --cal,--cln\tPrint UDUnits dates in human-legible format\n");
   if(strstr(opt_sng,"--cdl")) (void)fprintf(stdout,"    --cdl\t\tPrint CDL (netCDF lingua franca used by ncdump/ncgen)\n");
   if(strstr(opt_sng,"--chk_bnd")) (void)fprintf(stdout,"    --chk_bnd\t\tCheck coordinates for bounds attributes\n");
   if(strstr(opt_sng,"--chk_chr")) (void)fprintf(stdout,"    --chk_chr\t\tCheck identifiers for naughty characters\n");
   if(strstr(opt_sng,"--chk_map")) (void)fprintf(stdout,"    --chk_map\t\tCheck map-file quality\n");
   if(strstr(opt_sng,"--chk_mss")) (void)fprintf(stdout,"    --chk_mss\t\tCheck variables+groups for missing_value attribute\n");
   if(strstr(opt_sng,"--chk_nan")) (void)fprintf(stdout,"    --chk_nan\t\tCheck floating-point fields for NaN and NaNf\n");
-  if(strstr(opt_sng,"--chk_xtn")) (void)fprintf(stdout,"    --chk_xtn\t\tCheck that filename extensions consistency with DIWG recommendations\n");
-  if(strstr(opt_sng,"--cmp")) (void)fprintf(stdout,"    --cmp cmp_sng\tCompression string (e.g., 'gbr,3|zstd,1')\n");
+  if(strstr(opt_sng,"--chk_xtn")) (void)fprintf(stdout,"    --chk_xtn\t\tCheck that filename extensions comply with DIWG recommendations\n");
+  if(strstr(opt_sng,"--cmp")) (void)fprintf(stdout,"    --cmp cmp_sng\tCompression string (e.g., 'gbr,3|shf|zstd,3')\n");
   if(strstr(opt_sng,"--cnk_byt")) (void)fprintf(stdout,"    --cnk_byt, chunk_byte sz_byt\tChunksize in bytes\n");
   if(strstr(opt_sng,"--cnk_csh")) (void)fprintf(stdout,"    --cnk_csh, chunk_cache sz_byt\tChunk cache size in bytes\n");
   if(strstr(opt_sng,"--cnk_dmn")) (void)fprintf(stdout,"    --cnk_dmn, chunk_dimension nm,sz_lmn\tChunksize of dimension nm (in elements not bytes)\n");
@@ -1069,7 +1069,7 @@ nco_usg_prn(void)
     else (void)fprintf(stdout,"-d, --dmn, dimension dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n");
   } /* end if -d */
   if(strstr(opt_sng,"--dbl|flt")) (void)fprintf(stdout,"    --dbl, flt, rth_dbl|flt\tdbl: Promote single- to double-precision b4 arithmetic (default). flt: Single-precision arithmetic is allowed.\n");
-  if(strstr(opt_sng,"--dt_fmt")) (void)fprintf(stdout,"    --dt_fmt, date_format\tPrint UDUnits-compatible dates/times in short, regular, or ISO8601 calendar format (fmt=1,2,3)\n");
+  if(strstr(opt_sng,"--dt_fmt")) (void)fprintf(stdout,"    --dt_fmt, date_format\tPrint UDUnits dates as short, regular, or ISO8601 format (fmt=1,2,3)\n");
   if(strstr(opt_sng,"[-F]")) (void)fprintf(stdout,"-F, --ftn, fortran\tFortran indexing conventions (1-based) for I/O\n");
   if(strstr(opt_sng,"[-f]")) (void)fprintf(stdout,"-f, --fnc_tbl, prn_fnc_tbl\tPrint function table\n");
   if(strstr(opt_sng,"--fix_rec_crd")) (void)fprintf(stdout,"    --fix_rec_crd\tDo not interpolate/multiply record coordinate variables\n");

@@ -2487,6 +2487,15 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     printf "NCO regridder invoked with command:\n"
     echo "${cmd_ln}"
 fi # !vrb_lvl
+if [ ${dbg_lvl} -ge 2 ]; then
+    printf "************************************************************************\n"
+    printf "IMPORTANT: This output shows a SIMULATION of a production run\n"
+    printf "The values shown are real, but the printed commands are NOT executed\n"
+    printf "This output is for debugging purpose only since dbg_lvl = ${dbg_lvl} >= 2\n"
+    printf "The elapsed time should be near 0m0s since there is very little disk I/O\n"
+    printf "Set dbg_lvl <= 1 for a PRODUCTION RUN that executes these commands\n"
+    printf "************************************************************************\n"
+fi # !dbg
 if [ -f 'PET0.RegridWeightGen.Log' ]; then
     if [ ${vrb_lvl} -ge ${vrb_4} ]; then
 	printf "${spt_nm}: Removing PET0.RegridWeightGen.Log file and any other PET0.* files from current directory before running\n"

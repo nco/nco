@@ -1,8 +1,14 @@
-2024-04-09  Charlie Zender  <zender@uci.edu>
+2024-04-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.4-alpha03: Seminario';git push
-	git tag -a 5.2.4-alpha03 -m 'all: --qnt; ncclimo: dbg';git push --tags
+	git tag -a 5.2.4-alpha03 -m 'all: --qnt; ncclimo/ncremap: dbg';git push --tags
+
+	* ncclimo/ncremap: Print IMPORTANT notice about DEBUGGING run when dbg_lvel >= 2
+
+	* ncclimo: Add sanity check that fl_nbr > 0
+
+2024-04-09  Charlie Zender  <zender@uci.edu>
 
 	* all: Add --qnt as synonym for --ppc, --quantize
 
