@@ -1,3 +1,9 @@
+nco (5.2.4-1) unstable; urgency=low
+
+  * new upstream version Kamehameha I: all: --qnt, NCO client nco_qnt_mtd(); ncclimo/ncremap: dbg; ncclimo: ncap2 cxl rgn_avg hst
+
+ -- Charlie Zender <zender@uci.edu> Mon, 15 Apr 2024 12:26:11 -0700
+
 nco (5.2.3-1) unstable; urgency=low
 
   * new upstream version Cowboy Carter: all: mss_val wrn; ncclimo: rgn_avg fix elm, hrz_dmn, hrz_arg, area_wgt, ppn_opt; ncremap: upd doc

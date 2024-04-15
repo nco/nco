@@ -13,7 +13,7 @@ No major new features are implemented.
 Skip this release if these changes are not important to you.
 
 Work on NCO 5.2.5 has commenced and will add support for Zarr S3 
-stores, and to enhance the vertical regridder.
+stores, and will enhance the vertical regridder.
 
 Enjoy,
 Charlie
@@ -31,9 +31,37 @@ http://nco.sf.net/nco.html#qnt
 http://nco.sf.net/nco.html#ppc
 http://nco.sf.net/nco.html#quantize
 
+B. All numeric operators now write CF-compliant metadata for quantization
+algorithms through the NCO internal algorithms. (Previously NCO wrote CF
+metadata only for quanitzation performed by the netCDF library.) 
+NCO no longer writes the really long quantization metadata attributes
+such as QuantizeBitGroomNumberOfSignificantDigits. Note that libnetcdf
+still does write these attributes (prepended by an underscore) when
+its quantization functions are invoked.
+% ncks -O -7 --baa=8 --qnt prs_sfc=6 --cmp='shf|zst' in.nc out.nc
+% ncks -m -v prs_sfc,compression_info out.nc
+netcdf foo2 {
+  dimensions:
+    lat = 2 ;
+    lon = 4 ;
+    time = UNLIMITED ; // (10 currently)
+
+  variables:
+    char compression_info ;
+      compression_info:family = "quantize" ;
+      compression_info:algorithm = "BitRound" ;
+      compression_info:implementation = "NCO version 5.2.4" ;
+
+    float prs_sfc(time,lat,lon) ;
+      prs_sfc:long_name = "Surface pressure" ;
+      prs_sfc:units = "pascal" ;
+      prs_sfc:lossy_compression = "compression_info" ;
+      prs_sfc:lossy_compression_nsb = 6 ;
+} // group /
+
 BUG FIXES:
    
-A. Hi
+A. None
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

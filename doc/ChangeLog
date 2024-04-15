@@ -1,8 +1,8 @@
 2024-04-15  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.2.4-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.2.4-beta01: Kamehameha I';git push
-	git tag -a 5.2.4-beta01 -m 'all: --qnt, NCO client nco_qnt_mtd(); ncclimo/ncremap: dbg';git push --tags
+	* NCO 5.2.4 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.4: Kamehameha I';git push
+	git tag -a 5.2.4 -m 'all: --qnt, NCO client nco_qnt_mtd(); ncclimo/ncremap: dbg; ncclimo: ncap2 cxl rgn_avg hst';git push --tags
 
 2024-04-11  Charlie Zender  <zender@uci.edu>
 
