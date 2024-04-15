@@ -7,8 +7,8 @@ http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
 Version 5.2.4 fully implements the CF lossy metadata convention
-for its own internal quantization algorithms (of which there are
-eight!), improves ncclimo diagnostics, fxm.
+for three the three NCO internal quantization algorithms that
+are also in libnetCDF. It also improves ncclimo diagnostics.
 No major new features are implemented.
 Skip this release if these changes are not important to you.
 
@@ -22,10 +22,11 @@ NEW FEATURES (full details always in ChangeLog):
 
 A. All numeric operators now support --qnt as a synonym for --ppc.
 Previous one could only use --quantize as a synonym, and --qnt
-just seemed like it needed to be one too. These are the same:
-ncks --ppc default=3 --ppc prs_sfc=5 in.nc out.nc
+just seemed like it needed to be one too. The first three are the same:
+ncks --ppc default=3 --ppc prs_sfc=5 in.nc out.nc # Granular Bitround
 ncks --qnt default=3 --qnt prs_sfc=5 in.nc out.nc
 ncks --quantize default=3 --quantize prs_sfc=5 in.nc out.nc
+ncks --baa=8 --ppc default=12 --ppc prs_sfc=15 in.nc out.nc # Bitround
 http://nco.sf.net/nco.html#qnt
 http://nco.sf.net/nco.html#ppc
 http://nco.sf.net/nco.html#quantize

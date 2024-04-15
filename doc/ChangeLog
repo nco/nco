@@ -1,8 +1,14 @@
-2024-04-10  Charlie Zender  <zender@uci.edu>
+2024-04-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.4-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.2.4-beta01: Seminario';git push
+	cd ~/nco;git commit -a -m 'Version 5.2.4-beta01: Kamehameha I';git push
 	git tag -a 5.2.4-beta01 -m 'all: --qnt, NCO client nco_qnt_mtd(); ncclimo/ncremap: dbg';git push --tags
+
+2024-04-11  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo: Do not append history for rgn_avg computation---too much like encoding a program in a dataset
+
+2024-04-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.4-alpha03: Seminario';git push
