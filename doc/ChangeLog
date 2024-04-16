@@ -1,3 +1,11 @@
+2024-04-16  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.2.5-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.5-alpha01: Krugerstraße';git push
+	git tag -a 5.2.5-alpha01 -m 'Functionally identical to 5.2.4';git push --tags
+
+	* Replace doe.jpg with doe.png (transparent background)
+
 2024-04-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.4 release procedure:

@@ -402,7 +402,7 @@ program.
 <dt><a name="prp_acme"></a></dt> <!-- http://nco.sf.net#prp_acme -->
 <dt><a name="prp_e3sm"></a></dt> <!-- http://nco.sf.net#prp_e3sm -->
 <h2>DOE E3SM Project</h2>
-<img src="doe.jpg" height=180 width=180 align=right>
+<img src="doe.png" height=180 width=180 align=right>
 The Energy Exascale Earth System Model (E3SM)
 <a href="https://e3sm.org">project</a>,
 a part of DOE's Earth System Modeling (ESM)

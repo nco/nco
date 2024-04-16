@@ -940,7 +940,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       /* !DigitRound = DGR */
     case nco_baa_gbr:
       /* Granular BitGroom
-	 Test GBG:
+	 Test GBR:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
 	 ncks -O -7 -C -D 1 --baa=4 -v ppc_btg --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -7 -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
@@ -952,7 +952,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  //mnt_log10_prx=mnt_log10_tbl_gbr[tbl_idx][1];
 	  //dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
 #if 1
-	  /* Default GBG path */
+	  /* Default GBR path */
 	  mnt_fabs=fabs(mnt);
 	  mnt_log10_fabs=log10(mnt_fabs);
 	  /* 20211003 Continuous determination of dgt_nbr improves CR by ~10% */
@@ -993,7 +993,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !mss_val_cmp_flt */
       } /* !idx */
       break;
-      /* !GranularBitRound = GBG */
+      /* !GranularBitRound = GBR */
     case nco_baa_bgr:
     case nco_baa_btr:
       /* BitRound and

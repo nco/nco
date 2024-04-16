@@ -1,18 +1,18 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.4 tip the spear
+netCDF Operators NCO version 5.2.5 tip the spear
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.2.4 fully implements the CF lossy metadata convention
-for three the three NCO internal quantization algorithms that
-are also in libnetCDF. It also improves ncclimo diagnostics.
-No major new features are implemented.
-Skip this release if these changes are not important to you.
+Version 5.2.5 fully implements the CF lossy metadata convention for
+all NCO internal quantization algorithms. It also improves ncclimo
+diagnostics and adds a new invocation synonym (--qnt) for
+quantization. No major new features are implemented. Skip this release
+if these changes are not important to you. 
 
-Work on NCO 5.2.5 has commenced and will add support for Zarr S3 
+Work on NCO 5.2.6 has commenced and will add support for Zarr S3 
 stores, and will enhance the vertical regridder.
 
 Enjoy,
