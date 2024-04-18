@@ -637,7 +637,6 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     else if(!strcasecmp(flt_nm,"lz4")) flt_enm=nco_flt_lz4;
     
     else if(!strcasecmp(flt_nm,"btg")) flt_enm=nco_flt_btg;
-    else if(!strcasecmp(flt_nm,"btg")) flt_enm=nco_flt_btg;
     else if(!strcasecmp(flt_nm,"bitgroom")) flt_enm=nco_flt_btg;
     else if(!strcasecmp(flt_nm,"bit-groom")) flt_enm=nco_flt_btg;
     else if(!strcasecmp(flt_nm,"bit groom")) flt_enm=nco_flt_btg;
@@ -1677,5 +1676,80 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
   } /* !rcd */
 
   return rcd;
-  
 } /* !nco_qnt_mtd() */
+
+int /* O [enm] BAA enumerate */
+nco_qnt2baa /* [fnc] Convert user-supplied quantization string to BAA enum */
+(const char * const qnt_sng_in) /* I [sng] Quantization algorithm string */
+{
+  /* Purpose: Convert user-supplied quantization string to BAA enum */
+  char *qnt_sng=NULL; /* [sng] Quantization algorithm string */
+
+  int nco_baa_cnv_lcl=NC_MIN_INT; /* [enm] Bit-Adjustment Algorithm local variable */
+
+  /* Copy input variable received from user so as not to touch system memory */
+  qnt_sng=(char *)strdup(qnt_sng_in);
+
+  /* 8 BitRound (option since 20211215 */
+  if(!strcasecmp(qnt_sng,"btr")) nco_baa_cnv_lcl=nco_baa_btr;
+  else if(!strcasecmp(qnt_sng,"bitround")) nco_baa_cnv_lcl=nco_baa_btr;
+  else if(!strcasecmp(qnt_sng,"bit round")) nco_baa_cnv_lcl=nco_baa_btr;
+  else if(!strcasecmp(qnt_sng,"bit-round")) nco_baa_cnv_lcl=nco_baa_btr;
+  else if(!strcasecmp(qnt_sng,"Kou20")) nco_baa_cnv_lcl=nco_baa_btr;
+  
+  /* 4 Granular BitRound (option since 20211003, default 20211003--present) */
+  else if(!strcasecmp(qnt_sng,"gbr")) nco_baa_cnv_lcl=nco_baa_gbr;
+  else if(!strcasecmp(qnt_sng,"granularbr")) nco_baa_cnv_lcl=nco_baa_gbr;
+  else if(!strcasecmp(qnt_sng,"granular")) nco_baa_cnv_lcl=nco_baa_gbr;
+  else if(!strcasecmp(qnt_sng,"granular bitround")) nco_baa_cnv_lcl=nco_baa_gbr;
+  else if(!strcasecmp(qnt_sng,"granular-bitround")) nco_baa_cnv_lcl=nco_baa_gbr;
+  else if(!strcasecmp(qnt_sng,"granularbitround")) nco_baa_cnv_lcl=nco_baa_gbr;
+  
+  /* 0 BitGroom (option since 201502XX, default 201502XX--20200717) */
+  else if(!strcasecmp(qnt_sng,"btg")) nco_baa_cnv_lcl=nco_baa_btg;
+  else if(!strcasecmp(qnt_sng,"bitgroom")) nco_baa_cnv_lcl=nco_baa_btg;
+  else if(!strcasecmp(qnt_sng,"bit-groom")) nco_baa_cnv_lcl=nco_baa_btg;
+  else if(!strcasecmp(qnt_sng,"bit groom")) nco_baa_cnv_lcl=nco_baa_btg;
+  else if(!strcasecmp(qnt_sng,"Zen16")) nco_baa_cnv_lcl=nco_baa_btg;
+  
+  /* 3 DigitRound (DCG19 option since 20210928, default 20210928--20211003) */
+  else if(!strcasecmp(qnt_sng,"dgr")) nco_baa_cnv_lcl=nco_baa_dgr;
+  else if(!strcasecmp(qnt_sng,"digitround")) nco_baa_cnv_lcl=nco_baa_dgr;
+  else if(!strcasecmp(qnt_sng,"digit round")) nco_baa_cnv_lcl=nco_baa_dgr;
+  else if(!strcasecmp(qnt_sng,"digit-round")) nco_baa_cnv_lcl=nco_baa_dgr;
+  else if(!strcasecmp(qnt_sng,"DCG19")) nco_baa_cnv_lcl=nco_baa_dgr;
+  
+  /* 1 BitShave (option since 20160117) */
+  else if(!strcasecmp(qnt_sng,"shv")) nco_baa_cnv_lcl=nco_baa_shv;
+  else if(!strcasecmp(qnt_sng,"bitshave")) nco_baa_cnv_lcl=nco_baa_shv;
+  else if(!strcasecmp(qnt_sng,"bit-shave")) nco_baa_cnv_lcl=nco_baa_shv;
+  else if(!strcasecmp(qnt_sng,"bit shave")) nco_baa_cnv_lcl=nco_baa_shv;
+
+  /* 2 BitSet (option since 20160117) */
+  else if(!strcasecmp(qnt_sng,"set")) nco_baa_cnv_lcl=nco_baa_set;
+  else if(!strcasecmp(qnt_sng,"bitset")) nco_baa_cnv_lcl=nco_baa_set;
+  else if(!strcasecmp(qnt_sng,"bit-set")) nco_baa_cnv_lcl=nco_baa_set;
+  else if(!strcasecmp(qnt_sng,"bit set")) nco_baa_cnv_lcl=nco_baa_set;
+
+  /* 5 BitGroomRound (option since 20200717, default 20200717--20210928) */
+  else if(!strcasecmp(qnt_sng,"bgr")) nco_baa_cnv_lcl=nco_baa_bgr;
+  else if(!strcasecmp(qnt_sng,"bitgroomround")) nco_baa_cnv_lcl=nco_baa_bgr;
+  else if(!strcasecmp(qnt_sng,"bitgroom-round")) nco_baa_cnv_lcl=nco_baa_bgr;
+  else if(!strcasecmp(qnt_sng,"bitgroom round")) nco_baa_cnv_lcl=nco_baa_bgr;
+
+  /* 6 BitHalf-shave (option since 20200715) */
+  else if(!strcasecmp(qnt_sng,"sh2")) nco_baa_cnv_lcl=nco_baa_sh2;
+  else if(!strcasecmp(qnt_sng,"halfshave")) nco_baa_cnv_lcl=nco_baa_sh2;
+  else if(!strcasecmp(qnt_sng,"half-shave")) nco_baa_cnv_lcl=nco_baa_sh2;
+  else if(!strcasecmp(qnt_sng,"half shave")) nco_baa_cnv_lcl=nco_baa_sh2;
+
+  /* 7 BruteForce (option since 20210428) */
+  else if(!strcasecmp(qnt_sng,"brt")) nco_baa_cnv_lcl=nco_baa_brt;
+  else if(!strcasecmp(qnt_sng,"bruteforce")) nco_baa_cnv_lcl=nco_baa_brt;
+  else if(!strcasecmp(qnt_sng,"brute-force")) nco_baa_cnv_lcl=nco_baa_brt;
+  else if(!strcasecmp(qnt_sng,"brute force")) nco_baa_cnv_lcl=nco_baa_brt;
+
+  if(qnt_sng) qnt_sng=(char *)nco_free(qnt_sng);
+  
+  return nco_baa_cnv_lcl;
+} /* !nco_qnt2baa() */

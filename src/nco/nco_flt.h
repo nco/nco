@@ -199,7 +199,7 @@ char * /* O [sng] String describing BLOSC sub-compressor */
 nco_flt_sbc2nm /* [fnc] Convert BLOSC sub-compressor ID to name */
 (const unsigned int sbc_id); /* I [id] BLOSC sub-compressor ID */
 
-  int /* O [enm] Return code */
+int /* O [enm] Return code */
 nco_flt_old_wrp /* [fnc] Define output filters based on input filters */
 (const int nc_in_id, /* I [id] netCDF input file/group ID */
  const int var_in_id, /* I [id] Variable ID */
@@ -242,6 +242,10 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
  const nco_flt_typ_enm nco_flt_baa_enm, /* [nbr] NCO BAA filter enum */
  const nco_flt_typ_enm nco_flt_hdf_enm, /* [nbr] NCO HDF5 filter enum */
  const int qnt_lvl); /* I [enm] NSD/NSB level */
+
+int /* O [enm] BAA enumerate */
+nco_qnt2baa /* [fnc] Convert user-supplied quantization string to BAA enum */
+(const char * const qnt_sng_in); /* I [sng] Quantization algorithm string */
 
 #ifdef __cplusplus
 } /* !extern "C" */

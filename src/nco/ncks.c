@@ -151,6 +151,7 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *ppc_arg[NC_MAX_VARS]; /* [sng] PPC arguments */
+  char *qnt_sng=NULL; /* [sng] Quantization algorithm string */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *rec_dmn_nm_fix=NULL; /* [sng] Record dimension name (Original input name without _fix prefix) */
   char *rgr_in=NULL; /* [sng] File containing fields to be regridded */
@@ -510,6 +511,7 @@ main(int argc,char **argv)
     {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
     {"qnt",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
     {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
+    {"qnt_alg",required_argument,0,0}, /* [sng] Quantization algorithm name */
     {"rgr",required_argument,0,0}, /* [sng] Regridding */
     {"regridding",required_argument,0,0}, /* [sng] Regridding */
     {"rgr_in",required_argument,0,0}, /* [sng] File containing fields to be regridded */
@@ -818,6 +820,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_nm_prn") || !strcmp(opt_crr,"no_dmn_var_nm")) PRN_DMN_VAR_NM=False; /* endif "no_nm_prn" */
       if(!strcmp(opt_crr,"ntm") || !strcmp(opt_crr,"nonatomic") || !strcmp(opt_crr,"udt") || !strcmp(opt_crr,"user_defined_types")) PRN_UDT=True; /* [flg] Print non-atomic variables */
       if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"qnt") || !strcmp(opt_crr,"quantize")) ppc_arg[ppc_nbr++]=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"qnt_alg") || !strcmp(opt_crr,"quantize_algorithm")) nco_baa_cnv=(unsigned short int)nco_qnt2baa(optarg);
       if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True;
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Create (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Open (netCDF3) file(s) in RAM */
@@ -1607,6 +1610,7 @@ close_and_free:
     if(fl_in_dpl) fl_in_dpl=(char *)nco_free(fl_in_dpl);
     if(fl_prn) fl_prn=(char *)nco_free(fl_prn);
     if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
+    if(qnt_sng) qnt_sng=(char *)nco_free(qnt_sng);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */

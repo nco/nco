@@ -1,8 +1,14 @@
-2024-04-17  Charlie Zender  <zender@uci.edu>
+2024-04-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.5-alpha02: Udon';git push
-	git tag -a 5.2.5-alpha02 -m 'all: qnt alg nm cf cv';git push --tags
+	git tag -a 5.2.5-alpha02 -m 'all: qnt alg nm cf cv; qnt mre';git push --tags
+
+	* Add nco_qnt2baa() to support string-valued specification of NCO-implemented quantization algorithms
+
+	* nco_qnt_mtd() add maximum relative error to NSB methods
+
+2024-04-17  Charlie Zender  <zender@uci.edu>
 
 	* nco_qnt_mtd() use lowercase CF-ized algorithm names per draft CF convention, e.g., "granular_bitRound" instead of "Granular BitRound"
 
