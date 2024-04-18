@@ -454,7 +454,6 @@ main(int argc,char **argv)
     /* Long options with argument, no short option counterpart */
     {"baa",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
     {"bit_alg",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
-    {"qnt_alg",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
     {"bsa",required_argument,0,0}, /* [enm] Binary byte-swap algorithm */

@@ -1452,9 +1452,9 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
   /* Test CF algorithm:
      ncks -O -7 -v one_dmn_rec_var_flt --cmp='shf|zst,3' --baa=8 --ppc default=9 --ppc one_dmn_rec_var_flt=6 ~/nco/data/in.nc ~/foo.nc
      ncks -m --hdn ~/foo.nc
-     Controlled Vocabularies (CVs): 
+     Controlled Vocabulary (CV): 
      Family (optional): quantize
-     Algorithm: BitGroom, BitRound, Granular BitGroom
+     Algorithm: BitRound, BitGroom, DigitRound, Granular_BitGroom
      Implementation: libnetcdf 4.9.2 */
 
   const char fnc_nm[]="nco_qnt_mtd()";
@@ -1462,23 +1462,26 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
   aed_sct aed_ppc_alg;
   aed_sct aed_ppc_cnt;
   aed_sct aed_ppc_lvl;
+  aed_sct aed_ppc_mre;
 
   //  char alg_nm_dsd[]="least_significant_digit";
-  char alg_nm_btg[]="BitGroom"; /* [sng] CV value per draft CF-Convention */
-  char alg_nm_shv[]="BitShave";
-  char alg_nm_set[]="BitSet";
-  char alg_nm_dgr[]="DigitRound";
-  char alg_nm_gbr[]="GranularBitRound"; /* [sng] CV value per draft CF-Convention */
-  char alg_nm_bgr[]="BitGroomRound";
-  char alg_nm_sh2[]="HalfShave";
-  char alg_nm_brt[]="BruteForce";
-  char alg_nm_btr[]="BitRound"; /* [sng] CV value per draft CF-Convention */
+  /* Controlled Vocabulary (CV) keywords in draft CF-Convention are indicated */
+  char alg_nm_btg[]="bitgroom"; /* [sng] CV */
+  char alg_nm_shv[]="bitshave";
+  char alg_nm_set[]="bitset";
+  char alg_nm_dgr[]="digitround"; /* [sng] CV */
+  char alg_nm_gbr[]="granular_bitround"; /* [sng] CV */
+  char alg_nm_bgr[]="bitgroomround";
+  char alg_nm_sh2[]="halfshave";
+  char alg_nm_brt[]="bruteforce";
+  char alg_nm_btr[]="bitround"; /* [sng] CV */
   char cnt_nm_all[]="lossy_compression"; /* [sng] Attribute name to hold lossy compression container name (per draft CF-Convention) */
   char fml_val[]="quantize"; /* [sng] Container variable family value (CV per draft CF-Convention) (Optional) */
   char mpl_val_libnetcdf[]="libnetcdf"; /* [sng] Container variable implementation attribute value (per draft CF-Convention) */
   char mpl_val_nco[]="NCO"; /* [sng] Container variable implementation attribute value (per draft CF-Convention) */
-  char qnt_lvl_nsb_nm[]="lossy_compression_nsb"; /* [sng] Attribute name to hold NSB (CV value per draft CF-Convention) */
-  char qnt_lvl_nsd_nm[]="lossy_compression_nsd"; /* [sng] Attribute name to hold NSD (CV value per draft CF-Convention) */
+  char qnt_lvl_mre_nm[]="lossy_compression_maximum_relative_error"; /* [sng] Attribute name to hold MRE (CV) */
+  char qnt_lvl_nsb_nm[]="lossy_compression_nsb"; /* [sng] Attribute name to hold NSB (CV) */
+  char qnt_lvl_nsd_nm[]="lossy_compression_nsd"; /* [sng] Attribute name to hold NSD (CV) */
   char var_cnt_nm[]="compression_info"; /* [sng] Container variable name */
   char var_cnt_alg_nm[]="algorithm"; /* [sng] Container variable attribute name for algorithm type (per draft CF-Convention) */
   char var_cnt_fml_nm[]="family"; /* [sng] Container variable attribute name for algorithm family type (per draft CF-Convention) */
@@ -1492,11 +1495,18 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
 
   nco_bool flg_baa=False; /* [flg] Write metadata for internal NCO-generated bit adjustment */
   nco_bool flg_hdf=False; /* [flg] Write metadata for external libnetCDF-generated quantization */
+  nco_bool flg_mre=False; /* [flg] Add maximum relative error (MRE) statistic attribute */
+
+  nc_type var_typ; /* [enm] netCDF type of quantized variable */
 
   /* Determine whether filter is applied by NCO or by libnetCDF */
   if(nco_flt_hdf_enm != nco_flt_nil) flg_hdf=True; else flg_baa=True;
   
+  /* Add maximum relative error (MRE) statistic attribute to BitRound and HalfShave algorithms */
+  if((flg_hdf && nco_flt_hdf_enm == nco_flt_btr) || (flg_baa && ((nco_flt_baa_enm == nco_baa_btr) || (nco_flt_baa_enm == nco_baa_sh2)))) flg_mre=True;
+
   rcd=nco_inq_varname(nc_id,var_id,var_nm);
+  rcd=nco_inq_vartype(nc_id,var_id,&var_typ);
 
   if(flg_hdf){
     switch(nco_flt_hdf_enm){
@@ -1589,8 +1599,8 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
 
   qnt_lvl_dpl=qnt_lvl;
   aed_ppc_lvl.val.ip=&qnt_lvl_dpl;
-  aed_ppc_cnt.var_nm=aed_ppc_lvl.var_nm=var_nm;
-  aed_ppc_cnt.id=aed_ppc_lvl.id=var_id;
+  aed_ppc_cnt.var_nm=aed_ppc_lvl.var_nm=aed_ppc_mre.var_nm=var_nm;
+  aed_ppc_cnt.id=aed_ppc_lvl.id=aed_ppc_lvl.id=var_id;
   aed_ppc_cnt.att_nm=cnt_nm_all;
   aed_ppc_cnt.val.cp=var_cnt_nm;
   rcd=nco_inq_att_flg(nc_id,aed_ppc_lvl.id,aed_ppc_lvl.att_nm,&aed_ppc_lvl.type,&aed_ppc_lvl.sz);
@@ -1602,8 +1612,24 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
     aed_ppc_lvl.sz=1L;
     aed_ppc_lvl.type=NC_INT;
     aed_ppc_lvl.mode=aed_create;
+    aed_ppc_mre.sz=1L;
+    aed_ppc_mre.type=var_typ;
+    aed_ppc_mre.mode=aed_create;
     (void)nco_aed_prc(nc_id,var_id,aed_ppc_cnt);
     (void)nco_aed_prc(nc_id,var_id,aed_ppc_lvl);
+    if(flg_mre){
+      double qnt_mre_dbl; /* [frc] Maximum Relative Error (MRE) statistic */
+      float qnt_mre_flt; /* [frc] Maximum Relative Error (MRE) statistic */
+      qnt_mre_flt=qnt_mre_dbl=pow(2.0,-1.0*qnt_lvl_dpl);
+      aed_ppc_mre.att_nm=qnt_lvl_mre_nm;
+      if(var_typ == NC_FLOAT){aed_ppc_mre.val.fp=&qnt_mre_flt;}
+      else if(var_typ == NC_DOUBLE){aed_ppc_mre.val.dp=&qnt_mre_dbl;}
+      else{
+	(void)fprintf(stderr,"%s: ERROR %s reports variable %s is type %s. Maximum relative error (MRE) diagnostic is only available for floating-point types\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_typ_sng(var_typ));
+	nco_exit(EXIT_FAILURE);
+      } /* !var_typ */
+      (void)nco_aed_prc(nc_id,var_id,aed_ppc_mre);
+    } /* !flg_mre */
   }else{
     if(aed_ppc_lvl.sz == 1L && aed_ppc_lvl.type == NC_INT){
       /* Conforming PPC attribute already exists, replace with new value only if rounder */
