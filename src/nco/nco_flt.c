@@ -1683,6 +1683,8 @@ nco_qnt2baa /* [fnc] Convert user-supplied quantization string to BAA enum */
 (const char * const qnt_sng_in) /* I [sng] Quantization algorithm string */
 {
   /* Purpose: Convert user-supplied quantization string to BAA enum */
+  const char fnc_nm[]="nco_qnt2baa()";
+
   char *qnt_sng=NULL; /* [sng] Quantization algorithm string */
 
   int nco_baa_cnv_lcl=NC_MIN_INT; /* [enm] Bit-Adjustment Algorithm local variable */
@@ -1748,6 +1750,8 @@ nco_qnt2baa /* [fnc] Convert user-supplied quantization string to BAA enum */
   else if(!strcasecmp(qnt_sng,"bruteforce")) nco_baa_cnv_lcl=nco_baa_brt;
   else if(!strcasecmp(qnt_sng,"brute-force")) nco_baa_cnv_lcl=nco_baa_brt;
   else if(!strcasecmp(qnt_sng,"brute force")) nco_baa_cnv_lcl=nco_baa_brt;
+
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports requested algorithm string = %s, output nco_baa_cnv_lcl = %d\n",nco_prg_nm_get(),fnc_nm,qnt_sng,nco_baa_cnv_lcl);
 
   if(qnt_sng) qnt_sng=(char *)nco_free(qnt_sng);
   
