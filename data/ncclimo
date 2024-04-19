@@ -569,8 +569,8 @@ nm_typ='cesm' # [sng] Name type ('cesm', 'mpas', 'yyyymm', 'yyyy-mm', 'yyyy-mm-0
 no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
 par_typ="${par_bck}" # [sng] Parallelism type
-ppc_prc='' # [nbr] Precision-preserving compression precision
 prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'cpl', 'eam', 'eamxx', 'elm', 'mali', 'mpas', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi')
+qnt_prc='' # [nbr] Quantization precision
 rgn_avg='No' # [sng] Regional and global average timeseries
 rgr_map='' # [sng] Regridding (horizontal) map
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
@@ -640,7 +640,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, procedure${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}] [${fnt_tlc}serial | background | mpi${fnt_nrm}]"
-    echo " ${fnt_bld}--ppc_prc${fnt_nrm}  Precision-preserving compression precision (empty means none) (default ${fnt_bld}${ppc_prc}${fnt_nrm}) [${fnt_tlc}ppc, ppc_prc, precision, quantize${fnt_nrm}]"
+    echo " ${fnt_bld}--qnt_prc${fnt_nrm}  Quantization precision (empty means none) (default ${fnt_bld}${qnt_prc}${fnt_nrm}) [${fnt_tlc}qnt, qnt_prc, ppc, ppc_prc, precision, quantize${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map-file (horizontal) (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm}) [${fnt_tlc}rgr_map, regrid_map, map, map_file, map_fl${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_avg${fnt_nrm}  Regional and global average timeseries (default ${fnt_bld}${rgn_avg}${fnt_nrm}) [${fnt_tlc}rgn_avg, glb_avg, hms_avg, regional_average${fnt_nrm}]"
@@ -797,7 +797,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       drc_rgr=?* | rgr_drc=?* | dir_regrid=?* | regrid_dir=?* | regrid=?* ) drc_rgr_usr="${LONG_OPTARG}" ;; # -O # Regridded directory
 	       prc_typ=?* | procedure=?* ) prc_typ="${LONG_OPTARG}" ;; # -P # Procedure type
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
-	       ppc=?* | ppc_prc=?* | precision=?* | quantize=?* ) ppc_prc="${LONG_OPTARG}" ;; # # Precision-preserving compression
+	       qnt=?* | qnt_prc=?* | precision=?* | ppc=?* | ppc_prc=?* | quantize=?* ) qnt_prc="${LONG_OPTARG}" ;; # # Quantization precision
 	       rgn_avg | glb_avg | hms_avg | regional_average ) rgn_avg='Yes' ;; # # Regional and global average timeseries
 	       rgn_avg=?* | glb_avg=?* | hms_avg=?* | regional_average=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Regional average timeseries
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt_usr="${LONG_OPTARG}" ;; # -R # Regridding options
@@ -1277,15 +1277,15 @@ fi # !cmp_sng
 if [ -n "${dfl_lvl}" ]; then
     nco_opt="${nco_opt} --dfl_lvl=${dfl_lvl}"
 fi # !dfl_lvl
-if [ -n "${ppc_prc}" ]; then
-    nco_opt="${nco_opt} --ppc default=${ppc_prc}"
-fi # !ppc_prc
+if [ -n "${qnt_prc}" ]; then
+    nco_opt="${nco_opt} --qnt default=${qnt_prc}"
+fi # !qnt_prc
 if [ -n "${hdr_pad}" ]; then
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
 fi # !hdr_pad
 if [ -n "${uio_flg}" ]; then
     nco_opt="${nco_opt} --unbuffered_io"
-fi # !ppc_prc
+fi # !uio_flg
 if [ "${no_cll_msr}" = 'Yes' ]; then 
     spl_opt="${spl_opt} --no_cll_msr"
 fi # !no_cll_msr
@@ -2026,9 +2026,9 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: no_ntv   = ${no_ntv_tms}\n"
     printf "dbg: out_nm   = ${out_nm}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
-    printf "dbg: ppc_prc  = ${ppc_prc}\n"
     printf "dbg: ppn_opt  = ${ppn_opt}\n"
     printf "dbg: prc_typ  = ${prc_typ}\n"
+    printf "dbg: qnt_prc  = ${qnt_prc}\n"
     printf "dbg: rgn_avg  = ${rgn_avg}\n"
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_opt  = ${rgr_opt}\n"

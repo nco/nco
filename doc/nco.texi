@@ -3055,6 +3055,7 @@ name that most suits their taste.
 @cindex Options, multi-argument
 @cindex @code{--gaa @var{key}=@var{val}}
 @cindex @code{--ppc @var{key}=@var{val}}
+@cindex @code{--qnt @var{key}=@var{val}}
 @cindex @code{--rgr @var{key}=@var{val}}
 @cindex @code{--trr @var{key}=@var{val}}
 As of @acronym{NCO} version 4.6.2 (November, 2016), @acronym{NCO} accepts
@@ -3095,7 +3096,12 @@ Precision-Preserving Compression options are indicated via
 Regridding options are indicated via @samp{--rgr} (@pxref{Regridding}).
 Arguments to these four indicator options take the form of key-value
 pairs, e.g., @samp{--rgr @var{key}=@var{val}}. 
-These four features have so many options that making each key its own
+As of @w{version 5.2.5} (May 2024), @acronym{NCO} changed to
+preferring @samp{--qnt} over @samp{--ppc} for quantization
+algorithms.
+The two are simply synonyms, and backward compatibility is maintained.
+
+These features have so many options that making each key its own
 command line option would pollute the namespace of @acronym{NCO}'s
 global options. 
 Yet supplying multiple options to each indicator option one-at-a-time
@@ -9496,8 +9502,8 @@ Nearly a decade elapsed before the next features came in 2015 when,
 thanks to support from the @acronym{DOE}, we developed the lossy
 BitGroom quantization algorithm.
 @acronym{NCO} soon introduced a flexible per-variable @acronym{API}
-(@samp{--ppc}) to support it, and its relatives BitShave, and BitSet,
-in all arithmetic operators. 
+(@samp{--ppc} and @samp{--qnt}) to support it, and its relatives
+BitShave, and BitSet, in all arithmetic operators. 
 This work helped spur interest and research on other Bit Adjustment
 Algorithms (@acronym{BAA}s) that perform quantization.
 
@@ -9543,9 +9549,9 @@ through the standard @command{ncpdq} (for Linear Packing) and
 @acronym{NCO}-wide @code{-L} option (or its synonyms @code{--deflate}
 and @code{--dfl_lvl}) for @acronym{DEFLATE}. 
 The second generation of compression options refers to the
-@code{--ppc} and @code{--baa} (and related synonyms) options that
-control the type and level of quantization algorithm, and the
-variables to operate on.
+@code{--qnt}, @code{--ppc}, and @code{--baa} (and related synonyms)
+options that control the type and level of quantization algorithm, and
+the variables to operate on.
 These options call quantization and rounding routines implemented
 within @acronym{NCO} itself, rather than in external libraries.
 The new @code{--cmp_sng} (and synonyms) option provides an
@@ -9652,7 +9658,7 @@ This is because the real information content of geophysical variables
 can differ strongly due to a multitude of factors including the field
 meaning, spatial location, and dimensional units.
 @acronym{NCO} applies any quantization filter specified in
-@var{cmp_sng} uniformly to all variables encountered (the @samp{--ppc}
+@var{cmp_sng} uniformly to all variables encountered (the @samp{--qnt}
 quantization option/@acronym{API} is still available for per-variable
 quantization parameters, as discussed below). 
 The one exception is that @acronym{NCO} prohibits quantization of
@@ -9930,10 +9936,10 @@ implemented in @acronym{NCO} (or in the @acronym{CCR}, for that
 matter). 
 In other words, quantization to netCDF3 and
 @acronym{NETCDF4_CLASSIC}-format output files @emph{always} works
-when invoked through the @samp{--ppc} (not @samp{--cmp}) option. 
+when invoked through the @samp{--qnt} (not @samp{--cmp}) option. 
 This restriction will only affects netCDF prior to 4.9.1. 
 Per-variable quantization settings must also be invoked through
-@samp{--ppc} (not @samp{--cmp}) for all output formats, until and
+@samp{--qnt} (not @samp{--cmp}) for all output formats, until and
 unless this feature is migrated to @samp{--cmp} (there are no plans
 to do so).
 
@@ -9953,7 +9959,7 @@ We have found that this blend is best obtained by using per-variable
 quantization together with global lossless compression.
 @acronym{NCO} can configure per-variable quantization levels together
 with global lossless filters when the quantization algorithm is
-specified with the @samp{--ppc} option/@acronym{API} and the lossless
+specified with the @samp{--qnt} option/@acronym{API} and the lossless
 filters are specified with the @samp{--cmp_sng} option/@acronym{API}.
 Granular BitRound (GranularBR) and BitRound are state-of-the-art
 quantization algorithms that are configured with the number of
@@ -10002,13 +10008,15 @@ preserves all the meaningful precision of @emph{most} fields, and
 that dials-in the @acronym{CR} to the desired value.
 @example
 @verbatim
-ncks -7 --ppc default=3 ...          # GranularBR, NSD=3
-ncks -7 --baa=4 --ppc default=3 ...  # Same
-ncks -7 --baa=4 --ppc dfl=3 ...      # Same
-ncks -7 --baa=8 --ppc default=9  ... # BitRound, NSB=9
+ncks -7 --qnt default=3 ... # GranularBR, NSD=3
+ncks -7 --qnt default=3 ... # Same
+ncks -7 --qnt_alg=gbr --ppc default=3 ...  # Same
+ncks -7 --qnt_alg=gbr --ppc dfl=3 ...      # Same
+ncks -7 --qnt_alg=btr --ppc dfl=9 ...      # BitRound, NSB=9
+ncks -7 --baa=8 --ppc default=9  ...       # Same
 @end verbatim
 @end example
-As an argument to @samp{--ppc}, the keyword @code{dfl} is just a
+As an argument to @samp{--qnt}, the keyword @code{dfl} is just a
 synonym for @code{default} and has nothing to do with
 @acronym{DEFLATE}.  
 
@@ -10020,14 +10028,14 @@ threshold for each variable
 @footnote{See, e.g., the procedure described in ``Compressing
 atmospheric data into its real information content'' by M.~Klower et
 al., available at @url{https://doi.org/10.1038/s43588-021-00156-2}.}.
-The per-variable arguments to @samp{--ppc} can take many forms:
+The per-variable arguments to @samp{--qnt} can take many forms:
 @example
 @verbatim
-ncks --ppc p,w,z=5 --ppc q,RH=4 --ppc T,u,v=3 # Multiple options
-ncks --ppc p,w,z=5#q,RH=4#T,u,v=3 ...  # Combined option
-ncks --ppc Q.?=5#FS.?,FL.?=4#RH=.3 ... # Regular expressions
-ncks --baa=8 --ppc p,w,z=15#q,RH=12#T,u,v=9 ... # BitRound (NSB)
-ncks --baa=8 --ppc CO2=15#AER.?=12#U,V=6 ... # Klower et al. 
+ncks --qnt p,w,z=5 --qnt q,RH=4 --qnt T,u,v=3 # Multiple options
+ncks --qnt p,w,z=5#q,RH=4#T,u,v=3 ...  # Combined option
+ncks --qnt Q.?=5#FS.?,FL.?=4#RH=.3 ... # Regular expressions
+ncks --qnt_alg=btr --qnt p,w,z=15#q,RH=12#T,u,v=9 ... # BitRound (NSB)
+ncks --qnt_alg=btr --qnt CO2=15#AER.?=12#U,V=6 ... # Klower et al. 
 @end verbatim
 @end example
 No compression is necessary in this step, which presumably involves 
@@ -10038,10 +10046,10 @@ The fourth and final step combines the lossless and lossy algorithms
 to produce the final workflow:
 @example
 @verbatim
-ncks -7 --ppc dfl=3 --cmp='shf|zst' ... # A useful starting point?
-ncks -7 --ppc default=3#Q.?=5#FS.?,FL.?=4 --cmp='shf|zst' ...
-ncks -7 --baa=4 --ppc default=3#Q.?=5#FS.?,FL.?=4 --cmp='shf|zst' ...
-ncks -7 --baa=8 --ppc default=9#Q.?=15#FS.?,FL.?=12 --cmp='shf|zst' ...
+ncks -7 --qnt dfl=3 --cmp='shf|zst' ... # A useful starting point?
+ncks -7 --qnt default=3#Q.?=5#FS.?,FL.?=4 --cmp='shf|zst' ...
+ncks -7 --qnt_alg=gbr --qnt default=3#Q.?=5#FS.?,FL.?=4 --cmp='shf|zst' ...
+ncks -7 --qnt_alg=btr --qnt default=9#Q.?=15#FS.?,FL.?=12 --cmp='shf|zst' ...
 @end verbatim
 @end example
 The example above uses Zstandard (@pxref{fgr:qnt_cr_zst}) because it
@@ -10166,14 +10174,14 @@ Here @var{var} is the variable to quantize, and @var{prc} is its
 precision.
 @cindex indicator option
 @cindex multi-arguments
-The option @samp{--ppc} (and its long option equivalents such
-as @samp{--qnt} and @samp{--quantize}) indicates the argument syntax
+The option @samp{--qnt} (and its long option equivalents such
+as @samp{--ppc} and @samp{--quantize}) indicates the argument syntax
 will be @var{key}=@var{val}.
-As such, @samp{--ppc} and its synonyms are indicator options that accept
+As such, @samp{--qnt} and its synonyms are indicator options that accept
 arguments supplied one-by-one like 
-@samp{--ppc @var{key1}=@var{val1} --ppc @var{key2}=@var{val2}}, or
+@samp{--qnt @var{key1}=@var{val1} --qnt @var{key2}=@var{val2}}, or
 aggregated together in multi-argument format like
-@samp{--ppc @var{key1}=@var{val1}#@var{key2}=@var{val2}}
+@samp{--qnt @var{key1}=@var{val1}#@var{key2}=@var{val2}}
 (@pxref{Multi-arguments}).
 The default algorithm assumes @var{prc} specifies @acronym{NSD}
 precision, e.g., @samp{T=2} means @math{@var{nsd=2}}.
@@ -10254,7 +10262,7 @@ The exact alorithm employed is
 @var{scale} is the nearest power @w{of 2} that exceeds 
 @math{10**@var{prc}}, and the inverse of @var{scale} is used when 
 @math{@var{prc} < 0}.
-For @math{@var{ppc} = 3} or @math{@var{ppc} = -2}, for example, we have
+For @math{@var{qnt} = 3} or @math{@var{qnt} = -2}, for example, we have
 @math{@var{scale} = 1024} and @math{@var{scale} = 1/128}.}
 zeroes the greatest number of significand bits consistent with
 the desired precision.
@@ -10268,16 +10276,16 @@ as exact (3.140000...), and the value as stored (3.140625) after
 @acronym{PPC}-rounding with either the @acronym{NSD} (@math{@var{prc}=3})
 or @acronym{DSD} (@math{@var{prc}=2}) algorithm are, respectively,
 @ignore
-ncks -O -v pi --ppc pi=1  ~/nco/data/in.nc ~/foo_nsd1.nc 
-ncks -O -v pi --ppc pi=2  ~/nco/data/in.nc ~/foo_nsd2.nc 
-ncks -O -v pi --ppc pi=3  ~/nco/data/in.nc ~/foo_nsd3.nc 
-ncks -O -v pi --ppc pi=4  ~/nco/data/in.nc ~/foo_nsd4.nc 
-ncks -O -v pi --ppc pi=5  ~/nco/data/in.nc ~/foo_nsd5.nc 
-ncks -O -v pi --ppc pi=6  ~/nco/data/in.nc ~/foo_nsd6.nc 
-ncks -O -v pi --ppc pi=7  ~/nco/data/in.nc ~/foo_nsd7.nc 
-ncks -O -v pi --ppc pi=8  ~/nco/data/in.nc ~/foo_nsd8.nc 
-ncks -O -v pi --ppc pi=9  ~/nco/data/in.nc ~/foo_nsd9.nc 
-ncks -O -v pi --ppc pi=.2 ~/nco/data/in.nc ~/foo_dsd2.nc 
+ncks -O -v pi --qnt pi=1  ~/nco/data/in.nc ~/foo_nsd1.nc 
+ncks -O -v pi --qnt pi=2  ~/nco/data/in.nc ~/foo_nsd2.nc 
+ncks -O -v pi --qnt pi=3  ~/nco/data/in.nc ~/foo_nsd3.nc 
+ncks -O -v pi --qnt pi=4  ~/nco/data/in.nc ~/foo_nsd4.nc 
+ncks -O -v pi --qnt pi=5  ~/nco/data/in.nc ~/foo_nsd5.nc 
+ncks -O -v pi --qnt pi=6  ~/nco/data/in.nc ~/foo_nsd6.nc 
+ncks -O -v pi --qnt pi=7  ~/nco/data/in.nc ~/foo_nsd7.nc 
+ncks -O -v pi --qnt pi=8  ~/nco/data/in.nc ~/foo_nsd8.nc 
+ncks -O -v pi --qnt pi=9  ~/nco/data/in.nc ~/foo_nsd9.nc 
+ncks -O -v pi --qnt pi=.2 ~/nco/data/in.nc ~/foo_dsd2.nc 
 ncks -s %20.16e -C -H ~/foo_nsd.nc
 ncks -s %20.16e -C -H ~/foo_dsd.nc
 ccc --tst=bnr --flt_foo=3.14159265358979323844 2> /dev/null | grep "Binary of float"
@@ -10395,7 +10403,7 @@ The user accesses @acronym{PPC} through a single switch, @samp{--ppc},
 repeated as many times as necessary.
 To apply the @acronym{NSD} algorithm to variable @var{u} use, e.g., 
 @example
-ncks -7 --ppc u=2 in.nc out.nc
+ncks -7 --qnt u=2 in.nc out.nc
 @end example
 The output file will preserve only two significant digits of @var{u}.
 The options @samp{-4} or @samp{-7} ensure a netCDF4-format output 
@@ -10473,6 +10481,8 @@ entropy produces self-compensating instead of accumulating errors
 during statistical operations.}, respectively.
 
 @html
+<a name="qnt"></a> <!-- http://nco.sf.net/nco.html#qnt -->
+<a name="qnt_alg"></a> <!-- http://nco.sf.net/nco.html#qnt_alg -->
 <a name="ppq"></a> <!-- http://nco.sf.net/nco.html#ppq -->
 <a name="PPQ"></a> <!-- http://nco.sf.net/nco.html#PPQ -->
 <a name="gbr"></a> <!-- http://nco.sf.net/nco.html#gbr -->
@@ -10489,6 +10499,7 @@ during statistical operations.}, respectively.
 @end html
 @cindex @acronym{PPQ}
 @cindex @acronym{GBR}
+@cindex @acronym{BAA}
 @cindex BitGroom
 @cindex Granular BitRound
 @cindex BitShave
@@ -10500,7 +10511,7 @@ during statistical operations.}, respectively.
 @cindex BitRound
 As of @w{version 5.0.3} (October 2021), @acronym{NCO} supports a more
 complete set of Precision-Preserving Quantization (@acronym{PPQ})
-filters than has been documented here. 
+filters than was previously documented here. 
 The default algorithm has been changed from BitGroom with BitRound
 masks from R. Kouznetsov (2021), to what we call Granular BitRound
 (@acronym{GBR}).
@@ -10512,6 +10523,37 @@ dataset.
 Since it quantizes a few more bits than BitGroom (and BitGroomRound)
 for a given @acronym{NSD}, @acronym{GBR} produces significantly larger
 quantization errors than those algorithms as well.
+
+As of @w{version 5.2.5} (May 2024), @acronym{NCO} supports a simple
+@acronym{API} to specify quantization algorithms.
+This method uses the @samp{--qnt_alg=alg_nm} option, where
+@code{alg_nm} is a happy, friendly, abbreviation or full English
+string for the quantization algorithm name.
+@example
+@verbatim
+ncks -7 -L 1               --qnt default=3 in.nc out.nc # Granular BitRound (NSD)
+ncks -7 -L 1 --qnt_alg=btg --qnt default=3 in.nc out.nc # BitGroom (NSD)
+ncks -7 -L 1 --qnt_alg=shv --qnt default=3 in.nc out.nc # BitShave (NSD)
+ncks -7 -L 1 --qnt_alg=set --qnt default=3 in.nc out.nc # BitSet (NSD)
+ncks -7 -L 1 --qnt_alg=dgr --qnt default=3 in.nc out.nc # DigitRound (NSD)
+ncks -7 -L 1 --qnt_alg=gbr --qnt default=3 in.nc out.nc # Granular BitRound (NSD)
+ncks -7 -L 1 --qnt_alg=bgr --qnt default=3 in.nc out.nc # BitGroomRound (NSD)
+ncks -7 -L 1 --qnt_alg=sh2 --qnt default=9 in.nc out.nc # HalfShave (NSB)
+ncks -7 -L 1 --qnt_alg=brt --qnt default=3 in.nc out.nc # BruteForce (NSD)
+ncks -7 -L 1 --qnt_alg=btr --qnt default=9 in.nc out.nc # BitRound (NSB)
+@end verbatim
+@end example
+The algorithm strings shown above give only a hint as to the
+flexibility of synonyms recognized as algorithm names.
+For example, synonyms for @samp{btr} include (case-insensitive
+versions of) @samp{bitround}, @samp{bit round}, and @samp{bit-round}. 
+Try it and see!
+
+Behind the scenes, @acronym{NCO} translates the algorithm name to an
+enumerated bit-adjustment-algorithm @acronym{BAA} value.
+The @acronym{BAA} interface is undocumented and unsupported, however.
+This is to give the maintainers to change the unlying algorithm
+organization. 
 @example
 @verbatim
 ncks -7 -L 1         --ppc default=3 in.nc out.nc # Granular BitRound (NSD)
@@ -10526,12 +10568,16 @@ ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce (NSD)
 ncks -7 -L 1 --baa=8 --ppc default=9 in.nc out.nc # BitRound (NSB)
 @end verbatim
 @end example
+Although the @code{qnt_alg} and @acronym{BAA} @acronym{API}s are
+equivalent, the @acronym{BAA} values may change in the future so using
+the @samp{qnt_alg} interface is recommended.
+
 These @acronym{NSD} algorithms write an algorithm-specific attribute,
 e.g., @code{QuantizeGranularBitRoundNumberOfSignificantDigits} or
 @code{QuantizeDigitRoundNumberOfSignificantDigits}.
 Documentation on these algorithms is best found in the literature.
 While Bit-Groom/Shave/Set are described above, documentation on
-Bit-Adjustment-Algorithms (@acronym{BAA}) 3--8 will be improved in the
+Bit-Adjustment-Algorithms (@acronym{BAA}) 3--8 will be improved in the 
 future.  
 
 @c keepbits=number_significant_bits-1
@@ -10596,7 +10642,7 @@ To request, say, five significant digits (@math{@var{nsd=5}}) for all
 fields, except, say, wind speeds which are only known to integer values
 (@math{@var{dsd=0}}) in the supplied units, requires @samp{--ppc} twice: 
 @example
-ncks -4 --ppc default=5 --ppc u,v=.0 in.nc out.nc
+ncks -4 --qnt default=5 --qnt u,v=.0 in.nc out.nc
 @end example
 To preserve five digits in all variables except coordinate variables
 and @var{u} and @var{v}, first specify a default value with the
@@ -10604,20 +10650,20 @@ and @var{u} and @var{v}, first specify a default value with the
 or @samp{glb}), and separately specify the exceptions with
 per-variable key-value pairs: 
 @example
-ncks --ppc default=5 --ppc u,v=20 in.nc out.nc
+ncks --qnt default=5 --qnt u,v=20 in.nc out.nc
 @end example
-The @samp{--ppc} option may be specified any number of times to
+The @samp{--qnt} option may be specified any number of times to
 support varying precision types and levels, and each option may
 aggregate all the variables with the same precision
 @example
-ncks --ppc p,w,z=5 --ppc q,RH=4 --ppc T,u,v=3 in.nc out.nc
-ncks --ppc p,w,z=5#q,RH=4#T,u,v=3 in.nc out.nc # Multi-argument format
+ncks --qnt p,w,z=5 --qnt q,RH=4 --qnt T,u,v=3 in.nc out.nc
+ncks --qnt p,w,z=5#q,RH=4#T,u,v=3 in.nc out.nc # Multi-argument format
 @end example
 Any @var{var} argument may be a regular expression.
 This simplifies generating lists of related variables:
 @example
-ncks --ppc Q.?=5 --ppc FS.?,FL.?=4 --ppc RH=.3 in.nc out.nc
-ncks --ppc Q.?=5#FS.?,FL.?=4#RH=.3 in.nc out.nc # Multi-argument format
+ncks --qnt Q.?=5 --qnt FS.?,FL.?=4 --qnt RH=.3 in.nc out.nc
+ncks --qnt Q.?=5#FS.?,FL.?=4#RH=.3 in.nc out.nc # Multi-argument format
 @end example
 Although @acronym{PPC}-rounding instantly reduces data precision,
 on-disk storage reduction only occurs once the data are compressed.  
@@ -11064,9 +11110,9 @@ Such a specification for a @acronym{GCM} dataset might look like this
 # Many quantities, such as aerosol optical depths and burdens, are 
 # highly uncertain and only useful to three significant digits.
 ncks -7 -O \
---ppc default=5 \
---ppc AN.?,AQ.?=4 \
---ppc AER.?,AOD.?,ARE.?,AW.?,BURDEN.?=3 \
+--qnt default=5 \
+--qnt AN.?,AQ.?=4 \
+--qnt AER.?,AOD.?,ARE.?,AW.?,BURDEN.?=3 \
 ncar_cam.nc ~/foo.nc
 @end example
 
@@ -18937,8 +18983,9 @@ ncbo [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-H] [-h] [--hdr_pad @var{nbr}] [--hpss]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
-[-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] [--ram_all]
-[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
+[-O] [-o @var{file_3}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
+[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]]
+[-X ...] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -19437,7 +19484,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}]
 [-m @var{mdl_nm}] [--mth_end=@var{mth_end}] [--mth_srt=@var{mth_srt}]
 [-n @var{nco_opt}] [--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd] [--no_stdin] 
-[-O @var{drc_rgr}] [-o @var{drc_out}] [-P @var{prc_typ}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
+[-O @var{drc_rgr}] [-o @var{drc_out}] [-P @var{prc_typ}] [-p @var{par_typ}] [--qnt=@var{qnt_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}] [--split]
 [-t @var{thr_nbr}] [--tpd=@var{tpd}] [--uio] [-v @var{var_lst}] [--var_xtr=@var{var_xtr}] [--version] 
@@ -20224,16 +20271,18 @@ processes at a time.
 See discussion below under Memory Considerations.
 
 @html
-<a name="ppc_prc"></a> <!-- http://nco.sf.net/nco.html#ppc_prc -->
+<a name="qnt_prc"></a> <!-- http://nco.sf.net/nco.html#qnt_prc -->
 @end html
-@cindex @code{--ppc=@var{ppc_prc}}
+@cindex @code{--qnt=@var{qnt_prc}}
 @cindex @var{ppc_prc}
+@cindex @var{qnt_prc}
 @cindex @code{--ppc}
 @cindex @code{--ppc_prc}
+@cindex @code{--qnt_prc}
 @cindex @code{--precision}
 @cindex @code{--qnt}
 @cindex @code{--quantize}
-@item --ppc=@var{ppc_prc} (@code{--ppc}, @code{--ppc_prc}, @code{--precision}, @code{--qnt}, @code{--quantize})
+@item --qnt=@var{qnt_prc} (@code{--ppc}, @code{--ppc_prc}, @code{--precision}, @code{--qnt}, @code{--quantize})
 @cindex Decimal Significant Digits
 @cindex Number of Significant Digits
 @cindex Bit-Grooming
@@ -20241,16 +20290,16 @@ Specifies the precision of the Precision-Preserving Compression
 algorithm (@pxref{Precision-Preserving Compression}).
 A positive integer is interpreted as the Number of Significant Digits
 for the Bit-Grooming algorithm, and is equivalent to specifying
-@samp{--ppc default=@var{ppc_prc}} to a binary operator.
+@samp{--qnt default=@var{qnt_prc}} to a binary operator.
 A positive or negative integer preceded by a period, e.g., @samp{.-2} is 
 interpreted as the number of Decimal Significant Digits for the
 rounding algorithm and is equivalent to specifying
-@samp{--ppc default=.@var{ppc_prc}} to a binary operator.
+@samp{--qnt default=.@var{qnt_prc}} to a binary operator.
 This option applies one precision algorithm and a uniform precision
 for the entire file. 
 To specify variable-by-variable precision options, pass the desired
 options as a quoted string directly with @samp{-n @var{nco_opt}},
-e.g., @samp{-n '--ppc FSNT,TREFHT=4 --ppc CLOUD=2'}.
+e.g., @samp{-n '--qnt FSNT,TREFHT=4 --qnt CLOUD=2'}.
 
 @html
 <a name="rgr_opt"></a> <!-- http://nco.sf.net/nco.html#rgr_opt -->
@@ -21504,8 +21553,9 @@ ncecat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
 [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [--mrd] [-n @var{loop}]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] 
-[-t @var{thr_nbr}] [-u @var{ulm_nm}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
+[-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
+[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-u @var{ulm_nm}] [--unn]
+[-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -21773,8 +21823,9 @@ nces [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb @var{y1},@var{y2},@var{m1},@v
 [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] [--nsm_fl|grp] [--nsm_sfx sfx]
-[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rth_dbl|flt]
-[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x] [-y @var{op_typ}]
+[-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
+[-R] [-r] [--ram_all] [--rth_dbl|flt] [-t @var{thr_nbr}] [--unn]
+[-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -22042,8 +22093,9 @@ ncflint [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]  [--cmp @var{cmp_sng}]
 [-H] [-h] [--hdr_pad @var{nbr}] [--hpss] 
 [-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [-N]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
-[-O] [-o @var{file_3}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] 
-[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
+[-O] [-o @var{file_3}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}] 
+[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]]
+[-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -22341,8 +22393,9 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [--area_wgt] [-b @var{fl_bnr}]
 [-L @var{dfl_lvl}] [-l @var{path}]
 [-M] [-m] [--map @var{map-file}] [--md5] [--mk_rec_dmn @var{dim}]
 [--no_blank] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...] [--prn_fl @var{print-file}]
-[-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rgr ...] [--rnr=wgt]
+[-O] [-o @var{output-file}] [-P] [-p @var{path}] [--prn_fl @var{print-file}]
+[-Q] [-q] [--qnt ...] [--qnt_alg @var{alg_nm}]
+[-R] [-r] [--rad] [--ram_all] [--rgr ...] [--rnr=wgt]
 [-s @var{format}] [--s1d] [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [--vrt @var{vrt-file}] 
 [-X ...] [-x] [--xml] @var{input-file} [[@var{output-file}]]
 @end example
@@ -24643,8 +24696,9 @@ ncpdq [-3] [-4] [-5] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]]
 [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--mrd]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] [--ppc ...]
-[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-U] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x]
+[-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}]
+[--qnt ...] [--qnt_alg @var{alg_nm}] [-R] [-r] [--ram_all] [-t @var{thr_nbr}]
+[-U] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x]
 @var{input-file} [@var{output-file}]
 @end example
 
@@ -25294,8 +25348,8 @@ ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-N] [-n @var{loop}] 
 [--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [--prm_int] [--prw wgt_arr]
-[-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
+[-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
+[--prm_int] [--prw wgt_arr] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -25613,8 +25667,9 @@ ncrcat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
 [-H] [-h] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}]
 [--no_tmp_fl] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rec_apn]
-[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
+[-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
+[-R] [-r] [--ram_all] [--rec_apn] [-t @var{thr_nbr}]
+[--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -25753,7 +25808,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
 [--no_add_fll] [--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stdin] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
-[--pdq=@var{pdq_opt}] [--ppc=@var{ppc_opt}] [--preserve=@var{prs_stt}] [--ps_nm=@var{ps_nm}]
+[--pdq=@var{pdq_opt}] [--qnt=@var{qnt_opt}] [--preserve=@var{prs_stt}] [--ps_nm=@var{ps_nm}]
 [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src] [--rnr_thr=@var{rnr_thr}] 
 [--rrg_bb_wesn=@var{bb_wesn}] [--rrg_dat_glb=@var{dat_glb}] [--rrg_grd_glb=@var{grd_glb}]
 [--rrg_grd_rgn=@var{grd_rgn}] [--rrg_rnm_sng=@var{rnm_sng}]
@@ -30071,9 +30126,9 @@ ncwa [-3] [-4] [-5] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-H] [-h] [--hdr_pad @var{nbr}] [--hpss] [-I]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] 
 [--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rth_dbl|flt]
-[-T @var{mask_comp}] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}]
-[-X ...] [-x] [-y @var{op_typ}]
+[-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
+[-R] [-r] [--ram_all] [--rth_dbl|flt] [-T @var{mask_comp}] [-t @var{thr_nbr}]
+[--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-X ...] [-x] [-y @var{op_typ}]
 @var{input-file} [@var{output-file}]
 @end example
 

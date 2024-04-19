@@ -1,8 +1,14 @@
-2024-04-18  Charlie Zender  <zender@uci.edu>
+2024-04-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.5-alpha02: Udon';git push
 	git tag -a 5.2.5-alpha02 -m 'all: qnt alg nm cf cv; qnt mre';git push --tags
+
+	* Amend all docs to prefer --qnt over --ppc, mention --qnt_alg too
+
+	* Add --qnt_alg to all numerical operators, and --qnt to those and ncremap/ncclimo as well
+
+2024-04-18  Charlie Zender  <zender@uci.edu>
 
 	* Add nco_qnt2baa() to support string-valued specification of NCO-implemented quantization algorithms
 

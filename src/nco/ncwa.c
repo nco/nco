@@ -340,6 +340,7 @@ main(int argc,char **argv)
     {"precision_preserving_compression",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
     {"qnt",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
     {"quantize",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */
+    {"qnt_alg",required_argument,0,0}, /* [sng] Quantization algorithm name */
     /* Long options with short counterparts */
     {"3",no_argument,0,'3'},
     {"4",no_argument,0,'4'},
@@ -516,10 +517,8 @@ main(int argc,char **argv)
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
 	nc_set_log_level(log_lvl);
       } /* !log_lvl */
-      if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"qnt") || !strcmp(opt_crr,"quantize")){
-        ppc_arg[ppc_nbr]=(char *)strdup(optarg);
-        ppc_nbr++;
-      } /* endif "ppc" */
+      if(!strcmp(opt_crr,"qnt") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"quantize")) ppc_arg[ppc_nbr++]=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"qnt_alg") || !strcmp(opt_crr,"quantize_algorithm")) nco_baa_cnv=(unsigned short int)nco_qnt2baa(optarg);
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Create (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"unbuffered_io") || !strcmp(opt_crr,"uio") || !strcmp(opt_crr,"create_share")) SHARE_CREATE=True; /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
