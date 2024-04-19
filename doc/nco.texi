@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.5-alpha02
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 15 April 2024
+@set update-date 19 April 2024
 @set update-month April 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2720,6 +2720,7 @@ feature is automatic and cannot be controlled by the user.
 * Multiple Record Dimensions::
 * Missing Values::
 * Chunking::
+* Quantization Algorithms::
 * Compression::
 * Deflation::
 * MD5 digests::
@@ -8961,7 +8962,7 @@ important information from being lost.
 <a name="cnk_sz"></a> <!-- http://nco.sf.net/nco.html#cnk_sz -->
 <a name="chunk_size"></a> <!-- http://nco.sf.net/nco.html#chunk_size -->
 @end html
-@node Chunking, Compression, Missing Values, Shared features
+@node Chunking, Quantization Algorithms, Missing Values, Shared features
 @section Chunking
 @cindex @code{--cnk_byt}
 @cindex @code{--cnk_csh}
@@ -9444,6 +9445,98 @@ instructions to activate chunking nevertheless contain chunked
 variables. 
 
 @html
+<a name="qnt"></a> <!-- http://nco.sf.net/nco.html#qnt -->
+<a name="qnt_alg"></a> <!-- http://nco.sf.net/nco.html#qnt_alg -->
+<a name="quantize_algorithm"></a> <!-- http://nco.sf.net/nco.html#quantize_algorithm -->
+<a name="ppq"></a> <!-- http://nco.sf.net/nco.html#ppq -->
+<a name="PPQ"></a> <!-- http://nco.sf.net/nco.html#PPQ -->
+<a name="gbr"></a> <!-- http://nco.sf.net/nco.html#gbr -->
+<a name="GBR"></a> <!-- http://nco.sf.net/nco.html#GBR -->
+<a name="BitGroom"></a> <!-- http://nco.sf.net/nco.html#BitGroom -->
+<a name="GranularBitRound"></a> <!-- http://nco.sf.net/nco.html#GranularBitRound -->
+<a name="BitShave"></a> <!-- http://nco.sf.net/nco.html#BitShave -->
+<a name="BitSet"></a> <!-- http://nco.sf.net/nco.html#BitSet -->
+<a name="DigitRound"></a> <!-- http://nco.sf.net/nco.html#DigitRound -->
+<a name="BitGroomRound"></a> <!-- http://nco.sf.net/nco.html#BitGroomRound -->
+<a name="HalfShave"></a> <!-- http://nco.sf.net/nco.html#HalfShave -->
+<a name="BruteForce"></a> <!-- http://nco.sf.net/nco.html#BruteForce -->
+<a name="BitRound"></a> <!-- http://nco.sf.net/nco.html#BitRound -->
+@end html
+@node Quantization Algorithms, Compression, Chunking, Shared features
+@section Quantization Algorithms
+@cindex @acronym{PPQ}
+@cindex @acronym{GBR}
+@cindex @acronym{BAA}
+@cindex BitGroom
+@cindex Granular BitRound
+@cindex BitShave
+@cindex BitSet
+@cindex DigitRound
+@cindex BitGroomRound
+@cindex HalfShave
+@cindex BruteForce
+@cindex BitRound
+@cindex @code{--qnt_alg}
+@cindex @code{--quantize_algorithm}
+@cindex Quantization algorithm
+@cartouche
+Availability: @command{ncbo}, @command{ncecat}, @command{nces},
+@command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
+@command{ncrcat}, @command{ncwa}@* 
+Short options: None@*
+Long options: @samp{--qnt_alg @var{alg_nm}}@*
+@samp{--quantize_algorithm @var{alg_nm}}@*
+@end cartouche
+
+As of @w{version 5.2.5} (May 2024), @acronym{NCO} supports a simple
+@acronym{API} to specify quantization algorithms.
+This method uses the @samp{--qnt_alg=alg_nm} option, where
+@code{alg_nm} is a happy, friendly, abbreviation or full English
+string for the quantization algorithm name.
+@example
+@verbatim
+ncks -7 -L 1               --qnt default=3 in.nc out.nc # Granular BitRound (NSD)
+ncks -7 -L 1 --qnt_alg=btg --qnt default=3 in.nc out.nc # BitGroom (NSD)
+ncks -7 -L 1 --qnt_alg=shv --qnt default=3 in.nc out.nc # BitShave (NSD)
+ncks -7 -L 1 --qnt_alg=set --qnt default=3 in.nc out.nc # BitSet (NSD)
+ncks -7 -L 1 --qnt_alg=dgr --qnt default=3 in.nc out.nc # DigitRound (NSD)
+ncks -7 -L 1 --qnt_alg=gbr --qnt default=3 in.nc out.nc # Granular BitRound (NSD)
+ncks -7 -L 1 --qnt_alg=bgr --qnt default=3 in.nc out.nc # BitGroomRound (NSD)
+ncks -7 -L 1 --qnt_alg=sh2 --qnt default=9 in.nc out.nc # HalfShave (NSB)
+ncks -7 -L 1 --qnt_alg=brt --qnt default=3 in.nc out.nc # BruteForce (NSD)
+ncks -7 -L 1 --qnt_alg=btr --qnt default=9 in.nc out.nc # BitRound (NSB)
+@end verbatim
+@end example
+The algorithm strings shown above give only a hint as to the
+flexibility of synonyms recognized as algorithm names.
+For example, synonyms for @samp{btr} include (case-insensitive
+versions of) @samp{bitround}, @samp{bit round}, and @samp{bit-round}. 
+Try it and see!
+
+Behind the scenes, @acronym{NCO} translates the algorithm name to an
+enumerated bit-adjustment-algorithm @acronym{BAA} value.
+The @acronym{BAA} interface is undocumented and unsupported, however.
+This is to give the maintainers to change the unlying algorithm
+organization. 
+@example
+@verbatim
+ncks -7 -L 1         --ppc default=3 in.nc out.nc # Granular BitRound (NSD)
+ncks -7 -L 1 --baa=0 --ppc default=3 in.nc out.nc # BitGroom (NSD)
+ncks -7 -L 1 --baa=1 --ppc default=3 in.nc out.nc # BitShave (NSD)
+ncks -7 -L 1 --baa=2 --ppc default=3 in.nc out.nc # BitSet (NSD)
+ncks -7 -L 1 --baa=3 --ppc default=3 in.nc out.nc # DigitRound (NSD)
+ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # Granular BitRound (NSD)
+ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitGroomRound (NSD)
+ncks -7 -L 1 --baa=6 --ppc default=9 in.nc out.nc # HalfShave (NSB)
+ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce (NSD)
+ncks -7 -L 1 --baa=8 --ppc default=9 in.nc out.nc # BitRound (NSB)
+@end verbatim
+@end example
+Although the @code{qnt_alg} and @acronym{BAA} @acronym{API}s are
+equivalent, the @acronym{BAA} values may change in the future so using
+the @samp{qnt_alg} interface is recommended.
+
+@html
 <a name="bg"></a> <!-- http://nco.sf.net/nco.html#bg -->
 <a name="bitgrooming"></a> <!-- http://nco.sf.net/nco.html#bitgrooming -->
 <a name="Bit-Grooming"></a> <!-- http://nco.sf.net/nco.html#Bit-Grooming -->
@@ -9458,7 +9551,7 @@ variables.
 <a name="DSD"></a> <!-- http://nco.sf.net/nco.html#DSD -->
 <a name="qnt"></a> <!-- http://nco.sf.net/nco.html#qnt -->
 @end html
-@node Compression, Deflation, Chunking, Shared features
+@node Compression, Deflation, Quantization Algorithms, Shared features
 @section Compression
 @cindex @code{--cmp_sng}
 @cindex @code{--compression}
@@ -9485,6 +9578,8 @@ Long options: @samp{--ppc @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
 @samp{--precision_preserving_compression @var{var1}[,@var{var2}[,...]]=@var{prc}},@*
 @samp{--qnt @var{var1}[,@var{var2}[,...]]=@var{prc}}@*
 @samp{--quantize @var{var1}[,@var{var2}[,...]]=@var{prc}}@*
+@samp{--qnt_alg @var{alg_nm}}@*
+@samp{--quantize_algorithm @var{alg_nm}}@*
 @samp{--cmp cmp_sng}@*
 @samp{--cmp @var{codec1}[,@var{params1}[|@var{codec2}[,@var{params2}[|...]]]]}@*
 @samp{--codec @var{codec1}[,@var{params1}[|@var{codec2}[,@var{params2}[|...]]]]}@*
@@ -10480,35 +10575,6 @@ The criss-crossing tracks increase the pattern's entropy, and this
 entropy produces self-compensating instead of accumulating errors
 during statistical operations.}, respectively.
 
-@html
-<a name="qnt"></a> <!-- http://nco.sf.net/nco.html#qnt -->
-<a name="qnt_alg"></a> <!-- http://nco.sf.net/nco.html#qnt_alg -->
-<a name="ppq"></a> <!-- http://nco.sf.net/nco.html#ppq -->
-<a name="PPQ"></a> <!-- http://nco.sf.net/nco.html#PPQ -->
-<a name="gbr"></a> <!-- http://nco.sf.net/nco.html#gbr -->
-<a name="GBR"></a> <!-- http://nco.sf.net/nco.html#GBR -->
-<a name="BitGroom"></a> <!-- http://nco.sf.net/nco.html#BitGroom -->
-<a name="GranularBitRound"></a> <!-- http://nco.sf.net/nco.html#GranularBitRound -->
-<a name="BitShave"></a> <!-- http://nco.sf.net/nco.html#BitShave -->
-<a name="BitSet"></a> <!-- http://nco.sf.net/nco.html#BitSet -->
-<a name="DigitRound"></a> <!-- http://nco.sf.net/nco.html#DigitRound -->
-<a name="BitGroomRound"></a> <!-- http://nco.sf.net/nco.html#BitGroomRound -->
-<a name="HalfShave"></a> <!-- http://nco.sf.net/nco.html#HalfShave -->
-<a name="BruteForce"></a> <!-- http://nco.sf.net/nco.html#BruteForce -->
-<a name="BitRound"></a> <!-- http://nco.sf.net/nco.html#BitRound -->
-@end html
-@cindex @acronym{PPQ}
-@cindex @acronym{GBR}
-@cindex @acronym{BAA}
-@cindex BitGroom
-@cindex Granular BitRound
-@cindex BitShave
-@cindex BitSet
-@cindex DigitRound
-@cindex BitGroomRound
-@cindex HalfShave
-@cindex BruteForce
-@cindex BitRound
 As of @w{version 5.0.3} (October 2021), @acronym{NCO} supports a more
 complete set of Precision-Preserving Quantization (@acronym{PPQ})
 filters than was previously documented here. 
@@ -10523,54 +10589,6 @@ dataset.
 Since it quantizes a few more bits than BitGroom (and BitGroomRound)
 for a given @acronym{NSD}, @acronym{GBR} produces significantly larger
 quantization errors than those algorithms as well.
-
-As of @w{version 5.2.5} (May 2024), @acronym{NCO} supports a simple
-@acronym{API} to specify quantization algorithms.
-This method uses the @samp{--qnt_alg=alg_nm} option, where
-@code{alg_nm} is a happy, friendly, abbreviation or full English
-string for the quantization algorithm name.
-@example
-@verbatim
-ncks -7 -L 1               --qnt default=3 in.nc out.nc # Granular BitRound (NSD)
-ncks -7 -L 1 --qnt_alg=btg --qnt default=3 in.nc out.nc # BitGroom (NSD)
-ncks -7 -L 1 --qnt_alg=shv --qnt default=3 in.nc out.nc # BitShave (NSD)
-ncks -7 -L 1 --qnt_alg=set --qnt default=3 in.nc out.nc # BitSet (NSD)
-ncks -7 -L 1 --qnt_alg=dgr --qnt default=3 in.nc out.nc # DigitRound (NSD)
-ncks -7 -L 1 --qnt_alg=gbr --qnt default=3 in.nc out.nc # Granular BitRound (NSD)
-ncks -7 -L 1 --qnt_alg=bgr --qnt default=3 in.nc out.nc # BitGroomRound (NSD)
-ncks -7 -L 1 --qnt_alg=sh2 --qnt default=9 in.nc out.nc # HalfShave (NSB)
-ncks -7 -L 1 --qnt_alg=brt --qnt default=3 in.nc out.nc # BruteForce (NSD)
-ncks -7 -L 1 --qnt_alg=btr --qnt default=9 in.nc out.nc # BitRound (NSB)
-@end verbatim
-@end example
-The algorithm strings shown above give only a hint as to the
-flexibility of synonyms recognized as algorithm names.
-For example, synonyms for @samp{btr} include (case-insensitive
-versions of) @samp{bitround}, @samp{bit round}, and @samp{bit-round}. 
-Try it and see!
-
-Behind the scenes, @acronym{NCO} translates the algorithm name to an
-enumerated bit-adjustment-algorithm @acronym{BAA} value.
-The @acronym{BAA} interface is undocumented and unsupported, however.
-This is to give the maintainers to change the unlying algorithm
-organization. 
-@example
-@verbatim
-ncks -7 -L 1         --ppc default=3 in.nc out.nc # Granular BitRound (NSD)
-ncks -7 -L 1 --baa=0 --ppc default=3 in.nc out.nc # BitGroom (NSD)
-ncks -7 -L 1 --baa=1 --ppc default=3 in.nc out.nc # BitShave (NSD)
-ncks -7 -L 1 --baa=2 --ppc default=3 in.nc out.nc # BitSet (NSD)
-ncks -7 -L 1 --baa=3 --ppc default=3 in.nc out.nc # DigitRound (NSD)
-ncks -7 -L 1 --baa=4 --ppc default=3 in.nc out.nc # Granular BitRound (NSD)
-ncks -7 -L 1 --baa=5 --ppc default=3 in.nc out.nc # BitGroomRound (NSD)
-ncks -7 -L 1 --baa=6 --ppc default=9 in.nc out.nc # HalfShave (NSB)
-ncks -7 -L 1 --baa=7 --ppc default=3 in.nc out.nc # BruteForce (NSD)
-ncks -7 -L 1 --baa=8 --ppc default=9 in.nc out.nc # BitRound (NSB)
-@end verbatim
-@end example
-Although the @code{qnt_alg} and @acronym{BAA} @acronym{API}s are
-equivalent, the @acronym{BAA} values may change in the future so using
-the @samp{qnt_alg} interface is recommended.
 
 These @acronym{NSD} algorithms write an algorithm-specific attribute,
 e.g., @code{QuantizeGranularBitRoundNumberOfSignificantDigits} or

@@ -20,44 +20,34 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. All numeric operators now support --qnt as a synonym for --ppc.
-Previous one could only use --quantize as a synonym, and --qnt
-just seemed like it needed to be one too. The first three are the same:
-ncks --ppc default=3 --ppc prs_sfc=5 in.nc out.nc # Granular Bitround
-ncks --qnt default=3 --qnt prs_sfc=5 in.nc out.nc
-ncks --quantize default=3 --quantize prs_sfc=5 in.nc out.nc
-ncks --baa=8 --ppc default=12 --ppc prs_sfc=15 in.nc out.nc # Bitround
+A. All numeric operators now support --qnt_alg=alg_nm to request a
+quantization algorithm by name. Previously one had to use the --baa
+option with an obscure undocumented integer code for each algorithm.
+Now quantization algorithms can be requested by the English names.
+alg_nm can be BitGroom, Granular BitRound, BitShave, BitSet,
+DigitRound, BitGroomRound, HalfShave, BruteForce, BitRound or common
+synonyms for these names, e.g., set, shave, "bit round", btg, etc.
+The names are case-insensitive:
+ncks -7 -L 1               --qnt default=3 in.nc out.nc # Granular BitRound (NSD)
+ncks -7 -L 1 --qnt_alg=btg --qnt default=3 in.nc out.nc # BitGroom (NSD)
+ncks -7 -L 1 --qnt_alg=shv --qnt default=3 in.nc out.nc # BitShave (NSD)
+ncks -7 -L 1 --qnt_alg=set --qnt default=3 in.nc out.nc # BitSet (NSD)
+ncks -7 -L 1 --qnt_alg=dgr --qnt default=3 in.nc out.nc # DigitRound (NSD)
+ncks -7 -L 1 --qnt_alg=gbr --qnt default=3 in.nc out.nc # Granular BitRound (NSD)
+ncks -7 -L 1 --qnt_alg=bgr --qnt default=3 in.nc out.nc # BitGroomRound (NSD)
+ncks -7 -L 1 --qnt_alg=sh2 --qnt default=9 in.nc out.nc # HalfShave (NSB)
+ncks -7 -L 1 --qnt_alg=brt --qnt default=3 in.nc out.nc # BruteForce (NSD)
+ncks -7 -L 1 --qnt_alg=btr --qnt default=9 in.nc out.nc # BitRound (NSB)
+http://nco.sf.net/nco.html#qnt_alg
 http://nco.sf.net/nco.html#qnt
-http://nco.sf.net/nco.html#ppc
-http://nco.sf.net/nco.html#quantize
 
-B. All numeric operators now write CF-compliant metadata for quantization
-algorithms through the NCO internal algorithms. (Previously NCO wrote CF
-metadata only for quanitzation performed by the netCDF library.) 
-NCO no longer writes the really long quantization metadata attributes
-such as QuantizeBitGroomNumberOfSignificantDigits. Note that libnetcdf
-still does write these attributes (prepended by an underscore) when
-its quantization functions are invoked.
-% ncks -O -7 --baa=8 --qnt prs_sfc=6 --cmp='shf|zst' in.nc out.nc
-% ncks -m -v prs_sfc,compression_info out.nc
-netcdf foo2 {
-  dimensions:
-    lat = 2 ;
-    lon = 4 ;
-    time = UNLIMITED ; // (10 currently)
+B. CF-compliant metadata for quantization now includes maximum
+relative error (MRE) for the BitRound algorithm, for which MRE is
+0.5*2^-NSB = 2^-(NSB+1).
+ncks -7 -v ps,ts --qnt_alg=btr --qnt default=9 --qnt ps=13 --cmp='shf|zst' in.nc out.nc
+ncks -m -C -v ps,ts,compression_info out.nc
 
-  variables:
-    char compression_info ;
-      compression_info:family = "quantize" ;
-      compression_info:algorithm = "BitRound" ;
-      compression_info:implementation = "NCO version 5.2.4" ;
 
-    float prs_sfc(time,lat,lon) ;
-      prs_sfc:long_name = "Surface pressure" ;
-      prs_sfc:units = "pascal" ;
-      prs_sfc:lossy_compression = "compression_info" ;
-      prs_sfc:lossy_compression_nsb = 6 ;
-} // group /
 
 BUG FIXES:
    

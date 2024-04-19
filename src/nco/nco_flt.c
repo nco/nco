@@ -1619,7 +1619,7 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
     if(flg_mre){
       double qnt_mre_dbl; /* [frc] Maximum Relative Error (MRE) statistic */
       float qnt_mre_flt; /* [frc] Maximum Relative Error (MRE) statistic */
-      qnt_mre_flt=qnt_mre_dbl=pow(2.0,-1.0*qnt_lvl_dpl);
+      qnt_mre_flt=qnt_mre_dbl=0.5*pow(2.0,-1.0*qnt_lvl_dpl);
       aed_ppc_mre.att_nm=qnt_lvl_mre_nm;
       if(var_typ == NC_FLOAT){aed_ppc_mre.val.fp=&qnt_mre_flt;}
       else if(var_typ == NC_DOUBLE){aed_ppc_mre.val.dp=&qnt_mre_dbl;}

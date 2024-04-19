@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.5-alpha03: Bratislava';git push
 	git tag -a 5.2.5-alpha03 -m '';git push --tags
 
+	* Change MRE from 2^(-NSB) to 2^-(NSB+1) to account for implicit MSB=1
+
 	* NCO 5.2.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.5-alpha02: Takumi Tonkatsu Ramen';git push
 	git tag -a 5.2.5-alpha02 -m 'all: qnt_alg nm cf cv; qnt mre';git push --tags
@@ -16,7 +18,7 @@
 
 	* Add nco_qnt2baa() to support string-valued specification of NCO-implemented quantization algorithms
 
-	* nco_qnt_mtd() add maximum relative error to NSB methods
+	* nco_qnt_mtd() add maximum relative error (MRE) to NSB methods
 
 2024-04-17  Charlie Zender  <zender@uci.edu>
 
