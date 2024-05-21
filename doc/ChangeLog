@@ -1,8 +1,12 @@
-2024-04-19  Charlie Zender  <zender@uci.edu>
+2024-05-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.5-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.5-alpha03: Bratislava';git push
 	git tag -a 5.2.5-alpha03 -m '';git push --tags
+
+	* ncclimo/ncremap: print ncvis command instead of ncview command
+
+2024-04-19  Charlie Zender  <zender@uci.edu>
 
 	* Change MRE from 2^(-NSB) to 2^-(NSB+1) to account for implicit MSB=1
 
@@ -22,7 +26,7 @@
 
 2024-04-17  Charlie Zender  <zender@uci.edu>
 
-	* nco_qnt_mtd() use lowercase CF-ized algorithm names per draft CF convention, e.g., "granular_bitRound" instead of "Granular BitRound"
+	* nco_qnt_mtd() use lowercase CF-ized algorithm names per draft CF convention, e.g., "granular_bitround" instead of "Granular BitRound"
 
 2024-04-16  Charlie Zender  <zender@uci.edu>
 

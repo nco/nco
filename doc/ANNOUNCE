@@ -38,6 +38,10 @@ ncks -7 -L 1 --qnt_alg=bgr --qnt default=3 in.nc out.nc # BitGroomRound (NSD)
 ncks -7 -L 1 --qnt_alg=sh2 --qnt default=9 in.nc out.nc # HalfShave (NSB)
 ncks -7 -L 1 --qnt_alg=brt --qnt default=3 in.nc out.nc # BruteForce (NSD)
 ncks -7 -L 1 --qnt_alg=btr --qnt default=9 in.nc out.nc # BitRound (NSB)
+This menagerie arose from research efforts. We recommend that others
+choose between BitRound, DigitRound, and Granular BitRound for
+real-world workflows. The others are of mainly research or historical
+interest only. 
 http://nco.sf.net/nco.html#qnt_alg
 http://nco.sf.net/nco.html#qnt
 

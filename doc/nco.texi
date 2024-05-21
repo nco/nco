@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.5-alpha02
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 19 April 2024
+@set update-date 30 April 2024
 @set update-month April 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -28877,8 +28877,12 @@ to use @var{vrt_nm}, instead of the default @code{plev}, as the vertical
 coordinate name for pure pressure grids.
 This option first appeared in @acronym{NCO} @w{version 4.8.0},
 released in May, 2019.
-The vertical coordinate @var{vrt_nm} is usually, though not
-necessarily, specified in millibars.
+Note that the vertical coordinate may be specified in millibars 
+in some important reanalyses like @acronym{ERA5}, whereas many
+models express the vertical coordinate in Pascals.
+The user must ensure that the vertical coordinate in the template
+vertical grid-file is in the same units (e.g., mb or Pa) as the
+vertical coordinate in the file to be vertically interpolated.
 
 @html
 <a name="vrt"></a> <!-- http://nco.sf.net/nco.html#vrt -->

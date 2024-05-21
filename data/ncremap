@@ -711,7 +711,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--nsx_alg${fnt_nrm}  Intersection algorithm used by mbtempest (default ${fnt_bld}kdtree${fnt_nrm}) [${fnt_tlc}nsx_alg, intersection_algorithm${fnt_nrm}] (advfront|kdtree)"
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}out_fl${fnt_nrm}   Output-file (regridded file) (empty copies Input filename) (default ${fnt_bld}${out_fl}${fnt_nrm}) [${fnt_tlc}out_fl, out_file, output_file${fnt_nrm}]"
-    echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, prm_typ, procedure${fnt_nrm}]"
+    echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, prm_typ, procedure${fnt_nrm}] (cpl|eam|eamxx|elm|mpaso|mpassi|cam|clm|pop|...)"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
     echo " ${fnt_bld}--pdq_opt${fnt_nrm}  ncpdq dimension permutation string (empty means none) (default ${fnt_bld}${pdq_opt}${fnt_nrm}) [${fnt_tlc}pdq, pdq_opt, prm, prm_opt, permute${fnt_nrm}]"
     echo " ${fnt_bld}--preserve${fnt_nrm} Preserved statistic (empty preserves integral, except mean for MPAS) (default ${fnt_bld}${prs_stt}${fnt_nrm}) [${fnt_tlc}preserve, prs_stt, preserved_statistic${fnt_nrm}] (integral|mean)"
@@ -2525,7 +2525,7 @@ fi # wgt_usr
     
 if [ "${dst_usr_flg}" = 'Yes' ]; then 
     if [ "${grd_dst_usr_flg}" = 'Yes' ]; then 
-	printf "${spt_nm}: INFO Both '-d dst_fl' and '-g grd_dst' were specified so ${spt_nm} will infer ${grd_dst} from ${dst_fl}\n"
+	printf "${spt_nm}: INFO Both '-d dst_fl' and '-g grd_dst' were specified so ${spt_nm} will infer grid-file ${grd_dst} from data-file ${dst_fl}\n"
     fi # !grd_dst_usr_flg
 fi # !dst_usr_flg
 if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ] && [ "${vrt_usr_flg}" != 'Yes' ]; then 
@@ -3671,7 +3671,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     else # !fl_nbr
 	printf "Completed regridding data file(s) at `date`.\n"
 	echo "Quick plots of results from last regridded file:"
-	echo "ncview  ${out_fl} &"
+	echo "ncvis ${out_fl} &"
     fi # !fl_nbr
     date_dff=$((date_end-date_srt))
     echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"

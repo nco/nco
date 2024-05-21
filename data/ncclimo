@@ -638,7 +638,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--no_stdin${fnt_nrm} Do not check stdin for input file list [${fnt_tlc}no_stdin, no_inp_std, no_redirect, no_standard_input${fnt_nrm}]"
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_rgr${fnt_nrm}  Regridded directory (default ${fnt_bld}${drc_rgr}${fnt_nrm}) [${fnt_tlc}drc_rgr, rgr_drc, dir_regrid, regrid${fnt_nrm}]"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
-    echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, procedure${fnt_nrm}]"
+    echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, procedure${fnt_nrm}] (cpl|eam|eamxx|elm|mpaso|mpassi|cam|clm|pop|...)"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}] [${fnt_tlc}serial | background | mpi${fnt_nrm}]"
     echo " ${fnt_bld}--qnt_prc${fnt_nrm}  Quantization precision (empty means none) (default ${fnt_bld}${qnt_prc}${fnt_nrm}) [${fnt_tlc}qnt, qnt_prc, ppc, ppc_prc, precision, quantize${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
@@ -3794,15 +3794,15 @@ if [ "${clm_flg}" = 'Yes' ]; then
     
     if [ -n "${yr_srt_prv}" ]; then
 	if [ -n "${rgr_opt}" ]; then 
-	    echo "ncview ${fl_rgr_xtn[${idx_lst}]} &"
+	    echo "ncvis ${fl_rgr_xtn[${idx_lst}]} &"
 	else
-	    echo "ncview ${fl_xtn[${idx_lst}]} &"
+	    echo "ncvis ${fl_xtn[${idx_lst}]} &"
 	fi # !rgr_opt    
     else
 	if [ -n "${rgr_opt}" ]; then 
-	    echo "ncview ${fl_rgr[${idx_lst}]} &"
+	    echo "ncvis ${fl_rgr[${idx_lst}]} &"
 	else
-	    echo "ncview ${fl_out[${idx_lst}]} &"
+	    echo "ncvis ${fl_out[${idx_lst}]} &"
 	fi # !rgr_opt    
     fi # !yr_srt_prv
 fi # !clm_flg
@@ -3810,9 +3810,9 @@ if [ "${tms_flg}" = 'Yes' ]; then
     echo "Quick plots of last timeseries segment of last variable split:"
     let idx_lst=${var_nbr}-1
     if [ -n "${rgr_opt}" ] && [ ${no_ntv_tms} = 'No' ]; then 
-	echo "ncview ${fl_rgr[${idx_lst}]} &"
+	echo "ncvis ${fl_rgr[${idx_lst}]} &"
     else
-	echo "ncview ${fl_out[${idx_lst}]} &"
+	echo "ncvis ${fl_out[${idx_lst}]} &"
     fi # !rgr_opt    
 fi # !tms_flg
 date_end=$(date +"%s")
