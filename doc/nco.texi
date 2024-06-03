@@ -28064,6 +28064,8 @@ ncremap --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128,134,-16,-9' \
 
 @acronym{RRG}-mode supports most normal @command{ncremap} options,
 including input and output methods and regridding algorithms. 
+However, @acronym{RRG}-mode is not widely used and, as of 20240529,
+has not been parallelized like the rest of @command{ncremap}. 
 @*
 @html
 <a name="alm"></a> <!-- http://nco.sf.net/nco.html#alm -->

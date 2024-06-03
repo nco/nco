@@ -1,8 +1,14 @@
-2024-05-07  Charlie Zender  <zender@uci.edu>
+2024-06-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.5-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.5-alpha03: Bratislava';git push
 	git tag -a 5.2.5-alpha03 -m '';git push --tags
+
+	* ncremap: Splice MPAS-Atmosphere dimensions nIsoLevelsT,nIsoLevelsZ into default pdq_opt
+
+	* ncremap: Add --pdq_opt synonym to --prm_opt
+
+2024-05-07  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo/ncremap: print ncvis command instead of ncview command
 

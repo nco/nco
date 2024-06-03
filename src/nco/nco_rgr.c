@@ -5349,7 +5349,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      HIRDLS: Latitude
      MAR/RACMO: LAT, LON
      MLS: CO_Latitude
-     MPAS-O/I/LI: areaCell, latCell, lonCell and others that are all handled by separated MPAS convention implementation below
+     MPAS-A/O/I/LI: areaCell, latCell, lonCell and others that are all handled by separated MPAS convention implementation below
      NCO: lat_vertices, lon_vertices
      NEMO: nav_lat, nav_lon
      NWS HRRR: gridlat_0, gridlon_0
@@ -5779,9 +5779,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    break;
 	  } /* !row_dst_adr */
 	} /* !lnk_idx */
-	/* If weight loop reached end without a match, then this destination cell is empty */
+	/* If weight/link loop completed without a match... */
 	if(lnk_idx == lnk_nbr){
+	  /* ...then this destination cell is empty */
 	  flg_dst_mpt=True;
+	  /* Break dst_idx loop then print reassuring message that this empty cell will be _FillValue */
 	  break;
 	} /* !lnk_idx */
       } /* !dst_idx */
