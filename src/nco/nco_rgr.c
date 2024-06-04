@@ -5770,11 +5770,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       if(dst_idx < grd_sz_out) flg_dst_mpt=True;
       if(flg_dst_mpt && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one destination cell, Fortran (1-based) row index %lu, is empty. User requested (with --msk_apl) that masked cells receive _FillValue, so regridder will ensure that all regridded fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm,dst_idx+1L);
     }else{
-      /* Logic here could be replaced by examining frac_b variable, if we trust input frac_b...
+      /* Logic can be implemented by using only weight arrays or by examining frac_b variable, if we trust input frac_b...
 	 ...and we do trust input frac_b since it is already used for renormalization
 	 20240603: Nested lnk_idx loop within out dst_idx loop to search for empty cells is slow:
 	 Potentially 10^9+ searches that might yield no empty cells on hi-res grids (e.g., MPAS-A)
-	 20240603: Nested loop seems to hang for MPAS-A, try replacing by frac_b == frc_out loop instead... */
+	 20240603: Nested loop seems to hang but are actually just slow for MPAS-A
+	 20240604: Replace nested dst_idx/lnk_idx loop by faster frac_b == frc_out loop
+	 NB: frac_b == frc_out is unavailable in ESMF weight-only mapfiles */
+#if 0	
       for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){ /* For each destination cell... */
 	for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){ /* ...does any weight... */
 	  if(row_dst_adr[lnk_idx] == dst_idx){ /* ...contribute to that cell? */
@@ -5790,6 +5793,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  break;
 	} /* !lnk_idx */
       } /* !dst_idx */
+#endif /* !0 */
+      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++) /* For each destination cell... */
+	if(frc_out[idx] != 0.0) break;
+      /* If weight loop completed without a match then this destination cell is empty */
+      if(dst_idx == grd_sz_out) flg_dst_mpt=True;
       if(flg_dst_mpt && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one destination cell, Fortran (1-based) row index %lu, is empty. User requested (with --add_fll) that all empty cells receive _FillValue, so regridder will ensure that all regridded fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm,dst_idx+1L);
     } /* !flg_msk_apl */
   } /* !flg_add_fll */

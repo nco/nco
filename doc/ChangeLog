@@ -1,3 +1,7 @@
+2024-06-04  Charlie Zender  <zender@uci.edu>
+
+	* ncremap: Replace nested dst_idx/lnk_idx loop in flg_add_fll/flg_msk_apl block by faster frc_out loop
+
 2024-06-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.5-alpha03 release procedure:
