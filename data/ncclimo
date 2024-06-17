@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 
 # Purpose: Climatology script tailored to CESM'ish monthly input and E3SM output guidelines
@@ -685,6 +686,20 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
     exit 1
 } # !fnc_usg_prn()
+
+function bsh_mjr_vrs_lt_4 {
+    # Purpose: Return true if major version of Bash shell is < 4
+    # Usage: if bsh_mjr_vrs_lt_4 ; then ...; fi
+    local vrs
+    if [ -n ${BASH_VERSION} ]; then
+	let vrs=${BASH_VERSION%%.*} # NeR98 p. 100
+	if [ ${vrs} -lt 4 ] ; then # NeR98 p. 153
+	    return 0; # 0 is true in shell-ese
+	fi # !vrs
+    fi # !BASH_VERSION
+    # By default, functions return exit status of last command executed
+    return 1; # 1 is false in shell-ese
+} # !bsh_mjr_vrs_lt_4()
 
 function trim_leading_zeros {
     # Purpose: Trim leading zeros from string representing an integer
@@ -1514,27 +1529,87 @@ fi # !hfc && !hfs
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
 if [ "${tms_flg}" = 'Yes' ]; then
 
-    # 20210823: Pre-process extraction list if it contains a regular expression character
-    # Match var_lst against first file contents to create real extraction list
-    # Only necessary in subset mode to extract distinct timeseries
-    # https://stackoverflow.com/questions/26621736/how-to-check-if-a-string-contains-a-special-character
-    if [ -n "${var_lst}" ] && [[ "${var_lst}" == *[\^\$\+\?\.\&\(\)\[\]\{\}\|]* ]]; then
-	var_lst=`ncks -C -v ${var_lst} --lst_xtr ${ppn_opt} ${fl_in[0]}`
+    if [ -n "${var_lst}" ]; then
+	# 20210823: Pre-process extraction list if it contains a regular expression character
+	# Match var_lst against first file contents to create real extraction list
+	# Only necessary in subset mode to extract distinct timeseries
+	# https://stackoverflow.com/questions/26621736/how-to-check-if-a-string-contains-a-special-character
+	if [[ "${var_lst}" == *[\^\$\+\?\.\&\(\)\[\]\{\}\|]* ]]; then
+	    var_lst=`ncks -C -v ${var_lst} --lst_xtr ${ppn_opt} ${fl_in[0]}`
+	fi # !rx
+
+	# Create array of excluded variables from var_lst
+	if [ "${xcl_flg}" = 'Yes' ]; then
+	    var_lst_xcl=( ${var_lst//,/ } )
+	fi # !xcl_flg
     fi # !var_lst
-    
-    # 20240617 Here would be appropriate point to handle --xcl_flg for timeseries mode
-    if [ "${xcl_flg}" = 'Yes' ]; then
-	echo "${spt_nm}: ERROR Timeseries mode does not support exclude flag --xcl_var | --xcl | --exclude | --exclude_variables"
-	echo "${spt_nm}: HINT Contact the authors if you would like them to enable this feature"
-	exit 1
-    fi # !xcl_flg
 
     if [ -z "${var_lst}" ]; then
 	echo "${spt_nm}: WARNING Splitter mode without explicitly specified variable list (i.e., -v var_lst) splits all variables of rank >= 2 into separate files, thus doubling the on-disk data amount"
 	var_lst=`ncks --lst_rnk_ge2 ${ppn_opt} ${fl_in[0]}`
+
+	# Create array of all variables
+	if [ "${xcl_flg}" = 'Yes' ]; then
+	    var_lst_all=( ${var_lst//,/ } )
+	fi # !xcl_flg
     fi # !var_lst
+
+    # 20240617 Handle --xcl_flg for timeseries mode
+    if [ "${xcl_flg}" = 'Yes' ]; then
+
+	if bsh_mjr_vrs_lt_4; then
+	    echo "${spt_nm}: ERROR Exclude flag (--xcl_var | --xcl | --exclude | --exclude_variables) in timeseries mode only works with Bash v. 4.0+"
+	    echo "${spt_nm}: HINT Re-run in Bash v. 4.0+ shell"
+	    exit 1
+        fi # !bsh_mjr_vrs_lt_4()
+	    
+	if [ ${dbg_lvl} -ge 2 ]; then
+	    printf "var_lst_all="
+	    for var in ${var_lst_all[@]}; do
+		printf "${var},"
+	    done # !var_lst_all
+	    printf "\n"
+	fi # !dbg
+
+	if [ ${dbg_lvl} -ge 2 ]; then
+	    printf "var_lst_xcl="
+	    for var in ${var_lst_xcl[@]}; do
+		printf "${var},"
+	    done # !var_lst_xcl
+	    printf "\n"
+	fi # !dbg
+
+	# https://stackoverflow.com/questions/48791859/removing-items-from-one-list-when-present-in-another-in-bash
+	# Create associative array with variable names as keys, and a fixed value
+	declare -A var_lst_xtr=( ) # Requires Bash 4.0 or later
+	for var in "${var_lst_all[@]}"; do
+	    var_lst_xtr[${var}]=1
+	done # !var_lst_all
+
+	# Remove keys associated with excluded variables
+	for var in "${var_lst_xcl[@]}"; do
+	    unset "var_lst_xtr[${var}]"
+	done # !var_lst_xcl
+	
+	if [ ${dbg_lvl} -ge 2 ]; then
+	    printf "var_lst_xtr="
+	    for var in ${var_lst_xtr[@]}; do
+		printf "${var},"
+	    done # !var_lst_xtr
+	    printf "\n"
+	fi # !dbg
+
+	# Re-assemble extraction array into standard list
+	var_nbr=0 # [sng] Number of split (subset into timeseries) files
+	for var in "${var_lst_xtr[@]}"; do
+	    var_lst[${var_nbr}]="${var},"
+	    let var_nbr=${var_nbr}+1
+	done # !var_lst_xtr
+
+    fi # !xcl_flg
+
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
-    var_nbr=0 # [sng] Split (subset into timeseries) files
+    var_nbr=0 # [sng] Number of split (subset into timeseries) files
     for var in ${var_lst//,/ }; do
 	# NB:
 	var_sbs[${var_nbr}]=${var}

@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.5-alpha03: Bratislava';git push
 	git tag -a 5.2.5-alpha03 -m 'ncremap: support mpasa';git push --tags
 
+	* ncclimo: Add support for --xcl_var in timeseries mode. NB: Only works with Bash v. 4.0+
+
 	* ncclimo: Add explicit ERROR message that --xcl_var does not work in timeseries mode
 
 	* ncclimo: Fix borken drc_rgr_xtn option that interfered with --exclude

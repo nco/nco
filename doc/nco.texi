@@ -20658,8 +20658,8 @@ flag to take effect.
 Variables explicitly specified for exclusion by
 @samp{--xcl --vars=@var{var_lst}[,@dots{}]} need not be present in the
 input file.
-A significant limitation to be aware of is that this switch does not
-currently work in timeseries mode.
+This switch currently works only in climo mode, not in timeseries mode.
+This is a significant limitation that we are working to eliminate.
 
 @html
 <a name="ypf"></a> <!-- http://nco.sf.net/nco.html#ypf -->
