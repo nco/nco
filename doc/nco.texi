@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.5-alpha02
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 30 April 2024
-@set update-month April 2024
+@set update-date 17 June 2024
+@set update-month June 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -20658,6 +20658,8 @@ flag to take effect.
 Variables explicitly specified for exclusion by
 @samp{--xcl --vars=@var{var_lst}[,@dots{}]} need not be present in the
 input file.
+A significant limitation to be aware of is that this switch does not
+currently work in timeseries mode.
 
 @html
 <a name="ypf"></a> <!-- http://nco.sf.net/nco.html#ypf -->

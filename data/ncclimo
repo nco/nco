@@ -569,7 +569,7 @@ nm_typ='cesm' # [sng] Name type ('cesm', 'mpas', 'yyyymm', 'yyyy-mm', 'yyyy-mm-0
 no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
 par_typ="${par_bck}" # [sng] Parallelism type
-prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'cpl', 'eam', 'eamxx', 'elm', 'mali', 'mpas', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi')
+prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'cpl', 'eam', 'eamxx', 'elm', 'mali', 'mpas', 'mpasa', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi')
 qnt_prc='' # [nbr] Quantization precision
 rgn_avg='No' # [sng] Regional and global average timeseries
 rgr_map='' # [sng] Regridding (horizontal) map
@@ -823,11 +823,10 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       vrt_xtr=?* | xtr_mth=?* | extrapolation_type=?* | extrapolation_method=?* ) vrt_xtr="${LONG_OPTARG}" ;; # # Vertical extrapolation type (mss_val|nrs_ngh)
 	       drc_xtn=?* | xtn_drc=?* | extended_dir=?* | extended_climo=?* | extended=?* ) drc_xtn="${LONG_OPTARG}" ;; # -X # Extended climo directory
 	       drc_prv=?* | prv_drc=?* | previous_dir=?* | previous_climo=?* | previous=?* ) drc_prv="${LONG_OPTARG}" ;; # -x # Previous climo directory
-	       drc_rgr_xtn=?* | drc_xtn_rgr=?* | regridded_extended=?* | extended_regridded=?* ) drc_rgr_xtn="$
+	       drc_rgr_xtn=?* | drc_xtn_rgr=?* | regridded_extended=?* | extended_regridded=?* ) drc_rgr_xtn="${LONG_OPTARG}" ;; # -Y # Regridded extended climo directory
+	       drc_rgr_prv=?* | drc_prv_rgr=?* | regridded_previous=?* | previous_regridded=?* ) drc_rgr_prv="${LONG_OPTARG}" ;; # -y # Regridded previous climo directory
 	       xcl_var | xcl | exclude | exclude_variables ) xcl_flg='Yes' ;; # # Exclude rather than extract variable list
 	       xcl_var=?* | xcl=?* | exclude=?* | exclude_variables=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Exclude rather than extract variable list
-{LONG_OPTARG}" ;; # -Y # Regridded extended climo directory
-	       drc_rgr_prv=?* | drc_prv_rgr=?* | regridded_previous=?* | previous_regridded=?* ) drc_rgr_prv="${LONG_OPTARG}" ;; # -y # Regridded previous climo directory
 	       ypf_max=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_max_usr="${LONG_OPTARG}" ;; # -z # Years-per-output-file maximum
                '' ) break ;; # "--" terminates argument processing
                * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
@@ -1109,7 +1108,7 @@ fi # !mm_srt
 if [ -n "${caseid}" ]; then
     out_nm=${caseid}
 fi # !caseid
-if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mali' ] || [ "${mdl_nm}" = 'mpas' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpas-ocean' ] || [ "${mdl_nm}" = 'mpascice' ] || [ "${mdl_nm}" = 'mpasseaice' ] || [ "${mdl_nm}" = 'mpas-seaice' ] || [ "${mdl_nm}" = 'mpassi' ] || [ "${prc_typ}" = 'mali' ] || [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpaso' ] || [ "${prc_typ}" = 'mpas-ocean' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpas-seaice' ] || [ "${prc_typ}" = 'mpassi' ]; then
+if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mali' ] || [ "${mdl_nm}" = 'mpas' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpas-ocean' ] || [ "${mdl_nm}" = 'mpascice' ] || [ "${mdl_nm}" = 'mpasseaice' ] || [ "${mdl_nm}" = 'mpas-seaice' ] || [ "${mdl_nm}" = 'mpassi' ] || [ "${prc_typ}" = 'mali' ] || [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpasa' ] || [ "${prc_typ}" = 'mpaso' ] || [ "${prc_typ}" = 'mpas-ocean' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpas-seaice' ] || [ "${prc_typ}" = 'mpassi' ]; then
     mdl_typ='mpas'
     nm_typ='mpas'
     out_nm="${mdl_nm}"
@@ -1264,12 +1263,13 @@ fi # !fl_fmt
 if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="--dbg_lvl=${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
+# 20240617 var_lst for timeseries mode must be and is processed separately below
 if [ -n "${var_lst}" ] && [ "${tms_flg}" != 'Yes' ]; then
     if [ "${xcl_flg}" = 'Yes' ]; then
 	nco_opt="${nco_opt} -x"
-    fi # !xcl_flg
+    fi # !xcl_flg                                                                                     
     nco_opt="${nco_opt} -v ${var_lst}"
-fi # !var_lst
+fi # !var_lst                                                                                         
 if [ -n "${cmp_sng}" ]; then
     # 20230623: Insert backslashes to protect pipe characters from shell
     nco_opt="${nco_opt} --cmp=${cmp_sng//\|/\\|}"
@@ -1522,6 +1522,13 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	var_lst=`ncks -C -v ${var_lst} --lst_xtr ${ppn_opt} ${fl_in[0]}`
     fi # !var_lst
     
+    # 20240617 Here would be appropriate point to handle --xcl_flg for timeseries mode
+    if [ "${xcl_flg}" = 'Yes' ]; then
+	echo "${spt_nm}: ERROR Timeseries mode does not support exclude flag --xcl_var | --xcl | --exclude | --exclude_variables"
+	echo "${spt_nm}: HINT Contact the authors if you would like them to enable this feature"
+	exit 1
+    fi # !xcl_flg
+
     if [ -z "${var_lst}" ]; then
 	echo "${spt_nm}: WARNING Splitter mode without explicitly specified variable list (i.e., -v var_lst) splits all variables of rank >= 2 into separate files, thus doubling the on-disk data amount"
 	var_lst=`ncks --lst_rnk_ge2 ${ppn_opt} ${fl_in[0]}`
