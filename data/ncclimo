@@ -1558,7 +1558,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
     if [ "${xcl_flg}" = 'Yes' ]; then
 
 	if bsh_mjr_vrs_lt_4; then
-	    echo "${spt_nm}: ERROR Exclude flag (--xcl_var | --xcl | --exclude | --exclude_variables) in timeseries mode only works with Bash v. 4.0+"
+	    echo "${spt_nm}: ERROR Exclude flag (--xcl_var | --xcl | --exclude | --exclude_variables) in timeseries mode only works with Bash v. 4.0+ and this Bash is version ${BASH_VERSION}"
 	    echo "${spt_nm}: HINT Re-run in Bash v. 4.0+ shell"
 	    exit 1
         fi # !bsh_mjr_vrs_lt_4()
