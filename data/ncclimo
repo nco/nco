@@ -1,4 +1,3 @@
-
 #!/usr/bin/env bash
 
 # Purpose: Climatology script tailored to CESM'ish monthly input and E3SM output guidelines
@@ -1278,7 +1277,7 @@ fi # !fl_fmt
 if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="--dbg_lvl=${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
-# 20240617 var_lst for timeseries mode must be and is processed separately below
+# 20240617 var_lst for timeseries mode must be and is processed separately in timeseries block
 if [ -n "${var_lst}" ] && [ "${tms_flg}" != 'Yes' ]; then
     if [ "${xcl_flg}" = 'Yes' ]; then
 	nco_opt="${nco_opt} -x"
@@ -1544,11 +1543,17 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	fi # !xcl_flg
     fi # !var_lst
 
-    if [ -z "${var_lst}" ]; then
-	echo "${spt_nm}: WARNING Splitter mode without explicitly specified variable list (i.e., -v var_lst) splits all variables of rank >= 2 into separate files, thus doubling the on-disk data amount"
+    # Create list of all variables when none specified, and array of all variables to construct exclusion list
+    if [ -z "${var_lst}" ] && [ "${xcl_flg}" = 'Yes' ]; then
+	echo "${spt_nm}: ERROR Exclude option (--xcl_var | --xcl | --exclude | --exclude_variables) only works in conjunction with explicitly specified variable extraction list"
+	echo "${spt_nm}: HINT Re-run with explicitly specified variable list (-v var_lst)"
+	exit 1
+    fi # !var_lst
+    if [ -z "${var_lst}" ] || [ "${xcl_flg}" = 'Yes' ]; then
+	if [ -z "${var_lst}" ]; then
+	    echo "${spt_nm}: WARNING Splitter mode without explicitly specified variable list (i.e., -v var_lst) splits all variables of rank >= 2 into separate files, thus doubling the on-disk data amount"
+	fi # !var_lst
 	var_lst=`ncks --lst_rnk_ge2 ${ppn_opt} ${fl_in[0]}`
-
-	# Create array of all variables
 	if [ "${xcl_flg}" = 'Yes' ]; then
 	    var_lst_all=( ${var_lst//,/ } )
 	fi # !xcl_flg
@@ -1593,7 +1598,8 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	
 	if [ ${dbg_lvl} -ge 2 ]; then
 	    printf "var_lst_xtr="
-	    for var in ${var_lst_xtr[@]}; do
+	    # Extraction list is the keys (not values) of this array
+	    for var in ${!var_lst_xtr[@]}; do
 		printf "${var},"
 	    done # !var_lst_xtr
 	    printf "\n"
@@ -1601,11 +1607,14 @@ if [ "${tms_flg}" = 'Yes' ]; then
 
 	# Re-assemble extraction array into standard list
 	var_nbr=0 # [sng] Number of split (subset into timeseries) files
-	for var in "${var_lst_xtr[@]}"; do
-	    var_lst[${var_nbr}]="${var},"
+	var_lst='' # [sng] Variables to process
+	for var in "${!var_lst_xtr[@]}"; do
+	    var_lst="${var_lst},${var}"
 	    let var_nbr=${var_nbr}+1
 	done # !var_lst_xtr
-
+	# Remove leading comma from list
+	var_lst="${var_lst:1}"
+	
     fi # !xcl_flg
 
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
