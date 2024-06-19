@@ -1128,6 +1128,10 @@ if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mali' ] || [ "${mdl_nm}" = 'mpas
     out_nm="${mdl_nm}"
     hst_nm='hist'
 fi # !caseid
+if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpassi' ]; then 
+    prc_mpas='Yes'
+    prc_mpasseaice='Yes'
+fi # !prc_typ
 if [ "${mdl_typ}" = 'mpas' ] && [ -z "${prc_opt}" ]; then
     prc_typ='mpas'
     prc_opt='-P mpas'
@@ -1436,10 +1440,15 @@ if [ ${inp_aut} = 'Yes' ] && [ ${clm_md} = 'mth' ] || [ ${clm_md} = 'ann' ]; the
 		if [ ${mdl_nm} = 'mali' ]; then 
 		    fl_in[${fl_nbr}]="${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01_00000.nc"
 		else # !mdl_nm
-		    # 20161130: Old MPAS rule until today
+		    # 20161130: Really old MPAS rule until today (for pre-v1 data)
 		    # fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+		    # 20240619: Newer though still old MPAS rule until today (for v1 data)
 		    # Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
  		    fl_in[${fl_nbr}]="${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
+		    # 20240619: Latest MPAS rule (for v2+ data) prepends caseid
+		    if [ -n ${caseid} ]; then 
+ 			fl_in[${fl_nbr}]="${caseid}.${fl_in[${fl_nbr}]}"
+		    fi # !caseid
 		fi # !mdl_nm
 	    elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
 		fl_in[${fl_nbr}]="${bs_nm}_${YYYY}${MM}.${bs_sfx}"
@@ -1722,6 +1731,22 @@ if [ "${tms_flg}" = 'Yes' ]; then
 
     if [ "${rgn_avg}" = 'Yes' ]; then 
 
+	if [ "${prc_mpas}" = 'Yes' ]; then
+	    # 20240619
+	    # MPAS-LI, MPAS-O, MPAS-SI v2+ datasets omit latitude variable
+	    lat_nm='latCell' # Generic MPAS latitude variable
+	    # MPAS-A, MPAS-LI, MPAS-O, MPAS-SI v2+ datasets omit (time-constant) area variable
+	    # NB: areaCell is full gridcell area on MPAS mesh, and does not account for landfrac
+	    # Hence, area_wgt variable diagnosed below will be inaccurate for MPAS-O unless 'ocnfrac' is given and applied as sgs_frc
+	    area_nm='areaCell' # Generic MPAS fixed grid area variable
+	    if [ "${prc_mpasseaice}" = 'Yes' ]; then
+		# MPAS-SI v2+ datasets omit latitude though include (time-varying) area variable
+		sgs_frc='timeMonthly_avg_iceAreaCell'
+	    fi # !prc_mpasseaice
+	    echo "WARNING: Regional average timeseries option requires latitude and area variables. These variables are not present in many MPAS datasets."
+	    echo "HINT: First append latitude and area variables to raw timeseries datasets with, e.g., ncks -C -v ${lat_nm},${area_nm} in.nc out.nc"
+	fi # !prc_mpas
+	
 	# 20191217 Regional average timeseries require area and latitude variables
 	var_xtr="${var_xtr},${area_nm},${lat_nm}"
 
@@ -2264,9 +2289,9 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	printf "Each input file assumed to contain statistics for one month\n"
     fi # !mth
     if [ "${rgn_avg}" = 'Yes' ]; then 
-	printf "Hemispherically and globally averaged timeseries files saved to directory ${drc_out}\n"
+	printf "Hemispherically and globally averaged timeseries files to be saved to directory ${drc_out}\n"
     else
-	printf "Native-grid timeseries files saved to directory ${drc_out}\n"
+	printf "Native-grid timeseries files to be saved to directory ${drc_out}\n"
     fi # !rgn_avg
     if [ -n "${rgr_opt}" ]; then 
 	printf "Regridded split files to directory ${drc_rgr}\n"

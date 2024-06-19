@@ -597,7 +597,7 @@ rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
 rnr_thr='' # [frc] Renormalization option
 se_np_nbr=4 # [nbr] Spectral Element polynomial order of discretization (for TempestRemap SE grids)
 sgs_frc='' # [sng] Sub-grid fraction variable
-sgs_frc_usr='' # [sng] Sub-grid fraction variable
+sgs_frc_usr='' # [sng] Sub-grid fraction variable (user-defined)
 sgs_msk='' # [sng] Sub-grid mask variable
 sgs_nrm='1.0' # [frc] Sub-grid normalization
 skl_fl='' # [sng] Skeleton file
@@ -1963,7 +1963,7 @@ if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_
     sgs_msk='timeMonthly_avg_icePresentIntMask'
     sgs_nrm='1.0'
     prc_mpas='Yes'
-    prc_mpascice='Yes'
+    prc_mpasseaice='Yes'
 fi # !mpascice
 if [ -n "${add_fll_usr}" ]; then add_fll="${add_fll_usr}"; fi
 if [ "${add_fll}" = 'Yes' ]; then 
@@ -1978,9 +1978,6 @@ fi # !sgs
 if [ "${prc_sgs}" = 'Yes' ]; then
     if [ -n "${sgs_frc_usr}" ]; then sgs_frc="${sgs_frc_usr}"; fi
     if [ -z "${sgs_frc}" ]; then
-	echo "ERROR: SGS processing invoked without specifying sgs_frc variable name"
-	echo "HINT: Specify sgs_frc variable name with --sgs_frc=var_name"
-	exit 1
     fi # !sgs_frc
     rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
     if [ -n "${sgs_msk}" ]; then
