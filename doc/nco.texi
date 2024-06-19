@@ -7224,6 +7224,10 @@ ncremap -7 --dfl_lvl=1 -G ttl='CRUNCEP Equi-Angular 0.5x0.5 degree uniform grid,
 ncremap -7 --dfl_lvl=1 -G ttl='Equi-Angular 0.5x0.5 degree uniform grid (r05), dimensions 360x720, cell edges on Poles/Equator and Date Line/Prime Meridian'#latlon=360,720#lat_typ=uni#lon_typ=180_wst \
         -g ${DATA}/grids/r05_360x720.nc
 
+# 720x1440 ELM/MOSART grid, first longitude west edge at DateLine (NB: ELM defines r025, starts at Dateline)
+ncremap -7 --dfl_lvl=1 -G ttl='Equi-Angular 0.25x0.25 degree uniform grid (r025), dimensions 720x1440, cell edges on Poles/Equator and Date Line/Prime Meridian'#latlon=720,1440#lat_typ=uni#lon_typ=180_wst \
+        -g ${DATA}/grids/r025_720x1440.nc
+
 # 105x401 Greenland ERA5
 ncremap -G ttl='Equi-Angular Greenland 0.25x0.25 degree ERA5 north-to-south grid'#latlon=105,401#snwe=58.875,85.125,-87.125,13.125#lat_typ=uni#lat_drc=n2s#lon_typ=grn_ctr \
         -g ${DATA}/grids/greenland_0.25x0.25_era5.nc
@@ -20658,8 +20662,9 @@ flag to take effect.
 Variables explicitly specified for exclusion by
 @samp{--xcl --vars=@var{var_lst}[,@dots{}]} need not be present in the
 input file.
-This switch currently works only in climo mode, not in timeseries mode.
-This is a significant limitation that we are working to eliminate.
+Previously, this switch has always woked in climo mode.
+As of @acronym{NCO} version 5.2.5 (July, 2024), this switch also works
+in timeseries mode.
 
 @html
 <a name="ypf"></a> <!-- http://nco.sf.net/nco.html#ypf -->
@@ -20726,7 +20731,7 @@ more than @var{ypf_max} (default 50) years of input, i.e.,
 @file{T_000101_005012.nc}, @file{T_005101_009912.nc},
 @file{T_010001_014912.nc}, etc.
 
-@unnumberedsubsec @acronym{MPAS-O/I/L} considerations
+@unnumberedsubsec @acronym{MPAS-O/SI/LI} considerations
 @acronym{MPAS} ocean and ice models currently have their own
 (non-CESM'ish) naming convention that guarantees output files have the
 same names for all simulations. 
@@ -20741,11 +20746,13 @@ climatologies for any @acronym{MPAS} model.
 However, some regridder options are model-specific and therefore it is  
 smarter to specify which @acronym{MPAS} model produced the input
 data with 
+@samp{-P mpasatmosphere}, (or @samp{-P mpasa} for short),
 @samp{-P mpasocean}, (or @samp{-P mpaso} for short),
 @samp{-P mpasseaice}, (or @samp{-P mpassi} for short), or
 @samp{-P mali}, like this: 
 @example
 @verbatim
+ncclimo -P mpasa  -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-A
 ncclimo -P mpaso  -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
 ncclimo -P mpassi -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-SI
 ncclimo -P mali   -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-LI
@@ -27812,6 +27819,7 @@ Valid procedure types include @samp{airs} for @acronym{NASA AIRS} satellite data
 @samp{elm} or @samp{clm} for @acronym{DOE ELM} and @acronym{NCAR CLM} model data,
 @samp{cice} for @acronym{CICE} ice model data (must be on 2D grids),
 @samp{cism} for @acronym{NCAR CISM} land ice model data,
+@samp{mpasa}, or @samp{mpasatmosphere} for @acronym{MPAS} atmosphere model data,
 @samp{mpascice}, @samp{mpasseaice}, or @samp{mpassi} for @acronym{MPAS} sea-ice model data,
 @samp{mpaso} or @samp{mpasocean} for @acronym{MPAS} ocean model data,
 @samp{mod04} for @w{Level 2} @acronym{MODIS} @acronym{MOD04} product,
@@ -29001,8 +29009,9 @@ priorities for future development of vertical regridding are:
       (for @acronym{E3SM/CESM} hybrid grids), @code{lev},
       @code{lev_2}, and @code{lnsp} (for @acronym{ECMWF} hybrid grids
       only), @code{depth}, @code{timeMonthly_avg_zMid} (for
-      @acronym{MPAS} depth grids), and @code{plev} (for pure-pressure
-      grids).  
+      @acronym{MPAS} depth grids), and @code{plev} and @code{level}
+      (for pure-pressure grids with @acronym{NCEP} and @acronym{ERA5}
+      conventions, respectively).
       The infrastructure to provide alternate names for any of these
       input/output variables names is straightforward, and is heavily 
       used for horizontal spatial regridding.

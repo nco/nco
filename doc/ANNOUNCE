@@ -6,11 +6,13 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.2.5 fully implements the CF lossy metadata convention for
-all NCO internal quantization algorithms. It also improves ncclimo
+Version 5.2.5 fully implements the draft CF lossy metadata convention
+for all NCO internal quantization algorithms. It also improves ncclimo 
 diagnostics and adds a new invocation synonym (--qnt) for
-quantization. No major new features are implemented. Skip this release
-if these changes are not important to you. 
+quantization, and outputs a maximum_relative_error statistic
+where possible. ncclimo/ncremap add support for MPAS-Atmosphere
+datasets, and ncclimo supports excluding variable lists in timeseries
+mode. Skip this release if these changes are not important to you. 
 
 Work on NCO 5.2.6 has commenced and will add support for Zarr S3 
 stores, and will enhance the vertical regridder.
@@ -47,11 +49,75 @@ http://nco.sf.net/nco.html#qnt
 
 B. CF-compliant metadata for quantization now includes maximum
 relative error (MRE) for the BitRound algorithm, for which MRE is
-0.5*2^-NSB = 2^-(NSB+1).
+0.5*2^-NSB = 2^-(NSB+1). The MRE appears as the attribute
+"lossy_compression_maximum_relative_error" in each field's
+metadata:
 ncks -7 -v ps,ts --qnt_alg=btr --qnt default=9 --qnt ps=13 --cmp='shf|zst' in.nc out.nc
 ncks -m -C -v ps,ts,compression_info out.nc
+netcdf out {
+...
+    float ps(time,lat,lon) ;
+      ps:standard_name = "surface_air_pressure" ;
+      ps:units = "Pa" ;
+      ps:lossy_compression = "compression_info" ;
+      ps:lossy_compression_nsb = 13 ;
+      ps:lossy_compression_maximum_relative_error = 6.103516e-05f ;
 
+    float ts(time) ;
+      ts:standard_name = "surface_temperature" ;
+      ts:units = "K" ;
+      ts:lossy_compression = "compression_info" ;
+      ts:lossy_compression_nsb = 9 ;
+      ts:lossy_compression_maximum_relative_error = 0.0009765625f ;
+} // group /
+http://nco.sf.net/nco.html#qnt_alg
+http://nco.sf.net/nco.html#qnt
 
+C. ncremap and ncclimo now handle MPAS-A (Atmosphere) datasets.
+These operators have always supported MPAS Ocean, Sea-ice, and
+Land-Ice (all used by E3SM) datasets. This completes MPAS support.
+Use -P mpasa to indicate that datasets follow MPAS-A conventions.
+This allow ncremap to automatically permute the spatial dimensions
+into the correct order for regridding, and to differentiate itself
+from other MPAS datasets in terms of missing value treatment:
+ncremap -P mpasa  --map=map.nc mpa.nc foo.nc # MPAS-A
+ncremap -P mali   --map=map.nc mpli.nc foo.nc # MPAS-LI
+ncremap -P mpaso  --map=map.nc mpo.nc foo.nc # MPAS-O
+ncremap -P mpassi --map=map.nc mpsi.nc foo.nc # MPAS-SI
+
+NB: Omitting the -P mpasX option on MPAS datasets works if the user
+explicitly permutes the horizontal dimensions, e.g.: 
+ncremap --pdq=Time,nVertLevels,nIsoLevelsT,nIsoLevelsZ,nCells \
+	--map=map.nc mpa.nc foo.nc # MPAS-A
+Analogous workarounds apply to the other MPAS componenents when
+omitting the -P option, and -P mpas also works for generic MPAS.
+However, using -P mpasX results in the best output.
+http://nco.sf.net/nco.html#MPAS
+http://nco.sf.net/nco.html#ncremap
+http://nco.sf.net/nco.html#pdq_opt
+Thanks to Angela Borallo of CGG for prompting this feature.
+
+D. ncclimo now supports excluding the specified variable list
+(with -x or --xcl_var or --exclude) in timeseries mode.
+Previously this option only worked in climo mode.
+However, in timeseries mode this option requires invoking ncclimo
+with Bash version 4.0 or higher. NB: This works well across modern
+Linux  machines, though MacOS still ships Bash 3.2.57 (from 2007!).
+MacOS users must put an updated Bash on their PATH before /bin/bash
+to access this features (all other features continue to work fine
+with older versions of Bash).
+ncclimo --split --exclude -v FSNT,AODVIS,TREFHT \
+	-c v2.LR.historical_0101 -s 2013 -e 2014 \
+	-i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
+http://nco.sf.net/nco.html#xcl_var
+Thanks to Koichi Sakaguchi of PNNL for prompting this feature.
+
+E. ncremap now automatically tests whether vertical grid-file has a
+level(level) coordinate à la ERA5. If so, it treats this as a pure
+pressure coordinate. This is analogous to the treatment of the
+plev(plev) coordinate for NCEP files.
+ncremap --vrt_out=vrt_prs_era5_L37.nc in.nc out.nc
+http://nco.sf.net/nco.html#vrt
 
 BUG FIXES:
    

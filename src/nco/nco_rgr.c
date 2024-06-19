@@ -1048,6 +1048,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   }else if((rcd=nco_inq_varid_flg(tpl_id,plev_nm_tpl,&plev_id)) == NC_NOERR){
     nco_vrt_grd_out=nco_vrt_grd_prs; /* NCEP */
     flg_grd_out_prs=True;
+  }else if((rcd=nco_inq_varid_flg(tpl_id,"level",&plev_id)) == NC_NOERR){
+    /* 20240619: Automatically detect ERA5 pressure files so users can be lazy */
+    plev_nm_tpl=(char *)strdup("level");
+    plev_nm_out=(char *)strdup("level");
+    nco_vrt_grd_out=nco_vrt_grd_prs; /* ERA5 */
+    flg_grd_out_prs=True;
   }else if((rcd=nco_inq_dimid_flg(tpl_id,lev_nm_tpl,&lev_id)) == NC_NOERR){
     /* User may have manually altered lev dimension name to be a depth dimension */
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */

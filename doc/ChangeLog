@@ -1,8 +1,12 @@
-2024-06-18  Charlie Zender  <zender@uci.edu>
+2024-06-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.5-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.5-alpha04: D+D';git push
-	git tag -a 5.2.5-alpha04 -m '';git push --tags
+	git tag -a 5.2.5-alpha04 -m 'ncremap: vrt level(level)';git push --tags
+
+	* ncremap nco_vrt_ntp() if plev not found, try level(level) instead (for ERA5)
+
+2024-06-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.5-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.5-alpha03: Red Tide';git push

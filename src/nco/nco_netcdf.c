@@ -1710,11 +1710,11 @@ nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * co
   rcd=nc_def_dim(nc_id,dmn_nm,(size_t)dmn_sz,dmn_id);
   if(rcd == NC_ENAMEINUSE){
     (void)fprintf(stdout,"ERROR: %s cannot define dimension \"%s\" because that name is already in use\n",fnc_nm,dmn_nm);
-  } /* !rcd */
-  if(rcd == NC_EDIMSIZE){
+  }else if(rcd == NC_EDIMSIZE){
     (void)fprintf(stdout,"ERROR: %s cannot define dimension \"%s\" with illegal size = %ldL\n",fnc_nm,dmn_nm,dmn_sz);
-  } /* !rcd */
-  if(rcd == NC_EBADNAME){
+  }else if(rcd == NC_ENOTINDEFINE){
+    (void)fprintf(stdout,"ERROR: %s cannot define dimension \"%s\" while NC_CLASSIC file is in data-mode\n",fnc_nm,dmn_nm);
+  }else if(rcd == NC_EBADNAME){
     char *nm_nc=NULL; /* [sng] netCDF-compatible name */
     (void)fprintf(stdout,"INFO: %s reports input file dimension name \"%s\" contains illegal characters. ",fnc_nm,dmn_nm);
     nm_nc=nm2sng_nc(dmn_nm);
@@ -1728,13 +1728,13 @@ nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * co
     }else if(rcd == NC_ENAMEINUSE){
       rcd=nc_inq_dimid(nc_id,nm_nc,dmn_id);
       (void)fprintf(stdout," Will return dimension ID = %d of existing netCDF-safe dimension name \"%s\".\n",*dmn_id,nm_nc);
-    } /* endif */
+    } /* !rcd */
     if(nm_nc) free(nm_nc);
     assert(rcd == NC_NOERR || rcd == NC_EBADNAME || rcd == NC_ENAMEINUSE);
-  } /* endif */
+  } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* !nco_def_dim */
+} /* !nco_def_dim() */
 
 int
 nco_inq_dimid(const int nc_id,const char * const dmn_nm,int * const dmn_id)

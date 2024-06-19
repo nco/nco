@@ -1315,7 +1315,7 @@ main(int argc,char **argv)
 	if(att_ttl_val) att_ttl_val=(char *)nco_free(att_ttl_val);
       } /* !att_ttl_val */
       
-      /* Generate grids/maps or regrid horizontally/vertically */
+      /* Generate grids/maps and/or regrid horizontally/vertically */
       rcd=nco_rgr_ctl(rgr_nfo,trv_tbl);
       /* Change from NCO_NOERR to NC_NOERR */
       rcd=NC_NOERR;
