@@ -20879,12 +20879,22 @@ ls drc_out/*climo* | ncremap -m map.nc -O drc_rgr
 See @ref{ncremap netCDF Remapper} for more details (including
 @acronym{MPAS}!).  
  
+@html
+<a name="yr_end_prv"></a> <!-- http://nco.sf.net/nco.html#yr_end_prv -->
+<a name="yr_srt_prv"></a> <!-- http://nco.sf.net/nco.html#yr_srt_prv -->
+<a name="drc_xtn"></a> <!-- http://nco.sf.net/nco.html#drc_xtn -->
+<a name="drc_prv"></a> <!-- http://nco.sf.net/nco.html#drc_prv -->
+<a name="drc_rgr_xtn"></a> <!-- http://nco.sf.net/nco.html#drc_rgr_xtn -->
+<a name="drc_rgr_prv"></a> <!-- http://nco.sf.net/nco.html#drc_rgr_prv -->
+<a name="clm_bnr"></a> <!-- http://nco.sf.net/nco.html#clm_bnr -->
+<a name="clm_xtn"></a> <!-- http://nco.sf.net/nco.html#clm_xtn -->
+@end html
+@unnumberedsubsec Extended Climatologies
 @cindex incremental climatology (climo)
 @cindex binary climatology (climo)
 @cindex extended climatology (climo)
 @cindex previous climatology (climo)
 @cindex current climatology (climo)
-@unnumberedsubsec Extended Climatologies
 @command{ncclimo} supports two methods for generating extended
 climatologies: Binary and Incremental.
 Both methods lengthen a climatology without requiring access to 

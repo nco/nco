@@ -137,7 +137,9 @@ http://nco.sf.net/nco.html#ncclimo
 
 BUG FIXES:
    
-A. None
+A. ncclimo: The -Y/--drc_rgr_xtn option was broken. This has been 
+fixed. There is no workaround. The solution is to upgrade.
+http://nco.sf.net/nco.html#drc_rgr_xtn
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
