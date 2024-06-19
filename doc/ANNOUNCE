@@ -119,6 +119,22 @@ plev(plev) coordinate for NCEP files.
 ncremap --vrt_out=vrt_prs_era5_L37.nc in.nc out.nc
 http://nco.sf.net/nco.html#vrt
 
+F. ncclimo updated its MPAS dataset filename construction option.
+Previously it constructed MPAS monthly datasets names like this:
+${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc
+where mdl_nm is the canonical MPAS component name, e.g., mpaso.
+This yielded names consistent with MPAS v1 output like
+"mpaso.hist.am.timeSeriesStatsMonthly.0001-02-01.nc", and
+"mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc", 
+Now ncclimo prepends the ${caseid}, if present, to the filename.
+This yields names consistent with E3SM v2 and v3 output like
+"v2.LR.historical_0101.mpaso.hist.am.timeSeriesStatsMonthly.0001-02-01.nc", and
+"v2.LR.historical_0101.mpassi.hist.am.timeSeriesStatsMonthly.0001-02-01.nc". 
+To read MPAS filenames with different patterns, simply pipe the
+filenames to ncclimo;
+ls *mpas*hist | ncclimo ...
+http://nco.sf.net/nco.html#ncclimo
+
 BUG FIXES:
    
 A. None

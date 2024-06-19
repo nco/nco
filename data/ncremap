@@ -628,7 +628,7 @@ wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap weight-generation executab
 wgt_typ='' # [sng] Weight-generator program ('esmf', 'mbtempest', 'nco', or 'tempest')
 wgt_opt='' # [sng] Weight-generator options
 wgt_opt_cdo='' # [sng] CDO weight-generation options
-wgt_opt_esmf='--no_log --ignore_unmapped' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF < 7.1.0r)
+wgt_opt_esmf='--no_log --ignore_unmapped' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF < 7.1.0r). --ignore_unmapped tells ESMF to ignore cells on the destination grid which are not fully covered by cells on the source grid (because that would require extrapolation)
 #wgt_opt_esmf='--ignore_unmapped --ignore_degenerate' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF >= 7.1.0r) (ignore_degenerate is required for CICE regridding with ESMF >= 7.1.0r, and is not supported or required with ESMF < 7.1.0r)
 wgt_opt_nco='-O --dmm_in_mk' # [sng] NCO weight-generation options
 wgt_opt_tps='' # [sng] TempestRemap weight-generation options

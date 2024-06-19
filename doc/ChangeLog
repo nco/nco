@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.5-alpha04: D+D';git push
 	git tag -a 5.2.5-alpha04 -m 'ncremap: vrt level(level)';git push --tags
 
+	* nco.texi Document MPAS filename construction
+
 	* ncclimo WARN why rgn_avg expected to fail on MPAS input datasets
 
 	* ncclimo update MPAS filename construction rule by prepending ${caseid}

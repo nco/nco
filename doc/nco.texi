@@ -20752,12 +20752,28 @@ data with
 @samp{-P mali}, like this: 
 @example
 @verbatim
-ncclimo -P mpasa  -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-A
-ncclimo -P mpaso  -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
-ncclimo -P mpassi -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-SI
-ncclimo -P mali   -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-LI
+ncclimo -P mpasa  -c $case -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-A
+ncclimo -P mpaso  -c $case -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
+ncclimo -P mpassi -c $case -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-SI
+ncclimo -P mali   -c $case -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-LI
 @end verbatim
 @end example
+As of June 2024 and @acronym{NCO} @w{version 5.2.5}, @command{ncclimo}
+updated its @acronym{MPAS} dataset filename construction option. 
+Previously it constructed @acronym{MPAS} monthly datasets names like this:
+@file{$mdl_nm.hist.am.timeSeriesStatsMonthly.$YYYY-$MM-01.nc}.
+where @var{mdl_nm} is the canonical @acronym{MPAS} component name,
+e.g., @code{mpaso}.
+This yielded names consistent with @acronym{E3SM} v1 output like
+@file{mpaso.hist.am.timeSeriesStatsMonthly.0001-02-01.nc}, and
+@file{mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc}. 
+Now @command{ncclimo} prepends the @var{caseid}, if present, to the
+filename. 
+This yields names consistent with @acronym{E3SM} v2 and v3 output like
+@file{v2.LR.historical_0101.mpaso.hist.am.timeSeriesStatsMonthly.0001-02-01.nc}, and
+@file{v2.LR.historical_0101.mpassi.hist.am.timeSeriesStatsMonthly.0001-02-01.nc}. 
+To read @acronym{MPAS} filenames with other patterns, simply pipe the 
+filenames to @command{ncclimo}: @samp{ls *mpas*hist | ncclimo ...}.
 
 Raw output data from all @acronym{MPAS} models does not contain
 missing value attributes @footnote{
