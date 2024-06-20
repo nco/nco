@@ -628,6 +628,7 @@ nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code 
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '9' && lbr_sng[3] == '.' && lbr_sng[4] == '2'){rcd=492;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '9' && lbr_sng[3] == '.' && lbr_sng[4] == '3'){rcd=493;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '9' && lbr_sng[3] == '.' && lbr_sng[4] == '4'){rcd=494;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '9' && lbr_sng[3] == '.' && lbr_sng[4] == '5'){rcd=495;}
 #endif /* HAVE_NETCDF4_H */
   /* Use exit() not nco_exit(), because behavior of latter depends on NCO_ABORT_ON_ERROR
      When True, NCO_ABORT_ON_ERROR causes NCO to abort() not exit(rcd)

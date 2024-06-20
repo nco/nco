@@ -98,7 +98,7 @@ sub tst_rgr {
     # Library 4.3.3 should return $? = 133
     $exit_value+=300;
 
-    # nco_exit_lbr_rcd() returns codes:
+    # nco_exit_lbr_rcd() returns codes from nco_ctl.c:
     # 360 (for library 3.x)
     # 410 (for library 4.1.x)
     # 430 (for library 4.3.0)
@@ -127,6 +127,7 @@ sub tst_rgr {
     # 492 (for library 4.9.2)
     # 493 (for library 4.9.3)
     # 494 (for library 4.9.4)
+    # 495 (for library 4.9.5)
 
   if($exit_value == 410){print "netCDF version 4.1.x detected\n";}
   if($exit_value == 431){print "netCDF version 4.3.1 detected\n";}
@@ -154,6 +155,7 @@ sub tst_rgr {
   if($exit_value == 492){print "netCDF version 4.9.2 detected\n";}
   if($exit_value == 493){print "netCDF version 4.9.3 detected\n";}
   if($exit_value == 494){print "netCDF version 4.9.4 detected\n";}
+  if($exit_value == 495){print "netCDF version 4.9.5 detected\n";}
 
   if($exit_value >= 400){$RUN_NETCDF4_TESTS=1;}
   if($exit_value >= 431){$RUN_NETCDF4_TESTS_VERSION_GE_431=1;}

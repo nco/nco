@@ -1,12 +1,18 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.5 crash the gates
+netCDF Operators NCO version 5.2.6 re-crash the gates
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
+Version 5.2.6 contains a one-line bugfix to ncremap in 5.2.5.
+Unfortunately that horse had already escaped the barn.
+There is nothing else new in 5.2.6, so the release notes below
+repeat those for 5.2.5 so people can get a quick summary of new
+features since the previous widely distributed version, 5.2.4.
+
 What's new?
-Version 5.2.5 fully implements the draft CF lossy metadata convention
+Version 5.2.6 fully implements the draft CF lossy metadata convention
 for all NCO internal quantization algorithms. It also improves ncclimo 
 diagnostics and adds a new invocation synonym (--qnt) for
 quantization, and outputs a maximum_relative_error statistic
@@ -14,7 +20,7 @@ where possible. ncclimo/ncremap add support for MPAS-Atmosphere
 datasets, and ncclimo supports excluding variable lists in timeseries
 mode. Skip this release if these changes are not important to you. 
 
-Work on NCO 5.2.6 has commenced and will add support for Zarr S3 
+Work on NCO 5.2.7 has commenced and will add support for Zarr S3 
 stores, and will enhance the vertical regridder.
 
 Enjoy,
@@ -147,7 +153,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.2.0 built/tested under
+These problems occur with NCO 5.2.6 built/tested under
 MacOS 14.5 with netCDF 4.9.3-dev on HDF5 1.14.3 and with
 Linux FC38 with netCDF 4.9.2 on HDF5 1.14.1.
 

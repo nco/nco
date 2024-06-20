@@ -1,8 +1,12 @@
 2024-06-20  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.2.6-alpha01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.2.6-alpha01: Nordheimer';git push
-	git tag -a 5.2.6-alpha01 -m 'Functionally identical to 5.2.5';git push --tags
+	* NCO 5.2.7-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha01: Nordheimer';git push
+	git tag -a 5.2.7-alpha01 -m 'Functionally identical to 5.2.6 with one-line ncremap bugfix';git push --tags
+
+	* NCO 5.2.6 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.6: Solstice';git push
+	git tag -a 5.2.6 -m 'Functionally identical to 5.2.5 with one-line ncremap bugfix';git push --tags
 
 	* ncremap fix syntax error and bug introduced in 5.2.5 sgs_frc checking code
 
