@@ -1648,7 +1648,7 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
        Unless existing container variable is for different algorithm 
        Note that NCO can only handle writing one algorithm type per-invocation
        Hence we consider having an existing container for a different algorithm to be a corner case 
-       We do not yet support changing the container name for a second algorith type (e.g., "compression_info2")
+       We do not yet support changing the container name for a second algorithm type (e.g., "compression_info2")
        However, this is something to consider for the future */
     ;
   }else if(rcd != NC_NOERR){
