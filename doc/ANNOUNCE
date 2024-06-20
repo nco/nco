@@ -22,8 +22,8 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. All numeric operators now support --qnt_alg=alg_nm to request a
-quantization algorithm by name. Previously one had to use the --baa
+A. All numeric operators now support --qnt_alg=alg_nm to request an
+NCO quantization algorithm by name. Previously one had to use the --baa
 option with an obscure undocumented integer code for each algorithm.
 Now quantization algorithms can be requested by the English names.
 alg_nm can be BitGroom, Granular BitRound, BitShave, BitSet,
@@ -42,7 +42,7 @@ ncks -7 -L 1 --qnt_alg=brt --qnt default=3 in.nc out.nc # BruteForce (NSD)
 ncks -7 -L 1 --qnt_alg=btr --qnt default=9 in.nc out.nc # BitRound (NSB)
 This menagerie arose from research efforts. We recommend that others
 choose between BitRound, DigitRound, and Granular BitRound for
-real-world workflows. The others are of mainly research or historical
+real-world workflows. The others are of mainly research or historical 
 interest only. 
 http://nco.sf.net/nco.html#qnt_alg
 http://nco.sf.net/nco.html#qnt

@@ -1239,7 +1239,7 @@ For Conda-based systems (any OS, particularly useful for building NCO with newer
 <dt>conda install tempest-remap # (external executables for ncremap)</dt>
 <dt>conda install udunits2 # UDUnits</dt>
 <p>or, in one giant install,</p>
-<dt>conda install antlr=2.7.7 bison cmake flex curl esmf expat gsl libgomp libnetcdf llvm-openmp tempest-remap udunits2</dt>
+<dt>conda install antlr=2.7.7 bison blosc bzip2 cmake flex curl esmf expat gsl libgomp libnetcdf llvm-openmp tempest-remap udunits2 zstd</dt>
 </tt>
 
 For Debian-based systems (like Ubuntu) (<tt>aptitude</tt> is similar to and interchangeable with <tt>apt-get</tt>):
@@ -1403,16 +1403,13 @@ is usually untagged.
   <tt>export LD_LIBRARY_PATH="~zender/lib:${LD_LIBRARY_PATH}"</tt>
 <ul>
 <li>ANL OLCF Chrysalis <tt>chrysalis.lcrc.anl.gov</tt>: <tt>~ac.zender/bin_chrysalis</tt></li>
-<li>ANL ALCF Mira <tt>mira.alcf.anl.gov</tt>: <tt>~zender/bin</tt></li>
 <li>ANL LCRC Blues <tt>blues.lcrc.anl.gov</tt>: <tt>~zender/bin_blues</tt></li>
 <li>LLNL <tt>acme1.llnl.gov</tt>: <tt>~zender1/bin</tt></li>
-<li>NCAR CISL <tt>cheyenne.ucar.edu</tt>: <tt>~zender/bin</tt></li>
-<li>NERSC Cori <tt>cori.nersc.gov</tt>: <tt>~zender/bin_cori</tt></li>
+<li>NCAR CISL <tt>derecho.hpc.ucar.edu</tt>: <tt>~zender/bin</tt></li>
+<li>NERSC Perlmutter <tt>perlmutter-p1.nersc.gov</tt>: <tt>~zender/bin_perlmutter</tt></li>
 <li>ORNL OLCF Andes <tt>andes.olcf.ornl.gov</tt>: <tt>~zender/bin_andes</tt></li>
-<li>ORNL OLCF Titan <tt>titan.ccs.ornl.gov</tt>: <tt>~zender/bin_titan</tt></li>
+<li>ORNL OLCF Frontier <tt>frontier.olcf.ornl.gov</tt>: <tt>~zender/bin_frontier</tt></li>
 <li>PNNL Compy <tt>compy.pnl.gov</tt>: <tt>~zender/bin</tt></li>
-<li>UCI ESS <tt>greenplanet.ps.uci.edu</tt>: <tt>~zender/bin</tt></li>
-<li>UCI HPC3 <tt>hpc3.rcic.uci.edu</tt>: <tt>~zender/bin</tt></li>
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#NCAR -->

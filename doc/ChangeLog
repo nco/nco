@@ -1,7 +1,7 @@
 2024-06-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.5 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.2.5: D+D';git push
+	cd ~/nco;git commit -a -m 'Version 5.2.5: Freight Train';git push
 	git tag -a 5.2.5 -m 'all: qnt_alg nm cf cv, btr mre; ncclimo: xcl_var tms md, mpas fl_nm v3; ncremap: mpasa, vrt level(level)';git push --tags
 
 	* NCO 5.2.5-alpha04 release procedure:
