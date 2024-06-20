@@ -1977,8 +1977,6 @@ if [ -n "${sgs_frc}" ] || [ -n "${sgs_frc_usr}" ] || [ "${prc_typ}" = 'sgs' ]; t
 fi # !sgs
 if [ "${prc_sgs}" = 'Yes' ]; then
     if [ -n "${sgs_frc_usr}" ]; then sgs_frc="${sgs_frc_usr}"; fi
-    if [ -z "${sgs_frc}" ]; then
-    fi # !sgs_frc
     rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
     if [ -n "${sgs_msk}" ]; then
 	rgr_opt="${rgr_opt}#sgs_msk_nm=${sgs_msk}"
