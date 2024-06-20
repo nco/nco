@@ -1977,7 +1977,11 @@ if [ -n "${sgs_frc}" ] || [ -n "${sgs_frc_usr}" ] || [ "${prc_typ}" = 'sgs' ]; t
 fi # !sgs
 if [ "${prc_sgs}" = 'Yes' ]; then
     if [ -n "${sgs_frc_usr}" ]; then sgs_frc="${sgs_frc_usr}"; fi
-    rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
+    if [ -z "${sgs_frc}" ]; then
+	echo "ERROR: SGS processing invoked without specifying sgs_frc variable name"
+        echo "HINT: Specify sgs_frc variable name with --sgs_frc=var_name"
+        exit 1
+    fi # !sgs_frc                                                                                                     rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
     if [ -n "${sgs_msk}" ]; then
 	rgr_opt="${rgr_opt}#sgs_msk_nm=${sgs_msk}"
     fi # !sgs_msk
