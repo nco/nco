@@ -2,7 +2,11 @@
 
 	* NCO 5.2.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha02: Stroker';git push
-	git tag -a 5.2.7-alpha02 -m '';git push --tags
+	git tag -a 5.2.7-alpha02 -m 'all: qnt lossy_compresion->quantization, dpr family';git push --tags
+
+	* Deprecate "family" attribute from quantization container variable
+
+	* Migrate from container variable name from "lossy_compression" to "quantization"
 
 	* NCO 5.2.7-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha01: Nordheimer';git push

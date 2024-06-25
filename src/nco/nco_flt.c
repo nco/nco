@@ -992,7 +992,7 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
   /* Prevent quantization of non-floating-point variables */
   nco_flt_flg_enm flt_flg=nco_flt_flg_all_ok; /* [enm] Enumerated flag for fine-grained compression control */
   if(var_typ != NC_FLOAT && var_typ != NC_DOUBLE) flt_flg=nco_flt_flg_qnt_no;
-  if(nco_is_crd_var(nc_out_id,var_out_id) || nco_is_spc_in_cf_att(nc_out_id,"bounds",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"climatology",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"coordinates",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"grid_mapping",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"lossy_compression",var_out_id,NULL)) flt_flg=nco_flt_flg_prc_fll;
+  if(nco_is_crd_var(nc_out_id,var_out_id) || nco_is_spc_in_cf_att(nc_out_id,"bounds",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"climatology",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"coordinates",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"grid_mapping",var_out_id,NULL) || nco_is_spc_in_cf_att(nc_out_id,"quantization",var_out_id,NULL)) flt_flg=nco_flt_flg_prc_fll;
 
   if(nco_dbg_lvl_get() >= nco_dbg_var){
     if(flt_flg != nco_flt_flg_all_ok) (void)fprintf(stdout,"%s: DEBUG %s reports variable type or NCO guidelines (based on coordinate-like variables and CF rules) prevent variable %s from using lossy compression\n",nco_prg_nm_get(),fnc_nm,var_nm);
@@ -1474,16 +1474,16 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
   char alg_nm_sh2[]="halfshave";
   char alg_nm_brt[]="bruteforce";
   char alg_nm_btr[]="bitround"; /* [sng] CV */
-  char cnt_nm_all[]="lossy_compression"; /* [sng] Attribute name to hold lossy compression container name (per draft CF-Convention) */
-  char fml_val[]="quantize"; /* [sng] Container variable family value (CV per draft CF-Convention) (Optional) */
+  char cnt_nm_all[]="quantization"; /* [sng] Attribute name to hold lossy compression container name (per draft CF-Convention) */
+  //char fml_val[]="quantize"; /* [sng] Container variable family value (CV per draft CF-Convention) (Optional) */
   char mpl_val_libnetcdf[]="libnetcdf"; /* [sng] Container variable implementation attribute value (per draft CF-Convention) */
   char mpl_val_nco[]="NCO"; /* [sng] Container variable implementation attribute value (per draft CF-Convention) */
-  char qnt_lvl_mre_nm[]="lossy_compression_maximum_relative_error"; /* [sng] Attribute name to hold MRE (CV) */
-  char qnt_lvl_nsb_nm[]="lossy_compression_nsb"; /* [sng] Attribute name to hold NSB (CV) */
-  char qnt_lvl_nsd_nm[]="lossy_compression_nsd"; /* [sng] Attribute name to hold NSD (CV) */
-  char var_cnt_nm[]="compression_info"; /* [sng] Container variable name */
+  char qnt_lvl_mre_nm[]="quantization_maximum_relative_error"; /* [sng] Attribute name to hold MRE (CV) */
+  char qnt_lvl_nsb_nm[]="quantization_nsb"; /* [sng] Attribute name to hold NSB (CV) */
+  char qnt_lvl_nsd_nm[]="quantization_nsd"; /* [sng] Attribute name to hold NSD (CV) */
+  char var_cnt_nm[]="quantization_info"; /* [sng] Container variable name */
   char var_cnt_alg_nm[]="algorithm"; /* [sng] Container variable attribute name for algorithm type (per draft CF-Convention) */
-  char var_cnt_fml_nm[]="family"; /* [sng] Container variable attribute name for algorithm family type (per draft CF-Convention) */
+  //char var_cnt_fml_nm[]="family"; /* [sng] Container variable attribute name for algorithm family type (per draft CF-Convention) */
   char var_cnt_mpl_nm[]="implementation"; /* [sng] Container variable attribute name for algorithm implementation (per draft CF-Convention) */
   char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
 
@@ -1592,7 +1592,7 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
      ../src/nco/nco_flt.c:1563:90: note: in expansion of macro ‘NCO_VERSION’
      One alternative is to replace NCO_VERSION by TKN2SNG(NCO_VERSION) 
      However, this adds an undesirable extra pair of quotes to the output, e.g.,
-     compression_info:implementation = "libnetcdf version \"4.9.3-development\"" ; */
+     quantization_info:implementation = "libnetcdf version \"4.9.3-development\"" ; */
   if(flg_baa) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_MPL_SNG,"%s version %s",mpl_val_nco,vrs_nco_sng);
   if(flg_hdf) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_MPL_SNG,"%s version %s",mpl_val_libnetcdf,vrs_nc_sng);
 
@@ -1648,29 +1648,32 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
        Unless existing container variable is for different algorithm 
        Note that NCO can only handle writing one algorithm type per-invocation
        Hence we consider having an existing container for a different algorithm to be a corner case 
-       We do not yet support changing the container name for a second algorithm type (e.g., "compression_info2")
+       We do not yet support changing the container name for a second algorithm type (e.g., "quantization_info2")
        However, this is something to consider for the future */
     ;
   }else if(rcd != NC_NOERR){
     aed_sct aed_cnt_alg;
-    aed_sct aed_cnt_fml;
+    //aed_sct aed_cnt_fml;
     aed_sct aed_cnt_mpl;
     /* If not, create and populate it */
     rcd=nco_def_var(nc_id,var_cnt_nm,NC_CHAR,(int)0,(int *)NULL,&var_cnt_id);
     aed_cnt_alg.var_nm=aed_cnt_mpl.var_nm=var_cnt_nm;
-    aed_cnt_alg.id=aed_cnt_fml.id=aed_cnt_mpl.id=var_cnt_id;
+    //aed_cnt_alg.id=aed_cnt_fml.id=aed_cnt_mpl.id=var_cnt_id;
+    aed_cnt_alg.id=aed_cnt_mpl.id=var_cnt_id;
     aed_cnt_alg.att_nm=var_cnt_alg_nm;
     aed_cnt_alg.val.cp=aed_ppc_alg.att_nm;
     aed_cnt_alg.sz=strlen(aed_cnt_alg.val.cp);
-    aed_cnt_alg.type=aed_cnt_fml.type=aed_cnt_mpl.type=NC_CHAR;
-    aed_cnt_alg.mode=aed_cnt_fml.mode=aed_cnt_mpl.mode=aed_create;
-    aed_cnt_fml.att_nm=var_cnt_fml_nm;
-    aed_cnt_fml.val.cp=fml_val;
-    aed_cnt_fml.sz=strlen(aed_cnt_fml.val.cp);
+    //aed_cnt_alg.type=aed_cnt_fml.type=aed_cnt_mpl.type=NC_CHAR;
+    //aed_cnt_alg.mode=aed_cnt_fml.mode=aed_cnt_mpl.mode=aed_create;
+    aed_cnt_alg.type=aed_cnt_mpl.type=NC_CHAR;
+    aed_cnt_alg.mode=aed_cnt_mpl.mode=aed_create;
+    //aed_cnt_fml.att_nm=var_cnt_fml_nm;
+    //aed_cnt_fml.val.cp=fml_val;
+    //aed_cnt_fml.sz=strlen(aed_cnt_fml.val.cp);
     aed_cnt_mpl.att_nm=var_cnt_mpl_nm;
     aed_cnt_mpl.val.cp=mpl_val_sng;
     aed_cnt_mpl.sz=strlen(aed_cnt_mpl.val.cp);
-    (void)nco_aed_prc(nc_id,var_cnt_id,aed_cnt_fml);
+    //(void)nco_aed_prc(nc_id,var_cnt_id,aed_cnt_fml);
     (void)nco_aed_prc(nc_id,var_cnt_id,aed_cnt_alg);
     (void)nco_aed_prc(nc_id,var_cnt_id,aed_cnt_mpl);
   } /* !rcd */

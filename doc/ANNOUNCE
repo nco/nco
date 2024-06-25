@@ -59,20 +59,20 @@ relative error (MRE) for the BitRound algorithm, for which MRE is
 "lossy_compression_maximum_relative_error" in each field's
 metadata:
 ncks -7 -v ps,ts --qnt_alg=btr --qnt default=9 --qnt ps=13 --cmp='shf|zst' in.nc out.nc
-ncks -m -C -v ps,ts,compression_info out.nc
+ncks -m -C -v ps,ts,quantization_info out.nc
 netcdf out {
 ...
     float ps(time,lat,lon) ;
       ps:standard_name = "surface_air_pressure" ;
       ps:units = "Pa" ;
-      ps:lossy_compression = "compression_info" ;
+      ps:lossy_compression = "quantization_info" ;
       ps:lossy_compression_nsb = 13 ;
       ps:lossy_compression_maximum_relative_error = 6.103516e-05f ;
 
     float ts(time) ;
       ts:standard_name = "surface_temperature" ;
       ts:units = "K" ;
-      ts:lossy_compression = "compression_info" ;
+      ts:lossy_compression = "quantization_info" ;
       ts:lossy_compression_nsb = 9 ;
       ts:lossy_compression_maximum_relative_error = 0.0009765625f ;
 } // group /
