@@ -1,10 +1,14 @@
-2024-06-25  Charlie Zender  <zender@uci.edu>
+2024-06-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha02: Stroker';git push
 	git tag -a 5.2.7-alpha02 -m 'all: qnt lossy_compresion->quantization, dpr family';git push --tags
 
-	* Fix regrssion test that failed due to quantization being crd-like variable
+	* nco_rgr_wgt(), nco_ntp_vrt() Weaken WARNING to INFO when no variables found to regrid/interpolate
+
+2024-06-25  Charlie Zender  <zender@uci.edu>
+
+	* Update regression tests, including one that failed due to quantization being crd-like variable
 
 	* Deprecate "family" attribute from quantization container variable
 

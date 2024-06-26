@@ -2862,7 +2862,8 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncks #102
 # Test NSD compression rounding to three significant digits
 # ncks -4 -O -C --baa=0 -v ppc_big,ppc_dbl --ppc ppc_big,ppc_dbl=3 ~/nco/data/in.nc ~/foo.nc
-# ncks -H --trd -d time,5 -s %g -v ppc_big ~/foo.nc
+# ncks -C -H --trd -d time,5 -s %g -v ppc_big ~/foo.nc
+# 20240625 Fix failure due to retrieving container variable along with data variable
     $dsc_sng="Test NSD compression rounding to three significant digits";
     $tst_cmd[0]="ncks -O $nco_D_flg -4 -C --baa=0 -v ppc_big,ppc_dbl --ppc ppc_big,ppc_dbl=3 $in_pth_arg in.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -C -H --trd -d time,5 -s %g -v ppc_big %tmp_fl_00";

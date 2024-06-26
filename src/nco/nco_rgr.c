@@ -2928,7 +2928,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(!trv_tbl->lst[idx_tbl].flg_rgr) var_cpy_nbr++;
     } /* !nco_obj_typ_var */
   } /* !idx_tbl */
-  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit interpolation criteria. The vertical interpolator expects something to interpolate, and variables not interpolated are copied straight to output. HINT: If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\", \"lev\", and/or \"plev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid. For hybrid-pressure coordinate grids, ensure that the \"ilev\" and \"lev\" variable names are known with, e.g., \"ncks --rgr ilev_nm=interface_level --rgr lev_nm=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\". For pure pressure grids, ensure the \"plev\" coordinate name is defined with, e.g., \"ncks --rgr plev_nm=pressure_level\" or \"ncremap -R '--rgr plev=pressure_level'\".\n",nco_prg_nm_get(),fnc_nm);
+  if(!var_rgr_nbr){
+    (void)fprintf(stdout,"%s: INFO %s reports no variables fit vertical interpolation criteria.",nco_prg_nm_get(),fnc_nm);
+    if(var_cpy_nbr) (void)fprintf(stdout," The output file will consist of %d geophysical variables that are copied directly from the input (because they lack the vertical coordinate necessary for interpolation), and all grid variables and metadata necessary to describe the destination grid.\n",var_cpy_nbr); else (void)fprintf(stdout," The output file will consist solely of the grid variables and metadata necessary to describe the destination grid.\n");
+    (void)fprintf(stdout,"%s: HINT If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\", \"lev\", and/or \"plev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid. For hybrid-pressure coordinate grids, ensure that the \"ilev\" and \"lev\" variable names are known with, e.g., \"ncks --rgr ilev_nm=interface_level --rgr lev_nm=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\". For pure pressure grids, ensure the \"plev\" coordinate name is defined with, e.g., \"ncks --rgr plev_nm=pressure_level\" or \"ncremap -R '--rgr plev=pressure_level'\".\n",nco_prg_nm_get());
+  } /* !var_rgr_nbr */
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
       trv=trv_tbl->lst[idx_tbl];
@@ -5474,7 +5478,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       } /* !dmn_idx */
     } /* !nco_obj_typ_var */
   } /* !idx_tbl */
-  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit regridding criteria. The regridder expects something to regrid, and variables not regridded are copied straight to output. HINT: If the name(s) of the input horizontal spatial dimensions to be regridded (e.g., latitude and longitude or column) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"latitude\", \"longitude\", and \"ncol\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr col_nm=lndgrid --rgr lat_nm=north\" or \"ncremap -R '--rgr col_nm=lndgrid --rgr lat_nm=north'\".\n",nco_prg_nm_get(),fnc_nm);
+  if(!var_rgr_nbr){
+    (void)fprintf(stdout,"%s: INFO %s reports no variables fit regridding criteria.",nco_prg_nm_get(),fnc_nm);
+    if(var_cpy_nbr) (void)fprintf(stdout," The output file will consist of %d geophysical variables that are copied directly from the input (because they lack the horizontal dimensions necessary for regridding), and all grid variables and metadata necessary to describe the destination grid.\n",var_cpy_nbr); else (void)fprintf(stdout," The output file will consist solely of the grid variables and metadata necessary to describe the destination grid.\n");
+    (void)fprintf(stdout,"%s: HINT If the name(s) of the input horizontal spatial dimensions to be regridded (e.g., latitude and longitude or column) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"latitude\", \"longitude\", and \"ncol\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr col_nm=lndgrid --rgr lat_nm=north\" or \"ncremap -R '--rgr col_nm=lndgrid --rgr lat_nm=north'\".\n",nco_prg_nm_get());
+  } /* !var_rgr_nbr */
   
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
