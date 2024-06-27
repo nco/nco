@@ -98,6 +98,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_hrz) rgr->fl_hrz=(char *)nco_free(rgr->fl_hrz);
   if(rgr->fl_in) rgr->fl_in=(char *)nco_free(rgr->fl_in);
   if(rgr->fl_map) rgr->fl_map=(char *)nco_free(rgr->fl_map);
+  if(rgr->fl_nlm) rgr->fl_nlm=(char *)nco_free(rgr->fl_nlm);
   if(rgr->fl_msh) rgr->fl_msh=(char *)nco_free(rgr->fl_msh);
   if(rgr->fl_out) rgr->fl_out=(char *)nco_free(rgr->fl_out);
   if(rgr->fl_out_tmp) rgr->fl_out_tmp=(char *)nco_free(rgr->fl_out_tmp);
@@ -172,6 +173,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
  char * const rgr_grd_dst, /* I [sng] File containing destination grid */
  char * const rgr_hrz, /* I [sng] File containing horizontal coordinate grid */
  char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
+ char * const rgr_nlm, /* I [sng] File containing nonlinear mapping weights from source to destination grid */
  char * const rgr_var, /* I [sng] Variable for special regridding treatment */
  char * const rgr_vrt_in, /* I [sng] File containing input vertical coordinate grid */
  char * const rgr_vrt_out, /* I [sng] File containing output vertical coordinate grid */
@@ -212,6 +214,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   rgr->flg_wgt= rgr_map ? True : False; /* [flg] User-specified mapping weights */
   rgr->fl_map=rgr_map; /* [sng] File containing mapping weights from source to destination grid */
+  rgr->fl_nlm=rgr_nlm; /* [sng] File containing nonlinear mapping weights from source to destination grid */
 
   rgr->fl_hrz=rgr_hrz; /* [sng] [sng] File containing horizontal coordinate grid (for S1D) */
   rgr->fl_vrt_in=rgr_vrt_in; /* [sng] [sng] File containing input vertical coordinate grid */
@@ -241,6 +244,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"fl_out = %s, ",rgr->fl_out ? rgr->fl_out : "NULL");
     (void)fprintf(stderr,"fl_out_tmp = %s, ",rgr->fl_out_tmp ? rgr->fl_out_tmp : "NULL");
     (void)fprintf(stderr,"fl_map = %s, ",rgr->fl_map ? rgr->fl_map : "NULL");
+    (void)fprintf(stderr,"fl_nlm = %s, ",rgr->fl_nlm ? rgr->fl_nlm : "NULL");
     (void)fprintf(stderr,"fl_vrt_in = %s, ",rgr->fl_vrt_in ? rgr->fl_vrt_in : "NULL");
     (void)fprintf(stderr,"fl_vrt_out = %s, ",rgr->fl_vrt_out ? rgr->fl_vrt_out : "NULL");
     (void)fprintf(stderr,"\n");

@@ -198,6 +198,7 @@ extern "C" {
    char * const rgr_grd_dst, /* I [sng] File containing destination grid */
    char * const rgr_hrz, /* I [sng] File containing horizontal coordinate grid */
    char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
+   char * const rgr_nlm, /* I [sng] File containing nonlinear mapping weights from source to destination grid */
    char * const rgr_var, /* I [sng] Variable for special regridding treatment */
    char * const rgr_vrt_in, /* I [sng] File containing input vertical coordinate grid */
    char * const rgr_vrt_out, /* I [sng] File containing output vertical coordinate grid */

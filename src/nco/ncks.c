@@ -158,6 +158,7 @@ main(int argc,char **argv)
   char *rgr_grd_dst=NULL; /* [sng] File containing destination grid */
   char *rgr_hrz=NULL; /* [sng] File containing horizontal coordinate grid */
   char *rgr_map=NULL; /* [sng] File containing mapping weights from source to destination grid */
+  char *rgr_nlm=NULL; /* [sng] File containing nonlinear mapping weights from source to destination grid */
   char *rgr_out=NULL; /* [sng] File containing regridded fields */
   char *rgr_var=NULL; /* [sng] Variable for special regridding treatment */
   char *rgr_vrt_in=NULL; /* [sng] File containing input vertical coordinate grid */
@@ -523,6 +524,10 @@ main(int argc,char **argv)
     {"rgr_map",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
     {"map_file",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
     {"map_fl",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
+    {"rgr_nlm",required_argument,0,0}, /* [sng] File containing nonlinear mapping weights from source to destination grid */
+    {"nlm_caas",required_argument,0,0}, /* [sng] File containing nonlinear mapping weights from source to destination grid */
+    {"caas_nlm",required_argument,0,0}, /* [sng] File containing nonlinear mapping weights from source to destination grid */
+    {"nonlinear_map",required_argument,0,0}, /* [sng] File containing nonlinear mapping weights from source to destination grid */
     {"rgr_hrz",required_argument,0,0}, /* [sng] File containing horizontal coordinate grid */
     {"hrz_fl",required_argument,0,0}, /* [sng] File containing horizontal coordinate grid */
     {"hrz_crd",required_argument,0,0}, /* [sng] File containing horizontal coordinate grid */
@@ -844,7 +849,11 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"rgr_map") || !strcmp(opt_crr,"map_file") || !strcmp(opt_crr,"map_fl")){
         flg_rgr=True;
 	rgr_map=(char *)strdup(optarg);
-      } /* endif rgr_map */
+      } /* !rgr_map */
+      if(!strcmp(opt_crr,"rgr_nlm") || !strcmp(opt_crr,"nlm_caas") || !strcmp(opt_crr,"caas_nlm") || !strcmp(opt_crr,"nonlinear_map")){
+        flg_rgr=True;
+	rgr_nlm=(char *)strdup(optarg);
+      } /* !rgr_nlm */
       if(!strcmp(opt_crr,"hrz_fl") || !strcmp(opt_crr,"hrz_s1d") || !strcmp(opt_crr,"hrz_crd")){
 	flg_s1d=flg_rgr=True;
 	rgr_hrz=(char *)strdup(optarg);
@@ -1278,7 +1287,7 @@ main(int argc,char **argv)
       /* Initialize regridding structure */
       rgr_in=(char *)strdup(fl_in);
       rgr_out=(char *)strdup(fl_out);
-      rgr_nfo=nco_rgr_ini(cmd_ln,in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_hrz,rgr_map,rgr_var,rgr_vrt_in,rgr_vrt_out,wgt_vld_thr,xtn_lst_in,xtn_nbr);
+      rgr_nfo=nco_rgr_ini(cmd_ln,in_id,rgr_arg,rgr_nbr,rgr_in,rgr_out,rgr_grd_src,rgr_grd_dst,rgr_hrz,rgr_map,rgr_nlm,rgr_var,rgr_vrt_in,rgr_vrt_out,wgt_vld_thr,xtn_lst_in,xtn_nbr);
       rgr_nfo->fl_out_fmt=fl_out_fmt;
       rgr_nfo->dfl_lvl=dfl_lvl;
       rgr_nfo->hdr_pad=hdr_pad;

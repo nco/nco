@@ -1,10 +1,16 @@
-2024-06-26  Charlie Zender  <zender@uci.edu>
+2024-06-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha02: Stroker';git push
-	git tag -a 5.2.7-alpha02 -m 'all: qnt lossy_compresion->quantization, dpr family';git push --tags
+	git tag -a 5.2.7-alpha02 -m 'all: qnt lossy_compresion->quantization, dpr family; ncremap wrn->nfo';git push --tags
 
-	* nco_rgr_wgt(), nco_ntp_vrt() Weaken WARNING to INFO when no variables found to regrid/interpolate
+	* Add stubs to pass/free non-linear map for CAAS to regridder with --rgr_nlm
+
+	* Incorporate Jonathan Gregory suggestions in quantization metadata (and re-submit CF PR)
+
+2024-06-26  Charlie Zender  <zender@uci.edu>
+
+	* nco_rgr_wgt()/nco_ntp_vrt() Weaken WARNING to (expanded) INFO when no variables found to regrid/interpolate
 
 2024-06-25  Charlie Zender  <zender@uci.edu>
 
