@@ -6,7 +6,7 @@
 
 	* NCO 5.2.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha02: Stroker';git push
-	git tag -a 5.2.7-alpha02 -m 'all: qnt lossy_compresion->quantization, dpr family; ncremap wrn->nfo';git push --tags
+	git tag -a 5.2.7-alpha02 -m 'all: qnt lossy_compresion->quantization, dpr family; ncremap wrn->nfo, CAAS stb';git push --tags
 
 	* Open nonlinear map when present
 
