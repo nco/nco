@@ -4968,8 +4968,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      Below this line, fl_in and in_id refer to nonlinear map file */
 
   /* Ingest nonlinear map used in CAAS */
-  fl_nlm=(char *)strdup(rgr->fl_nlm);
-  if(fl_nlm){
+  if(rgr->fl_nlm){
+    fl_nlm=(char *)strdup(rgr->fl_nlm);
     if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining nonlinear mapping weights from %s\n",nco_prg_nm_get(),fnc_nm,fl_nlm);
   
     /* Make sure file is on local system and is readable or die trying */

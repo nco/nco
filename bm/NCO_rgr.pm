@@ -194,8 +194,8 @@ if($USER =~ /zender/){
     $HOME=$ENV{'HOME'};
 if($USER eq 'zender'){
 	# Regridding regression tests
-	# valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncks -O -D 5 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc ${DATA}/ne30/raw_ne30_tst.nc ~/foo.nc > ~/foo 2>&1
-	# ncks -O -D 5 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc ${DATA}/ne30/raw_ne30_tst.nc ~/foo.nc
+	# valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncks -O -D 5 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc ${DATA}/ne30/raw/ne30_tst.nc ~/foo.nc > ~/foo 2>&1
+	# ncks -O -D 5 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc ${DATA}/ne30/raw/ne30_tst.nc ~/foo.nc
 	# ncwa -O -w area ~/foo.nc ~/foo2.nc
 	# ncks -H --trd -u -C -v FSNT ~/foo2.nc
 	# ncwa -O -y ttl -v area ~/foo.nc ~/foo3.nc
@@ -203,12 +203,12 @@ if($USER eq 'zender'){
 	
 	$dsc_sng="ncks regrid FSNT 1D->2D to test conservation (does rsync to dust.ess.uci.edu)";
 	$tst_cmd[0]="rsync dust.ess.uci.edu:data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc .";
-	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/raw_ne30_tst.nc .";
+	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/raw/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv129x256_aave.20150901.nc ne30_tst.nc %tmp_fl_00%";
 #	my $pwd=`pwd`; chomp $pwd; print $pwd;
 #	$dsc_sng="ncks regrid FSNT to regridding conservation (does wget to dust.ess.uci.edu)";
 #	$tst_cmd[0]="wget -c -P $drc_dat http://dust.ess.uci.edu/maps/map_ne30np4_to_fv129x256_aave.20150901.nc";
-#	$tst_cmd[1]="wget -c -P $drc_dat http://dust.ess.uci.edu/ne30/raw_ne30_tst.nc";
+#	$tst_cmd[1]="wget -c -P $drc_dat http://dust.ess.uci.edu/ne30/raw/ne30_tst.nc";
 #	$tst_cmd[2]="ncks -h -O $fl_fmt $nco_D_flg --map=".$drc_dat."/map_ne30np4_to_fv129x256_aave.20150901.nc ".$drc_dat."/ne30_tst.nc %tmp_fl_00%";
 	$tst_cmd[3]="/bin/cp -f %tmp_fl_00% ne30_2D.nc";
 	$tst_cmd[4]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
@@ -236,7 +236,7 @@ if($USER eq 'zender'){
 
 	$dsc_sng="ncks regrid FSNT 1D->2D to test bilinear remapping (does rsync to dust.ess.uci.edu)";
 	$tst_cmd[0]="rsync dust.ess.uci.edu:data/maps/map_ne30np4_to_fv257x512_bilin.20150901.nc .";
-	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/raw_ne30_tst.nc .";
+	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/raw/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_fv257x512_bilin.20150901.nc ne30_tst.nc %tmp_fl_00%";
 	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w gw %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H --trd -u -C -v FSNT %tmp_fl_01%";
@@ -268,7 +268,7 @@ if($USER eq 'zender'){
 
 	$dsc_sng="ncks regrid FSNT 1D->1D to test identity mapping and conservation (does rsync to dust.ess.uci.edu)";
 	$tst_cmd[0]="rsync dust.ess.uci.edu:data/maps/map_ne30np4_to_ne30np4_aave.20150603.nc .";
-	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/raw_ne30_tst.nc .";
+	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/raw/ne30_tst.nc .";
 	$tst_cmd[2]="ncks -O $fl_fmt $nco_D_flg --map=map_ne30np4_to_ne30np4_aave.20150603.nc ne30_tst.nc %tmp_fl_00%";
 	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H --trd -u -C -v FSNT %tmp_fl_01%";
@@ -312,7 +312,7 @@ if($USER eq 'zender'){
 
 	$dsc_sng="ncremap regrid FSNT 1D->2D to test conservation (depends on rsync to dust.ess.uci.edu)";
 	$tst_cmd[0]="rsync dust.ess.uci.edu:data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc .";
-	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/raw_ne30_tst.nc .";
+	$tst_cmd[1]="rsync dust.ess.uci.edu:data/ne30/raw/ne30_tst.nc .";
 	$tst_cmd[2]="ncremap -i ne30_tst.nc -m map_ne30np4_to_fv129x256_aave.20150901.nc -o %tmp_fl_00%";
 	$tst_cmd[3]="ncwa -O $fl_fmt $nco_D_flg -w area %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[4]="ncks -O $fl_fmt $nco_D_flg -H --trd -u -C -v FSNT %tmp_fl_01%";
