@@ -3940,6 +3940,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   const char fnc_nm[]="nco_rgr_wgt()"; /* [sng] Function name */
 
   char *fl_in;
+  char *fl_nlm; /* [sng] File containing nonlinear mapping weights from source to destination grid */
   char *fl_pth_lcl=NULL;
 
   const double rdn2dgr=180.0/M_PI;
@@ -4964,6 +4965,28 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
 
   /* Above this line, fl_in and in_id refer to map file
+     Below this line, fl_in and in_id refer to nonlinear map file */
+
+  /* Ingest nonlinear map used in CAAS */
+  fl_nlm=(char *)strdup(rgr->fl_nlm);
+  if(fl_nlm){
+    if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining nonlinear mapping weights from %s\n",nco_prg_nm_get(),fnc_nm,fl_nlm);
+  
+    /* Make sure file is on local system and is readable or die trying */
+    fl_nlm=nco_fl_mk_lcl(fl_nlm,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
+    /* Open file using appropriate buffer size hints and verbosity */
+    if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+    if(SHARE_OPEN) md_open=md_open|NC_SHARE;
+    rcd+=nco_fl_open(fl_nlm,md_open,&bfr_sz_hnt,&in_id);
+
+    /* Close input netCDF file */
+    nco_close(in_id);
+    
+    /* Remove local copy of file */
+    if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_nlm);
+  } /* !fl_nlm */
+  
+  /* Above this line, fl_in and in_id refer to nonlinear map file
      Below this line, fl_in and in_id refer to input file to be regridded */
 
   /* Initialize */
@@ -6974,6 +6997,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  } /* !dst_idx */
 	} /* !flg_msk_apl */
 	
+	if(fl_nlm){
+	  
+	} /* !fl_nlm */
+
 	if(nco_dbg_lvl_get() >= nco_dbg_var){
 	  tm_end=clock();
 	  tm_drn=(float)(tm_end-tm_srt)/CLOCKS_PER_SEC;

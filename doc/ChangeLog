@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha02: Stroker';git push
 	git tag -a 5.2.7-alpha02 -m 'all: qnt lossy_compresion->quantization, dpr family; ncremap wrn->nfo';git push --tags
 
-	* Add stubs to pass/free non-linear map for CAAS to regridder with --rgr_nlm
+	* Open nonlinear map when present
+
+	* Add stubs to pass/free non-linear map name for CAAS to regridder with --rgr_nlm
 
 	* Incorporate Jonathan Gregory suggestions in quantization metadata (and re-submit CF PR)
 
