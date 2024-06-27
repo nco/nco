@@ -1,5 +1,9 @@
 2024-06-27  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.7-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha03: 11th Hour';git push
+	git tag -a 5.2.7-alpha03 -m '';git push --tags
+
 	* NCO 5.2.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha02: Stroker';git push
 	git tag -a 5.2.7-alpha02 -m 'all: qnt lossy_compresion->quantization, dpr family; ncremap wrn->nfo';git push --tags
