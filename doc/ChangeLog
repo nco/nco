@@ -1,8 +1,12 @@
-2024-06-27  Charlie Zender  <zender@uci.edu>
+2024-06-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha03: 11th Hour';git push
 	git tag -a 5.2.7-alpha03 -m '';git push --tags
+
+	* CAAS: Obtain dimension sizes from nonlinear map-file
+
+2024-06-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha02: Stroker';git push

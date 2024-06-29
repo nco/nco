@@ -3985,7 +3985,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   nco_grd_lat_typ_enm nco_grd_lat_typ=nco_grd_lat_nil; /* [enm] Latitude grid-type enum */
   nco_grd_lon_typ_enm nco_grd_lon_typ=nco_grd_lon_nil; /* [enm] Longitude grid-type enum */
 
-  nco_mpf_sct mpf;
+  nco_mpf_sct mpf; /* Map-file structure */
+  nco_mpf_sct nlmpf; /* Map-file structure for nonlinear map */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   
@@ -4074,7 +4075,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   case nco_rgr_mpf_unknown:
     rcd+=nco_inq_dimid_flg(in_id,"n_a",&src_grid_size_id);
     if(rcd != NC_NOERR){
-      (void)fprintf(stderr,"%s: ERROR %s reports requested dimension \"n_a\" is not in input file. HINT: This does not appear to be a \"map-file\" of any known type. A map-file must contain the weights needed to regrid from the source to destination grid. Perhaps you have give a data-file to the regridder instead? Please read the manual http://nco.sf.net/nco.html#ncremap and reformulate your command accordingly.\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stderr,"%s: ERROR %s reports requested dimension \"n_a\" is not in input map-file. HINT: This does not appear to be a \"map-file\" of any known type. A map-file must contain the weights needed to regrid from the source to destination grid. Perhaps you have give a data-file to the regridder instead? Please read the manual http://nco.sf.net/nco.html#ncremap and reformulate your command accordingly.\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
     } /* !rcd */
     rcd+=nco_inq_dimid(in_id,"n_b",&dst_grid_size_id);
@@ -4978,6 +4979,28 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
     if(SHARE_OPEN) md_open=md_open|NC_SHARE;
     rcd+=nco_fl_open(fl_nlm,md_open,&bfr_sz_hnt,&in_id);
+
+    rcd+=nco_inq_dimid_flg(in_id,"n_a",&src_grid_size_id);
+    if(rcd != NC_NOERR){
+      (void)fprintf(stderr,"%s: ERROR %s reports requested dimension \"n_a\" is not in input nonlinear map-file. HINT: This does not appear to be a \"map-file\" of any known type. A map-file must contain the weights needed to regrid from the source to destination grid. Perhaps you have give a data-file to the regridder instead? Please read the manual http://nco.sf.net/nco.html#ncremap and reformulate your command accordingly.\n",nco_prg_nm_get(),fnc_nm);
+      nco_exit(EXIT_FAILURE);
+    } /* !rcd */
+    rcd+=nco_inq_dimid(in_id,"n_b",&dst_grid_size_id);
+    rcd+=nco_inq_dimid(in_id,"nv_a",&src_grid_corners_id);
+    rcd+=nco_inq_dimid(in_id,"nv_b",&dst_grid_corners_id);
+    rcd+=nco_inq_dimid(in_id,"src_grid_rank",&src_grid_rank_id);
+    rcd+=nco_inq_dimid(in_id,"dst_grid_rank",&dst_grid_rank_id);
+    rcd+=nco_inq_dimid(in_id,"n_s",&num_links_id);
+
+    /* Use dimension IDs to get dimension sizes */
+    rcd+=nco_inq_dimlen(in_id,num_links_id,&nlmpf.num_links);
+    rcd+=nco_inq_dimlen(in_id,src_grid_size_id,&nlmpf.src_grid_size);
+    rcd+=nco_inq_dimlen(in_id,dst_grid_size_id,&nlmpf.dst_grid_size);
+    rcd+=nco_inq_dimlen(in_id,src_grid_corners_id,&nlmpf.src_grid_corners);
+    rcd+=nco_inq_dimlen(in_id,dst_grid_corners_id,&nlmpf.dst_grid_corners);
+    rcd+=nco_inq_dimlen(in_id,src_grid_rank_id,&nlmpf.src_grid_rank);
+    rcd+=nco_inq_dimlen(in_id,dst_grid_rank_id,&nlmpf.dst_grid_rank);
+    assert(nlmpf.src_grid_size < INT_MAX && nlmpf.dst_grid_size < INT_MAX);
 
     /* Close input netCDF file */
     nco_close(in_id);
