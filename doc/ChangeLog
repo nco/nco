@@ -2,7 +2,7 @@
 
 	* NCO 5.2.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha03: 11th Hour';git push
-	git tag -a 5.2.7-alpha03 -m '';git push --tags
+	git tag -a 5.2.7-alpha03 -m 'ncremap: fix flg_dst_mpt which fixes --add_fll, CAAS stubs';git push --tags
 
 	* Correct index subscript in revamped implementation of	flg_dst_mpt. Fixes issue Xylar noticed.
 
