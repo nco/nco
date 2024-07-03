@@ -5002,6 +5002,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd+=nco_inq_dimlen(in_id,dst_grid_rank_id,&nlmpf.dst_grid_rank);
     assert(nlmpf.src_grid_size < INT_MAX && nlmpf.dst_grid_size < INT_MAX);
 
+    if(nlmpf.num_links != mpf.num_links){
+      (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports map-file and nonlinear map-file have differing dimension sizes n_s\n",nco_prg_nm_get(),fnc_nm);
+      nco_exit(EXIT_FAILURE);
+    } /* mpf.num_links */
+
     /* Close input netCDF file */
     nco_close(in_id);
     
@@ -5842,6 +5847,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	 20240604: Replace nested dst_idx/lnk_idx loop by faster frac_b == frc_out loop
 	 NB: frac_b == frc_out is unavailable in ESMF weight-only mapfiles */
 #if 0	
+      /* This long, slow method used in NCO <= 5.2.4 */
       for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){ /* For each destination cell... */
 	for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){ /* ...does any weight... */
 	  if(row_dst_adr[lnk_idx] == dst_idx){ /* ...contribute to that cell? */
@@ -5857,11 +5863,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  break;
 	} /* !lnk_idx */
       } /* !dst_idx */
-#endif /* !0 */
+#else /* !0 */
+      /* Faster method used in NCO >= 5.2.6 */
       for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++) /* For each destination cell... */
-	if(frc_out[idx] != 0.0) break;
-      /* If weight loop completed without a match then this destination cell is empty */
-      if(dst_idx == grd_sz_out) flg_dst_mpt=True;
+	if(frc_out[dst_idx] == 0.0) break;
+      /* If destination fraction of zero detected then this destination cell is empty and we must add _FillValue attribute below */
+      if(dst_idx != grd_sz_out) flg_dst_mpt=True;
+#endif /* !0 */
       if(flg_dst_mpt && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one destination cell, Fortran (1-based) row index %lu, is empty. User requested (with --add_fll) that all empty cells receive _FillValue, so regridder will ensure that all regridded fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm,dst_idx+1L);
     } /* !flg_msk_apl */
   } /* !flg_add_fll */

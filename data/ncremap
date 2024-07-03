@@ -503,7 +503,7 @@ bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
 chk_map='Yes' # [flg] Check map-file quality
 cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
-clm_flg='No' # [flg] Invoked by ncclimo script
+clm_flg='No' # [flg] Assume MPAS attributes have already been fiddled with (e.g., ncremap was invoked by ncclimo in climo mode)
 cmp_sng='' # [sng] Compression string
 cnv_exe_mbt='mbconvert' # [sng] MOAB-Tempest SCRIP/Exodus conversion to H5M executable
 #cnv_exe_tps='ConvertSCRIPToExodus' # Command was deprecated in 2022
@@ -1704,8 +1704,8 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 	prc_typ='mpasa'
     fi # !mpasatmosphere
 	
-    # Add/alter missing metadata to MPAS files unless script was invoked by ncclimo
-    # NB: MPAS Analysis sets clm_flg to prevent ncremap from doing unnecessary _FillValue work
+    # Add/alter missing metadata to MPAS files unless script was invoked by ncclimo (or with -C == --clm_flg)
+    # NB: MPAS Analysis sets clm_flg=Yes to prevent ncremap from doing unnecessary _FillValue work
     # MPAS Analysis correctly deals with NaNs, masks, unset MPAS _FillValues, etc
     if [ "${clm_flg}" = 'No' ] && [ "${prc_typ}" != 'mpasa' ]; then
 	att_flg='Yes'
@@ -3363,7 +3363,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		printf "att(in)  : ${fl_in[${fl_idx}]}\n"
 		printf "att(out) : ${att_fl[${fl_idx}]}\n"
 	    fi # !vrb_lvl
-	    cmd_att[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncatted -O -t -a _FillValue,,o,d,${mss_val} -a _FillValue,,o,f,${mss_val} \"${fl_in[${fl_idx}]}\" \"${att_fl[${fl_idx}]}\""
+	    cmd_att[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncatted -O --type_match -a _FillValue,,o,d,${mss_val} -a _FillValue,,o,f,${mss_val} \"${fl_in[${fl_idx}]}\" \"${att_fl[${fl_idx}]}\""
 	    fl_in[${fl_idx}]="${att_fl[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_att[${fl_idx}]}
