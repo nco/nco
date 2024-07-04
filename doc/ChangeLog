@@ -1,3 +1,12 @@
+2024-07-04  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.2.7-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha04: Fake Orangina';git push
+	git tag -a 5.2.7-alpha04 -m '';git push --tags
+
+	* nco_get_var()/nco_get_vara()/nco_inq_varid() print filename where error occurs
+	Helps disambiguate in which file things go wrong for MFOs
+
 2024-07-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.7-alpha03 release procedure:

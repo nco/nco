@@ -2459,10 +2459,18 @@ nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)
     /* Variable of input name is not in file
        Check if variable with netCDF-sanitized version of input name exists */
     char *nm_nc=NULL; /* [sng] netCDF-compatible name */
+    char *path=NULL;
+    size_t pathlen;
+
+    rcd=nc_inq_path(nc_id,&pathlen,NULL);
+    path=(char *)malloc(pathlen*sizeof(char));
+    rcd=nc_inq_path(nc_id,NULL,path);
+
     nm_nc=nm2sng_nc(var_nm);
     rcd=nc_inq_varid(nc_id,nm_nc,var_id);
-    if(rcd == NC_NOERR) (void)fprintf(stdout,"INFO: %s reports requested variable \"%s\" is not defined in file, though variable with netCDF-safe name \"%s\" is. Returning safe-named variable ID = %d.\n",fnc_nm,var_nm,nm_nc,*var_id); else (void)fprintf(stdout,"ERROR: %s reports requested variable \"%s\" is not defined in file\n",fnc_nm,var_nm);
+    if(rcd == NC_NOERR) (void)fprintf(stdout,"INFO: %s reports requested variable \"%s\" is not defined in file %s, though variable with netCDF-safe name \"%s\" is. Returning safe-named variable ID = %d.\n",fnc_nm,var_nm,path,nm_nc,*var_id); else (void)fprintf(stdout,"ERROR: %s reports requested variable \"%s\" is not defined in file %s\n",fnc_nm,var_nm,path);
     if(nm_nc) free(nm_nc);
+    if(path) free(path);
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
@@ -2605,8 +2613,15 @@ nco_get_var(const int nc_id,const int var_id,void * const vp,const nc_type var_t
   } /* !udt */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
+    char *path=NULL;
+    int rcd2;
+    size_t pathlen;
+    rcd2=nc_inq_path(nc_id,&pathlen,NULL);
+    path=(char *)malloc(pathlen*sizeof(char));
+    rcd2=nc_inq_path(nc_id,NULL,path);
     (void)nco_inq_varname(nc_id,var_id,var_nm);
-    (void)fprintf(stdout,"ERROR: %s failed to nc_get_var() variable \"%s\"\n",fnc_nm,var_nm);
+    (void)fprintf(stdout,"ERROR: %s failed to nc_get_var() variable \"%s\" from %s\n",fnc_nm,var_nm,path);
+    if(path) free(path);
   } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
@@ -2826,9 +2841,16 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !0 */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
+    char *path=NULL;
+    int rcd2;
+    size_t pathlen;
+    rcd2=nc_inq_path(nc_id,&pathlen,NULL);
+    path=(char *)malloc(pathlen*sizeof(char));
+    rcd2=nc_inq_path(nc_id,NULL,path);
     (void)nco_inq_varname(nc_id,var_id,var_nm);
-    (void)fprintf(stdout,"ERROR: %s failed to nc_get_vara() variable \"%s\"\n",fnc_nm,var_nm);
-  } /* endif */
+    (void)fprintf(stdout,"ERROR: %s failed to nc_get_vara() variable \"%s\" from %s\n",fnc_nm,var_nm,path);
+    if(path) free(path);
+  } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* !nco_get_vara */
