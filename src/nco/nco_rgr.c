@@ -5026,14 +5026,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     nlcol_src_adr=(int *)nco_malloc_dbg(nlmpf.num_links*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for nonlinear remapping addresses");
     nlrow_dst_adr=(int *)nco_malloc_dbg(nlmpf.num_links*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for nonlinear remapping addresses");
 
-    /* Obtain remap matrix addresses and weights from map file */
+    /* Obtain nonlinear addresses and weights from map file */
     dmn_srt[0]=0L;
     dmn_cnt[0]=nlmpf.num_links;
-    rcd=nco_get_vara(in_id,col_src_adr_id,dmn_srt,dmn_cnt,col_src_adr,NC_INT);
-    rcd=nco_get_vara(in_id,row_dst_adr_id,dmn_srt,dmn_cnt,row_dst_adr,NC_INT);
+    rcd=nco_get_vara(in_id,col_src_adr_id,dmn_srt,dmn_cnt,nlcol_src_adr,NC_INT);
+    rcd=nco_get_vara(in_id,row_dst_adr_id,dmn_srt,dmn_cnt,nlrow_dst_adr,NC_INT);
     dmn_srt[0]=0L;
     dmn_cnt[0]=nlmpf.num_links;
-    rcd=nco_get_vara(in_id,wgt_raw_id,dmn_srt,dmn_cnt,wgt_raw,NC_DOUBLE);
+    rcd=nco_get_vara(in_id,wgt_raw_id,dmn_srt,dmn_cnt,nlwgt_raw,NC_DOUBLE);
     
     /* Pre-subtract one from row/column addresses (stored, by convention, as Fortran indices) to optimize later access with C indices */
     size_t nllnk_nbr; /* [nbr] Nonlinear number of links */
