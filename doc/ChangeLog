@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha04: Fake Orangina';git push
 	git tag -a 5.2.7-alpha04 -m '';git push --tags
 
+	* CAAS: Obtain weights, indices from nonlinear map-file
+
 	* nco_get_var()/nco_get_vara()/nco_inq_varid() print filename where error occurs
 	Helps disambiguate in which file things go wrong for MFOs
 

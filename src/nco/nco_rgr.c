@@ -4980,6 +4980,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(SHARE_OPEN) md_open=md_open|NC_SHARE;
     rcd+=nco_fl_open(fl_nlm,md_open,&bfr_sz_hnt,&in_id);
 
+    /* Use *_id variables from conservative map to hold nonlinear variable IDs */
     rcd+=nco_inq_dimid_flg(in_id,"n_a",&src_grid_size_id);
     if(rcd != NC_NOERR){
       (void)fprintf(stderr,"%s: ERROR %s reports requested dimension \"n_a\" is not in input nonlinear map-file. HINT: This does not appear to be a \"map-file\" of any known type. A map-file must contain the weights needed to regrid from the source to destination grid. Perhaps you have give a data-file to the regridder instead? Please read the manual http://nco.sf.net/nco.html#ncremap and reformulate your command accordingly.\n",nco_prg_nm_get(),fnc_nm);
@@ -5000,12 +5001,60 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd+=nco_inq_dimlen(in_id,dst_grid_corners_id,&nlmpf.dst_grid_corners);
     rcd+=nco_inq_dimlen(in_id,src_grid_rank_id,&nlmpf.src_grid_rank);
     rcd+=nco_inq_dimlen(in_id,dst_grid_rank_id,&nlmpf.dst_grid_rank);
-    assert(nlmpf.src_grid_size < INT_MAX && nlmpf.dst_grid_size < INT_MAX);
 
-    if(nlmpf.num_links != mpf.num_links){
-      (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports map-file and nonlinear map-file have differing dimension sizes n_s\n",nco_prg_nm_get(),fnc_nm);
+    if(nlmpf.src_grid_size != mpf.src_grid_size || nlmpf.dst_grid_size != mpf.dst_grid_size){
+      (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports map-file and nonlinear map-file dimensions sizes differ\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
-    } /* mpf.num_links */
+    } /* nlmpf.num_links */
+
+    rcd+=nco_inq_varid(in_id,"row",&row_dst_adr_id); /* SCRIP: dst_address */
+    rcd+=nco_inq_varid(in_id,"col",&col_src_adr_id); /* SCRIP: src_address */
+    rcd+=nco_inq_varid(in_id,"S",&wgt_raw_id); /* NB: remap_matrix[num_links,num_wgts] != S[n_s] */
+
+    /* Allocate new, nonlinear versions of row_dst_adr, col_src_adr, and wgt_raw */
+    double *nlwgt_raw; /* [frc] Nonlinear remapping weights */
+    int *nlcol_src_adr; /* [idx] Nonlinear source address (col) */
+    int *nlrow_dst_adr; /* [idx] Nonlinear destination address (row) */
+    
+    /* Allocate space to hold dimension metadata for destination grid */
+    dmn_srt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
+    dmn_cnt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
+    dmn_srd=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
+    
+    /* Allocate space for and obtain weights and addresses */
+    nlwgt_raw=(double *)nco_malloc_dbg(nlmpf.num_links*nco_typ_lng(NC_DOUBLE),fnc_nm,"Unable to malloc() value buffer for nonlinear remapping weights");
+    nlcol_src_adr=(int *)nco_malloc_dbg(nlmpf.num_links*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for nonlinear remapping addresses");
+    nlrow_dst_adr=(int *)nco_malloc_dbg(nlmpf.num_links*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for nonlinear remapping addresses");
+
+    /* Obtain remap matrix addresses and weights from map file */
+    dmn_srt[0]=0L;
+    dmn_cnt[0]=nlmpf.num_links;
+    rcd=nco_get_vara(in_id,col_src_adr_id,dmn_srt,dmn_cnt,col_src_adr,NC_INT);
+    rcd=nco_get_vara(in_id,row_dst_adr_id,dmn_srt,dmn_cnt,row_dst_adr,NC_INT);
+    dmn_srt[0]=0L;
+    dmn_cnt[0]=nlmpf.num_links;
+    rcd=nco_get_vara(in_id,wgt_raw_id,dmn_srt,dmn_cnt,wgt_raw,NC_DOUBLE);
+    
+    /* Pre-subtract one from row/column addresses (stored, by convention, as Fortran indices) to optimize later access with C indices */
+    size_t nllnk_nbr; /* [nbr] Nonlinear number of links */
+    size_t nllnk_idx; /* [idx] Nonlinear link index */
+    nllnk_nbr=nlmpf.num_links;
+    for(nllnk_idx=0;nllnk_idx<nllnk_nbr;nllnk_idx++) nlrow_dst_adr[nllnk_idx]--;
+    for(nllnk_idx=0;nllnk_idx<nllnk_nbr;nllnk_idx++) nlcol_src_adr[nllnk_idx]--;
+    if(nco_dbg_lvl_get() >= nco_dbg_io){
+      (void)fprintf(stdout,"nlidx nlrow_dst nlcol_src nlwgt_raw\n");
+      for(nllnk_idx=0;nllnk_idx<nllnk_nbr;nllnk_idx++) (void)fprintf(stdout,"%li %d %d %g\n",nllnk_idx,nlrow_dst_adr[nllnk_idx],nlcol_src_adr[nllnk_idx],nlwgt_raw[nllnk_idx]);
+    } /* !dbg */
+
+    /* Free memory associated with input file */
+    if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+    if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
+    if(dmn_srd) dmn_srd=(long *)nco_free(dmn_srd);
+    
+    /* fxm: move down */
+    if(nlcol_src_adr) nlcol_src_adr=(int *)nco_free(nlcol_src_adr);
+    if(nlrow_dst_adr) nlrow_dst_adr=(int *)nco_free(nlrow_dst_adr);
+    if(nlwgt_raw) nlwgt_raw=(double *)nco_free(nlwgt_raw);
 
     /* Close input netCDF file */
     nco_close(in_id);
