@@ -2376,6 +2376,7 @@ nco_map_chk /* Map-file evaluation */
   /* Start Report in own scope */
   {
     const double eps_abs=5.0e-16;
+    const double rds_earth=6.370e+06; // (6.370e+06) [m] Radius of sphere of same volume as Earth
     double area_a_min,area_a_max,area_a_ttl;
     double area_b_min,area_b_max,area_b_ttl;
     double avg,mebs,rms,sdn;
@@ -2386,6 +2387,9 @@ nco_map_chk /* Map-file evaluation */
     double mask_b_min,mask_b_max,mask_b_ttl;
     double row_min,row_max,row_ttl;
     double s_min,s_max,s_ttl;
+    size_t idx_min_area_a,idx_max_area_a;;
+    size_t idx_min_area_b,idx_max_area_b;;
+    size_t idx_max;
 
     nco_map_var_min_max_ttl(var_col,(double *)NULL,flg_area_wgt,(int *)NULL,&col_min,&idx_min,&col_max,&idx_max,&col_ttl,&avg,&mebs,&rms,&sdn);
     nco_map_var_min_max_ttl(var_row,(double *)NULL,flg_area_wgt,(int *)NULL,&row_min,&idx_min,&row_max,&idx_max,&row_ttl,&avg,&mebs,&rms,&sdn);
@@ -2403,7 +2407,7 @@ nco_map_chk /* Map-file evaluation */
     nco_map_hst_mk(var_col,var_area_a->sz,hst_col,hst_sz);
     nco_map_hst_mk(var_row,var_area_b->sz,hst_row,hst_sz);
 
-    if(has_area_a) nco_map_var_min_max_ttl(var_area_a,(double *)NULL,flg_area_wgt,(int *)NULL,&area_a_min,&idx_min,&area_a_max,&idx_max,&area_a_ttl,&avg,&mebs,&rms,&sdn);
+    if(has_area_a) nco_map_var_min_max_ttl(var_area_a,(double *)NULL,flg_area_wgt,(int *)NULL,&area_a_min,&idx_min_area_a,&area_a_max,&idx_max_area_a,&area_a_ttl,&avg,&mebs,&rms,&sdn);
     if(var_mask_a) nco_map_var_min_max_ttl(var_mask_a,(double *)NULL,flg_area_wgt,(int *)NULL,&mask_a_min,&idx_min,&mask_a_max,&idx_max,&mask_a_ttl,&avg,&mebs,&rms,&sdn);
 
     fprintf(stdout,"Characterization of map-file %s\n",fl_in);
@@ -2462,16 +2466,20 @@ nco_map_chk /* Map-file evaluation */
     if(var_mask_a) fprintf(stdout,"mask_a S errors: %lu%s\n",mask_a_err,mask_a_err ? " <--- # of weights that, in violation of mask_a, contribute from masked source cells to destination gridcells WARNING WARNING WARNING" : ""); else fprintf(stdout,"mask_a S errors: map-file omits mask_a\n");
     if(has_area_a){
       fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
-      fprintf(stdout,"area_a min, max: %0.16e, %0.16e\n",area_a_min,area_a_max);
+      // 20240708: Output diameter of circle with same area as smallest/largest gridcell
+      // s=r*theta, A=r2*sr, r=1 -> A=4pi*r2 -> pi*dx2=A -> dx=sqrt(A/pi) -> dx=sqrt(r2*sr/pi)
+      fprintf(stdout,"area_a min, dmt: %0.16e sr, %0.2f km in grid A cell [%lu,%+g,%+g]\n",area_a_min,sqrt(rds_earth*rds_earth*area_a_min/M_PI)/1000.0,idx_min_area_a+1UL,var_yc_a->val.dp[idx_min_area_a],var_xc_a->val.dp[idx_min_area_a]);
+      fprintf(stdout,"area_a max, dmt: %0.16e sr, %0.2f km in grid A cell [%lu,%+g,%+g]\n",area_a_max,sqrt(rds_earth*rds_earth*area_a_max/M_PI)/1000.0,idx_max_area_a+1UL,var_yc_a->val.dp[idx_max_area_a],var_xc_a->val.dp[idx_max_area_a]);
       if(fabs(1.0-area_a_ttl/4.0/M_PI) < 1.0e-2) grid_a_tiles_sphere=True;
     }else{
       fprintf(stdout,"area_a sum/4*pi: map-file does not provide completely non-zero area_a\n");
-      fprintf(stdout,"area_a min, max: map-file does not provide completely non-zero area_a\n");
+      fprintf(stdout,"area_a min, dmt: map-file does not provide completely non-zero area_a\n");
+      fprintf(stdout,"area_a max, dmt: map-file does not provide completely non-zero area_a\n");
     } /* !has_area_a */
     fprintf(stdout,"Column (source cell) indices utilized min, max: %.0f, %.0f\n",col_min,col_max);
     fprintf(stdout,"Ignored source cells (empty columns): %d\n\n",hst_col[0]);
 
-    if(has_area_b) nco_map_var_min_max_ttl(var_area_b,(double *)NULL,flg_area_wgt,(int *)NULL,&area_b_min,&idx_min,&area_b_max,&idx_max,&area_b_ttl,&avg,&mebs,&rms,&sdn);
+    if(has_area_b) nco_map_var_min_max_ttl(var_area_b,(double *)NULL,flg_area_wgt,(int *)NULL,&area_b_min,&idx_min_area_b,&area_b_max,&idx_max_area_b,&area_b_ttl,&avg,&mebs,&rms,&sdn);
     if(var_mask_b) nco_map_var_min_max_ttl(var_mask_b,(double *)NULL,flg_area_wgt,(int *)NULL,&mask_b_min,&idx_min,&mask_b_max,&idx_max,&mask_b_ttl,&avg,&mebs,&rms,&sdn);
 
     fprintf(stdout,"Grid B size n_b: %lu // Number of rows/destinations\n",var_area_b->sz);
@@ -2480,11 +2488,13 @@ nco_map_chk /* Map-file evaluation */
     if(var_mask_b) fprintf(stdout,"mask_b S errors: %lu%s\n",mask_b_err,mask_b_err ? " <--- # of weights that, in violation of mask_b, contribute from source gridcells to masked destination gridcells WARNING WARNING WARNING" : ""); else fprintf(stdout,"mask_b S errors: map-file omits mask_b\n");
     if(has_area_b){
       fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
-      fprintf(stdout,"area_b min, max: %0.16e, %0.16e\n",area_b_min,area_b_max);
+      fprintf(stdout,"area_b min, dmt: %0.16e sr, %0.2f km in grid A cell [%lu,%+g,%+g]\n",area_b_min,sqrt(rds_earth*rds_earth*area_b_min/M_PI)/1000.0,idx_min_area_b+1UL,var_yc_a->val.dp[idx_min_area_b],var_xc_a->val.dp[idx_min_area_b]);
+      fprintf(stdout,"area_b max, dmt: %0.16e sr, %0.2f km in grid A cell [%lu,%+g,%+g]\n",area_b_max,sqrt(rds_earth*rds_earth*area_b_max/M_PI)/1000.0,idx_max_area_b+1UL,var_yc_a->val.dp[idx_max_area_b],var_xc_a->val.dp[idx_max_area_b]);
       if(fabs(1.0-area_b_ttl/4.0/M_PI) < 1.0e-2) grid_b_tiles_sphere=True;
     }else{
       fprintf(stdout,"area_b sum/4*pi: map-file does not provide completely non-zero area_b\n");
-      fprintf(stdout,"area_b min, max: map-file does not provide completely non-zero area_b\n");
+      fprintf(stdout,"area_b min, dmt: map-file does not provide completely non-zero area_b\n");
+      fprintf(stdout,"area_b max, dmt: map-file does not provide completely non-zero area_b\n");
     } /* !has_area_b */
     fprintf(stdout,"Row (destination cell) indices utilized min, max: %.0f, %.0f\n",row_min,row_max);
     fprintf(stdout,"Ignored destination cells (empty rows): %d\n\n",hst_row[0]);
