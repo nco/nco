@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha04: Fake Orangina';git push
 	git tag -a 5.2.7-alpha04 -m 'ncks chk_map area_a/b dmt lcn';git push --tags
 
-	* Add area_a/b min/max diameter properties and locations to --chk_map output
+	* chk_map: Output side of equi-areal square instead of radius of equi-areal circle
+
+	* ncks: Add area_a/b min/max diameter properties and locations to --chk_map output
 
 2024-07-04  Charlie Zender  <zender@uci.edu>
 
