@@ -2143,6 +2143,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: out_nm   = ${out_nm}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: ppn_opt  = ${ppn_opt}\n"
+    printf "dbg: prc_opt  = ${prc_opt}\n"
     printf "dbg: prc_typ  = ${prc_typ}\n"
     printf "dbg: qnt_prc  = ${qnt_prc}\n"
     printf "dbg: rgn_avg  = ${rgn_avg}\n"
