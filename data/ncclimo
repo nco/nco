@@ -1773,8 +1773,13 @@ if [ "${tms_flg}" = 'Yes' ]; then
 
 else # !tms_flg
 
+    if [ "${mth_flg}" = 'Yes' ]; then
+	echo "${spt_nm}: ERROR Monthly climo-mode only supports climatologies that start in January (jfd-mode, the default) or December (djf) mode. Climo mode does not support arbitrary starting months (--mth_srt and --mth_end). If you would like ${spt_nm} to generate climos for arbitrary starting months, please talk to Charlie."
+	exit 1
+    fi # !mth_flg
+	
     if [ "${rgn_avg}" = 'Yes' ]; then 
-	echo "${spt_nm}: ERROR Regional and global average functionality are intended for time-series (splitting) mode only. If you would like ${spt_nm} to provide global and regional mean output for other types of climatologies, please talk to Charlie."
+	echo "${spt_nm}: ERROR Regional and global average timeseries functionality is supported for time-series (splitting) mode only. If you would like ${spt_nm} to provide global and regional mean output for other types of climatologies, please talk to Charlie."
 	echo "${spt_nm}: HINT Create global means of climos with, e.g., \"ncwa -w ${area_nm} in.nc out.nc\""
 	echo "${spt_nm}: HINT See averaging documentation at http://nco.sf.net/nco.html#ncwa"
 	exit 1

@@ -1,3 +1,11 @@
+2024-07-22  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.2.7-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha04: Fake Orangina';git push
+	git tag -a 5.2.7-alpha04 -m 'ncclimo: mth_flg clm md ERROR; ncks chk_map area_a/b dmt lcn';git push --tags
+
+	* ncclimo: ERROR when climo called with --mth_srt, --mth_end
+
 2024-07-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.7-alpha04 release procedure:
