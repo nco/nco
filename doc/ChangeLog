@@ -1,8 +1,10 @@
-2024-07-22  Charlie Zender  <zender@uci.edu>
+2024-07-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.7 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7: Kealakekua';git push
 	git tag -a 5.2.7 -m 'all: qnt lossy_compresion->quantization, dpr family; ncclimo: mth_flg clm md ERROR; ncks fix flg_dst_mpt/add_fll, chk_map area_a/b dmt lcn; ncremap: fix sgs_frc typo';git push --tags
+
+2024-07-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.7-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha04: Fake Orangina';git push

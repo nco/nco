@@ -1,18 +1,16 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.6 re-crash the gates
+netCDF Operators NCO version 5.2.7 march into history
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
-Version 5.2.6 contains a one-line bugfix to ncremap in 5.2.5.
-Unfortunately that horse had already escaped the barn.
-There is nothing else new in 5.2.6, so the release notes below
-repeat those for 5.2.5 so people can get a quick summary of new
-features since the previous widely distributed version, 5.2.4.
-
 What's new?
-Version 5.2.6 fully implements the draft CF lossy metadata convention
+Version 5.2.7 contains updates to quantization metadata,
+enhanced grid area diagnostics for check_map, and bug-fixes
+for ncremap.
+
+Version 5.2.7 fully implements the draft CF lossy metadata convention
 for all NCO internal quantization algorithms. It also improves ncclimo 
 diagnostics and adds a new invocation synonym (--qnt) for
 quantization, and outputs a maximum_relative_error statistic
@@ -20,7 +18,7 @@ where possible. ncclimo/ncremap add support for MPAS-Atmosphere
 datasets, and ncclimo supports excluding variable lists in timeseries
 mode. Skip this release if these changes are not important to you. 
 
-Work on NCO 5.2.7 has commenced and will add support for Zarr S3 
+Work on NCO 5.2.8 has commenced and will add support for Zarr S3 
 stores, and will enhance the vertical regridder.
 
 Enjoy,
@@ -28,124 +26,70 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. All numeric operators now support --qnt_alg=alg_nm to request an
-NCO quantization algorithm by name. Previously one had to use the --baa
-option with an obscure undocumented integer code for each algorithm.
-Now quantization algorithms can be requested by the English names.
-alg_nm can be BitGroom, Granular BitRound, BitShave, BitSet,
-DigitRound, BitGroomRound, HalfShave, BruteForce, BitRound or common
-synonyms for these names, e.g., set, shave, "bit round", btg, etc.
-The names are case-insensitive:
-ncks -7 -L 1               --qnt default=3 in.nc out.nc # Granular BitRound (NSD)
-ncks -7 -L 1 --qnt_alg=btg --qnt default=3 in.nc out.nc # BitGroom (NSD)
-ncks -7 -L 1 --qnt_alg=shv --qnt default=3 in.nc out.nc # BitShave (NSD)
-ncks -7 -L 1 --qnt_alg=set --qnt default=3 in.nc out.nc # BitSet (NSD)
-ncks -7 -L 1 --qnt_alg=dgr --qnt default=3 in.nc out.nc # DigitRound (NSD)
-ncks -7 -L 1 --qnt_alg=gbr --qnt default=3 in.nc out.nc # Granular BitRound (NSD)
-ncks -7 -L 1 --qnt_alg=bgr --qnt default=3 in.nc out.nc # BitGroomRound (NSD)
-ncks -7 -L 1 --qnt_alg=sh2 --qnt default=9 in.nc out.nc # HalfShave (NSB)
-ncks -7 -L 1 --qnt_alg=brt --qnt default=3 in.nc out.nc # BruteForce (NSD)
-ncks -7 -L 1 --qnt_alg=btr --qnt default=9 in.nc out.nc # BitRound (NSB)
-This menagerie arose from research efforts. We recommend that others
-choose between BitRound, DigitRound, and Granular BitRound for
-real-world workflows. The others are of mainly research or historical 
-interest only. 
-http://nco.sf.net/nco.html#qnt_alg
-http://nco.sf.net/nco.html#qnt
-
-B. CF-compliant metadata for quantization now includes maximum
-relative error (MRE) for the BitRound algorithm, for which MRE is
-0.5*2^-NSB = 2^-(NSB+1). The MRE appears as the attribute
-"lossy_compression_maximum_relative_error" in each field's
-metadata:
+A. Version 5.2.7 implements the final (we think) CF quantization
+metadata convention. The main change is that the keywords and
+container variable are now "quantization" instead of
+"lossy_compression". 
 ncks -7 -v ps,ts --qnt_alg=btr --qnt default=9 --qnt ps=13 --cmp='shf|zst' in.nc out.nc
 ncks -m -C -v ps,ts,quantization_info out.nc
 netcdf out {
 ...
-    float ps(time,lat,lon) ;
+   float ps(time,lat,lon) ;
       ps:standard_name = "surface_air_pressure" ;
       ps:units = "Pa" ;
-      ps:lossy_compression = "quantization_info" ;
-      ps:lossy_compression_nsb = 13 ;
-      ps:lossy_compression_maximum_relative_error = 6.103516e-05f ;
+      ps:quantization = "quantization_info" ;
+      ps:quantization_nsb = 13 ;
+      ps:quantization_maximum_relative_error = 6.103516e-05f ;
+
+    char quantization_info ;
+      quantization_info:algorithm = "bitround" ;
+      quantization_info:implementation = "NCO version 5.2.7" ;
 
     float ts(time) ;
       ts:standard_name = "surface_temperature" ;
       ts:units = "K" ;
-      ts:lossy_compression = "quantization_info" ;
-      ts:lossy_compression_nsb = 9 ;
-      ts:lossy_compression_maximum_relative_error = 0.0009765625f ;
+      ts:quantization = "quantization_info" ;
+      ts:quantization_nsb = 9 ;
+      ts:quantization_maximum_relative_error = 0.0009765625f ;
 } // group /
 http://nco.sf.net/nco.html#qnt_alg
 http://nco.sf.net/nco.html#qnt
 
-C. ncremap and ncclimo now handle MPAS-A (Atmosphere) datasets.
-These operators have always supported MPAS Ocean, Sea-ice, and
-Land-Ice (all used by E3SM) datasets. This completes MPAS support.
-Use -P mpasa to indicate that datasets follow MPAS-A conventions.
-This allow ncremap to automatically permute the spatial dimensions
-into the correct order for regridding, and to differentiate itself
-from other MPAS datasets in terms of missing value treatment:
-ncremap -P mpasa  --map=map.nc mpa.nc foo.nc # MPAS-A
-ncremap -P mali   --map=map.nc mpli.nc foo.nc # MPAS-LI
-ncremap -P mpaso  --map=map.nc mpo.nc foo.nc # MPAS-O
-ncremap -P mpassi --map=map.nc mpsi.nc foo.nc # MPAS-SI
-
-NB: Omitting the -P mpasX option on MPAS datasets works if the user
-explicitly permutes the horizontal dimensions, e.g.: 
-ncremap --pdq=Time,nVertLevels,nIsoLevelsT,nIsoLevelsZ,nCells \
-	--map=map.nc mpa.nc foo.nc # MPAS-A
-Analogous workarounds apply to the other MPAS componenents when
-omitting the -P option, and -P mpas also works for generic MPAS.
-However, using -P mpasX results in the best output.
-http://nco.sf.net/nco.html#MPAS
-http://nco.sf.net/nco.html#ncremap
-http://nco.sf.net/nco.html#pdq_opt
-Thanks to Angela Borallo of CGG for prompting this feature.
-
-D. ncclimo now supports excluding the specified variable list
-(with -x or --xcl_var or --exclude) in timeseries mode.
-Previously this option only worked in climo mode.
-However, in timeseries mode this option requires invoking ncclimo
-with Bash version 4.0 or higher. NB: This works well across modern
-Linux  machines, though MacOS still ships Bash 3.2.57 (from 2007!).
-MacOS users must put an updated Bash on their PATH before /bin/bash
-to access this features (all other features continue to work fine
-with older versions of Bash).
-ncclimo --split --exclude -v FSNT,AODVIS,TREFHT \
-	-c v2.LR.historical_0101 -s 2013 -e 2014 \
-	-i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
-http://nco.sf.net/nco.html#xcl_var
-Thanks to Koichi Sakaguchi of PNNL for prompting this feature.
-
-E. ncremap now automatically tests whether vertical grid-file has a
-level(level) coordinate à la ERA5. If so, it treats this as a pure
-pressure coordinate. This is analogous to the treatment of the
-plev(plev) coordinate for NCEP files.
-ncremap --vrt_out=vrt_prs_era5_L37.nc in.nc out.nc
-http://nco.sf.net/nco.html#vrt
-
-F. ncclimo updated its MPAS dataset filename construction option.
-Previously it constructed MPAS monthly datasets names like this:
-${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc
-where mdl_nm is the canonical MPAS component name, e.g., mpaso.
-This yielded names consistent with MPAS v1 output like
-"mpaso.hist.am.timeSeriesStatsMonthly.0001-02-01.nc", and
-"mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc", 
-Now ncclimo prepends the ${caseid}, if present, to the filename.
-This yields names consistent with E3SM v2 and v3 output like
-"v2.LR.historical_0101.mpaso.hist.am.timeSeriesStatsMonthly.0001-02-01.nc", and
-"v2.LR.historical_0101.mpassi.hist.am.timeSeriesStatsMonthly.0001-02-01.nc". 
-To read MPAS filenames with different patterns, simply pipe the
-filenames to ncclimo;
-ls *mpas*hist | ncclimo ...
-http://nco.sf.net/nco.html#ncclimo
+B. ncks --chk_map now produces additional diagnostics about the
+source and destination grids. Then new diagnostics are values and
+locations (index, latitude, longitude) of the minimum and maximum
+gridcell areas (usually in sterradians), together with the effective
+quadrilateral size on Earth of the gridcell (assuming a square shaped
+cell of equivalent area):
+ncks --chk_map map_ne30pg2_to_cmip6_180x360_nco.20200901.nc
+...
+area_a min, ~dx: 4.9093515660647374e-04 sr, 141.14 km in grid A cell [21544,+45.7267,+177.69]
+area_a max, ~dx: 6.8523331840188574e-04 sr, 166.75 km in grid A cell [9061,+0.749936,+180.75]
+...
+area_b min, ~dx: 2.6580860638549120e-06 sr, 10.39 km in grid A cell [60,-42.7476,+359.25]
+area_b max, ~dx: 3.0460968486221404e-04 sr, 111.18 km in grid A cell [32272,-68.5,+135.5]
+These diagnostics can be useful in identifying grid-related dynamics
+issues, e.g., due to CFL conditions. This feature was inspired by
+map diagnostic software from Mark Taylor (SNL).
+http://nco.sf.net/nco.html#chk_map
 
 BUG FIXES:
    
-A. ncclimo: The -Y/--drc_rgr_xtn option was broken. This has been 
-fixed. There is no workaround. The solution is to upgrade.
-http://nco.sf.net/nco.html#drc_rgr_xtn
+A. ncremap: A bug that crept into version 5.2.6 has been fixed.
+Namely, the detection of empty destination gridcells was broken.
+This prevented correctly adding the _FillValue attribute to some
+fields with missing values. The workaround is to use version 5.2.4.
+The solution is to upgrade. Thanks to Xylar Asay-Davis (LANL) for
+reporting resultant problems.
+
+B. ncclimo: A bug that crept into version 5.2.6 has been fixed.
+ncclimo had stopped passing the specified processing type (-P mdl)
+to internal calls to ncremap. This prevented ncremap from
+automagically weighting fields from surface models by the appropriate
+sub-gridscale fraction variable (landfrac for ELM+CLM, aice for CICE,
+timeMonthly_avg_iceAreaCell for MPAS-Seaice). The workaround is to use
+version 5.2.4. The solution is to upgrade. Thanks to Tony Bartoletti
+(LLNL) for noticing resultant problems.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
@@ -153,7 +97,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.2.6 built/tested under
+These problems occur with NCO 5.2.7 built/tested under
 MacOS 14.5 with netCDF 4.9.3-dev on HDF5 1.14.3 and with
 Linux FC38 with netCDF 4.9.2 on HDF5 1.14.1.
 
