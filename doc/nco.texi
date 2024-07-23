@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.7-alpha04
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 19 June 2024
-@set update-month June 2024
+@set update-date 22 July 2024
+@set update-month July 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -28223,6 +28223,11 @@ ncremap -P cice in.nc out.nc
 ncremap -P mpasseaice in.nc out.nc
 ncremap --sgs_frc=timeMonthly_avg_iceAreaCell in.nc out.nc
 @end example
+
+@html
+<a name="sgs_frc_fl"></a> <!-- http://nco.sf.net/nco.html#sgs_frc_fl -->
+@end html
+@cindex @var{sgs_frc_fl}
 It is sometimes convenient to store the @var{sgs_frc} field in
 an external file from the field(s) to be regridded.
 For example, @acronym{CMIP}-style timeseries are often written
@@ -28233,6 +28238,19 @@ variable name:
 @example
 ncremap --sgs_frc=sgs_landfrac_ne30.nc/landfrac -m map.nc in.nc out.nc
 @end example
+This feature is most useful for datasets whose @var{sgs_frc} field is
+time-invariant, as is usually the case for land models.
+This is because a single @var{sgs_frc} location (e.g.,
+@file{r05.nc/landfrac}) can be used for all files of the same
+resolution.
+Time-varying @var{sgs_frc} fields (e.g., for sea-ice models) change
+with the same frequency as the simulation output.
+Thus fields associated with time-varying @var{sgs_frc} must be
+regridded ``timestep-by-timestep'', i.e., with a separate
+@command{ncremap} invocation for each snapshot of @var{sgs_frc}.
+Of course, @command{ncrcat} can later concatenate these separate
+regriddings can be recombined back into into a single, regridded
+timeseries. 
 
 Files regridded using explicitly specified @acronym{SGS} options will
 differ slightly from those regridded using the @samp{-P elm} or 
