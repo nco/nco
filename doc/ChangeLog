@@ -1,18 +1,20 @@
 2024-07-22  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.7 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.7: Kealakekua';git push
+	git tag -a 5.2.7 -m 'all: qnt lossy_compresion->quantization, dpr family; ncclimo: mth_flg clm md ERROR; ncks fix flg_dst_mpt/add_fll, chk_map area_a/b dmt lcn; ncremap: fix sgs_frc typo';git push --tags
+
 	* NCO 5.2.7-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha04: Fake Orangina';git push
 	git tag -a 5.2.7-alpha04 -m 'ncclimo: mth_flg clm md ERROR; ncks chk_map area_a/b dmt lcn; ncremap: fix sgs_frc typo';git push --tags
+
+	* nco.texi: Clarify method and rationale for specifying --sgs_frc=/path/to/file/sgs_frc
 
 	* ncremap: Fix typo in 5.2.6 that dropped sgs_frc argument to ncks
 
 	* ncclimo: ERROR when climo called with --mth_srt, --mth_end
 
 2024-07-18  Charlie Zender  <zender@uci.edu>
-
-	* NCO 5.2.7-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha04: Fake Orangina';git push
-	git tag -a 5.2.7-alpha04 -m 'ncks chk_map area_a/b dmt lcn';git push --tags
 
 	* ncclimo add prc_opt to debug output
 
