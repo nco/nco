@@ -10,14 +10,6 @@ Version 5.2.7 contains updates to quantization metadata,
 enhanced grid area diagnostics for check_map, and bug-fixes
 for ncremap.
 
-Version 5.2.7 fully implements the draft CF lossy metadata convention
-for all NCO internal quantization algorithms. It also improves ncclimo 
-diagnostics and adds a new invocation synonym (--qnt) for
-quantization, and outputs a maximum_relative_error statistic
-where possible. ncclimo/ncremap add support for MPAS-Atmosphere
-datasets, and ncclimo supports excluding variable lists in timeseries
-mode. Skip this release if these changes are not important to you. 
-
 Work on NCO 5.2.8 has commenced and will add support for Zarr S3 
 stores, and will enhance the vertical regridder.
 
