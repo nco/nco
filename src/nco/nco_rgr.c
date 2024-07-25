@@ -6493,15 +6493,16 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
   double *caas_sgs_frc_in=NULL;
   double *caas_sgs_frc_out=NULL;
+  double *caas_wgt_vld_out=NULL;
+  int *caas_tally=NULL;
   if(nlwgt_raw){
-    /* 20240714 fxm Allocate caas_tally and caas_wgt_vld_out ... when not already allocated */
     /* If sgs_frc_* is used in conservative regridding... */
     if(sgs_frc_out){
-      /* Then copy those into analogous CAAS variables */
+      /* ...then copy those into analogous CAAS variables... */
       caas_sgs_frc_in=sgs_frc_in;
       caas_sgs_frc_out=sgs_frc_out;
-    }else{
-      /* Otherwise, must allocate caas_sgs_frc_* since sgs_frc_* DNE */
+    }else{ /* !sgs_frc_out */
+      /* ...otherwise, must allocate caas_sgs_frc_* since sgs_frc_* DNE */
       caas_sgs_frc_in=(double *)nco_malloc_dbg(grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() caas_sgs_frc_in value buffer");
       caas_sgs_frc_out=(double *)nco_malloc_dbg(grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() caas_sgs_frc_out value buffer");
       /* 20240709: Baby steps to begin, assume fields are 2D and global */
@@ -6559,27 +6560,27 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 #endif /* !__GNUG__ */
 #if defined( __clang__ ) && !defined(NCO_OPENMP_DEFINED)
   /* OpenMP clause to build NCO with Clang compilers */
-# pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,nllnk_idx,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(caas_sgs_frc_in,caas_sgs_frc_out,col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for firstprivate(caas_tally,caas_wgt_vld_out,dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,nllnk_idx,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(caas_sgs_frc_in,caas_sgs_frc_out,col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
 # define NCO_OPENMP_DEFINED
 #endif /* !__clang__ */
 #if defined( __INTEL_COMPILER ) && !defined(NCO_OPENMP_DEFINED)
   /* OpenMP clause to build NCO with Intel compilers */
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,nllnk_idx,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(caas_sgs_frc_in,caas_sgs_frc_out,col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,nlcol_src_adr,nllnk_nbr,nlrow_dst_adr,nlwgt_raw,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(caas_tally,caas_wgt_vld_out,dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,nllnk_idx,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(caas_sgs_frc_in,caas_sgs_frc_out,col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,nlcol_src_adr,nllnk_nbr,nlrow_dst_adr,nlwgt_raw,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
 # define NCO_OPENMP_DEFINED
 #endif /* !__INTEL_COMPILER */
 #if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION < 490) && !defined(NCO_OPENMP_DEFINED)
   /* Old OpenMP clause to build NCO with GCC compiler versions < 4.9.0 */
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,nllnk_idx,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(caas_sgs_frc_in,caas_sgs_frc_out,col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,nlcol_src_adr,nllnk_nbr,nlrow_dst_adr,nlwgt_raw,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+# pragma omp parallel for default(none) firstprivate(caas_tally,caas_wgt_vld_out,dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,nllnk_idx,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(caas_sgs_frc_in,caas_sgs_frc_out,col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,fnc_nm,frc_out,lnk_nbr,msk_out,nlcol_src_adr,nllnk_nbr,nlrow_dst_adr,nlwgt_raw,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 # define NCO_OPENMP_DEFINED
 #endif /* !GCC < 490 */
 #if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION >= 900) && !defined(NCO_OPENMP_DEFINED) && 0
   /* Experimental OpenMP clause to build NCO with modern OpenMP5 GPU options */
-# pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,nllnk_idx,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(caas_sgs_frc_in,caas_sgs_frc_out,col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,msk_out,nlcol_src_adr,nllnk_nbr,nlrow_dst_adr,nlwgt_raw,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+# pragma omp target teams distribute parallel for firstprivate(caas_tally,caas_wgt_vld_out,dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,nllnk_idx,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(caas_sgs_frc_in,caas_sgs_frc_out,col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,flg_rnr,frc_out,lnk_nbr,msk_out,nlcol_src_adr,nllnk_nbr,nlrow_dst_adr,nlwgt_raw,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 # define NCO_OPENMP_DEFINED
 #endif /* !GCC with experimental GPU_SUPPORT */
 #if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION >= 490) && !defined(NCO_OPENMP_DEFINED)
   /* Standard OpenMP clause to build NCO on modern GCC versions >= 4.9.0 */
-# pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,nllnk_idx,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(caas_sgs_frc_in,caas_sgs_frc_out,col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,frc_out,lnk_nbr,msk_out,nlcol_src_adr,nllnk_nbr,nlrow_dst_adr,nlwgt_raw,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
+# pragma omp parallel for firstprivate(caas_tally,caas_wgt_vld_out,dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,nllnk_idx,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(caas_sgs_frc_in,caas_sgs_frc_out,col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,frc_out,lnk_nbr,msk_out,nlcol_src_adr,nllnk_nbr,nlrow_dst_adr,nlwgt_raw,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 # define NCO_OPENMP_DEFINED
 #endif /* !GCC >= 490 */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -7100,6 +7101,20 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  /* Initialize output */
 	  (void)memset(caas_gym,0,var_sz_out*nco_typ_lng(var_typ_rgr));
 
+	  /* 20240724 fxm Allocate caas_tally and caas_wgt_vld_out ... when not already allocated */
+	  if(tally){
+	    caas_tally=tally;
+	  }else{ /* !sgs_frc_out */
+	    caas_tally=(int *)nco_malloc_dbg(var_sz_out*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() caas_tally buffer");
+	  } /* !sgs_frc_out */
+	  (void)memset(caas_tally,0,var_sz_out*nco_typ_lng(NC_INT));
+	  if(wgt_vld_out){
+	    caas_wgt_vld_out=wgt_vld_out;
+	  }else{ /* !sgs_frc_out */
+	    caas_wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() caas_wgt_vld_out buffer");
+	  } /* !sgs_frc_out */
+	  (void)memset(caas_wgt_vld_out,0,var_sz_out*nco_typ_lng(var_typ_rgr));
+
 	  /* Handle Sub-SGS normalization */
 	  const double sub_sgs_frc_out_thr=sgs_nrm*1.0e-15; /* [frc] Threshold sub-SGS fraction for validity/normalization */
 	  double *sub_sgs_frc_out=NULL;
@@ -7115,7 +7130,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    idx_out=row_dst_adr[lnk_idx];
 	    if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
 	      var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*caas_sgs_frc_in[idx_in];
-	      tally[idx_out]++;
+	      caas_tally[idx_out]++;
 	    }else{ /* !mss_val_cmp_dbl */
 	      /* If input field value is missing in a gridcell with positive-definite area,
 		 then input field has sub-sub-gridscale missing value in gridcell.
@@ -7131,7 +7146,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	     if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out[dst_idx];} <--old (pre-20220615) normalization */
 	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 	    sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
-	    if(!tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
+	    if(!caas_tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
 	  } /* !dst_idx */
 
 	  if(caas_gym) caas_gym=(double *)nco_free(caas_gym);

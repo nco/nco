@@ -1,16 +1,16 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.7 march into history
+netCDF Operators NCO version 5.2.8 march into history
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.2.7 contains updates to quantization metadata,
+Version 5.2.8 contains updates to quantization metadata,
 enhanced grid area diagnostics for check_map, and bug-fixes
 for ncremap.
 
-Work on NCO 5.2.8 has commenced and will add support for Zarr S3 
+Work on NCO 5.2.9 has commenced and will add support for Zarr S3 
 stores, and will enhance the vertical regridder.
 
 Enjoy,
