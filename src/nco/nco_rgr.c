@@ -7154,7 +7154,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
 	  /* Order matters for these free's---must occur before free(tally, wgt_vld_out)
 	     "else" clause prevents dangling pointers when CAAS arrays are copies of original arrays */
-	  if(caas_tally && !tally) caas_tally=(double *)nco_free(caas_tally); else caas_tally=NULL;
+	  if(caas_tally && !tally) caas_tally=(int *)nco_free(caas_tally); else caas_tally=NULL;
 	  if(caas_wgt_vld_out && !wgt_vld_out) caas_wgt_vld_out=(double *)nco_free(caas_wgt_vld_out); else caas_wgt_vld_out=NULL;
 
 	} /* !nlwgt_raw */
