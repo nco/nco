@@ -7151,6 +7151,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
 	  if(caas_gym) caas_gym=(double *)nco_free(caas_gym);
 	  if(sub_sgs_frc_out) sub_sgs_frc_out=(double *)nco_free(sub_sgs_frc_out);
+
+	  /* Order matters for these free's---must occur before free(tally, wgt_vld_out)
+	     "else" clause prevents dangling pointers when CAAS arrays are copies of original arrays */
+	  if(caas_tally && !tally) caas_tally=(double *)nco_free(caas_tally); else caas_tally=NULL;
+	  if(caas_wgt_vld_out && !wgt_vld_out) caas_wgt_vld_out=(double *)nco_free(caas_wgt_vld_out); else caas_wgt_vld_out=NULL;
+
 	} /* !nlwgt_raw */
 
 	if(nco_dbg_lvl_get() >= nco_dbg_var){
@@ -7186,9 +7192,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables regridded = %d (%d extensive), copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_xtn_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
 
-  /* Order matters for these free's---must occur before free(sgs_frc_*) */
-  if(caas_sgs_frc_in && !sgs_frc_in) caas_sgs_frc_in=(double *)nco_free(caas_sgs_frc_in);
-  if(caas_sgs_frc_out && !sgs_frc_out) caas_sgs_frc_out=(double *)nco_free(caas_sgs_frc_out);
+  /* Order matters for these free's---must occur before free(sgs_frc_*)
+     "else" clause prevents dangling pointers when CAAS arrays are copies of original arrays */
+  if(caas_sgs_frc_in && !sgs_frc_in) caas_sgs_frc_in=(double *)nco_free(caas_sgs_frc_in); else caas_sgs_frc_in=NULL;
+  if(caas_sgs_frc_out && !sgs_frc_out) caas_sgs_frc_out=(double *)nco_free(caas_sgs_frc_out); else caas_sgs_frc_out=NULL;
 
   /* Free memory allocated for grid reading/writing */
   if(area_out) area_out=(double *)nco_free(area_out);
