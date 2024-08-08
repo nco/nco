@@ -898,7 +898,8 @@ main(int argc,char **argv)
 	   ncks --tst_udunits='0 days since 1918-11-11','days since 1939-09-09',standard ~/nco/data/in.nc
 	   ncks --tst_udunits='0 days since 1918-11-11','days since 1939-09-09',360_day ~/nco/data/in.nc
 	   ncks --tst_udunits='0 days since 1918-11-11','days since 1939-09-09',365_day ~/nco/data/in.nc
-	   ncks --tst_udunits='0 days since 1918-11-11','days since 1939-09-09',366_day ~/nco/data/in.nc */
+	   ncks --tst_udunits='0 days since 1918-11-11','days since 1939-09-09',366_day ~/nco/data/in.nc
+	   ncks --tst_udunits='0 days since 1918-11-11','days since -4712-01-01 12:00:00',julian ~/nco/data/in.nc */
         char *cp;
         char **args;
         double crr_val;

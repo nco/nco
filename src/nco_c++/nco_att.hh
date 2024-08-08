@@ -364,7 +364,7 @@ nco_get_att // [fnc] Get attribute value
   // Purpose: Wrapper for nco_get_att()
   typ_ntr att_val; // O [frc] Attribute value
   int rcd=nco_get_att(nc_id,var_id,att_nm,att_val);
-  rcd+=0; // 20140531 CEWI to prevent -Wunused-variable
+  rcd=rcd+0; // 20140531 CEWI to prevent -Wunused-variable
   return att_val;
 } // end nco_get_att<typ_ntr>()
 
@@ -392,7 +392,7 @@ nco_get_att // [fnc] Get attribute value
 
   typ_ntr att_val; // O [frc] Attribute value
   int rcd=nco_get_att(nc_id,nco_inq_varid(nc_id,var_nm),att_nm,att_val);
-  rcd+=0; // 20140531 CEWI to prevent -Wunused-variable
+  rcd=rcd+0; // 20140531 CEWI to prevent -Wunused-variable
   return att_val;
 } // end nco_get_att<typ_ntr>()
 

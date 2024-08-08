@@ -1,8 +1,12 @@
-2024-07-24  Charlie Zender  <zender@uci.edu>
+2024-08-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.8-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.8-alpha01: Kia';git push
 	git tag -a 5.2.8-alpha01 -m 'Functionally identical to 5.2.7';git push --tags
+
+	* nco_c++ nco_att.hh address two CEWI warnings
+
+2024-07-24  Charlie Zender  <zender@uci.edu>
 
 	* Rudimentary version of CAAS algorithm primitives works with CAAS arrays
 
