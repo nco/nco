@@ -1081,10 +1081,14 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   /* Length of string + NUL required to hold output of ctime() */
 #define TIME_STAMP_SNG_LNG 25 
   
+  const char fnc_nm[]="nco_hst_att_cat()"; /* [sng] Function name */
+
   char att_nm[NC_MAX_NAME+1L];
   char *ctime_sng;
   char *hst_crr=NULL;
+  nco_string *hst_crr_sngp=&hst_crr;
   char *hst_new;
+  nco_string *hst_new_sngp=&hst_new;
   char time_stamp_sng[TIME_STAMP_SNG_LNG];
   
   const char att_nm_hst[]="history"; /* [sng] Lowercase name of history attribute */
@@ -1095,7 +1099,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 
   long att_sz=0L;
 
-  nc_type att_typ;
+  nc_type att_typ=NC_CHAR; /* [enm] Declare history as NC_CHAR by default (used if history does not yet exist */
   
   time_t time_crr_time_t;
 
@@ -1130,26 +1134,39 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   
     /* NB: ncattinq(), unlike strlen(), counts terminating NUL for stored NC_CHAR arrays */
     rcd+=nco_inq_att(out_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
-    if(att_typ != NC_CHAR){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore current command line will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),att_nm);
+    if(att_typ != NC_CHAR && att_typ != NC_STRING){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s or %s. Therefore current command line will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),att_nm);
       return;
     } /* end if */
 
-    /* Allocate and NUL-terminate space for current history attribute
-       If history attribute is of size zero then ensure strlen(hst_crr) = 0 */
-    hst_crr=(char *)nco_malloc((att_sz+1L)*sizeof(char));
-    hst_crr[att_sz]='\0';
-    if(att_sz > 0) rcd+=nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)hst_crr,NC_CHAR);
+    if(att_typ == NC_CHAR){
+      /* Allocate and NUL-terminate space for current history attribute
+	 If history attribute is of size zero then ensure strlen(hst_crr) = 0 */
+      hst_crr=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+      hst_crr[att_sz]='\0';
+      if(att_sz > 0) rcd+=nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)hst_crr,att_typ);
+    }else if(att_typ == NC_STRING){
+      if(att_sz != 1L){
+	(void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute is an %s array of size %ld. This violates the CF Conventions which requires a single string for this attribute. Therefore current command line will not be appended to %s in output file.\n",nco_prg_nm_get(),fnc_nm,att_nm,nco_typ_sng(att_typ),att_sz,att_nm);
+	return;
+      } /* !att_sz */
+      rcd+=nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)hst_crr_sngp,att_typ);
+      /* De-reference the char ** NC_STRING array, a list now known to be of size one, into a normal char * string */
+      hst_crr=hst_crr_sngp[0];
+    } /* !att_typ */
 
     /* Add 4 for formatting characters */
     hst_new=(char *)nco_malloc((strlen(hst_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4UL)*sizeof(char));
     (void)sprintf(hst_new,"%s: %s\n%s",time_stamp_sng,hst_sng,hst_crr);
   } /* endif history global attribute currently exists */
 
-  rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long int)(strlen(hst_new)+1UL),(void *)hst_new);
+  if(att_typ == NC_CHAR) rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,att_typ,(long int)(strlen(hst_new)+1UL),(void *)hst_new);
+  if(att_typ == NC_STRING) rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,att_typ,(long int)att_sz,(void *)hst_new_sngp);
 
-  hst_crr=(char *)nco_free(hst_crr);
-  hst_new=(char *)nco_free(hst_new);
+  if(att_typ == NC_CHAR) hst_crr=(char *)nco_free(hst_crr);
+  if(att_typ == NC_STRING) rcd+=nco_free_string(att_sz,hst_crr_sngp);
+  if(att_typ == NC_CHAR) hst_new=(char *)nco_free(hst_new);
+  if(att_typ == NC_STRING) rcd+=nco_free_string(att_sz,hst_new_sngp);
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_hst_att_cat"); /* CEWI */
 

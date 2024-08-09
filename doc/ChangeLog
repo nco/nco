@@ -1,8 +1,12 @@
-2024-08-08  Charlie Zender  <zender@uci.edu>
+2024-08-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.8-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.8-alpha01: Kia';git push
-	git tag -a 5.2.8-alpha01 -m 'Functionally identical to 5.2.7';git push --tags
+	git tag -a 5.2.8-alpha01 -m 'Functionally identical to 5.2.7 and supports NC_STRING history attribute';git push --tags
+
+	* Modify nco_hst_att_cat() to write/append an NC_STRING history attribute
+
+2024-08-08  Charlie Zender  <zender@uci.edu>
 
 	* nco_c++ nco_att.hh address two CEWI warnings
 
