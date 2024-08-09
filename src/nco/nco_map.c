@@ -2488,8 +2488,8 @@ nco_map_chk /* Map-file evaluation */
     if(var_mask_b) fprintf(stdout,"mask_b S errors: %lu%s\n",mask_b_err,mask_b_err ? " <--- # of weights that, in violation of mask_b, contribute from source gridcells to masked destination gridcells WARNING WARNING WARNING" : ""); else fprintf(stdout,"mask_b S errors: map-file omits mask_b\n");
     if(has_area_b){
       fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
-      fprintf(stdout,"area_b min, ~dx: %0.16e sr, %0.2f km in grid A cell [%lu,%+g,%+g]\n",area_b_min,rds_earth*sqrt(area_b_min)/1000.0,idx_min_area_b+1UL,var_yc_a->val.dp[idx_min_area_b],var_xc_a->val.dp[idx_min_area_b]);
-      fprintf(stdout,"area_b max, ~dx: %0.16e sr, %0.2f km in grid A cell [%lu,%+g,%+g]\n",area_b_max,rds_earth*sqrt(area_b_max)/1000.0,idx_max_area_b+1UL,var_yc_a->val.dp[idx_max_area_b],var_xc_a->val.dp[idx_max_area_b]);
+      fprintf(stdout,"area_b min, ~dx: %0.16e sr, %0.2f km in grid B cell [%lu,%+g,%+g]\n",area_b_min,rds_earth*sqrt(area_b_min)/1000.0,idx_min_area_b+1UL,var_yc_b->val.dp[idx_min_area_b],var_xc_b->val.dp[idx_min_area_b]);
+      fprintf(stdout,"area_b max, ~dx: %0.16e sr, %0.2f km in grid B cell [%lu,%+g,%+g]\n",area_b_max,rds_earth*sqrt(area_b_max)/1000.0,idx_max_area_b+1UL,var_yc_b->val.dp[idx_max_area_b],var_xc_b->val.dp[idx_max_area_b]);
       if(fabs(1.0-area_b_ttl/4.0/M_PI) < 1.0e-2) grid_b_tiles_sphere=True;
     }else{
       fprintf(stdout,"area_b sum/4*pi: map-file does not provide completely non-zero area_b\n");
