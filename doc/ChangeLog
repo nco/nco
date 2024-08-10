@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.8-alpha02: Clean Subaru';git push
 	git tag -a 5.2.8-alpha02 -m 'ncks --chk_map fix area_b dgn';git push --tags
 
+	* Revert nco_hst_att_cat() NC_STRING feature for ncatted/ncrename (fail at nc_enddef()/nc_close() stage)
+
 	* Print correct label and location for new grid diagnostics for area_b in nco_map_chk()
 
 	* NCO 5.2.8-alpha01 release procedure:

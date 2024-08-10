@@ -1134,9 +1134,14 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   
     /* NB: ncattinq(), unlike strlen(), counts terminating NUL for stored NC_CHAR arrays */
     rcd+=nco_inq_att(out_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
-    if(att_typ != NC_CHAR && att_typ != NC_STRING){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s or %s. Therefore current command line will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),att_nm);
-      return;
+    if(att_typ != NC_CHAR){
+      /* 20240809: NC_STRING patch fails with ncatted, ncrename */
+      if(att_typ == NC_STRING && nco_prg_id_get() != ncatted && nco_prg_id_get() != ncrename){
+	;
+      }else{
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s or %s. Therefore current command line will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),att_nm);
+	return;
+      } /* !att_typ */
     } /* end if */
 
     if(att_typ == NC_CHAR){

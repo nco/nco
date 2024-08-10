@@ -743,6 +743,8 @@ ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CXX=${L
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='' CXX=${LINUX_CXX} CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Imua 20230509
 CC='gcc' CFLAGS='-I/usr/include/udunits2' CXX='g++' CXXFLAGS='-I/usr/include/udunits2' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+# Imua debug 20240809
+CC='gcc' CFLAGS='-I/usr/include/udunits2' CXX='g++' CXXFLAGS='-I/usr/include/udunits2' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
