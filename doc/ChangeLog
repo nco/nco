@@ -1,8 +1,14 @@
-2024-08-09  Charlie Zender  <zender@uci.edu>
+2024-08-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.8-alpha02: Clean Subaru';git push
-	git tag -a 5.2.8-alpha02 -m 'ncks --chk_map fix area_b dgn';git push --tags
+	git tag -a 5.2.8-alpha02 -m 'ncatted/ncrename: fl_fmt msg, NC_STRING; ncks --chk_map fix area_b dgn';git push --tags
+
+	* ncatted and ncrename now explain (then exit) when user specifies output file type
+
+	* Improve WARNING when ncatted and ncrename will not modify NC_STRING history attributes
+
+2024-08-09  Charlie Zender  <zender@uci.edu>
 
 	* Revert nco_hst_att_cat() NC_STRING feature for ncatted/ncrename (fail at nc_enddef()/nc_close() stage)
 

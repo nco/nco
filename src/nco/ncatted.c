@@ -166,7 +166,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="a:D:Hhl:Oo:p:Rrt-:";
+  const char * const opt_sht_lst="34567a:D:Hhl:Oo:p:Rrt-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -238,6 +238,8 @@ main(int argc,char **argv)
     /* Long options with argument, no short option counterpart */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"fl_fmt",required_argument,0,0},
+    {"file_format",required_argument,0,0},
     {"gaa",required_argument,0,0}, /* [sng] Global attribute add */
     {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
     {"hdr_pad",required_argument,0,0},
@@ -304,6 +306,16 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_mmr_cln=False; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")){
+	(void)fprintf(stdout,"%s: ERROR Operators ncatted and ncrename always copy the output file type from the input file type. Specification of output file type using any of the switches (-3, -4, -5, -6, -7) or options (--fl_fmt=<output-type>) is not allowed. HINT: Change the input file type with, e.g., ncks --fl_fmt=<output-type> in.nc out.nc prior to invoking %s\n",nco_prg_nm,nco_prg_nm);
+        (void)nco_usg_prn();
+        nco_exit(EXIT_FAILURE);
+      } /* !fl_fmt */
+      if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")){
+	(void)fprintf(stdout,"%s: ERROR Operators ncatted and ncrename always copy the output file type from the input file type. Specification of output file type using any of the switches (-3, -4, -5, -6, -7) or options (--fl_fmt=<output-type>) is not allowed. HINT: Change the input file type with, e.g., ncks --fl_fmt=<output-type> in.nc out.nc prior to invoking %s\n",nco_prg_nm,nco_prg_nm);
+        (void)nco_usg_prn();
+        nco_exit(EXIT_FAILURE);
+      } /* !fl_fmt */
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
         gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
@@ -328,6 +340,15 @@ main(int argc,char **argv)
     /* Process short options */
     switch(opt){
     case 0: /* Long options have already been processed, return */
+      break;
+    case '3': /* Request netCDF3 output storage format */
+    case '4': /* Request netCDF4 output storage format */
+    case '5': /* Request netCDF3 64-bit offset+data storage (i.e., pnetCDF) format */
+    case '6': /* Request netCDF3 64-bit offset output storage format */
+    case '7': /* Request netCDF4-classic output storage format */
+      (void)fprintf(stdout,"%s: ERROR Operators ncatted and ncrename always copy the output file type from the input file type. Specification of output file type using any of the switches (-3, -4, -5, -6, -7) or options (--fl_fmt=<output-type>) is not allowed. HINT: Change the input file type with, e.g., ncks --fl_fmt=<output-type> in.nc out.nc prior to invoking %s\n",nco_prg_nm,nco_prg_nm);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
       break;
     case 'a': /* Copy argument for later processing */
       aed_arg[nbr_aed]=(char *)strdup(optarg);

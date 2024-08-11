@@ -1135,14 +1135,15 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     /* NB: ncattinq(), unlike strlen(), counts terminating NUL for stored NC_CHAR arrays */
     rcd+=nco_inq_att(out_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
     if(att_typ != NC_CHAR){
-      /* 20240809: NC_STRING patch fails with ncatted, ncrename */
+      /* 20240809: NC_STRING patch currently fails with ncatted, ncrename */
       if(att_typ == NC_STRING && nco_prg_id_get() != ncatted && nco_prg_id_get() != ncrename){
-	;
+	//      if(att_typ == NC_STRING && nco_prg_id_get() != ncrename){ // 20240811
+	; // Proceed normally with NC_STRING type history attribute for most operators (except ncatted and ncrename)
       }else{
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s or %s. Therefore current command line will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),att_nm);
+	if(att_typ == NC_STRING && (nco_prg_id_get() == ncatted || nco_prg_id_get() == ncrename)) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s. Command will proceed normally except current command line will not be appended to %s in output file because of a bug (that we are trying to solve) in the implementation of modifying NC_STRING \"%s\" attributes for ncatted and ncrename.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),att_nm,att_nm); else (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s or %s. Therefore current command line will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),att_nm);
 	return;
       } /* !att_typ */
-    } /* end if */
+    } /* !att_typ */
 
     if(att_typ == NC_CHAR){
       /* Allocate and NUL-terminate space for current history attribute
