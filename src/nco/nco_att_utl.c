@@ -1138,9 +1138,10 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
       /* 20240809: NC_STRING patch currently fails with ncatted, ncrename */
       if(att_typ == NC_STRING && nco_prg_id_get() != ncatted && nco_prg_id_get() != ncrename){
 	//      if(att_typ == NC_STRING && nco_prg_id_get() != ncrename){ // 20240811
-	; // Proceed normally with NC_STRING type history attribute for most operators (except ncatted and ncrename)
+      //if(att_typ == NC_STRING){ // NC_STRING type history attribute is supported
+	;
       }else{
-	if(att_typ == NC_STRING && (nco_prg_id_get() == ncatted || nco_prg_id_get() == ncrename)) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s. Command will proceed normally except current command line will not be appended to %s in output file because of a bug (that we are trying to solve) in the implementation of modifying NC_STRING \"%s\" attributes for ncatted and ncrename.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),att_nm,att_nm); else (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s or %s. Therefore current command line will not be appended to %s in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),att_nm);
+	if(att_typ == NC_STRING && (nco_prg_id_get() == ncatted || nco_prg_id_get() == ncrename)) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s. Command will proceed normally except current command line will not be appended to \"%s\" attribute in output file because of a bug (that we are trying to solve) in the implementation of modifying NC_STRING \"%s\" attributes for ncatted and ncrename.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),att_nm,att_nm); else (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s or %s, in violation of NUG and CF conventions. Therefore current command line will not be appended to \"%s\" attribute in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),att_nm);
 	return;
       } /* !att_typ */
     } /* !att_typ */
@@ -1153,7 +1154,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
       if(att_sz > 0) rcd+=nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)hst_crr,att_typ);
     }else if(att_typ == NC_STRING){
       if(att_sz != 1L){
-	(void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute is an %s array of size %ld. This violates the CF Conventions which requires a single string for this attribute. Therefore current command line will not be appended to %s in output file.\n",nco_prg_nm_get(),fnc_nm,att_nm,nco_typ_sng(att_typ),att_sz,att_nm);
+	(void)fprintf(stderr,"%s: WARNING %s reports \"%s\" attribute is an %s array of size %ld. This violates the CF Conventions which requires a single string for this attribute. Therefore current command line will not be appended to \"%s\" attribute in output file.\n",nco_prg_nm_get(),fnc_nm,att_nm,nco_typ_sng(att_typ),att_sz,att_nm);
 	return;
       } /* !att_sz */
       rcd+=nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)hst_crr_sngp,att_typ);
