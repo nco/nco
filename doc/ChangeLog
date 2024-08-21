@@ -1,8 +1,14 @@
-2024-08-11  Charlie Zender  <zender@uci.edu>
+2024-08-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.8-alpha02: Clean Subaru';git push
-	git tag -a 5.2.8-alpha02 -m 'ncatted/ncrename: fl_fmt msg, NC_STRING; ncks --chk_map fix area_b dgn';git push --tags
+	git tag -a 5.2.8-alpha02 -m 'all: NCO_MAX_CHUNK_SIZE HINT, WARNING; ncatted/ncrename: fl_fmt msg, NC_STRING; ncks --chk_map fix area_b dgn';git push --tags
+
+	* nco_cnk_sz_set_trv(): Kludgy adjustment to maximum chunk length, add WARNING
+
+	* nco_def_var_chunking(): Add HINT
+
+2024-08-11  Charlie Zender  <zender@uci.edu>
 
 	* ncatted and ncrename now explain (then exit) when user specifies output file type
 

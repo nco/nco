@@ -1174,12 +1174,18 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
         cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].dmn_cnt;
       } /* !NON_HYP_DMN */
     }else{ /* !record dimension */
-      /* Set non-record dimensions to default, possibly override later */
+      /* Set chunk sizes of non-record dimensions to dimension sizes, so long as they are small enough, possibly override later */
       cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
+      if(cnk_sz[dmn_idx]*4 > NCO_MAX_CHUNK_SIZE){
+	/* 20240821 Necessary, though not sufficient, that chunk length along each dimension,
+	   times four bytes (minimum size per float or double, in B), be less than maximum total chunksize in [B].
+	   Yes, this is kludgy */
+	cnk_sz[dmn_idx]/=10;
+      } /* !cnk_sz[dmn_idx] */
       if(dmn_cmn[dmn_idx].sz == 0L) (void)fprintf(stdout,"%s: ERROR %s reports variable %s has dim_sz == 0L for non-record dimension %s. This should not occur and it will cause chunking to fail...\n",nco_prg_nm_get(),fnc_nm,var_nm,dmn_cmn[dmn_idx].nm);
     } /* !record dimension */
 
-  } /* end loop over dimensions */
+  } /* !dmn_idx */
 
   if(cnk_map == nco_cnk_map_lfp ||
      (cnk_plc == nco_cnk_plc_nco && dmn_nbr != 3) ||
@@ -1448,19 +1454,18 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   } /* !dmn_idx */
 
   /* Final Safety Check */
- cnk_sft_chk: /* end goto */
+ cnk_sft_chk: /* !goto */
 
   /* Status: Previous loop implemented per-dimension checks on user-requested chunksizes only
      Loop below implements similar final safety check for ALL dimensions and ALL chunking maps
      Check trims fixed (not record) dimension chunksize to never be larger than dimension size */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-    if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz) {
-      if (dmn_cmn[dmn_idx].is_rec_dmn){
+    if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
+      if(dmn_cmn[dmn_idx].is_rec_dmn){
          /* rec dmn size 0 then we can apply any cnk_sz - else cnk_sz <= dmn_sz */
         long lcl_dmn_sz=0ll;
-        if( nco_inq_dim_flg(grp_id_out, dmn_cmn[dmn_idx].id, (char*)NULL, &lcl_dmn_sz)==NC_NOERR && lcl_dmn_sz>0)
+        if(nco_inq_dim_flg(grp_id_out, dmn_cmn[dmn_idx].id, (char*)NULL, &lcl_dmn_sz)==NC_NOERR && lcl_dmn_sz>0)
           cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
-
       }else{
         /* non-record dimensions must have cnk_sz <= dmn_sz */
         if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s final check trimming chunksize of \"%s\" dimension from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_sz[dmn_idx],(unsigned long)dmn_cmn[dmn_idx].sz);
@@ -1475,6 +1480,17 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     } /* !cnk_sz */
   } /* !dmn_idx */
 
+  /* 20240821 Check that total chunksize does not exceed 4 GB = NCO_MAX_CHUNK_SIZE */
+  size_t cnk_sz_prd=1L;
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) cnk_sz_prd*=cnk_sz[dmn_idx];
+  if(cnk_sz_prd > NCO_MAX_CHUNK_SIZE){
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: WARNING %s final safety check reports variable %s chunksize of %lu B exceeds netCDF4 maximum allowed chunksize of %lu B. Expect nco_def_var_chunking() call to fail...\n",nco_prg_nm_get(),fnc_nm,var_nm,(unsigned long)cnk_sz_prd,(unsigned long)NCO_MAX_CHUNK_SIZE);
+  /* fxm: implement automatic fix, e.g., set chunk length of longest dimensions to value selected from prime number factorization of dimension size? */
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      ;
+    } /* !dmn_idx */
+  } /* !cnk_sz_prd */
+  
   if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev){
     /* Dimensions and chunksizes used by variable in output file */
     (void)fprintf(stdout,"idx dmn_nm\tdmn_sz\tcnk_sz:\n");

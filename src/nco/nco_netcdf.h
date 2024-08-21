@@ -305,7 +305,7 @@
 # define H5Z_FILTER_BLOSC 32001
 #endif
 
-/* define MAX CHUNK SIZE here as its not present in netcdf.h */
+/* Define MAX CHUNK SIZE here since it is not present in netcdf.h */
 #define NCO_MAX_CHUNK_SIZE (0xFFFFFFFF)
 
 #ifdef __cplusplus

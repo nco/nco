@@ -2116,13 +2116,14 @@ int nco_def_var_chunking
 
   rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,(size_t *)cnk_sz);
   if(rcd == NC_EBADCHUNK){
+    char var_nm[NC_MAX_NAME+1L];
     int idx;
     int dmn_nbr;
     nc_type var_typ;
     size_t sz;
-
     (void)nco_inq_varndims(nc_id,var_id,&dmn_nbr);
     (void)nco_inq_vartype(nc_id,var_id,&var_typ);
+    (void)nco_inq_varname(nc_id,var_id,var_nm);
 
     sz=nco_typ_lng(var_typ);
     for(idx=0;idx<dmn_nbr;idx++){
@@ -2130,7 +2131,7 @@ int nco_def_var_chunking
       sz*=cnk_sz[idx];
     } /* !idx */
 
-    if(sz > NCO_MAX_CHUNK_SIZE) (void)fprintf(stderr, "%s: ERROR Total requested chunk size = %lu exceeds netCDF maximium-supported chunk size = %u\n",fnc_nm,sz,NCO_MAX_CHUNK_SIZE);
+    if(sz > NCO_MAX_CHUNK_SIZE) (void)fprintf(stderr, "%s: ERROR Total requested chunk size = %lu exceeds netCDF maximium-supported chunk size = %u for variable %s\nHINT: Restrict chunk sizes to fall below this limit by using NCO chunking options explicitly reduce chunk size on the largest dimension(s), e.g., --cnk_dmn dim_name,chunk_size\n",fnc_nm,sz,NCO_MAX_CHUNK_SIZE,var_nm);
   } /* !rcd */
   if(rcd == NC_EINVAL){
     char var_nm[NC_MAX_NAME+1L];
@@ -2614,11 +2615,10 @@ nco_get_var(const int nc_id,const int var_id,void * const vp,const nc_type var_t
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     char *path=NULL;
-    int rcd2;
     size_t pathlen;
-    rcd2=nc_inq_path(nc_id,&pathlen,NULL);
+    nc_inq_path(nc_id,&pathlen,NULL);
     path=(char *)malloc(pathlen*sizeof(char));
-    rcd2=nc_inq_path(nc_id,NULL,path);
+    nc_inq_path(nc_id,NULL,path);
     (void)nco_inq_varname(nc_id,var_id,var_nm);
     (void)fprintf(stdout,"ERROR: %s failed to nc_get_var() variable \"%s\" from %s\n",fnc_nm,var_nm,path);
     if(path) free(path);
@@ -2842,11 +2842,10 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     char *path=NULL;
-    int rcd2;
     size_t pathlen;
-    rcd2=nc_inq_path(nc_id,&pathlen,NULL);
+    nc_inq_path(nc_id,&pathlen,NULL);
     path=(char *)malloc(pathlen*sizeof(char));
-    rcd2=nc_inq_path(nc_id,NULL,path);
+    nc_inq_path(nc_id,NULL,path);
     (void)nco_inq_varname(nc_id,var_id,var_nm);
     (void)fprintf(stdout,"ERROR: %s failed to nc_get_vara() variable \"%s\" from %s\n",fnc_nm,var_nm,path);
     if(path) free(path);

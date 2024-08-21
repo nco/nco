@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.8-alpha02
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 9 August 2024
+@set update-date 19 August 2024
 @set update-month August 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7117,15 +7117,18 @@ Generating common grids:
 @verbatim
 # Through version 4.7.5 (August, 2018), ncks performed grid-generation
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude centered at Greenwich
+# This is NOT the CMIP6 1x1 grid
 ncks --rgr ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
      --rgr scrip=${DATA}/grids/180x360_SCRIP.20150901.nc \
      ~zender/nco/data/in.nc ~/foo.nc
 
 # As of version 4.7.6 (August, 2018), ncremap supports more concise commands
+# This is NOT the CMIP6 1x1 grid
 ncremap -G ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
         -g ${DATA}/grids/180x360_SCRIP.20180901.nc
 
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude west edge at Greenwich
+# This IS the CMIP6 1x1 grid
 ncremap -G ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_wst \
         -g ${DATA}/grids/180x360wst_SCRIP.20180301.nc
 
@@ -15704,7 +15707,7 @@ where @file{narr.nco} is an @command{ncap2} script like this:
       NCO does not write RAM variable to output
       Masks are often unwanted, and can be big, so this speeds execution
    3. Example could be extended to preserve mean lat and lon of sub-region
-      Follow uwnd example to do this: lat_msk=0.0*lat ... lat_avg=lat.avg($y,$x) */
+      Follow uwnd example to do this: lat_sk=0.0*lat ... lat_avg=lat.avg($y,$x) */
 *uwnd_msk=0.0*uwnd;
 where((lat >= 35.6 && lat <= 37.0) && (lon >= -100.5 && lon <= -99.0))
   uwnd_msk=uwnd;
