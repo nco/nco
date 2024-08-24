@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.8-alpha02: Clean Subaru';git push
 	git tag -a 5.2.8-alpha02 -m 'all: NCO_MAX_CHUNK_SIZE HINT, WARNING; ncatted/ncrename: fl_fmt msg, NC_STRING; ncclimo: --rgn_stt=ttl; ncks --chk_map fix area_b dgn';git push --tags
 
+	* ncclimo: Pass flg_sum not rgn_stt to cmd_rgn. Workaround ncap2 syntax errors. Confirm BFB with old avg procedure.
+
 	* ncclimo: Implement --rgn_stt. Make --rgn_avg a synonym for --rgn_stt=avg. Implement --rgn_avg=ttl.
 
 2024-08-21  Charlie Zender  <zender@uci.edu>
