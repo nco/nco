@@ -1,8 +1,12 @@
-2024-08-21  Charlie Zender  <zender@uci.edu>
+2024-08-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.8-alpha02: Clean Subaru';git push
-	git tag -a 5.2.8-alpha02 -m 'all: NCO_MAX_CHUNK_SIZE HINT, WARNING; ncatted/ncrename: fl_fmt msg, NC_STRING; ncks --chk_map fix area_b dgn';git push --tags
+	git tag -a 5.2.8-alpha02 -m 'all: NCO_MAX_CHUNK_SIZE HINT, WARNING; ncatted/ncrename: fl_fmt msg, NC_STRING; ncclimo: --rgn_stt=ttl; ncks --chk_map fix area_b dgn';git push --tags
+
+	* ncclimo: Implement --rgn_stt. Make --rgn_avg a synonym for --rgn_stt=avg. Implement --rgn_avg=ttl.
+
+2024-08-21  Charlie Zender  <zender@uci.edu>
 
 	* nco_cnk_sz_set_trv(): Kludgy adjustment to maximum chunk length, add WARNING
 

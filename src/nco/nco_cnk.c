@@ -1109,7 +1109,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	      cnk_sz[dmn_idx]=cnk_in[dmn_idx_in];
 	      break;
 	  } /* endif */
-	} /* end loop over dmn_idx_in */
+	} /* !dmn_idx_in */
 	if(dmn_idx_in == dmn_nbr_in){
 	  /* Output file dimension not found in input file */
 	  assert(nco_prg_id_get() == ncecat || nco_prg_id_get() == ncap );
@@ -1119,8 +1119,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	    cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].dmn_cnt;
 	  } /* !NON_HYP_DMN */
 	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports variable %s output dimension %s not found in input file. Setting default chunksize for this dimension to = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_sz[dmn_idx]);
-	} /* endif dimension not in input file */
-      } /* end loop over dmn_idx */
+	} /* !dmn_idx_in (dimension not in input file) */
+      } /* !dmn_idx */
 
       /* Memory management */
       if(cnk_in) cnk_in=(size_t *)nco_free(cnk_in);
@@ -1480,7 +1480,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     } /* !cnk_sz */
   } /* !dmn_idx */
 
-  /* 20240821 Check that total chunksize does not exceed 4 GB = NCO_MAX_CHUNK_SIZE */
+  /* 20240821 Check that total chunksize does not exceed NCO_MAX_CHUNK_SIZE = 4 GB */
   size_t cnk_sz_prd=1L;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) cnk_sz_prd*=cnk_sz[dmn_idx];
   if(cnk_sz_prd > NCO_MAX_CHUNK_SIZE){

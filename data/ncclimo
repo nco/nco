@@ -572,6 +572,7 @@ par_typ="${par_bck}" # [sng] Parallelism type
 prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'cpl', 'eam', 'eamxx', 'elm', 'mali', 'mpas', 'mpasa', 'mpasatmosphere', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi')
 qnt_prc='' # [nbr] Quantization precision
 rgn_avg='No' # [sng] Regional and global average timeseries
+rgn_stt='No' # [sng] Regional and global statistics
 rgr_map='' # [sng] Regridding (horizontal) map
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
@@ -644,6 +645,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map-file (horizontal) (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm}) [${fnt_tlc}rgr_map, regrid_map, map, map_file, map_fl${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_avg${fnt_nrm}  Regional and global average timeseries (default ${fnt_bld}${rgn_avg}${fnt_nrm}) [${fnt_tlc}rgn_avg, glb_avg, hms_avg, regional_average${fnt_nrm}]"
+    echo " ${fnt_bld}--rgn_stt${fnt_nrm}  Regional and global statistical timeseries (default ${fnt_bld}${rgn_stt}${fnt_nrm}) [${fnt_tlc}rgn_stt, glb_stt, hms_stt, regional_statistics${fnt_nrm}] (avg|sum)"
     echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm}) [${fnt_tlc}yr_srt_prv, prv_yr_srt, previous_start${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm}) [${fnt_tlc}yr_srt, start_yr, year_start, start_year, start${fnt_nrm}]"
     echo " ${fnt_bld}--seasons${fnt_nrm}  Seasons to output ('none' means none) (default ${fnt_bld}${csn_lst}${fnt_nrm}, also available: jfm,amj,jas,ond,on,fm) [${fnt_tlc}csn_lst, csn, seasons${fnt_nrm}]"
@@ -812,8 +814,9 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       prc_typ=?* | procedure=?* ) prc_typ="${LONG_OPTARG}" ;; # -P # Procedure type
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
 	       qnt=?* | qnt_prc=?* | precision=?* | ppc=?* | ppc_prc=?* | quantize=?* ) qnt_prc="${LONG_OPTARG}" ;; # # Quantization precision
-	       rgn_avg | glb_avg | hms_avg | regional_average ) rgn_avg='Yes' ;; # # Regional and global average timeseries
+	       rgn_avg | glb_avg | hms_avg | regional_average ) rgn_avg='Yes'; rgn_stt='avg' ;; # # Regional and global average timeseries
 	       rgn_avg=?* | glb_avg=?* | hms_avg=?* | regional_average=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Regional average timeseries
+	       rgn_stt=?* | glb_stt=?* | hms_stt=?* | regional_statistics=?* ) rgn_stt="${LONG_OPTARG}" ;; # # Regional and global statistical timeseries
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt_usr="${LONG_OPTARG}" ;; # -R # Regridding options
 	       rgr_map=?* | regrid_map=?* | map=?* ) rgr_map="${LONG_OPTARG}" ;; # -r # Regridding map (horizontal)
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
@@ -1498,7 +1501,7 @@ if [ ${fl_nbr} -eq 0 ] || [ -z ${fl_in[0]} ]; then
 fi # !fl_nbr
 
 # Prepend drc_in to fl_in in MFOs (ncra, ncrcat)
-# 20240401 Also prepend drc_in to fl_in in SFOs (ncks, ncap2) used in hfc/hfs modes and in rgn_avg
+# 20240401 Also prepend drc_in to fl_in in SFOs (ncks, ncap2) used in hfc/hfs modes and in rgn_stt
 # Otherwise operators will fail to find input files when cwd != drc_in
 ppn_opt="-p ${drc_in}"
 # 20220111 If input files include absolute path, then use fl_in as-is later on
@@ -1729,14 +1732,14 @@ if [ "${tms_flg}" = 'Yes' ]; then
     fi  # !mth_flg
     let sgm_nbrm1=${sgm_nbr}-1
 
-    if [ "${rgn_avg}" = 'Yes' ]; then 
+    if [ "${rgn_stt}" != 'No' ]; then 
 
 	if [ "${prc_mpas}" = 'Yes' ]; then
 	    # 20240619
 	    # MPAS-LI, MPAS-O, MPAS-SI v2+ datasets omit latitude variable
 	    lat_nm='latCell' # Generic MPAS latitude variable
 	    # MPAS-A, MPAS-LI, MPAS-O, MPAS-SI v2+ datasets omit (time-constant) area variable
-	    # NB: areaCell is full gridcell area on MPAS mesh, and does not account for landfrac
+	    # NB: areaCell is full gridcell area on MPAS mesh, and does not account for landfrac/ocnfrac
 	    # Hence, area_wgt variable diagnosed below will be inaccurate for MPAS-O unless 'ocnfrac' is given and applied as sgs_frc
 	    area_nm='areaCell' # Generic MPAS fixed grid area variable
 	    if [ "${prc_mpasseaice}" = 'Yes' ]; then
@@ -1769,7 +1772,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    # 20240329 Prepend string literal '$' to each horizontal dimension for use in argument to ncap2 avg() function  (e.g., 'lat,lon' -> '$lat,$lon')
 	    hrz_arg="\$${hrz_dmn/,/,\$}"
 	fi # !hrz_dmn
-    fi # !rgn_avg
+    fi # !rgn_stt
 
 else # !tms_flg
 
@@ -1778,12 +1781,12 @@ else # !tms_flg
 	exit 1
     fi # !mth_flg
 	
-    if [ "${rgn_avg}" = 'Yes' ]; then 
-	echo "${spt_nm}: ERROR Regional and global average timeseries functionality is supported for time-series (splitting) mode only. If you would like ${spt_nm} to provide global and regional mean output for other types of climatologies, please talk to Charlie."
-	echo "${spt_nm}: HINT Create global means of climos with, e.g., \"ncwa -w ${area_nm} in.nc out.nc\""
+    if [ "${rgn_stt}" != 'No' ]; then 
+	echo "${spt_nm}: ERROR Regional and global statistical timeseries functionality is supported for time-series (splitting) mode only. If you would like ${spt_nm} to provide global and regional statistical output for other types of climatologies, please talk to Charlie."
+	echo "${spt_nm}: HINT Create global statistics of climos with, e.g., \"ncwa -w ${area_nm} in.nc out.nc\""
 	echo "${spt_nm}: HINT See averaging documentation at http://nco.sf.net/nco.html#ncwa"
 	exit 1
-    fi # !rgn_avg
+    fi # !rgn_stt
 
     if [ -z "${out_nm}" ]; then
 	echo "${spt_nm}: ERROR Missing information needed to generate output filenames"
@@ -2152,6 +2155,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: prc_typ  = ${prc_typ}\n"
     printf "dbg: qnt_prc  = ${qnt_prc}\n"
     printf "dbg: rgn_avg  = ${rgn_avg}\n"
+    printf "dbg: rgn_stt  = ${rgn_stt}\n"
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_opt  = ${rgr_opt}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
@@ -2294,11 +2298,15 @@ if [ "${tms_flg}" = 'Yes' ]; then
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain statistics for one month\n"
     fi # !mth
-    if [ "${rgn_avg}" = 'Yes' ]; then 
-	printf "Hemispherically and globally averaged timeseries files to be saved to directory ${drc_out}\n"
+    if [ "${rgn_stt}" != 'No' ]; then 
+	if [ "${rgn_stt}" = 'avg' ]; then
+	    printf "Hemispherically and globally averaged timeseries files to be saved to directory ${drc_out}\n"
+	elif [ "${rgn_stt}" = 'sum' ]; then
+	    printf "Hemispherically and globally integrated (summed) timeseries files to be saved to directory ${drc_out}\n"
+	fi # !rgn_stt
     else
 	printf "Native-grid timeseries files to be saved to directory ${drc_out}\n"
-    fi # !rgn_avg
+    fi # !rgn_stt
     if [ -n "${rgr_opt}" ]; then 
 	printf "Regridded split files to directory ${drc_rgr}\n"
 	if [ "${thr_nbr}" -ne 1 ]; then 
@@ -2956,31 +2964,32 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		done # !var_idx
 	    fi # !par_opt
 	    
-	    if [ "${rgn_avg}" = 'Yes' ]; then 
+	    if [ "${rgn_stt}" != 'No' ]; then 
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
-		    cmd_rgn="*rgn_nbr=3;defdim(\"rgn\",rgn_nbr);*${var_sbs[${var_idx}]}_tmp=0.0f*${var_sbs[${var_idx}]}.avg(${hrz_arg});*${var_sbs[${var_idx}]}_rgn[time,rgn]=${var_sbs[${var_idx}]}_tmp;${var_sbs[${var_idx}]}_rgn@coordinates=\"region_name\";*${lat_nm}_area=${lat_nm}+0.0*${area_nm};*msk_sth=0*${lat_nm}_area.int();delete_miss(msk_sth);*msk_nrt=0*${lat_nm}_area.int();delete_miss(msk_nrt);*idx_glb=0;*idx_nrt=1;*idx_sth=2;*rgn_len=19;defdim(\"rgn_len\",rgn_len);region_name[rgn,rgn_len]=\" \";region_name(idx_glb,0:5)=\"Global\";region_name(idx_nrt,:)=\"Northern Hemisphere\";region_name(idx_sth,:)=\"Southern Hemisphere\";region_name@long_name=\"${var_sbs[${var_idx}]} timeseries array contains area-weighted averages over these regions\";${var_sbs[${var_idx}]}_rgn(:,idx_glb)=((${var_sbs[${var_idx}]}*${area_wgt}).avg(${hrz_arg})/(${area_wgt}).avg(${hrz_arg})).float();where(${lat_nm}_area < 0.0) msk_sth=1; elsewhere msk_nrt=1;${var_sbs[${var_idx}]}_rgn(:,idx_nrt)=((${var_sbs[${var_idx}]}*${area_wgt}*msk_nrt).avg(${hrz_arg})/(${area_wgt}*msk_nrt).avg(${hrz_arg})).float();${var_sbs[${var_idx}]}_rgn(:,idx_sth)=((${var_sbs[${var_idx}]}*${area_wgt}*msk_sth).avg(${hrz_arg})/(${area_wgt}*msk_sth).avg(${hrz_arg})).float();${var_sbs[${var_idx}]}=${var_sbs[${var_idx}]}_rgn;push(&${var_sbs[${var_idx}]}@cell_methods,\" area: mean\");if(exists(time_bnds)) time_bnds=time_bnds;if(exists(time_bounds)) time_bounds=time_bounds;"
+		    cmd_rgn="*rgn_nbr=3;defdim(\"rgn\",rgn_nbr);*${var_nm}_tmp=0.0f*${var_nm}.avg(${hrz_arg});*${var_nm}_rgn[time,rgn]=${var_nm}_tmp;${var_nm}_rgn@coordinates=\"region_name\";*${lat_nm}_area=${lat_nm}+0.0*${area_nm};*msk_sth=0*${lat_nm}_area.int();delete_miss(msk_sth);*msk_nrt=0*${lat_nm}_area.int();delete_miss(msk_nrt);*idx_glb=0;*idx_nrt=1;*idx_sth=2;*rgn_len=19;defdim(\"rgn_len\",rgn_len);region_name[rgn,rgn_len]=\" \";region_name(idx_glb,0:5)=\"Global\";region_name(idx_nrt,:)=\"Northern Hemisphere\";region_name(idx_sth,:)=\"Southern Hemisphere\";region_name@long_name=\"${var_nm} timeseries array contains area-weighted averages over these regions\";where(${lat_nm}_area < 0.0) msk_sth=1; elsewhere msk_nrt=1;${var_nm}_rgn(:,idx_glb)=((${var_nm}*${area_wgt}).avg(${hrz_arg})/(${area_wgt}).avg(${hrz_arg})).float();${var_nm}_rgn(:,idx_nrt)=((${var_nm}*${area_wgt}*msk_nrt).avg(${hrz_arg})/(${area_wgt}*msk_nrt).avg(${hrz_arg})).float();${var_nm}_rgn(:,idx_sth)=((${var_nm}*${area_wgt}*msk_sth).avg(${hrz_arg})/(${area_wgt}*msk_sth).avg(${hrz_arg})).float();if(\"${rgn_stt}\" == \"sum\"){${var_nm}_rgn(:,idx_glb)*=(${area_wgt}).total(${hrz_arg}).float();${var_nm}_rgn(:,idx_nrt)*=(${area_wgt}*msk_nrt).total(${hrz_arg}).float();${var_nm}_rgn(:,idx_sth)*=(${area_wgt}*msk_sth).total(${hrz_arg}).float();}${var_nm}=${var_nm}_rgn;push(&${var_nm}@cell_methods,\" area: mean\");if(exists(time_bnds)) time_bnds=time_bnds;if(exists(time_bounds)) time_bounds=time_bounds;"
 		    # NB: We do not pass nco_opt to ncap2 here. nco_opt might contain switches like -x that have different meanings in ncap2
 		    # File format is inherited from timeseries file, so no need to pass that
 		    # One option to consider passing by default here is --no_tmp_fl
-		    # 20240411: Do not append history for rgn_avg computation---too much like encoding a program in a dataset
-		    cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncap2 -h -O -v -s '${cmd_rgn}' ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
+		    # 20240411: Do not append history for rgn_stt computation---too much like encoding a program in a dataset
+		    cmd_stt[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncap2 -h -O -v -s '${cmd_rgn}' ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
 		    # 20220817: Prior to today, --glb_avg used ncwa for global average
 		    # As of NCO 5.1.1, --glb_avg is a deprecated synonym for --rgn_avg
+		    # As of NCO 5.2.8, --rgn_avg is a synonym for --rgn_stt=avg
 		    # Both produce (currently three) regional timeseries
-		    # The original --glb_avg implementation is:
-		    # cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
+		    # The original --glb_avg implementation was:
+		    # cmd_stt[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
 		    if [ ${dbg_lvl} -ge 1 ]; then
-			echo ${cmd_avg[${var_idx}]}
+			echo ${cmd_stt[${var_idx}]}
 		    fi # !dbg
 		    if [ ${dbg_lvl} -le 1 ]; then
 			if [ -z "${par_opt}" ]; then
-			    eval ${cmd_avg[${var_idx}]}
+			    eval ${cmd_stt[${var_idx}]}
 			    if [ "$?" -ne 0 ]; then
-				printf "${spt_nm}: ERROR global and regional average cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
+				printf "${spt_nm}: ERROR global and regional statistics cmd_stt[${var_idx}] failed. Debug this:\n${cmd_stt[${var_idx}]}\n"
 				exit 1
 			    fi # !err
 			else # !par_opt
-			    eval ${cmd_avg[${var_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+			    eval ${cmd_stt[${var_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
 			    avg_pid[${var_idx}]=$!
 			fi # !par_opt
 		    fi # !dbg
@@ -2991,9 +3000,9 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 			wait ${avg_pid[${var_idx}]}
 			if [ "$?" -eq 0 ]; then
-			    printf "`date`: Globally and regionally averaged ${cmd_avg[${var_idx}]##* }\n"
+			    printf "`date`: Globally and regional statistics ${cmd_stt[${var_idx}]##* }\n"
 			else
-			    printf "${spt_nm}: ERROR Failed to globally and regionally average. cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
+			    printf "${spt_nm}: ERROR Failed in global and regional statistics. cmd_stt[${var_idx}] failed. Debug this:\n${cmd_stt[${var_idx}]}\n"
 			    # 20190323: exiting parent here creates orphans, kill live children then exit
 			    for ((kid_idx=var_idx+1;kid_idx<=var_idx_end;kid_idx++)); do
 				kill -9 ${avg_pid[${kid_idx}]}
@@ -3003,7 +3012,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		    done # !var_idx
 		fi # !par_opt
 		
-	    fi # !rgn_avg
+	    fi # !rgn_stt
 	    
 	done # !bch_idx
 	
