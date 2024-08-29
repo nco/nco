@@ -2908,7 +2908,23 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
       nc_type var_typ_out;
       (void)nco_inq_vartype(nc_id,var_id,&var_typ_out);
       (void)fprintf(stdout,"NC_ERANGE Error Diagnostics for variable %s:\n",var_nm);
-      (void)fprintf(stdout,"%s attempting to write data array that user specified as type %s to output variable %s with output file-defined type %s:\n",fnc_nm,nco_typ_sng(var_typ),var_nm,nco_typ_sng(var_typ_out));
+      (void)fprintf(stdout,"%s attempted to write data array that user specified as type %s to output variable %s with output file-defined type %s\n",fnc_nm,nco_typ_sng(var_typ),var_nm,nco_typ_sng(var_typ_out));
+      if(var_typ == NC_DOUBLE){
+	double *var_dbl;
+	double var_min;
+	double var_max;
+	size_t idx;
+	size_t var_sz=1UL;
+	for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) var_sz*=cnt_sz_t[dmn_idx];
+	var_dbl=(double *)malloc(var_sz*sizeof(double));
+	(void)memcpy((void *)var_dbl,(void *)vp,var_sz*sizeof(double));
+	for(idx=0;idx<var_sz-1;idx++){
+	  var_min=(var_dbl[idx] < var_dbl[idx+1L]) ? var_dbl[idx] : var_dbl[idx+1L];
+	  var_max=(var_dbl[idx] > var_dbl[idx+1L]) ? var_dbl[idx] : var_dbl[idx+1L];
+	} /* !idx */
+	//	if(var_dbl) var_dbl=(double *)free(var_dbl);
+	(void)fprintf(stdout,"%s reports range of input data array values (possibly including _FillValue) is %g <= %s <= %g\n",fnc_nm,var_min,var_nm,var_max);
+      } /* !var_typ */
     } /* !rcd */
   } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara()");
