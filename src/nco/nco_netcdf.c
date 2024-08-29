@@ -112,7 +112,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 #endif /* !ENABLE_NETCDF4 */ 
      (void)fprintf(stdout,"3. NCO attempts to read other filetypes (HDF4, HDF-EOS2, PnetCDF/CDF5) for which support must be (but was not) enabled at netCDF build-time. NCO can access HDF4 files if NCO is first re-linked to a version of netCDF configured with the --enable-hdf4 option. This is a non-standard netCDF build option described here: http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html. NCO can access PnetCDF/CDF5 files if NCO is first re-linked to netCDF version 4.4.0 or later.\n4. NCO attempts to utilize diskless (i.e., RAM) files.  In this case remove the diskless switches (e.g., --ram or --diskless) and then re-issue the command.\n5. Access to a DAP URL fails, and the backup method of downloading the URL using wget obtains a data aggregation file (e.g., a .ncml file) instead of an actual netCDF file. In this case the problem is with the DAP server or URL.\n"); break; 
   case NC_ERANGE: /* (-60) */
-    (void)fprintf(stdout,"ERROR NC_ERANGE Result not representable in output file\nHINT: NC_ERANGE errors typically occur after an arithmetic operation results in a value not representible by the output variable type when NCO attempts to write those values to an output file.  Possible workaround for cases when the correct values fall outside the range of the storage type: Promote the variable to higher precision before attempting arithmetic.  For example,\nncap2 -O -s \'foo=double(foo);\' in.nc in.nc\nFor more details, see http://nco.sf.net/nco.html#typ_cnv\n"); break; 
+    (void)fprintf(stdout,"ERROR NC_ERANGE Result not representable in output file\nHINT: NC_ERANGE errors when NCO attempts to write those values to an output file. Typically this means an arithmetic operation created an extreme value not representable by the output variable type, e.g., an NC_FLOAT cannot store floating point numbers with base-10 exponents that exceed +/- 38, and an NC_UINT cannot store numbers larger than 2^16. Possible workaround for cases when the correct values fall outside the range of the storage type: Promote the variable to higher precision before attempting arithmetic.  For example,\nncap2 -O -s \'foo=double(foo);\' in.nc in.nc\nFor more details, see http://nco.sf.net/nco.html#typ_cnv\n"); break; 
   case NC_EUNLIMIT: /* (-54) */
     (void)fprintf(stdout,"ERROR NC_UNLIMIT NC_UNLIMITED size already in use\nHINT: NC_EUNLIMIT errors can occur when attempting to convert netCDF4 classic files that contain multiple record dimensions into a netCDF3 file that allows only one record dimension. In this case, try first fixing the excess record dimension(s) (with, e.g., ncks --fix_rec_dmn) and then convert to netCDF3. For more details, see http://nco.sf.net/nco.html#fix_rec_dmn\n"); break;
   case NC_EVARSIZE: /* (-62) */
@@ -2903,6 +2903,12 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
 	(void)nc_inq_dimlen(nc_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
 	(void)fprintf(stdout,"%d\t%lu\n",dmn_idx,dmn_sz[dmn_idx]);
       } /* !dmn_idx */
+    } /* !rcd */
+    if(rcd == NC_ERANGE){
+      nc_type var_typ_out;
+      (void)nco_inq_vartype(nc_id,var_id,&var_typ_out);
+      (void)fprintf(stdout,"NC_ERANGE Error Diagnostics for variable %s:\n",var_nm);
+      (void)fprintf(stdout,"%s attempting to write data array that user specified as type %s to output variable %s with output file-defined type %s:\n",fnc_nm,nco_typ_sng(var_typ),var_nm,nco_typ_sng(var_typ_out));
     } /* !rcd */
   } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara()");

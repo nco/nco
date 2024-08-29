@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.8-alpha03
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 23 August 2024
+@set update-date 27 August 2024
 @set update-month August 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -15093,8 +15093,11 @@ lat_1D_rct@long_name = sprint4(lat_1D_rct@long_name)
 @end example
 
 @noindent @strong{hyperslab a netCDF string @*@*}
-Its possible to index-into a NC_CHAR string. Just like a C-String. Remember  an NC_CHAR string is  has no terminating null.
-You CANNOT index into a NC_STRING. You have to convert to an NC_CHAR first. 
+It is possible to index-into an NC_CHAR string, similar to a C-String.
+Unlike a C-String, however, an NC_CHAR string has no null-character to
+mark its termination.
+One CANNOT index into an NC_STRING string.
+One must must convert to an NC_CHAR first. 
 @example
 @verbatim
 global@greeting="hello world!!!"
@@ -17620,7 +17623,7 @@ A dimension of size one is said to be @emph{degenerate}.
 Whether a degenerate record dimension is desirable or not
 depends on the application.
 Often a degenerate @var{time} dimension is useful, e.g., for
-concatentating, but it may cause problems with arithmetic.
+concatenating, though it may cause problems with arithmetic.
 Such is the case in the above example, where the first step employs
 @command{ncwa} rather than @command{ncra} for the time-averaging.
 Of course the numerical results are the same with both operators.
@@ -18860,6 +18863,11 @@ Add a @code{units} attribute of @code{kilogram kilogram-1} to all
 variables whose first three characters are @samp{H2O}:
 @example
 ncatted -a units,'^H2O',c,c,'kilogram kilogram-1' in.nc
+@end example
+
+Remove the @code{_FillValue} attribute from @code{lat} and @code{lon} variables.
+@example
+ncatted -O -a _FillValue,'[lat]|[lon]',d,, in.nc
 @end example
 
 Overwrite the @code{quanta} attribute of variable
@@ -26602,7 +26610,7 @@ invoking the @samp{--atm2ocn} switch:
 @example
 # Use --a2o to generate weights for "big" to "little" remaps:
 ncremap --a2o -a se2fv_flx --src_grd=atm_se_grd.nc \
-              --dst_grd=ocn_fv_grd.nc -m map.nc
+              --dst_grd=ocn_fv_grd.nc -m atm2ocn.nc
 # Otherwise, omit it:
 ncremap       -a fv2se_flx --src_grd=ocn_fv_grd.nc \
               --dst_grd=atm_se_grd.nc -m map.nc

@@ -1,8 +1,14 @@
-2024-08-24  Charlie Zender  <zender@uci.edu>
+2024-08-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.8-alpha03: Swim, Rick, Swim!';git push
 	git tag -a 5.2.8-alpha03 -m '';git push --tags
+
+	* nco_put_vara(): Add diagnostics for NC_ERANGE errors
+
+	* ncremap: Add v3 regression commands
+
+2024-08-24  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo: Add --sum_scl option for global sum timeseries
 
@@ -101,7 +107,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.7-alpha02: Stroker';git push
 	git tag -a 5.2.7-alpha02 -m 'all: qnt lossy_compresion->quantization, dpr family; ncremap wrn->nfo, CAAS stb';git push --tags
 
-	* Open nonlinear map when present
+	* Open nonlinear map when present on command line
 
 	* Add stubs to pass/free non-linear map name for CAAS to regridder with --rgr_nlm
 
