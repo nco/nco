@@ -2922,7 +2922,7 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
 	  var_min=(var_dbl[idx] < var_dbl[idx+1L]) ? var_dbl[idx] : var_dbl[idx+1L];
 	  var_max=(var_dbl[idx] > var_dbl[idx+1L]) ? var_dbl[idx] : var_dbl[idx+1L];
 	} /* !idx */
-	//	if(var_dbl) var_dbl=(double *)free(var_dbl);
+	if(var_dbl) (void)free((void *)var_dbl);
 	(void)fprintf(stdout,"%s reports range of input data array values (possibly including _FillValue) is %g <= %s <= %g\n",fnc_nm,var_min,var_nm,var_max);
       } /* !var_typ */
     } /* !rcd */
