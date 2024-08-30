@@ -6953,9 +6953,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  idx_in=col_src_adr[lnk_idx];
 		  idx_out=row_dst_adr[lnk_idx];
 		  sgs_frc_in_crr=sgs_frc_in[idx_in];
-		  //		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
 		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl && sgs_frc_in_crr != mss_val_cmp_dbl){
-		    if(sgs_frc_in_crr == mss_val_cmp_dbl && nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: WARNING %s Inside sub-SGS accumulation block about to increment %s[%ld]=%g by val_in*wgt_raw*sgs_frc_in for input cell idx_in = %ld where tally = %d, val_in = %g, wgt_raw = %g, sgs_frc_in = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,idx_out,var_val_dbl_out[idx_out],idx_in,tally[idx_out],var_val_dbl_in[idx_in],wgt_raw[lnk_idx],sgs_frc_in[idx_in]);
 		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in_crr;
 		    tally[idx_out]++;
 		  }else{ /* !mss_val_cmp_dbl */
@@ -6969,30 +6967,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		} /* !lnk_idx */
 		/* NB: Normalization clause is complex to support sgs_frc_out from both ELM and MPAS-Seaice
 		   20220615: Old normalization command fails (though rarely) if input sgs_frc is single-precision
-		   20240830: Old failures in single-precision might actually have been due to inadvertently accumulating sub-SGS fraction with weights that multiplied sgs_frc_in where it was a missing value. If so, the threshold factor may no longer be unnecessary!
 		   Solution is to use use precision-dependent thresholds for normalization
-		   if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out[dst_idx];} <--old (pre-20220615) normalization */
-		/* 20240830: Find where BTRAN regridding goes off the rails */
-		if(nco_dbg_lvl_get() >= nco_dbg_var){
-		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-		    if(var_val_dbl_out[dst_idx] > NC_MAX_FLOAT){
-		      (void)fprintf(fp_stdout,"%s: WARNING %s Before sub-SGS block reports %s element %ld = %g > NC_MAX_FLOAT; tally = %d, sgs_frc_out = %g, sub_sgs_frc_out = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,dst_idx,var_val_dbl_out[dst_idx],tally[dst_idx],sgs_frc_out[dst_idx],sub_sgs_frc_out[dst_idx]);
-		    } /* !var_val_dbl_out */
-		  } /* !dst_idx */
-		} /* !dbg */
+		   if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out[dst_idx];} <--old (pre-20220615) normalization
+		   20240830: Old failures in single-precision might have been due to inadvertently accumulating sub-SGS fraction with weights that multiplied sgs_frc_in where it was a missing value. If so, the threshold factor may no longer be unnecessary! */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-		  sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
 		  /* If output cell is not already missing value, then set it to missing value if there are no contributions to it or if the covered real estate is too small. Otherwise normalize the output value by the sub-SGS area fraction. */
+		  sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
 		  if(!tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr >= 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
 		} /* !dst_idx */
-		/* 20240830: Find where BTRAN regridding goes off the rails */
-		if(nco_dbg_lvl_get() >= nco_dbg_var){
-		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-		    if(var_val_dbl_out[dst_idx] > NC_MAX_FLOAT){
-		      (void)fprintf(fp_stdout,"%s: WARNING %s After sub-SGS block reports %s element %ld = %g > NC_MAX_FLOAT; tally = %d, sgs_frc_out = %g, sub_sgs_frc_out = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,dst_idx,var_val_dbl_out[dst_idx],tally[dst_idx],sgs_frc_out[dst_idx],sub_sgs_frc_out[dst_idx]);
-		    } /* !var_val_dbl_out */
-		  } /* !dst_idx */
-		} /* !dbg */
 	      }else{ /* lvl_nbr > 1 */
 		/* SGS-regrid multi-level fields with missing values */
 		val_in_fst=0L;
