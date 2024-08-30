@@ -2918,12 +2918,14 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
 	for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) var_sz*=cnt_sz_t[dmn_idx];
 	var_dbl=(double *)malloc(var_sz*sizeof(double));
 	(void)memcpy((void *)var_dbl,(void *)vp,var_sz*sizeof(double));
-	for(idx=0;idx<var_sz-1;idx++){
-	  var_min=(var_dbl[idx] < var_dbl[idx+1L]) ? var_dbl[idx] : var_dbl[idx+1L];
-	  var_max=(var_dbl[idx] > var_dbl[idx+1L]) ? var_dbl[idx] : var_dbl[idx+1L];
+	var_max=var_min=var_dbl[0];
+	for(idx=1;idx<var_sz;idx++){ /* NB: idx starts from 1 */
+	  if(var_dbl[idx] < var_min) var_min=var_dbl[idx];
+	  if(var_dbl[idx] > var_max) var_max=var_dbl[idx];
 	} /* !idx */
 	if(var_dbl) (void)free((void *)var_dbl);
-	(void)fprintf(stdout,"%s reports range of input data array values (possibly including _FillValue) is %g <= %s <= %g\n",fnc_nm,var_min,var_nm,var_max);
+	(void)fprintf(stdout,"%s ERROR: Range of input data array values (possibly including _FillValue) is %g <= %s <= %g\n",fnc_nm,var_min,var_nm,var_max);
+	if(var_typ_out == NC_FLOAT) (void)fprintf(stdout,"%s INFO: Smallest and largest representable values of type NC_FLOAT are 1.17549e-38 <= |value| <= 3.40282e+38\n",fnc_nm);
       } /* !var_typ */
     } /* !rcd */
   } /* !rcd */
