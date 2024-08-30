@@ -336,7 +336,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_dgn_bnd=False; /* [flg] Diagnose rather than copy inferred bounds */
   rgr->flg_erwg_units=True; /* [flg] Generate ERWG 7.1.0r-compliant SCRIP-format grid files */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
-  rgr->flg_mpt_mss=False; /* [flg] Apply msk_out to variables after regridding */
+  rgr->flg_mpt_mss=False; /* [flg] Set empty (sgs_frc==0.0) SGS cells to missing value */
   rgr->flg_msk_apl=False; /* [flg] Apply msk_out to variables after regridding */
   rgr->flg_msk_out=False; /* [flg] Add mask to output */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
@@ -5873,7 +5873,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* Add _FillValue to empty destination cells, if requested */
   nco_bool flg_add_fll=rgr->flg_add_fll; /* [flg] Add _FillValue to fields with empty destination cells */
   nco_bool flg_dst_mpt=False; /* [flg] At least one destination cell is empty */
-  nco_bool flg_mpt_mss=rgr->flg_mpt_mss; /* [flg] Set empty (sgs_frc=0.0) SGS cells to missing value */
+  nco_bool flg_mpt_mss=rgr->flg_mpt_mss; /* [flg] Set empty (sgs_frc==0.0) SGS cells to missing value */
   size_t dst_idx; /* [idx] Index on destination grid */
   size_t src_idx; /* [idx] Index on source grid */
   /* Determine whether any destination cells are, in fact, empty */
@@ -6720,7 +6720,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	float tm_drn; /* [s] Seconds elapsed */
 	if(nco_dbg_lvl_get() >= nco_dbg_var) tm_srt=clock();
  
-	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: DEBUG renormalization configuration for %s: sgs_frc_out = %s, flg_frc_nrm = %d, has_mss_val = %d, flg_rnr = %d, wgt_vld_thr = %g\n",nco_prg_nm_get(),var_nm,sgs_frc_out ? "Yes" : "No",flg_frc_nrm,has_mss_val,flg_rnr,wgt_vld_thr);
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: DEBUG renormalization configuration for %s: sgs_frc_out = %s, flg_frc_nrm = %d, has_mss_val = %d, flg_rnr = %d, wgt_vld_thr = %g, flg_add_fll = %d, flg_mpt_mss = %d, flg_msk_apl = %d\n",nco_prg_nm_get(),var_nm,sgs_frc_out ? "Yes" : "No",flg_frc_nrm,has_mss_val,flg_rnr,wgt_vld_thr,flg_add_fll,flg_mpt_mss,flg_msk_apl);
 
 	/* This first block is for "normal" variables without sub-gridscale fractions */
 	if(!sgs_frc_out){
@@ -6877,7 +6877,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Variables with sub-gridscale fractions require "double-weighting" and normalization */
 	if(sgs_frc_out){
 	  if(!strcmp(var_nm,sgs_frc_nm)){
-	    /* Copy shared variable sgs_frc_out that was regridded before OpenMP loop
+	    /* Copy shared variable sgs_frc_out (that was regridded before OpenMP loop) into output buffer for sgs_frc_nm
 	       20190911: Reasons to copy sgs_frc_out into sgs_frc_nm data include speed, consistency, and well-definedness of sgs_frc_out. One reason to regrid sgs_frc_nm here is consistency with original, raw dataset: ELM landfrac is masked so regridding it here (rather than using sgs_frc_out) would produce a regridded dataset more identical to raw ELM output. The same can be said for CICE (I think). MPAS cellMask and timeMonthly_avg_iceAreaCell are not masked, and so should produce the same values as sgs_frc_out if regridded here. */
 	    memcpy(var_val_dbl_out,sgs_frc_out,grd_sz_out*nco_typ_lng(var_typ_rgr));
 	  }else if(sgs_msk_nm && !strcmp(var_nm,sgs_msk_nm)){
@@ -6915,10 +6915,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      /* 20220417 SGS regridding with missing values presents additional complexity 
 		 Original SGS implementation assumed field and sgs_frc valid at same points
 		 However, ELM landunit-specific values are missing in gridcells that lack those landunits
+		 Hence valid field values imply valid sgs_frc, yet valid sgs_frc sometime occurs with missing field values
+		 
 		 For example:
 		 TSOI is missing in land gridcells that are entirely glacier, 
-		 TSOIICE is missing in land gridcells that are vegetated,
-		 TLAKE and LAKEICETHICK are missing in land gridcells have no lakes
+		 TSOIICE is missing in land gridcells that are entirely vegetated,
+		 TLAKE and LAKEICETHICK are missing in lake-free land gridcells 
 		 Recently noticed that ELM archives (by default) a dozen or so such fields
 		 Such fields are means over the fractional landunit of the fractional land
 		 We call these fields sub-SGS
@@ -6950,26 +6952,47 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		  idx_in=col_src_adr[lnk_idx];
 		  idx_out=row_dst_adr[lnk_idx];
-		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
-		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
+		  sgs_frc_in_crr=sgs_frc_in[idx_in];
+		  //		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
+		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl && sgs_frc_in_crr != mss_val_cmp_dbl){
+		    if(sgs_frc_in_crr == mss_val_cmp_dbl && nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: WARNING %s Inside sub-SGS accumulation block about to increment %s[%ld]=%g by val_in*wgt_raw*sgs_frc_in for input cell idx_in = %ld where tally = %d, val_in = %g, wgt_raw = %g, sgs_frc_in = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,idx_out,var_val_dbl_out[idx_out],idx_in,tally[idx_out],var_val_dbl_in[idx_in],wgt_raw[lnk_idx],sgs_frc_in[idx_in]);
+		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in_crr;
 		    tally[idx_out]++;
 		  }else{ /* !mss_val_cmp_dbl */
 		    /* If input field value is missing in a gridcell with positive-definite area,
 		       then input field has sub-sub-gridscale missing value in gridcell.
 		       Reduce effective area used for normalization appropriately */
-		    if((sgs_frc_in_crr=sgs_frc_in[idx_in]) != mss_val_cmp_dbl)
+		    if(sgs_frc_in_crr != mss_val_cmp_dbl)
 		      if(sgs_frc_in_crr > 0.0)
 			sub_sgs_frc_out[idx_out]-=sgs_frc_in_crr*wgt_raw[lnk_idx];
 		  } /* !mss_val_cmp_dbl */
 		} /* !lnk_idx */
 		/* NB: Normalization clause is complex to support sgs_frc_out from both ELM and MPAS-Seaice
 		   20220615: Old normalization command fails (though rarely) if input sgs_frc is single-precision
+		   20240830: Old failures in single-precision might actually have been due to inadvertently accumulating sub-SGS fraction with weights that multiplied sgs_frc_in where it was a missing value. If so, the threshold factor may no longer be unnecessary!
 		   Solution is to use use precision-dependent thresholds for normalization
 		   if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out[dst_idx];} <--old (pre-20220615) normalization */
+		/* 20240830: Find where BTRAN regridding goes off the rails */
+		if(nco_dbg_lvl_get() >= nco_dbg_var){
+		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+		    if(var_val_dbl_out[dst_idx] > NC_MAX_FLOAT){
+		      (void)fprintf(fp_stdout,"%s: WARNING %s Before sub-SGS block reports %s element %ld = %g > NC_MAX_FLOAT; tally = %d, sgs_frc_out = %g, sub_sgs_frc_out = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,dst_idx,var_val_dbl_out[dst_idx],tally[dst_idx],sgs_frc_out[dst_idx],sub_sgs_frc_out[dst_idx]);
+		    } /* !var_val_dbl_out */
+		  } /* !dst_idx */
+		} /* !dbg */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		  sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
-		  if(!tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
+		  /* If output cell is not already missing value, then set it to missing value if there are no contributions to it or if the covered real estate is too small. Otherwise normalize the output value by the sub-SGS area fraction. */
+		  if(!tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr >= 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
 		} /* !dst_idx */
+		/* 20240830: Find where BTRAN regridding goes off the rails */
+		if(nco_dbg_lvl_get() >= nco_dbg_var){
+		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+		    if(var_val_dbl_out[dst_idx] > NC_MAX_FLOAT){
+		      (void)fprintf(fp_stdout,"%s: WARNING %s After sub-SGS block reports %s element %ld = %g > NC_MAX_FLOAT; tally = %d, sgs_frc_out = %g, sub_sgs_frc_out = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,dst_idx,var_val_dbl_out[dst_idx],tally[dst_idx],sgs_frc_out[dst_idx],sub_sgs_frc_out[dst_idx]);
+		    } /* !var_val_dbl_out */
+		  } /* !dst_idx */
+		} /* !dbg */
 	      }else{ /* lvl_nbr > 1 */
 		/* SGS-regrid multi-level fields with missing values */
 		val_in_fst=0L;
@@ -6978,8 +7001,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		    idx_in=col_src_adr[lnk_idx]+val_in_fst;
 		    idx_out=row_dst_adr[lnk_idx]+val_out_fst;
-		    if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
-		      var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[col_src_adr[lnk_idx]];
+		    sgs_frc_in_crr=sgs_frc_in[col_src_adr[lnk_idx]];
+		    if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl && sgs_frc_in_crr != mss_val_cmp_dbl){
+		      var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in_crr;
 		      tally[idx_out]++;
 		    }else{ /* !mss_val_cmp_dbl */
 		      /* Same sub-sub-gridcell procedure as for single-level fields except...
@@ -6988,7 +7012,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 			 Use sub-SGS-adjusted normalization factor computed in level 0 for all remaining levels
 			 Otherwise would need to re-copy/compute sgs_frc_out for every level */
 		      if(lvl_idx == 0)
-			if((sgs_frc_in_crr=sgs_frc_in[idx_in]) != mss_val_cmp_dbl)
+			if(sgs_frc_in_crr != mss_val_cmp_dbl)
 			  if(sgs_frc_in_crr > 0.0)
 			    sub_sgs_frc_out[idx_out]-=sgs_frc_in_crr*wgt_raw[lnk_idx];
 		    } /* !mss_val_cmp_dbl */
@@ -6998,6 +7022,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		    idx_out=dst_idx+val_out_fst;
 		    sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
 		    //if(!tally[idx_out]){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[idx_out]/=sub_sgs_frc_out[dst_idx];}
+		    // 20240830: fxm needs fixing like single-level field above
 		    if(!tally[idx_out] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[idx_out]/=sub_sgs_frc_out_crr;}
 		  } /* !dst_idx */
 		  val_in_fst+=grd_sz_in;
@@ -7051,7 +7076,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	     Once sgs_msk if fully supported following clause will likely be redundant with --msk_apl in datasets with sgs_msk */
 	  if(sgs_frc_out){
 
-	    /* 20231019: Set empty (sgs_frc=0.0) SGS cells to missing value
+	    /* 20231019: Set empty (sgs_frc==0.0) SGS cells to missing value
 	       When triggered, this sets, e.g., open-ocean areas in MPAS-Seaice data to missing values */
 	    if(flg_mpt_mss){ 
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
@@ -7128,14 +7153,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 	    idx_in=col_src_adr[lnk_idx];
 	    idx_out=row_dst_adr[lnk_idx];
-	    if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl){
-	      var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*caas_sgs_frc_in[idx_in];
+	    sgs_frc_in_crr=caas_sgs_frc_in[idx_in];
+	    if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_cmp_dbl && sgs_frc_in_crr != mss_val_cmp_dbl){
+	      var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in_crr;
 	      caas_tally[idx_out]++;
 	    }else{ /* !mss_val_cmp_dbl */
 	      /* If input field value is missing in a gridcell with positive-definite area,
 		 then input field has sub-sub-gridscale missing value in gridcell.
 		 Reduce effective area used for normalization appropriately */
-	      if((sgs_frc_in_crr=caas_sgs_frc_in[idx_in]) != mss_val_cmp_dbl)
+	      if(sgs_frc_in_crr != mss_val_cmp_dbl)
 		if(sgs_frc_in_crr > 0.0)
 		  sub_sgs_frc_out[idx_out]-=sgs_frc_in_crr*wgt_raw[lnk_idx];
 	    } /* !mss_val_cmp_dbl */
@@ -7146,7 +7172,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	     if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out[dst_idx];} <--old (pre-20220615) normalization */
 	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 	    sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
-	    if(!caas_tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
+	    if(!caas_tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr >= 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
 	  } /* !dst_idx */
 
 	  if(caas_gym) caas_gym=(double *)nco_free(caas_gym);

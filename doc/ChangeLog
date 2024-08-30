@@ -1,8 +1,16 @@
-2024-08-29  Charlie Zender  <zender@uci.edu>
+2024-08-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.8-alpha03: Swim, Rick, Swim!';git push
 	git tag -a 5.2.8-alpha03 -m '';git push --tags
+
+	* ncremap: Stop weighting accumulation to SGS values where sgs_frc_in is missing value
+	Potentially serious bug most likely to affect ELM datasets whose sgs_frc = landfrac contains missing values
+	Also crops-up when applying new SGS variable (e.g., Icemask) in regions where ELM may not have valid input
+
+	* ncremap: Further improve flag and ERANGE diagnostics
+
+2024-08-29  Charlie Zender  <zender@uci.edu>
 
 	* nco_put_vara(): Add diagnostics for NC_ERANGE errors
 
