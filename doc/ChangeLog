@@ -1,5 +1,9 @@
 2024-08-31  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.8-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.8-beta01: No Apologies';git push
+	git tag -a 5.2.8-beta01 -m 'ncremap: fix sub-SGS algorithm, sum_scl, rgn_stt=sum, chk_map dgn area_b, cnk max WARNING; ncatted/ncrename: hst_att_cat NC_STRING WARNING';git push --tags
+
 	* NCO 5.2.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.8-alpha03: Swim, Rick, Swim!';git push
 	git tag -a 5.2.8-alpha03 -m 'ncremap: fix sub-SGS algorithm, NC_ERANGE dgn, --sum_scl';git push --tags
