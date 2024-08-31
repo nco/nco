@@ -1,8 +1,14 @@
-2024-08-30  Charlie Zender  <zender@uci.edu>
+2024-08-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.8-alpha03: Swim, Rick, Swim!';git push
-	git tag -a 5.2.8-alpha03 -m '';git push --tags
+	git tag -a 5.2.8-alpha03 -m 'ncremap: fix sub-SGS algorithm, NC_ERANGE dgn, --sum_scl';git push --tags
+
+	* ncremap: Yesterday's SGS fix also removed need for sub_sgs_frc_out_thr so remove it
+	Verify threshold-free sub-SGS regridding handles all ELM problems from the past (see 20220615)
+	Eliminates last kludge in SGS regridder!
+
+2024-08-30  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: Stop weighting accumulation to SGS values where sgs_frc_in is missing value
 	Potentially serious bug most likely to affect ELM datasets whose sgs_frc = landfrac contains missing values

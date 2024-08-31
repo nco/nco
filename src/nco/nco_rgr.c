@@ -6934,12 +6934,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		 Copy sgs_frc_out into volatile sub_sgs_frc_out iff sgs_frc and has_mss_val
 		 Remove contributions of missing landunit area from sub_sgs_frc_out
 		 Normalize by sub_sgs_frc_out instead of sgs_frc_out
-		 Delete sub_sgs_frc_out
-		 Procedure works fine in theory and with sgs_frc that originates with double precision
-		 However, rounding errors can accumulate with single precision landfrac (as in CLM/ELM)
-		 These cause 2 bad temperatures for ne30pg2->180x360 regridding of vegetated-only gridcells
-		 Solution is to threshold normalization by sub_sgs_frc_out, accounting for sgs_frc units */
-	      const double sub_sgs_frc_out_thr=sgs_nrm*1.0e-15; /* [frc] Threshold sub-SGS fraction for validity/normalization */
+		 Delete sub_sgs_frc_out */
 	      double *sub_sgs_frc_out=NULL;
 	      double sgs_frc_in_crr; /* [frc] SGS fraction of current input (source) gridcell */
 	      double sub_sgs_frc_out_crr; /* [frc] SGS fraction of current output (destination) gridcell */
@@ -6965,15 +6960,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 			sub_sgs_frc_out[idx_out]-=sgs_frc_in_crr*wgt_raw[lnk_idx];
 		  } /* !mss_val_cmp_dbl */
 		} /* !lnk_idx */
-		/* NB: Normalization clause is complex to support sgs_frc_out from both ELM and MPAS-Seaice
-		   20220615: Old normalization command fails (though rarely) if input sgs_frc is single-precision
-		   Solution is to use use precision-dependent thresholds for normalization
-		   if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out[dst_idx];} <--old (pre-20220615) normalization
-		   20240830: Old failures in single-precision might have been due to inadvertently accumulating sub-SGS fraction with weights that multiplied sgs_frc_in where it was a missing value. If so, the threshold factor may no longer be unnecessary! */
+		/* NB: Normalization clause is complex to support sgs_frc_out from both ELM and MPAS-Seaice */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-		  /* If output cell is not already missing value, then set it to missing value if there are no contributions to it or if the covered real estate is too small. Otherwise normalize the output value by the sub-SGS area fraction. */
+		  /* If output cell is not already missing value, then set it to missing value if it has no contributing cells
+		     Otherwise normalize the output value by the sub-SGS area fraction */
 		  sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
-		  if(!tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr >= 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
+		  if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
 		} /* !dst_idx */
 	      }else{ /* lvl_nbr > 1 */
 		/* SGS-regrid multi-level fields with missing values */
@@ -7003,9 +6995,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		    idx_out=dst_idx+val_out_fst;
 		    sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
-		    //if(!tally[idx_out]){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[idx_out]/=sub_sgs_frc_out[dst_idx];}
-		    // 20240830: fxm needs fixing like single-level field above
-		    if(!tally[idx_out] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[idx_out]/=sub_sgs_frc_out_crr;}
+		    if(!tally[idx_out]){var_val_dbl_out[idx_out]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[idx_out]/=sub_sgs_frc_out_crr;}
 		  } /* !dst_idx */
 		  val_in_fst+=grd_sz_in;
 		  val_out_fst+=grd_sz_out;
@@ -7123,7 +7113,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  (void)memset(caas_wgt_vld_out,0,var_sz_out*nco_typ_lng(var_typ_rgr));
 
 	  /* Handle Sub-SGS normalization */
-	  const double sub_sgs_frc_out_thr=sgs_nrm*1.0e-15; /* [frc] Threshold sub-SGS fraction for validity/normalization */
 	  double *sub_sgs_frc_out=NULL;
 	  double sgs_frc_in_crr; /* [frc] SGS fraction of current input (source) gridcell */
 	  double sub_sgs_frc_out_crr; /* [frc] SGS fraction of current output (destination) gridcell */
@@ -7148,13 +7137,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  sub_sgs_frc_out[idx_out]-=sgs_frc_in_crr*wgt_raw[lnk_idx];
 	    } /* !mss_val_cmp_dbl */
 	  } /* !lnk_idx */
-	  /* NB: Normalization clause is complex to support sgs_frc_out from both ELM and MPAS-Seaice
-	     20220615: Old normalization command fails (though rarely) if input sgs_frc is single-precision
-	     Solution is to use use precision-dependent thresholds for normalization
-	     if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out[dst_idx] > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out[dst_idx];} <--old (pre-20220615) normalization */
+	  /* NB: Normalization clause is complex to support sgs_frc_out from both ELM and MPAS-Seaice */
 	  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 	    sub_sgs_frc_out_crr=sub_sgs_frc_out[dst_idx];
-	    if(!caas_tally[dst_idx] || sub_sgs_frc_out_crr < sub_sgs_frc_out_thr){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr >= 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
+	    if(!caas_tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_cmp_dbl;}else{if(sub_sgs_frc_out_crr > 0.0) var_val_dbl_out[dst_idx]/=sub_sgs_frc_out_crr;}
 	  } /* !dst_idx */
 
 	  if(caas_gym) caas_gym=(double *)nco_free(caas_gym);
