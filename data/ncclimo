@@ -297,9 +297,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Split directory:
 # ncclimo --dbg=1 --ypf=50 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split global mean
-# cd ${DATA}/ne30/raw;ls 2018*000[12]-??*.nc | ncclimo --split --dbg=1 --glb_avg -s 1 -e 2 --var=FSNT,AODVIS,TREFHT --drc_out=${DATA}/ne30/clm
-# Split regional mean
 # cd ${DATA}/ne30/raw;ls 2018*000[12]-??*.nc | ncclimo --split --dbg=1 --rgn_avg -s 1 -e 2 --var=FSNT,AODVIS,TREFHT --drc_out=${DATA}/ne30/clm
+# Split global sum
+# ncclimo -P elm --split --rgn_stt=sum --sum_scl=1.0e6*3600*24*365/1.0e12 -v GPP -c v3.LR.piControl -s 460 -e 461 --var=GPP --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split all:
 # cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split ELM:
@@ -2180,6 +2180,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: sgm_nbr  = ${sgm_nbr}\n"
     printf "dbg: sgm_rmd  = ${sgm_rmd}\n"
     printf "dbg: sgs_frc  = ${sgs_frc}\n"
+    printf "dbg: sum_scl  = ${sum_scl}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: tms_flg  = ${tms_flg}\n"
     printf "dbg: tpd_out  = ${tpd_out}\n"
