@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.8-alpha03
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 27 August 2024
-@set update-month August 2024
+@set update-date 2 September 2024
+@set update-month September 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -19513,13 +19513,13 @@ SYNTAX
 ncclimo [-3] [-4] [-5] [-6] [-7] 
 [-a @var{wnt_md}] [-C @var{clm_md}] [-c @var{caseid}] [--cmp @var{cmp_sng}]
 [-d @var{dbg_lvl}] [--d2f] [--dpf=@var{dpf}] [--dpt_fl=@var{dpt_fl}] [-E @var{yr_prv}] [-e @var{yr_end}]
-[-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [--glb_avg] [-h @var{hst_nm}] [-i @var{drc_in}]
-[-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}]
+[-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [--glb_avg] [--glb_stt=@var{glb_stt}] 
+[-h @var{hst_nm}] [-i @var{drc_in}] [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}]
 [-m @var{mdl_nm}] [--mth_end=@var{mth_end}] [--mth_srt=@var{mth_srt}]
 [-n @var{nco_opt}] [--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd] [--no_stdin] 
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-P @var{prc_typ}] [-p @var{par_typ}] [--qnt=@var{qnt_prc}]
-[-R @var{rgr_opt}] [-r @var{rgr_map}]
-[-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}] [--split]
+[-R @var{rgr_opt}] [-r @var{rgr_map}] [-S @var{yr_prv}] [-s @var{yr_srt}]
+[--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}] [--split] [--sum_scl=@var{sum_scl}]
 [-t @var{thr_nbr}] [--tpd=@var{tpd}] [--uio] [-v @var{var_lst}] [--var_xtr=@var{var_xtr}] [--version] 
 [--vrt_out=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}]
 [-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
@@ -20185,7 +20185,7 @@ See @ref{CF Conventions} for a detailed description.
 @cindex global average
 @cindex regional average
 @cindex hemispheric average
-@item --glb_avg (@code{--glb_avg}, @code{--global_average}) (deprecated) 
+@item --glb_avg (@code{--glb_avg}, @code{--global_average}) (deprecated)
 @item --rgn_avg (@code{--rgn_avg}, @code{--region_average})
 When introduced in @acronym{NCO} version 4.9.1 (released December,
 2019), this switch (which takes no argument) caused the splitter to
@@ -20221,6 +20221,110 @@ the full regridded timeseries, if requested, at the same time.
 Because the switch now outputs global and regional averages, the best
 practice is to invoke with @samp{--rgn_avg} instead of
 @samp{--glb_avg}. 
+@acronym{NCO} version 5.2.8 (released September, 2024) superseded this
+switch by introducing support for more general global/regional
+statistics timeseries output via the @code{--glb_stt}/@code{--rgn_stt}
+options. 
+
+@html
+<a name="hms_stt"></a> <!-- http://nco.sf.net/nco.html#hms_stt -->
+<a name="rgn_stt"></a> <!-- http://nco.sf.net/nco.html#rgn_stt -->
+<a name="glb_stt"></a> <!-- http://nco.sf.net/nco.html#glb_stt -->
+<a name="global_statistic"></a> <!-- http://nco.sf.net/nco.html#global_statistic -->
+<a name="regional_statistic"></a> <!-- http://nco.sf.net/nco.html#regional_statistic -->
+<a name="foo"></a> <!-- http://nco.sf.net/nco.html#foo -->
+<a name="foo"></a> <!-- http://nco.sf.net/nco.html#foo -->
+<a name="foo"></a> <!-- http://nco.sf.net/nco.html#foo -->
+<a name="foo"></a> <!-- http://nco.sf.net/nco.html#foo -->
+@end html
+@cindex @code{--sum_scl}
+@cindex @code{--sum_scale}
+@cindex @code{--scl_fct}
+@cindex @code{--scale_factor}
+@cindex @code{--sum_scl}
+@cindex @code{--glb_stt}
+@cindex @code{--global_statistic}
+@cindex @code{--rgn_stt}
+@cindex @code{--regional_statistic}
+@cindex @code{--hms_stt}
+@cindex global statistic
+@cindex regional statistic
+@cindex hemispheric statistic
+@cindex sum scale
+@cindex scale factor
+@cindex @code{--sum_scl}
+@item --glb_stt (@code{--glb_stt}, @code{--global_statistic})
+@item --rgn_stt (@code{--rgn_stt}, @code{--region_statistic})
+@acronym{NCO} version 5.2.8 (released September, 2024) introduced the
+@code{--glb_stt}/@code{--rgn_stt} options (or long options
+equivalents @code{--hms_stt}, @code{--regional_statistic}, and
+@code{--global_statistic}) to support more general global/regional
+statistics timeseries output. 
+These options allow the user to choose which statistic, sums or
+averages, to output with global/regional timeseries for all
+variables.
+Set @var{rgn_stt} to @code{avg}, @code{average}, or @code{mean}
+to output timeseries of the global/regional mean statistic.
+Set @var{rgn_stt} to @code{sum}, @code{total}, @code{ttl}, or
+@code{integral} to output timeseries of the global/regional sum.
+The option @samp{--rgn_stt=avg} is equivalent setting the
+@code{--rgn_avg} switch (which may eventually be deprecated).
+When invoked with @samp{--rgn_stt=sum} the averaged field is
+multiplied by the sum of the @var{area} variable. 
+For area-intensive fields (e.g., fluxes per unit area) this results in
+the total net flux over the area.
+However, the field must employ the same areal units as the @var{area} 
+variable for this to be true. 
+For example, fields given in inverse square meters would need to
+employ an @var{area} variable in square meters.
+Unfortunately, many people love non-SI units so that is rarely
+the case!
+For example, ELM and CLM archive @var{area} in a field named
+@code{area} whose units are square kilometers, so a scale factor of
+one million is needed to correct the sum for many variables.
+EAM and CAM also archive @var{area} in a field named @code{area},
+though in unis of inverse steradians, which would require a
+different scale factor to match the sums of area-intensive fields.
+
+That is why @command{ncclimo} introduced a second new option
+@samp{--sum_scl=@var{sum_scl}}, in @acronym{NCO} version 5.2.8
+(released September, 2024).
+The long option equivalents are @code{--scl_fct}, @code{--sum_scale},
+and @code{--scale_factor}.
+When @var{rgn_stt} is @code{sum}, the @var{sum_scl} scale factor
+multiplies the integrated field value, which allows the user to
+generate timeseries in the desired units for any field.
+Consider these prototypical examples to generate global timeseries
+of common geophysical statistics from @acronym{ESM} output:
+@example
+@verbatim
+# Timeseries of global GPP in grams/s for ELM/CLM:
+ncclimo -P elm --split --rgn_stt=sum --sum_scl=1.0e6 -v GPP ...
+# Timeseries of global GPP in GT C/yr for ELM/CLM:
+ncclimo -P elm --split --rgn_stt=sum --sum_scl=1.0e6*3600*24*365/1.0e12 -v GPP ...
+# Timeseries of global column vapor in kg for EAM/CAM:
+ncclimo -P eam --split --rgn_stt=sum --sum_scl=6.37122e6^2 -v TMQ ...
+@end verbatim
+@end example
+All three examples set @var{rgn_stt} to @code{sum} in order to
+activate the @var{sum_scl} factor.
+The first example scales (multiplies) the mean of all global
+timeseries (here, @code{GPP} for concreteness) by one million.
+This factor converts the @acronym{ELM} or @acronym{CLM} @code{area}
+variable from square kilometers to square meters, appropriate to
+to integrating fields like @code{GPP} whose fluxes are per square
+meter.
+The output timeseries of @code{GPP} would then be in @w{gC s-1}.
+The second example sets the scale factor to convert the global
+@code{GPP} statistic to units of @w{GT C yr-1}.
+The third example shows how to convert areal sums in sterradians
+(which @acronym{EAM} and @acronym{CAM} use for @code{area}) to
+square meters.
+This factor converts atmospheric variables from global mean mass per
+square meter to global total mass.
+The @code{--glb_stt=sum}/@code{--sum_scl} procedure is model- and
+variable-specific and we are open to suggestions to make it more
+useful. 
 
 @html
 <a name="no_ntv_tms"></a> <!-- http://nco.sf.net/nco.html#no_ntv_tms -->

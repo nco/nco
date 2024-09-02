@@ -1,87 +1,70 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.8 march into history
+netCDF Operators NCO version 5.2.8 topple the technocracy!
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.2.8 contains updates to quantization metadata,
-enhanced grid area diagnostics for check_map, and bug-fixes
-for ncremap.
-
-Work on NCO 5.2.9 has commenced and will add support for Zarr S3 
-stores, and will enhance the vertical regridder.
+Version 5.2.8 mostly contains features and fixes for regridding
+and climatology generation. Climatologies now allow the choice
+between two statistics (sums and means) to output as regional/global
+timeseries. The regridder fixes corner case behavior when the
+sub-gridscale (SGS) fraction is a missing value (as in ELM/CLM).
+Many improvements to the robustness and helpfulness of WARNINGs
+and ERRORs are included. Upgrades are encouraged for everyone
+who uses the regridder on ELM/CLM/CTSM datasets.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Version 5.2.7 implements the final (we think) CF quantization
-metadata convention. The main change is that the keywords and
-container variable are now "quantization" instead of
-"lossy_compression". 
-ncks -7 -v ps,ts --qnt_alg=btr --qnt default=9 --qnt ps=13 --cmp='shf|zst' in.nc out.nc
-ncks -m -C -v ps,ts,quantization_info out.nc
-netcdf out {
-...
-   float ps(time,lat,lon) ;
-      ps:standard_name = "surface_air_pressure" ;
-      ps:units = "Pa" ;
-      ps:quantization = "quantization_info" ;
-      ps:quantization_nsb = 13 ;
-      ps:quantization_maximum_relative_error = 6.103516e-05f ;
+A. ncclimo has two new options to control global/regional timeseries:
+--rgn_stt=avg|sum and --sum_scl=sum_scl. These options allow the user
+to choose which statistic, sums or averages, to output with
+global/regional timeseries for all variables. The option --rgn_stt=avg
+is identical to the current timeseries output by the --rgn_avg switch
+(which will be deprecated eventually). When invoked with --rgn_stt=sum
+the averaged field is multiplied by the sum of the area variable.
+For fields that are area-intensive (e.g., fluxes per unit area) this
+results in the total net flux over the area. However, the field must
+employ the same area units as the Area variable for this to be true.
+For example, fields given in m-2 would need to employ an Area variable
+in m2. Unfortunately, many people love non-SI units so that is rarely
+the case! For example, ELM and CLM archive Area in km2, so a scale
+factor of one million is needed to correct the sum for many variables.
+EAM and CAM use sr-1 for Area so it needs a different scale factor.
+That is why ncclimo accepts a second new option --sum_scl=sum_scl.
+This scale factor multiplies the integrated field value, and allows
+the user to generate timeseries in the desired units for any field.
+The whole procedure is model and variable-specific and we are open
+to suggestions to make it more useful. Example usage is: 
 
-    char quantization_info ;
-      quantization_info:algorithm = "bitround" ;
-      quantization_info:implementation = "NCO version 5.2.7" ;
-
-    float ts(time) ;
-      ts:standard_name = "surface_temperature" ;
-      ts:units = "K" ;
-      ts:quantization = "quantization_info" ;
-      ts:quantization_nsb = 9 ;
-      ts:quantization_maximum_relative_error = 0.0009765625f ;
-} // group /
-http://nco.sf.net/nco.html#qnt_alg
-http://nco.sf.net/nco.html#qnt
-
-B. ncks --chk_map now produces additional diagnostics about the
-source and destination grids. Then new diagnostics are values and
-locations (index, latitude, longitude) of the minimum and maximum
-gridcell areas (usually in sterradians), together with the effective
-quadrilateral size on Earth of the gridcell (assuming a square shaped
-cell of equivalent area):
-ncks --chk_map map_ne30pg2_to_cmip6_180x360_nco.20200901.nc
-...
-area_a min, ~dx: 4.9093515660647374e-04 sr, 141.14 km in grid A cell [21544,+45.7267,+177.69]
-area_a max, ~dx: 6.8523331840188574e-04 sr, 166.75 km in grid A cell [9061,+0.749936,+180.75]
-...
-area_b min, ~dx: 2.6580860638549120e-06 sr, 10.39 km in grid A cell [60,-42.7476,+359.25]
-area_b max, ~dx: 3.0460968486221404e-04 sr, 111.18 km in grid A cell [32272,-68.5,+135.5]
-These diagnostics can be useful in identifying grid-related dynamics
-issues, e.g., due to CFL conditions. This feature was inspired by
-map diagnostic software from Mark Taylor (SNL).
-http://nco.sf.net/nco.html#chk_map
+# Timeseries of global GPP in grams/s for ELM/CLM:
+ncclimo -P elm --split --rgn_stt=sum --sum_scl=1.0e6 -v GPP ...
+# Timeseries of global GPP in GT C/yr for ELM/CLM:
+ncclimo -P elm --split --rgn_stt=sum --sum_scl=1.0e6*3600*24*365/1.0e12 -v GPP ...
+# Timeseries of global column vapor in kg for EAM/CAM:
+ncclimo -P eam --split --rgn_stt=sum --sum_scl=6.37122e6^2 -v TMQ ...
+http://nco.sf.net/nco.html#ncclimo
+http://nco.sf.net/nco.html#rgn_stt
+http://nco.sf.net/nco.html#sum_scl
 
 BUG FIXES:
    
-A. ncremap: A bug that crept into version 5.2.6 has been fixed.
-Namely, the detection of empty destination gridcells was broken.
-This prevented correctly adding the _FillValue attribute to some
-fields with missing values. The workaround is to use version 5.2.4.
-The solution is to upgrade. Thanks to Xylar Asay-Davis (LANL) for
-reporting resultant problems.
+A. ncks --chk_map fixes a mix-up introduced in 5.2.7 where the new
+area_b diagnostics were mis-labeled and show the location of min/max
+on the area_a grid instead of the area_b grid. The workaround is to
+use 5.2.6 or earlier. The solution is to upgrade.
 
-B. ncclimo: A bug that crept into version 5.2.6 has been fixed.
-ncclimo had stopped passing the specified processing type (-P mdl)
-to internal calls to ncremap. This prevented ncremap from
-automagically weighting fields from surface models by the appropriate
-sub-gridscale fraction variable (landfrac for ELM+CLM, aice for CICE,
-timeMonthly_avg_iceAreaCell for MPAS-Seaice). The workaround is to use
-version 5.2.4. The solution is to upgrade. Thanks to Tony Bartoletti
-(LLNL) for noticing resultant problems.
+B. ncremap fixes a problem where portions of missing values (aka
+_FillValue) could infect destination cells whose sub-gridscale (SGS)
+fractions equal _FillValue. This problem can arise in ELM/CLM
+datasets because their 'landfrac' variable sets non-land areas to the
+missing value (a practice of questionable value). Thanks to Chloe
+Whicker-Clarke for reporting this issue. There is no workaround. The
+solution is to upgrade. 
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

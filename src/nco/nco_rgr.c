@@ -6933,7 +6933,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		 Workaround algorithm:
 		 Copy sgs_frc_out into volatile sub_sgs_frc_out iff sgs_frc and has_mss_val
 		 Remove contributions of missing landunit area from sub_sgs_frc_out
-		 Normalize by sub_sgs_frc_out instead of sgs_frc_out
+		 Remember to check that contributions come from source cells where sgs_frc_in is valid value
+		 Although sgs_frc_out is construced to be valid value, sgs_frc_in might be missing value
+		 After deducting areal contributions from invalid input cells, normalize by sub_sgs_frc_out instead of sgs_frc_out
 		 Delete sub_sgs_frc_out */
 	      double *sub_sgs_frc_out=NULL;
 	      double sgs_frc_in_crr; /* [frc] SGS fraction of current input (source) gridcell */
