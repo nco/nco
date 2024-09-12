@@ -1,8 +1,12 @@
-2024-09-02  Charlie Zender  <zender@uci.edu>
+2024-09-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.9-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha01: Camp Rick';git push
 	git tag -a 5.2.9-alpha01 -m 'Functionally identical to 5.2.8';git push --tags
+
+	* Shift from clang++ -std=c++17 and clang to clang++ -std=c++23	and clang -std=c23 on MacOS
+
+2024-09-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.8 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.8: Sitton Peak';git push

@@ -7104,6 +7104,7 @@ The third example uses a convenience switch introduced to reduce typing.
 
 @html
 <a name="grd_cmd"></a> <!-- http://nco.sf.net/nco.html#grd_cmd -->
+<a name="xmp_grd"></a> <!-- http://nco.sf.net/nco.html#xmp_grd -->
 @end html
 Generating common grids:
 @cindex @acronym{ECMWF IFS} grid
@@ -7115,14 +7116,14 @@ Generating common grids:
 @cindex @acronym{Equi-angular} grid
 @example
 @verbatim
-# Through version 4.7.5 (August, 2018), ncks performed grid-generation
+# Access to grid-generation was through ncks, not ncremap, until version 4.7.6
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude centered at Greenwich
 # This is NOT the CMIP6 1x1 grid
 ncks --rgr ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
      --rgr scrip=${DATA}/grids/180x360_SCRIP.20150901.nc \
      ~zender/nco/data/in.nc ~/foo.nc
 
-# As of version 4.7.6 (August, 2018), ncremap supports more concise commands
+# Version 4.7.6+ (August, 2018), supports the preferred, more concise, ncremap syntax:
 # This is NOT the CMIP6 1x1 grid
 ncremap -G ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
         -g ${DATA}/grids/180x360_SCRIP.20180901.nc
@@ -7223,11 +7224,11 @@ ncremap -7 --dfl_lvl=1 -G ttl='Cap/FV ECMWF ERA5 grid 0.25x0.25 degree, dimensio
 ncremap -7 --dfl_lvl=1 -G ttl='CRUNCEP Equi-Angular 0.5x0.5 degree uniform grid, dimensions 360x720, cell edges on Poles/Equator and Prime Meridian/Date Line'#latlon=360,720#lat_typ=uni#lon_typ=Grn_wst \
         -g ${DATA}/grids/cruncep_360x720.nc
 
-# 360x720 ELM/MOSART grid, first longitude west edge at DateLine (NB: ELM defines r05, starts at Dateline)
+# 360x720 ELM/MOSART grid, first longitude west edge at DateLine (NB: starts at Dateline, "r" stands for "river" grid)
 ncremap -7 --dfl_lvl=1 -G ttl='Equi-Angular 0.5x0.5 degree uniform grid (r05), dimensions 360x720, cell edges on Poles/Equator and Date Line/Prime Meridian'#latlon=360,720#lat_typ=uni#lon_typ=180_wst \
         -g ${DATA}/grids/r05_360x720.nc
 
-# 720x1440 ELM/MOSART grid, first longitude west edge at DateLine (NB: ELM defines r025, starts at Dateline)
+# 720x1440 ELM/MOSART grid, first longitude west edge at DateLine (NB: starts at Dateline, "r" stands for "river" grid)
 ncremap -7 --dfl_lvl=1 -G ttl='Equi-Angular 0.25x0.25 degree uniform grid (r025), dimensions 720x1440, cell edges on Poles/Equator and Date Line/Prime Meridian'#latlon=720,1440#lat_typ=uni#lon_typ=180_wst \
         -g ${DATA}/grids/r025_720x1440.nc
 
