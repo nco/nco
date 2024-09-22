@@ -1927,7 +1927,7 @@ if [ "${prc_typ}" = 'eamxx' ]; then
 	# 20240110: EAMXX also uses dim2 dimension for time_bnds
 	#pdq_opt='-a ilev,lev,dim2,ncol'
 	# 20230304: EAMxx may have been vertically interpolated to pure-pressure levels prior to horizontal regridding
-	pdq_opt='-a ilev,lev,plev,dim2,ncol'
+	pdq_opt='-a ilev,l%8jev,plev,dim2,ncol'
 	# NB: ncpdq is invoked iff performing horizontal regridding (vertical interpolation works fine either way)
     fi # !pdq_opt && !pdq_flg
     if [ -z "${ps_nm}" ]; then

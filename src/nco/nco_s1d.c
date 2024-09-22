@@ -133,13 +133,17 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
   /* Usage:
      ncks -D 1 -O -C --s1d ~/data/bm/elm_mali_bg_hst.nc ~/foo.nc
+     ncks -D 1 -O -C --s1d --hrz=${DATA}/bm/elmv3_r05l15.nc ~/data/bm/elmv3_rst_r05l15.nc ~/foo.nc
      ncks -D 1 -O -C --s1d -v cols1d_topoglc --hrz=${DATA}/bm/elm_mali_ig_hst.nc ${DATA}/bm/elm_mali_rst.nc ~/foo.nc
      ncks -D 1 -O -C --s1d -v GPP,pfts1d_wtgcell ~/beth_in.nc ~/foo.nc
      ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' -P elm -m ${DATA}/maps/map_ne30np4_to_fv128x256_aave.20160301.nc ~/foo.nc ~/foo_rgr.nc */
 
-  /* 20240131: Unpacking an r05 ELM restart file into latxlon format is storage-intensive
+  /* 20240920: Unpacking an standard r05 ELM restart file into latxlon format is NOT storage-intensive
+     Converting an r05 B simulation on imua took ~1 minute and reduced the filesize from ~14 GB to ~9 GB
+
+     20240131: Unpacking an r05 ELM IG restart file into latxlon format is storage-intensive
      Converting an r05 gis_1to10km IG simulation on imua took ~2 hrs and ballooned the filesize from ~7 GB to ~7 TB!
-     Always subset before converting the input restart file
+     Always subset before converting the IG input restart file
      ncks -D 1 -O -C --s1d --hrz=${DATA}/bm/elm_mali_ig_hst.nc ${DATA}/bm/elm_mali_rst.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_s1d_unpack()"; /* [sng] Function name */
@@ -226,7 +230,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
      1. The horizontal dimension in an unstructured grid
      2. A fraction of a landunit, which is itself a fraction of a CTSM/ELM gridcell
         In particular, a column is a fraction of a vegetated, urban, glacier, or crop landunit
-     This routine distinguishes these meanings by abbreviating (1) as "col" and (2) as "clm" 
+     We distinguish these meanings by abbreviating definition (1) as "col" and definition (2) as "clm" 
      This usage maintains the precedent that "col" is the horizontal unstructured dimension in nco_rgr.c
      It is necessary though unintuitive that "cols1d" variable metadata will use the "clm" abbreviation */
   if(col_nm_in && (rcd=nco_inq_dimid_flg(in_id,col_nm_in,&dmn_id_col_in)) == NC_NOERR) /* do nothing */; 
@@ -708,6 +712,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int ilun_urban_hd; /* 8 [enm] */
   int ilun_urban_md; /* 9 [enm] */
   if(flg_nm_hst){
+    /* Names in data file are as in history files ("ltype_"...) */
     rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_vegetated_or_bare_soil",&ilun_vegetated_or_bare_soil,NC_INT);
     rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_crop",&ilun_crop,NC_INT);
     rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_landice",&ilun_landice,NC_INT);
@@ -718,6 +723,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_urban_hd",&ilun_urban_hd,NC_INT);
     rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_urban_md",&ilun_urban_md,NC_INT);
   }else{ /* !flg_nm_hst */
+    /* Names in data file are as in restart files ("ilun_"...) */
     rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_vegetated_or_bare_soil",&ilun_vegetated_or_bare_soil,NC_INT);
     rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_crop",&ilun_crop,NC_INT);
     rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_landice",&ilun_landice,NC_INT);
@@ -1718,8 +1724,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 	    /* PFT variable dimension ordering, from LRV to MRV:
 	       Restart input: PFT, lev*|numrad, e.g., T_REF2M_MIN_INST(pft), fabd_sun(pft,numrad), tlai_z(pft,levcan)
-	       History input: time, PFT, lev*|numrad, spatial
-	       NCO Output   : time, PFT, lev*|numrad, spatial */
+	       History input: time, PFT, lev*|numrad, horizontal
+	       NCO Output   : time, PFT, lev*|numrad, horizontal */
 	    for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
 
 	      pft_typ=pfts1d_ityp_veg[pft_idx]; /* [1 <= pft_typ <= pft_nbr_out] */
@@ -1764,7 +1770,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    /* Topounit variable dimension ordering, from LRV to MRV:
 	       Restart input: topounit, e.g., TS_TOPO(topounit)
 	       History input: N/A
-	       NCO Output   : time, spatial */
+	       NCO Output   : time, horizontal */
 	    for(tpo_idx=0;tpo_idx<tpo_nbr_in;tpo_idx++){
 
 	      /* grd_idx is 0-based index relative to the origin of the horizontal grid, topo1d is 1-based
@@ -1800,8 +1806,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
 	  /* MEC variable dimension ordering, from LRV to MRV:
 	     Restart input: MEC, lev*, e.g., DZSNO(column,levsno), H2OSOI_ICE(column,levtot), T_SOISNO(column,levtot), ZSNO(column,levsno), flx_absdn(column,levsno1), qflx_snofrz_lyr(column,levsno), snw_rds(column,levsno)
-	     History input: time, lev*, spatial, e.g., SNO_BW(time,levsno,lat,lon)
-	     NCO Output   : time, MEC, lev*, spatial
+	     History input: time, lev*, horizontal, e.g., SNO_BW(time,levsno,lat,lon)
+	     NCO Output   : time, MEC, lev*, horizontal
 	     ncks --trd -C -d column,0,11 -v DZSNO,cols1d_gridcell_index ${DATA}/bm/elm_mali_rst.nc | m */
 	  mec_idx=0;
 	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO unpack block for %s clm_nbr = %ld, mec_nbr = %ld, mrv_nbr = %ld\n",nco_prg_nm_get(),var_nm,clm_nbr_in,(has_mec) ? mec_nbr_out : 0,mrv_nbr);
