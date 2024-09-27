@@ -310,6 +310,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -P mpasocean -7 -L 1 -m ${DATA}/maps/map_EC30to60E2r2_to_cmip6_180x360_aave.20220301.nc ${DATA}/bm/mpov2_EC30to60E2r2l60.nc ~/foo_mpov2.nc
 # ncremap -P mpasocean -7 -L 1 -m ${DATA}/maps/map_IcoswISC30E3r5_to_cmip6_180x360_traave.20231201.nc ${DATA}/bm/mpov3_IcoswISC30E3r5l64.nc ~/foo_mpov3.nc
 # ncremap -P eamxx -7 -L 1 -m ${DATA}/maps/map_ne1024pg2_to_fv256x512_mono.20201201.nc ${DATA}/bm/screamv1_ne1024pg2l128.nc ~/foo_eamxx.nc
+# ncremap --ps_nm=lnsp -v asn,t --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/hdf/ecmwf_ifs_f640L137.nc ~/foo.nc
 # Regrid:
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -j 3 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr # Batch-parallelism

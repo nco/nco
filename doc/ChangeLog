@@ -1,8 +1,12 @@
-2024-09-26  Charlie Zender  <zender@uci.edu>
+2024-09-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.9-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha02: Adieu Borrego';git push
 	git tag -a 5.2.9-alpha02 -m 'fxm';git push --tags
+
+	* Replace _FillValue by NC_FillValue in nco.h
+
+2024-09-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.9-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha01: Camp Rick';git push

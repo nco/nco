@@ -231,6 +231,11 @@ extern "C" {
   /*#define NCO_HSH_TRV_OBJ */
 #undef NCO_HSH_TRV_OBJ
 
+  /* 20240927: netCDF 4.9.3 switches _FillValue to NC_FillValue macro */
+#ifndef NC_FillValue
+# define NC_FillValue      "_FillValue"
+#endif /* !NC_FillValue */
+
   /* NCO_MSS_VAL_SNG names attribute whose value is "skipped" by arithmetic, aka the missing value attribute
      Attribute name should be either "missing_value" or "_FillValue" */
 #ifndef NCO_MSS_VAL_SNG
@@ -311,11 +316,13 @@ extern "C" {
 
 # ifdef NCO_USE_FILL_VALUE
   /* This arcane get()/set() usage necessary because TKN2SNG() macro above is broken. TODO nco905 */
-  char nco_mss_val_sng[]="_FillValue"; /* [sng] Missing value attribute name */
+  //  char nco_mss_val_sng[]="_FillValue"; /* [sng] Missing value attribute name */
+  char nco_mss_val_sng[]=NC_FillValue; /* [sng] Missing value attribute name */
   char nco_not_mss_val_sng[]="missing_value"; /* [sng] Not missing value attribute name */
 # else /* !NCO_USE_FILL_VALUE */
   char nco_mss_val_sng[]="missing_value"; /* [sng] Missing value attribute name */
-  char nco_not_mss_val_sng[]="_FillValue"; /* [sng] Not missing value attribute name */
+  //  char nco_not_mss_val_sng[]="_FillValue"; /* [sng] Not missing value attribute name */
+  char nco_not_mss_val_sng[]=NC_FillValue; /* [sng] Not missing value attribute name */
 # endif /* !NCO_USE_FILL_VALUE */
   char *nco_mss_val_sng_get(void){return nco_mss_val_sng;} /* [sng] Missing value attribute name */
   char *nco_not_mss_val_sng_get(void){return nco_not_mss_val_sng;} /* [sng] Not missing value attribute name */

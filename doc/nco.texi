@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.9-alpha02
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 2 September 2024
+@set update-date 27 September 2024
 @set update-month September 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -29322,13 +29322,87 @@ half-layer coordinate and employs distinct dimensions (@code{nhym} and
 
 To invoke @command{ncremap} on a hybrid coordinate dataset in
 @acronym{IFS} format, one must specify that the surface pressure 
-variable is named @code{lnsp}: 
+variable is named @code{lnsp}. 
+No modifications to the @acronym{IFS} dataset are necessary.
+The vertical grid file should be in @acronym{CESM}/@acronym{E3SM} format.
 @example
 @verbatim
-ncremap --ps_nm=lnsp --vrt_grd=vrt_grd.nc in.nc out.nc
+zender@spectral:~$ ncks -m -C -v lnsp,hyai,hyam,hybi,hybm,lev,lev_2 ifs.nc
+netcdf ecmwf_ifs_f640L137 {
+  dimensions:
+    lev = 137 ;
+    lev_2 = 1 ;
+    nhyi = 138 ;
+    nhym = 137 ;
+
+  variables:
+    double hyai(nhyi) ;
+      hyai:long_name = "hybrid A coefficient at layer interfaces" ;
+      hyai:units = "Pa" ;
+    double hyam(nhym) ;
+      hyam:long_name = "hybrid A coefficient at layer midpoints" ;
+      hyam:units = "Pa" ;
+    double hybi(nhyi) ;
+      hybi:long_name = "hybrid B coefficient at layer interfaces" ;
+      hybi:units = "1" ;
+    double hybm(nhym) ;
+      hybm:long_name = "hybrid B coefficient at layer midpoints" ;
+      hybm:units = "1" ;
+    double lev(lev) ;
+      lev:standard_name = "hybrid_sigma_pressure" ;
+      lev:long_name = "hybrid level at layer midpoints" ;
+      lev:formula = "hyam hybm (mlev=hyam+hybm*aps)" ;
+      lev:formula_terms = "ap: hyam b: hybm ps: aps" ;
+      lev:units = "level" ;
+      lev:positive = "down" ;
+    double lev_2(lev_2) ;
+      lev_2:standard_name = "hybrid_sigma_pressure" ;
+      lev_2:long_name = "hybrid level at layer midpoints" ;
+      lev_2:formula = "hyam hybm (mlev=hyam+hybm*aps)" ;
+      lev_2:formula_terms = "ap: hyam b: hybm ps: aps" ;
+      lev_2:units = "level" ;
+      lev_2:positive = "down" ;
+    float lnsp(time,lev_2,lat,lon) ;
+      lnsp:long_name = "Logarithm of surface pressure" ;
+      lnsp:param = "25.3.0" ;
+} // group /
+zender@spectral:~$ ncks -m vrt_grd.nc
+netcdf vrt_hyb_L72 {
+  dimensions:
+    ilev = 73 ;
+    lev = 72 ;
+
+  variables:
+    double P0 ;
+      P0:long_name = "reference pressure" ;
+      P0:units = "Pa" ;
+
+    double hyai(ilev) ;
+      hyai:long_name = "hybrid A coefficient at layer interfaces" ;
+
+    double hyam(lev) ;
+      hyam:long_name = "hybrid A coefficient at layer midpoints" ;
+
+    double hybi(ilev) ;
+      hybi:long_name = "hybrid B coefficient at layer interfaces" ;
+
+    double hybm(lev) ;
+      hybm:long_name = "hybrid B coefficient at layer midpoints" ;
+} // group /
+zender@spectral:~$ ncremap --ps_nm=lnsp --vrt_grd=vrt_grd.nc ifs.nc out.nc
+zender@spectral:~$ 
 @end verbatim
 @end example
-@command{ncremap} automagically handles all of the other details. 
+The @acronym{IFS} file can be horizontally regridded in the same
+invocation. 
+@command{ncremap} automagically handles all of the other details.
+Currently @command{ncremap} can only interpolate data from (not to) an 
+@acronym{IFS}-format hybrid vertical grid data file.
+To interpolate to an @acronym{IFS}-format hybrid vertical grid, one
+must place the destination vertical grid into a
+@acronym{CESM/E3SM}-format hybrid vertical grid file (see above) 
+that includes a @code{PS} surface pressure field (not @code{lnsp}
+log-surface pressure) for the destination grid.
 
 The @code{lev} and @code{ilev} coordinates of a hybrid grid are
 defined by the hybrid coefficients and reference pressure, and are
