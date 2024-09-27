@@ -207,6 +207,11 @@
 # define NC_FORMAT_64BIT_DATA	NC_FORMAT_CDF5
 #endif
 
+/* 20240927: netCDF 4.9.3 switched "_FillValue" to NC_FillValue macro */
+#ifndef NC_FillValue
+# define NC_FillValue      "_FillValue"
+#endif /* !NC_FillValue */
+
 /* netcdf.h added tokens specifically for DAP in 2012?
    Started annotating these error codes in nco_err_exit() in NCO 4.4.6 in 201409 */
 #ifndef NC_EIO

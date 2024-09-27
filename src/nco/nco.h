@@ -231,7 +231,7 @@ extern "C" {
   /*#define NCO_HSH_TRV_OBJ */
 #undef NCO_HSH_TRV_OBJ
 
-  /* 20240927: netCDF 4.9.3 switches _FillValue to NC_FillValue macro */
+  /* 20240927: netCDF 4.9.3 switched "_FillValue" to NC_FillValue macro */
 #ifndef NC_FillValue
 # define NC_FillValue      "_FillValue"
 #endif /* !NC_FillValue */

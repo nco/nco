@@ -2834,7 +2834,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(!has_mss_val && flg_need_msv){
 	val_unn mss_val_dfl; /* [] Default _FillValue */
 	mss_val_dfl=nco_mss_val_dfl_get(NC_INT);
-	rcd=nco_put_att(out_id,mlc_id,"_FillValue",NC_INT,1L,(void *)(&mss_val_dfl));
+	rcd=nco_put_att(out_id,mlc_id,NC_FillValue,NC_INT,1L,(void *)(&mss_val_dfl));
       } /* !has_mss_val, !flg_need_msv */
     } /* !flg_mlc_out */
   } /* !flg_grd_out_dpt_3D */
@@ -3015,7 +3015,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   dmn_cnt_out=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
 
   aed_sct aed_mtd_fll_val;
-  char *att_nm_fll_val=strdup("_FillValue");
+  char *att_nm_fll_val=strdup(NC_FillValue);
   int flg_pck; /* [flg] Variable is packed on disk  */
   float mss_val_flt;
   if(flg_add_msv_att){
@@ -6088,7 +6088,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    if(!has_mss_val){
 	      val_unn mss_val_dfl; /* [] Default _FillValue */
 	      mss_val_dfl=nco_mss_val_dfl_get(var_typ_out);
-	      rcd=nco_put_att(out_id,var_id_out,"_FillValue",var_typ_out,1L,(void *)(&mss_val_dfl));
+	      rcd=nco_put_att(out_id,var_id_out,NC_FillValue,var_typ_out,1L,(void *)(&mss_val_dfl));
 	    } /* !has_mss_val */
 	  } /* !flg_add_fll */
 	} /* !flg_rgr */
@@ -11963,7 +11963,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     aed_mtd.mode=aed_create;
     (void)nco_aed_prc(out_id,fc_nd_id,aed_mtd);
     if(att_nm) att_nm=(char *)nco_free(att_nm);
-    att_nm=strdup("_FillValue");
+    att_nm=strdup(NC_FillValue);
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=fc_nd_nm;
     aed_mtd.id=fc_nd_id;

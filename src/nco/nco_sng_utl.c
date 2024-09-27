@@ -406,7 +406,7 @@ nm_cf_chk /* [fnc] Check that variable/dimension/attribute name is CF-compliant 
       /* First character must be alphabetic */
       if(isalpha(chr_crr)) continue;
       /* netCDF library-defined attributes with leading underscores are only exceptions allowed to above rule */
-      if(flg_ndr && !strcmp(nm,"_FillValue"))
+      if(flg_ndr && !strcmp(nm,NC_FillValue))
 	continue;
     }else if(idx_chr > 0){
       /* Remaining characters must be alphanumeric or underscores */
