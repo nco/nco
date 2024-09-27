@@ -1,5 +1,9 @@
 2024-09-26  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.9-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha02: Adieu Borrego';git push
+	git tag -a 5.2.9-alpha02 -m 'fxm';git push --tags
+
 	* NCO 5.2.9-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha01: Camp Rick';git push
 	git tag -a 5.2.9-alpha01 -m 'Functionally identical to 5.2.8 + ECMWF IFS fixes';git push --tags
