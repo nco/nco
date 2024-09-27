@@ -29286,10 +29286,20 @@ ncap2 -O -v -s 'defdim("ilev",11);defdim("lev",10);P0=100000.0; \
 @acronym{NCO} currently has no other means of representing pure sigma
 vertical grids (as opposed to pure pressure grids).
 
+@html
+<a name="vrt_hyb_ifs"></a> <!-- http://nco.sf.net/nco.html#vrt_hyb_ifs -->
+@end html
 As of July 2019 and @acronym{NCO} @w{version 4.8.1}, @acronym{NCO} 
 supports regridding @acronym{ECMWF} datasets in @acronym{IFS} hybrid
 vertical coordinate format to @acronym{CESM}/@acronym{E3SM}-format
 hybrid vertical grids. 
+Unfortunately there was a regression and this functionality was
+broken between about 2023--2024 (the workaround is to use older
+@acronym{NCO} versions like 4.9.0).
+@acronym{NCO} once agains supports this functionality as of October
+2024 (@acronym{NCO} @w{version 5.2.9}), though now the user must
+employ the @samp{--ps_nm=lnsp} option shown below.
+
 The native @acronym{IFS} hybrid datasets that we have seen store
 pressure coordinates in terms of a slightly different formula that
 employs the log of surface pressure (@code{lnsp}) instead of surface
@@ -29309,6 +29319,16 @@ half-layer coordinate and employs distinct dimensions (@code{nhym} and
 @acronym{ECMWF} uses the vertical coordinates @code{lev} and
 @code{lev_2} for full-layer (i.e., midlayer) and  half-layer
 (i.e., interface) for all other variables.
+
+To invoke @command{ncremap} on a hybrid coordinate dataset in
+@acronym{IFS} format, one must specify that the surface pressure 
+variable is named @code{lnsp}: 
+@example
+@verbatim
+ncremap --ps_nm=lnsp --vrt_grd=vrt_grd.nc in.nc out.nc
+@end verbatim
+@end example
+@command{ncremap} automagically handles all of the other details. 
 
 The @code{lev} and @code{ilev} coordinates of a hybrid grid are
 defined by the hybrid coefficients and reference pressure, and are

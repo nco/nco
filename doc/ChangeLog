@@ -1,8 +1,16 @@
-2024-09-11  Charlie Zender  <zender@uci.edu>
+2024-09-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.9-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha01: Camp Rick';git push
-	git tag -a 5.2.9-alpha01 -m 'Functionally identical to 5.2.8';git push --tags
+	git tag -a 5.2.9-alpha01 -m 'Functionally identical to 5.2.8 + ECMWF IFS fixes';git push --tags
+
+	* Update vertical interpolation regressions with ECMWF IFS documentaiton in nco.texi
+
+	* Require --ps_nm=lnsp for ECMWF IFS hybrid coordinates
+
+	* Fix vertical interpolation regressions with ECMWF IFS hybrid coordinates
+
+2024-09-11  Charlie Zender  <zender@uci.edu>
 
 	* Shift from clang++ -std=c++17 and clang to clang++ -std=c++23	and clang -std=c23 on MacOS
 

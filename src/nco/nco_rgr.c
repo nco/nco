@@ -1710,7 +1710,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
        ECMWF provides "hya?" as a constant in Pa and "hyb?" as a dimensionless coefficient of PS, whereas CAM/EAM provides "hya?" and "hyb?" both as dimensionless coefficients of P0 and PS
        ECMWF provides "lev" and "lev_2" with midpoint and surface pressure indices (not values), respectively, whereas CAM/EAM provides "lev" and "ilev" coordinate values in hPa
        ECMWF provides dimensionless "lnsp" for log(surface pressure) whereas CAM/EAM provide "PS" for surface pressure in Pa
-       ECMWF "lnsp" has degenerate level dimension "lev_2" whereas CAM/EAM "PS" has no "ilev" dimension
+       ECMWF "lnsp" has degenerate level dimension "lev_2" whereas CAM/EAM "PS" has no "ilev" dimension (this leads ncks to detect an additional, artificial, horizontal dimension when inspecting surface pressure)
        ECMWF uses hya? instead of reference pressure whereas CAM/EAM provides "P0" in hPa */
 
     if(flg_grd_hyb_cameam){
@@ -3190,11 +3190,16 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   size_t grd_nbr=grd_sz_in; /* [nbr] Horizonal grid size */
 
   /* Results of heuristic method of determining whether vertical or horizontal MRV dimension */
+  int dmn_hrz_dgn_nbr=0; /* [nbr] Number of "degenerate" or "artificial" horizontal dimensions expected to be detected */
+  /* ECMWF/IFS defines log of surface pressure with degenerate dimension "lev_2" */
+  if(flg_grd_hyb_ecmwf) dmn_hrz_dgn_nbr=1;
+  /* [nbr] Remove degernate/horizontal dimensions from number of detected input horizontal dimensions */
+  dmn_hrz_nbr_in-=dmn_hrz_dgn_nbr;
   if(dmn_hrz_nbr_in == 0 || grd_sz_in == 1L){flg_grd_hrz_0D=True;}
   else if(dmn_hrz_nbr_in == 1){flg_grd_hrz_1D=True;}
   else if(dmn_hrz_nbr_in == 2){flg_grd_hrz_2D=True;}
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports flg_hrz_mrv = %d, dmn_hrz_nbr_in = %d, grd_sz_in = %ld, flg_grd_hrz_0D = %d, flg_grd_hrz_1D = %d, flg_grd_hrz_2D = %d\n",nco_prg_nm_get(),fnc_nm,flg_hrz_mrv,dmn_hrz_nbr_in,grd_sz_in,flg_grd_hrz_0D,flg_grd_hrz_1D,flg_grd_hrz_2D);
-  assert(dmn_hrz_nbr_in <= 2);
+  assert(dmn_hrz_nbr_in >= 0 && dmn_hrz_nbr_in <= 2);
   
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped as shared in parallel clause */
