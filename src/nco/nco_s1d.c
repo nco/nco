@@ -1094,7 +1094,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int nco_s1d_typ; /* [enm] Sparse-1D type of input variable */
 
   long mrv_idx; /* [idx] MRV index */
-  long mrv_nbr; /* [nbr] Product of sizes of dimensions following (thus MRV) column|gridcell|landunit|pft|topounit dimension, e.g., lev*|numrad */
+  long mrv_nbr; /* [nbr] Product of sizes of dimensions following (thus MRV than) column|gridcell|landunit|pft|topounit dimension, e.g., lev*|numrad */
 
   nco_bool flg_add_spt_crd; /* [flg] Add spatial coordinates to S1D variable */
   nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
@@ -1556,7 +1556,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	   
 	   History files are generally ordered (time,lev*,[column|pft]|[lat,lon|lndgrid])
 	   Most history file fields contain MRV horizontal spatial dimensions
-	   However Beth Drewniak's beth_in.nc fields have no horizontal spatial dimensions,
+	   However Beth Drewniak's beth_in.nc fields and Eva Sinha's eva_in.nc fields have no horizontal spatial dimensions,
 	   and place lev* as LRV (like normal history fields) not MRV (like normal "vanilla" restart files) */
 	if(flg_nm_hst)
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++)
@@ -1734,7 +1734,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
 	      /* grd_idx is 0-based index relative to the origin of the horizontal grid, pfts1d is 1-based
 		 [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= pfts1d_ixy <= col_nbr_out]
-		 Storage order for history fields (Beth's GPP, anyway) is lon,lat
+		 Storage order for history fields (Beth's GPP, anyway) is lon,lat (!)
 		 Storage order for restart fields (e.g., DZSNO) is lat,lon */
 	      if(flg_nm_hst) grd_idx_out= flg_grd_1D ? pfts1d_ixy[pft_idx]-1L : (pfts1d_ixy[pft_idx]-1L)*lat_nbr+(pfts1d_jxy[pft_idx]-1L);
 	      if(flg_nm_rst) grd_idx_out= flg_grd_1D ? pfts1d_ixy[pft_idx]-1L : (pfts1d_jxy[pft_idx]-1L)*lon_nbr+(pfts1d_ixy[pft_idx]-1L);

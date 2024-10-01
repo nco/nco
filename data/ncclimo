@@ -1111,11 +1111,13 @@ let mth_nbr=${yr_end_rth}*12+${mth_end_rth}-${yr_srt_rth}*12-${mth_srt_rth}+1
 let mth_srtm1=${mth_srt_rth}-1
 let mth_endp1=${mth_end_rth}+1
 if [ ${mth_srtm1} -eq 0 ]; then
+    let mth_srtm1=12
     mm_srtm1='12'
 else # !mth_srtm1
     mm_srtm1=`printf "%02d" ${mth_srtm1}`
 fi # !mth_srtm1
 if [ ${mth_endp1} -eq 13 ]; then
+    let mth_endp1=1
     mm_endp1='01'
 else # !mth_endp1
     mm_endp1=`printf "%02d" ${mth_endp1}`
@@ -2799,6 +2801,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	done # !fl_idx
 	yyyy_srt_sgm[${sgm_idx}]=`printf "%04d" ${yr_srt_sgm}`
 	yyyy_end_sgm[${sgm_idx}]=`printf "%04d" ${yr_end_sgm}`
+	# 202401001: fxm: presumably could cause value too great for base error?
 	let yr_endp1_sgm=${yr_end_sgm}+1
 	yyyy_endp1_sgm[${sgm_idx}]=`printf "%04d" ${yr_endp1_sgm}`
 
@@ -2806,11 +2809,14 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	mm_end_sgm[${sgm_idx}]='12'
 	mm_srt_sgm[${sgm_idx}]=${mm_srt}
 	if [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
+	    let mth_end_sgm=${mth_end_rth}
 	    mm_end_sgm[${sgm_idx}]=${mm_end}
 	else # !sgm_idx
+	    let mth_end_sgm=${mth_srtm1}
 	    mm_end_sgm[${sgm_idx}]=${mm_srtm1}
 	fi # !sgm_idx
-	let mm_endp1_sgm=${mm_end_sgm}+1
+	# 202401001: fxm: Causes error "value too great for base (error token is "08")"
+	let mm_endp1_sgm=${mth_end_sgm}+1
 	mm_endp1_sgm[${sgm_idx}]=`printf "%02d" ${mm_endp1_sgm}`
 
 	# Sanity check that all files exist before wasting time and space on concatenation
