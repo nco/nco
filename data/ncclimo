@@ -1217,7 +1217,7 @@ if [ ${inp_aut} = 'No' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ 
     if [ ${bch_pbs} = 'Yes' ]; then
 	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
     else # !bch_pbs
-	echo "${spt_nm}: HINT An easy way to provide lengthy or complex filenames to pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+	echo "${spt_nm}: HINT Provide a list of lengthy or complex filenames as a pipe to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
     fi # !bch_pbs
     exit 1
 fi # !tms_flg
@@ -3025,7 +3025,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 			wait ${avg_pid[${var_idx}]}
 			if [ "$?" -eq 0 ]; then
-			    printf "`date`: Globally and regional statistics ${cmd_stt[${var_idx}]##* }\n"
+			    printf "`date`: Global and regional statistics ${cmd_stt[${var_idx}]##* }\n"
 			else
 			    printf "${spt_nm}: ERROR Failed in global and regional statistics. cmd_stt[${var_idx}] failed. Debug this:\n${cmd_stt[${var_idx}]}\n"
 			    # 20190323: exiting parent here creates orphans, kill live children then exit

@@ -19783,9 +19783,9 @@ automatically abstracted and used to template and generate all the
 filenames based on the specified @var{yr_srt} and @var{yr_end}. 
 @example
 @verbatim
-ncclimo --c merra2_198001.nc --start=1980 --end=1999 
-ncclimo --c cesm_1980-01.nc --start=1980 --end=1999 
-ncclimo --c eamxx_1980-01-00000.nc --start=1980 --end=1999 
+ncclimo -c merra2_198001.nc --start=1980 --end=1999
+ncclimo -c cesm_1980-01.nc --start=1980 --end=1999 
+ncclimo -c eamxx_1980-01-00000.nc --start=1980 --end=1999 
 @end verbatim
 @end example
 Please tell us any common dataset filename regular expressions that you would
@@ -19897,8 +19897,8 @@ In climate generation mode, output climo file names are constructed by
 default with the same @var{caseid} as the input files.
 The @var{fml_nm}, if supplied, replaces @var{caseid} in output climo
 names, which are of the form
-@var{fml_nm}_XX_YYYYMM_YYYYMM.nc where @var{XX} is the month or seasonal
-abbreviation.
+@code{@var{fml_nm}_XX_YYYYMM_YYYYMM.nc} where @var{XX} is the month or
+seasonal abbreviation.
 Use @samp{-f @var{fml_nm}} to simplify long names, avoid overlap, etc.
 Example values of @var{fml_nm} are @samp{control}, @samp{experiment},
 and (for a single-variable climo) @samp{FSNT}.

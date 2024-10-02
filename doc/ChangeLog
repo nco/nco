@@ -1,8 +1,12 @@
-2024-10-01  Charlie Zender  <zender@uci.edu>
+2024-10-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.9-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha02: Adieu Borrego';git push
-	git tag -a 5.2.9-alpha02 -m 'fxm';git push --tags
+	git tag -a 5.2.9-alpha02 -m 'ncclimo: fix bsh syn, fix eamxx pdq';git push --tags
+
+	* Fix typo pdq_opt='-a ilev,l%8jev,plev,dim2,ncol' that causes eamxx regridding to fail
+
+2024-10-01  Charlie Zender  <zender@uci.edu>
 
 	* Fix illegal Bash string->numeric conversion error with mm_endp1_sgm definition
 
