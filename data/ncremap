@@ -1929,8 +1929,8 @@ if [ "${prc_typ}" = 'eamxx' ]; then
 	#pdq_opt='-a ilev,lev,dim2,ncol'
 	# 20230304: EAMxx may have been vertically interpolated to pure-pressure levels prior to horizontal regridding
 	#pdq_opt='-a ilev,lev,plev,dim2,ncol'
-	# 20241002: EAMxx may have COSP dimensions
-	pdq_opt='-a ilev,lev,plev,cosp_tau,cosp_cth,dim2,ncol'
+	# 20241002: EAMxx may have COSP dimensions in order cosp_tau,cosp_cth or cosp_tau,cosp_prs
+	pdq_opt='-a ilev,lev,plev,cosp_tau,cosp_cth,cosp_prs,dim2,ncol'
 	# NB: ncpdq is invoked iff performing horizontal regridding (vertical interpolation works fine either way)
     fi # !pdq_opt && !pdq_flg
     if [ -z "${ps_nm}" ]; then
