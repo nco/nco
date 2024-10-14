@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.2.9-alpha02
 @set copyright-years 1995--2024
 @set update-year 2024
-@set update-date 27 September 2024
-@set update-month September 2024
+@set update-date 4 October 2024
+@set update-month October 2024
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -19783,9 +19783,9 @@ automatically abstracted and used to template and generate all the
 filenames based on the specified @var{yr_srt} and @var{yr_end}. 
 @example
 @verbatim
-ncclimo -c merra2_198001.nc --start=1980 --end=1999
-ncclimo -c cesm_1980-01.nc --start=1980 --end=1999 
-ncclimo -c eamxx_1980-01-00000.nc --start=1980 --end=1999 
+ncclimo -c merra2_198001.nc --start=1980 --end=1999 --drc_in=${drc}
+ncclimo -c cesm_1980-01.nc --start=1980 --end=1999 --drc_in=${drc}
+ncclimo -c eamxx_1980-01-00000.nc --start=1980 --end=1999 --drc_in=${drc}
 @end verbatim
 @end example
 Please tell us any common dataset filename regular expressions that you would

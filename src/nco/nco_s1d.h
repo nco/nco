@@ -104,13 +104,13 @@ extern "C" {
 
   /* Types used in Sparse-1D structure */
   typedef enum nco_s1d_typ_enm{ /* [enm] Sparse-1D type enum */
-    nco_s1d_nil=0,
-    nco_s1d_unk, /* Unknown or unclassified sparse-type */
-    nco_s1d_clm, /* Sparse-1D Column (cols1d) format */
-    nco_s1d_grd, /* Sparse-1D Gridcell (grid1d) format */
-    nco_s1d_lnd, /* Sparse-1D Landunit (land1d) format */
-    nco_s1d_pft, /* Sparse-1D PFT (pfts1d) format */
-    nco_s1d_tpo, /* Sparse-1D Topounit (topo1d) format */
+    nco_s1d_nil=0, /* Unset sparse-type */
+    nco_s1d_unk=1, /* Unknown or unclassified sparse-type */
+    nco_s1d_clm=2, /* Sparse-1D Column (cols1d) format */
+    nco_s1d_grd=3, /* Sparse-1D Gridcell (grid1d) format */
+    nco_s1d_lnd=4, /* Sparse-1D Landunit (land1d) format */
+    nco_s1d_pft=5, /* Sparse-1D PFT (pfts1d) format */
+    nco_s1d_tpo=6, /* Sparse-1D Topounit (topo1d) format */
   } nco_s1d_typ_enm;
 
   const char * /* O [sng] String describing column type */

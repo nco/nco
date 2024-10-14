@@ -1,8 +1,12 @@
-2024-10-02  Charlie Zender  <zender@uci.edu>
+2024-10-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.9-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha02: Adieu Borrego';git push
 	git tag -a 5.2.9-alpha02 -m 'ncclimo: fix bsh syn, fix eamxx pdq';git push --tags
+
+	* Define dmn_cnt_out before using it to determine lvl_nbr in nco_s1d.c:nco_s1d_unpack()
+
+2024-10-02  Charlie Zender  <zender@uci.edu>
 
 	* Fix typo pdq_opt='-a ilev,l%8jev,plev,dim2,ncol' that causes eamxx regridding to fail
 

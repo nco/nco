@@ -1215,7 +1215,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		} /* !var_val_in.dp */
 	      break;
 	    case NC_INT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-		if(var_val_in.ip[idx_in] != 0.0 && var_val_in.ip[idx_in] != mss_val_cmp_dbl){
+		if(var_val_in.ip[idx_in] != 0 && var_val_in.ip[idx_in] != mss_val_cmp_dbl){
 		  idx_s1d_crr=idx_in/mrv_nbr;
 		  break;
 		} /* !var_val_in.ip */
@@ -1225,9 +1225,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	      nco_dfl_case_nc_type_err();
 	      break;
 	    } /* !var_typ_in */
-	      //(void)fprintf(stdout,"%s: DEBUG quark1\n",nco_prg_nm_get());
 	    if(idx_in == var_sz_in){
-	      (void)fprintf(fp_stdout,"%s: INFO %s reports %s has no valid values in input, so will be all missing values in output too...\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	      (void)fprintf(fp_stdout,"%s: INFO %s reports %s has no valid values in input, and will be all missing values in output too...\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	      flg_var_mpt=True;
 	    } /* !idx_in */
 	    lnd_typ_crr=NC_MIN_INT;
@@ -1543,28 +1542,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO define block for %s dmn_idx = %d, dmn_id = %d, mrv_nbr = %ld\n",nco_prg_nm_get(),var_nm,dmn_idx,dmn_id,mrv_nbr);
 	} /* !dmn_idx */
 	
-	/* Compute number and size of non-lat/lon or non-col dimensions (e.g., level, time, species, wavelength)
-	   Denote their convolution by level or 'lvl' for shorthand
-	   There are lvl_nbr elements for each lat/lon or col position
-	   Dimensions CLM/ELM dimensions that count in "lvl_nbr" include all lev* dimensions, time, numrad */
-	lvl_nbr=1L;
-	/* Restart files are generally ordered (column|gridcell|landunit|pft|topounit,lev*|numrad)
-	   Restart files unroll the MEC dimension into the column dimension
-	   Restart files unroll the PFT dimension into the pft dimension
-	   Restart files explicitly retain all lev*,numrad dimensions
-	   NB: lev* and numrad are mutually exclusive (never both appear in same variable)
-	   
-	   History files are generally ordered (time,lev*,[column|pft]|[lat,lon|lndgrid])
-	   Most history file fields contain MRV horizontal spatial dimensions
-	   However Beth Drewniak's beth_in.nc fields and Eva Sinha's eva_in.nc fields have no horizontal spatial dimensions,
-	   and place lev* as LRV (like normal history fields) not MRV (like normal "vanilla" restart files) */
-	if(flg_nm_hst)
-	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++)
-	    lvl_nbr*=dmn_cnt_out[dmn_idx];
-	if(flg_nm_rst)
-	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++)
-	    lvl_nbr*=1L;
-
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	  rcd=nco_inq_dimlen(out_id,dmn_ids_out[dmn_idx],dmn_cnt_out+dmn_idx);
 	  if(dmn_cnt_out[dmn_idx] == 0L){
@@ -1578,6 +1555,31 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  var_sz_out*=dmn_cnt_out[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
 	} /* !dmn_idx */
+
+	/* Compute number and size of non-lat/lon or non-col dimensions (e.g., level, time, crop species, wavelength)
+	   Denote their convolution by level or 'lvl' for shorthand
+	   There are lvl_nbr elements for each lat/lon or col position
+	   CLM/ELM dimensions that count in "lvl_nbr" include all lev* dimensions, time, numrad */
+	lvl_nbr=1L;
+	/* Restart files are generally ordered (column|gridcell|landunit|pft|topounit,lev*|numrad)
+	   Restart files unroll the MEC dimension into the column dimension
+	   Restart files unroll the PFT dimension into the pft dimension
+	   Restart files explicitly retain all lev*,numrad dimensions
+	   NB: lev* and numrad are mutually exclusive (never both appear in same variable)
+	   
+	   History files are generally ordered (time,lev*,[column|pft]|[lat,lon|lndgrid])
+	   Most history file fields contain MRV horizontal spatial dimensions
+	   However Beth Drewniak's beth_in.nc fields and Eva Sinha's eva_in.nc fields in h2 files have no horizontal spatial dimensions,
+	   and place lev* as LRV (like normal history fields) not MRV (like normal "vanilla" restart files)
+	   Examples of such fields include AR(time,pft), GPP(time,pft) */
+	if(flg_nm_hst)
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++)
+	    lvl_nbr*=dmn_cnt_out[dmn_idx];
+	if(flg_nm_rst)
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++)
+	    lvl_nbr*=1L;
+
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG lvl_nbr = %ld\n",nco_prg_nm_get(),lvl_nbr);
 
 	var_val_in.vp=(void *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_in),fnc_nm,"Unable to malloc() input value buffer");
 	var_val_out.vp=(void *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_out),fnc_nm,"Unable to malloc() output value buffer");
