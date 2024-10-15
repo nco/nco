@@ -1,5 +1,9 @@
 2024-10-15  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.2.9-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha03: Palenque';git push
+	git tag -a 5.2.9-alpha03 -m '';git push --tags
+
 	* NCO 5.2.9-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha02: Adieu Borrego';git push
 	git tag -a 5.2.9-alpha02 -m 'ncclimo: fix bsh syn, fix eamxx pdq; ncks: S1D fix hst pft, add pft crd';git push --tags
