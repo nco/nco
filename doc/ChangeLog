@@ -1,8 +1,15 @@
-2024-10-14  Charlie Zender  <zender@uci.edu>
+2024-10-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.9-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha02: Adieu Borrego';git push
-	git tag -a 5.2.9-alpha02 -m 'ncclimo: fix bsh syn, fix eamxx pdq';git push --tags
+	git tag -a 5.2.9-alpha02 -m 'ncclimo: fix bsh syn, fix eamxx pdq; ncks: S1D fix hst pft, add pft crd';git push --tags
+
+	* Add PFT string coordinate to output files
+
+	* Assume PFT storage order in history files is same as in restart files
+	This shifts the original convention that worked with beth_in.nc to the newer eva_h2.nc convention
+
+2024-10-14  Charlie Zender  <zender@uci.edu>
 
 	* Define dmn_cnt_out before using it to determine lvl_nbr in nco_s1d.c:nco_s1d_unpack()
 

@@ -75,6 +75,9 @@ extern "C" {
 
   /* Types used in landunit structure */
   typedef enum nco_pft_typ_enm{ /* [enm] Landunit type enum */
+    /* NB: This structure is kind of useless because it is user-defined
+       Restart files enumerate all PFTs in global attributes
+       History files enumerate only crop PFTs (i.e., CFTs) in global attributes */
     nco_pft_ipft_not_vegetated=0, /* Not vegetated */
     nco_pft_ipft_needleleaf_evergreen_temperate_tree=1, /* Needleleaf evergreen temperate tree */
     nco_pft_ipft_needleleaf_evergreen_boreal_tree=2, /* Needleleaf evergreen boreal tree */
@@ -90,16 +93,6 @@ extern "C" {
     nco_pft_ipft_c3_arctic_grass=12, /* C3 Arctic grass */
     nco_pft_ipft_c3_non_arctic_grass=13, /* C3 non-Arctic grass */
     nco_pft_ipft_c4_grass=14, /* C4 grass */
-    nco_pft_ipft_c3_crop=15, /* C3 crop */
-    nco_pft_ipft_c3_irrigated=16, /* C3 irrigated */
-    nco_pft_ipft_corn=17, /* Corn */
-    nco_pft_ipft_irrigated_corn=18, /* Irrigated corn */
-    nco_pft_ipft_spring_temperate_cereal=19, /* Spring temperate cereal */
-    nco_pft_ipft_irrigated_spring_temperate_cereal=20, /* Irrigated spring temperate cereal */
-    nco_pft_ipft_winter_temperate_cereal=21, /* Winter temperate cereal */
-    nco_pft_ipft_irrigated_winter_temperate_cereal=22, /* Irrigated winter temperate cereal */
-    nco_pft_ipft_soybean=23, /* Soybean */
-    nco_pft_ipft_irrigated_soybean=24, /* Irrigated soybean */
   } nco_pft_typ_enm;
 
   /* Types used in Sparse-1D structure */
