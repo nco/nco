@@ -68,7 +68,7 @@ nco_lnd_typ_sng /* [fnc] Convert landunit-type enum to string */
   return (char *)NULL;
 } /* !nco_lnd_typ_sng() */
 
-const char * /* O [sng] String describing PFT type */
+char * /* O [sng] String describing PFT type */
 nco_pft_typ_sng /* [fnc] Convert PFT-type enum to string */
 (const int nco_pft_typ) /* I [enm] PFT type enum */
 {
@@ -163,7 +163,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     
   char *mec_nm_out=(char *)strdup("mec");
   char *pft_sng_lng_nm_out=(char *)strdup("pft_sng_lng");
-  char *pft_sng_out; /* [sng] Coordinate array of PFT strings */
+  char *pft_chr_out=NULL; /* [sng] Coordinate array of PFT strings */
 
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
@@ -187,6 +187,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   long int pft_idx;
   long int tpo_idx;
 
+  nco_string *pft_sng_out=NULL; /* [sng] Coordinate array of PFT strings */
   nco_bool flg_var_mpt; /* [flg] Variable has no valid values */
 
   size_t idx_dbg=rgr->idx_dbg; /* [idx] User-specifiable debugging location */
@@ -217,7 +218,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   nco_bool flg_nm_hst=False; /* [flg] Names in data file are as in history files ("ltype_"...) */
   nco_bool flg_nm_rst=False; /* [flg] Names in data file are as in restart files ("ilun_"...) */
 
-  /* Does data file have unstructured grid? 
+  /* Does data file have unstructured grid?
      MB: Routine must handle two semantically distinct meanings of "column":
      1. The horizontal dimension in an unstructured grid
      2. A fraction of a landunit, which is itself a fraction of a CTSM/ELM gridcell
@@ -1090,34 +1091,51 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     dmn_ids_out[0]=dmn_id_pft_out;
     dmn_ids_out[1]=dmn_id_pft_sng_lng_out;
     /* Assemble PFT coordinate as list of strings */
-    pft_sng_out=(char *)nco_calloc(pft_nbr_out*pft_sng_lng_out,sizeof(char));
+    if(fl_out_fmt == NC_FORMAT_NETCDF4){
+      pft_sng_out=(nco_string *)nco_calloc(pft_nbr_out,sizeof(nco_string));
+    }else{
+      pft_chr_out=(char *)nco_calloc(pft_nbr_out*pft_sng_lng_out,sizeof(char));
+    } /* !fl_out_fmt */
 #define NCO_MAX_NTR_PFT_TYP 14 /* Maximum number of natural PFTs (not counting bare ground) */
     const int pft_max_ntr_pft_typ=NCO_MAX_NTR_PFT_TYP; /* [nbr] Maximum number of natural PFTs (not counting bare ground) */
     /* Gather natural PFT names
        PFT indexing is complicated, and smacks of Fortran conventions
        PFT ityp = 0 is bare ground/not vegetated 
-       PFT ityp = 0 is a valid ityp even though bare ground is not a "true" PFT, and ll gridded output PFT fields skip this ityp.
-       PFT ityp = 1 is Needleleaf evergreen temperate tree (I think this is the first true PFT)
+       PFT ityp = 0 is a valid ityp even though bare ground is not a "true" PFT, and all gridded output PFT fields skip this ityp
+       PFT ityp = 1 is Needleleaf evergreen temperate tree (the first true PFT)
        PFT ityp = 14 is C4 grass is the last natural PFT
        Thus there are only 14 actual and natural PFTs 
        Our output gridded datasets use the C-convention and are zero-based
        Hence our output PFT element 0 represents PFT ityp 1 == Needleleaf evergreen temperate tree
        We accomplish this by adding 1 to pft_idx in call to nco_pft_typ_sng() */
     for(pft_idx=0;pft_idx<pft_max_ntr_pft_typ;pft_idx++){
-      strncpy(pft_sng_out+pft_idx*pft_sng_lng_out,nco_pft_typ_sng(pft_idx+1),pft_sng_lng_out);
+      if(fl_out_fmt == NC_FORMAT_NETCDF4){
+	pft_sng_out[pft_idx]=nco_pft_typ_sng(pft_idx+1);
+      }else{
+	strncpy(pft_chr_out+pft_idx*pft_sng_lng_out,nco_pft_typ_sng(pft_idx+1),pft_sng_lng_out);
+      } /* !fl_out_fmt */
     } /* !pft_idx */
     /* Restart files enumerate all (natural and crop) PFTs in global attributes
        History files enumerate only crop PFTs (i.e., CFTs) in global attributes */
-    char *cft_nm_crr=(char *)strdup("CFT ityp XX");
+    char *cft_nm_crr=NULL; /* [sng] Crop functional type descriptor */
     for(pft_idx=pft_max_ntr_pft_typ;pft_idx<pft_nbr_out;pft_idx++){
-      /* Label includes Fortran PFT ityp so add 1 to pft_idx */
-      sprintf(cft_nm_crr+9,"%02ld",pft_idx+1);
-      strncpy(pft_sng_out+pft_idx*pft_sng_lng_out,cft_nm_crr,pft_sng_lng_out);
+      /* Label includes Fortran PFT and CFT ityp so add 1 to pft_idx */
+      cft_nm_crr=(char *)strdup("PFT ityp %02ld, CFT ityp %02ld");
+      sprintf(cft_nm_crr,cft_nm_crr,pft_idx+1,pft_idx+1-pft_max_ntr_pft_typ);
+      if(fl_out_fmt == NC_FORMAT_NETCDF4){
+	pft_sng_out[pft_idx]=cft_nm_crr;
+      }else{
+	strncpy(pft_chr_out+pft_idx*pft_sng_lng_out,cft_nm_crr,pft_sng_lng_out);
+      } /* !fl_out_fmt */
     } /* !pft_idx */
-    rcd+=nco_def_var(out_id,pft_nm_out,NC_CHAR,dmn_nbr_2D,dmn_ids_out,&pft_out_id);
+    if(fl_out_fmt == NC_FORMAT_NETCDF4){
+      rcd+=nco_def_var(out_id,pft_nm_out,NC_STRING,dmn_nbr_1D,dmn_ids_out,&pft_out_id);
+    }else{
+      rcd+=nco_def_var(out_id,pft_nm_out,NC_CHAR,dmn_nbr_2D,dmn_ids_out,&pft_out_id);
+    } /* !fl_out_fmt */
     var_crt_nbr++;
     rcd=nco_char_att_put(out_id,pft_nm_out,"long_name","PFT Descriptor");
-    rcd=nco_char_att_put(out_id,pft_nm_out,"note","Storage uses C (0-based indexing) convention and does not include space for PFT ityp 0 == bare ground/not vegetated. Thus PFT ityp is one more than the storage index. For example, storage index 0 is PFT ityp 1 == Needleleaf evergreen temperate tree. The last natural PFT is ityp 14 == C4 grass. The presence of crop PFTs (i.e., CFTs) in data fields is indicated by an extended PFT type index. Usually the first crop CFT ityp = 1 is c3_crop and is PFT ityp 15. The last CFT ityp is the total PFT dimension size minus 14, the number of natural PFTs.");
+    rcd=nco_char_att_put(out_id,pft_nm_out,"note","Storage uses C (0-based indexing) convention and does not include space for PFT ityp 0 == bare ground/not vegetated. Thus PFT ityp is one more than the storage index. For example, storage index 0 is PFT ityp 1 == Needleleaf evergreen temperate tree. The last natural PFT is ityp 14 == C4 grass. The presence of crop PFTs (i.e., CFTs) in data fields is indicated by an extended PFT type index whose enumeration is sequential with PFTs. Usually the first crop is c3_crop with PFT ityp 15 and CFT ityp = 1. The last CFT ityp is the total PFT dimension size minus 14 (the number of natural PFTs).");
   } /* !need_pft */
     
   double mss_val_dbl;
@@ -1463,7 +1481,13 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(need_levgrnd && levgrnd_out_id != NC_MIN_INT) rcd=nco_put_var(out_id,levgrnd_out_id,(void *)levgrnd,NC_DOUBLE);
   if(need_levlak && levlak_out_id != NC_MIN_INT) rcd=nco_put_var(out_id,levlak_out_id,(void *)levlak,NC_DOUBLE);
   if(need_mec && mec_out_id != NC_MIN_INT) rcd=nco_put_var(out_id,mec_out_id,(void *)mec,NC_DOUBLE);
-  if(need_pft && pft_out_id != NC_MIN_INT) rcd=nco_put_var(out_id,pft_out_id,(void *)pft_sng_out,NC_CHAR);
+  if(need_pft && pft_out_id != NC_MIN_INT){
+    if(fl_out_fmt == NC_FORMAT_NETCDF4){
+      rcd=nco_put_var(out_id,pft_out_id,(void *)pft_sng_out,NC_STRING);
+    }else{
+      rcd=nco_put_var(out_id,pft_out_id,(void *)pft_chr_out,NC_CHAR);
+    } /* !fl_out_fmt */
+  } /* !need_pft */
 
   /* Free pre-allocated array space */
   if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
@@ -1976,7 +2000,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(grd_nm_out) grd_nm_out=(char *)nco_free(grd_nm_out);
   if(lnd_nm_out) lnd_nm_out=(char *)nco_free(lnd_nm_out);
   if(pft_nm_out) pft_nm_out=(char *)nco_free(pft_nm_out);
-  if(pft_sng_out) pft_sng_out=(char *)nco_free(pft_sng_out);
+  if(pft_chr_out) pft_chr_out=(char *)nco_free(pft_chr_out);
+  if(pft_sng_out) pft_sng_out=(nco_string *)nco_free(pft_sng_out);
   if(pft_sng_lng_nm_out) pft_sng_lng_nm_out=(char *)nco_free(pft_sng_lng_nm_out);
   if(tpo_nm_out) tpo_nm_out=(char *)nco_free(tpo_nm_out);
 

@@ -1,8 +1,14 @@
-2024-10-15  Charlie Zender  <zender@uci.edu>
+2024-10-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha03: Palenque';git push
 	git tag -a 5.2.9-alpha03 -m '';git push --tags
+
+	* Store enumerated PFT and CFT in pft coordinate variable
+
+2024-10-15  Charlie Zender  <zender@uci.edu>
+
+	* Output pft coordinate as NC_STRING (not 2D NC_CHAR) when fl_fmt_out == NC_FORMAT_NETCDF4
 
 	* NCO 5.2.9-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha02: Adieu Borrego';git push

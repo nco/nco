@@ -114,7 +114,7 @@ extern "C" {
   nco_lnd_typ_sng /* [fnc] Convert landunit type enum to string */
   (const int nco_lnd_typ); /* I [enm] Landunit type enum */
 
-  const char * /* O [sng] String describing PFT type */
+  char * /* O [sng] String describing PFT type */
   nco_pft_typ_sng /* [fnc] Convert PFT-type enum to string */
   (const int nco_pft_typ); /* I [enm] PFT type enum */
 
