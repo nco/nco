@@ -4,6 +4,12 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha03: Palenque';git push
 	git tag -a 5.2.9-alpha03 -m '';git push --tags
 
+	* Account for lvl_nbr (i.e., ltype dimension) in unpacking nco_s1d_tpo variables
+
+	* Change storage order ot nco_s1d_tpo to always be lat,lon
+
+	* Discover buggy topos1d_[ij]xy in input files, provide workaround by replacing with grids1d_[ij]xy
+
 	* Sanity check that tpo_nbr_in == grd_nbr_in
 
 	* Sanity check that mec_nbr_in == mec_nbr_out

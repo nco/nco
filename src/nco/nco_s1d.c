@@ -369,6 +369,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_inq_varid(in_id,"grid1d_ixy",&grid1d_ixy_id);
     rcd=nco_inq_varid(in_id,"grid1d_jxy",&grid1d_jxy_id);
     rcd=nco_inq_varid(in_id,"grid1d_lon",&grid1d_lon_id);
+    /* NB: 20241017: grid1d_[ij]xy are only needed when topo1d_[ij]xy are invalid
+     And in that case, we read grid1d_[ij]xy values directly into topo1d_[ij]xy */
+    //int *grid1d_ixy=NULL; /* [idx] Gridcell 2D longitude index */
+    //int *grid1d_jxy=NULL; /* [idx] Gridcell 2D latitude index */
   } /* !flg_s1d_grd */
      
   rcd=nco_inq_varid_flg(in_id,"land1d_lat",&land1d_lat_id);
@@ -539,7 +543,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(need_lnd) rcd=nco_inq_dimlen(in_id,dmn_id_lnd_in,&lnd_nbr_in);
   if(need_pft) rcd=nco_inq_dimlen(in_id,dmn_id_pft_in,&pft_nbr_in);
   if(need_tpo) rcd=nco_inq_dimlen(in_id,dmn_id_tpo_in,&tpo_nbr_in);
-  if(need_tpo && need_grd && tpo_nbr_in != grd_nbr_in) (void)fprintf(stdout,"%s: %s WARNING Number of topounits and gridcells are unequal. Expect mayhem. tpo_nbr_in = %ld != %ld = grd_nbr_in\n",nco_prg_nm_get(),fnc_nm,tpo_nbr_in,grd_nbr_in);
+  /* 20241017: I think topounits are an abstract layer between gridcells and landunits. E3SMv3 introduced topounits with the simplest usage, tpo_nbr_in == grd_nbr_in so that each gridcell is a single topounit. However, in the future some gridcells may have multiple topounits, with each topounit having its own landunits (and so on). I think topounits will generally be used to represent distinct topographic slopes/catchments with a gridcell, e.g., sunlit side of mountains vs shaded side. */
+  if(need_tpo && need_grd && tpo_nbr_in != grd_nbr_in) (void)fprintf(stdout,"%s: WARNING %s reports number of topounits and gridcells are unequal. Expect mayhem. tpo_nbr_in = %ld != %ld = grd_nbr_in\n",nco_prg_nm_get(),fnc_nm,tpo_nbr_in,grd_nbr_in);
 
   int dmn_id_levcan_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_levgrnd_in=NC_MIN_INT; /* [id] Dimension ID */
@@ -867,6 +872,33 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       topo1d_jxy=(int *)nco_malloc(tpo_nbr_in*sizeof(int));
       rcd=nco_get_var(in_id,topo1d_jxy_id,topo1d_jxy,NC_INT);
     } /* !flg_grd_2D */
+
+    if(flg_nm_hst){
+      /* 20241017: eva_h2.nc, eva_h3.nc has empty (all values are zero) topo1d_ixy, topo1d_jxy, 
+	 These are supposed to be (1-based) Fortran indices to corresponding longitude and latitude gridcells of the topounit
+	 If any index is zero, ... fxm */
+      nco_bool flg_rpl_tpo_wth_grd=False; /* [flg] Replace topo1d_[ij]xy values with grid1d_[ij]xy values */
+      for(tpo_idx=0;tpo_idx<tpo_nbr_in;tpo_idx++){
+	if((topo1d_ixy[tpo_idx] <= 0) || (topo1d_jxy[tpo_idx] <= 0)){
+	  (void)fprintf(stdout,"%s: WARNING %s reports invalid topounit latitude and/or longitude indices: topo1d_ixy[%ld] = %d, topo1d_jxy[%ld] = %d. These are supposed to be (1-based) Fortran indices to corresponding longitude and latitude gridcells of the topounit. By definition/convention, each Fortran index must be > 0. In other words, this input dataset, presumably produced by ELM, contains invalid variables. Contact the ELM authors and/or upgrade ELM to fix the root cause of this problem.\n",nco_prg_nm_get(),fnc_nm,tpo_idx,topo1d_ixy[tpo_idx],tpo_idx,topo1d_ixy[tpo_idx]);
+	  if((grid1d_ixy_id != NC_MIN_INT) && (grid1d_jxy_id != NC_MIN_INT)){
+	    (void)fprintf(stdout,"%s: WARNING %s Attempting workaround: Will replace invalid topo1d_[ij]xy values with grid1d_[ij]xy values, respectively.\nCross your fingers...\n",nco_prg_nm_get(),fnc_nm);
+	    flg_rpl_tpo_wth_grd=True;
+	  }else{
+	    (void)fprintf(stdout,"%s: ERROR %s Unable to work around invalid topo1d_[ij]xy values because grid1d_[ij]xy values are not present to be used as replacements\n",nco_prg_nm_get(),fnc_nm);
+	    nco_exit(EXIT_FAILURE);
+	  } /* !grid1d_ixy_id */
+	} /* !topo1d_ixy */
+	if(flg_rpl_tpo_wth_grd){
+	  /* Overwrite topo1d_[ij]xy with grid1d_[ij]xy */
+	  rcd=nco_get_var(in_id,grid1d_ixy_id,topo1d_ixy,NC_INT);
+	  if(flg_grd_2D){
+	    rcd=nco_get_var(in_id,grid1d_jxy_id,topo1d_jxy,NC_INT);
+	  } /* !flg_grd_2D */
+	} /* !flg_rpl_tpo_wth_grd */
+      } /* !tpo_idx */
+      
+    } /* !flg_nm_hst */
     
   } /* !need_tpo */
   
@@ -1576,8 +1608,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   long lvl_idx; /* [idx] Level index */
   long lvl_nbr; /* [nbr] Number of levels */
 
-  //size_t val_in_fst; /* [nbr] Number of elements by which current N-D slab input values are offset from origin */
-  //size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab output values are offset from origin */
+  size_t val_in_fst; /* [nbr] Number of elements by which current N-D slab input values are offset from origin */
+  size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab output values are offset from origin */
 
   if(idx_dbg == 0L) idx_dbg=11;
   if(nco_dbg_lvl_get() >= nco_dbg_var){
@@ -1791,11 +1823,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	nco_s1d_typ=nco_s1d_nil;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	  dmn_id=dmn_ids_in[dmn_idx];
-	  /* 20241017: Order is important here
+	  /* 20241017: A note of caution
+	     This loop overrides the first s1d_typ encountered with the second (if any) encountered
 	     History variables, e.g., float PCT_LANDUNIT(time,ltype,topounit), can contain both landunit and topounit dimensions
-	     In such cases first dimension found (ltype in this case) will set nco_s1d_lnd
-	     Then second dimension found (topounit in this case) will set nco_s1d_tpo
-	     Result will be to skip landunit processing and end up in topounit processing */
+	     However, in such cases the input landunit dimension uses the gridded name "ltype" not the S1D name "landunit"
+	     That should prevent mistakes in confusing s1d_lnd with s1d_tpo variables */
 	  if(dmn_id == dmn_id_clm_in) nco_s1d_typ=nco_s1d_clm;
 	  else if(dmn_id == dmn_id_grd_in) nco_s1d_typ=nco_s1d_grd;
 	  else if(dmn_id == dmn_id_lnd_in) nco_s1d_typ=nco_s1d_lnd;
@@ -1908,25 +1940,28 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  /* Turn TS_TOPO(topounit) into TS_TOPO(lndgrid) or TS_TOPO(lat,lon)
 	     20240131: This curently works only for single-timestep files
 	     In general, must enclose this in outer loop over (time x level) */
+	  val_in_fst=0L;
+	  val_out_fst=0L;
 	  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 	    /* Topounit variable dimension ordering, from LRV to MRV:
 	       Restart input: topounit, e.g., TS_TOPO(topounit)
-	       History input: N/A
+	       History input: time, ltype, topounit, e.g., PCT_LANDUNIT(time,ltype,topounit), PCT_NAT_PFT(time,natpft,topounit)
 	       NCO Output   : time, horizontal */
 	    for(tpo_idx=0;tpo_idx<tpo_nbr_in;tpo_idx++){
 
 	      /* grd_idx is 0-based index relative to the origin of the horizontal grid, topo1d is 1-based
 		 [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= topo1d_ixy <= col_nbr_out]
-		 Storage order for history fields is fxm
-		 Storage order for restart fields (e.g., TS_TOPO is lat,lon */
-	      if(flg_nm_hst) grd_idx_out= flg_grd_1D ? topo1d_ixy[tpo_idx]-1L : (topo1d_ixy[tpo_idx]-1L)*lat_nbr+(topo1d_jxy[tpo_idx]-1L);
-	      if(flg_nm_rst) grd_idx_out= flg_grd_1D ? topo1d_ixy[tpo_idx]-1L : (topo1d_jxy[tpo_idx]-1L)*lon_nbr+(topo1d_ixy[tpo_idx]-1L);
+		 Storage order for history fields (e.g., PCT_LANDUNIT, PCT_NAT_PFT) is lat,lon 
+		 Storage order for restart fields (e.g., TS_TOPO) is lat,lon */
+	      // if(flg_nm_hst) grd_idx_out= flg_grd_1D ? topo1d_ixy[tpo_idx]-1L : (topo1d_ixy[tpo_idx]-1L)*lat_nbr+(topo1d_jxy[tpo_idx]-1L);
+	      grd_idx_out= flg_grd_1D ? topo1d_ixy[tpo_idx]-1L : (topo1d_jxy[tpo_idx]-1L)*lon_nbr+(topo1d_ixy[tpo_idx]-1L);
 
 	      for(mrv_idx=0;mrv_idx<mrv_nbr;mrv_idx++){
 		/* Recall that lev*|numrad are MRV in restart input, and are LRV in output where lev*|numrad precedes column,[lat,lon|lndgrid] */
 		if(flg_nm_hst) idx_in=tpo_idx;
 		if(flg_nm_rst) idx_in=tpo_idx*mrv_nbr+mrv_idx;
-		idx_out=grd_idx_out;
+		idx_in=val_in_fst+idx_in;
+		idx_out=val_out_fst+grd_idx_out;
 		switch(var_typ_out){
 		case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[idx_in]; break;
 		case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[idx_in]; break;
@@ -1938,6 +1973,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		} /* !var_typ_out */
 	      } /* !mrv_idx */
 	    } /* !tpo_idx */
+	    val_in_fst+=tpo_nbr_in;
+	    val_out_fst+=grd_sz_out;
 	  } /* !lvl_idx */
 	} /* !nco_s1d_tpo */
 	
