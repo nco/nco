@@ -1,8 +1,18 @@
-2024-10-16  Charlie Zender  <zender@uci.edu>
+2024-10-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha03: Palenque';git push
 	git tag -a 5.2.9-alpha03 -m '';git push --tags
+
+	* Correct argument order of nco_malloc_dbg() call in nco_cpy_var_val()
+
+	* Define lnd_typ_crr=nco_lnd_ilun_nil for Gridcell and Topounit	variables so diagnostic printing can work
+
+	* Print var_nm in nco_def_var() debugging output
+
+	* Add fflush() to tidy debugging output
+
+2024-10-16  Charlie Zender  <zender@uci.edu>
 
 	* Store enumerated PFT and CFT in pft coordinate variable
 

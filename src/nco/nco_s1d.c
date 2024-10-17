@@ -125,16 +125,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
      ncks -D 1 -O -C --s1d ~/data/bm/elm_mali_bg_hst.nc ~/foo.nc
      ncks -D 1 -O -C --s1d --hrz=${DATA}/bm/elmv3_r05l15.nc ~/data/bm/elmv3_rst_r05l15.nc ~/foo.nc
      ncks -D 1 -O -C --s1d -v cols1d_topoglc --hrz=${DATA}/bm/elm_mali_ig_hst.nc ${DATA}/bm/elm_mali_rst.nc ~/foo.nc
-     ncks -D 1 -O -C --s1d -v GPP,pfts1d_wtgcell ~/beth_in.nc ~/foo.nc
+     ncks -D 1 -O -C --s1d -v GPP,pfts1d_wtgcell ~/eva_h2.nc ~/foo.nc
      ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' -P elm -m ${DATA}/maps/map_ne30np4_to_fv128x256_aave.20160301.nc ~/foo.nc ~/foo_rgr.nc */
 
   /* 20240920: Unpacking an standard r05 ELM restart file into latxlon format is NOT storage-intensive
-     Converting an r05 B simulation on imua took ~1 minute and reduced the filesize from ~14 GB to ~9 GB
-
-     20240131: Unpacking an r05 ELM IG restart file into latxlon format is storage-intensive
-     Converting an r05 gis_1to10km IG simulation on imua took ~2 hrs and ballooned the filesize from ~7 GB to ~7 TB!
-     Always subset before converting the IG input restart file
-     ncks -D 1 -O -C --s1d --hrz=${DATA}/bm/elm_mali_ig_hst.nc ${DATA}/bm/elm_mali_rst.nc ~/foo.nc */
+     Converting an r05 B simulation on imua took ~1 minute and reduced the filesize from ~14 GB to ~9 GB */
 
   const char fnc_nm[]="nco_s1d_unpack()"; /* [sng] Function name */
 
@@ -211,6 +206,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int dmn_id_lon_in=NC_MIN_INT; /* [id] Dimension ID */
 
   nco_bool FL_RTR_RMT_LCN;
+  nco_bool flg_cft=False; /* [flg] Dataset contains crop PFTs, i.e., CFTs */
   nco_bool flg_grd_1D=False; /* [flg] Unpacked data are on unstructured (1D) grid */
   nco_bool flg_grd_2D=False; /* [flg] Unpacked data are on rectangular (2D) grid */
   nco_bool flg_grd_dat=False; /* [flg] Use horizontal grid from required input data file */
@@ -753,7 +749,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       while(cols1d_ityplun[clm_idx++] == ilun_landice_multiple_elevation_classes) mec_nbr_out++;
       break;
     } /* !clm_idx */
-    /* NB: landice_MEC (ilun=4, usually) landunits have 10 (always, AFAICT) glacier elevation classes */
+    /* Glacier landunits (ilun=4, usually) with active glaciers (e.g., IG cases) have 10 (always, AFAICT) glacier elevation classes
+       20241016: IG restart files store the number of elevation classes in orphaned dimension named "glc_nec"
+       Restart files without active glaciers do not contain the "glc_nec" dimension
+       All ELM restart files also contain an orphaned dimension named "levtrc"---not sure what it is for */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO mec_nbr_out = %ld\n",nco_prg_nm_get(),mec_nbr_out);
     if(mec_nbr_out > 0) need_mec=True;
     
@@ -793,6 +792,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
   /* Determine output PFT dimension if needed */
   //double *pfts1d_wtgcell=NULL; /* [frc] PFT weight relative to corresponding gridcell */
+  /* ELM history files contain a dimension named "natpft" that contains the number of natural PFTs (including bare ground)
+     AFAICT, the variable PCT_NAT_PFT(time,natpft,lat,lon) is the exclusive user of this dimension
+     ELM restart files do not contain the natpft dimension */
+#define NCO_MAX_NTR_PFT 14 /* Maximum number of natural PFTs (not counting bare ground) */
+  const int pft_max_ntr_pft=NCO_MAX_NTR_PFT; /* [nbr] Maximum number of natural PFTs (not counting bare ground) */
   int *pfts1d_active=NULL; /* [flg] PFT active flag (1=active, 0=inactive) */
   int *pfts1d_ityp_veg=NULL; /* [enm] PFT vegetation type */
   int *pfts1d_ityplun=NULL; /* [enm] PFT landunit type */
@@ -821,6 +825,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       //while(pfts1d_ityp_veg[++pft_idx] != 0) pft_nbr_out++;
       //      break;
     } /* !pft_idx */
+    if(pft_nbr_out > pft_max_ntr_pft) flg_cft=True;
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %ld\n",nco_prg_nm_get(),pft_nbr_out);
 
     pfts1d_ixy=(int *)nco_malloc(pft_nbr_in*sizeof(int));
@@ -850,6 +855,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     
   } /* !need_tpo */
   
+  (void)fflush(stdout);
+
   /* Define unpacked versions of needed dimensions before all else */
   if(need_clm && clm_nbr_out > 0L) rcd=nco_def_dim(out_id,clm_nm_out,clm_nbr_out,&dmn_id_clm_out);
   if(need_lnd && lnd_nbr_out > 0L) rcd=nco_def_dim(out_id,lnd_nm_out,lnd_nbr_out,&dmn_id_lnd_out);
@@ -1096,19 +1103,27 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     }else{
       pft_chr_out=(char *)nco_calloc(pft_nbr_out*pft_sng_lng_out,sizeof(char));
     } /* !fl_out_fmt */
-#define NCO_MAX_NTR_PFT_TYP 14 /* Maximum number of natural PFTs (not counting bare ground) */
-    const int pft_max_ntr_pft_typ=NCO_MAX_NTR_PFT_TYP; /* [nbr] Maximum number of natural PFTs (not counting bare ground) */
     /* Gather natural PFT names
        PFT indexing is complicated, and smacks of Fortran conventions
        PFT ityp = 0 is bare ground/not vegetated 
        PFT ityp = 0 is a valid ityp even though bare ground is not a "true" PFT, and all gridded output PFT fields skip this ityp
        PFT ityp = 1 is Needleleaf evergreen temperate tree (the first true PFT)
-       PFT ityp = 14 is C4 grass is the last natural PFT
-       Thus there are only 14 actual and natural PFTs 
+       PFT ityp = 14 is C4 grass is often the last natural PFT
+
+       ELMv3 control has natpft = 17 and...
+       :ipft_c3_crop = 15 ;
+       :ipft_c3_irrigated = 16 ;
+       PFT ityp = 15 is C3 crop
+       PFT ityp = 16 is C3 irrigated, last "natural PFT"
+
+       Eva h2 file has natpft = 15 and...
+       :cft_c3_crop = 1 ;
+       :cft_c3_irrigated = 2 ;
+
        Our output gridded datasets use the C-convention and are zero-based
        Hence our output PFT element 0 represents PFT ityp 1 == Needleleaf evergreen temperate tree
        We accomplish this by adding 1 to pft_idx in call to nco_pft_typ_sng() */
-    for(pft_idx=0;pft_idx<pft_max_ntr_pft_typ;pft_idx++){
+    for(pft_idx=0;pft_idx<pft_max_ntr_pft;pft_idx++){
       if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	pft_sng_out[pft_idx]=nco_pft_typ_sng(pft_idx+1);
       }else{
@@ -1118,10 +1133,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     /* Restart files enumerate all (natural and crop) PFTs in global attributes
        History files enumerate only crop PFTs (i.e., CFTs) in global attributes */
     char *cft_nm_crr=NULL; /* [sng] Crop functional type descriptor */
-    for(pft_idx=pft_max_ntr_pft_typ;pft_idx<pft_nbr_out;pft_idx++){
+    for(pft_idx=pft_max_ntr_pft;pft_idx<pft_nbr_out;pft_idx++){
       /* Label includes Fortran PFT and CFT ityp so add 1 to pft_idx */
       cft_nm_crr=(char *)strdup("PFT ityp %02ld, CFT ityp %02ld");
-      sprintf(cft_nm_crr,cft_nm_crr,pft_idx+1,pft_idx+1-pft_max_ntr_pft_typ);
+      sprintf(cft_nm_crr,cft_nm_crr,pft_idx+1,pft_idx+1-pft_max_ntr_pft);
       if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	pft_sng_out[pft_idx]=cft_nm_crr;
       }else{
@@ -1136,14 +1151,55 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     var_crt_nbr++;
     rcd=nco_char_att_put(out_id,pft_nm_out,"long_name","PFT Descriptor");
     rcd=nco_char_att_put(out_id,pft_nm_out,"note","Storage uses C (0-based indexing) convention and does not include space for PFT ityp 0 == bare ground/not vegetated. Thus PFT ityp is one more than the storage index. For example, storage index 0 is PFT ityp 1 == Needleleaf evergreen temperate tree. The last natural PFT is ityp 14 == C4 grass. The presence of crop PFTs (i.e., CFTs) in data fields is indicated by an extended PFT type index whose enumeration is sequential with PFTs. Usually the first crop is c3_crop with PFT ityp 15 and CFT ityp = 1. The last CFT ityp is the total PFT dimension size minus 14 (the number of natural PFTs).");
+
+    char att_nm[NC_MAX_NAME+1L]; /* [sng] Attribute name */
+    int att_glb_nbr; /* [nbr] Number of global attributes */
+    rcd=nco_inq(in_id,(int *)NULL,(int *)NULL,&att_glb_nbr,(int *)NULL);
+    (void)fprintf(stdout,"%s: DEBUG att_glb_nbr = %d\n",nco_prg_nm_get(),att_glb_nbr);
+    int att_idx;
+    long att_sz;
+    nc_type att_typ;
+
+    char cft_xpr[]="cft_";
+    char pft_xpr[]="ipft_";
+    char *cft_ptr=NULL;
+    char *pft_ptr=NULL;
+    char *cft_crr=NULL;
+    char *pft_crr=NULL;
+    int cft_nbr_crr=0; /* [nbr] Current number of CFT attributes read */
+    int pft_nbr_crr=0; /* [nbr] Current number of PFT attributes read */
+    for(att_idx=0;att_idx<att_glb_nbr;att_idx++){
+      rcd=nco_inq_attname(in_id,NC_GLOBAL,att_idx,att_nm);
+      if(flg_nm_hst){
+	if((cft_ptr=strcasestr(att_nm,cft_xpr))){
+	  cft_nbr_crr++;
+	  cft_crr=(char *)strdup(cft_ptr);
+	} /* !cft_ptr */
+      } /* !flg_nm_rst */
+      if(flg_nm_rst){
+	if((pft_ptr=strcasestr(att_nm,pft_xpr))){
+	  pft_nbr_crr++;
+	  pft_idx=pft_nbr_crr-1;
+	  pft_crr=(char *)strdup(pft_ptr);
+	  if(fl_out_fmt == NC_FORMAT_NETCDF4){
+	    if(pft_idx >= 1) pft_sng_out[pft_idx]=pft_crr;
+	  }else{
+	    if(pft_idx >= 1) strncpy(pft_chr_out+pft_idx*pft_sng_lng_out,pft_crr,pft_sng_lng_out);
+	  } /* !fl_out_fmt */
+	} /* !pft_ptr */
+      } /* !flg_nm_rst */
+      rcd=nco_inq_att(in_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
+    } /* !att_idx */
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Read cft_nbr_crr = %d CFT attributes and pft_nbr_crr = %d PFT attributes\n",nco_prg_nm_get(),cft_nbr_crr,pft_nbr_crr);
+    (void)fflush(stdout);
   } /* !need_pft */
-    
+  
   double mss_val_dbl;
   double mss_val_cmp_dbl; /* Missing value for comparison to double precision values */
-
+  
   int flg_pck; /* [flg] Variable is packed on disk  */
   int nco_s1d_typ; /* [enm] Sparse-1D type of input variable */
-
+  
   long mrv_idx; /* [idx] MRV index */
   long mrv_nbr; /* [nbr] Product of sizes of dimensions following (thus MRV than) column|gridcell|landunit|pft|topounit dimension, e.g., lev*|numrad */
 
@@ -1251,7 +1307,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	       NB: Not sure where to put the lnd_typ=1 values in gridcells that also have MEC */
 	    idx_s1d_crr=NC_MIN_INT;
 
-	    /* fxm: got to here with topounits */
 	    switch(var_typ_in){
 	    case NC_FLOAT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
 		if(var_val_in.fp[idx_in] != 0.0f && var_val_in.fp[idx_in] != mss_val_cmp_dbl){
@@ -1286,8 +1341,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	      case nco_s1d_clm:	lnd_typ_crr=cols1d_ityplun[idx_s1d_crr]; break;
 	      case nco_s1d_lnd:	lnd_typ_crr=land1d_ityplun[idx_s1d_crr]; break;
 	      case nco_s1d_pft:	lnd_typ_crr=pfts1d_ityplun[idx_s1d_crr]; break;
-	      case nco_s1d_tpo:
-	      case nco_s1d_grd:
+	      case nco_s1d_grd: lnd_typ_crr=nco_lnd_ilun_nil; break; /* Gridcell variables may contain multiple landunits */
+	      case nco_s1d_tpo: lnd_typ_crr=nco_lnd_ilun_nil; break; /* Topounit variables may contain multiple landunits */
 	      default: break;
 	      } /* !nco_s1d_typ */
 	      /* Is variable is defined on MECs? */
@@ -1746,7 +1801,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    } /* !var_val_in.dp */
 	  break;
 	case NC_INT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-	    if(var_val_in.ip[idx_in] != 0.0 && var_val_in.ip[idx_in] != mss_val_cmp_dbl){
+	    if(var_val_in.ip[idx_in] != 0 && var_val_in.ip[idx_in] != mss_val_cmp_dbl){
 	      idx_s1d_crr=idx_in/mrv_nbr;
 	      break;
 	    } /* !var_val_in.ip */
@@ -1763,13 +1818,15 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  case nco_s1d_clm: lnd_typ_crr=cols1d_ityplun[idx_s1d_crr]; break;
 	  case nco_s1d_lnd: lnd_typ_crr=land1d_ityplun[idx_s1d_crr]; break;
 	  case nco_s1d_pft: lnd_typ_crr=pfts1d_ityplun[idx_s1d_crr]; break;
-	  case nco_s1d_grd:
+	  case nco_s1d_grd: lnd_typ_crr=nco_lnd_ilun_nil; break; /* Gridcell variables may contain multiple landunits */
+	  case nco_s1d_tpo: lnd_typ_crr=nco_lnd_ilun_nil; break; /* Topounit variables may contain multiple landunits */
 	  default: break;
 	  } /* !nco_s1d_typ */
 	} /* !idx_s1d_crr */
 
 	if(!flg_var_mpt && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d = %s, lnd_typ_crr = %d = %s, has_mec = %d\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ_crr,nco_lnd_typ_sng(lnd_typ_crr),has_mec);
 	  
+	/* fxm: got to here with topounits */
 	if(flg_var_mpt) goto skp_upk;
 
 	/* The Hard Work */
@@ -1789,7 +1846,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
 
 	      pft_typ=pfts1d_ityp_veg[pft_idx]; /* [1 <= pft_typ <= pft_nbr_out] */
-	      /* Skip bare ground so output array contains only vegetated types */
+
+	      /* Skip bare ground so output array contains only vegetated types
+		 20241016: Allow bare ground so output PFT dimension size is natpft instead of natpft-1? */
 	      if(!pft_typ) continue;
 
 	      /* grd_idx is 0-based index relative to the origin of the horizontal grid, pfts1d is 1-based
@@ -1972,8 +2031,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     } /* !xtr */
   } /* end (OpenMP parallel for) loop over idx_tbl */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables interpolated = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables unpacked = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
 
+#if false  
   /* Free output data memory */
   if(cols1d_active) cols1d_active=(int *)nco_free(cols1d_active);
   if(cols1d_ityp) cols1d_ityp=(int *)nco_free(cols1d_ityp);
@@ -2020,6 +2080,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(levsno1_nm_out) levsno1_nm_out=(char *)nco_free(levsno1_nm_out);
   if(levtot_nm_out) levtot_nm_out=(char *)nco_free(levtot_nm_out);
   if(numrad_nm_out) numrad_nm_out=(char *)nco_free(numrad_nm_out);
+#endif /* !false */
 
   return rcd;
 } /* !nco_s1d_unpack() */

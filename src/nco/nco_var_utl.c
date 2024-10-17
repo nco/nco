@@ -81,7 +81,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   } /* end loop over dim */
 
   /* Allocate enough space to hold variable */
-  void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hyperslab from input to output file",fnc_nm);
+  void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),fnc_nm,"Unable to malloc() value buffer when copying hyperslab from input to output file");
 
   /* 20150114: Keep PPC code in single block for easier reuse */
   int ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of sig. digits/bits */

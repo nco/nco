@@ -2070,8 +2070,8 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
     if(rcd == NC_NOERR) (void)fprintf(stdout,"Original variable name is preserved in \"%s\" attribute.\n",att_nm);
   } /* !rcd */
 
-  if(0){
-    char var_nm[NC_MAX_NAME+1L];
+  /* Make this condition true to print debuggining information when defining a variable */
+  if(1){
     char dmn_nm[NC_MAX_NAME+1L];
     int dmn_idx; /* [idx] Dimension index */
     long dmn_cnt;
@@ -2079,9 +2079,10 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
     (void)fprintf(stderr,"%s: INFO %s defining %s with %d dimensions\n","libnco",fnc_nm,var_nm,dmn_nbr);
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
       rcd=nco_inq_dim(nc_id,dmn_id[dmn_idx],dmn_nm,&dmn_cnt);
-      (void)fprintf(stdout,"%s: DEBUG quark73 dmn_idx = %d, dmn_id[%d] = %d, dmn_cnt[%d] = %ld, dmn_nm = %s\n",fnc_nm,dmn_idx,dmn_idx,dmn_id[dmn_idx],dmn_idx,dmn_cnt,dmn_nm);
+      (void)fprintf(stderr,"%s: DEBUG quark73 dmn_idx = %d, dmn_id[%d] = %d, dmn_cnt[%d] = %ld, dmn_nm = %s\n",fnc_nm,dmn_idx,dmn_idx,dmn_id[dmn_idx],dmn_idx,dmn_cnt,dmn_nm);
       var_sz*=dmn_cnt;
       if(dmn_idx == dmn_nbr-1) (void)fprintf(stderr,"%s: Total variable size = %ld\n",fnc_nm,var_sz);
+      (void)fflush(stderr);
     } /* !dmn_idx */
   } /* !dbg */
 
@@ -3130,7 +3131,7 @@ nco_inq_att(const int nc_id,const int var_id,const char * const att_nm,nc_type *
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"ERROR: %s unable to inquire attribute var_id: %d, att_nm: %s\n",fnc_nm,var_id,att_nm);
     nco_err_exit(rcd,fnc_nm);
-  } /* endif */
+  } /* !rcd */
   return rcd;
 } /* !nco_inq_att */
 
@@ -3148,7 +3149,7 @@ nco_inq_att_flg(const int nc_id,const int var_id,const char * const att_nm,nc_ty
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"ERROR: %s unable to inquire attribute var_id: %d, att_nm: %s\n",fnc_nm,var_id,att_nm);
     nco_err_exit(rcd,fnc_nm);
-  } /* endif */
+  } /* !rcd */
   return rcd;
 } /* !nco_inq_att_flg */
 
@@ -3173,7 +3174,7 @@ nco_inq_attid_flg(const int nc_id,const int var_id,const char * const att_nm,int
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"ERROR: %s unable to inquire attribute var_id: %d, att_nm: %s\n",fnc_nm,var_id,att_nm);
     nco_err_exit(rcd,fnc_nm);
-  } /* endif */
+  } /* !rcd */
   return rcd;
 } /* !nco_inq_attid_flg */
 
@@ -3417,10 +3418,10 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
     (void)fprintf(stderr,"ERROR: %s unable to get attribute var_id: %d, var_nm: %s, att_nm: %s\n",fnc_nm,var_id,var_nm,att_nm);
-  } /* endif */
+  } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_att()");
   return rcd;
-} /* !nco_get_att */
+} /* !nco_get_att() */
 /* End Attribute routines */
 
 /* Begin netCDF4 stubs */
