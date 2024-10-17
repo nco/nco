@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha03: Palenque';git push
 	git tag -a 5.2.9-alpha03 -m '';git push --tags
 
+	* Sanity check that tpo_nbr_in == grd_nbr_in
+
+	* Sanity check that mec_nbr_in == mec_nbr_out
+
 	* Correct argument order of nco_malloc_dbg() call in nco_cpy_var_val()
 
 	* Define lnd_typ_crr=nco_lnd_ilun_nil for Gridcell and Topounit	variables so diagnostic printing can work

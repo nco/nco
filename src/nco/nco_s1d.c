@@ -143,8 +143,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
   char *grd_nm_in=(char *)strdup("gridcell");
-  char *lnd_nm_in=(char *)strdup("landunit");
+  char *lnd_nm_in=(char *)strdup("landunit"); /* Canonical landunit sparse dimension name, used in history and restart files */
+  // 20241017 fxm: replace dimension name "ltype" with "landunit" in all output files?
+  //char *ltype_nm_in=(char *)strdup("ltype"); /* Gridded landunit dimension name used in history (PCT_LANDUNIT, eva_h2.nc) files */
   char *clm_nm_in=(char *)strdup("column");
+  char *mec_nm_in=(char *)strdup("glc_nec"); /* 20241017: glc_nec is only present in IG/BG restarts as an "orphaned dimension" (no variables use it) so ncks -m does not print it. Use ncdump -h to see it. */
   char *pft_nm_in=(char *)strdup("pft");
   char *tpo_nm_in=(char *)strdup("topounit");
 
@@ -327,6 +330,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int dmn_id_clm_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_grd_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_lnd_in=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_mec_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_pft_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_tpo_in=NC_MIN_INT; /* [id] Dimension ID */
 
@@ -520,6 +524,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   long clm_nbr_in=NC_MIN_INT; /* [nbr] Number of columns in input data */
   long grd_nbr_in=NC_MIN_INT; /* [nbr] Number of gridcells in input data */
   long lnd_nbr_in=NC_MIN_INT; /* [nbr] Number of landunits in input data */
+  long mec_nbr_in=NC_MIN_INT; /* [nbr] Number of MECs in input data */
   long pft_nbr_in=NC_MIN_INT; /* [nbr] Number of PFTs in input data */
   long tpo_nbr_in=NC_MIN_INT; /* [nbr] Number of topounits in input data */
   long clm_nbr_out=NC_MIN_INT; /* [nbr] Number of columns in output data */
@@ -534,6 +539,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(need_lnd) rcd=nco_inq_dimlen(in_id,dmn_id_lnd_in,&lnd_nbr_in);
   if(need_pft) rcd=nco_inq_dimlen(in_id,dmn_id_pft_in,&pft_nbr_in);
   if(need_tpo) rcd=nco_inq_dimlen(in_id,dmn_id_tpo_in,&tpo_nbr_in);
+  if(need_tpo && need_grd && tpo_nbr_in != grd_nbr_in) (void)fprintf(stdout,"%s: %s WARNING Number of topounits and gridcells are unequal. Expect mayhem. tpo_nbr_in = %ld != %ld = grd_nbr_in\n",nco_prg_nm_get(),fnc_nm,tpo_nbr_in,grd_nbr_in);
 
   int dmn_id_levcan_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_levgrnd_in=NC_MIN_INT; /* [id] Dimension ID */
@@ -755,6 +761,15 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
        All ELM restart files also contain an orphaned dimension named "levtrc"---not sure what it is for */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO mec_nbr_out = %ld\n",nco_prg_nm_get(),mec_nbr_out);
     if(mec_nbr_out > 0) need_mec=True;
+    if(need_mec){
+      /* Sanity check. Allow for input files that have MECs yet lack "glc_nec" due to NCO skipping orphaned dimensions. */
+      rcd=nco_inq_dimid_flg(in_id,mec_nm_in,&dmn_id_mec_in);
+      if(rcd == NC_NOERR){
+	nco_inq_dimlen(in_id,dmn_id_mec_in,&mec_nbr_in);
+	assert(mec_nbr_in == mec_nbr_out);
+      } /* !rcd */
+      rcd=NC_NOERR;
+    } /* !need_mec */
     
     cols1d_ixy=(int *)nco_malloc(clm_nbr_in*sizeof(int));
     rcd=nco_get_var(in_id,cols1d_ixy_id,cols1d_ixy,NC_INT);
@@ -1094,7 +1109,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     
   /* PFT coordinate  */
   int pft_out_id=NC_MIN_INT; /* [id] Variable ID for PFT coordinate */
-  if(need_pft){
+  if(False){
+    //  if(need_pft){
     dmn_ids_out[0]=dmn_id_pft_out;
     dmn_ids_out[1]=dmn_id_pft_sng_lng_out;
     /* Assemble PFT coordinate as list of strings */
@@ -1775,6 +1791,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	nco_s1d_typ=nco_s1d_nil;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	  dmn_id=dmn_ids_in[dmn_idx];
+	  /* 20241017: Order is important here
+	     History variables, e.g., float PCT_LANDUNIT(time,ltype,topounit), can contain both landunit and topounit dimensions
+	     In such cases first dimension found (ltype in this case) will set nco_s1d_lnd
+	     Then second dimension found (topounit in this case) will set nco_s1d_tpo
+	     Result will be to skip landunit processing and end up in topounit processing */
 	  if(dmn_id == dmn_id_clm_in) nco_s1d_typ=nco_s1d_clm;
 	  else if(dmn_id == dmn_id_grd_in) nco_s1d_typ=nco_s1d_grd;
 	  else if(dmn_id == dmn_id_lnd_in) nco_s1d_typ=nco_s1d_lnd;
@@ -1896,7 +1917,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
 	      /* grd_idx is 0-based index relative to the origin of the horizontal grid, topo1d is 1-based
 		 [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= topo1d_ixy <= col_nbr_out]
-		 Storage order for history fields is N/A
+		 Storage order for history fields is fxm
 		 Storage order for restart fields (e.g., TS_TOPO is lat,lon */
 	      if(flg_nm_hst) grd_idx_out= flg_grd_1D ? topo1d_ixy[tpo_idx]-1L : (topo1d_ixy[tpo_idx]-1L)*lat_nbr+(topo1d_jxy[tpo_idx]-1L);
 	      if(flg_nm_rst) grd_idx_out= flg_grd_1D ? topo1d_ixy[tpo_idx]-1L : (topo1d_jxy[tpo_idx]-1L)*lon_nbr+(topo1d_ixy[tpo_idx]-1L);
@@ -2033,7 +2054,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables unpacked = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
 
-#if false  
   /* Free output data memory */
   if(cols1d_active) cols1d_active=(int *)nco_free(cols1d_active);
   if(cols1d_ityp) cols1d_ityp=(int *)nco_free(cols1d_ityp);
@@ -2080,7 +2100,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(levsno1_nm_out) levsno1_nm_out=(char *)nco_free(levsno1_nm_out);
   if(levtot_nm_out) levtot_nm_out=(char *)nco_free(levtot_nm_out);
   if(numrad_nm_out) numrad_nm_out=(char *)nco_free(numrad_nm_out);
-#endif /* !false */
 
   return rcd;
 } /* !nco_s1d_unpack() */
