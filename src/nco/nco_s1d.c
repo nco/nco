@@ -1380,7 +1380,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	      break;
 	    } /* !var_typ_in */
 	    if(idx_in == var_sz_in){
-	      (void)fprintf(fp_stdout,"%s: INFO %s reports %s has no valid values in input, and will be all missing values in output too...\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	      (void)fprintf(fp_stdout,"%s: INFO %s reports %s has no valid values, output will be all _FillValue\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	      flg_var_mpt=True;
 	    } /* !idx_in */
 	    lnd_typ_crr=NC_MIN_INT;
@@ -1421,7 +1421,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		  if(val_vld) break;
 		} /* !clm_idx */
 		if(val_vld) has_mec=trv_tbl->lst[idx_tbl].has_mec=True;
-		if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG %s exited MEC search at mrv_idx = %ld, clm_idx = %ld, idx_in = %ld, has_mec = %d\n",nco_prg_nm_get(),var_nm,mrv_idx,clm_idx,idx_in,has_mec);
+		if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: DEBUG %s exited MEC search at mrv_idx = %ld, clm_idx = %ld, idx_in = %ld, has_mec = %d\n",nco_prg_nm_get(),var_nm,mrv_idx,clm_idx,idx_in,has_mec);
 	      } /* !nco_s1d_typ */
 	    } /* !idx_s1d_crr */
 	    if(var_val_in.vp) var_val_in.vp=(void *)nco_free(var_val_in.vp);
