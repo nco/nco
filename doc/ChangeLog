@@ -2,7 +2,7 @@
 
 	* NCO 5.2.9 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9: Empathy Card';git push
-	git tag -a 5.2.9 -m 'all: NC_FillValue; ncclimo: fix bsh syn, fix eamxx pdq; ncks: S1D pft dsk rdr, topounits, workaround, pft crd, sanitize, fflush; ncremap: ECMWF IFS fix';git push --tags
+	git tag -a 5.2.9 -m 'all: NC_FillValue; ncclimo: fix bsh syn; ncks: S1D pft dsk rdr, topounits, workaround, pft crd, sanitize, fflush; ncremap: fix ECMWF IFS, eamxx pdq';git push --tags
 
 	* Progress inferring pft_sng_out from global attributes, though remains off by default
 

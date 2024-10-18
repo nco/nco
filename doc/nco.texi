@@ -24167,6 +24167,9 @@ feature to make it more useful.
 @cindex restart files
 @cindex sparse format
 @cindex @acronym{S1D} format
+@cindex @acronym{ELM} files
+@cindex @acronym{CLM} files
+@cindex @acronym{CTSM} files
 @cindex @code{--unpack_sparse}
 @cindex @code{--s1d}
 @cindex @code{--sparse}
@@ -27981,9 +27984,9 @@ idiosyncratic model values and then invoke the Sub-gridscale
 The @acronym{MOD04} procedure unpacks input data.
 The @acronym{EAMxx} procedures permute input data dimensions into this
 order prior to horizontal regridding:
-@code{ilev,lev,dim2,ncol}, and cause the vertical interpolation
-routine to look for surface pressure under the name @code{ps} instead
-of @code{PS}.
+@code{time,lwband,swband,ilev,lev,plev,cosp_tau,cosp_cth,cosp_prs,dim2,ncol},
+and cause the vertical interpolation routine to look for surface
+pressure under the name @code{ps} instead of @code{PS}.
 The @acronym{MPAS} procedures permute input data dimensions into this
 order: 
 @code{Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells},

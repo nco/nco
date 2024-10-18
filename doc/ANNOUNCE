@@ -1,23 +1,50 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.2.9 lean to the left
+netCDF Operators NCO version 5.2.9 scratch an itch
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.2.9 ...
+Version 5.2.9 significantly improves the unpacking of ELM/CLM/CTSM
+history and restart datasets. ncclimo and ncremap benefit from a
+few updates and fixes. This release many be skipped if these changes
+do not interest you.
+
+Work on 5.3.0 is underway and includes yet more capability in
+unpacking ELM/CLM history/restart files.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap
+A. ncks leveled-up the way it unpacks ELM/CLM history/restart files. 
+This is by far the biggest feature in this release.
+New features include support for PFTs in history files, support
+for topounits in ELM (PCT_LANDUNIT, PCT_NAT_PFT, TS_TOPO), a
+workaround for invalid topounits coordinates, and outputting a pft 
+coordinate variable with vegetation names.
 
-http://nco.sf.net/nco.html#ncclimo
-http://nco.sf.net/nco.html#rgn_stt
-http://nco.sf.net/nco.html#sum_scl
+ncks --s1d history_h2.nc out.nc # History files usually h2, h3...
+ncks --s1d --hrz=history.nc restart.nc out.nc # Restart files
+
+http://nco.sf.net/nco.html#s1d
+http://nco.sf.net/nco.html#unpack_sparse
+
+B. ncremap now automagically horizontall regids the latest EAMxx and
+SCREAM files without needing manual invocation of long, hairy
+options. In particular, users can invoke
+
+ncremap -P eamxx --map=map.nc eamxx.nc out.nc
+
+instead of this:
+
+ncremap -P eamxx
+--prm_opt=time,lwband,swband,ilev,lev,plev,cosp_tau,cosp_cth,cosp_prs,dim2,ncol
+--map=map.nc eamxx.nc out.nc
+
+http://nco.sf.net/nco.html#eamxx
 
 BUG FIXES:
    
@@ -33,6 +60,10 @@ Thanks to Erik Koene for reporting this issue. There is no
 workaround. The solution is to upgrade, or to use an older NCO
 version, e.g., 4.9.0.
 http://nco.sf.net/nco.html#vrt_hyb_ifs
+
+B. ncclimo fixes an illegal Bash string->numeric conversion error.
+This error could occur when invoking non-default start and end
+months. There is no workaround. The solution is to upgrade. 
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
