@@ -1885,7 +1885,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
 	if(!flg_var_mpt && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d = %s, lnd_typ_crr = %d = %s, has_mec = %d\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ_crr,nco_lnd_typ_sng(lnd_typ_crr),has_mec);
 	  
-	/* fxm: got to here with topounits */
 	if(flg_var_mpt) goto skp_upk;
 
 	/* The Hard Work */

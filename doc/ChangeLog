@@ -2,7 +2,7 @@
 
 	* NCO 5.2.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha03: Palenque';git push
-	git tag -a 5.2.9-alpha03 -m '';git push --tags
+	git tag -a 5.2.9-alpha03 -m 'ncks: S1D finish topounits, workaround bad topos1d_[ij]xy, address sanitize';git push --tags
 
 	* Activate pft_sng_out those disable inferring from global attributes
 
