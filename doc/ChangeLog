@@ -1,10 +1,10 @@
 2024-10-18  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.2.9-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha04: Empathy Card';git push
-	git tag -a 5.2.9-alpha04 -m 'ncks: S1D polish';git push --tags
+	* NCO 5.2.9 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.9: Empathy Card';git push
+	git tag -a 5.2.9 -m 'all: NC_FillValue; ncclimo: fix bsh syn, fix eamxx pdq; ncks: S1D pft dsk rdr, topounits, workaround, pft crd, sanitize, fflush; ncremap: ECMWF IFS fix';git push --tags
 
-	* Progress on inferring pft_sng_out from global attributes, though remains off by default
+	* Progress inferring pft_sng_out from global attributes, though remains off by default
 
 	* Read pft_nbr_nbr_in from history files
 
