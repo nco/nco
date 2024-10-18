@@ -93,6 +93,12 @@ extern "C" {
     nco_pft_ipft_c3_arctic_grass=12, /* C3 Arctic grass */
     nco_pft_ipft_c3_non_arctic_grass=13, /* C3 non-Arctic grass */
     nco_pft_ipft_c4_grass=14, /* C4 grass */
+    /* 20241017: ELMv3 includes C3 crop and irrigated in natpft dimension (natpft=17)
+       Previously, AFAIK, ELM datasets always had natpft=15
+       Also Eva h2, h3 history files still have natpft=15
+       These final two enumerates will not be accessed unless natpft>=17*/
+    nco_pft_ipft_c3_crop=15, /* C3 crop */
+    nco_pft_ipft_c3_irrigated=16, /* C3 irrigated */
   } nco_pft_typ_enm;
 
   /* Types used in Sparse-1D structure */

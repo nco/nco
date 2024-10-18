@@ -175,6 +175,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int dmn_idx; /* [idx] Dimension index */
   int dmn_idx_swp; /* [idx] Dimension index */
 
+  long int chr_idx;
   long int clm_idx;
   long int grd_idx_out;
   long int idx_s1d_crr; /* [idx] Current valid index into S1D arrays */
@@ -1141,8 +1142,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     
   /* PFT coordinate  */
   int pft_out_id=NC_MIN_INT; /* [id] Variable ID for PFT coordinate */
-  if(False){
-    //  if(need_pft){
+  //if(False){
+  if(need_pft){
     dmn_ids_out[0]=dmn_id_pft_out;
     dmn_ids_out[1]=dmn_id_pft_sng_lng_out;
     /* Assemble PFT coordinate as list of strings */
@@ -1150,7 +1151,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       pft_sng_out=(nco_string *)nco_calloc(pft_nbr_out,sizeof(nco_string));
     }else{
       pft_chr_out=(char *)nco_calloc(pft_nbr_out*pft_sng_lng_out,sizeof(char));
+      //      for(chr_idx=0;chr_idx<pft_nbr_out*pft_sng_lng_out;chr_idx++) pft_chr_out='\0';
     } /* !fl_out_fmt */
+    
     /* Gather natural PFT names
        PFT indexing is complicated, and smacks of Fortran conventions
        PFT ityp = 0 is bare ground/not vegetated 
@@ -1175,7 +1178,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	pft_sng_out[pft_idx]=nco_pft_typ_sng(pft_idx+1);
       }else{
-	strncpy(pft_chr_out+pft_idx*pft_sng_lng_out,nco_pft_typ_sng(pft_idx+1),pft_sng_lng_out);
+	strcpy(pft_chr_out+pft_idx*pft_sng_lng_out,nco_pft_typ_sng(pft_idx+1));
       } /* !fl_out_fmt */
     } /* !pft_idx */
     /* Restart files enumerate all (natural and crop) PFTs in global attributes
@@ -1188,7 +1191,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	pft_sng_out[pft_idx]=cft_nm_crr;
       }else{
-	strncpy(pft_chr_out+pft_idx*pft_sng_lng_out,cft_nm_crr,pft_sng_lng_out);
+	strcpy(pft_chr_out+pft_idx*pft_sng_lng_out,cft_nm_crr);
       } /* !fl_out_fmt */
     } /* !pft_idx */
     if(fl_out_fmt == NC_FORMAT_NETCDF4){
@@ -1200,6 +1203,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_char_att_put(out_id,pft_nm_out,"long_name","PFT Descriptor");
     rcd=nco_char_att_put(out_id,pft_nm_out,"note","Storage uses C (0-based indexing) convention and does not include space for PFT ityp 0 == bare ground/not vegetated. Thus PFT ityp is one more than the storage index. For example, storage index 0 is PFT ityp 1 == Needleleaf evergreen temperate tree. The last natural PFT is ityp 14 == C4 grass. The presence of crop PFTs (i.e., CFTs) in data fields is indicated by an extended PFT type index whose enumeration is sequential with PFTs. Usually the first crop is c3_crop with PFT ityp 15 and CFT ityp = 1. The last CFT ityp is the total PFT dimension size minus 14 (the number of natural PFTs).");
 
+#if false    
+    /* Address sanitizer has a field day in this section... */
     char att_nm[NC_MAX_NAME+1L]; /* [sng] Attribute name */
     int att_glb_nbr; /* [nbr] Number of global attributes */
     rcd=nco_inq(in_id,(int *)NULL,(int *)NULL,&att_glb_nbr,(int *)NULL);
@@ -1232,13 +1237,14 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	    if(pft_idx >= 1) pft_sng_out[pft_idx]=pft_crr;
 	  }else{
-	    if(pft_idx >= 1) strncpy(pft_chr_out+pft_idx*pft_sng_lng_out,pft_crr,pft_sng_lng_out);
+	    if(pft_idx >= 1) strcpy(pft_chr_out+pft_idx*pft_sng_lng_out,pft_crr);
 	  } /* !fl_out_fmt */
 	} /* !pft_ptr */
       } /* !flg_nm_rst */
       rcd=nco_inq_att(in_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
     } /* !att_idx */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Read cft_nbr_crr = %d CFT attributes and pft_nbr_crr = %d PFT attributes\n",nco_prg_nm_get(),cft_nbr_crr,pft_nbr_crr);
+#endif /* !false */
     (void)fflush(stdout);
   } /* !need_pft */
   

@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha03: Palenque';git push
 	git tag -a 5.2.9-alpha03 -m '';git push --tags
 
+	* Activate pft_sng_out those disable inferring from global attributes
+
 	* Enable Clang address sanitizer with -fsanitize=address
 
 	* Account for lvl_nbr (i.e., ltype dimension) in unpacking nco_s1d_tpo variables
