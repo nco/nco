@@ -96,7 +96,7 @@ extern "C" {
     /* 20241017: ELMv3 includes C3 crop and irrigated in natpft dimension (natpft=17)
        Previously, AFAIK, ELM datasets always had natpft=15
        Also Eva h2, h3 history files still have natpft=15
-       These final two enumerates will not be accessed unless natpft >= 17 */
+       These final two enumerates are not accessed unless natpft >= 17 */
     nco_pft_ipft_c3_crop=15, /* C3 crop */
     nco_pft_ipft_c3_irrigated=16, /* C3 irrigated */
   } nco_pft_typ_enm;

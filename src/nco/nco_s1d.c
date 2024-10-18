@@ -89,6 +89,13 @@ nco_pft_typ_sng /* [fnc] Convert PFT-type enum to string */
   case nco_pft_ipft_c3_arctic_grass: return "C3 Arctic grass"; /* 12 */
   case nco_pft_ipft_c3_non_arctic_grass: return "C3 non-Arctic grass"; /* 13 */
   case nco_pft_ipft_c4_grass: return "C4 grass"; /* 14 */
+    /* 20241017: ELMv3 includes C3 crop and irrigated in natpft dimension (natpft=17)
+       Previously, AFAIK, ELM datasets always had natpft=15
+       Also Eva h2, h3 history files still have natpft=15
+       These final two enumerates are not accessed unless natpft >= 17 */
+  case nco_pft_ipft_c3_crop: return "C3 crop"; /* 15 */
+  case nco_pft_ipft_c3_irrigated: return "C3 irrigated"; /* 16 */
+
   default: nco_dfl_case_generic_err((int)nco_pft_typ); break;
   } /* !nco_pft_typ_enm */
 
@@ -115,11 +122,11 @@ nco_s1d_sng /* [fnc] Convert sparse-1D type enum to string */
 } /* !nco_s1d_sng() */
 
 int /* O [rcd] Return code */
-nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
+nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 (rgr_sct * const rgr, /* I/O [sct] Regridding structure */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal Table */
 {
-  /* Purpose: Read sparse CLM/ELM input file, inflate and write into output file */
+  /* Purpose: Read sparse ELM/CLM input file, inflate and write into output file */
 
   /* Usage:
      ncks -D 1 -O -C --s1d ~/data/bm/elm_mali_bg_hst.nc ~/foo.nc
@@ -149,6 +156,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   char *clm_nm_in=(char *)strdup("column");
   char *mec_nm_in=(char *)strdup("glc_nec"); /* 20241017: glc_nec is only present in IG/BG restarts as an "orphaned dimension" (no variables use it) so ncks -m does not print it. Use ncdump -h to see it. */
   char *pft_nm_in=(char *)strdup("pft");
+  char *pft_ntr_nm_in=(char *)strdup("natpft");
   char *tpo_nm_in=(char *)strdup("topounit");
 
   char *levcan_nm_in=(char *)strdup("levcan");
@@ -175,7 +183,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int dmn_idx; /* [idx] Dimension index */
   int dmn_idx_swp; /* [idx] Dimension index */
 
-  long int chr_idx;
   long int clm_idx;
   long int grd_idx_out;
   long int idx_s1d_crr; /* [idx] Current valid index into S1D arrays */
@@ -333,6 +340,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int dmn_id_lnd_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_mec_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_pft_in=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_pft_ntr_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_tpo_in=NC_MIN_INT; /* [id] Dimension ID */
 
   nco_bool flg_s1d_clm=False; /* [flg] Dataset contains sparse variables for columns */
@@ -350,7 +358,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     (void)fprintf(stderr,"%s: ERROR %s reports input data file lacks expected global attributes\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !flg_nm_hst */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will assume input attributes and variables use CLM/ELM %s naming conventions like %s\n",nco_prg_nm_get(),fnc_nm,flg_nm_hst ? "history file" : "restart file",flg_nm_hst ? "\"ltype_...\"" : "\"ilun_...\"");
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will assume input attributes and variables use ELM/CLM %s naming conventions like %s\n",nco_prg_nm_get(),fnc_nm,flg_nm_hst ? "history file" : "restart file",flg_nm_hst ? "\"ltype_...\"" : "\"ilun_...\"");
 
   rcd=nco_inq_varid_flg(in_id,"cols1d_lat",&cols1d_lat_id);
   if(cols1d_lat_id != NC_MIN_INT) flg_s1d_clm=True;
@@ -412,7 +420,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   } /* !flg_s1d_tpo */
   
   if(!(flg_s1d_clm || flg_s1d_lnd || flg_s1d_pft || flg_s1d_tpo)){
-    (void)fprintf(stderr,"%s: ERROR %s does not detect any of the key variables (currently cols1d_lat, land1d_lat, pfts1d_lat, topo1d_lat) used to indicate presence of sparse-packed (S1D) variables\nHINT: Be sure the target dataset (file) contains S1D variables---not all CLM/ELM history (as opposed to restart) files do\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"%s: ERROR %s does not detect any of the key variables (currently cols1d_lat, land1d_lat, pfts1d_lat, topo1d_lat) used to indicate presence of sparse-packed (S1D) variables\nHINT: Be sure the target dataset (file) contains S1D variables---not all ELM/CLM history (as opposed to restart) files do. For example, default ELM/CLM h0 (monthly) history files typically contain no S1D variables.\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !flg_s1d_clm... */
 
@@ -531,6 +539,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   long lnd_nbr_in=NC_MIN_INT; /* [nbr] Number of landunits in input data */
   long mec_nbr_in=NC_MIN_INT; /* [nbr] Number of MECs in input data */
   long pft_nbr_in=NC_MIN_INT; /* [nbr] Number of PFTs in input data */
+  long pft_ntr_nbr_in=NC_MIN_INT; /* [nbr] Number of natural PFTs in input data */
   long tpo_nbr_in=NC_MIN_INT; /* [nbr] Number of topounits in input data */
   long clm_nbr_out=NC_MIN_INT; /* [nbr] Number of columns in output data */
   long grd_nbr_out=NC_MIN_INT; /* [nbr] Number of gridcells in output data */
@@ -787,7 +796,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   } /* !need_clm */
     
   /* Determine output Grid dimension if needed:
-     CLM/ELM 'gridcell' dimension counts each gridcell that contains land
+     ELM/CLM 'gridcell' dimension counts each gridcell that contains land
      Replace this dimension by horizontal dimension(s) in input data file */
   if(need_grd){
     if(flg_grd_1D) grd_nbr_out=col_nbr;
@@ -815,9 +824,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   //double *pfts1d_wtgcell=NULL; /* [frc] PFT weight relative to corresponding gridcell */
   /* ELM history files contain a dimension named "natpft" that contains the number of natural PFTs (including bare ground)
      AFAICT, the variable PCT_NAT_PFT(time,natpft,lat,lon) is the exclusive user of this dimension
-     ELM restart files do not contain the natpft dimension */
-#define NCO_MAX_NTR_PFT 14 /* Maximum number of natural PFTs (not counting bare ground) */
-  const int pft_max_ntr_pft=NCO_MAX_NTR_PFT; /* [nbr] Maximum number of natural PFTs (not counting bare ground) */
+     ELM restart files do not contain the natpft dimension
+     However, we need natpft for restart files in order to parse crop names in global attributes 
+     How to obtain natpft for restart files? */
+#define NCO_PFT_NTR_MAX 16 /* Maximum number of natural PFTs (not counting bare ground) */
+  const int pft_ntr_max=NCO_PFT_NTR_MAX; /* [nbr] Maximum number of natural PFTs (not counting bare ground) */
   int *pfts1d_active=NULL; /* [flg] PFT active flag (1=active, 0=inactive) */
   int *pfts1d_ityp_veg=NULL; /* [enm] PFT vegetation type */
   int *pfts1d_ityplun=NULL; /* [enm] PFT landunit type */
@@ -846,8 +857,13 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       //while(pfts1d_ityp_veg[++pft_idx] != 0) pft_nbr_out++;
       //      break;
     } /* !pft_idx */
-    if(pft_nbr_out > pft_max_ntr_pft) flg_cft=True;
+    if(pft_nbr_out > pft_ntr_max) flg_cft=True;
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %ld\n",nco_prg_nm_get(),pft_nbr_out);
+    if(flg_nm_hst){
+      rcd=nco_inq_dimid(in_id,pft_ntr_nm_in,&dmn_id_pft_ntr_in);
+      rcd=nco_inq_dimlen(in_id,dmn_id_pft_ntr_in,&pft_ntr_nbr_in);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_ntr_nbr_in = %ld\n",nco_prg_nm_get(),pft_ntr_nbr_in);
+    } /* !flg_nm_hst */
 
     pfts1d_ixy=(int *)nco_malloc(pft_nbr_in*sizeof(int));
     rcd=nco_get_var(in_id,pfts1d_ixy_id,pfts1d_ixy,NC_INT);
@@ -1151,7 +1167,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       pft_sng_out=(nco_string *)nco_calloc(pft_nbr_out,sizeof(nco_string));
     }else{
       pft_chr_out=(char *)nco_calloc(pft_nbr_out*pft_sng_lng_out,sizeof(char));
-      //      for(chr_idx=0;chr_idx<pft_nbr_out*pft_sng_lng_out;chr_idx++) pft_chr_out='\0';
     } /* !fl_out_fmt */
     
     /* Gather natural PFT names
@@ -1174,7 +1189,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
        Our output gridded datasets use the C-convention and are zero-based
        Hence our output PFT element 0 represents PFT ityp 1 == Needleleaf evergreen temperate tree
        We accomplish this by adding 1 to pft_idx in call to nco_pft_typ_sng() */
-    for(pft_idx=0;pft_idx<pft_max_ntr_pft;pft_idx++){
+    for(pft_idx=0;pft_idx<pft_ntr_max;pft_idx++){
       if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	pft_sng_out[pft_idx]=nco_pft_typ_sng(pft_idx+1);
       }else{
@@ -1184,10 +1199,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     /* Restart files enumerate all (natural and crop) PFTs in global attributes
        History files enumerate only crop PFTs (i.e., CFTs) in global attributes */
     char *cft_nm_crr=NULL; /* [sng] Crop functional type descriptor */
-    for(pft_idx=pft_max_ntr_pft;pft_idx<pft_nbr_out;pft_idx++){
+    for(pft_idx=pft_ntr_max;pft_idx<pft_nbr_out;pft_idx++){
       /* Label includes Fortran PFT and CFT ityp so add 1 to pft_idx */
       cft_nm_crr=(char *)strdup("PFT ityp %02ld, CFT ityp %02ld");
-      sprintf(cft_nm_crr,cft_nm_crr,pft_idx+1,pft_idx+1-pft_max_ntr_pft);
+      sprintf(cft_nm_crr,cft_nm_crr,pft_idx+1,pft_idx+1-pft_ntr_max);
       if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	pft_sng_out[pft_idx]=cft_nm_crr;
       }else{
@@ -1201,10 +1216,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     } /* !fl_out_fmt */
     var_crt_nbr++;
     rcd=nco_char_att_put(out_id,pft_nm_out,"long_name","PFT Descriptor");
-    rcd=nco_char_att_put(out_id,pft_nm_out,"note","Storage uses C (0-based indexing) convention and does not include space for PFT ityp 0 == bare ground/not vegetated. Thus PFT ityp is one more than the storage index. For example, storage index 0 is PFT ityp 1 == Needleleaf evergreen temperate tree. The last natural PFT is ityp 14 == C4 grass. The presence of crop PFTs (i.e., CFTs) in data fields is indicated by an extended PFT type index whose enumeration is sequential with PFTs. Usually the first crop is c3_crop with PFT ityp 15 and CFT ityp = 1. The last CFT ityp is the total PFT dimension size minus 14 (the number of natural PFTs).");
+    rcd=nco_char_att_put(out_id,pft_nm_out,"note","Storage uses C (0-based indexing) convention and does not include space for PFT ityp 0 == bare ground/not vegetated. Thus PFT ityp is one more than the storage index. For example, storage index 0 is PFT ityp 1 == Needleleaf evergreen temperate tree. Often the last natural PFT is ityp 14 == C4 grass, although sometimes it is ityp 16 == C3 irrigated. The presence of crop PFTs (i.e., CFTs) in data fields is indicated by an extended PFT type index whose enumeration is sequential with natural PFTs. Often the first crop is c3_crop with PFT ityp 15 and CFT ityp = 1, although sometimes it is corn with PFT ityp 17 and CFT ityp = 1. The last CFT ityp is the total PFT dimension size minus the number of natural PFTs.");
 
 #if false    
-    /* Address sanitizer has a field day in this section... */
     char att_nm[NC_MAX_NAME+1L]; /* [sng] Attribute name */
     int att_glb_nbr; /* [nbr] Number of global attributes */
     rcd=nco_inq(in_id,(int *)NULL,(int *)NULL,&att_glb_nbr,(int *)NULL);
@@ -1223,25 +1237,34 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     int pft_nbr_crr=0; /* [nbr] Current number of PFT attributes read */
     for(att_idx=0;att_idx<att_glb_nbr;att_idx++){
       rcd=nco_inq_attname(in_id,NC_GLOBAL,att_idx,att_nm);
+      rcd=nco_inq_att(in_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
       if(flg_nm_hst){
 	if((cft_ptr=strcasestr(att_nm,cft_xpr))){
 	  cft_nbr_crr++;
-	  cft_crr=(char *)strdup(cft_ptr);
+	  /* Add four to eliminate the "cft_" portion of the attribute name */
+	  cft_crr=(char *)strdup(cft_ptr+4);
+	  pft_idx=pft_ntr_nbr_in-2+cft_nbr_crr;
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports cft_nbr_crr = %d, pft_idx = %d, cft_crr = %s\n",nco_prg_nm_get(),fnc_nm,cft_nbr_crr,pft_idx,cft_crr);
+	  if(fl_out_fmt == NC_FORMAT_NETCDF4){
+	    if(pft_idx >= 0) pft_sng_out[pft_idx]=cft_crr;
+	  }else{
+	    if(pft_idx >= 0) strcpy(pft_chr_out+pft_idx*pft_sng_lng_out,cft_crr);
+	  } /* !fl_out_fmt */
 	} /* !cft_ptr */
-      } /* !flg_nm_rst */
+      } /* !flg_nm_hst */
       if(flg_nm_rst){
 	if((pft_ptr=strcasestr(att_nm,pft_xpr))){
 	  pft_nbr_crr++;
-	  pft_idx=pft_nbr_crr-1;
+	  pft_idx=pft_nbr_crr-2;
 	  pft_crr=(char *)strdup(pft_ptr);
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports pft_nbr_crr = %d, pft_idx = %d, pft_crr = %s\n",nco_prg_nm_get(),fnc_nm,pft_nbr_crr,pft_idx,pft_crr);
 	  if(fl_out_fmt == NC_FORMAT_NETCDF4){
-	    if(pft_idx >= 1) pft_sng_out[pft_idx]=pft_crr;
+	    if(pft_idx >= 0) pft_sng_out[pft_idx]=pft_crr;
 	  }else{
-	    if(pft_idx >= 1) strcpy(pft_chr_out+pft_idx*pft_sng_lng_out,pft_crr);
+	    if(pft_idx >= 0) strcpy(pft_chr_out+pft_idx*pft_sng_lng_out,pft_crr);
 	  } /* !fl_out_fmt */
 	} /* !pft_ptr */
       } /* !flg_nm_rst */
-      rcd=nco_inq_att(in_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
     } /* !att_idx */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Read cft_nbr_crr = %d CFT attributes and pft_nbr_crr = %d PFT attributes\n",nco_prg_nm_get(),cft_nbr_crr,pft_nbr_crr);
 #endif /* !false */
@@ -1726,7 +1749,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	/* Compute number and size of non-lat/lon or non-col dimensions (e.g., level, time, crop species, wavelength)
 	   Denote their convolution by level or 'lvl' for shorthand
 	   There are lvl_nbr elements for each lat/lon or col position
-	   CLM/ELM dimensions that count in "lvl_nbr" include all lev* dimensions, time, numrad */
+	   ELM/CLM dimensions that count in "lvl_nbr" include all lev* dimensions, time, numrad */
 	lvl_nbr=1L;
 	/* Restart files are generally ordered (column|gridcell|landunit|pft|topounit,lev*|numrad)
 	   Restart files unroll the MEC dimension into the column dimension

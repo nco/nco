@@ -1,10 +1,20 @@
+2024-10-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.2.9-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha04: Empathy Card';git push
+	git tag -a 5.2.9-alpha04 -m 'ncks: S1D polish';git push --tags
+
+	* Progress on inferring pft_sng_out from global attributes, though remains off by default
+
+	* Read pft_nbr_nbr_in from history files
+
 2024-10-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9-alpha03: Palenque';git push
 	git tag -a 5.2.9-alpha03 -m 'ncks: S1D finish topounits, workaround bad topos1d_[ij]xy, address sanitize';git push --tags
 
-	* Activate pft_sng_out those disable inferring from global attributes
+	* Activate pft_sng_out though disable inferring from global attributes
 
 	* Enable Clang address sanitizer with -fsanitize=address
 
