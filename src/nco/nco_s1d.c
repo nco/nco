@@ -89,7 +89,7 @@ nco_pft_typ_sng /* [fnc] Convert PFT-type enum to string */
   case nco_pft_ipft_c3_arctic_grass: return "C3 Arctic grass"; /* 12 */
   case nco_pft_ipft_c3_non_arctic_grass: return "C3 non-Arctic grass"; /* 13 */
   case nco_pft_ipft_c4_grass: return "C4 grass"; /* 14 */
-    /* 20241017: ELMv3 includes C3 crop and irrigated in natpft dimension (natpft=17)
+    /* 20241017: ELMv3 control includes C3 crop and irrigated in natpft dimension (natpft=17)
        Previously, AFAIK, ELM datasets always had natpft=15
        Also Eva h2, h3 history files still have natpft=15
        These final two enumerates are not accessed unless natpft >= 17 */
@@ -217,7 +217,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   int dmn_id_lon_in=NC_MIN_INT; /* [id] Dimension ID */
 
   nco_bool FL_RTR_RMT_LCN;
-  nco_bool flg_cft=False; /* [flg] Dataset contains crop PFTs, i.e., CFTs */
   nco_bool flg_grd_1D=False; /* [flg] Unpacked data are on unstructured (1D) grid */
   nco_bool flg_grd_2D=False; /* [flg] Unpacked data are on rectangular (2D) grid */
   nco_bool flg_grd_dat=False; /* [flg] Use horizontal grid from required input data file */
@@ -546,6 +545,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   long lnd_nbr_out=NC_MIN_INT; /* [nbr] Number of landunits in output data */
   long mec_nbr_out=NC_MIN_INT; /* [nbr] Number of MECs in output data */
   long pft_nbr_out=NC_MIN_INT; /* [nbr] Number of PFTs in output data */
+  long pft_crp_nbr_out=NC_MIN_INT; /* [nbr] Number of crop PFTs in output data */
+  long pft_ntr_nbr_out=NC_MIN_INT; /* [nbr] Number of natural PFTs in output data */
   long pft_sng_lng_out=NC_MIN_INT; /* [nbr] Max length of PFT string in output data */
   long tpo_nbr_out=NC_MIN_INT; /* [nbr] Number of topounits in output data */
   if(need_clm) rcd=nco_inq_dimlen(in_id,dmn_id_clm_in,&clm_nbr_in);
@@ -827,8 +828,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
      ELM restart files do not contain the natpft dimension
      However, we need natpft for restart files in order to parse crop names in global attributes 
      How to obtain natpft for restart files? */
-#define NCO_PFT_NTR_MAX 16 /* Maximum number of natural PFTs (not counting bare ground) */
-  const int pft_ntr_max=NCO_PFT_NTR_MAX; /* [nbr] Maximum number of natural PFTs (not counting bare ground) */
   int *pfts1d_active=NULL; /* [flg] PFT active flag (1=active, 0=inactive) */
   int *pfts1d_ityp_veg=NULL; /* [enm] PFT vegetation type */
   int *pfts1d_ityplun=NULL; /* [enm] PFT landunit type */
@@ -847,22 +846,37 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     //rcd=nco_get_var(in_id,pfts1d_wtgcell_id,pfts1d_wtgcell,NC_DOUBLE);
     rcd=nco_get_var(in_id,pfts1d_ityp_veg_id,pfts1d_ityp_veg,NC_INT);
     rcd=nco_get_var(in_id,pfts1d_ityplun_id,pfts1d_ityplun,NC_INT);
-    
+
     pft_nbr_out=0;
+    pft_crp_nbr_out=0;
+    pft_ntr_nbr_out=0;
     for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
+      /* Count total PFTs = Natural + Crops */
       if(pfts1d_ityp_veg[pft_idx] > pft_nbr_out) pft_nbr_out=pfts1d_ityp_veg[pft_idx];
-      // Slightly more convoluted method originally used on beth_in.nc (to count only crops, I think
-      //      if((pfts1d_ityplun[pft_idx] != ilun_vegetated_or_bare_soil) && (pfts1d_ityplun[pft_idx] != ilun_crop)) continue;
-      //      /* Skip bare ground, skip MECs */
-      //while(pfts1d_ityp_veg[++pft_idx] != 0) pft_nbr_out++;
-      //      break;
+      /* Count natural PFTs only */
+      if(pfts1d_ityplun[pft_idx] == ilun_vegetated_or_bare_soil)
+	if(pfts1d_ityp_veg[pft_idx] > pft_ntr_nbr_out) pft_ntr_nbr_out=pfts1d_ityp_veg[pft_idx];
+      /* Count crop PFTs only */
+      if(pfts1d_ityplun[pft_idx] == ilun_crop)
+	if(pfts1d_ityp_veg[pft_idx] > pft_crp_nbr_out) pft_crp_nbr_out=pfts1d_ityp_veg[pft_idx];
     } /* !pft_idx */
-    if(pft_nbr_out > pft_ntr_max) flg_cft=True;
+    /* Subtract starting offset crop index from crop number */
+    if(pft_crp_nbr_out > pft_ntr_nbr_out) pft_crp_nbr_out-=pft_ntr_nbr_out;
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %ld\n",nco_prg_nm_get(),pft_nbr_out);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_ntr_nbr_out = %ld\n",nco_prg_nm_get(),pft_ntr_nbr_out);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_crp_nbr_out = %ld\n",nco_prg_nm_get(),pft_crp_nbr_out);
+
+    /* Sanity check PFT counts */
     if(flg_nm_hst){
-      rcd=nco_inq_dimid(in_id,pft_ntr_nm_in,&dmn_id_pft_ntr_in);
-      rcd=nco_inq_dimlen(in_id,dmn_id_pft_ntr_in,&pft_ntr_nbr_in);
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_ntr_nbr_in = %ld\n",nco_prg_nm_get(),pft_ntr_nbr_in);
+      rcd=nco_inq_dimid_flg(in_id,pft_ntr_nm_in,&dmn_id_pft_ntr_in);
+      if(rcd == NC_NOERR){
+	rcd=nco_inq_dimlen(in_id,dmn_id_pft_ntr_in,&pft_ntr_nbr_in);
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_ntr_nbr_in = %ld\n",nco_prg_nm_get(),pft_ntr_nbr_in);
+	assert(pft_ntr_nbr_in != pft_ntr_nbr_out);
+      }else{ /* !rcd */
+	(void)fprintf(stdout,"%s: WARNING %s is unable to find natural PFT dimension \"%s\" in a history-type dataset\n",nco_prg_nm_get(),fnc_nm,pft_ntr_nm_in);
+      } /* !rcd */
+      
     } /* !flg_nm_hst */
 
     pfts1d_ixy=(int *)nco_malloc(pft_nbr_in*sizeof(int));
@@ -1158,7 +1172,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     
   /* PFT coordinate  */
   int pft_out_id=NC_MIN_INT; /* [id] Variable ID for PFT coordinate */
-  //if(False){
   if(need_pft){
     dmn_ids_out[0]=dmn_id_pft_out;
     dmn_ids_out[1]=dmn_id_pft_sng_lng_out;
@@ -1182,6 +1195,17 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
        PFT ityp = 15 is C3 crop
        PFT ityp = 16 is C3 irrigated, last "natural PFT"
 
+       Presence of PFT name in global attribute field does not guarantee PFT is active
+       ELMv3 control restart files contain global attributes for these seven crops despite absence of these crops in restart fields:
+       :ipft_corn = 17 ;
+       :ipft_irrigated_corn = 18 ;
+       :ipft_spring_temperate_cereal = 19 ;
+       :ipft_irrigated_spring_temperate_cereal = 20 ;
+       :ipft_winter_temperate_cereal = 21 ;
+       :ipft_irrigated_winter_temperate_cereal = 22 ;
+       :ipft_soybean = 23 ;
+       Be careful NOT to include these names in pft coordinate
+
        Eva h2 file has natpft = 15 and...
        :cft_c3_crop = 1 ;
        :cft_c3_irrigated = 2 ;
@@ -1189,7 +1213,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
        Our output gridded datasets use the C-convention and are zero-based
        Hence our output PFT element 0 represents PFT ityp 1 == Needleleaf evergreen temperate tree
        We accomplish this by adding 1 to pft_idx in call to nco_pft_typ_sng() */
-    for(pft_idx=0;pft_idx<pft_ntr_max;pft_idx++){
+    for(pft_idx=0;pft_idx<pft_ntr_nbr_out;pft_idx++){
       if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	pft_sng_out[pft_idx]=nco_pft_typ_sng(pft_idx+1);
       }else{
@@ -1199,10 +1223,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     /* Restart files enumerate all (natural and crop) PFTs in global attributes
        History files enumerate only crop PFTs (i.e., CFTs) in global attributes */
     char *cft_nm_crr=NULL; /* [sng] Crop functional type descriptor */
-    for(pft_idx=pft_ntr_max;pft_idx<pft_nbr_out;pft_idx++){
+    for(pft_idx=pft_ntr_nbr_out;pft_idx<pft_nbr_out;pft_idx++){
       /* Label includes Fortran PFT and CFT ityp so add 1 to pft_idx */
       cft_nm_crr=(char *)strdup("PFT ityp %02ld, CFT ityp %02ld");
-      sprintf(cft_nm_crr,cft_nm_crr,pft_idx+1,pft_idx+1-pft_ntr_max);
+      sprintf(cft_nm_crr,cft_nm_crr,pft_idx+1,pft_idx-pft_ntr_nbr_out+1);
       if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	pft_sng_out[pft_idx]=cft_nm_crr;
       }else{

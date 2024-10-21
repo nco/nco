@@ -1,8 +1,12 @@
-2024-10-18  Charlie Zender  <zender@uci.edu>
+2024-10-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha01: Sanitize';git push
 	git tag -a 5.3.0-alpha01 -m 'Functionally identical to 5.2.9';git push --tags
+
+	* Infer/determine and use self-consistent pft_ntr_nbr_out, pft_crp_nbr_out, pft_nbr_out for both history/restart datasets
+
+2024-10-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.2.9 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.2.9: Empathy Card';git push
