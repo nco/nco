@@ -1221,7 +1221,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       } /* !fl_out_fmt */
     } /* !pft_idx */
     /* Restart files enumerate all (natural and crop) PFTs in global attributes
-       History files enumerate only crop PFTs (i.e., CFTs) in global attributes */
+       History files enumerate only crop PFTs (i.e., CFTs) in global attributes
+       Prior to 20241022, automatically generate PFT/CFT names in a boring list format
+       Uncomment this simple block in case complex gleaning from global attributes (below) becomes problematic later */
+#if false
     char *cft_nm_crr=NULL; /* [sng] Crop functional type descriptor */
     for(pft_idx=pft_ntr_nbr_out;pft_idx<pft_nbr_out;pft_idx++){
       /* Label includes Fortran PFT and CFT ityp so add 1 to pft_idx */
@@ -1233,6 +1236,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	strcpy(pft_chr_out+pft_idx*pft_sng_lng_out,cft_nm_crr);
       } /* !fl_out_fmt */
     } /* !pft_idx */
+#endif /* !false */
     if(fl_out_fmt == NC_FORMAT_NETCDF4){
       rcd+=nco_def_var(out_id,pft_nm_out,NC_STRING,dmn_nbr_1D,dmn_ids_out,&pft_out_id);
     }else{
@@ -1242,7 +1246,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     rcd=nco_char_att_put(out_id,pft_nm_out,"long_name","PFT Descriptor");
     rcd=nco_char_att_put(out_id,pft_nm_out,"note","Storage uses C (0-based indexing) convention and does not include space for PFT ityp 0 == bare ground/not vegetated. Thus PFT ityp is one more than the storage index. For example, storage index 0 is PFT ityp 1 == Needleleaf evergreen temperate tree. Often the last natural PFT is ityp 14 == C4 grass, although sometimes it is ityp 16 == C3 irrigated. The presence of crop PFTs (i.e., CFTs) in data fields is indicated by an extended PFT type index whose enumeration is sequential with natural PFTs. Often the first crop is c3_crop with PFT ityp 15 and CFT ityp = 1, although sometimes it is corn with PFT ityp 17 and CFT ityp = 1. The last CFT ityp is the total PFT dimension size minus the number of natural PFTs.");
 
-#if false    
+    // As of 20241022, glean as many PFT/CFT names as possible from global attributes
     char att_nm[NC_MAX_NAME+1L]; /* [sng] Attribute name */
     int att_glb_nbr; /* [nbr] Number of global attributes */
     rcd=nco_inq(in_id,(int *)NULL,(int *)NULL,&att_glb_nbr,(int *)NULL);
@@ -1257,6 +1261,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     char *pft_ptr=NULL;
     char *cft_crr=NULL;
     char *pft_crr=NULL;
+    char *usc_ptr=NULL;
     int cft_nbr_crr=0; /* [nbr] Current number of CFT attributes read */
     int pft_nbr_crr=0; /* [nbr] Current number of PFT attributes read */
     for(att_idx=0;att_idx<att_glb_nbr;att_idx++){
@@ -1265,10 +1270,15 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       if(flg_nm_hst){
 	if((cft_ptr=strcasestr(att_nm,cft_xpr))){
 	  cft_nbr_crr++;
-	  /* Add four to eliminate the "cft_" portion of the attribute name */
+	  /* Add four to eliminate "cft_" portion of attribute name */
 	  cft_crr=(char *)strdup(cft_ptr+4);
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports cft_nbr_crr = %d, pft_idx = %ld, cft_crr = %s\n",nco_prg_nm_get(),fnc_nm,cft_nbr_crr,pft_idx,cft_crr);
+	  /* Capitalize first word for nicer labels */
+	  cft_crr[0]=toupper(cft_crr[0]);
+	  /* Remove underscores */
+	  usc_ptr=cft_crr;
+	  while((usc_ptr=strchr(usc_ptr,'_')) != NULL) *usc_ptr++=' ';
 	  pft_idx=pft_ntr_nbr_in-2+cft_nbr_crr;
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports cft_nbr_crr = %d, pft_idx = %d, cft_crr = %s\n",nco_prg_nm_get(),fnc_nm,cft_nbr_crr,pft_idx,cft_crr);
 	  if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	    if(pft_idx >= 0) pft_sng_out[pft_idx]=cft_crr;
 	  }else{
@@ -1280,18 +1290,26 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	if((pft_ptr=strcasestr(att_nm,pft_xpr))){
 	  pft_nbr_crr++;
 	  pft_idx=pft_nbr_crr-2;
-	  pft_crr=(char *)strdup(pft_ptr);
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports pft_nbr_crr = %d, pft_idx = %d, pft_crr = %s\n",nco_prg_nm_get(),fnc_nm,pft_nbr_crr,pft_idx,pft_crr);
-	  if(fl_out_fmt == NC_FORMAT_NETCDF4){
-	    if(pft_idx >= 0) pft_sng_out[pft_idx]=pft_crr;
-	  }else{
-	    if(pft_idx >= 0) strcpy(pft_chr_out+pft_idx*pft_sng_lng_out,pft_crr);
-	  } /* !fl_out_fmt */
+	  /* Restart datasets can contain "ipft_..." attributes for inactive crop types that are not included in pft_nbr_out */
+	  if(pft_idx < pft_nbr_out-1){
+	    /* Add five to eliminate "ipft_" portion of attribute name */
+	    pft_crr=(char *)strdup(pft_ptr+5);
+	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports pft_nbr_crr = %d, pft_idx = %ld, pft_crr = %s\n",nco_prg_nm_get(),fnc_nm,pft_nbr_crr,pft_idx,pft_crr);
+	    /* Capitalize first word for nicer labels */
+	    pft_crr[0]=toupper(pft_crr[0]);
+	    /* Remove underscores */
+	    usc_ptr=pft_crr;
+	    while((usc_ptr=strchr(usc_ptr,'_')) != NULL) *usc_ptr++=' ';
+	    if(fl_out_fmt == NC_FORMAT_NETCDF4){
+	      if(pft_idx >= 0) pft_sng_out[pft_idx]=pft_crr;
+	    }else{
+	      if(pft_idx >= 0) strcpy(pft_chr_out+pft_idx*pft_sng_lng_out,pft_crr);
+	    } /* !fl_out_fmt */
+	  } /* !pft_idx */
 	} /* !pft_ptr */
       } /* !flg_nm_rst */
     } /* !att_idx */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Read cft_nbr_crr = %d CFT attributes and pft_nbr_crr = %d PFT attributes\n",nco_prg_nm_get(),cft_nbr_crr,pft_nbr_crr);
-#endif /* !false */
     (void)fflush(stdout);
   } /* !need_pft */
   
