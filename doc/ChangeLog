@@ -1,8 +1,16 @@
-2024-10-22  Charlie Zender  <zender@uci.edu>
+2024-10-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha02: Widow\'s Peak';git push
-	git tag -a 5.3.0-alpha02 -m 'fxm';git push --tags
+	git tag -a 5.3.0-alpha02 -m 'ncks: mec_idx fix';git push --tags
+
+	* mec_idx now allows for < 10 MEC columns, possibly with gaps, in glacier/MEC landunits
+
+2024-10-23  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo update examples
+
+2024-10-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha01: Sanitize';git push
