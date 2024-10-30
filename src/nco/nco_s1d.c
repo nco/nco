@@ -2171,6 +2171,14 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		     Restart arrays are stored as, e.g., [cols1d,levlak] */
 		  idx_in=clm_idx*mrv_nbr+mrv_idx;
 		  idx_out=mrv_idx*grd_sz_out+grd_idx_out;
+		  /* Alter output index for snow layers if desired/possible. See explanation above. */
+		  if(flg_levsno){
+		    levsno_idx_in=mrv_idx;
+		    if(levsno_idx_in < levsno_nbr_in && (levsno_idx_in-snl_var[clm_idx] >= levsno_nbr_in)){
+		      levsno_idx_out=levsno_idx_in-(levsno_nbr_in+snl_var[clm_idx]);
+		      idx_out=levsno_idx_out*grd_sz_out+grd_idx_out;
+		    } /* !levsno_idx_in */
+		  } /* !flg_levsno */
 		  switch(var_typ_out){
 		  case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[idx_in]; break;
 		  case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[idx_in]; break;
