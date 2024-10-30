@@ -150,13 +150,14 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
   char *grd_nm_in=(char *)strdup("gridcell");
-  char *lnd_nm_in=(char *)strdup("landunit"); /* Canonical landunit sparse dimension name, used in history and restart files */
+  char *lnd_nm_in=(char *)strdup("landunit"); /* [sng] Canonical landunit sparse dimension name, used in history and restart files */
   // 20241017 fxm: replace dimension name "ltype" with "landunit" in all output files?
-  //char *ltype_nm_in=(char *)strdup("ltype"); /* Gridded landunit dimension name used in history (PCT_LANDUNIT, eva_h2.nc) files */
+  //char *ltype_nm_in=(char *)strdup("ltype"); /* [sng] Gridded landunit dimension name used in history (PCT_LANDUNIT, eva_h2.nc) files */
   char *clm_nm_in=(char *)strdup("column");
-  char *mec_nm_in=(char *)strdup("glc_nec"); /* 20241017: glc_nec is only present in IG/BG restarts as an "orphaned dimension" (no variables use it) so ncks -m does not print it. Use ncdump -h to see it. */
+  char *mec_nm_in=(char *)strdup("glc_nec"); /* [sng] 20241017: glc_nec is only present in IG/BG restarts as an "orphaned dimension" (no variables use it) so ncks -m does not print/preserve it. Use ncks --orphan to print/preserve it. Or ncdump -h to see it. */
   char *pft_nm_in=(char *)strdup("pft");
   char *pft_ntr_nm_in=(char *)strdup("natpft");
+  char *snl_var_nm=(char *)strdup("SNLSNO"); /* [sng] Name of variable containing (negative of) number of snow layers */
   char *tpo_nm_in=(char *)strdup("topounit");
 
   char *levcan_nm_in=(char *)strdup("levcan");
@@ -195,6 +196,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 
   nco_string *pft_sng_out=NULL; /* [sng] Coordinate array of PFT strings */
   nco_bool flg_var_mpt; /* [flg] Variable has no valid values */
+  nco_bool flg_levsno; /* [flg] Re-arrange snow layers using snl_var */
 
   size_t idx_dbg=rgr->idx_dbg; /* [idx] User-specifiable debugging location */
   size_t idx_in; /* [idx] Input grid index */
@@ -303,6 +305,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   int cols1d_lon_id=NC_MIN_INT; /* [id] Column longitude */
   int cols1d_ityp_id=NC_MIN_INT; /* [id] Column type */
   int cols1d_ityplun_id=NC_MIN_INT; /* [id] Column landunit type */
+  int snl_var_id=NC_MIN_INT; /* [id] Negative of number of snow layers */
 
   int grid1d_ixy_id=NC_MIN_INT; /* [id] Gridcell 2D longitude index (1-based) */
   int grid1d_jxy_id=NC_MIN_INT; /* [id] Gridcell 2D latitude index (1-based) */
@@ -754,6 +757,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   int *cols1d_ityplun=NULL; /* [enm] Column landunit type */
   int *cols1d_ixy=NULL; /* [idx] Column 2D longitude index */
   int *cols1d_jxy=NULL; /* [idx] Column 2D latitude index */
+  int *snl_var=NULL; /* [nbr] Negative of number of snow layers */
   int clm_typ; /* [enm] Column landunit type */
   if(need_clm){
     if(cols1d_active_id != NC_MIN_INT) cols1d_active=(int *)nco_malloc(clm_nbr_in*sizeof(int));
@@ -794,6 +798,18 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       rcd=nco_get_var(in_id,cols1d_jxy_id,cols1d_jxy,NC_INT);
     } /* !flg_grd_2D */
     
+    /* 20241030: Grab snl_var to demangle levels of snow variables */
+    if(need_levsno){
+      rcd=nco_inq_varid_flg(in_id,snl_var_nm,&snl_var_id);
+      if(rcd == NC_NOERR){
+	snl_var=(int *)nco_malloc(clm_nbr_in*sizeof(int));
+	rcd=nco_get_var(in_id,snl_var_id,snl_var,NC_INT);
+	(void)fprintf(stdout,"%s: INFO Will use %s to assign levsno, levsno1, and levtot snow layers to top-down (ocean-like) vertical grid\n",nco_prg_nm_get(),snl_var_nm);
+      }else{ /* !rcd */
+	(void)fprintf(stdout,"%s: INFO Snow layer variable %s not in input, unable to assign snow layers to intuitive (top-down) vertical grid\n",nco_prg_nm_get(),snl_var_nm);
+      } /* !rcd */
+    } /* !need_levsno */
+
   } /* !need_clm */
     
   /* Determine output Grid dimension if needed:
@@ -1422,12 +1438,12 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	      } /* !var_typ_out */
 	    } /* !has_mss_val */
 	    /* Determine what landunit this variable is defined on
-	       Ratio of idx_in (an element counter) by mrv_nbr yields a clm/lnd/pft/tpo index
+	       Ratio of idx_in (an element counter) on first valid landunit by mrv_nbr yields a clm/lnd/pft/tpo index
 	       Some variables (like DZSNO) defined on lnd_typ=1 (e.g., for non-ice sheet gridcells) and on unrolled dimension (e.g., MEC)
-	   NB: Not sure where to put the lnd_typ=1 values in gridcells that also have MEC
-	   Currently, we ignore it, i.e., if input gridcell contains same variable defined on vegetated landunit and glacier landunit, then output contains values from glacier landunits and ignores values on vegetated landunit
-	   A better solution might be to add the vegetated landunit value times landunit weight to the value on elevation class 1 times weight of that class 
-	   Or to create and output a new variable, e.g., H2OSOI_ICE_vgt without the MEC dimension that contains just the value from the vegetated landunit */
+	       NB: Not sure where to put the lnd_typ=1 values in gridcells that also have MEC
+	       Currently, we ignore it, i.e., if input gridcell contains same variable defined on vegetated landunit and glacier landunit, then output contains values from glacier landunits and ignores values on vegetated landunit
+	       A better solution might be to add the vegetated landunit value times landunit weight to the value on elevation class 1 times weight of that class 
+	       Or to create and output a new variable, e.g., H2OSOI_ICE_vgt without the MEC dimension that contains just the value from the vegetated landunit */
 	    idx_s1d_crr=NC_MIN_INT;
 
 	    switch(var_typ_in){
@@ -1680,6 +1696,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   /* Unpack and copy data from input file */
   int thr_idx; /* [idx] Thread index */
 
+  long levsno_idx_in; /* [idx] Input snowpack level index */
+  long levsno_idx_out; /* [idx] Output snowpack level index */
+
   long lvl_idx; /* [idx] Level index */
   long lvl_nbr; /* [nbr] Number of levels */
 
@@ -1711,7 +1730,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   } /* !dbg */
   
 #ifdef __GNUG__
-# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,flg_var_mpt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_mss_val,has_numrad,has_pft,has_tpo,idx_in,idx_out,idx_s1d_crr,idx_tbl,in_id,lnd_typ,lnd_typ_crr,lvl_idx,lvl_nbr,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,mss_val_unn,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,clm_typ_mec_fst,cols1d_ityp,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tpo_in,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pft,lat_nbr,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy,tpo_nbr_in,tpo_nbr_out,topo1d_ixy,topo1d_jxy)
+# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,flg_var_mpt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_mss_val,has_numrad,has_pft,has_tpo,idx_in,idx_out,idx_s1d_crr,idx_tbl,in_id,levsno_idx_in,levsno_idx_out,lnd_typ,lnd_typ_crr,lvl_idx,lvl_nbr,mec_idx,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,mss_val_unn,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,clm_typ_mec_fst,cols1d_ityp,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tpo_in,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pft,lat_nbr,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy,snl_var,tpo_nbr_in,tpo_nbr_out,topo1d_ixy,topo1d_jxy)
 #endif /* !__GNUG__ */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -1744,6 +1763,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	rcd=nco_inq_vardimid(out_id,var_id_out,dmn_ids_out);
 	has_levcan=has_levgrnd=has_levlak=has_levsno=has_levsno1=has_levtot=has_mec=has_numrad=False;
 	has_mec=trv_tbl->lst[idx_tbl].has_mec; /* Use previously diagnosed value */
+	flg_levsno=False;
 	flg_var_mpt=False;
 	/* 20240202: Identify special dimensions in input variable
 	   mrv_nbr is product of sizes of dimensions following (thus MRV) column|gridcell|landunit|pft|topounit */
@@ -1911,7 +1931,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	} /* !dmn_idx */
 
 	/* Determine what landunit this variable is defined on
-	   Ratio of idx_in (an element counter) by mrv_nbr yields a clm/lnd/pft/tpo index
+	   Ratio of idx_in (an element counter) on first valid landunit by mrv_nbr yields a clm/lnd/pft/tpo index
 	   Some variables (like DZSNO) defined on lnd_typ=1 (e.g., for non-ice sheet gridcells) and on unrolled dimension (e.g., MEC)
 	   NB: Not sure where to put the lnd_typ=1 values in gridcells that also have MEC
 	   Currently, we ignore it, i.e., if input gridcell contains same variable defined on vegetated landunit and glacier landunit, then output contains values from glacier landunits and ignores values on vegetated landunit
@@ -2066,6 +2086,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	     NCO Output   : time, MEC, lev*, horizontal
 	     ncks --trd -C -d column,0,11 -v DZSNO,cols1d_gridcell_index ${DATA}/bm/elm_mali_rst.nc | m */
 	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO unpack block for %s clm_nbr = %ld, mec_nbr = %ld, mrv_nbr = %ld\n",nco_prg_nm_get(),var_nm,clm_nbr_in,(has_mec) ? mec_nbr_out : 0,mrv_nbr);
+
+	  if(snl_var && (has_levsno || has_levsno1 || has_levtot)) flg_levsno=True;
 	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
 	    clm_typ=cols1d_ityp[clm_idx];
 	    lnd_typ=cols1d_ityplun[clm_idx]; /* [1 <= lnd_typ <= lnd_nbr_out] */
@@ -2089,6 +2111,40 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		/* Recall that lev*|numrad are MRV in restart input, and are LRV in output where lev*|numrad precedes column,[lat,lon|lndgrid] */
 		idx_in=clm_idx*mrv_nbr+mrv_idx;
 		idx_out=mec_idx*mrv_nbr*grd_sz_out+mrv_idx*grd_sz_out+grd_idx_out;
+		/* Alter output index for snow layers if desired/possible */
+		if(flg_levsno){
+		  /* Snow layer dimension has intricate indexing/storage scheme
+		     levsno increases downward from top layer (like pressure)
+		     The number of snow layers varies according to snow depth
+		     The surface snow layer (adjacent to ground) is always index == 0. See clm5.pdf, p. 93, Tbl 8.2.
+		     (Since the "starting" index is zero, this is equivalent to a C-based index
+		     Thus we do not confuse matters by qualifying input index by Fortran or C in the following
+		     They are equivalent for input snow indexes because of the zero-based convention).
+		     Additional layers are added as snowpack deepens 
+		     Snow layers are stored adjacent to the surface layer so that hydrology can route heat and melt from the snow into the ground/soil layers as vertically adjacent gridcells (this simplifies solution to, e.g., Crank-Nicholson solvers)
+		     The notation snl+1 describes the top layer of snow for general snow pack, where snl is the _negative_ of the number of snow layers
+		     The maximum number of snow layers (aka, levsno_nbr, the levsno dimension size) can be 16 (with E3SM use_extra_snowlayers), 12 (with CESM2), or 5 (CLM4, E3SMv1-3 default)
+		     Therefore where all layers are utilized, the top snow layer (adjacent to atmosphere) is index == -15 for has_deep_snowpack, -11 for CESM2, -4 for default E3SM snowpack
+		     A gridcell with only three layers, say, has top snow layer index -2 and surface index 0
+		     Unless snl_var is present, S1D will unpack snow variables exactly as stored, so that the top level of a 3-layer snowpack will appear in index -2, aka C-index 13 for the output levsno dimension for E3SM with use_extra_snowlayers
+		     This results in a "negative space" above the snow fields in the output file
+		     A more intuitive order in which to unpack and then view gridded snow is to place the top layer at index 0 of the levsno dimension in the output file, with deeper layers arranged subsequently
+		     
+		     This shifts the empty cells for non-utilized snowpack layers from the top to the bottom of the output (analogous to bottom topography masking the lower layers of z-grid ocean datasets)
+		     This block uses snl_var when present to effect that shift, so that output snow is butted against the beginning rather than the end of the levsno dimension 
+		     Expressed mathematically, we want snl+1, which occupies input levsno index levsno_idx_in == [levsno_nbr_in-(-snl)] == [levsno_nbr_in+snl], to have levsno C-index 0 in the output:
+		     levsno_idx_out == levsno_nbr_in+snl == -> */
+		  levsno_idx_in=mrv_idx;
+		  /* Only rearrange snow layers, leave empty snow layers and all soil layers alone
+		     First condition is False in soil layers of levtot variables
+		     Second condition is False in empty snow layers of all variables */
+		  if(levsno_idx_in < levsno_nbr_in && (levsno_idx_in-snl_var[clm_idx] >= levsno_nbr_in)){
+		    levsno_idx_out=levsno_idx_in-(levsno_nbr_in+snl_var[clm_idx]);
+		    assert(levsno_idx_out >= 0);
+		    assert(levsno_idx_out < mrv_nbr);
+		    idx_out=mec_idx*mrv_nbr*grd_sz_out+levsno_idx_out*grd_sz_out+grd_idx_out;
+		  } /* !levsno_idx_in */
+		} /* !flg_levsno */
 		switch(var_typ_out){
 		case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[idx_in]; break;
 		case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[idx_in]; break;
@@ -2181,6 +2237,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   if(pfts1d_ixy) pfts1d_ixy=(int *)nco_free(pfts1d_ixy);
   if(pfts1d_jxy) pfts1d_jxy=(int *)nco_free(pfts1d_jxy);
   //if(pfts1d_wtgcell) pfts1d_wtgcell=(double *)nco_free(pfts1d_wtgcell);
+  if(snl_var) snl_var=(int *)nco_free(snl_var);
   if(topo1d_ixy) topo1d_ixy=(int *)nco_free(topo1d_ixy);
   if(topo1d_jxy) topo1d_jxy=(int *)nco_free(topo1d_jxy);
 
