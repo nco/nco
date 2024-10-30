@@ -876,6 +876,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       if(pfts1d_ityplun[pft_idx] == ilun_crop)
 	if(pfts1d_ityp_veg[pft_idx] > pft_crp_nbr_out) pft_crp_nbr_out=pfts1d_ityp_veg[pft_idx];
     } /* !pft_idx */
+    /* Add one to account for ityp == 0 for bare_soil */
+    pft_nbr_out++;
+    pft_ntr_nbr_out++;
+    pft_crp_nbr_out++;
     /* Subtract starting offset crop index from crop number */
     if(pft_crp_nbr_out > pft_ntr_nbr_out) pft_crp_nbr_out-=pft_ntr_nbr_out;
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %ld\n",nco_prg_nm_get(),pft_nbr_out);
@@ -888,7 +892,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       if(rcd == NC_NOERR){
 	rcd=nco_inq_dimlen(in_id,dmn_id_pft_ntr_in,&pft_ntr_nbr_in);
 	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_ntr_nbr_in = %ld\n",nco_prg_nm_get(),pft_ntr_nbr_in);
-	assert(pft_ntr_nbr_in != pft_ntr_nbr_out);
+	assert(pft_ntr_nbr_in == pft_ntr_nbr_out);
       }else{ /* !rcd */
 	(void)fprintf(stdout,"%s: WARNING %s is unable to find natural PFT dimension \"%s\" in a history-type dataset\n",nco_prg_nm_get(),fnc_nm,pft_ntr_nm_in);
       } /* !rcd */
@@ -1232,9 +1236,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
        We accomplish this by adding 1 to pft_idx in call to nco_pft_typ_sng() */
     for(pft_idx=0;pft_idx<pft_ntr_nbr_out;pft_idx++){
       if(fl_out_fmt == NC_FORMAT_NETCDF4){
-	pft_sng_out[pft_idx]=nco_pft_typ_sng(pft_idx+1);
+	pft_sng_out[pft_idx]=nco_pft_typ_sng(pft_idx);
       }else{
-	strcpy(pft_chr_out+pft_idx*pft_sng_lng_out,nco_pft_typ_sng(pft_idx+1));
+	strcpy(pft_chr_out+pft_idx*pft_sng_lng_out,nco_pft_typ_sng(pft_idx));
       } /* !fl_out_fmt */
     } /* !pft_idx */
     /* Restart files enumerate all (natural and crop) PFTs in global attributes
@@ -1261,7 +1265,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     } /* !fl_out_fmt */
     var_crt_nbr++;
     rcd=nco_char_att_put(out_id,pft_nm_out,"long_name","PFT Descriptor");
-    rcd=nco_char_att_put(out_id,pft_nm_out,"note","Storage uses C (0-based indexing) convention and does not include space for PFT ityp 0 == bare ground/not vegetated. Thus PFT ityp is one more than the storage index. For example, storage index 0 is PFT ityp 1 == Needleleaf evergreen temperate tree. Often the last natural PFT is ityp 14 == C4 grass, although sometimes it is ityp 16 == C3 irrigated. The presence of crop PFTs (i.e., CFTs) in data fields is indicated by an extended PFT type index whose enumeration is sequential with natural PFTs. Often the first crop is c3_crop with PFT ityp 15 and CFT ityp = 1, although sometimes it is corn with PFT ityp 17 and CFT ityp = 1. The last CFT ityp is the total PFT dimension size minus the number of natural PFTs.");
+    rcd=nco_char_att_put(out_id,pft_nm_out,"note","Storage uses C (0-based indexing) convention and includes space for PFT ityp 0 == bare ground/not vegetated. Thus PFT ityp equals the storage index. For example, storage index 0 is PFT type 0 == Not vegetated and storage index 1 is PFT ityp 1 == Needleleaf evergreen temperate tree. Often the last natural PFT is ityp 14 == C4 grass, although sometimes it is ityp 16 == C3 irrigated. The presence of crop PFTs (i.e., CFTs) in data fields is indicated by an extended PFT type index whose enumeration is sequential with natural PFTs. Often the first crop is c3_crop with PFT ityp 15 and CFT ityp = 1, although sometimes it is corn with PFT ityp 17 and CFT ityp = 1. The last CFT ityp is the total PFT dimension size minus the number of natural PFTs.");
 
     // As of 20241022, glean as many PFT/CFT names as possible from global attributes
     char att_nm[NC_MAX_NAME+1L]; /* [sng] Attribute name */
@@ -1295,7 +1299,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	  /* Remove underscores */
 	  usc_ptr=cft_crr;
 	  while((usc_ptr=strchr(usc_ptr,'_')) != NULL) *usc_ptr++=' ';
-	  pft_idx=pft_ntr_nbr_in-2+cft_nbr_crr;
+	  pft_idx=pft_ntr_nbr_in-1+cft_nbr_crr;
 	  if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	    if(pft_idx >= 0) pft_sng_out[pft_idx]=cft_crr;
 	  }else{
@@ -1308,7 +1312,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	  pft_nbr_crr++;
 	  pft_idx=pft_nbr_crr-2;
 	  /* Restart datasets can contain "ipft_..." attributes for inactive crop types that are not included in pft_nbr_out */
-	  if(pft_idx < pft_nbr_out-1){
+	  if(pft_idx < pft_nbr_out){
 	    /* Add five to eliminate "ipft_" portion of attribute name */
 	    pft_crr=(char *)strdup(pft_ptr+5);
 	    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s reports pft_nbr_crr = %d, pft_idx = %ld, pft_crr = %s\n",nco_prg_nm_get(),fnc_nm,pft_nbr_crr,pft_idx,pft_crr);
