@@ -1,8 +1,14 @@
-2024-10-24  Charlie Zender  <zender@uci.edu>
+2024-10-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha02: Widow\'s Peak';git push
-	git tag -a 5.3.0-alpha02 -m 'ncks: mec_idx fix';git push --tags
+	git tag -a 5.3.0-alpha02 -m 'ncks: S1D mec_idx fix, bare ground, rdr w/SNLSNO';git push --tags
+
+	* Use SNLSNO to assign levsno, levsno1, and levtot snow layers to top-down (ocean-like) vertical grid
+
+	* Restore PFT ityp = 0 = not vegetated to all output datasets
+
+2024-10-24  Charlie Zender  <zender@uci.edu>
 
 	* mec_idx now allows for < 10 MEC columns, possibly with gaps, in glacier/MEC landunits
 
