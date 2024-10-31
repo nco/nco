@@ -879,9 +879,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     /* Add one to account for ityp == 0 for bare_soil */
     pft_nbr_out++;
     pft_ntr_nbr_out++;
-    pft_crp_nbr_out++;
-    /* Subtract starting offset crop index from crop number */
-    if(pft_crp_nbr_out > pft_ntr_nbr_out) pft_crp_nbr_out-=pft_ntr_nbr_out;
+    /* Subtract starting offset natural index from crop number */
+    if(pft_crp_nbr_out >= pft_ntr_nbr_out) pft_crp_nbr_out=pft_crp_nbr_out-pft_ntr_nbr_out+1;
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %ld\n",nco_prg_nm_get(),pft_nbr_out);
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_ntr_nbr_out = %ld\n",nco_prg_nm_get(),pft_ntr_nbr_out);
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_crp_nbr_out = %ld\n",nco_prg_nm_get(),pft_crp_nbr_out);
@@ -1206,8 +1205,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     /* Gather natural PFT names
        PFT indexing is complicated, and smacks of Fortran conventions
        PFT ityp = 0 is bare ground/not vegetated 
-       PFT ityp = 0 is a valid ityp even though bare ground is not a "true" PFT, and all gridded output PFT fields skip this ityp
-       PFT ityp = 1 is Needleleaf evergreen temperate tree (the first true PFT)
+       PFT ityp = 0 is a valid ityp even though bare ground is has no plants
+       PFT ityp = 1 is Needleleaf evergreen temperate tree
        PFT ityp = 14 is C4 grass is often the last natural PFT
 
        ELMv3 control has natpft = 17 and...
@@ -1232,8 +1231,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
        :cft_c3_irrigated = 2 ;
 
        Our output gridded datasets use the C-convention and are zero-based
-       Hence our output PFT element 0 represents PFT ityp 1 == Needleleaf evergreen temperate tree
-       We accomplish this by adding 1 to pft_idx in call to nco_pft_typ_sng() */
+       Our output PFT element 0 represents PFT ityp 0 == Not vegetated
+       Our output PFT element 1 represents PFT ityp 1 == Needleleaf evergreen temperate tree */
     for(pft_idx=0;pft_idx<pft_ntr_nbr_out;pft_idx++){
       if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	pft_sng_out[pft_idx]=nco_pft_typ_sng(pft_idx);
@@ -1248,9 +1247,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 #if false
     char *cft_nm_crr=NULL; /* [sng] Crop functional type descriptor */
     for(pft_idx=pft_ntr_nbr_out;pft_idx<pft_nbr_out;pft_idx++){
-      /* Label includes Fortran PFT and CFT ityp so add 1 to pft_idx */
       cft_nm_crr=(char *)strdup("PFT ityp %02ld, CFT ityp %02ld");
-      sprintf(cft_nm_crr,cft_nm_crr,pft_idx+1,pft_idx-pft_ntr_nbr_out+1);
+      sprintf(cft_nm_crr,cft_nm_crr,pft_idx,pft_idx-pft_ntr_nbr_out);
       if(fl_out_fmt == NC_FORMAT_NETCDF4){
 	pft_sng_out[pft_idx]=cft_nm_crr;
       }else{
@@ -1310,7 +1308,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       if(flg_nm_rst){
 	if((pft_ptr=strcasestr(att_nm,pft_xpr))){
 	  pft_nbr_crr++;
-	  pft_idx=pft_nbr_crr-2;
+	  pft_idx=pft_nbr_crr-1;
 	  /* Restart datasets can contain "ipft_..." attributes for inactive crop types that are not included in pft_nbr_out */
 	  if(pft_idx < pft_nbr_out){
 	    /* Add five to eliminate "ipft_" portion of attribute name */
@@ -1999,11 +1997,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	       NCO Output   : time, PFT, lev*|numrad, horizontal */
 	    for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
 
-	      pft_typ=pfts1d_ityp_veg[pft_idx]; /* [1 <= pft_typ <= pft_nbr_out] */
-
-	      /* Skip bare ground so output array contains only vegetated types
-		 20241016: Allow bare ground so output PFT dimension size is natpft instead of natpft-1? */
-	      if(!pft_typ) continue;
+	      pft_typ=pfts1d_ityp_veg[pft_idx]; /* [0 <= pft_typ <= pft_nbr_out-1] */
 
 	      /* grd_idx is 0-based index relative to the origin of the horizontal grid, pfts1d is 1-based
 		 [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= pfts1d_ixy <= col_nbr_out]
@@ -2018,7 +2012,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		/* Recall that lev*|numrad are MRV in restart input, and are LRV in output where lev*|numrad precedes column,[lat,lon|lndgrid] */
 		if(flg_nm_hst) idx_in=pft_idx;
 		if(flg_nm_rst) idx_in=pft_idx*mrv_nbr+mrv_idx;
-		idx_out=(pft_typ-1)*grd_sz_out+grd_idx_out;
+		idx_out=pft_typ*grd_sz_out+grd_idx_out;
 		/* memcpy() would allow next statement to work for generic types
 		   However, memcpy() is a system call and could be expensive in an innermost loop */
 		switch(var_typ_out){
