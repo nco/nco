@@ -1,11 +1,15 @@
-2024-10-30  Charlie Zender  <zender@uci.edu>
+2024-10-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha03: Slow Horses';git push
 	git tag -a 5.3.0-alpha03 -m '';git push --tags
 
+	* S1D compute mec_nbr_out as maximum MEC index utilized (fixes ne30 bug)
+
+2024-10-30  Charlie Zender  <zender@uci.edu>
+
 	* NCO 5.3.0-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha02: Widow\'s Peak';git push
+	cd ~/nco;git commit -a -m "Version 5.3.0-alpha02: Widow's Peak";git push
 	git tag -a 5.3.0-alpha02 -m 'ncks: S1D mec_idx fix, bare ground, rdr w/SNLSNO';git push --tags
 
 	* Use SNLSNO to assign levsno, levsno1, and levtot snow layers to top-down (ocean-like) vertical grid

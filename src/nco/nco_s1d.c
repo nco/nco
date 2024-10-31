@@ -759,6 +759,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   int *cols1d_jxy=NULL; /* [idx] Column 2D latitude index */
   int *snl_var=NULL; /* [nbr] Negative of number of snow layers */
   int clm_typ; /* [enm] Column landunit type */
+  const int clm_typ_mec_fst=400; /* [enm] MEC column-type offset from zero */
   if(need_clm){
     if(cols1d_active_id != NC_MIN_INT) cols1d_active=(int *)nco_malloc(clm_nbr_in*sizeof(int));
     if(cols1d_active_id != NC_MIN_INT) rcd=nco_get_var(in_id,cols1d_active_id,cols1d_active,NC_INT);
@@ -771,9 +772,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 
     mec_nbr_out=0;
     for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
-      if(cols1d_ityplun[clm_idx] != ilun_landice_multiple_elevation_classes) continue;
-      while(cols1d_ityplun[clm_idx++] == ilun_landice_multiple_elevation_classes) mec_nbr_out++;
-      break;
+      if(cols1d_ityplun[clm_idx] == ilun_landice_multiple_elevation_classes){
+	mec_idx=cols1d_ityp[clm_idx] % clm_typ_mec_fst;
+	if(mec_idx > mec_nbr_out) mec_nbr_out=mec_idx;
+      } /* !cols1d_ityplun */
     } /* !clm_idx */
     /* Glacier landunits (ilun=4, usually) with active glaciers (e.g., IG cases) have 10 (always, AFAICT) glacier elevation classes
        20241016: IG restart files store the number of elevation classes in orphaned dimension named "glc_nec"
@@ -1179,7 +1181,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 
   /* MEC coordinate clm5.pdf: "The default is to have 10 elevation classes whose lower limits are 0, 200, 400, 700, 1000, 1300, 1600, 2000, 2500, and 3000 m." */
   const double mec[10]={0,200,400,700,1000,1300,1600,2000,2500,3000}; /* [frc] Lowest elevation in each MEC */
-  const int clm_typ_mec_fst=400; /* [enm] MEC column-type offset from zero */
   int mec_out_id=NC_MIN_INT; /* [id] Variable ID for MEC */
   if(need_mec && mec_nbr_out == 10){
     dmn_ids_out[0]=dmn_id_mec_out;
