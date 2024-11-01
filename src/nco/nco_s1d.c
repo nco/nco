@@ -168,7 +168,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   char *levtot_nm_in=(char *)strdup("levtot");
   char *numrad_nm_in=(char *)strdup("numrad");
     
-  char *mec_nm_out=(char *)strdup("mec");
+  char *mec_nm_out=(char *)strdup("mecp1");
   char *pft_sng_lng_nm_out=(char *)strdup("pft_sng_lng");
   char *pft_chr_out=NULL; /* [sng] Coordinate array of PFT strings */
 
@@ -190,7 +190,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   //long int lat_idx;
   //long int lon_idx;
   long int lnd_idx;
-  long int mec_idx;
+  long int mec_idx_in;
+  long int mec_idx_out;
   long int pft_idx;
   long int tpo_idx;
 
@@ -547,6 +548,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   long grd_nbr_out=NC_MIN_INT; /* [nbr] Number of gridcells in output data */
   long lnd_nbr_out=NC_MIN_INT; /* [nbr] Number of landunits in output data */
   long mec_nbr_out=NC_MIN_INT; /* [nbr] Number of MECs in output data */
+  long mec_nbr_outp1=NC_MIN_INT; /* [nbr] Number of MECs+1 in output data */
   long pft_nbr_out=NC_MIN_INT; /* [nbr] Number of PFTs in output data */
   long pft_crp_nbr_out=NC_MIN_INT; /* [nbr] Number of crop PFTs in output data */
   long pft_ntr_nbr_out=NC_MIN_INT; /* [nbr] Number of natural PFTs in output data */
@@ -773,8 +775,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     mec_nbr_out=0;
     for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
       if(cols1d_ityplun[clm_idx] == ilun_landice_multiple_elevation_classes){
-	mec_idx=cols1d_ityp[clm_idx] % clm_typ_mec_fst;
-	if(mec_idx > mec_nbr_out) mec_nbr_out=mec_idx;
+	mec_nbr_in=cols1d_ityp[clm_idx] % clm_typ_mec_fst;
+	if(mec_nbr_in > mec_nbr_out) mec_nbr_out=mec_nbr_in;
       } /* !cols1d_ityplun */
     } /* !clm_idx */
     /* Glacier landunits (ilun=4, usually) with active glaciers (e.g., IG cases) have 10 (always, AFAICT) glacier elevation classes
@@ -964,8 +966,13 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   pft_sng_lng_out=NCO_PFT_MAX_SNG_LNG;
   if(need_pft && pft_nbr_out > 0L) rcd=nco_def_dim(out_id,pft_sng_lng_nm_out,pft_sng_lng_out,&dmn_id_pft_sng_lng_out);
 
-  /* MECs can be a new output dimension if they are enumerated in input (MEC is a column-level sub-unit of a glacier landunit) */
-  if(need_mec && mec_nbr_out > 0L) rcd=nco_def_dim(out_id,mec_nm_out,mec_nbr_out,&dmn_id_mec_out);
+  /* MECs can be a new output dimension if they are enumerated in input (MEC is a column-level sub-unit of a glacier landunit)
+     mec_nbr_out refers to the number of actual MECs
+     mec_nbr_outp1 is the size of the MEC dimension
+     Index zero of MEC dimension is used to hold soil values of MEC variables 
+     Indices 1-10 of MEC dimension hold actual elevation class data */
+  mec_nbr_outp1=mec_nbr_out+1;
+  if(need_mec && mec_nbr_out > 0L) rcd=nco_def_dim(out_id,mec_nm_out,mec_nbr_out+1,&dmn_id_mec_out);
 
   if(need_levcan && levcan_nbr_out > 0L) rcd=nco_def_dim(out_id,levcan_nm_out,levcan_nbr_out,&dmn_id_levcan_out);
   if(need_levgrnd && levgrnd_nbr_out > 0L) rcd=nco_def_dim(out_id,levgrnd_nm_out,levgrnd_nbr_out,&dmn_id_levgrnd_out);
@@ -1179,15 +1186,16 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     rcd=nco_char_att_put(out_id,levlak_nm_out,"units","meter");
   } /* !need_levlak */
 
-  /* MEC coordinate clm5.pdf: "The default is to have 10 elevation classes whose lower limits are 0, 200, 400, 700, 1000, 1300, 1600, 2000, 2500, and 3000 m." */
-  const double mec[10]={0,200,400,700,1000,1300,1600,2000,2500,3000}; /* [frc] Lowest elevation in each MEC */
+  /* MEC coordinate clm5.pdf: "The default is to have 10 elevation classes whose lower limits are 0, 200, 400, 700, 1000, 1300, 1600, 2000, 2500, and 3000 m."
+     The first value of the output dimension is -1 to indicate that it represents soil data */
+  const double mec[11]={-1,0,200,400,700,1000,1300,1600,2000,2500,3000}; /* [frc] Lowest elevation in each MEC */
   int mec_out_id=NC_MIN_INT; /* [id] Variable ID for MEC */
   if(need_mec && mec_nbr_out == 10){
     dmn_ids_out[0]=dmn_id_mec_out;
     rcd+=nco_def_var(out_id,mec_nm_out,NC_DOUBLE,dmn_nbr_1D,dmn_ids_out,&mec_out_id);
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,mec_out_id,NULL,nco_flt_flg_prc_fll);
     var_crt_nbr++;
-    rcd=nco_char_att_put(out_id,mec_nm_out,"long_name","Lowest elevation");
+    rcd=nco_char_att_put(out_id,mec_nm_out,"long_name","Lowest elevation (-1 is soil column data)");
     rcd=nco_char_att_put(out_id,mec_nm_out,"units","meter");
   } /* !need_mec */
     
@@ -1527,7 +1535,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	      if(has_mec){
 		/* Change input column dimension to MEC when present otherwise eliminate this dimension */
 		dmn_ids_out[dmn_idx]=dmn_id_mec_out;
-		dmn_cnt_out[dmn_idx]=mec_nbr_out;
+		dmn_cnt_out[dmn_idx]=mec_nbr_outp1;
 	      }else{ /* !has_mec */
 		dmn_nbr_out--;
 		dmn_ids_out[dmn_idx]=NC_MIN_INT;
@@ -1733,7 +1741,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   } /* !dbg */
   
 #ifdef __GNUG__
-# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,flg_var_mpt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_mss_val,has_numrad,has_pft,has_tpo,idx_in,idx_out,idx_s1d_crr,idx_tbl,in_id,levsno_idx_in,levsno_idx_out,lnd_typ,lnd_typ_crr,lvl_idx,lvl_nbr,mec_idx,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,mss_val_unn,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,clm_typ_mec_fst,cols1d_ityp,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tpo_in,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pft,lat_nbr,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy,snl_var,tpo_nbr_in,tpo_nbr_out,topo1d_ixy,topo1d_jxy)
+# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,flg_var_mpt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_mss_val,has_numrad,has_pft,has_tpo,idx_in,idx_out,idx_s1d_crr,idx_tbl,in_id,levsno_idx_in,levsno_idx_out,lnd_typ,lnd_typ_crr,lvl_idx,lvl_nbr,mec_idx_in,mec_idx_out,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,mss_val_unn,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,clm_typ_mec_fst,cols1d_ityp,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tpo_in,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pft,lat_nbr,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy,snl_var,tpo_nbr_in,tpo_nbr_out,topo1d_ixy,topo1d_jxy)
 #endif /* !__GNUG__ */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -2086,13 +2094,15 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	     ncks --trd -C -d column,0,11 -v DZSNO,cols1d_gridcell_index ${DATA}/bm/elm_mali_rst.nc | m */
 	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO unpack block for %s clm_nbr = %ld, mec_nbr = %ld, mrv_nbr = %ld\n",nco_prg_nm_get(),var_nm,clm_nbr_in,(has_mec) ? mec_nbr_out : 0,mrv_nbr);
 
+	  /* Rearrange snow layer data for this variable? */
 	  if(snl_var && (has_levsno || has_levsno1 || has_levtot)) flg_levsno=True;
+
 	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
 	    clm_typ=cols1d_ityp[clm_idx];
 	    lnd_typ=cols1d_ityplun[clm_idx]; /* [1 <= lnd_typ <= lnd_nbr_out] */
 
 	    /* Skip columns with LUTs for which this variable is undefined
-	       The !has_mec exception is subtle---it ensures MEC fields alway pass through 
+	       The !has_mec exception is subtle---it ensures MEC fields always pass through
 	       NB: LUT=1 values for MEC fields (e.g., DZSNO) are written into MEC=1 slot by non-MEC block
 	       The MEC=1 value for the same gridcell overwrites the LUT=1 value in the MEC=1 slot */
 	    if(lnd_typ != lnd_typ_crr && !has_mec) continue;
@@ -2105,11 +2115,14 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	    
 	    /* Process all column fields */
 	    if(has_mec && lnd_typ == nco_lnd_ilun_landice_multiple_elevation_classes){
-	      mec_idx=(clm_typ % clm_typ_mec_fst)-1;
+	      /* Subtract one because MEC column types are 1-based (401, 402, ... 410) */
+	      mec_idx_in=(clm_typ % clm_typ_mec_fst)-1;
+	      /* 20241101: Reserve index[0] of MEC dimension for soil column data */
+	      mec_idx_out=mec_idx_in+1;
 	      for(mrv_idx=0;mrv_idx<mrv_nbr;mrv_idx++){
 		/* Recall that lev*|numrad are MRV in restart input, and are LRV in output where lev*|numrad precedes column,[lat,lon|lndgrid] */
 		idx_in=clm_idx*mrv_nbr+mrv_idx;
-		idx_out=mec_idx*mrv_nbr*grd_sz_out+mrv_idx*grd_sz_out+grd_idx_out;
+		idx_out=mec_idx_out*mrv_nbr*grd_sz_out+mrv_idx*grd_sz_out+grd_idx_out;
 		/* Alter output index for snow layers if desired/possible */
 		if(flg_levsno){
 		  /* Snow layer dimension has intricate indexing/storage scheme
@@ -2141,7 +2154,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		    levsno_idx_out=levsno_idx_in-(levsno_nbr_in+snl_var[clm_idx]);
 		    assert(levsno_idx_out >= 0);
 		    assert(levsno_idx_out < mrv_nbr);
-		    idx_out=mec_idx*mrv_nbr*grd_sz_out+levsno_idx_out*grd_sz_out+grd_idx_out;
+		    idx_out=mec_idx_out*mrv_nbr*grd_sz_out+levsno_idx_out*grd_sz_out+grd_idx_out;
 		  } /* !levsno_idx_in */
 		} /* !flg_levsno */
 		switch(var_typ_out){
@@ -2153,7 +2166,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		  nco_dfl_case_nc_type_err();
 		  break;
 		} /* !var_typ_out */
-		if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO %s clm_idx = %ld, mec_idx = %ld, mrv_idx = %ld\n",fnc_nm,var_nm,clm_idx,mec_idx,mrv_idx);
+		if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO %s clm_idx = %ld, mec_idx_in = %ld, mrv_idx = %ld\n",fnc_nm,var_nm,clm_idx,mec_idx_in,mrv_idx);
 	      } /* !mrv_idx */
 	    }else{ /* !has_mec && !ilun_landice_multiple_elevation_classes */
 	      switch(lnd_typ){
