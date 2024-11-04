@@ -1,8 +1,12 @@
-2024-10-31  Charlie Zender  <zender@uci.edu>
+2024-11-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha03: Slow Horses';git push
-	git tag -a 5.3.0-alpha03 -m '';git push --tags
+	git tag -a 5.3.0-alpha03 -m 'ncks: S1D mecp1 soil';git push --tags
+
+	* S1D insert additional MEC layer (index=0) that stores soil column data
+
+2024-10-31  Charlie Zender  <zender@uci.edu>
 
 	* S1D compute mec_nbr_out as maximum MEC index utilized (fixes ne30 bug)
 
