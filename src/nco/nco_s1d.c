@@ -1155,6 +1155,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       rcd+=nco_def_var(out_id,frc_column_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_column_out_id);
       if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,frc_column_out_id,NULL,nco_flt_flg_prc_fll);
       var_crt_nbr++;
+      rcd=nco_char_att_put(out_id,frc_column_nm,"long_name","Fraction of gridcell occupied by snow-related columns");
+      rcd=nco_char_att_put(out_id,frc_column_nm,"legend","column index = 0 is soil column, index = 1 is non-MEC glaciated or MEC == 1, indexes 2..mec_nbr are other MEC columns if present, index = 2 or mec_nbr+1 is total of previous columns");
     } /* !flg_frc_column_out */
     if(flg_frc_landunit_out){
       dmn_ids_out[0]=dmn_id_lnd_out;
@@ -1162,6 +1164,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       rcd+=nco_def_var(out_id,frc_landunit_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_landunit_out_id);
       if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,frc_landunit_out_id,NULL,nco_flt_flg_prc_fll);
       var_crt_nbr++;
+      rcd=nco_char_att_put(out_id,frc_landunit_nm,"long_name","Fraction of gridcell occupied by Landunit");
+      rcd=nco_char_att_put(out_id,frc_landunit_nm,"legend","landunit index = 0 is sum of all landunit fractions, indexes = 1..9 are standard landunit types");
     } /* !flg_frc_landunit_out */
     if(flg_area_out){
       rcd+=nco_def_var(out_id,area_nm,crd_typ_out,dmn_nbr_1D,&dmn_id_col_out,&area_out_id);

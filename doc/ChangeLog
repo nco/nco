@@ -1,8 +1,12 @@
 2024-11-05  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.0-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha04: Nail Biter';git push
+	git tag -a 5.3.0-alpha04 -m 'fxm';git push --tags
+
 	* NCO 5.3.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha03: Slow Horses';git push
-	git tag -a 5.3.0-alpha03 -m 'ncks: S1D mecp1 soil';git push --tags
+	git tag -a 5.3.0-alpha03 -m 'ncks: S1D mecp1 soil, frc_column, frc_landunit';git push --tags
 
 	* Diagnostic frc_column and frc_landunit from restart files works
 
