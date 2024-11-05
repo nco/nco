@@ -1797,7 +1797,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       clm_typ=cols1d_ityp[clm_idx];
       if(clm_typ == nco_clm_icol_vegetated_or_bare_soil) clm_idx_out=0;
       else if(clm_typ == nco_clm_icol_landice) clm_idx_out=1; 
-      else if(clm_typ >= nco_clm_icol_landice_multiple_elevation_class_01 && clm_typ >= nco_clm_icol_landice_multiple_elevation_class_10) clm_idx_out=clm_typ % clm_typ_mec_fst;
+      else if(clm_typ >= nco_clm_icol_landice_multiple_elevation_class_01 && clm_typ <= nco_clm_icol_landice_multiple_elevation_class_10) clm_idx_out=clm_typ % clm_typ_mec_fst;
       else continue;
       /* Subtract one to shift from input 1-based (Fortran) convention to output 0-based (C) convention */
       grd_idx_out= flg_grd_1D ? cols1d_ixy[clm_idx]-1L : (cols1d_jxy[clm_idx]-1L)*lon_nbr+(cols1d_ixy[clm_idx]-1L);
