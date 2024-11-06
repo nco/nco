@@ -6532,6 +6532,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     int sgs_var_gnr_id=NC_MIN_INT; /* [id] SGS indicator variable ID */
     if((rcd=nco_inq_varid_flg(in_id,sgs_nm_elm,&sgs_var_gnr_id)) == NC_NOERR){
       sgs_nm_gnr=sgs_nm_elm;
+      /* 20241106 EAMxx stores the variable "landfrac" in output
+	 EAMxx data needs no SGS normalization so squelch the warning below for EAMxx files */
+      char *att_src_val=NULL;
+      char att_sng_src[]="source"; /* [sng] CMIP standard string (lowercase) */
+      att_src_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_src);
+      /* Assume EAMxx created file if global attribute "source" contains string "EAMxx" */
+      if(att_src_val && strstr(att_src_val,"EAMxx")) sgs_nm_gnr=NULL;
     }else if((rcd=nco_inq_varid_flg(in_id,sgs_nm_msi,&sgs_var_gnr_id)) == NC_NOERR){
       sgs_nm_gnr=sgs_nm_msi;
     }else if((rcd=nco_inq_varid_flg(in_id,sgs_nm_cice,&sgs_var_gnr_id)) == NC_NOERR){
@@ -6539,14 +6546,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     } /* !rcd */
     rcd=NC_NOERR;
     //(void)fprintf(stdout,"%s: DEBUG quark1 var_rgr_nbr = %d, sgs_frc_nm = %s, sgs_nm_gnr = %s\n",nco_prg_nm_get(),var_rgr_nbr,sgs_frc_nm,sgs_nm_gnr);
-    if(sgs_nm_gnr) (void)fprintf(stdout,"%s: WARNING %s reports sub-gridscale (SGS) regridding not requested despite presence in input dataset of SGS fractional area or area-time variable \"%s\". For most ESM land model fields this will produce erroneous (and non-conservative) answers for gridcells with partial land coverage. HINT: In most cases the SGS regridder algorithm should be invoked with \"ncremap -P elm ...\", \"ncremap -P mpasseaice ...\", or more explicitly with \"ncremap --sgs_frc=%s ...\". SGS functionality and options are documented at http://nco.sf.net/nco.html#sgs. Methods and rationale to specify an external (out-of-file) SGS variable are described at http://nco.sf.net/nco.html#sgs_frc_fl.\n",nco_prg_nm_get(),fnc_nm,sgs_nm_gnr,sgs_nm_gnr); else if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports SGS-indicator variables (landfrac, timeMonthly_avg_iceAreaCell, aice) not present in input file\n",nco_prg_nm_get(),fnc_nm);
+    if(sgs_nm_gnr) (void)fprintf(stdout,"%s: WARNING %s reports sub-gridscale (SGS) regridding not requested despite presence in input dataset of SGS fractional area or area-time variable \"%s\". For most ESM land- or sea-ice model fields this will produce erroneous (and non-conservative) answers for gridcells with partial land or sea-ice coverage, respectively. HINT: In most cases the SGS regridder algorithm should be invoked with \"ncremap -P elm ...\", \"ncremap -P mpasseaice ...\", or more explicitly with \"ncremap --sgs_frc=%s ...\". SGS functionality and options are documented at http://nco.sf.net/nco.html#sgs. Methods and rationale to specify an external (out-of-file) SGS variable are described at http://nco.sf.net/nco.html#sgs_frc_fl.\n",nco_prg_nm_get(),fnc_nm,sgs_nm_gnr,sgs_nm_gnr); else if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s reports SGS-indicator variables (landfrac, timeMonthly_avg_iceAreaCell, aice) not present in input file\n",nco_prg_nm_get(),fnc_nm);
   } /* !var_rgr_nbr, !sgs_frc_nm */
 
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: # means regridded, ~ means copied\n");
 
-  /* Using naked stdin/stdout/stderr in parallel region generates
-     warning Copy appropriate filehandle to variable scoped as shared
-     in parallel clause */
+  /* Using naked stdin/stdout/stderr in parallel region generates warning 
+     Copy appropriate filehandle to variable scoped as shared in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
   /* OpenMP notes:
