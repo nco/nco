@@ -632,9 +632,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   
   int hrz_id; /* [id] Horizontal grid netCDF file ID */
   long bnd_nbr=int_CEWI; /* [nbr] Number of boundaries for output time and rectangular grid coordinates, and number of vertices for output non-rectangular grid coordinates */
-  long col_nbr; /* [nbr] Number of columns */
-  long lon_nbr; /* [nbr] Number of longitudes */
-  long lat_nbr; /* [nbr] Number of latitudes */
+  long col_nbr=NC_MIN_INT; /* [nbr] Number of columns */
+  long lon_nbr=NC_MIN_INT; /* [nbr] Number of longitudes */
+  long lat_nbr=NC_MIN_INT; /* [nbr] Number of latitudes */
   size_t grd_sz_in; /* [nbr] Number of elements in single layer of input grid */
   size_t grd_sz_out; /* [nbr] Number of elements in single layer of output grid */
   if(flg_grd_dat) hrz_id=in_id; else hrz_id=tpl_id;
@@ -1814,7 +1814,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   /* Diagnose and write area-fractions for all landunits */
   if(flg_frc_landunit_out){
     double *frc_landunit=NULL; /* [frc] Landunit weight relative to corresponding gridcell */
-    frc_landunit=(double *)nco_calloc(clm_nbr_out*grd_nbr_out,sizeof(double));
+    frc_landunit=(double *)nco_calloc(lnd_nbr_out*grd_nbr_out,sizeof(double));
 
     for(lnd_idx=0;lnd_idx < lnd_nbr_in;lnd_idx++){
       lnd_typ=land1d_ityplun[lnd_idx];

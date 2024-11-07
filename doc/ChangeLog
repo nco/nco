@@ -1,8 +1,12 @@
-2024-11-06  Charlie Zender  <zender@uci.edu>
+2024-11-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha04: Nail Biter';git push
 	git tag -a 5.3.0-alpha04 -m 'fxm';git push --tags
+
+	* Fix allocation dimension for frc_landunit, now works on ne30 datasets
+
+2024-11-06  Charlie Zender  <zender@uci.edu>
 
 	* ncremap squelch SGS normalization WARNING due to landfrac in EAMxx files
 

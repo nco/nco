@@ -6535,10 +6535,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       /* 20241106 EAMxx stores the variable "landfrac" in output
 	 EAMxx data needs no SGS normalization so squelch the warning below for EAMxx files */
       char *att_src_val=NULL;
-      char att_sng_src[]="source"; /* [sng] CMIP standard string (lowercase) */
+      char att_sng_src[]="source"; /* [sng] CMIP standard attribute name for data source */
       att_src_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_src);
       /* Assume EAMxx created file if global attribute "source" contains string "EAMxx" */
       if(att_src_val && strstr(att_src_val,"EAMxx")) sgs_nm_gnr=NULL;
+      if(att_src_val) att_src_val=(char *)nco_free(att_src_val);
     }else if((rcd=nco_inq_varid_flg(in_id,sgs_nm_msi,&sgs_var_gnr_id)) == NC_NOERR){
       sgs_nm_gnr=sgs_nm_msi;
     }else if((rcd=nco_inq_varid_flg(in_id,sgs_nm_cice,&sgs_var_gnr_id)) == NC_NOERR){
