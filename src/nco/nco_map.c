@@ -2232,6 +2232,7 @@ nco_map_chk /* Map-file evaluation */
     dmn_in[idx]=nco_dmn_fll(in_id,idx,dmn_nm);
   } /* !idx */
 
+  /* 20241111: Initializing all map variables at once leads to OOM on 1x1 km RRM map-file */
   var_S=nco_map_var_init(in_id,"S",dmn_in,dmn_in_nbr);
   var_area_a=nco_map_var_init(in_id,"area_a",dmn_in,dmn_in_nbr);
   var_area_b=nco_map_var_init(in_id,"area_b",dmn_in,dmn_in_nbr);
@@ -2342,7 +2343,7 @@ nco_map_chk /* Map-file evaluation */
      This block warns about weights in S (which should all be non-zero, 
      by definition of a sparse array) that extract from a masked source cell,
      or contribute to a masked destination cell, or both.
-     Such violations are called "mask errors" */
+     We call such violations "mask errors" */
   size_t mask_a_err;
   size_t mask_b_err;
   mask_a_err=0L;

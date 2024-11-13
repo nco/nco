@@ -1000,8 +1000,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   if(pft_nbr_out == NC_MIN_INT) pft_nbr_out=pft_ntr_nbr_out=pft_crp_nbr_out=0;
   if(tpo_nbr_out == NC_MIN_INT) tpo_nbr_out=0;
   if(flg_frc_column_out){
-    clm_nbr_out=3; /* Soil column, Glaciated column, Total column */
-    if(need_mec) clm_nbr_out=mec_nbr_out+2; /* Soil column, MECs, Total column */
+    clm_nbr_out=5; /* Soil column, Glaciated column, Lake column, Wetland column, Total column */
+    if(need_mec) clm_nbr_out=mec_nbr_out+5; /* Soil column, MECs, Total MEC, Lake column, Wetland column, Total column */
   } /* !flg_frc_column_out */
   if(flg_frc_landunit_out) lnd_nbr_out=10; /* Total columns plus nine input landunits with Fortran-based indexes */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO clm_nbr_out = %ld\n",nco_prg_nm_get(),clm_nbr_out);
@@ -1156,7 +1156,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,frc_column_out_id,NULL,nco_flt_flg_prc_fll);
       var_crt_nbr++;
       rcd=nco_char_att_put(out_id,frc_column_nm,"long_name","Fraction of gridcell occupied by snow-related columns");
-      rcd=nco_char_att_put(out_id,frc_column_nm,"legend","column index = 0 is soil column, index = 1 is non-MEC glaciated or MEC == 1, indexes 2..mec_nbr are other MEC columns if present, index = 2 or mec_nbr+1 is total of previous columns");
+      rcd=nco_char_att_put(out_id,frc_column_nm,"legend","For datasets with Multiple Elevation Classes (MECs): index = 0 is soil column, index = 1 is MEC == 1, indexes 2..mec_nbr are remaining MEC columns, index 11 is sub-total of MEC columns, index = 12 is deep lake column, index = 13 is wetland column, and index = 14 is grand total of natural columns. For non-MEC datasets, index = 0 is soil column, index =1 is glaciated column, index = 2 is deep lake column, index = 3 is wetland column, and index = 4 is grand total of natural columns.");
     } /* !flg_frc_column_out */
     if(flg_frc_landunit_out){
       dmn_ids_out[0]=dmn_id_lnd_out;
@@ -1783,28 +1783,37 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 
   /* Diagnose and write area-fractions for column-types of interest */
   if(flg_frc_column_out){
-    int clm_ttl_idx=NC_MIN_INT; /* [idx] Output column index to store total weight of soil+MEC columns */
     double *frc_column=NULL; /* [frc] Column weight relative to corresponding gridcell */
+    int clm_idx_ttl=NC_MIN_INT; /* [idx] Output column index to store grand total weight of natural columns */
+    int clm_idx_mec_ttl=NC_MIN_INT; /* [idx] Output column index to store sub-total weight of MEC columns */
     int idx_ttl_out; /* [idx] Index to store total weight of soil+MEC columns */
 
     frc_column=(double *)nco_calloc(clm_nbr_out*grd_nbr_out,sizeof(double));
 
-    /* MECs: Store soil column in column index 0, MECs in indexes 1--10, and total in index 11
-       No-MECs: Store soil column in column index 0, glaciated in index 1, and total in index 2 */
-    clm_ttl_idx=clm_nbr_out-1;
+    /* MECs: Store soil column in column index 0, MECs in indexes 1--10, total MECs in 11, lakes in 12, wetlands in 13, and grand total in index 14
+       No-MECs: Store soil column in column index 0, glaciated in index 1, lakes in 2, wetlands in 3, and grand total in index 4 */
+    clm_idx_mec_ttl=mec_nbr_out+1;
+    clm_idx_ttl=clm_nbr_out-1;
 
     for(clm_idx=0;clm_idx < clm_nbr_in;clm_idx++){
       clm_typ=cols1d_ityp[clm_idx];
       if(clm_typ == nco_clm_icol_vegetated_or_bare_soil) clm_idx_out=0;
       else if(clm_typ == nco_clm_icol_landice) clm_idx_out=1; 
       else if(clm_typ >= nco_clm_icol_landice_multiple_elevation_class_01 && clm_typ <= nco_clm_icol_landice_multiple_elevation_class_10) clm_idx_out=clm_typ % clm_typ_mec_fst;
-      else continue;
+      else if(clm_typ == nco_clm_icol_deep_lake) clm_idx_out= need_mec ? 12 : 2;
+      else if(clm_typ == nco_clm_icol_wetland) clm_idx_out= need_mec ? 13 : 3;
+      else continue; /* Ignore Urban columns and Vegetated columns for now */
       /* Subtract one to shift from input 1-based (Fortran) convention to output 0-based (C) convention */
       grd_idx_out= flg_grd_1D ? cols1d_ixy[clm_idx]-1L : (cols1d_jxy[clm_idx]-1L)*lon_nbr+(cols1d_ixy[clm_idx]-1L);
       idx_out=clm_idx_out*grd_nbr_out+grd_idx_out;
       frc_column[idx_out]+=cols1d_wtxy[clm_idx];
-      /* Store total of soil + MEC weights in column index 11 */
-      idx_ttl_out=clm_ttl_idx*grd_nbr_out+grd_idx_out;
+      if(clm_typ >= nco_clm_icol_landice_multiple_elevation_class_01 && clm_typ <= nco_clm_icol_landice_multiple_elevation_class_10){
+	/* Sub-total over MECs */
+	idx_ttl_out=clm_idx_mec_ttl*grd_nbr_out+grd_idx_out;
+	frc_column[idx_ttl_out]+=cols1d_wtxy[clm_idx];
+      } /* !clm_typ */
+      /* Grand total over natural columns */
+      idx_ttl_out=clm_idx_ttl*grd_nbr_out+grd_idx_out;
       frc_column[idx_ttl_out]+=cols1d_wtxy[clm_idx];
     } /* !clm_idx */
     if(frc_column_out_id != NC_MIN_INT) rcd=nco_put_var(out_id,frc_column_out_id,(void *)frc_column,NC_DOUBLE);
