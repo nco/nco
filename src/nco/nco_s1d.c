@@ -226,7 +226,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   nco_string *pft_sng_out=NULL; /* [sng] Coordinate array of PFT strings */
   nco_bool flg_var_mpt; /* [flg] Variable has no valid values */
   nco_bool flg_levsno; /* [flg] Re-arrange snow layers using snl_var */
-  nco_lut_out_enm lut_out=rgr->lut_out; /* [enm] Landunit type(s) for S1D column output */
+  nco_lut_out_enm lut_out=(nco_lut_out_enm)(rgr->lut_out); /* [enm] Landunit type(s) for S1D column output */
   
   size_t idx_dbg=rgr->idx_dbg; /* [idx] User-specifiable debugging location */
   size_t idx_in; /* [idx] Input grid index */
