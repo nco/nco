@@ -851,7 +851,7 @@ extern "C" {
     typ_sym, /* [enm] Symbol identifier */
     typ_opr /* [enm] Operator */
   } nod_typ_enm; /* end Node enumerator */
-  /* end enumeration section */
+  /* !enumeration section */
 
   typedef enum { /* [enm] Calendar type */
     cln_std=1, /* Standard mixed Julian/Gregorian */
@@ -1148,7 +1148,7 @@ extern "C" {
     nco_wgt_bln  /* Bilinear interpolation */
   } nco_wgt_typ_enm;
 
-typedef enum nco_xtr_typ_enm
+  typedef enum nco_xtr_typ_enm
     { /* [enm] Extrapolation type enum */
      nco_xtr_fll_lnr=0, // Perform linear extrapolation using two nearest valid neighbors
      nco_xtr_fll_ngh, // Set extrapolated value to value of nearest valid neighbor
@@ -1251,13 +1251,14 @@ typedef enum nco_xtr_typ_enm
     long lat_nbr; /* [nbr] Number of latitudes in destination grid */
     long lon_nbr; /* [nbr] Number of longitudes in destination grid */
     long xtr_nsp; /* [nbr] Extrapolation number of source points */
+    nco_edg_typ_enm edg_typ; /* [enm] Arc-type for triangle edges */
     nco_grd_2D_typ_enm grd_typ; /* [enm] Destination grid-type enum */
     nco_grd_lat_drc_enm lat_drc; /* [enm] Latitude grid-direction enum */
     nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
     nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
+    int lut_out; /* [enm] Landunit type(s) for S1D column output */
     nco_ntp_typ_enm ntp_mth; /* [enm] Interpolation method */
     nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon-to-triangle decomposition method */ 
-    nco_edg_typ_enm edg_typ; /* [enm] Arc-type for triangle edges */
     nco_xtr_typ_enm xtr_mth; /* [enm] Extrapolation method */
     nco_wgt_typ_enm wgt_typ; /* [enm] Weight generation type */
     // Other internal data and metadata 
@@ -1271,7 +1272,7 @@ typedef enum nco_xtr_typ_enm
     int rgr_nbr; /* [nbr] Number of regridding arguments */
     int thr_nbr; /* [nbr] Thread number */
     int xtn_nbr; /* [nbr] Number of extensive variables */
-    int area_mth; /* [enm]  area method used calculating grid cell area */
+    int area_mth; /* [enm] Method to calculate gridcell area */
     long idx_dbg; /* [idx] Index of gridcell for debugging */
     long tst; /* [enm] Generic key for testing (undocumented) */
     nco_bool flg_add_fll; /* [flg] Add _FillValue to fields with empty destination cells */

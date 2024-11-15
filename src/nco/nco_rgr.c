@@ -357,6 +357,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_wst=NC_MAX_DOUBLE; /* [dgr] Longitude of western edge of grid */
   rgr->lat_nrt=NC_MAX_DOUBLE; /* [dgr] Latitude of northern edge of grid */
   rgr->lon_est=NC_MAX_DOUBLE; /* [dgr] Longitude of eastern edge of grid */
+  rgr->lut_out=nco_lut_out_vegetated_or_bare_soil; /* [enm] Landunit type(s) for S1D column output */
   rgr->msk_var=NULL; /* [sng] Mask-template variable */
   rgr->ply_tri_mth=nco_ply_tri_mth_csz; /* [enm] Polygon-to-triangle decomposition method */ 
   rgr->sgs_nrm=1.0; /* [sng] Sub-gridscale normalization */
@@ -839,6 +840,11 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
     } /* !xtr_xpn */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lut_out") || !strcmp(rgr_lst[rgr_var_idx].key,"landunit")){
+      rgr->lut_out=(nco_lut_out_enm)strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
+      continue;
+    } /* !lut_out */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"wgt_typ") || !strcmp(rgr_lst[rgr_var_idx].key,"weight_type")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"con") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_con") || !strcasecmp(rgr_lst[rgr_var_idx].val,"ncoaave") || !strcasecmp(rgr_lst[rgr_var_idx].val,"conservative") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_con"))
         rgr->wgt_typ=nco_wgt_con;

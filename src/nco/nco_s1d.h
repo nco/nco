@@ -73,8 +73,24 @@ extern "C" {
     nco_lnd_ilun_urban_md=9, /* Urban medium density */
   } nco_lnd_typ_enm;
 
+  /* Types used in landunit-output type structure */
+  typedef enum nco_lut_out_enm{ /* [enm] Landunit output type enum */
+    nco_lut_out_nil=0, /* Unknown, unset, or unclassified landunit output type */
+    nco_lut_out_vegetated_or_bare_soil=1, /* Vegetated or bare soil */
+    nco_lut_out_crop=2, /* Crop */
+    nco_lut_out_landice=3, /* Landice (plain, no MEC) */
+    nco_lut_out_landice_multiple_elevation_classes=4, /* Landice multiple elevation classes */
+    nco_lut_out_deep_lake=5, /* Deep lake */
+    nco_lut_out_wetland=6, /* Wetland */
+    nco_lut_out_urban_tbd=7, /* Urban tall building district */
+    nco_lut_out_urban_hd=8, /* Urban high density */
+    nco_lut_out_urban_md=9, /* Urban medium density */
+    nco_lut_out_wgt_all=10, /* Area-weighted average of all landunit types */
+    nco_lut_out_wgt_soi_glc=13, /* Area-weighted average of soil+glacier types */
+  } nco_lut_out_enm;
+
   /* Types used in landunit structure */
-  typedef enum nco_pft_typ_enm{ /* [enm] Landunit type enum */
+  typedef enum nco_pft_typ_enm{ /* [enm] PFT type enum */
     /* NB: This structure is kind of useless because it is user-defined
        Restart files enumerate all PFTs in global attributes
        History files enumerate only crop PFTs (i.e., CFTs) in global attributes */
@@ -119,6 +135,10 @@ extern "C" {
   const char * /* O [sng] String describing landunit type */
   nco_lnd_typ_sng /* [fnc] Convert landunit type enum to string */
   (const int nco_lnd_typ); /* I [enm] Landunit type enum */
+
+  const char * /* O [sng] String describing landunit output type */
+  nco_lut_out_sng /* [fnc] Convert landunit output type enum to string */
+  (const int nco_lut_out); /* I [enm] Landunit output type enum */
 
   char * /* O [sng] String describing PFT type */
   nco_pft_typ_sng /* [fnc] Convert PFT-type enum to string */

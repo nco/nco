@@ -68,6 +68,31 @@ nco_lnd_typ_sng /* [fnc] Convert landunit-type enum to string */
   return (char *)NULL;
 } /* !nco_lnd_typ_sng() */
 
+const char * /* O [sng] String describing landunit output type */
+nco_lut_out_sng /* [fnc] Convert landunit output type enum to string */
+(const int nco_lut_out) /* I [enm] Landunit output type enum */
+{
+  /* Purpose: Convert landunit output type enum to string */
+  switch(nco_lut_out){
+  case nco_lut_out_nil: return "Unknown, unset, or unclassified landunit type"; /* 0 */
+  case nco_lut_out_vegetated_or_bare_soil: return "Vegetated or bare soil"; /* 1 */
+  case nco_lut_out_crop: return "Crop"; /* 2 */
+  case nco_lut_out_landice: return "Landice (plain, no MEC)"; /* 3 */
+  case nco_lut_out_landice_multiple_elevation_classes: return "Landice multiple elevation classes"; /* 4 */
+  case nco_lut_out_deep_lake: return "Deep lake"; /* 5 */
+  case nco_lut_out_wetland: return "Wetland"; /* 6 */
+  case nco_lut_out_urban_tbd: return "Urban tall building district"; /* 7 */
+  case nco_lut_out_urban_hd: return "Urban high density"; /* 8 */
+  case nco_lut_out_urban_md: return "Urban medium density"; /* 9 */
+  case nco_lut_out_wgt_all: return "Area-weighted average of all landunit types"; /* 10 */
+  case nco_lut_out_wgt_soi_glc: return "Area-weighted average of soil+glacier types"; /* 13 */
+  default: nco_dfl_case_generic_err((int)nco_lut_out); break;
+  } /* !nco_lut_out_enm */
+
+  /* Some compilers: e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* !nco_lut_out_sng() */
+
 char * /* O [sng] String describing PFT type */
 nco_pft_typ_sng /* [fnc] Convert PFT-type enum to string */
 (const int nco_pft_typ) /* I [enm] PFT type enum */
@@ -197,10 +222,12 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   long int pft_idx;
   long int tpo_idx;
 
+  nco_bool *lut_vld_flg=NULL; /* [flg] Landunit types for which columns in this variable contain valid values */
   nco_string *pft_sng_out=NULL; /* [sng] Coordinate array of PFT strings */
   nco_bool flg_var_mpt; /* [flg] Variable has no valid values */
   nco_bool flg_levsno; /* [flg] Re-arrange snow layers using snl_var */
-
+  nco_lut_out_enm lut_out=rgr->lut_out; /* [enm] Landunit type(s) for S1D column output */
+  
   size_t idx_dbg=rgr->idx_dbg; /* [idx] User-specifiable debugging location */
   size_t idx_in; /* [idx] Input grid index */
   size_t idx_out; /* [idx] Output grid index */
@@ -366,6 +393,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     nco_exit(EXIT_FAILURE);
   } /* !flg_nm_hst */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will assume input attributes and variables use ELM/CLM %s naming conventions like %s\n",nco_prg_nm_get(),fnc_nm,flg_nm_hst ? "history file" : "restart file",flg_nm_hst ? "\"ltype_...\"" : "\"ilun_...\"");
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will output landunit type(s) \"%s\" for non-MEC columns and in index 0 of MEC dimension for MEC columns. Single LUTs will contain value of the last column of that landunit-type in the gridcell. Area-weighted averages will be over all columns of that LUT in the gridcell.\n",nco_prg_nm_get(),fnc_nm,nco_lut_out_sng(lut_out));
 
   rcd=nco_inq_varid_flg(in_id,"cols1d_lat",&cols1d_lat_id);
   if(cols1d_lat_id != NC_MIN_INT) flg_s1d_clm=True;
@@ -766,6 +794,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 
   /* Determine output Column dimension if needed */
   double *cols1d_wtxy=NULL; /* [frc] Column weight relative to corresponding gridcell */
+  double clm_wgt=NC_MIN_DOUBLE; /* [frc] Column weight relative to corresponding gridcell */
   int *cols1d_active=NULL; /* [flg] Column active flag (1=active, 0=inactive) */
   int *cols1d_gridcell_index=NULL; /* [idx] Gridcell index of column */
   int *cols1d_ityp=NULL; /* [enm] Column type */
@@ -851,7 +880,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   int *land1d_ixy=NULL; /* [idx] Landunit 2D longitude index */
   int *land1d_jxy=NULL; /* [idx] Landunit 2D latitude index */
   int lnd_typ; /* [enm] Landunit type */
-  int lnd_typ_crr; /* [enm] Landunit type of current column|landunit|pft */
+  int lnd_typ_vld_1st; /* [enm] Landunit type of first valid (non-zero, non-missing) column|landunit|pft for variable */
+  const int lut_max=9; /* [enm] Maximum value of landunit type (typically 9 for ELM) */
   if(need_lnd){
     if(land1d_active_id != NC_MIN_INT) land1d_active=(int *)nco_malloc(lnd_nbr_in*sizeof(int));
     if(land1d_active_id != NC_MIN_INT) rcd=nco_get_var(in_id,land1d_active_id,land1d_active,NC_INT);
@@ -992,7 +1022,15 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   nco_bool flg_frc_landunit_out=False; /* [flg] Add frc_landunit to output */
   if(cols1d_ityp && cols1d_ixy && cols1d_wtxy) flg_frc_column_out=True;
   if(land1d_ityplun && land1d_ixy && land1d_wtxy) flg_frc_landunit_out=True;
-
+  switch(lut_out){
+  case nco_lut_out_wgt_all: /* Area-weighted average of columns of all landunit types in gridcell */
+  case nco_lut_out_wgt_soi_glc: /* Area-weighted average of columns of soil+glacier types in gridcell */
+    if(!cols1d_wtxy) (void)fprintf(stdout,"%s: ERROR %s reports requested landunit output type lut_out = %s requires use of unavailable variable cols1d_wtxy\n",nco_prg_nm_get(),fnc_nm,nco_lut_out_sng(lut_out));
+    break;
+  default:
+    break;
+  } /* !lut_out */
+  
   /* Define unpacked versions of needed dimensions before all else */
   if(clm_nbr_out == NC_MIN_INT) clm_nbr_out=0;
   if(lnd_nbr_out == NC_MIN_INT) lnd_nbr_out=0;
@@ -1003,7 +1041,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     clm_nbr_out=5; /* Soil column, Glaciated column, Lake column, Wetland column, Total column */
     if(need_mec) clm_nbr_out=mec_nbr_out+5; /* Soil column, MECs, Total MEC, Lake column, Wetland column, Total column */
   } /* !flg_frc_column_out */
-  if(flg_frc_landunit_out) lnd_nbr_out=10; /* Total columns plus nine input landunits with Fortran-based indexes */
+  if(flg_frc_landunit_out) lnd_nbr_out=1+lut_max; /* Total of all columns in index 0 plus nine input landunits with Fortran-based indexes */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO clm_nbr_out = %ld\n",nco_prg_nm_get(),clm_nbr_out);
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO lnd_nbr_out = %ld\n",nco_prg_nm_get(),lnd_nbr_out);
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO mec_nbr_out = %ld\n",nco_prg_nm_get(),mec_nbr_out);
@@ -1435,7 +1473,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   int nco_s1d_typ; /* [enm] Sparse-1D type of input variable */
   
   long mrv_idx; /* [idx] MRV index */
-  long mrv_nbr; /* [nbr] Product of sizes of dimensions following (thus MRV than) column|gridcell|landunit|pft|topounit dimension, e.g., lev*|numrad */
+  long mrv_nbr; /* [nbr] Product of sizes of dimensions following (thus MRV than) column|gridcell|landunit|pft|topounit dimension, e.g., lev*|numrad. NB: mrv_nbr >= 1. */
 
   nco_bool flg_add_spt_crd; /* [flg] Add spatial coordinates to S1D variable */
   nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
@@ -1536,12 +1574,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	      } /* !var_typ_out */
 	    } /* !has_mss_val */
 	    /* Determine what landunit this variable is defined on
-	       Ratio of idx_in (an element counter) on first valid landunit by mrv_nbr yields a clm/lnd/pft/tpo index
-	       Some variables (like DZSNO) defined on lnd_typ=1 (e.g., for non-ice sheet gridcells) and on unrolled dimension (e.g., MEC)
-	       NB: Not sure where to put the lnd_typ=1 values in gridcells that also have MEC
-	       Currently, we ignore it, i.e., if input gridcell contains same variable defined on vegetated landunit and glacier landunit, then output contains values from glacier landunits and ignores values on vegetated landunit
-	       A better solution might be to add the vegetated landunit value times landunit weight to the value on elevation class 1 times weight of that class 
-	       Or to create and output a new variable, e.g., H2OSOI_ICE_vgt without the MEC dimension that contains just the value from the vegetated landunit */
+	       Ratio of idx_in (an element counter) on first valid landunit by mrv_nbr yields a clm/lnd/pft/tpo index */
 	    idx_s1d_crr=NC_MIN_INT;
 
 	    switch(var_typ_in){
@@ -1572,14 +1605,14 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	      (void)fprintf(fp_stdout,"%s: INFO %s reports %s has no valid values, output will be all _FillValue\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	      flg_var_mpt=True;
 	    } /* !idx_in */
-	    lnd_typ_crr=NC_MIN_INT;
+	    lnd_typ_vld_1st=NC_MIN_INT;
 	    if(idx_s1d_crr != NC_MIN_INT){
 	      switch(nco_s1d_typ){
-	      case nco_s1d_clm:	lnd_typ_crr=cols1d_ityplun[idx_s1d_crr]; break;
-	      case nco_s1d_lnd:	lnd_typ_crr=land1d_ityplun[idx_s1d_crr]; break;
-	      case nco_s1d_pft:	lnd_typ_crr=pfts1d_ityplun[idx_s1d_crr]; break;
-	      case nco_s1d_grd: lnd_typ_crr=nco_lnd_ilun_nil; break; /* Gridcell variables may contain multiple landunits */
-	      case nco_s1d_tpo: lnd_typ_crr=nco_lnd_ilun_nil; break; /* Topounit variables may contain multiple landunits */
+	      case nco_s1d_clm:	lnd_typ_vld_1st=cols1d_ityplun[idx_s1d_crr]; break;
+	      case nco_s1d_lnd:	lnd_typ_vld_1st=land1d_ityplun[idx_s1d_crr]; break;
+	      case nco_s1d_pft:	lnd_typ_vld_1st=pfts1d_ityplun[idx_s1d_crr]; break;
+	      case nco_s1d_grd: lnd_typ_vld_1st=nco_lnd_ilun_nil; break; /* Gridcell variables may contain multiple landunits */
+	      case nco_s1d_tpo: lnd_typ_vld_1st=nco_lnd_ilun_nil; break; /* Topounit variables may contain multiple landunits */
 	      default: break;
 	      } /* !nco_s1d_typ */
 	      /* Is variable is defined on MECs? */
@@ -1887,7 +1920,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   } /* !dbg */
   
 #ifdef __GNUG__
-# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(clm_typ,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,flg_var_mpt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_mss_val,has_numrad,has_pft,has_tpo,idx_in,idx_out,idx_s1d_crr,idx_tbl,in_id,levsno_idx_in,levsno_idx_out,lnd_typ,lnd_typ_crr,lvl_idx,lvl_nbr,mec_idx_in,mec_idx_out,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,mss_val_unn,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,clm_typ_mec_fst,cols1d_ityp,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tpo_in,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pft,lat_nbr,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy,snl_var,tpo_nbr_in,tpo_nbr_out,topo1d_ixy,topo1d_jxy)
+# pragma omp parallel for firstprivate(lut_vld_flg,var_val_in,var_val_out) private(clm_typ,clm_wgt,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,flg_var_mpt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_mss_val,has_numrad,has_pft,has_tpo,idx_in,idx_out,idx_s1d_crr,idx_tbl,in_id,levsno_idx_in,levsno_idx_out,lnd_typ,lnd_typ_vld_1st,lvl_idx,lvl_nbr,mec_idx_in,mec_idx_out,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,mss_val_unn,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,clm_typ_mec_fst,cols1d_ityp,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tpo_in,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pft,lat_nbr,idx_dbg,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,lut_out,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy,snl_var,tpo_nbr_in,tpo_nbr_out,topo1d_ixy,topo1d_jxy)
 #endif /* !__GNUG__ */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -1923,7 +1956,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	flg_levsno=False;
 	flg_var_mpt=False;
 	/* 20240202: Identify special dimensions in input variable
-	   mrv_nbr is product of sizes of dimensions following (thus MRV) column|gridcell|landunit|pft|topounit */
+	   mrv_nbr is product of sizes of dimensions following (thus MRV) column|gridcell|landunit|pft|topounit
+	   mrv_nbr == 1L for variables that have no dimensions other than column|gridcell|landunit|pft|topounit */
 	mrv_nbr=1L;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	  dmn_id=dmn_ids_in[dmn_idx];
@@ -2088,12 +2122,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	} /* !dmn_idx */
 
 	/* Determine what landunit this variable is defined on
-	   Ratio of idx_in (an element counter) on first valid landunit by mrv_nbr yields a clm/lnd/pft/tpo index
-	   Some variables (like DZSNO) defined on lnd_typ=1 (e.g., for non-ice sheet gridcells) and on unrolled dimension (e.g., MEC)
-	   NB: Not sure where to put the lnd_typ=1 values in gridcells that also have MEC
-	   Currently, we ignore it, i.e., if input gridcell contains same variable defined on vegetated landunit and glacier landunit, then output contains values from glacier landunits and ignores values on vegetated landunit
-	   A better solution might be to add the vegetated landunit value times landunit weight to the value on elevation class 1 times weight of that class 
-	   Or to create and output a new variable, e.g., H2OSOI_ICE_vgt without the MEC dimension that contains just the value from the vegetated landunit */
+	   Ratio of idx_in (an element counter) on first valid landunit by mrv_nbr yields a clm/lnd/pft/tpo index */
 	idx_s1d_crr=NC_MIN_INT;
 	switch(var_typ_in){
 	case NC_FLOAT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
@@ -2123,16 +2152,16 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	if(idx_in == var_sz_in) flg_var_mpt=True;
 	if(idx_s1d_crr != NC_MIN_INT){
 	  switch(nco_s1d_typ){
-	  case nco_s1d_clm: lnd_typ_crr=cols1d_ityplun[idx_s1d_crr]; break;
-	  case nco_s1d_lnd: lnd_typ_crr=land1d_ityplun[idx_s1d_crr]; break;
-	  case nco_s1d_pft: lnd_typ_crr=pfts1d_ityplun[idx_s1d_crr]; break;
-	  case nco_s1d_grd: lnd_typ_crr=nco_lnd_ilun_nil; break; /* Gridcell variables may contain multiple landunits */
-	  case nco_s1d_tpo: lnd_typ_crr=nco_lnd_ilun_nil; break; /* Topounit variables may contain multiple landunits */
+	  case nco_s1d_clm: lnd_typ_vld_1st=cols1d_ityplun[idx_s1d_crr]; break;
+	  case nco_s1d_lnd: lnd_typ_vld_1st=land1d_ityplun[idx_s1d_crr]; break;
+	  case nco_s1d_pft: lnd_typ_vld_1st=pfts1d_ityplun[idx_s1d_crr]; break;
+	  case nco_s1d_grd: lnd_typ_vld_1st=nco_lnd_ilun_nil; break; /* Gridcell variables may contain multiple landunits */
+	  case nco_s1d_tpo: lnd_typ_vld_1st=nco_lnd_ilun_nil; break; /* Topounit variables may contain multiple landunits */
 	  default: break;
 	  } /* !nco_s1d_typ */
 	} /* !idx_s1d_crr */
 
-	if(!flg_var_mpt && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d = %s, lnd_typ_crr = %d = %s, has_mec = %d\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ_crr,nco_lnd_typ_sng(lnd_typ_crr),has_mec);
+	if(!flg_var_mpt && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: %s, idx_in = %ld, s1d_enm = %d = %s, lnd_typ_vld_1st = %d = %s, has_mec = %d\n",nco_prg_nm_get(),var_nm,idx_in,(int)nco_s1d_typ,nco_s1d_sng(nco_s1d_typ),lnd_typ_vld_1st,nco_lnd_typ_sng(lnd_typ_vld_1st),has_mec);
 	  
 	if(flg_var_mpt) goto skp_upk;
 
@@ -2243,14 +2272,39 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	  /* Rearrange snow layer data for this variable? */
 	  if(snl_var && (has_levsno || has_levsno1 || has_levtot)) flg_levsno=True;
 
+	  /* Some variables (like DZSNO) defined on lnd_typ=1 (e.g., for non-ice sheet gridcells) and on unrolled dimension (e.g., MEC)
+	     If input variable contains valid columns on multiple landunit types, e.g., soil and glacier landunits, then if/where to place column values is user-defined policy implemented by lut_out option
+	     lut_out needs to know which landunit types contain valid values for each variable 
+	     We store an array of Boolean flags, one per landunit type, in lut_vld_flg(landunit)
+	     lut_vld_flg is indexed with 1-based (Fortran) landunit type enums, i.e., lut_vld_flg[1..9] */
+	  lut_vld_flg=(nco_bool *)nco_malloc((lut_max+1)*sizeof(nco_bool));
+	  for(lnd_idx=0;lnd_idx<=lut_max;lnd_idx++){
+	    lut_vld_flg[lnd_idx]=False;
+	  } /* !lnd_idx */
+	  assert(lnd_typ_vld_1st >= 1);
+	  assert(lnd_typ_vld_1st <= lut_max);
+	  lut_vld_flg[lnd_typ_vld_1st]=True;
+
 	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
 	    lnd_typ=cols1d_ityplun[clm_idx]; /* [1 <= lnd_typ <= lnd_nbr_out] */
 
 	    /* Skip columns with LUTs for which this variable is undefined
 	       The !has_mec exception is subtle---it ensures MEC fields always pass through
-	       NB: LUT=1 values for MEC fields (e.g., DZSNO) are written into MEC=1 slot by non-MEC block
-	       The MEC=1 value for the same gridcell overwrites the LUT=1 value in the MEC=1 slot */
-	    if(lnd_typ != lnd_typ_crr && !has_mec) continue;
+	       Restart files present in order of landunit, i.e., columns in LUT=1 (i.e., soil landunit) appears before LUT=2, etc.
+	       Thus LUT=1 (i.e., soil column) values appear before MEC columns and are written into MEC=0 slot by non-MEC block
+	       LUT=4 (i.e., MEC columns) for the same gridcell appear later and are written into the MEC=1..10 slots
+	       LUT=5,...9 (i.e., lake, wetland, urban) columns then appear and are written into MEC=0 slot by non-MEC block */
+	    
+	    //if(lnd_typ != lnd_typ_vld_1st && !has_mec) continue;
+	    //if(!lnd_vld_flg[lnd_typ] && !has_mec) continue;
+
+	    clm_wgt=0.0;
+	    if(cols1d_wtxy){
+	      clm_wgt=cols1d_wtxy[clm_idx];
+	      /* Unwise to skip columns with zero weight since, e.g., Antarctica soil columns are all snow-capped even though most have zero weight */
+	      /* Skip columns with no weight (area) in this gridcell */
+	      //if(clm_wgt <= 0.0) continue;
+	    } /* !cols1d */
 	    
 	    /* grd_idx is 0-based index relative to the origin of the horizontal grid, cols1d is 1-based
 	       [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= cols1d_ixy <= col_nbr_out]
@@ -2258,14 +2312,18 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	       Storage order for restart fields (e.g., DZSNO) is lat,lon */
 	    grd_idx_out= flg_grd_1D ? cols1d_ixy[clm_idx]-1L : (cols1d_jxy[clm_idx]-1L)*lon_nbr+(cols1d_ixy[clm_idx]-1L);
 	    
-	    /* Process all column fields */
+	    /* Process MEC columns
+	       Remember that if MECs exist anywhere in the dataset then all column variables must have restart values for MECs 
+	       Variables with valid (non-zero, non-missing value) entries in at least one cell have has_mec==True (otherwise False) 
+	       Variables with has_mec == True are allocated the MEC dimension
+	       Other variables have no allocated memory to receive the zeros or missing values in their MEC cells */
 	    if(has_mec && lnd_typ == nco_lnd_ilun_landice_multiple_elevation_classes){
 	      /* NB: clm_typ is only needed for, so only access it with, MEC variables
 		 cols1d_ityp is not present in some crop history files (e.g., eva_h3.nc) */
 	      clm_typ=cols1d_ityp[clm_idx];
 	      /* Subtract one because MEC column types are 1-based (401, 402, ... 410) */
 	      mec_idx_in=(clm_typ % clm_typ_mec_fst)-1;
-	      /* 20241101: Reserve index[0] of MEC dimension for soil column data */
+	      /* 20241101: Reserve index[0] of MEC dimension for soil column data of same variable */
 	      mec_idx_out=mec_idx_in+1;
 	      for(mrv_idx=0;mrv_idx<mrv_nbr;mrv_idx++){
 		/* Recall that lev*|numrad are MRV in restart input, and are LRV in output where lev*|numrad precedes column,[lat,lon|lndgrid] */
@@ -2316,8 +2374,20 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		} /* !var_typ_out */
 		if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO %s clm_idx = %ld, mec_idx_in = %ld, mrv_idx = %ld\n",fnc_nm,var_nm,clm_idx,mec_idx_in,mrv_idx);
 	      } /* !mrv_idx */
-	    }else{ /* !has_mec && !ilun_landice_multiple_elevation_classes */
+	    }else{ /* !has_mec || !ilun_landice_multiple_elevation_classes */
+	      /* In this block we know that column weight > 0, and lnd_typ != ilun_landice_multiple_elevation_classes
+		 The variable may have MECs, though not in this particular column */
+	      /* Skip this column type until/unless we are sure that variable has valid values in it */
+	      if(!lut_vld_flg[lnd_typ]) continue;
 	      switch(lnd_typ){
+	      case nco_lnd_ilun_landice_multiple_elevation_classes:
+		/* Default v3 variables with no valid values on MECs (and thus has_mec==False) include: 
+		   FH2OSFC, H2OSFC, LAKE_ICEFRAC, MFLX_SNOW_LYR, SAVEDTKE1, T_GRND_R, T_GRND_U, T_LAKE, URBAN_AC, URBAN_HEAT, USTLAKE 
+		   MEC columns are invalid for these variables so do not write anything */
+		//(void)fprintf(fp_stdout,"%s: INFO %s reports variable %s has column weight = %f and has_mec = %d on MEC landunit type \n",nco_prg_nm_get(),fnc_nm,var_nm,cols1d_wtxy ? clm_wgt : -737,has_mec);
+		break; /* !ilun_landice_multiple_elevation_classes */
+		/* Other landunit types might or might not have valid values
+		   However, we only know that the value is valid when lnd_typ == lnd_typ_vld_1st */
 	      case nco_lnd_ilun_vegetated_or_bare_soil:
 	      case nco_lnd_ilun_crop:
 	      case nco_lnd_ilun_landice:
@@ -2340,9 +2410,39 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		    } /* !levsno_idx_in */
 		  } /* !flg_levsno */
 		  switch(var_typ_out){
-		  case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[idx_in]; break;
-		  case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[idx_in]; break;
-		  case NC_INT: var_val_out.ip[idx_out]=var_val_in.ip[idx_in]; break;
+		    /* MEC values are handled separately in above block
+		       MEC and non-MEC variables have two options for what to store in all non-MEC columns
+		       MEC variables reserve one index (MEC index = 0) of extra space per gridcell for other columns
+		       Non-MEC columns use this address (MEC index = 0) to store one value per gridcell
+		       Storing all non-MEC column types for each gridcell would require a column dimension for every variable
+		       That is too anal and storage-intensive so instead we store only one non-MEC column type per gridcell
+		       What column-type or combination of column types  (soil, lake, wetland, etc.) to store there is debatable
+		       For example, I am usually interested in glacier and soil columns and/or their area-weighted average
+		       To accomodate this, S1D provides the lut_out option to specify which landunit to store in each gridcell:
+		       ncks --rgr lut_out=[1..9] specifies a single landunit type to output
+		       ncks --rgr lut_out=0      means output an area-weighted average of all landunit types
+		       Users can consecutively run S1D with different lut_out options to gain a more comprehensive view */
+		  case NC_FLOAT:
+		    if(lut_out == nco_lut_out_wgt_all || lut_out == nco_lut_out_wgt_soi_glc){
+		      if(var_val_out.fp[idx_out] == mss_val_unn.f) var_val_out.fp[idx_out]=var_val_in.fp[idx_in]*clm_wgt; else var_val_out.fp[idx_out]+=var_val_in.fp[idx_in]*clm_wgt;
+		    }else{
+		      var_val_out.fp[idx_out]=var_val_in.fp[idx_in];
+		    } /* !cols1d_wtxy */
+		    break;
+		  case NC_DOUBLE: 
+		    if(lut_out == nco_lut_out_wgt_all || lut_out == nco_lut_out_wgt_soi_glc){
+		      if(var_val_out.dp[idx_out] == mss_val_unn.d) var_val_out.dp[idx_out]=var_val_in.dp[idx_in]*clm_wgt; else var_val_out.dp[idx_out]+=var_val_in.dp[idx_in]*clm_wgt;
+		    }else{
+		      var_val_out.dp[idx_out]=var_val_in.dp[idx_in];
+		    } /* !cols1d_wtxy */
+		    break;
+		  case NC_INT: 
+		    if(lut_out == nco_lut_out_wgt_all || lut_out == nco_lut_out_wgt_soi_glc){
+		      if(var_val_out.ip[idx_out] == mss_val_unn.i) var_val_out.ip[idx_out]=var_val_in.ip[idx_in]*clm_wgt; else var_val_out.ip[idx_out]+=var_val_in.ip[idx_in]*clm_wgt;
+		    }else{
+		      var_val_out.ip[idx_out]=var_val_in.ip[idx_in];
+		    } /* !cols1d_wtxy */
+		    break;
 		  default:
 		    (void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported numeric type\n",nco_prg_nm_get(),fnc_nm);
 		    nco_dfl_case_nc_type_err();
@@ -2350,16 +2450,12 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		  } /* !var_typ_out */
 		} /* !mrv_idx */
 		break; /* !ilun_deep_lake */
-	      case nco_lnd_ilun_landice_multiple_elevation_classes:
-		(void)fprintf(fp_stdout,"%s: ERROR %s reports MEC LUT in non-MEC variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
-		nco_exit(EXIT_FAILURE);
-		break; /* !ilun_landice_multiple_elevation_classes */
 	      default:
 		(void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported landunit type\n",nco_prg_nm_get(),fnc_nm);
 		nco_dfl_case_generic_err((int)lnd_typ);
 		break; /* !default */
 	      } /* !lnd_typ */
-	    } /* !has_mec && !ilun_landice_multiple_elevation_classes */
+	    } /* !(has_mec && ilun_landice_multiple_elevation_classes) */
 	  } /* !clm_idx */
 	} /* !nco_s1d_typ */
 	  
@@ -2370,12 +2466,14 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	{ /* begin OpenMP critical */
 	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_out.vp,var_typ_out);
 	} /* end OpenMP critical */
-	
+
+	/* Free private memory allocated on a per-variable basis */
 	if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
 	if(dmn_ids_out) dmn_ids_out=(int *)nco_free(dmn_ids_out);
 	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
 	if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
 	if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
+	if(lut_vld_flg) lut_vld_flg=(nco_bool *)nco_free(lut_vld_flg);
 	if(var_val_in.vp) var_val_in.vp=(void *)nco_free(var_val_in.vp);
 	if(var_val_out.vp) var_val_out.vp=(void *)nco_free(var_val_out.vp);
       }else{ /* !trv.flg_rgr */
@@ -2391,7 +2489,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables unpacked = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
 
-  /* Free output data memory */
+  /* Free output data and shared memory */
   if(cols1d_active) cols1d_active=(int *)nco_free(cols1d_active);
   if(cols1d_gridcell_index) cols1d_gridcell_index=(int *)nco_free(cols1d_gridcell_index);
   if(cols1d_ityp) cols1d_ityp=(int *)nco_free(cols1d_ityp);

@@ -65,7 +65,7 @@ nco_sng_strip /* [fnc] Strip leading and trailing white space */
   while(isblank(*(sng+end-1L))) end--;
   sng[end]='\0';
   return sng;
-} /* end nco_sng_strip() */
+} /* !nco_sng_strip() */
 
 kvm_sct * /* O [sct] Pointer to free'd kvm list */
 nco_kvm_lst_free /* [fnc] Relinquish dynamic memory from list of kvm structures */
@@ -81,13 +81,13 @@ nco_kvm_lst_free /* [fnc] Relinquish dynamic memory from list of kvm structures 
   } /* end for */
   if(kvm) kvm=(kvm_sct *)nco_free(kvm);
   return kvm;
-} /* end nco_kvm_lst_free() */
+} /* !nco_kvm_lst_free() */
 
 void
 nco_kvm_prn(kvm_sct kvm)
 {
   if(kvm.key) (void)fprintf(stdout,"%s = %s\n",kvm.key,kvm.val); else return;
-} /* end nco_kvm_prn() */
+} /* !nco_kvm_prn() */
 
 char * /* O/I [sng] string that has backslash(es) */
 nco_remove_backslash
@@ -167,7 +167,7 @@ nco_sng_split /* [fnc] Split string by delimiter */
   } /* !sng_fnl */
   
   return sng_fnl;
-} /* end nco_sng_split() */
+} /* !nco_sng_split() */
 
 int /* O [flg] Option is flag */
 nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
@@ -305,7 +305,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
   char **separate_arg=nco_sng_split(arg,(const char *)nco_mta_dlm);
   size_t counter=nco_count_blocks(arg,nco_mta_dlm)*nco_count_blocks(arg,nco_mta_sub_dlm); /* [nbr] Maximum number of kvm structures in this argument */
 
-   for(int idx=0;idx<nco_count_blocks(arg,nco_mta_dlm);idx++){
+  for(int idx=0;idx<nco_count_blocks(arg,nco_mta_dlm);idx++){
     if(!nco_input_check(separate_arg[idx])) nco_exit(EXIT_FAILURE);
   } /* !idx */
   
@@ -334,7 +334,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
     individual_arg=nco_sng_lst_free(individual_arg,nco_count_blocks(set_of_keys,nco_mta_sub_dlm));
     nco_free(set_of_keys);
     nco_free(value);
-  } /* end outer loop */
+  } /* !sng_idx */
   separate_arg=nco_sng_lst_free(separate_arg,nco_count_blocks(arg,nco_mta_dlm));
   /* Ending flag for kvm array */
   kvm_set[kvm_idx].key=NULL;

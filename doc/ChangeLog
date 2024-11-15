@@ -1,8 +1,16 @@
-2024-11-12  Charlie Zender  <zender@uci.edu>
+2024-11-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha04: Nail Biter';git push
 	git tag -a 5.3.0-alpha04 -m 'fxm';git push --tags
+
+	* Add and prepare to use lut_vld_flg array instead of lnd_typ_vld_1st
+
+	* Add lut_out enum functionality to support forthcoming lut_out option for columns
+
+	* Refactor S1D handling of MEC and non-MEC columns
+
+2024-11-12  Charlie Zender  <zender@uci.edu>
 
 	* Add deep lake and wetland columns to frc_column variable
 
