@@ -15003,6 +15003,7 @@ th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint() : \
 
 @html
 <a name="ncap_prn"></a> <!-- http://nco.sf.net/nco.html#ncap_prn -->
+<a name="print"></a> <!-- http://nco.sf.net/nco.html#print -->
 @end html
 @node Print & String methods, Missing values ncap2, if statement, ncap2 netCDF Arithmetic Processor
 @subsection Print & String methods

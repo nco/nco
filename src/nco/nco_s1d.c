@@ -393,7 +393,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     nco_exit(EXIT_FAILURE);
   } /* !flg_nm_hst */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will assume input attributes and variables use ELM/CLM %s naming conventions like %s\n",nco_prg_nm_get(),fnc_nm,flg_nm_hst ? "history file" : "restart file",flg_nm_hst ? "\"ltype_...\"" : "\"ilun_...\"");
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will output landunit type(s) \"%s\" for non-MEC columns and in index 0 of MEC dimension for MEC columns. Single LUTs will contain value of the last column of that landunit-type in the gridcell. Area-weighted averages will be over all columns of that LUT in the gridcell.\n",nco_prg_nm_get(),fnc_nm,nco_lut_out_sng(lut_out));
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will output landunit type (LUT) \"%s\" for non-MEC columns and in index 0 of MEC dimension for MEC columns. A single LUT will contain the value of the last column of that LUT in the gridcell. Area-weighted averages will be over all columns of the requested LUTs in the gridcell.\n",nco_prg_nm_get(),fnc_nm,nco_lut_out_sng(lut_out));
 
   rcd=nco_inq_varid_flg(in_id,"cols1d_lat",&cols1d_lat_id);
   if(cols1d_lat_id != NC_MIN_INT) flg_s1d_clm=True;
@@ -2121,8 +2121,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	  else if(dmn_id == dmn_id_tpo_in) nco_s1d_typ=nco_s1d_tpo;
 	} /* !dmn_idx */
 
-	/* Determine what landunit this variable is defined on
-	   Ratio of idx_in (an element counter) on first valid landunit by mrv_nbr yields a clm/lnd/pft/tpo index */
+	/* Is this variable empty?
+	   If not empty, what is the first valid landunit that this variable is defined on?
+	   Ratio of idx_in (an element counter) on first valid landunit by mrv_nbr yields a clm/lnd/pft/tpo index
+	   NB: A similar block below determines a valid/invalid flag for which landunits columns are defined on
+	   That block should be moved to replace this block if the validity array proves useful for landunit or PFT variables */
 	idx_s1d_crr=NC_MIN_INT;
 	switch(var_typ_in){
 	case NC_FLOAT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
@@ -2281,28 +2284,51 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	  for(lnd_idx=0;lnd_idx<=lut_max;lnd_idx++){
 	    lut_vld_flg[lnd_idx]=False;
 	  } /* !lnd_idx */
-	  assert(lnd_typ_vld_1st >= 1);
-	  assert(lnd_typ_vld_1st <= lut_max);
-	  lut_vld_flg[lnd_typ_vld_1st]=True;
-
+	  for(lnd_idx=1;lnd_idx<=lut_max;lnd_idx++){ /* NB: index starts at 1 */
+	    switch(var_typ_in){
+	    case NC_FLOAT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
+		if(var_val_in.fp[idx_in] != 0.0f && var_val_in.fp[idx_in] != mss_val_cmp_dbl){
+		  idx_s1d_crr=idx_in/mrv_nbr;
+		  lut_vld_flg[cols1d_ityplun[idx_s1d_crr]]=True;
+		  break;
+		} /* !var_val_in.fp */
+	      break;
+	    case NC_DOUBLE: for(idx_in=0;idx_in<var_sz_in;idx_in++)
+		if(var_val_in.dp[idx_in] != 0.0 && var_val_in.dp[idx_in] != mss_val_cmp_dbl){
+		  idx_s1d_crr=idx_in/mrv_nbr;
+		  lut_vld_flg[cols1d_ityplun[idx_s1d_crr]]=True;
+		  break;
+		} /* !var_val_in.dp */
+	      break;
+	    case NC_INT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
+		if(var_val_in.ip[idx_in] != 0 && var_val_in.ip[idx_in] != mss_val_cmp_dbl){
+		  idx_s1d_crr=idx_in/mrv_nbr;
+		  lut_vld_flg[cols1d_ityplun[idx_s1d_crr]]=True;
+		  break;
+		} /* !var_val_in.ip */
+	      break;
+	    default:
+	      (void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported numeric type\n",nco_prg_nm_get(),fnc_nm);
+	      nco_dfl_case_nc_type_err();
+	      break;
+	    } /* !var_typ_in */
+	  } /* !lnd_idx */
+	  
 	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
 	    lnd_typ=cols1d_ityplun[clm_idx]; /* [1 <= lnd_typ <= lnd_nbr_out] */
-
+	    
 	    /* Skip columns with LUTs for which this variable is undefined
 	       The !has_mec exception is subtle---it ensures MEC fields always pass through
 	       Restart files present in order of landunit, i.e., columns in LUT=1 (i.e., soil landunit) appears before LUT=2, etc.
-	       Thus LUT=1 (i.e., soil column) values appear before MEC columns and are written into MEC=0 slot by non-MEC block
-	       LUT=4 (i.e., MEC columns) for the same gridcell appear later and are written into the MEC=1..10 slots
-	       LUT=5,...9 (i.e., lake, wetland, urban) columns then appear and are written into MEC=0 slot by non-MEC block */
+	       Following logic always writes valid MEC landunit gridcells
+	       Then it writes any other valid gridcells of the requested non-MEC LUTs
+	       We write non-glacier LUTs into the MEC=0 slot for MEC-fields (if present) */
 	    
-	    //if(lnd_typ != lnd_typ_vld_1st && !has_mec) continue;
-	    //if(!lnd_vld_flg[lnd_typ] && !has_mec) continue;
-
 	    clm_wgt=0.0;
 	    if(cols1d_wtxy){
 	      clm_wgt=cols1d_wtxy[clm_idx];
-	      /* Unwise to skip columns with zero weight since, e.g., Antarctica soil columns are all snow-capped even though most have zero weight */
-	      /* Skip columns with no weight (area) in this gridcell */
+	      /* It is unwise to skip columns with zero weight (area)
+		 One reason is that Antarctic soil columns are all snow-capped even though most have zero weight */
 	      //if(clm_wgt <= 0.0) continue;
 	    } /* !cols1d */
 	    
@@ -2377,7 +2403,18 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	    }else{ /* !has_mec || !ilun_landice_multiple_elevation_classes */
 	      /* In this block we know that column weight > 0, and lnd_typ != ilun_landice_multiple_elevation_classes
 		 The variable may have MECs, though not in this particular column */
-	      /* Skip this column type until/unless we are sure that variable has valid values in it */
+	      /* Skip column types not requested to be output */
+	      switch(lut_out){
+	      case nco_lut_out_wgt_all:
+		break;
+	      case nco_lut_out_wgt_soi_glc:
+		if(lnd_typ != nco_lnd_ilun_vegetated_or_bare_soil && (lnd_typ != nco_lnd_ilun_landice)) continue;
+		break;
+	      default:
+		if(lnd_typ != lut_out) continue;
+		break;
+	      } /* !lutout */
+	      /* Skip column types that this variable lack valid values for */
 	      if(!lut_vld_flg[lnd_typ]) continue;
 	      switch(lnd_typ){
 	      case nco_lnd_ilun_landice_multiple_elevation_classes:
@@ -2386,8 +2423,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		   MEC columns are invalid for these variables so do not write anything */
 		//(void)fprintf(fp_stdout,"%s: INFO %s reports variable %s has column weight = %f and has_mec = %d on MEC landunit type \n",nco_prg_nm_get(),fnc_nm,var_nm,cols1d_wtxy ? clm_wgt : -737,has_mec);
 		break; /* !ilun_landice_multiple_elevation_classes */
-		/* Other landunit types might or might not have valid values
-		   However, we only know that the value is valid when lnd_typ == lnd_typ_vld_1st */
 	      case nco_lnd_ilun_vegetated_or_bare_soil:
 	      case nco_lnd_ilun_crop:
 	      case nco_lnd_ilun_landice:
