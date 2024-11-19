@@ -84,8 +84,8 @@ nco_lut_out_sng /* [fnc] Convert landunit output type enum to string */
   case nco_lut_out_urban_tbd: return "Urban tall building district"; /* 7 */
   case nco_lut_out_urban_hd: return "Urban high density"; /* 8 */
   case nco_lut_out_urban_md: return "Urban medium density"; /* 9 */
-  case nco_lut_out_wgt_all: return "Area-weighted average of all landunit types"; /* 10 */
-  case nco_lut_out_wgt_soi_glc: return "Area-weighted average of soil+glacier types"; /* 13 */
+  case nco_lut_out_wgt_all: return "Area-weighted average of all landunit types except MEC glaciers"; /* 10 */
+  case nco_lut_out_wgt_soi_glc: return "Area-weighted average of soil+(non-MEC) glacier types"; /* 13 */
   default: nco_dfl_case_generic_err((int)nco_lut_out); break;
   } /* !nco_lut_out_enm */
 
@@ -1312,7 +1312,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   } /* !need_levlak */
 
   /* MEC coordinate clm5.pdf: "The default is to have 10 elevation classes whose lower limits are 0, 200, 400, 700, 1000, 1300, 1600, 2000, 2500, and 3000 m."
-     The first value of the output dimension is -1 to indicate that it represents soil data */
+     First value of output MEC coordinate is elevation = -1 to subtly indicate that it represents non-MEC data */
   const double mec[11]={-1,0,200,400,700,1000,1300,1600,2000,2500,3000}; /* [frc] Lowest elevation in each MEC */
   int mec_out_id=NC_MIN_INT; /* [id] Variable ID for MEC */
   if(need_mec && mec_nbr_out == 10){
@@ -1320,7 +1320,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     rcd+=nco_def_var(out_id,mec_nm_out,NC_DOUBLE,dmn_nbr_1D,dmn_ids_out,&mec_out_id);
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,mec_out_id,NULL,nco_flt_flg_prc_fll);
     var_crt_nbr++;
-    rcd=nco_char_att_put(out_id,mec_nm_out,"long_name","Lowest elevation (-1 is soil column data)");
+    rcd=nco_char_att_put(out_id,mec_nm_out,"long_name","Lowest elevation (-1 is non-MEC column data)");
     rcd=nco_char_att_put(out_id,mec_nm_out,"units","meter");
   } /* !need_mec */
     
@@ -2284,42 +2284,39 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	  for(lnd_idx=0;lnd_idx<=lut_max;lnd_idx++){
 	    lut_vld_flg[lnd_idx]=False;
 	  } /* !lnd_idx */
-	  for(lnd_idx=1;lnd_idx<=lut_max;lnd_idx++){ /* NB: index starts at 1 */
-	    switch(var_typ_in){
-	    case NC_FLOAT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-		if(var_val_in.fp[idx_in] != 0.0f && var_val_in.fp[idx_in] != mss_val_cmp_dbl){
-		  idx_s1d_crr=idx_in/mrv_nbr;
-		  lut_vld_flg[cols1d_ityplun[idx_s1d_crr]]=True;
-		  break;
-		} /* !var_val_in.fp */
-	      break;
-	    case NC_DOUBLE: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-		if(var_val_in.dp[idx_in] != 0.0 && var_val_in.dp[idx_in] != mss_val_cmp_dbl){
-		  idx_s1d_crr=idx_in/mrv_nbr;
-		  lut_vld_flg[cols1d_ityplun[idx_s1d_crr]]=True;
-		  break;
-		} /* !var_val_in.dp */
-	      break;
-	    case NC_INT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
-		if(var_val_in.ip[idx_in] != 0 && var_val_in.ip[idx_in] != mss_val_cmp_dbl){
-		  idx_s1d_crr=idx_in/mrv_nbr;
-		  lut_vld_flg[cols1d_ityplun[idx_s1d_crr]]=True;
-		  break;
-		} /* !var_val_in.ip */
-	      break;
-	    default:
-	      (void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported numeric type\n",nco_prg_nm_get(),fnc_nm);
-	      nco_dfl_case_nc_type_err();
-	      break;
-	    } /* !var_typ_in */
-	  } /* !lnd_idx */
+	  switch(var_typ_in){
+	  case NC_FLOAT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
+	      if(var_val_in.fp[idx_in] != 0.0f && var_val_in.fp[idx_in] != mss_val_cmp_dbl){
+		idx_s1d_crr=idx_in/mrv_nbr;
+		lut_vld_flg[cols1d_ityplun[idx_s1d_crr]]=True;
+	      } /* !var_val_in.fp */
+	    break;
+	  case NC_DOUBLE: for(idx_in=0;idx_in<var_sz_in;idx_in++)
+	      if(var_val_in.dp[idx_in] != 0.0 && var_val_in.dp[idx_in] != mss_val_cmp_dbl){
+		idx_s1d_crr=idx_in/mrv_nbr;
+		lut_vld_flg[cols1d_ityplun[idx_s1d_crr]]=True;
+	      } /* !var_val_in.dp */
+	    break;
+	  case NC_INT: for(idx_in=0;idx_in<var_sz_in;idx_in++)
+	      if(var_val_in.ip[idx_in] != 0 && var_val_in.ip[idx_in] != mss_val_cmp_dbl){
+		idx_s1d_crr=idx_in/mrv_nbr;
+		lut_vld_flg[cols1d_ityplun[idx_s1d_crr]]=True;
+	      } /* !var_val_in.ip */
+	    break;
+	  default:
+	    (void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported numeric type\n",nco_prg_nm_get(),fnc_nm);
+	    nco_dfl_case_nc_type_err();
+	    break;
+	  } /* !var_typ_in */
 	  
 	  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
 	    lnd_typ=cols1d_ityplun[clm_idx]; /* [1 <= lnd_typ <= lnd_nbr_out] */
 	    
 	    /* Skip columns with LUTs for which this variable is undefined
 	       The !has_mec exception is subtle---it ensures MEC fields always pass through
-	       Restart files present in order of landunit, i.e., columns in LUT=1 (i.e., soil landunit) appears before LUT=2, etc.
+	       Restart files _mostly_ present in landunit order, i.e., LUT=1 columns (i.e., soil landunit) appear before LUT=2, etc.
+	       However, we should not (and do not) rely on this ordering
+	       In fact, ELM v3 often places lakes and wetlands (LUT=5 and6, respectively) _after_ Urban type (LUT=7--9)
 	       Following logic always writes valid MEC landunit gridcells
 	       Then it writes any other valid gridcells of the requested non-MEC LUTs
 	       We write non-glacier LUTs into the MEC=0 slot for MEC-fields (if present) */
@@ -2349,7 +2346,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	      clm_typ=cols1d_ityp[clm_idx];
 	      /* Subtract one because MEC column types are 1-based (401, 402, ... 410) */
 	      mec_idx_in=(clm_typ % clm_typ_mec_fst)-1;
-	      /* 20241101: Reserve index[0] of MEC dimension for soil column data of same variable */
+	      /* 20241101: Reserve index[0] of MEC dimension for other LUT column data of same variable */
 	      mec_idx_out=mec_idx_in+1;
 	      for(mrv_idx=0;mrv_idx<mrv_nbr;mrv_idx++){
 		/* Recall that lev*|numrad are MRV in restart input, and are LRV in output where lev*|numrad precedes column,[lat,lon|lndgrid] */

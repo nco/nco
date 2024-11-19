@@ -1,8 +1,12 @@
-2024-11-18  Charlie Zender  <zender@uci.edu>
+2024-11-19  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.3.0-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha05: Nail Biter';git push
+	git tag -a 5.3.0-alpha05 -m '';git push --tags
 
 	* NCO 5.3.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha04: Nail Biter';git push
-	git tag -a 5.3.0-alpha04 -m 'fxm';git push --tags
+	git tag -a 5.3.0-alpha04 -m 'ncks: S1D lut_out, wgt_all, wgt_soi_glc options; ncremap: eamxx landfrac ok';git push --tags
 
 	* Finish/test/validate implementation of lut_vld_flg
 
