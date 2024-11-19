@@ -1,7 +1,7 @@
 2024-11-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha05: Nail Biter';git push
+	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha05: Break of Dawn';git push
 	git tag -a 5.3.0-alpha05 -m '';git push --tags
 
 	* NCO 5.3.0-alpha04 release procedure:
