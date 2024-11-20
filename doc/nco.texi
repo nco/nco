@@ -24213,6 +24213,21 @@ The output file contains all input variables placed on a lat-lon or
 unstructured grid, with new dimensions for Plant Funtional Type
 (@acronym{PFT}) and multiple elevation classes (@acronym{MEC}s).
 
+The @acronym{S1D} capabilities have steadily grown culminating in
+major new features in @acronym{NCO} @w{version 5.2.9} and
+@w{version 5.3.0}, released in October and November, 2024,
+respectively. 
+@html
+<a name="lut_out"></a> <!-- http://nco.sf.net/nco.html#lut_out -->
+<a name="frc_landunit"></a> <!-- http://nco.sf.net/nco.html#frc_landunit -->
+<a name="frc_column"></a> <!-- http://nco.sf.net/nco.html#frc_column -->
+<a name="SNLSNO"></a> <!-- http://nco.sf.net/nco.html#SNLSNO -->
+@end html
+@cindex @code{lut_out}
+@cindex @code{SNLSNO}
+@cindex @code{frc_landunit}
+@cindex @code{frc_column}
+
 @html
 <a name="ssh"></a> <!-- http://nco.sf.net/nco.html#ssh -->
 <a name="scr"></a> <!-- http://nco.sf.net/nco.html#scr -->

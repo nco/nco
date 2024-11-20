@@ -453,20 +453,19 @@ make install >> nco.make.foo 2>&1
 # Sysadmin upgrade request: cislhelp@ucar.edu # NCAR Maintainer = Pat Nichols
 # Latest ticket to build NCO: 216373 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.9.2 module load nco/5.1.6 # 20240107
-# Personal recipe last modified: 20240107 (add -lgslcblas to bld/Makefile)
-# Personal recipe last borken: 20240107 (NCO base works, ncap2 unable to link to antlr)
+# Personal recipe last modified: 20241119 (new paths)
+# Personal recipe last borken: 20241119 (NCO base works, ncap2 unable to link to antlr)
 # Personal recipe last successful: 20231103
 # Derecho GNU:
 module purge
 module load ncarenv gcc ncarcompilers netcdf udunits
-export LINUX_CXX='g++ -std=c++11'
+export LINUX_CXX='g++ -std=c++17'
 export PATH=${PATH}:/opt/pbs/bin # needed for qsub
-# 20240207 Derecho paths may all need to be changed from 23.06 to 23.09
-export PATH=${PATH}:/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t/bin # needed for ncgen
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t/lib:/glade/u/apps/derecho/23.06/spack/opt/spack/udunits/2.2.28/gcc/12.2.0/vls2/lib # needed to run NCO
+export PATH=${PATH}:/glade/u/apps/derecho/23.09/spack/opt/spack/netcdf/4.9.2/gcc/13.2.0/zywl/bin # needed for ncgen
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/derecho/23.09/spack/opt/spack/netcdf/4.9.2/gcc/13.2.0/zywl/lib:/glade/u/apps/derecho/23.09/spack/opt/spack/udunits/2.2.28/gcc/13.2.0/se4j/lib:/glade/u/apps/derecho/23.09/spack/opt/spack/gsl/2.7.1/gcc/12.2.0/7ri3/lib # needed to run NCO
 cd ~/nco;/bin/rm -f *.foo;make distclean
 cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make ANTLR_ROOT=/glade/u/apps/derecho/23.06/opt GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.7/gnu/12.1.0' GSL_INC='/glade/u/apps/ch/opt/gsl/2.7/gnu/12.1.0/include' GSL_LIB='/glade/u/apps/ch/opt/gsl/2.7/gnu/12.1.0/lib' NETCDF_ROOT='/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t' UDUNITS_INC='/glade/u/apps/derecho/23.06/spack/opt/spack/udunits/2.2.28/gcc/12.2.0/vls2/include' UDUNITS_LIB='/glade/u/apps/derecho/23.06/spack/opt/spack/udunits/2.2.28/gcc/12.2.0/vls2/lib' OPTS=D allinone;cd -
+cd ~/nco/bld;make ANTLR_ROOT=/glade/u/apps/derecho/23.09/spack/opt/spack/antlr/2.7.7/gcc/7.5.0/lldi GSL_ROOT='/glade/u/apps/derecho/23.09/spack/opt/spack/gsl/2.7.1/gcc/12.2.0/7ri3' GSL_INC='/glade/u/apps/derecho/23.09/spack/opt/spack/gsl/2.7.1/gcc/12.2.0/7ri3/include' GSL_LIB='/glade/u/apps/derecho/23.09/spack/opt/spack/gsl/2.7.1/gcc/12.2.0/7ri3/lib' NETCDF_ROOT='/glade/u/apps/derecho/23.09/spack/opt/spack/netcdf/4.9.2/gcc/13.2.0/zywl' UDUNITS_INC='/glade/u/apps/derecho/23.09/spack/opt/spack/udunits/2.2.28/gcc/13.2.0/se4j/include' UDUNITS_LIB='/glade/u/apps/derecho/23.09/spack/opt/spack/udunits/2.2.28/gcc/13.2.0/se4j/lib' OPTS=D allinone;cd -
 # !Derecho
 
 # gcc/g++ 20201208 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on Frontier:
