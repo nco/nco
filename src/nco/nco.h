@@ -1292,7 +1292,8 @@ extern "C" {
     nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
     nco_bool flg_ps_rtn; /* [flg] Retain surface pressure variable in vertical interpolation output */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
-    nco_bool flg_s1d; /* [flg] Unpack sparse-1D CLM/ELM variables */
+    nco_bool flg_s1d; /* [flg] Unpack sparse-1D (S1D) CLM/ELM variables */
+    nco_bool flg_snw_ocn; /* [flg] Unpack S1D snow fields into sane (ocean-like) level order */
     nco_bool flg_stg; /* [flg] Write staggered grid with FV output */
     nco_bool flg_uio; /* [flg] Unbuffered I/O (NC_SHARE) for netCDF3 files */
     nco_bool flg_usr_rqs; /* [flg] User-requested regridding */

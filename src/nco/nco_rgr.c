@@ -335,6 +335,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_dgn_area=False; /* [flg] Diagnose rather than copy inferred area */
   rgr->flg_dgn_bnd=False; /* [flg] Diagnose rather than copy inferred bounds */
   rgr->flg_erwg_units=True; /* [flg] Generate ERWG 7.1.0r-compliant SCRIP-format grid files */
+  rgr->flg_snw_ocn=True; /* [flg] Unpack S1D snow fields into sane (ocean-like) level order */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->flg_mpt_mss=False; /* [flg] Set empty (sgs_frc==0.0) SGS cells to missing value */
   rgr->flg_msk_apl=False; /* [flg] Apply msk_out to variables after regridding */
@@ -506,6 +507,16 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_stg=True;
       continue;
     } /* !no_stagger */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"snw_ocn") || !strcmp(rgr_lst[rgr_var_idx].key,"snow_ocean")){
+      /* Unpack S1D snow fields into sane (ocean-like) level order */
+      rgr->flg_snw_ocn=True;
+      continue;
+    } /* !snw_ocn */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"no_snw_ocn") || !strcmp(rgr_lst[rgr_var_idx].key,"no_snow_ocean")){
+      /* Unpack S1D snow fields into sane (ocean-like) level order */
+      rgr->flg_snw_ocn=False;
+      continue;
+    } /* !no_snw_ocn */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"grd_ttl") || !strcmp(rgr_lst[rgr_var_idx].key,"ttl")){
       if(rgr->grd_ttl) rgr->grd_ttl=(char *)nco_free(rgr->grd_ttl);
       rgr->grd_ttl=(char *)strdup(rgr_lst[rgr_var_idx].val);

@@ -61,13 +61,35 @@ snow layers in the variable SNLSNO. Restart files for these models
 store the active snow layer butted-up against the lowest layers in
 the level dimension (so that they are continguous with soil layers
 to simplify hydrologic calculations). This makes snow variables in
-restart files hard to visualize. NCO S1D uses SNLSNO to grid the snow
-variables much from the first layer down, increasing with depth,
-and places the inactive layers at the bottom (i.e., where they reside 
+restart files hard to visualize. NCO S1D uses SNLSNO can grid the snow 
+variables from the first layer downwards, increasing with depth,
+and place the inactive layers at the bottom (i.e., where they reside 
 physically). The resulting snow variables appear like ocean state
-variables over uneven bathymetry so masked data increases with depth.  
+variables over uneven bathymetry, with missing value underneath.
 
-C. ncremap always warns when it regrids land model files that contain
+C. ncks S1D now accepts the --rgr lut_out=$lut_out option to specify
+which column type(s) to place in each gridcell in the output file.
+The argument to lut_out is the standard landunit type of the column,
+with (thus far) two additional values that will output area-weighted
+averages of multiple landunit types:
+
+lut_out Output will be value of column(s) in this andunit 
+1       Vegetated or bare soil
+2       Crop
+3       Landice (plain, no MEC)
+4       Landice multiple elevation classes
+5       Deep lake
+6       Wetland
+7       Urban tall building district
+8       Urban high density
+9       Urban medium density
+10      Area-weighted average of all landunit types except MEC glaciers
+13      Area-weighted average of soil+(non-MEC) glacier
+
+ncks --s1d --lut_out=1 --hrz=hst.nc rst.nc s1d.nc # Output Soil LUT
+ncks --s1d --lut_out=13 --hrz=hst.nc rst.nc s1d.nc # Avg Soil+Glacier
+
+D. ncremap always warns when it regrids land model files that contain
 a "landfrac" variable and SGS renormalization is not requested. 
 This is because ELM/CLM/CTSM use "landfrac" for sub-gridscale
 fraction, and ignoring that causes errors along coastlines.

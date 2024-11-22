@@ -24227,6 +24227,36 @@ respectively.
 @cindex @code{SNLSNO}
 @cindex @code{frc_landunit}
 @cindex @code{frc_column}
+The @samp{--rgr lut_out=$lut_out} option specifies which column
+type(s) to place in each gridcell in the output file. 
+The value @var{lut_out} is the standard landunit type of the column.
+Two additional values specify to output area-weighted averages of
+multiple landunit types: 
+@example
+@verbatim
+lut_out Output will be value of column(s) in this andunit 
+0       Not Currently Used
+1       Vegetated or bare soil
+2       Crop
+3       Landice (plain, no MEC)
+4       Landice multiple elevation classes
+5       Deep lake
+6       Wetland
+7       Urban tall building district
+8       Urban high density
+9       Urban medium density
+10      Area-weighted average of all landunit types except MEC glaciers
+13      Area-weighted average of soil+(non-MEC) glacier
+@end verbatim
+@end example
+This feature is necessarily restricted to restart datasets, e.g.,
+@example
+@verbatim
+ncks --s1d --lut_out=1 --hrz=hst.nc rst.nc s1d.nc # Output Soil LUT
+ncks --s1d --lut_out=13 --hrz=hst.nc rst.nc s1d.nc # Avg Soil+Glacier
+@end verbatim
+@end example
+
 
 @html
 <a name="ssh"></a> <!-- http://nco.sf.net/nco.html#ssh -->

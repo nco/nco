@@ -198,9 +198,13 @@ nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
     "no_area_out",
     "no_cell_measures",
     "no_cll_msr",
+    "no_snw_ocn",
+    "no_snow_ocean",
     "no_stagger",
     "no_stg",
     "ps_rtn",
+    "snw_ocn",
+    "snow_ocean",
     "rtn_sfc_prs",
     "retain_surface_pressure"
     };

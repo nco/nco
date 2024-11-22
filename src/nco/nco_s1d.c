@@ -225,7 +225,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   nco_bool *lut_vld_flg=NULL; /* [flg] Landunit types for which columns in this variable contain valid values */
   nco_string *pft_sng_out=NULL; /* [sng] Coordinate array of PFT strings */
   nco_bool flg_var_mpt; /* [flg] Variable has no valid values */
-  nco_bool flg_snw_rdr; /* [flg] Re-arrange snow layer order using snl_var */
+  nco_bool flg_snw_ocn=rgr->flg_snw_ocn; /* [flg] Unpack S1D snow fields into sane (ocean-like) level order */
+  nco_bool flg_snw_rdr; /* [flg] Re-arrange snow layer order for this variable using snl_var */
   nco_lut_out_enm lut_out=(nco_lut_out_enm)(rgr->lut_out); /* [enm] Landunit type(s) for S1D column output */
   
   size_t idx_dbg=rgr->idx_dbg; /* [idx] User-specifiable debugging location */
@@ -393,7 +394,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     nco_exit(EXIT_FAILURE);
   } /* !flg_nm_hst */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will assume input attributes and variables use ELM/CLM %s naming conventions like %s\n",nco_prg_nm_get(),fnc_nm,flg_nm_hst ? "history file" : "restart file",flg_nm_hst ? "\"ltype_...\"" : "\"ilun_...\"");
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will output landunit type (LUT) \"%s\" for non-MEC columns and in index 0 of MEC dimension for MEC columns. A single LUT will contain the value of the last column of that LUT in the gridcell. Area-weighted averages will be over all columns of the requested LUTs in the gridcell.\n",nco_prg_nm_get(),fnc_nm,nco_lut_out_sng(lut_out));
+  if(nco_dbg_lvl_get() >= nco_dbg_std && flg_nm_rst) (void)fprintf(stderr,"%s: INFO %s will output landunit type (LUT) %d = \"%s\" for non-MEC columns and in index 0 of MEC dimension for MEC columns. A single LUT will contain the value of the last column of that LUT in the gridcell. Area-weighted averages will be over all columns of the requested LUTs in the gridcell.\n",nco_prg_nm_get(),fnc_nm,(int)lut_out,nco_lut_out_sng(lut_out));
+  if(nco_dbg_lvl_get() >= nco_dbg_std && flg_nm_rst){
+    if(flg_snw_ocn) (void)fprintf(stderr,"%s: INFO %s will unpack multi-layer snow fields so the top layer is at index 0 of the levsno dimension in the output file, with deeper layers arranged subsequently. This shifts the empty cells for non-utilized snowpack layers from the top to the bottom of the output (analogous to bottom topography masking the lower layers of z-grid ocean datasets)\n",nco_prg_nm_get(),fnc_nm); else (void)fprintf(stderr,"%s: INFO %s will unpack multi-layer snow fields into their raw storage order, where active snow layers abut the end of the levsno dimension, and any empty, deeper layers appear at the beginning of the levsno dimension. This is non-intuitive, yet ensures the snow hydrological transport is contiguous with the underlying soil levels.\n",nco_prg_nm_get(),fnc_nm);
+  } /* !dbg */
 
   rcd=nco_inq_varid_flg(in_id,"cols1d_lat",&cols1d_lat_id);
   if(cols1d_lat_id != NC_MIN_INT) flg_s1d_clm=True;
@@ -1934,7 +1938,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   } /* !dbg */
   
 #ifdef __GNUG__
-# pragma omp parallel for firstprivate(lut_vld_flg,var_val_in,var_val_out) private(clm_typ,clm_wgt,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,flg_snw_rdr,flg_var_mpt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_mss_val,has_numrad,has_pft,has_tpo,idx_in,idx_out,idx_s1d_crr,idx_tbl,in_id,levsno_idx_in,levsno_idx_out,lnd_typ,lnd_typ_vld_1st,lvl_idx,lvl_nbr,mec_idx_in,mec_idx_out,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,mss_val_unn,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,clm_typ_mec_fst,cols1d_ityp,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tpo_in,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pft,lat_nbr,idx_dbg,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,lut_out,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy,snl_var,tpo_nbr_in,tpo_nbr_out,topo1d_ixy,topo1d_jxy)
+# pragma omp parallel for firstprivate(lut_vld_flg,var_val_in,var_val_out) private(clm_typ,clm_wgt,dmn_cnt_in,dmn_cnt_out,dmn_id,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,flg_snw_rdr,flg_var_mpt,has_clm,has_grd,has_levcan,has_levgrnd,has_levlak,has_levsno,has_levsno1,has_levtot,has_lnd,has_mec,has_mss_val,has_numrad,has_pft,has_tpo,idx_in,idx_out,idx_s1d_crr,idx_tbl,in_id,levsno_idx_in,levsno_idx_out,lnd_typ,lnd_typ_vld_1st,lvl_idx,lvl_nbr,mec_idx_in,mec_idx_out,mrv_idx,mrv_nbr,mss_val,mss_val_dbl,mss_val_cmp_dbl,mss_val_unn,nco_s1d_typ,pft_typ,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_in,var_typ_out) shared(clm_nbr_in,clm_nbr_out,clm_typ_mec_fst,cols1d_ityp,cols1d_ityplun,cols1d_ixy,cols1d_jxy,col_nbr,dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_levcan_in,dmn_id_levgrnd_in,dmn_id_levlak_in,dmn_id_levsno_in,dmn_id_levsno1_in,dmn_id_levtot_in,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_numrad_in,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tpo_in,dmn_nbr_hrz_crd,flg_nm_hst,flg_nm_rst,flg_s1d_clm,flg_s1d_pft,flg_snw_ocn,lat_nbr,idx_dbg,ilun_landice_multiple_elevation_classes,land1d_ityplun,lnd_nbr_in,lnd_nbr_out,lon_nbr,lut_out,mec_nbr_out,need_mec,out_id,pft_nbr_in,pft_nbr_out,pfts1d_ityplun,pfts1d_ityp_veg,pfts1d_ixy,pfts1d_jxy,snl_var,tpo_nbr_in,tpo_nbr_out,topo1d_ixy,topo1d_jxy)
 #endif /* !__GNUG__ */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -2287,7 +2291,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: INFO unpack block for %s clm_nbr = %ld, mec_nbr = %ld, mrv_nbr = %ld\n",nco_prg_nm_get(),var_nm,clm_nbr_in,(has_mec) ? mec_nbr_out : 0,mrv_nbr);
 
 	  /* Rearrange snow layer data for this variable? */
-	  if(snl_var && (has_levsno || has_levsno1 || has_levtot)) flg_snw_rdr=True;
+	  if(snl_var && flg_snw_ocn && (has_levsno || has_levsno1 || has_levtot)) flg_snw_rdr=True;
 
 	  /* Some variables (like DZSNO) defined on lnd_typ=1 (e.g., for non-ice sheet gridcells) and on unrolled dimension (e.g., MEC)
 	     If input variable contains valid columns on multiple landunit types, e.g., soil and glacier landunits, then if/where to place column values is user-defined policy implemented by lut_out option
@@ -2383,7 +2387,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		     A gridcell with only three layers, say, has top snow layer index -2 and surface index 0
 		     Unless snl_var is present, S1D will unpack snow variables exactly as stored, so that the top level of a 3-layer snowpack will appear in index -2, aka C-index 13 for the output levsno dimension for E3SM with use_extra_snowlayers
 		     This results in a "negative space" above the snow fields in the output file
-		     A more intuitive order in which to unpack and then view gridded snow is to place the top layer at index 0 of the levsno dimension in the output file, with deeper layers arranged subsequently
+		     A more intuitive order to view gridded snow is to place the top layer at index 0 of the levsno dimension in the output file, with deeper layers arranged subsequently
 		     
 		     This shifts the empty cells for non-utilized snowpack layers from the top to the bottom of the output (analogous to bottom topography masking the lower layers of z-grid ocean datasets)
 		     This block uses snl_var when present to effect that shift, so that output snow is butted against the beginning rather than the end of the levsno dimension 
