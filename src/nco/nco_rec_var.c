@@ -50,11 +50,17 @@ nco_rec_crd_chk /* Check for monotonicity of coordinate values */
 
   static monotonic_direction_enm monotonic_direction;
 
+  /* 20241121: Monotonicity check is more complex when REC_APN == True because idx_rec_out starts out >> 0
+     Track whether last value and monotonicity direction have been set for valid comparison 
+     This stops annoying problem reported by S. McGinnis as https://github.com/nco/nco/issues/288 */
+  static nco_bool LAST_VAL_IS_SET=False;
+  static nco_bool DRC_IS_SET=False;
+
   /* 20130424: First record coordinate variable received will be tested for monotonicity
      Subsequent record coordinate variables will be ignored
      Fixes problem caused by associated record coordinates like time_bnds
      Will be necessary to generalize this for netCDF4 files with multiple record coordinates */
-  if(idx_rec_out == 0L && !rec_crd_nm) rec_crd_nm=(char *)strdup(var->nm);
+  if(idx_rec_out == 0L || !rec_crd_nm) rec_crd_nm=(char *)strdup(var->nm);
   if(rec_crd_nm)
     if(strcmp(rec_crd_nm,var->nm))
        return;
@@ -74,24 +80,28 @@ nco_rec_crd_chk /* Check for monotonicity of coordinate values */
   case NC_CHAR: rec_crd_val_crr=var->val.cp[0]; break;
   case NC_STRING: break; /* Do nothing */
     default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+  } /* !switch */
   
-  if(idx_rec_out > 1L){
+  if(LAST_VAL_IS_SET && !DRC_IS_SET){
+    if(rec_crd_val_crr > rec_crd_val_lst) monotonic_direction=increasing; else monotonic_direction=decreasing;
+    DRC_IS_SET=True;
+  } /* !LAST_VAL_IS_SET */
+    
+  if(idx_rec_out > 1L && LAST_VAL_IS_SET){
     if(((rec_crd_val_crr > rec_crd_val_lst) && monotonic_direction == decreasing) ||
        ((rec_crd_val_crr < rec_crd_val_lst) && monotonic_direction == increasing)){
       if(idx_rec-1 == -1){
 	/* Inter-file non-monotonicity */
 	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO/WARNING Inter-file non-monotonicity. Record coordinate \"%s\" does not monotonically %s between last specified record of previous input file (whose name is not cached locally and thus currently unavailable for printing) and first specified record (i.e., record index = %ld) of current input file (%s). This message is often informational only and may usually be safely ignored. It is quite common when joining files with \"wrapped\" record coordinates, e.g., joining a January file to a December file when the time coordinate is enumerated as day of year. It is also common when joining files which employ a \"time=base_time+time_offset\" convention. Sometimes, however, this message is a warning which signals that the user has joined files together in a different order than intended and that corrective action should be taken to re-order the input files. Output file %s will contain these non-monotonic record coordinate values (%f, %f) at record indices %ld, %ld.\n",nco_prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),idx_rec,fl_in,fl_out,rec_crd_val_lst,rec_crd_val_crr,idx_rec_out-1L,idx_rec_out);
-      }else{
+      }else{ /* !idx_rec */
 	/* Intra-file non-monotonicity */
 	(void)fprintf(stderr,"%s: WARNING Intra-file non-monotonicity. Record coordinate \"%s\" does not monotonically %s between (input file %s record indices: %ld, %ld) (output file %s record indices %ld, %ld) record coordinate values %f, %f\n",nco_prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),fl_in,idx_rec-1L,idx_rec,fl_out,idx_rec_out-1,idx_rec_out,rec_crd_val_lst,rec_crd_val_crr);
-      } /* end if Intra-file non-monotonicity */
-    } /* end if not monotonic */
-  }else if(idx_rec_out == 1L){
-    if(rec_crd_val_crr > rec_crd_val_lst) monotonic_direction=increasing; else monotonic_direction=decreasing;
-  } /* end if */
+      } /* !idx_rec */
+    } /* !not monotonic */
+  } /* !idx_rec_out */
     
   rec_crd_val_lst=rec_crd_val_crr;
+  LAST_VAL_IS_SET=True;
 
 } /* !nco_rec_crd_chk() */
 

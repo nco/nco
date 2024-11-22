@@ -1,8 +1,12 @@
-2024-11-21  Charlie Zender  <zender@uci.edu>
+2024-11-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha05: Break of Dawn';git push
 	git tag -a 5.3.0-alpha05 -m 'ncks: S1D ilun_UNUSED; ncrcat: fix	REC_APN wrn';git push --tags
+
+	* ncrcat: Allow monotonicity test when REC_APN,	ensure last value and monotonicity already defined before comparison
+
+2024-11-21  Charlie Zender  <zender@uci.edu>
 
 	* ncrcat: Eschew monotonicity test nco_rec_crd_chk() when --record_append = REC_APN is true
 

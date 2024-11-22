@@ -1628,10 +1628,8 @@ main(int argc,char **argv)
               if(md5) (void)nco_md5_chk(md5,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),grp_out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
             } /* end if ncrcat */
 
-            /* Warn if record coordinate, if any, is not monotonic (unless interleaved) 
-	       20241121: Skip this monotonicity check if REC_APN because when that is true we never read in the data in the existing output file, we just append to it
-	       This fixes annoying problem reported by S. McGinnis as https://github.com/nco/nco/issues/288 */
-            if(!FLG_ILV && nco_prg_id == ncrcat && !REC_APN && var_prc[idx]->is_crd_var) (void)nco_rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
+            /* Warn if record coordinate, if any, is not monotonic (unless interleaved) */
+            if(!FLG_ILV && nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)nco_rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
             /* Convert missing_value, if any, back to unpacked or unpromoted type
 	       Otherwise missing_value will be double-promoted when next record read in nco_msa_var_get_trv()
 	       Do not convert after last record otherwise normalization fails
