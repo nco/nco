@@ -789,16 +789,18 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_urban_tbd",&ilun_urban_tbd,NC_INT);
     rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_urban_hd",&ilun_urban_hd,NC_INT);
     rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_urban_md",&ilun_urban_md,NC_INT);
+    /* 20241120: NCAR CLM/CTSM deprecates ilun_landice for ilun_UNUSED in at least some simulations, e.g., CESM2 LE */
     rcd=nco_inq_att_flg(in_id,NC_GLOBAL,"ilun_landice",(nc_type *)NULL,(long *)NULL);
     if(rcd == NC_NOERR){
       rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_landice",&ilun_landice,NC_INT);
     }else{
       rcd=nco_inq_att_flg(in_id,NC_GLOBAL,"ilun_UNUSED",(nc_type *)NULL,(long *)NULL);
       if(rcd == NC_NOERR){
+	/* For now we treat ilun_UNUSED as if it were ilun_glacier */
 	rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_UNUSED",&ilun_landice,NC_INT);
 	(void)fprintf(stdout,"%s: INFO Restart dataset appears to be from CTSM not ELM because history global attribute defines 'ilun_UNUSED = 3' not 'ilun_glacier = 3'\n",nco_prg_nm_get());
       }else{
-	(void)fprintf(stdout,"%s: ERROR Restart dataset appears contain unknown landunit type\n",nco_prg_nm_get());
+	(void)fprintf(stdout,"%s: ERROR Restart dataset is missing expected landunit type global attribute\n",nco_prg_nm_get());
 	nco_exit(EXIT_FAILURE);
       } /* !rcd */
     } /* !rcd */

@@ -33,7 +33,7 @@ rec_var_dbg /* [fnc] Aid in debugging problems with record dimension */
  const char * const dbg_sng); /* I [sng] Debugging message to print */
 
 void
-rec_crd_chk /* Check for monotonicity of coordinate values */
+nco_rec_crd_chk /* Check for monotonicity of coordinate values */
 (const var_sct * const var, /* I [sct] Coordinate to check for monotonicity */
  const char * const fl_in, /* I [sng] Input filename */
  const char * const fl_out, /* I [sng] Output filename */

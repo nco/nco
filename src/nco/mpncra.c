@@ -982,7 +982,7 @@ main(int argc,char **argv)
 	  } /* end if ncrcat */
 	  
 	  /* Make sure record coordinate, if any, is monotonic */
-	  if(nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,rec_usd_cml);
+	  if(nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)nco_rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,rec_usd_cml);
 	  /* Convert missing_value, if any, back to unpacked type */
 	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_RECORD)
 	    var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
@@ -1243,7 +1243,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
 	      } /* end if ncrcat */
 	      /* Make sure record coordinate, if any, is monotonic */
-	      if(nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,rec_usd_cml);
+	      if(nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)nco_rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,rec_usd_cml);
 	      /* Convert missing_value, if any, back to disk type */
 	      if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_RECORD)
 		var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);

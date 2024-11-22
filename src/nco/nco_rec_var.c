@@ -10,12 +10,12 @@
 #include "nco_rec_var.h" /* Record variable utilities */
 
 void
-rec_var_dbg /* [fnc] Aid in debugging problems with record dimension */
+nco_rec_var_dbg /* [fnc] Aid in debugging problems with record dimension */
 (const int nc_id, /* I [id] netCDF file ID */
  const char * const dbg_sng) /* I [sng] Debugging message to print */
 {
   /* Purpose: Aid in debugging problems with record dimension */
-  /* Usage: if(nco_dbg_lvl == 73) rec_var_dbg(out_id,"After ncvarput()"); */
+  /* Usage: if(nco_dbg_lvl == 73) nco_rec_var_dbg(out_id,"After ncvarput()"); */
   int nbr_dmn_fl;
   int nbr_var_fl;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
@@ -30,10 +30,10 @@ rec_var_dbg /* [fnc] Aid in debugging problems with record dimension */
     (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, record dimension size is %li\n",nco_prg_nm_get(),nbr_dmn_fl,nbr_var_fl,dmn_sz);
   } /* end else */
   (void)fflush(stderr);
-} /* end rec_var_dbg() */
+} /* !nco_rec_var_dbg() */
 
 void
-rec_crd_chk /* Check for monotonicity of coordinate values */
+nco_rec_crd_chk /* Check for monotonicity of coordinate values */
 (const var_sct * const var, /* I [sct] Coordinate to check for monotonicity */
  const char * const fl_in, /* I [sng] Input filename */
  const char * const fl_out, /* I [sng] Output filename */
@@ -93,5 +93,5 @@ rec_crd_chk /* Check for monotonicity of coordinate values */
     
   rec_crd_val_lst=rec_crd_val_crr;
 
-} /* end rec_crd_chk() */
+} /* !nco_rec_crd_chk() */
 
