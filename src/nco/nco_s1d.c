@@ -873,9 +873,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       if(rcd == NC_NOERR){
 	snl_var=(int *)nco_malloc(clm_nbr_in*sizeof(int));
 	rcd=nco_get_var(in_id,snl_var_id,snl_var,NC_INT);
-	(void)fprintf(stdout,"%s: INFO Will use %s to assign levsno, levsno1, and levtot snow layers to top-down (ocean-like) vertical grid\n",nco_prg_nm_get(),snl_var_nm);
+	if(nco_dbg_lvl_get() >= nco_dbg_fl && flg_nm_rst && flg_snw_ocn) (void)fprintf(stdout,"%s: INFO Will use %s to assign levsno, levsno1, and levtot snow layers to top-down (ocean-like) vertical grid\n",nco_prg_nm_get(),snl_var_nm);
       }else{ /* !rcd */
-	(void)fprintf(stdout,"%s: INFO Snow layer variable %s not in input, unable to assign snow layers to intuitive (top-down) vertical grid\n",nco_prg_nm_get(),snl_var_nm);
+	if(nco_dbg_lvl_get() >= nco_dbg_std && flg_nm_rst && flg_snw_ocn) (void)fprintf(stdout,"%s: INFO Snow layer variable %s not in input, unable to assign snow layers to intuitive (top-down) vertical grid\n",nco_prg_nm_get(),snl_var_nm);
       } /* !rcd */
     } /* !need_levsno */
 
