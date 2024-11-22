@@ -1,8 +1,14 @@
 2024-11-22  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.0-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha06: ';git push
+	git tag -a 5.3.0-alpha06 -m '';git push --tags
+
 	* NCO 5.3.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha05: Break of Dawn';git push
-	git tag -a 5.3.0-alpha05 -m 'ncks: S1D ilun_UNUSED; ncrcat: fix	REC_APN wrn';git push --tags
+	git tag -a 5.3.0-alpha05 -m 'ncks: S1D ilun_UNUSED, snw_ocn; ncrcat: fix REC_APN wrn';git push --tags
+
+	* nco.texi Document lut_out, snw_ocn
 
 	* S1D add snw_ocn and no_snw_ocn flags to affirm or disable unpacking of snow levels to ocean-like ordering
 
