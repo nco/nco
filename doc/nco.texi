@@ -24217,18 +24217,20 @@ The @acronym{S1D} capabilities have steadily grown culminating in
 major new features in @acronym{NCO} @w{version 5.2.9} and
 @w{version 5.3.0}, released in October and November, 2024,
 respectively. 
+
 @html
 <a name="lut_out"></a> <!-- http://nco.sf.net/nco.html#lut_out -->
 <a name="frc_landunit"></a> <!-- http://nco.sf.net/nco.html#frc_landunit -->
 <a name="frc_column"></a> <!-- http://nco.sf.net/nco.html#frc_column -->
 <a name="SNLSNO"></a> <!-- http://nco.sf.net/nco.html#SNLSNO -->
 @end html
+@cindex landunit type
 @cindex @code{lut_out}
-@cindex @code{SNLSNO}
 @cindex @code{frc_landunit}
 @cindex @code{frc_column}
-The @samp{--rgr lut_out=$lut_out} option specifies which column
-type(s) to place in each gridcell in the output file. 
+The @samp{--rgr lut_out=$lut_out} option specifies that only columns
+of specified landunit type(s) should appear in the output for
+column-variables. 
 The value @var{lut_out} is the standard landunit type of the column.
 Two additional values specify to output area-weighted averages of
 multiple landunit types: 
@@ -24257,6 +24259,44 @@ ncks --s1d --lut_out=13 --hrz=hst.nc rst.nc s1d.nc # Avg Soil+Glacier
 @end verbatim
 @end example
 
+@html
+<a name="snw_ocn"></a> <!-- http://nco.sf.net/nco.html#snw_ocn -->
+<a name="no_snw_ocn"></a> <!-- http://nco.sf.net/nco.html#no_snw_ocn -->
+<a name="SNLSNO"></a> <!-- http://nco.sf.net/nco.html#SNLSNO -->
+<a name="snow_ocean"></a> <!-- http://nco.sf.net/nco.html#snow_ocean -->
+<a name="no_snow_ocean"></a> <!-- http://nco.sf.net/nco.html#no_snow_ocean -->
+@end html
+@cindex @code{snw_ocn}
+@cindex @code{no_snw_ocn}
+@cindex @code{SNLSNO}
+@cindex @code{snow_ocean}
+@cindex @code{no_snow_ocean}
+@acronym{S1D} can now grid snow-related variables into a top-down
+(ocean-like) vertical grid that many think is more intuitive. 
+By default the land system models @acronym{ELM}, @acronym{CLM}, and
+@acronym{CTSM} store the negative of the number of active snow layers
+in the variable @code{SNLSNO}.
+Restart files for these models store the active snow layer butted-up
+against the lowest layers in the snow-level dimension (so that they
+are continguous with soil layers to simplify hydrologic
+calculations).
+This makes good modeling sense though also makes snow variables in 
+restart files difficult to visualize.
+By default @acronym{S1D} now uses @code{SNLSNO}, if present, to unpack
+active layers of snow variables into a top-layer first, downwards
+order, increasing with depth.
+Inactive layers are underneath the bottom (i.e., where they 
+reside physically).
+The resulting snow variables appear like ocean state variables over
+uneven bathymetry, with missing values underneath.
+We call this "snow-ocean" ordering to contrast it with the on-disk
+storage order of snow variables. 
+@example
+@verbatim
+ncks --s1d --rgr snw_ocn --hrz=hst.nc rst.nc s1d.nc # Snow-ocean order
+ncks --s1d --rgr no_snw_ocn --hrz=hst.nc rst.nc s1d.nc # Input order
+@end verbatim
+@end example
 
 @html
 <a name="ssh"></a> <!-- http://nco.sf.net/nco.html#ssh -->

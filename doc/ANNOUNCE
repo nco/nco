@@ -54,26 +54,33 @@ netcdf s1d_r05 {
 http://nco.sf.net/nco.html#s1d
 http://nco.sf.net/nco.html#unpack_sparse
 
-B. ncks now grids snow-related variables into a top-down (ocean-like)
-vertical grid that many people think is much more intuitive to view.
+B. ncks can now grid snow-related variables into a top-down
+(ocean-like) vertical grid that many think is more intuitive. 
 By default ELM/CLM/CTSM store the negative of the number of active
 snow layers in the variable SNLSNO. Restart files for these models
 store the active snow layer butted-up against the lowest layers in
 the level dimension (so that they are continguous with soil layers
 to simplify hydrologic calculations). This makes snow variables in
-restart files hard to visualize. NCO S1D uses SNLSNO can grid the snow 
-variables from the first layer downwards, increasing with depth,
-and place the inactive layers at the bottom (i.e., where they reside 
-physically). The resulting snow variables appear like ocean state
-variables over uneven bathymetry, with missing value underneath.
+restart files hard to visualize. By default S1D now uses SNLSNO, if
+present, to unpack snow variables in a first layer downwards order,
+increasing with depth. Inactive layers at the bottom (i.e., where they
+reside physically). The resulting snow variables appear like ocean
+state variables over uneven bathymetry, with missing value
+underneath. We call this "snow-ocean" ordering to contrast it with
+the on-disk storage order of snow variables. 
 
-C. ncks S1D now accepts the --rgr lut_out=$lut_out option to specify
+http://nco.sf.net/nco.html#s1d
+http://nco.sf.net/nco.html#snw_ocn
+http://nco.sf.net/nco.html#snw_rdr
+http://nco.sf.net/nco.html#no_snw_ocn
+
+C. ncks S1D now accepts the "--rgr lut_out=$lut_out" option to specify 
 which column type(s) to place in each gridcell in the output file.
-The argument to lut_out is the standard landunit type of the column,
+The argument lut_out is the standard landunit type of the column,
 with (thus far) two additional values that will output area-weighted
 averages of multiple landunit types:
 
-lut_out Output will be value of column(s) in this andunit 
+lut_out Output will be value of column(s) in this Landunit 
 1       Vegetated or bare soil
 2       Crop
 3       Landice (plain, no MEC)
@@ -86,8 +93,12 @@ lut_out Output will be value of column(s) in this andunit
 10      Area-weighted average of all landunit types except MEC glaciers
 13      Area-weighted average of soil+(non-MEC) glacier
 
-ncks --s1d --lut_out=1 --hrz=hst.nc rst.nc s1d.nc # Output Soil LUT
-ncks --s1d --lut_out=13 --hrz=hst.nc rst.nc s1d.nc # Avg Soil+Glacier
+For example,
+ncks --s1d --rgr lut_out=1 --hrz=hst.nc rst.nc s1d.nc # Output Soil LUT
+ncks --s1d --rgr lut_out=13 --hrz=hst.nc rst.nc s1d.nc # Avg Soil+Glacier
+
+http://nco.sf.net/nco.html#s1d
+http://nco.sf.net/nco.html#lut_out
 
 D. ncremap always warns when it regrids land model files that contain
 a "landfrac" variable and SGS renormalization is not requested. 
