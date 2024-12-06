@@ -15557,10 +15557,10 @@ To write a @acronym{RAM} variable to disk (like a regular variable) use
 @cindex ram_write()
 @cindex ram_delete()
 @example
-*temp[$time,$lat,$lon]=10.0;     // Cast
+*temp[$time,$lat,$lon]=10.0;    // Cast
 *temp_avg=temp.avg($time);      // Regular assign
-temp.ram_delete();              // Delete RAM variable
 temp_avg.ram_write();           // Write Variable to output
+temp.ram_delete();              // Delete RAM variable
 
 // Create and increment a RAM variable from "one" in Input
 *one++;   
@@ -15767,18 +15767,16 @@ for(*idx=1;idx<sz;idx++)
   if(lat(idx)-lat(idx-1) < 0.0) break;
 
 if(idx == sz) print("lat co-ordinate is monotonic\n");
-   else print("lat co-ordinate is NOT monotonic\n");
+  else print("lat co-ordinate is NOT monotonic\n");
 
 // Sum odd elements	
 *idx=0;
 *sz=$lat_nw.size;
 *sum=0.0;
-
 while(idx<sz){
   if(lat(idx)%2) sum+=lat(idx);
   idx++;
 }
-
 ram_write(sum);
 print("Total of odd elements ");print(sum);print("\n"); 
 @end verbatim

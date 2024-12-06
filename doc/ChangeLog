@@ -1,8 +1,18 @@
-2024-11-22  Charlie Zender  <zender@uci.edu>
+2024-12-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha06: Awkward Self Haircut';git push
-	git tag -a 5.3.0-alpha06 -m '';git push --tags
+	git tag -a 5.3.0-alpha06 -m 'ncclimo: tms wrt area_wgt; ncks: S1D pft->PFT;';git push --tags
+
+	* ncclimo: Output area_wgt=(area*landfrac) for use by zppy
+
+	* ncclimo: region_name@long_name now specifies area-weighted sums (rgn_stt=sum) or means (rgn_stt=avg)
+
+2024-12-05  Charlie Zender  <zender@uci.edu>
+
+	* S1D change pft coordinate name to PFT so it is not same as dimension name (new CF 1.12 rule)
+
+2024-11-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha05: Break of Dawn';git push

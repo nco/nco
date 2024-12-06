@@ -728,11 +728,13 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   char *grd_nm_out=NULL;
   char *lnd_nm_out=NULL;
   char *pft_nm_out=NULL;
+  char *pft_crd_nm_out=NULL;
   char *tpo_nm_out=NULL;
   if(need_clm) clm_nm_out=(char *)strdup(clm_nm_in);
   if(need_grd) grd_nm_out=(char *)strdup(grd_nm_in);
   if(need_lnd) lnd_nm_out=(char *)strdup(lnd_nm_in);
   if(need_pft) pft_nm_out=(char *)strdup(pft_nm_in);
+  if(need_pft) pft_crd_nm_out=(char *)strdup("PFT"); /* New CF 1.12 Convention prevents 1D-string variables from having same name as their dimension */
   if(need_tpo) tpo_nm_out=(char *)strdup(tpo_nm_in);
   int dmn_id_clm_out=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_lnd_out=NC_MIN_INT; /* [id] Dimension ID */
@@ -1409,13 +1411,13 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     } /* !pft_idx */
 #endif /* !false */
     if(fl_out_fmt == NC_FORMAT_NETCDF4){
-      rcd+=nco_def_var(out_id,pft_nm_out,NC_STRING,dmn_nbr_1D,dmn_ids_out,&pft_out_id);
+      rcd+=nco_def_var(out_id,pft_crd_nm_out,NC_STRING,dmn_nbr_1D,dmn_ids_out,&pft_out_id);
     }else{
-      rcd+=nco_def_var(out_id,pft_nm_out,NC_CHAR,dmn_nbr_2D,dmn_ids_out,&pft_out_id);
+      rcd+=nco_def_var(out_id,pft_crd_nm_out,NC_CHAR,dmn_nbr_2D,dmn_ids_out,&pft_out_id);
     } /* !fl_out_fmt */
     var_crt_nbr++;
-    rcd=nco_char_att_put(out_id,pft_nm_out,"long_name","PFT Descriptor");
-    rcd=nco_char_att_put(out_id,pft_nm_out,"note","Storage uses C (0-based indexing) convention and includes space for PFT ityp 0 == bare ground/not vegetated. Thus PFT ityp equals the storage index. For example, storage index 0 is PFT type 0 == Not vegetated and storage index 1 is PFT ityp 1 == Needleleaf evergreen temperate tree. Often the last natural PFT is ityp 14 == C4 grass, although sometimes it is ityp 16 == C3 irrigated. The presence of crop PFTs (i.e., CFTs) in data fields is indicated by an extended PFT type index whose enumeration is sequential with natural PFTs. Often the first crop is c3_crop with PFT ityp 15 and CFT ityp = 1, although sometimes it is corn with PFT ityp 17 and CFT ityp = 1. The last CFT ityp is the total PFT dimension size minus the number of natural PFTs.");
+    rcd=nco_char_att_put(out_id,pft_crd_nm_out,"long_name","PFT Descriptor");
+    rcd=nco_char_att_put(out_id,pft_crd_nm_out,"note","Storage uses C (0-based indexing) convention and includes space for PFT ityp 0 == bare ground/not vegetated. Thus PFT ityp equals the storage index. For example, storage index 0 is PFT type 0 == Not vegetated and storage index 1 is PFT ityp 1 == Needleleaf evergreen temperate tree. Often the last natural PFT is ityp 14 == C4 grass, although sometimes it is ityp 16 == C3 irrigated. The presence of crop PFTs (i.e., CFTs) in data fields is indicated by an extended PFT type index whose enumeration is sequential with natural PFTs. Often the first crop is c3_crop with PFT ityp 15 and CFT ityp = 1, although sometimes it is corn with PFT ityp 17 and CFT ityp = 1. The last CFT ityp is the total PFT dimension size minus the number of natural PFTs.");
 
     // As of 20241022, glean as many PFT/CFT names as possible from global attributes
     char att_nm[NC_MAX_NAME+1L]; /* [sng] Attribute name */
@@ -2572,6 +2574,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   if(grd_nm_out) grd_nm_out=(char *)nco_free(grd_nm_out);
   if(lnd_nm_out) lnd_nm_out=(char *)nco_free(lnd_nm_out);
   if(pft_nm_out) pft_nm_out=(char *)nco_free(pft_nm_out);
+  if(pft_crd_nm_out) pft_crd_nm_out=(char *)nco_free(pft_crd_nm_out);
   if(pft_chr_out) pft_chr_out=(char *)nco_free(pft_chr_out);
   if(pft_sng_out) pft_sng_out=(nco_string *)nco_free(pft_sng_out);
   if(pft_sng_lng_nm_out) pft_sng_lng_nm_out=(char *)nco_free(pft_sng_lng_nm_out);
