@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha06: Awkward Self Haircut';git push
 	git tag -a 5.3.0-alpha06 -m 'ncclimo: tms wrt area_wgt; ncks: S1D pft->PFT;';git push --tags
 
-	* ncclimo: Output area_wgt=(area*landfrac) for use by zppy
+	* ncclimo: Output valid_area_per_gridcell=area_wgt=(area*landfrac) for use by zppy
 
 	* ncclimo: region_name@long_name now specifies area-weighted sums (rgn_stt=sum) or means (rgn_stt=avg)
 
