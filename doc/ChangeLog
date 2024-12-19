@@ -1,8 +1,12 @@
-2024-12-06  Charlie Zender  <zender@uci.edu>
+2024-12-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.0-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.0-alpha06: Awkward Self Haircut';git push
-	git tag -a 5.3.0-alpha06 -m 'ncclimo: tms wrt area_wgt; ncks: S1D pft->PFT;';git push --tags
+	git tag -a 5.3.0-alpha06 -m 'ncclimo: tms wrt area_wgt, omit -v; ncks: S1D pft->PFT;';git push --tags
+
+	* Omit -v in ncap2 call for rgn_stt computation
+
+2024-12-06  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo: Output valid_area_per_gridcell=area_wgt=(area*landfrac) for use by zppy
 
