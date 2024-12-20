@@ -20232,11 +20232,11 @@ options.
 <a name="glb_stt"></a> <!-- http://nco.sf.net/nco.html#glb_stt -->
 <a name="global_statistic"></a> <!-- http://nco.sf.net/nco.html#global_statistic -->
 <a name="regional_statistic"></a> <!-- http://nco.sf.net/nco.html#regional_statistic -->
-<a name="foo"></a> <!-- http://nco.sf.net/nco.html#foo -->
-<a name="foo"></a> <!-- http://nco.sf.net/nco.html#foo -->
-<a name="foo"></a> <!-- http://nco.sf.net/nco.html#foo -->
-<a name="foo"></a> <!-- http://nco.sf.net/nco.html#foo -->
+<a name="sum_scl"></a> <!-- http://nco.sf.net/nco.html#sum_scl -->
+<a name="sum_scale"></a> <!-- http://nco.sf.net/nco.html#sum_scale -->
+<a name="valid_area_per_gridcell"></a> <!-- http://nco.sf.net/nco.html#valid_area_per_gridcell -->
 @end html
+@cindex @code{valid_area_per_gridcell}
 @cindex @code{--sum_scl}
 @cindex @code{--sum_scale}
 @cindex @code{--scl_fct}
@@ -20325,6 +20325,26 @@ square meter to global total mass.
 The @code{--glb_stt=sum}/@code{--sum_scl} procedure is model- and
 variable-specific and we are open to suggestions to make it more
 useful. 
+
+@cindex @var{area}
+@cindex @var{sgs_frc}
+@cindex @code{valid_area_per_gridcell}
+As of @acronym{NCO} version 5.3.0 (December, 2025) @command{ncclimo}
+automatically outputs additional metrics with global statistics.
+The output files containing the global timeseries also contain the
+variable @code{valid_area_per_gridcell}.
+This field is equivalent to the product of the @var{area} variable 
+and the @var{sgs_frc} variable (if any).
+Thus for @acronym{ELM}/@acronym{CLM}/@acronym{CTSM}, this field equals
+@code{area} times @code{landfrac}, while for
+@acronym{EAM}/@acronym{CAM} this variable simply equals @code{area}.
+The output files also contain the @var{area} and @var{sgs_frc}
+variables separately.
+The presence of these variables in output allows downstream processors
+(e.g., @command{zppy}) to generate additional masks and weights for
+rescaling the statistics.
+For example, these fields can be used to rescale global sums into any
+units desired.
 
 @html
 <a name="no_ntv_tms"></a> <!-- http://nco.sf.net/nco.html#no_ntv_tms -->

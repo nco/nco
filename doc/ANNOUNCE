@@ -7,11 +7,14 @@ http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
 Version 5.3.0 significantly improves the unpacking of ELM/CLM/CTSM
-history and restart datasets. ncremap has more EAMxx-friendly
-behavior. 
-This release many be skipped if these changes do not interest you.
+history and restart datasets, and seems complete in this regard.
+ncrcat has more friendly behavior when appending, and ncclimo now
+outputs more metrics (such as valid area per gridcell) when in
+regional statistics mode. This release many be skipped if these
+changes do not interest you. 
 
-Work on 5.3.1 is underway and includes 
+Work on 5.3.1 is underway and includes improved NC_STRING for
+common text attributes.
 
 Enjoy,
 Charlie
@@ -106,28 +109,34 @@ This is because ELM/CLM/CTSM use "landfrac" for sub-gridscale
 fraction, and ignoring that causes errors along coastlines.
 EAMxx also archives that same "landfrac" but every EAMxx variable
 is valid throughout every gridcell so renormalization would be
-superfluous at best. Now ncremap no longer emist the "landfrac"
+superfluous at best. Now ncremap no longer emits the "landfrac"
 WARNING for EAMxx files.
 http://nco.sf.net/nco.html#eamxx
 
+E. As of NCO version 5.3.0 (December, 2025) ncclimo automatically
+outputs additional metrics with global statistics. The output files
+containing the global timeseries also contain the variable
+valid_area_per_gridcell. This field is equivalent to the product of
+the area variable  and the sgs_frc variable (if any). Thus for
+ELM/CLM/CTSM, this field equals area times landfrac, while for EAM/CAM
+this variable simply equals area. The output files also contain the
+area and sgs_frc variables separately. The presence of these variables
+in output allows downstream processors (e.g., zppy) to generate
+additional masks and weights for rescaling the statistics. For
+example, these fields can be used to rescale global sums into any
+units desired. 
+ncclimo -P elm --split --rgn_stt=sum -c v3.LR.piControl -s 460 -e 461 \
+--drc_in=drc_in --drc_out=drc_out
+http://nco.sf.net/nco.html#glb_stt
+http://nco.sf.net/nco.html#rgn_stt
+
 BUG FIXES:
    
-A. ncremap fixes a regression with the vertical interpolation of ECMWF
-datasets in IFS format. The regression, introduced 1-2 years ago,
-causes the interpolation to abort. To vertically interpolate a hybrid
-coordinate dataset in IFS format, one must now specify that the
-surface pressure variable is named lnsp: 
-
-ncremap --ps_nm=lnsp --vrt_grd=vrt_grd.nc in.nc out.nc
-
-Thanks to Erik Koene for reporting this issue. There is no
-workaround. The solution is to upgrade, or to use an older NCO
-version, e.g., 4.9.0.
-http://nco.sf.net/nco.html#vrt_hyb_ifs
-
-B. ncclimo fixes an illegal Bash string->numeric conversion error.
-This error could occur when invoking non-default start and end
-months. There is no workaround. The solution is to upgrade. 
+A. ncrcat ensures that the last time value and monotonicity are
+both defined before the monotonicity check is performed in REC_APN
+mode. This fixes overly noisy false-negative WARNINGs about
+monotonicity. Thanks to Seth McGinnis (NCAR) for reporting this
+problem.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

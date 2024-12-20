@@ -157,7 +157,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		E3SMU_ROOT='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
 	    export PATH='/home/zender1/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/home/zender1/lib'\:${LD_LIBRARY_PATH} ; ;;
+            export LD_LIBRARY_PATH='/home/zender1/lib:/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib'\:${LD_LIBRARY_PATH} ; ;;
 	andes* )
 	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
@@ -165,32 +165,19 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_andes'\:${PATH}
-	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/lib'\:${LD_LIBRARY_PATH} ; ;;
 	blues* | blogin* | b[0123456789][0123456789][0123456789] )
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
 	    export PATH='/home/zender/bin_blues'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/zender/lib_blues'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/home/zender/lib_blues:/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest/lib'\:${LD_LIBRARY_PATH} ; ;;
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
-	    # 20221006 Add build environment modules
-	    module load openmpi/4.0.4-hpcx-hghvhj5
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
 	    export PATH='/home/ac.zender/bin_chrysalis'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis'\:${LD_LIBRARY_PATH} ; ;;
-	*cheyenne* )
-	    # 20180112: Cheyenne support not yet tested in batch mode
-	    if [ ${spt_nm} = 'ncremap' ]; then
-		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
-		module load ncl
-	    fi # !ncremap
-	    if [ -n "${NCARG_ROOT}" ]; then
-		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.6.2/gnu/8.3.0/bin"
-	    fi # !NCARG_ROOT
-            export PATH='/glade/u/home/zender/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0/lib:/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib:/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis:/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest/lib'\:${LD_LIBRARY_PATH} ; ;;
 	compy* | n[0123456789][0123456789][0123456789][0123456789] )
 	    module purge
 	    module load gcc/10.2.0
@@ -202,6 +189,17 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    fi # !ncremap
 	    export PATH='/qfs/people/zender/bin:/qfs/people/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib:/qfs/people/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
+	derecho* )
+	    # 20240107: Derecho support not yet tested in batch mode
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
+		module load ncl
+	    fi # !ncremap
+	    if [ -n "${NCARG_ROOT}" ]; then
+		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.6.2/gnu/8.3.0/bin"
+	    fi # !NCARG_ROOT
+            export PATH='/glade/u/home/zender/bin'\:${PATH}
+            export LD_LIBRARY_PATH='/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t/lib:/glade/u/apps/derecho/23.06/spack/opt/spack/udunits/2.2.28/gcc/12.2.0/vls2/lib:/glade/u/apps/ch/opt/gsl/2.7/gnu/12.1.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	e3sm* )
 	    export PATH='/home/zender/bin:/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
@@ -235,13 +233,12 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		export PATH='/global/homes/z/zender/bin_perlmutter'\:${PATH}
 		export LD_LIBRARY_PATH='/global/homes/z/zender/lib_perlmutter'\:${LD_LIBRARY_PATH}
 	    fi # !LMOD_SYSTEM_NAME
-	    ;; # !login
+	    ;; # !login	
 	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] )
 	    # 20221103 Add build environment modules
 	    module load PrgEnv-gnu
 	    module load cray-hdf5/1.12.2.9
 	    module load cray-netcdf/4.9.0.9
-	    module load gsl
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
 		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
@@ -252,19 +249,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 	    fi # !NCARG_ROOT
 	    export PATH='/global/homes/z/zender/bin_perlmutter'\:${PATH}
-            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_perlmutter'\:${LD_LIBRARY_PATH} ; ;;
-	titan* )
-	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
-	    module load gcc
-	    if [ ${spt_nm} = 'ncremap' ]; then
-		# 20170831: Use module load ncl (6.3.0 lacks ERWG)
-		module load ncl # 20170916 OK
-	    fi # !ncremap
-	    if [ -n "${NCARG_ROOT}" ]; then
-		export PATH="${PATH}:${NCARG_ROOT}/bin"
-	    fi # !NCARG_ROOT
-            export PATH='/ccs/home/zender/bin_titan'\:${PATH}
-	    export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
+            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_perlmutter:/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'\:${LD_LIBRARY_PATH} ; ;;
 	* ) # Default fall-through
 	    hrd_pth_fnd='No' ; ;;
     esac # !HOSTNAME
@@ -276,11 +261,14 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	export PATH="${PATH}:${TEMPESTREMAP_ROOT}/bin"
 	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${TEMPESTREMAP_ROOT}/lib"
     fi # !TEMPESTREMAP_ROOT
-    # 20210519: E3SM-U supplies many uncommon executables, e.g., ESMF_RegridWeightGen
-    # Append E3SM-U to end of PATH so NCO binaries not redirected, e.g., from CSZ's development directory to E3SM-U
+    # 20210519: E3SM-U supplies many uncommon executables and libraries, e.g., libantlr, ESMF_RegridWeightGen
+    # 20241220: Now that ncclimo also regularly uses ncap2 executable for global timeseries, must modify its path too
+    # ncclimo only needs access to E3SM_U libraries (e.g., libgsl, libantlr)
+    # ncremap needs access to E3SM_U binaries (ESMF_RegridWeightGen, ...) _and_ libraries
+    # Append E3SM-U binaries to _end_ of PATH so NCO binaries not redirected, e.g., from CSZ's development directory to E3SM-U
     if [ -n "${E3SMU_ROOT}" ]; then
 	export PATH="${PATH}:${E3SMU_ROOT}/bin"
-    fi # !MOAB_ROOT
+    fi # !E3SMU_ROOT
 fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Test cases (${DATA]/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)

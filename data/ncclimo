@@ -140,7 +140,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		E3SMU_ROOT='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
-	    export PATH='/home/zender1/bin:/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin'\:${PATH}
+	    export PATH='/home/zender1/bin'\:${PATH}
             export LD_LIBRARY_PATH='/home/zender1/lib:/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib'\:${LD_LIBRARY_PATH} ; ;;
 	andes* )
 	    # 20190827: Must guarantee finding mpirun
@@ -155,15 +155,13 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
 	    export PATH='/home/zender/bin_blues'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/zender/lib_blues'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/home/zender/lib_blues:/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest/lib'\:${LD_LIBRARY_PATH} ; ;;
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
-	    # 20221006 Add build environment modules
-	    module load openmpi/4.0.4-hpcx-hghvhj5
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
 	    export PATH='/home/ac.zender/bin_chrysalis'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis:/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest/lib'\:${LD_LIBRARY_PATH} ; ;;
 	compy* | n[0123456789][0123456789][0123456789][0123456789] )
 	    module purge
 	    module load gcc/10.2.0
@@ -225,7 +223,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    module load PrgEnv-gnu
 	    module load cray-hdf5/1.12.2.9
 	    module load cray-netcdf/4.9.0.9
-	    module load gsl
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
 		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
@@ -236,7 +233,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 	    fi # !NCARG_ROOT
 	    export PATH='/global/homes/z/zender/bin_perlmutter'\:${PATH}
-            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_perlmutter'\:${LD_LIBRARY_PATH} ; ;;
+            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_perlmutter:/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'\:${LD_LIBRARY_PATH} ; ;;
 	* ) # Default fall-through
 	    hrd_pth_fnd='No' ; ;;
     esac # !HOSTNAME
