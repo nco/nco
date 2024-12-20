@@ -159,8 +159,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
-	    export PATH='/home/ac.zender/bin_chrysalis:/home/ac.zender/anaconda/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis:/home/ac.zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/home/ac.zender/bin_chrysalis'\:${PATH}
+	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis'\:${LD_LIBRARY_PATH} ; ;;
 	compy* | n[0123456789][0123456789][0123456789][0123456789] )
 	    module purge
 	    module load gcc/10.2.0

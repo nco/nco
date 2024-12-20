@@ -287,6 +287,17 @@ cd ~/nco;cmake/clean.sh
 cd ~/nco/cmake;cmake .. -DCMAKE_INSTALL_PREFIX=${HOME} -DNETCDF_INCLUDE:PATH=${NETCDF_INC} -DNETCDF_LIBRARY:FILE=${NETCDF_LIB}/libnetcdf.a -DHDF5_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a -DHDF5_HL_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a
 make install
 
+# Clang Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories with CMake:
+# Generic when netCDF is in ~/anaconda (chrysalis)
+cd ~/nco;/bin/rm -f *.foo;make distclean
+unset NETCDF_ROOT
+export NETCDF_INC=${HOME}/anaconda/include
+export NETCDF_LIB=${HOME}/anaconda/lib
+export CC=/usr/bin/cc
+export CXX=/usr/bin/c++
+cd ~/nco/cmake;cmake .. -DCMAKE_INSTALL_PREFIX=${HOME} -DNETCDF_INCLUDE:PATH=${NETCDF_INC} -DNETCDF_LIBRARY:FILE=${NETCDF_LIB}/libnetcdf.a -DHDF5_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a -DHDF5_HL_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a
+make install
+
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in system directories with CMake:
 # Generic when netCDF is in /usr (Ubuntu glace)
 # Personal recipe last modified: 20170814
@@ -311,15 +322,20 @@ make install
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on acme1:
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
-# Personal recipe last modified: 20231026 (Use ~/anaconda rather than E3SMU)
-# Personal recipe last borken: 20231026
-# Most recent build error: 20231019 "configure: error: cannot find netCDF library"
-# Personal recipe last successful: 20240328
+# Personal recipe last modified: 20241220 (Use ~/anaconda rather than E3SMU)
+# Personal recipe last borken: 20241219
+# Most recent build error: 20231019 ncap2 link error caused by locally built antlr
+# Personal recipe last successful: 20241220
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 cd ~/nco;/bin/rm -f *.foo;make distclean
-# NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
-# 20220104 NB: ANTLR_ROOT in ${HOME} is only used at compile-time, not run-time
-cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CPPFLAGS='-I/home/zender1/anaconda/include' CXX='g++' LDFLAGS='-L/home/zender1/anaconda/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
+export LINUX_CXX='g++ -std=c++11'
+export LINUX_FC='gfortran'
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/lib
+export NETCDF_ROOT=/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest
+export PATH=${PATH}:/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest/bin
+cd ~/nco;git reset --hard origin/master
+cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
@@ -394,13 +410,21 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Sysadmin upgrade request: support@lcrc.anl.gov
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
-# Personal recipe last modified: 20231206 (define NETCDF_ROOT once, in configure.eg)
-# Personal recipe last borken: 2024326 "checking for netcdf.h... yes; checking for nc_open in -lnetcdf... no"
-# Personal recipe last successful: 20231206
+# Personal recipe last modified: 20241219 (change to Andes build method)
+# Personal recipe last borken: 20241218 "checking for netcdf.h... yes; checking for nc_open in -lnetcdf... no"
+# Personal recipe last successful: 20241219
 cd ~/nco;/bin/rm -f *.foo;make distclean
-# Default as of 20210924 is to build with Anaconda netCDF
-# Default as of 20230425 is to build with Anaconda gcc/g++
-cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT="${HOME}/anaconda" ./configure --disable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+# Default as of 20210924 is to build with personal Anaconda netCDF
+# Default as of 20230425 is to build with personal Anaconda gcc/g++
+# Default as of 20241219 is to build with System gcc/g++, personal Anaconda netCDF, and E3SM anaconda everything else
+export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
+export LINUX_CXX='g++ -std=c++11'
+export LINUX_FC='gfortran'
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest/lib
+export NETCDF_ROOT=/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest
+export PATH=${PATH}:/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest/bin
+cd ~/nco;git reset --hard origin/master
+cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
