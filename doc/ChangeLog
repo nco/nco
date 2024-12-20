@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.0-beta01: Blagden Alley';git push
 	git tag -a 5.3.0-beta01 -m 'ncclimo: tms area_wgt, omit -v; ncks: S1D refactor, lut_out, frc_column, frc_landunit, snw_ocn, pft->PFT, clmv4; ncrcat: fix REC_APN wrn';git push --tags
 
+	* Update --npo paths for Chrysalis, Acme1
+
 	* Resuscitate Acme1 builds by emulating Andes methods
 
 	* Resuscitate Chrysalis builds by emulating Andes methods
