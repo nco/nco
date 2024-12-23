@@ -667,9 +667,10 @@ You may retrieve the source of tagged versions directly with, e.g.,
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
+<tt>ncremap</tt> CF Convention for longitude vertices in map-files;
 <tt>ncremap</tt> small-circle weights;</li>
 <li><b>NCO 5.3.1</b>: (<i>In Progress, features in-progress or complete include</i>)
-<tt>ncremap</tt> CF Convention for longitude vertices in map-files</li>
+<tt>ncremap</tt> Gracefully autoconvert 0-D NC_STRING->1-D NC_CHAR variables</li>
 <li><b>NCO 5.3.0</b>: (<i>Current Stable Release</i>)
 <tt>ncclimo area_wgt</tt>;
 <tt>ncks --s1d --snw_ocn --lut_out</tt>;
