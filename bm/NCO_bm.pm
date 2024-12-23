@@ -24,7 +24,7 @@ use Cwd 'abs_path';
 #use NCO_benchmarks qw($tw_prt_bm);
 use strict;
 
-use NCO_rgr qw(
+use NCO_rgr qw (
 	       tst_rgr
 	       $dodap $pfx_cmd $pfx_cmd_crr $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl
 	       $fl_out
@@ -160,7 +160,7 @@ sub bm_ntl($$){
     }else{
 # Set and verify MY_BIN_DIR
 	$MY_BIN_DIR=abs_path("../src/nco");
-	dbg_msg(2, "ENV var 'MY_BIN_DIR' not specified, so using default [$MY_BIN_DIR].");
+	dbg_msg(2,"ENV var 'MY_BIN_DIR' not specified, so using default [$MY_BIN_DIR].");
 #		if($bch_flg){
 #			die "unable to continue in batch mode without MY_BIN_DIR\n stopped\n";
 #		}else{ # !bch_flg

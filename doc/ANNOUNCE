@@ -117,7 +117,7 @@ E. As of NCO version 5.3.0 (December, 2025) ncclimo automatically
 outputs additional metrics with global statistics. The output files
 containing the global timeseries also contain the variable
 valid_area_per_gridcell. This field is equivalent to the product of
-the area variable  and the sgs_frc variable (if any). Thus for
+the area variable and the sgs_frc variable (if any). Thus for
 ELM/CLM/CTSM, this field equals area times landfrac, while for EAM/CAM
 this variable simply equals area. The output files also contain the
 area and sgs_frc variables separately. The presence of these variables

@@ -2,7 +2,7 @@ nco (5.3.0-1) unstable; urgency=low
 
   * new upstream version Awkward Self Haircut: ncclimo: tms area_wgt, omit -v; ncks: S1D refactor, lut_out, frc_column, frc_landunit, snw_ocn, pft->PFT, clmv4; ncrcat: fix REC_APN wrn
 
- -- Charlie Zender <zender@uci.edu> Fri, 20 Dec 2024 12:26:17 -0700
+ -- Charlie Zender <zender@uci.edu> Mon, 21 Dec 2024 12:26:17 -0700
 
 nco (5.2.9-1) unstable; urgency=low
 
