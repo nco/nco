@@ -550,7 +550,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
      Truncate dimensions in variable definition in output file according to user-specified limits
      Copy variable-by-variable, old-style, 
-     Routine was used by ncks until MSA implementation in ~2005 
+     Routine was used by all of ncks until MSA implementation in ~2005 
      Functionality now extended and superceded by nco_cpy_var_val_mlt_lmt() */
 
   nco_bool SRD=False;
