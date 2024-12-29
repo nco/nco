@@ -1,10 +1,14 @@
-2024-12-28  Charlie Zender  <zender@uci.edu>
+2024-12-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.1-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.1-alpha01: Au Revoir Chloe';git push
-	git tag -a 5.3.1-alpha01 -m 'Functionally identical to 5.3.0';git push --tags
+	git tag -a 5.3.1-alpha01 -m 'Functionally identical to 5.3.0, plus autoconversion in regridder';git push --tags
 
-	* ncks: Finish autoconversion functionality in regridder
+	* ncks: Add autoconversion to vertical interpolation. Works single-threaded, fails multi-threaded.
+
+2024-12-28  Charlie Zender  <zender@uci.edu>
+
+	* ncks: Finish autoconversion functionality in horizontal regridder
 
 	* ncks: Generalize string length dimension size as smallest necessary integral power of 10
 

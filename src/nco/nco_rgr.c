@@ -946,6 +946,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   char *fl_vrt_in=NULL; /* [sng] Input vertical grid file */
   char *fl_pth_lcl=NULL;
 
+  int fl_in_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int in_id; /* I [id] Input netCDF file ID */
@@ -2800,8 +2801,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int var_id_out; /* [id] Variable ID */
   nc_type var_typ_out; /* [enm] Variable type to write to disk */
   nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
+  nco_bool flg_autoconvert=False; /* [flg] May need to demote netCDF4 atomic types */
 
+  rcd=nco_inq_format(in_id,&fl_in_fmt);
   fl_out_fmt=rgr->fl_out_fmt;
+  if(fl_in_fmt == NC_FORMAT_NETCDF4 && fl_out_fmt != NC_FORMAT_NETCDF4) flg_autoconvert=True;
 
   /* Define new coordinates and grid variables in regridded file */
   const int dmn_nbr_0D=0; /* [nbr] Rank of 0-D grid variables (scalars) */
@@ -3102,6 +3106,27 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_id_out+dmn_idx);
 	    } /* !rcd */
 	  } /* !dmn_idx */
+	  if(flg_autoconvert && var_typ_out == NC_STRING && dmn_nbr_in == 0){
+	    char dmn_nm_sng[14];
+	    char *var_in_sng_val; /* [sng] Scalar string variable */
+	    double sng_sz_log10; /* [nbr] Log10 of scalar string length */
+	    int dmn_sz_chr; /* [nbr] Length of character array to hold string + NUL */
+	    size_t sng_sz; /* [nbr] Length of scalar string variable */
+	    /* Determine and define sufficiently-sized dimension for NC_CHAR output */
+	    rcd=nco_get_var(in_id,var_id_in,&var_in_sng_val,var_typ_out);
+	    sng_sz=strlen(var_in_sng_val);
+	    assert(sng_sz < 10000);
+	    sng_sz_log10=(int)log10(sng_sz)+1;
+	    dmn_sz_chr=(int)pow(10.0,sng_sz_log10);
+	    dmn_nm_sng[0]='\0'; 
+	    (void)sprintf(dmn_nm_sng,"sng_lng_%d",dmn_sz_chr);
+	    rcd=nco_inq_dimid_flg(out_id,dmn_nm_sng,dmn_id_out);
+	    if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,dmn_nm_sng,dmn_sz_chr,dmn_id_out);
+	    /* Input NC_STRING is scalar so output NC_CHAR is 1-D */
+	    dmn_nbr_out++;
+	    var_typ_out=NC_CHAR;
+	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s (aka \"the regridder\") will autoconvert scalar NC_STRING to 1-D NC_CHAR for variable \"%s\": val = %s, sng_sz = %ld, dmn_nm = %s\n",nco_prg_nm_get(),fnc_nm,var_nm,var_in_sng_val,sng_sz,dmn_nm_sng);
+	  } /* !flg_autoconvert */
 	} /* !flg_rgr */
 	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
 	/* Duplicate netCDF4 compression settings when possible */
@@ -3381,15 +3406,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 # endif /* 900 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_autoconvert,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_autoconvert,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 # else /* !old g++ */
 #  if defined(GXX_WITH_OPENMP5_GPU_SUPPORT) && 0
 #   pragma omp target teams distribute parallel for
 #  else
-#   pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
+#   pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_autoconvert,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 #  endif /* !GCC > 9.0 */
 # endif /* !GCC < 4.9 */
 #endif /* !__INTEL_COMPILER */
@@ -3403,17 +3428,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 #endif /* !_OPENMP */
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
 	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
+	/* Get var_id_in and var_id_out for both regridded and non-regridded variables 
+	   Use var_typ_out and dmn_nbr_in to determine whether non-regridded variables should be autoconverted */
+	var_nm=trv.nm;
+	var_typ_out=trv.var_typ; /* NB: Output type in file is same as input type */
+	rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
+	rcd=nco_inq_varid(out_id,var_nm,&var_id_out);
+	rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr_in);
 	if(trv.flg_rgr){
 	  /* Interpolate variable */
-	  var_nm=trv.nm;
 	  if(!strcmp(var_nm,"US") || !strcmp(var_nm,"VS")) (void)fprintf(fp_stdout,"%s: WARNING %s reports attempt to vertically interpolate a variable named \"%s\". If this variable is from a CESM CAM or E3SM EAM output or initial condition file on a rectangular grid (e.g., FV 0.9x1.25), then expect this program to fail and dump core when interpolating US and to produce slightly incorrect answers for VS. The vertical interpolation routine requires that interpolated variables be on the same horizontal grid as the supplied pressure field. However, the CAM/EAM US and VS variables from rectangular grid simulations are often on a horizontal grid, called the staggered grid, that is offset from the rest of the variables including the surface pressure. US usually sits on a grid that is staggered in latitude from, and is a slightly different size than, the surface pressure grid. This leads to a core dump. VS sits on a grid staggered in longitude from, though the same size as, the surface pressure field. The resulting interpolation will be based on surface pressure half a gridcell to the east rather than centered with VS. The correct procedure to vertically interpolate US and VS is to 1) horizontally regrid the supplied surface pressure (often \"PS\") to the staggered grid, then 2) vertically interpolate US and VS to the desired vertical grid based on the surface pressure on the staggered grid, then 3) re-combine the interpolated US and VS with the interpolated versions of the rest of the variables. The best solution to this dilemma is to script this workflow. Contact Charlie if you need help with this.\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  var_typ_rgr=NC_DOUBLE; /* NB: Perform regridding in double precision */
-	  var_typ_out=trv.var_typ; /* NB: Output type in file is same as input type */
 	  var_sz_in=1L;
 	  var_sz_out=1L;
-	  rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
-	  rcd=nco_inq_varid(out_id,var_nm,&var_id_out);
-	  rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr_in);
 	  rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr_out);
 	  dmn_nbr_max= dmn_nbr_in > dmn_nbr_out ? dmn_nbr_in : dmn_nbr_out;
 	  dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
@@ -3834,7 +3861,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  if(tm_idx == 0){
 #pragma omp critical
 	    { /* begin OpenMP critical */
-	      (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
+	      if(flg_autoconvert && var_typ_out == NC_STRING && dmn_nbr_in == 0){
+		char *var_in_sng_val; /* [sng] Scalar string input variable */
+		char *var_out_chr_val; /* [sng] Scalar string output variable */
+		size_t sng_sz; /* [nbr] Length of scalar string variable */
+		rcd=nco_get_var(in_id,var_id_in,&var_in_sng_val,var_typ_out);
+		sng_sz=strlen(var_in_sng_val);
+		var_out_chr_val=(char *)nco_calloc(pow(10.0,(int)log10(sng_sz)+1.0),sizeof(char));
+		(void)strcat(var_out_chr_val,var_in_sng_val);
+		rcd=nco_put_var(out_id,var_id_out,(void *)var_out_chr_val,NC_CHAR);
+		if(var_out_chr_val) var_out_chr_val=(char *)nco_free(var_out_chr_val);
+	      }else{
+		(void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
+	      } /* !flg_autoconvert */
 	    } /* end OpenMP critical */
 	  } /* !tm_idx */
 	} /* !flg_rgr */
@@ -5773,7 +5812,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   nc_type var_typ_rgr; /* [enm] Variable type used during regridding */
   nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
   nco_bool flg_autoconvert=False; /* [flg] May need to demote netCDF4 atomic types */
-  //nco_bool flg_sng2chr=False; /* [flg] Convert this scalar NC_STRING to 1-D NC_CHAR */
 
   rcd=nco_inq_format(in_id,&fl_in_fmt);
   fl_out_fmt=rgr->fl_out_fmt;
@@ -6107,7 +6145,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    dmn_nbr_out++;
 	    var_typ_out=NC_CHAR;
 	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s (aka \"the regridder\") will autoconvert scalar NC_STRING to 1-D NC_CHAR for variable \"%s\": val = %s, sng_sz = %ld, dmn_nm = %s\n",nco_prg_nm_get(),fnc_nm,var_nm,var_in_sng_val,sng_sz,dmn_nm_sng);
-	    //flg_sng2chr=True;
 	  } /* !flg_autoconvert */
 	} /* !flg_rgr */
 	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
@@ -6649,7 +6686,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 #endif /* !_OPENMP */
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
-      /* var_typ_out and dmn_nbr_in are needed to determine whether non-regridded variables should be autoconverted */
+      /* Get var_id_in and var_id_out for both regridded and non-regridded variables 
+	 Use var_typ_out and dmn_nbr_in to determine whether non-regridded variables should be autoconverted */
       var_nm=trv.nm;
       var_typ_out=trv.var_typ; /* NB: Output type in file is same as input type */
       rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
