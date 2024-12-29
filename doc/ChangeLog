@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.1-alpha01: Au Revoir Chloe';git push
 	git tag -a 5.3.1-alpha01 -m 'Functionally identical to 5.3.0';git push --tags
 
+	* ncks: Finish autoconversion functionality in regridder
+
 	* ncks: Generalize string length dimension size as smallest necessary integral power of 10
 
 2024-12-24  Charlie Zender  <zender@uci.edu>

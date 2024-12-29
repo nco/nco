@@ -223,11 +223,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   long int tpo_idx;
 
   nco_bool *lut_vld_flg=NULL; /* [flg] Landunit types for which columns in this variable contain valid values */
-  nco_string *pft_sng_out=NULL; /* [sng] Coordinate array of PFT strings */
   nco_bool flg_var_mpt; /* [flg] Variable has no valid values */
   nco_bool flg_snw_ocn=rgr->flg_snw_ocn; /* [flg] Unpack S1D snow fields into sane (ocean-like) level order */
   nco_bool flg_snw_rdr; /* [flg] Re-arrange snow layer order for this variable using snl_var */
   nco_lut_out_enm lut_out=(nco_lut_out_enm)(rgr->lut_out); /* [enm] Landunit type(s) for S1D column output */
+  nco_string *pft_sng_out=NULL; /* [sng] Coordinate array of PFT strings */
   
   size_t idx_dbg=rgr->idx_dbg; /* [idx] User-specifiable debugging location */
   size_t idx_in; /* [idx] Input grid index */

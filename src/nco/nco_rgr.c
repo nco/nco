@@ -6090,23 +6090,23 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  if(flg_autoconvert && var_typ_out == NC_STRING && dmn_nbr_in == 0){
 	    char dmn_nm_sng[14];
 	    char *var_in_sng_val; /* [sng] Scalar string variable */
-	    int dmn_sz_sng; /* [nbr] Length of scalar string dimension */
-	    int sng_sz_log10; /* [nbr] Log10 of scalar string length */
+	    double sng_sz_log10; /* [nbr] Log10 of scalar string length */
+	    int dmn_sz_chr; /* [nbr] Length of character array to hold string + NUL */
 	    size_t sng_sz; /* [nbr] Length of scalar string variable */
 	    /* Determine and define sufficiently-sized dimension for NC_CHAR output */
 	    rcd=nco_get_var(in_id,var_id_in,&var_in_sng_val,var_typ_out);
 	    sng_sz=strlen(var_in_sng_val);
 	    assert(sng_sz < 10000);
 	    sng_sz_log10=(int)log10(sng_sz)+1;
-	    dmn_sz_sng=(int)pow(10.0,sng_sz_log10);
+	    dmn_sz_chr=(int)pow(10.0,sng_sz_log10);
 	    dmn_nm_sng[0]='\0'; 
-	    (void)sprintf(dmn_nm_sng,"sng_lng_%d",dmn_sz_sng);
+	    (void)sprintf(dmn_nm_sng,"sng_lng_%d",dmn_sz_chr);
 	    rcd=nco_inq_dimid_flg(out_id,dmn_nm_sng,dmn_id_out);
-	    if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,dmn_nm_sng,dmn_sz_sng,dmn_id_out);
+	    if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,dmn_nm_sng,dmn_sz_chr,dmn_id_out);
 	    /* Input NC_STRING is scalar so output NC_CHAR is 1-D */
 	    dmn_nbr_out++;
 	    var_typ_out=NC_CHAR;
-	    (void)fprintf(stderr,"%s: INFO %s (aka \"the regridder\") will autoconvert scalar NC_STRING to 1-D NC_CHAR for variable \"%s\": val = %s, sng_sz = %ld, dmn_nm = %s\n",nco_prg_nm_get(),fnc_nm,var_nm,var_in_sng_val,sng_sz,dmn_nm_sng);
+	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s (aka \"the regridder\") will autoconvert scalar NC_STRING to 1-D NC_CHAR for variable \"%s\": val = %s, sng_sz = %ld, dmn_nm = %s\n",nco_prg_nm_get(),fnc_nm,var_nm,var_in_sng_val,sng_sz,dmn_nm_sng);
 	    //flg_sng2chr=True;
 	  } /* !flg_autoconvert */
 	} /* !flg_rgr */
@@ -6650,16 +6650,16 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
       /* var_typ_out and dmn_nbr_in are needed to determine whether non-regridded variables should be autoconverted */
-      var_typ_out=trv.var_typ; /* NB: Output type in file is same as input type */
       var_nm=trv.nm;
+      var_typ_out=trv.var_typ; /* NB: Output type in file is same as input type */
       rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
+      rcd=nco_inq_varid(out_id,var_nm,&var_id_out);
       rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr_in);
       if(trv.flg_rgr){
 	/* Regrid variable */
 	var_typ_rgr=NC_DOUBLE; /* NB: Perform regridding in double precision */
 	var_sz_in=1L;
 	var_sz_out=1L;
-	rcd=nco_inq_varid(out_id,var_nm,&var_id_out);
 	rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr_out);
 	dmn_nbr_max= dmn_nbr_in > dmn_nbr_out ? dmn_nbr_in : dmn_nbr_out;
 	dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
@@ -7238,7 +7238,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 #pragma omp critical
 	{ /* begin OpenMP critical */
 	  if(flg_autoconvert && var_typ_out == NC_STRING && dmn_nbr_in == 0){
-	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"DEBUG: Placeholder for autoconverting %s\n",var_nm);
+	    char *var_in_sng_val; /* [sng] Scalar string input variable */
+	    char *var_out_chr_val; /* [sng] Scalar string output variable */
+	    size_t sng_sz; /* [nbr] Length of scalar string variable */
+	    rcd=nco_get_var(in_id,var_id_in,&var_in_sng_val,var_typ_out);
+	    sng_sz=strlen(var_in_sng_val);
+	    var_out_chr_val=(char *)nco_calloc(pow(10.0,(int)log10(sng_sz)+1.0),sizeof(char));
+	    (void)strcat(var_out_chr_val,var_in_sng_val);
+	    rcd=nco_put_var(out_id,var_id_out,(void *)var_out_chr_val,NC_CHAR);
+	    if(var_out_chr_val) var_out_chr_val=(char *)nco_free(var_out_chr_val);
 	  }else{
 	    (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
 	  } /* !flg_autoconvert */
