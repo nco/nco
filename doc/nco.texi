@@ -128,8 +128,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.3.1-alpha01
-@set doc-edition 5.3.1-alpha01
+@set nco-edition 5.3.1-alpha02
+@set doc-edition 5.3.1-alpha02
 @set copyright-years 1995--2024
 @set update-year 2024
 @set update-date 23 December 2024
@@ -31328,9 +31328,6 @@ This list links to the full papers and seminars themselves.
 <a name="prp_sei"></a> <!-- http://nco.sf.net/nco.html#prp_sei -->
 <a name="fnd"></a> <!-- http://nco.sf.net/nco.html#fnd -->
 @end html
-@menu
-* Proposals for Institutional Funding::  
-@end menu
 
 @node Proposals for Institutional Funding,  , Citation, Contributing
 @section Proposals for Institutional Funding
