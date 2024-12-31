@@ -311,9 +311,9 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->plev_nm_in=NULL; /* [sng] Name of input variable to recognize as pure-pressure coordinate */
   rgr->plev_nm_out=NULL; /* [sng] Name of variable to output as vertical coordinate for pure pressure grids */
   rgr->plev_nm_tpl=NULL; /* [sng] Name of template variable to recognize as vertical coordinate for pure pressure grids */
-  rgr->ps_nm_in=NULL; /* [sng] Name of input variable to recognize as surface pressure for hybrid/sigma pressure grids */
-  rgr->ps_nm_out=NULL; /* [sng] Name of variable to output as surface pressure for hybrid/sigma pressure grids */
-  rgr->ps_nm_tpl=NULL; /* [sng] Name of template variable to recognize as surface pressure for hybrid/sigma pressure grids */
+  rgr->ps_nm_in=NULL; /* [sng] Name of input variable to recognize as surface pressure for hybrid sigma-pressure grids */
+  rgr->ps_nm_out=NULL; /* [sng] Name of variable to output as surface pressure for hybrid sigma-pressure grids */
+  rgr->ps_nm_tpl=NULL; /* [sng] Name of template variable to recognize as surface pressure for hybrid sigma-pressure grids */
   rgr->sgs_frc_nm=NULL; /* [sng] Name of variable sub-gridscale fraction */
   rgr->sgs_msk_nm=NULL; /* [sng] Name of variable sub-gridscale mask */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
@@ -914,10 +914,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   if(!rgr->plev_nm_in) rgr->plev_nm_in=(char *)strdup("plev"); /* [sng] Name of variable to recognize as pure pressure coordinate */
   if(!rgr->plev_nm_tpl) rgr->plev_nm_tpl=(char *)strdup("plev"); /* [sng] Name of template variable to recognize as vertical coordinate for pure pressure grids */
   if(!rgr->ps_nm_out){
-    if(rgr->ps_nm_in) rgr->ps_nm_out=(char *)strdup(rgr->ps_nm_in); else rgr->ps_nm_out=(char *)strdup("PS"); /* [sng] Name of variable to output as surface pressure for hybrid/sigma pressure grids */
+    if(rgr->ps_nm_in) rgr->ps_nm_out=(char *)strdup(rgr->ps_nm_in); else rgr->ps_nm_out=(char *)strdup("PS"); /* [sng] Name of variable to output as surface pressure for hybrid sigma-pressure grids */
   } /* !rgr->ps_nm_out */
-  if(!rgr->ps_nm_in) rgr->ps_nm_in=(char *)strdup("PS"); /* [sng] Name of input variable to recognize as surface pressure for hybrid/sigma pressure grids */
-  if(!rgr->ps_nm_tpl) rgr->ps_nm_tpl=(char *)strdup("PS"); /* [sng] Name of template variable to recognize as surface pressure for hybrid/sigma pressure grids */
+  if(!rgr->ps_nm_in) rgr->ps_nm_in=(char *)strdup("PS"); /* [sng] Name of input variable to recognize as surface pressure for hybrid sigma-pressure grids */
+  if(!rgr->ps_nm_tpl) rgr->ps_nm_tpl=(char *)strdup("PS"); /* [sng] Name of template variable to recognize as surface pressure for hybrid sigma-pressure grids */
   
     /* Derived from defaults and command-line arguments */
   // On second thought, do not strdup() these here. This way, NULL means user never specified lon/lat-out names
@@ -978,15 +978,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(SHARE_OPEN) md_open=md_open|NC_SHARE;
   rcd+=nco_fl_open(fl_tpl,md_open,&bfr_sz_hnt,&tpl_id);
 
-  /* Formula-terms for hybrid pressure vertical grid on unstructured CAM/EAM horizontal grid:
+  /* Formula-terms for hybrid sigma-pressure vertical grid on unstructured CAM/EAM horizontal grid:
      prs_mdp[time,lev,col]=P0*hyam[lev] +PS[time,col]*hybm[lev]
      prs_ntf[time,lev,col]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
 
-  /* Formula-terms for hybrid pressure vertical grid on unstructured SCREAM/EAMxx horizontal grid:
+  /* Formula-terms for hybrid sigma-pressure vertical grid on unstructured SCREAM/EAMxx horizontal grid:
      prs_mdp[time,col,lev]=P0*hyam[lev] +PS[time,col]*hybm[lev]
      prs_ntf[time,col,lev]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
 
-  /* Formula-terms for hybrid pressure vertical grid on ECMWF RLL horizontal grid:
+  /* Formula-terms for hybrid sigma-pressure vertical grid on ECMWF RLL horizontal grid:
      prs_mdp[time,lev,lat,lon]=hyam[lev] +exp(lnsp[time,lat,lon])*hybm[lev]
      prs_ntf[time,lev,lat,lon]=hyai[ilev]+exp(lnsp[time,lat,lon])*hybi[ilev] */
 
@@ -1110,7 +1110,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* SOSE */
     flg_grd_out_dpt=True;
   }else{ /* !hyai */
-    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure vertical grid coordinate information, or depth dimension, in vertical grid file for output data\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid sigma-pressure or pure-pressure vertical grid coordinate information, or depth dimension, in vertical grid file for output data\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT ensure vertical grid coordinate file contains a valid vertical grid coordinate\n",nco_prg_nm_get());
     return NCO_ERR;
   } /* !hyai */
@@ -1647,8 +1647,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* SOSE */
     flg_grd_in_dpt=True;
   }else{ /* !hyai */
-    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure or depth vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. The signal variables default to \"hyai\" for hybrid, \"plev\" for pressure, and the signature dimension defaults to \"nVertLevels\" for height/depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid sigma-pressure or pure-pressure or depth vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. The signal variables default to \"hyai\" for hybrid sigma-pressure, \"plev\" for pure pressure, and the signature dimension defaults to \"nVertLevels\" for height/depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
     return NCO_ERR;
   } /* !hyai */
   if(flg_grd_in_dpt){
@@ -1723,7 +1723,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
     /* Assume ECMWF files use "lnsp" for (log) surface pressure, otherwise CAM/EAM style */
     if(!strcmp(ps_nm_in,"lnsp")) flg_grd_hyb_ecmwf=True; else flg_grd_hyb_cameam=True;
-    /* 20190602: ECMWF hybrid vertical grid parameters and dimensions differ from CAM/EAM:
+    /* 20190602: ECMWF hybrid sigma-pressure vertical grid parameters and dimensions differ from CAM/EAM:
        ECMWF defines vertical dimensions "nhym" and "nhyi" specifically for hy[ab][im] and uses "lev" and "lev_2" for all other variables, whereas CAM/EAM uses same dimensions "lev" and "ilev" for all vertical variables including hybrid coefficients
        ECMWF provides "hya?" as a constant in Pa and "hyb?" as a dimensionless coefficient of PS, whereas CAM/EAM provides "hya?" and "hyb?" both as dimensionless coefficients of P0 and PS
        ECMWF provides "lev" and "lev_2" with midpoint and surface pressure indices (not values), respectively, whereas CAM/EAM provides "lev" and "ilev" coordinate values in hPa
@@ -1749,11 +1749,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if((rcd=nco_inq_varid_flg(in_id,ps_nm_in,&ps_id)) == NC_NOERR){ /* NB: Use in_id not vrt_in_id to search for PS in pure-pressure files since the surface pressure field is likely to be in the data file */
       /* Output file-creation procedure discriminates between input surface pressure dimensioned as CAM/EAM vs. ECMWF */
       flg_grd_hyb_cameam=True;
-      if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field %s in pure-pressure input data file. %s will be copied directly from pure-pressure grid input dataset to, and used to construct the pressures of, the output hybrid-coordinate data file, where it will be named %s.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_in,ps_nm_out);
-      if(flg_grd_out_hyb && (ps_id_tpl != NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field in both vertical-grid file as %s, and in pure-pressure input data file as %s. The vertical grid-file takes precedence. %s will be copied directly from vertical-grid file to, and used to construct the pressures of, the output hybrid-coordinate data file, where it will be named %s. %s in input pure-pressure file will be ignored.\n",nco_prg_nm_get(),fnc_nm,ps_nm_tpl,ps_nm_in,ps_nm_tpl,ps_nm_out,ps_nm_in);
+      if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field %s in pure-pressure input data file. %s will be copied directly from pure-pressure grid input dataset to, and used to construct the pressures of, the output hybrid sigma-pressure coordinate data file, where it will be named %s.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_in,ps_nm_out);
+      if(flg_grd_out_hyb && (ps_id_tpl != NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field in both vertical-grid file as %s, and in pure-pressure input data file as %s. The vertical grid-file takes precedence. %s will be copied directly from vertical-grid file to, and used to construct the pressures of, the output hybrid sigma-pressure coordinate data file, where it will be named %s. %s in input pure-pressure file will be ignored.\n",nco_prg_nm_get(),fnc_nm,ps_nm_tpl,ps_nm_in,ps_nm_tpl,ps_nm_out,ps_nm_in);
     }else{
       if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)){
-	(void)fprintf(stderr,"%s: ERROR %s does not find spatially varying surface pressure field %s in pure-pressure input data file or as %s in vertical grid-file for hybrid-pressure output. A surface pressure field must be present in at least one of these files in order to construct the output hybrid-coordinate pressures.\nHINT: Append a valid surface pressure field to the input data file or to the vertical grid-file.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_tpl);
+	(void)fprintf(stderr,"%s: ERROR %s does not find spatially varying surface pressure field %s in pure-pressure input data file or as %s in vertical grid-file for hybrid sigma-pressure output. A surface pressure field must be present in at least one of these files in order to construct the output hybrid sigma-pressure coordinate pressures.\nHINT: Append a valid surface pressure field to the input data file or to the vertical grid-file.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_tpl);
 	nco_exit(EXIT_FAILURE);
       } /* !ps_id_tpl */
     } /* !ps_id */
@@ -1888,7 +1888,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* flg_grd_in_dpt */
 
   if(flg_grd_in_hyb){
-    /* Get input hybrid grid vertical information */
+    /* Get input hybrid sigma-pressure grid vertical information */
     rcd=nco_inq_varndims(fl_xtr_id,ps_id,&dmn_nbr_in);
     rcd=nco_inq_vardimid(vrt_in_id,hyai_id,&dmn_id_ilev_in);
     if(flg_grd_hyb_cameam) rcd=nco_inq_vardimid(vrt_in_id,hyam_id,&dmn_id_lev_in);
@@ -1896,7 +1896,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_dimlen(vrt_in_id,dmn_id_ilev_in,&ilev_nbr_in);
     rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_ilev_in,dmn_nm);
-    /* Copy hybrid coordinate names from dimension names since ilev and lev are 1D coordinates */
+    /* Copy hybrid sigma-pressure coordinate names from dimension names since ilev and lev are 1D coordinates */
     //if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in); // 20221204: Causes double free() in nco_rgr_free()
     ilev_nm_in=strdup(dmn_nm); // 20221204: Never free()'d
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
@@ -1915,7 +1915,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       rcd=nco_inq_dimid_flg(in_id,ilev_nm_in,&dmn_id_ilev_in);
       rcd=nco_inq_dimid_flg(in_id,lev_nm_in,&dmn_id_lev_in);
       if(dmn_id_ilev_in == NC_MIN_INT && dmn_id_lev_in == NC_MIN_INT){
-	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") unable to find at least one hybrid vertical dimension (searched for %s and %s) in input data file. Possible that external vertical grid file uses different dimension names than input data file.\n",nco_prg_nm_get(),fnc_nm,ilev_nm_in,lev_nm_in);
+	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") unable to find at least one hybrid sigma-pressure vertical dimension (searched for %s and %s) in input data file. Possible that external vertical grid file uses different dimension names than input data file.\n",nco_prg_nm_get(),fnc_nm,ilev_nm_in,lev_nm_in);
 	nco_exit(EXIT_FAILURE);
       } /* !dmn_id_ilev_in */
     } /* !vrt_in_id */
@@ -2295,7 +2295,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_get_var(vrt_in_id,lev_id,lev_in,crd_typ_out);
   } /* !flg_grd_in_prs */
     
-  /* Always obtain surface pressure if input or output grid is hybrid */
+  /* Always obtain surface pressure if input or output grid is hybrid sigma-pressure */
   if(flg_grd_in_hyb || flg_grd_out_hyb){
 
     /* Copy horizontal grid information from input file
@@ -2303,7 +2303,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(ps_id_tpl == NC_MIN_INT){
 
       /* NB: dmn_nbr_in/out in this block refer only to horizontal dimensions necessary to define PS */
-      rcd=nco_inq_varndims(fl_xtr_id,ps_id,&dmn_nbr_in); /* This is harmlessly repeated for hybrid input files */
+      rcd=nco_inq_varndims(fl_xtr_id,ps_id,&dmn_nbr_in); /* This is harmlessly repeated for hybrid sigma-pressure input files */
       dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
       dmn_cnt_in=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
       if(!dmn_srt) dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long)); /* NB: Allocate dmn_srt only once */
@@ -2349,7 +2349,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	 We have already defined grd_sz_out if PS is in template file
 	 We have already defined grd_sz_in and grd_sz_out := grd_sz_in when PS not in template file
 	 We have already defined grd_sz_in if input file is pure-pressure
-	 However, we have not yet defined grd_sz_in if input file is hybrid
+	 However, we have not yet defined grd_sz_in if input file is hybrid sigma-pressure
 	 Expectation is that grd_sz_in (from input file) = grd_sz_out (from template file)
 	 An independent check on this would examine dimension sizes in input file
 	 Such a check would immediately flag horizontal mismatches between vertical file and input file
@@ -2362,8 +2362,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     /* Timestep sequencing
        NB: tm_nbr_??? variables count timesteps in vertical grid definitions
        These are not necessarily the same as the number of timesteps in either file
-       Time-invariant hybrid or pure-pressure coordinates are valid vertical grids for timeseries
-       Usually hybrid grids have as many timesteps in the grids as in the timeseries 
+       Time-invariant hybrid sigma-pressure or pure-pressure coordinates are valid vertical grids for timeseries
+       Usually hybrid sigma-pressure grids have as many timesteps in the grids as in the timeseries 
        Usually pressure grids are time-invariant (time-varying pure pressure grids have never been supported)
        20240326:
        ERA5 time-invariant pure pressure grid input file with timeseries variables 
@@ -2382,7 +2382,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
     ps_in=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
 
-    /* Surface pressure comes from either hybrid vertical grid-files, hybrid data files, or pressure data files that provide surface pressure */
+    /* Surface pressure comes from either hybrid sigma-pressure vertical grid-files, hybrid sigma-pressure data files, or pressure data files that provide surface pressure */
     if(flg_grd_in_hyb || (flg_grd_in_prs && ps_id_tpl == NC_MIN_INT)) rcd=nco_get_var(fl_xtr_id,ps_id,ps_in,crd_typ_out);
 
     /* ECMWF distributes IFS forecasts with lnsp = log(surface pressure) */
@@ -2525,7 +2525,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       for(size_t idx_out=0;idx_out<tm_hrz_sz;idx_out++) prs_min_out[idx_out]=lev_out_min;
     } /* !flg_grd_out_dpt_1D */
     if(flg_grd_in_hyb){
-      /* Does input hybrid coordinate increase or decrease in index (not geometric) space?
+      /* Does input hybrid sigma-pressure coordinate increase or decrease in index (not geometric) space?
 	 CAM/EAM vertical coordinate increases in index space since model top is at level zero
 	 (CAM/EAM vertical coordinate decreases in geometric space since pressure decreases with height) */
       prs_max_in[0]=p0_in*hyam_in[0]+ps_in[0]*hybm_in[0];
@@ -2547,7 +2547,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       } /* !tm_idx */
     } /* !flg_grd_in_hyb */
     if(flg_grd_out_hyb){
-      /* Does output hybrid coordinate increase or decrease in index (not geometric) space?
+      /* Does output hybrid sigma-pressure coordinate increase or decrease in index (not geometric) space?
 	 Modify procedure for input coordinate to allow single-level output */
       ncr_idx_out=True;
       if(lev_nbr_out > 1){
@@ -2613,7 +2613,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(plev_nm_in) plev_nm_out=(char *)strdup(plev_nm_in); else plev_nm_out=(char *)strdup("plev");
     } /* !rgr->plev_nm_out */
     lev_nm_out=(char *)strdup(plev_nm_out);
-    /* Hybrid-sigma/pressure interface variables, if any, must also be output to pure-pressure files on lev grid */
+    /* Hybrid sigma-pressure interface variables, if any, must also be output to pure-pressure files on lev grid */
     ilev_nm_out=(char *)strdup(plev_nm_out);
   } /* !flg_grd_out_prs */
 
@@ -2956,7 +2956,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(!var_rgr_nbr){
     (void)fprintf(stdout,"%s: INFO %s reports no variables fit vertical interpolation criteria.",nco_prg_nm_get(),fnc_nm);
     if(var_cpy_nbr) (void)fprintf(stdout," The output file will consist of %d geophysical variables that are copied directly from the input (because they lack the vertical coordinate necessary for interpolation), and all grid variables and metadata necessary to describe the destination grid.\n",var_cpy_nbr); else (void)fprintf(stdout," The output file will consist solely of the grid variables and metadata necessary to describe the destination grid.\n");
-    (void)fprintf(stdout,"%s: HINT If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\", \"lev\", and/or \"plev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid. For hybrid-pressure coordinate grids, ensure that the \"ilev\" and \"lev\" variable names are known with, e.g., \"ncks --rgr ilev_nm=interface_level --rgr lev_nm=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\". For pure pressure grids, ensure the \"plev\" coordinate name is defined with, e.g., \"ncks --rgr plev_nm=pressure_level\" or \"ncremap -R '--rgr plev=pressure_level'\".\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: HINT If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\", \"lev\", and/or \"plev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid. For hybrid sigma-pressure coordinate grids, ensure that the \"ilev\" and \"lev\" variable names are known with, e.g., \"ncks --rgr ilev_nm=interface_level --rgr lev_nm=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\". For pure pressure grids, ensure the \"plev\" coordinate name is defined with, e.g., \"ncks --rgr plev_nm=pressure_level\" or \"ncremap -R '--rgr plev=pressure_level'\".\n",nco_prg_nm_get());
   } /* !var_rgr_nbr */
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -12491,7 +12491,7 @@ nco_xtr_var_get /* [fnc] Obtain variable specified by [external_path]/var_nm */
     char *sls_ptr; /* [sng] Pointer to last slash character (' ') */
     sls_ptr=strrchr(var_nm,sls_chr);
     if(!sls_ptr){
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s (aka \"the regridder\") reports unable to find (required) surface pressure or (optional) depth/height variable var_nm = %s for hybrid grid in input file, and unable to identify filename (ending with slash '/' or backslash '\\', depending on the operating system) portion of that string to serve as local external file for vertical grid input\n",nco_prg_nm_get(),fnc_nm,var_nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s (aka \"the regridder\") reports unable to find (required) surface pressure or (optional) depth/height variable var_nm = %s for hybrid sigma-pressure grid in input file, and unable to identify filename (ending with slash '/' or backslash '\\', depending on the operating system) portion of that string to serve as local external file for vertical grid input\n",nco_prg_nm_get(),fnc_nm,var_nm);
       return rcd;
     } /* !sls_ptr */
     

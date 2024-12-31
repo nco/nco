@@ -7924,7 +7924,7 @@ These annotations include
     @var{ilev_dmn_nm}-dimension will be vertically interpolated to the 
     specified (with @samp{vrt_out=@var{vrt_fl}}) vertical output grid,
     and will all contain the @var{lev_dmn_nm}- and, for
-    hybrid-sigma/pressure interface variables,
+    hybrid sigma-pressure interface variables,
     @var{ilev_dmn_nm}-dimensions.
     To treat different dimensions as the midlayer and interface level
     dimensions, use the options @samp{--rgr lev_dmn_nm=@var{lev_dmn_nm}}
@@ -7943,7 +7943,7 @@ These annotations include
 @cindex @samp{--rgr plev_nm=@var{plev_nm}}
 @item Vertical Coordinate Names: @var{lev}, @var{ilev}, @var{plev}
     The name of the vertical coordinate variables that represent
-    midpoint levels and interface levels in hybrid-sigma/pressuure
+    midpoint levels and interface levels in hybrid sigma-pressure
     input files are @var{lev_nm} and @var{ilev_nm}, and default to
     @code{lev} and @code{ilev}, respectively.  
     While the vertical coordinate in pure-pressure vertical grid files
@@ -7959,17 +7959,17 @@ These annotations include
     vertical coordinate output names re-use the ``lev'' options, i.e.,
     @samp{--rgr lev_nm_out=@var{lev_nm_out}} option.
     Variables that contain a @var{lev_dmn_nm}-dimension or a
-    @var{ilev_dmn_nm}-dimension on hybrid-sigma/pressure input grid,
+    @var{ilev_dmn_nm}-dimension on hybrid sigma-pressure input grid,
     or a @var{plev_dmn_nm}-dimension on a pure pressure grid,
     will be regridded, and output in vertically interpolated files on
-    a hybrid-sigma/pressure grid will all contain the @var{lev_nm}-
+    a hybrid sigma-pressure grid will all contain the @var{lev_nm}-
     and @var{ilev_nm}-variables, and output on a pure-pressure grid
     will contain the @var{lev_nm} coordinate.
     Unless the @var{lev_dmn_nm} and @var{ilev_dmn_nm} dimensions
     are explicitly configured otherwise, they will share the same
     name as the @var{lev_nm}/@var{plev_nm} and
     @var{ilev_nm}-variables, respectively.
-    Thus variables regridded to a hybrid-sigma/pressure output grid
+    Thus variables regridded to a hybrid sigma-pressure output grid
     usually have @var{lev_nm}- and @var{ilev_nm} as coordinate
     variables. 
     Variables regridded to a pure-pressure output grid will only have 
@@ -7989,7 +7989,7 @@ These annotations include
 @cindex @samp{--rgr ps_nm=@var{ps_nm}}
 @item Surface Pressure Names: @var{ps}, @var{PS}
     The name of the surface pressure field necessary to reconstruct
-    the layer pressures in the hybrid-sigma/pressure coordinate system 
+    the layer pressures in the hybrid sigma-pressure coordinate system 
     is @var{ps_nm} which defaults to @code{PS}.
     As of @acronym{NCO} @w{version 5.1.2}, released in November, 2022,
     one may change this with the @samp{--rgr ps_nm=@var{ps_nm}} option.
@@ -13309,7 +13309,7 @@ pack, etc.) the following variables:
 @code{msk_*}, and
 @code{wgt_*}.
 These variables represent Gaussian weights, land/sea masks,
-time fields, hybrid pressure coefficients, and latititude/longitude
+time fields, hybrid sigma-pressure coefficients, and latitude/longitude
 boundaries.
 We call these fields non-coordinate @dfn{grid properties}.
 Coordinate grid properties are easy to identify because they are 
@@ -14309,7 +14309,8 @@ It is not possible to manually define in Output any dimensions that exist in Inp
 @end html
 @node Left hand casting, Arrays and hyperslabs, Dimensions, ncap2 netCDF Arithmetic Processor
 @subsection Left hand casting
-@cindex hybrid coordinate system 
+@cindex hybrid sigma-pressure coordinate system 
+@cindex hybrid vertical coordinate system 
 @cindex left hand casting
 @cindex @acronym{LHS}
 The following examples demonstrate the utility of the 
@@ -14352,7 +14353,7 @@ message.
 Consider now a slightly more complex example.
 In geophysical models, a coordinate system based on 
 a blend of terrain-following and density-following surfaces is 
-called a @dfn{hybrid coordinate system}.
+called a @dfn{hybrid sigma-pressure coordinate system}.
 In this coordinate system, four variables must be manipulated to
 obtain the pressure of the vertical coordinate:
 @var{PO} is the domain-mean surface pressure offset (a scalar),
@@ -14368,7 +14369,7 @@ from the four input variables of mixed rank and orthogonality:
 ncap2 -s 'prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm' in.nc out.nc
 @end example
 Manipulating the four fields which define the pressure in a hybrid
-coordinate system is easy with left hand casting.
+sigma-pressure coordinate system is easy with left hand casting.
 
 @html
 <a name="pdel"></a> <!-- http://nco.sf.net/nco.html#pdel -->
@@ -14377,9 +14378,9 @@ coordinate system is easy with left hand casting.
 Finally, we show how to use interface quantities to define midpoint
 quantities.
 In particular, we will define interface pressures using the standard
-@acronym{CESM} output hybrid coordinate parameters, and then difference
-those interface pressures to obtain the pressure difference between
-the interfaces. 
+@acronym{CESM} output hybrid sigma-pressure coordinate parameters, and
+then difference those interface pressures to obtain the pressure
+difference between the interfaces. 
 The pressure difference is necessary obtain gridcell mass path
 and density (which are midpoint quantities).
 Definitions are as in the above example, with new variables
@@ -28095,7 +28096,9 @@ and cause the vertical interpolation routine to look for surface
 pressure under the name @code{ps} instead of @code{PS}.
 The @acronym{MPAS} procedures permute input data dimensions into this
 order: 
-@code{Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells},
+@code{Time,depth,nVertInterfaces,nVertLevels,nVertLevelsP1,nZBGCTracers,
+nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,
+maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells},
 and invokes renormalization.
 An @acronym{MPAS} dataset that contains any other dimensions will fail
 to regrid until/unless those dimensions are added to the
@@ -29254,16 +29257,16 @@ priorities for future development of vertical regridding are:
       special-case approximations for temperature or geopotential,
       will remain low priority until we are lobbied with compelling
       use-cases for other algorithms.  
-@item Time-varying vertical grids are only allowed for hybrid grids
+@item Time-varying vertical grids are only allowed for hybrid sigma-pressure grids
       (not pure pressure grids), and these must store the time
       dimension as a record dimension.
       This constraint applies to the vertical grid only, not to the
       other fields in the dataset.
       Hence this does not preclude interpolating timeseries to/from
       time-invariant vertical grids.
-      For example, time-varying hybrid grid data such as temperature
-      may be interpolated to timeseries on a time-invariant pressure
-      grid.
+      For example, time-varying hybrid sigma-pressure grid data such
+      as temperature may be interpolated to timeseries on a
+      time-invariant pressure grid.
       Eliminating this constraint will not be a priority unless/until
       an important use-case is identified.  
 @item Variable names for input and output vertical grids must match
@@ -29271,12 +29274,12 @@ priorities for future development of vertical regridding are:
       @acronym{NCEP} implementations. 
       These names include @code{hyai}, @code{hyam}, @code{hybi},
       @code{hybm}, @code{ilev}, @code{lev}, @code{P0}, and @code{PS}
-      (for @acronym{E3SM/CESM} hybrid grids), @code{lev},
-      @code{lev_2}, and @code{lnsp} (for @acronym{ECMWF} hybrid grids
-      only), @code{depth}, @code{timeMonthly_avg_zMid} (for
-      @acronym{MPAS} depth grids), and @code{plev} and @code{level}
-      (for pure-pressure grids with @acronym{NCEP} and @acronym{ERA5}
-      conventions, respectively).
+      (for @acronym{E3SM/CESM} hybrid sigma-pressure grids), @code{lev},
+      @code{lev_2}, and @code{lnsp} (for @acronym{ECMWF} hybrid
+      sigma-pressure grids only), @code{depth},
+      @code{timeMonthly_avg_zMid} (for @acronym{MPAS} depth grids),
+      and @code{plev} and @code{level} (for pure-pressure grids with
+      @acronym{NCEP} and @acronym{ERA5} conventions, respectively).
       The infrastructure to provide alternate names for any of these
       input/output variables names is straightforward, and is heavily 
       used for horizontal spatial regridding.
@@ -29312,10 +29315,10 @@ e.g., @samp{--plev_nm_in=z}.
 <a name="vrt_hyb_mk"></a> <!-- http://nco.sf.net/nco.html#vrt_hyb_mk -->
 <a name="vrt_hyb"></a> <!-- http://nco.sf.net/nco.html#vrt_hyb -->
 @end html
-Hybrid-coordinate grids are a hybrid between a sigma-coordinate
-grid (where each pressure level is a fixed fraction of a
-spatiotemporally varying surface pressure) and a pure-pressure grid
-that is spatially invariant (as described above). 
+Hybrid sigma-pressure coordinate grids are a hybrid between a
+sigma-coordinate grid (where each pressure level is a fixed fraction
+of a spatiotemporally varying surface pressure) and a pure-pressure
+grid that is spatially invariant (as described above). 
 The so-called hybrid @var{A} and @var{B} coefficients specify the
 fractional weight of the pure-pressure and sigma-grids, respectively, 
 at each level.
@@ -29326,9 +29329,9 @@ at each level.
 @cindex @code{hybi}
 @cindex @code{hybm}
 @cindex @code{formula_terms} attribute
-The hybrid gridfile must specify @var{A} and @var{B} coefficients for 
-both layer midpoints and interfaces with these standard
-(as employed by @acronym{CESM} and @acronym{E3SM}) names and
+The hybrid sigma-pressure gridfile must specify @var{A} and @var{B}
+coefficients for both layer midpoints and interfaces with these
+standard (as employed by @acronym{CESM} and @acronym{E3SM}) names and 
 dimensions: @code{hyai(ilev)}, @code{hybi(ilev)}, @code{hyam(lev)}, 
 and @code{hybm(lev)}.
 The reference pressure and surface pressure must be named
@@ -29356,8 +29359,8 @@ ncks -C -v hyai,hyam,hybi,hybm,P0 in_L128.nc vrt_hyb_L128.nc
 @end verbatim
 @end example
 Such files are extremely small and portable, and represent
-all the hybrid files created by the model because the vertical
-grid parameters are time-invariant.
+all the hybrid sigma-pressure files created by the model because the
+vertical grid parameters are time-invariant.
 A ``fat'' vertical grid file would also include the time-varying
 grid information, i.e., the surface pressure field.
 Fat grid-files are also easy to create with @command{ncks}, e.g.,
@@ -29376,9 +29379,10 @@ ncap2 -s 'prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm' \
 @end verbatim
 @end example
 
-Hybrid-coordinate grids define a pure-sigma or pure-pressure grid when
-either their @var{A} or @var{B} coefficients are zero, respectively.
-For example, the following creates the hybrid-coordinate
+Hybrid sigma-pressure coordinate grids define a pure-sigma or
+pure-pressure grid when either their @var{A} or @var{B} coefficients
+are zero, respectively.
+For example, the following creates the hybrid sigma-pressure coordinate
 representation of a pure-pressure grid with midpoints every @w{100 hPa}
 from @w{100 hPa} to @w{1000 hPa}:
 @example
@@ -29396,8 +29400,8 @@ vertical grids (as opposed to pure pressure grids).
 @end html
 As of July 2019 and @acronym{NCO} @w{version 4.8.1}, @acronym{NCO} 
 supports regridding @acronym{ECMWF} datasets in @acronym{IFS} hybrid
-vertical coordinate format to @acronym{CESM}/@acronym{E3SM}-format
-hybrid vertical grids. 
+sigma-pressure vertical coordinate format to
+@acronym{CESM}/@acronym{E3SM}-format hybrid vertical grids. 
 Unfortunately there was a regression and this functionality was
 broken between about 2023--2024 (the workaround is to use older
 @acronym{NCO} versions like 4.9.0).
