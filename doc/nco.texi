@@ -130,10 +130,10 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 5.3.1-alpha02
 @set doc-edition 5.3.1-alpha02
-@set copyright-years 1995--2024
-@set update-year 2024
-@set update-date 23 December 2024
-@set update-month December 2024
+@set copyright-years 1995--2025
+@set update-year 2025
+@set update-date 1 January 2025
+@set update-month January 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -21641,7 +21641,7 @@ EXAMPLES
 @html
 <a name="merra2"></a> <!-- http://nco.sf.net/nco.html#merra2 -->
 @end html
-How to create a climo from a collection of monthly
+How does one create a climo from a collection of monthly
 non-@acronym{CESM}'ish files?  
 This is a two-step procedure:
 First be sure the names are arranged with a @acronym{YYYYMM}-format date
@@ -26079,11 +26079,12 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [--dt_sng=@var{dt_sng}] [--esmf_typ=@var{esmf_typ}] 
 [--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}]
 [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}] [-L @var{dfl_lvl}]
-[-M] [-m @var{map_fl}] [--mpi_nbr=@var{mpi_nbr}] [--mpi_pfx=@var{mpi_pfx}] [--mpt_mss] [--msh_fl=@var{msh_fl}]
-[--msk_apl] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
+[-M] [-m @var{map_fl}] [--mpi_nbr=@var{mpi_nbr}] [--mpi_pfx=@var{mpi_pfx}] [--mpt_mss]
+[--msh_fl=@var{msh_fl}] [--msk_apl] [--msk_dst=@var{msk_dst}]
+[--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
 [-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
-[--no_add_fll] [--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stdin] [--no_stg_grd]
-[-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
+[--no_add_fll] [--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stdin]
+[--no_stg_grd] [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
 [--pdq=@var{pdq_opt}] [--qnt=@var{qnt_opt}] [--preserve=@var{prs_stt}] [--ps_nm=@var{ps_nm}]
 [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src] [--rnr_thr=@var{rnr_thr}] 
 [--rrg_bb_wesn=@var{bb_wesn}] [--rrg_dat_glb=@var{dat_glb}] [--rrg_grd_glb=@var{grd_glb}]
@@ -26092,7 +26093,8 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}] [--uio]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
-[--vrt_in=@var{vrt_fl}] [--vrt_out=@var{vrt_fl}] [--vrt_nm=@var{vrt_nm}] [--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
+[--vrt_in=@var{vrt_fl}] [--vrt_out=@var{vrt_fl}] [--vrt_nm=@var{vrt_nm}]
+[--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
 [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] [--xcl_var]
 [--xtr_nsp=@var{xtr_nsp}] [--xtr_xpn=@var{xtr_xpn}]
 [@var{input-files}] [@var{output-file}]
@@ -26231,11 +26233,11 @@ is supplied with @samp{-m @var{map_fl}}.
 
 Most people ultimately use @command{ncremap} to regrid data, yet not all
 data can or should be regridded in the sense of applying a sparse-matrix
-of weights to an input field to produce and output field.
-Certain fields (e.g., the longitude coordinate) specify the grid.
+of weights to an input field to produce an output field.
+Certain fields (e.g., the longitude coordinate) specify the grid itself.
 These fields must be provided in order to compute the weights that are
 used to regrid. 
-The regridded usually copies these fields ``as is'' directly into
+The regridder usually copies these fields ``as is'' directly into
 regridded files, where they describe the destination grid, and replace
 or supercede the source grid information.
 Other fields are extensive grid properties (e.g., the number of cells
@@ -29183,10 +29185,12 @@ to vertically interpolate the input file to the vertical coordinate
 grid contained in the file @var{vrt_fl}.
 This option first appeared in @acronym{NCO} @w{version 4.8.0},
 released in May, 2019.
-The vertical gridfile @var{vrt_fl} must specify a vertical gridtype
-that @command{ncremap} understands, currently either pure-pressure or
-hybrid-coordinate pressure.
-We plan to add pure-sigma coordinates in the future.
+The vertical gridfile @var{vrt_fl} must specify one of the three
+vertical gridtypes that @command{ncremap} understands: pure-pressure,  
+hybrid sigma-pressure, or geometric depth (e.g., for ocean data).
+Note that pure-sigma coordinates are a special case of hybrid
+sigma-pressure coordinates and can always be reformatted to work as
+well. 
 
 Besides the vertical grid-type, the main assumptions, constraints, and
 priorities for future development of vertical regridding are:
@@ -29241,21 +29245,15 @@ priorities for future development of vertical regridding are:
       November 2022 in @acronym{NCO} @w{version 5.1.1}, are:
       linear extrapolation (@samp{--vrt_xtr=linear}),
       setting @w{to 0.0} (@samp{--vrt_xtr=zero}).
-      Linear extrapolation does exactly what you think: Values outside
-      the input domain are linearly extrapolated from the nearest two
-      values inside the input domain.
-      Zero extrapolation sets values outside the extrapoloation domain
+      Linear extrapolation does exactly what it sounds like:
+      Extrapolate values outside the input domain linearly from the
+      nearest two values inside the input domain.
+      Zero extrapolation sets values outside the extrapolation domain
       @w{to 0.0}.  
       Supporting other methods, or improving the existing
       special-case approximations for temperature or geopotential,
       will remain low priority until we are lobbied with compelling
       use-cases for other algorithms.  
-@item Missing values may not always be treated correctly
-      Eliminating this constraint was not originally a priority
-      because atmospheric datasets often contain no missing data.
-      However, now that vertical regridding can be applied to ocean
-      data with a depth coordinate, we need to verify that using
-      missing values to indicate bathymetry works as expected.
 @item Time-varying vertical grids are only allowed for hybrid grids
       (not pure pressure grids), and these must store the time
       dimension as a record dimension.
@@ -29562,16 +29560,16 @@ Temperature and geopotential height are exceptions to this rule.
 Temperature variables (those named @code{T} or @code{ta}, anyway) are
 extrapolated upwards towards space using the nearest neighbor
 assumption, and downwards beneath the surface assuming a moist 
-adiabatic lapse rate of 6.5 degrees centigrade per 100 millibars.
+adiabatic lapse rate of @w{6.5 degrees} centigrade per @w{100 millibars}.
 Geopotential variables (those named @code{Z3} or @code{zg}, anyway)
 are extrapolated upwards and downwards using the hypsometric equation
 @footnote{@math{Z_2-Z_1=(R_d*T_v/g_0)*ln(p_1/p_2)=(R_d*T_v/g_0)*(ln(p_1)-ln(p_2))}}
 @c Z2-Z1=(Rd*Tv/g0)*ln(p1/p2)=(Rd*Tv/g0)*(ln(p1)-ln(p2))} 
 with constant global mean virtual temperature
-@math{@var{@tpt{}} = 288}K.
-This assumption leads to unrealistic values where @tpt{} differs
+@math{@var{tpt} = 288}K.
+This assumption leads to unrealistic values where @var{tpt} differs
 significantly from the global mean surface temperature.
-Using the local @tpt{} itself would be a much better approximation,
+Using the local @var{tpt} itself would be a much better approximation,
 yet would require a time-consuming implementation.
 Please let us know if accurate surface geopotential extrapolation in
 cold regions is important to you.

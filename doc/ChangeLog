@@ -1,8 +1,12 @@
-2024-12-29  Charlie Zender  <zender@uci.edu>
+2024-12-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.1-alpha02: Poison Enchilada';git push
-	git tag -a 5.3.1-alpha02 -m '';git push --tags
+	git tag -a 5.3.1-alpha02 -m 'all: 2025; ';git push --tags
+
+	* 2025
+
+2024-12-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.1-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.1-alpha01: Au Revoir Chloe';git push
