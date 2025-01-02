@@ -1024,6 +1024,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_hrz_mrv_out=True; /* [flg] Horizontal dimension is Most-Rapidly-Varying in output */
   nco_bool flg_mlc_out=True; /* [flg] Add maxLevelCell to output 3D depth grids */
   nco_bool flg_ps_rtn=False; /* [flg] Retain surface pressure variable in vertical interpolation output */
+  nco_bool flg_dmn_is_fx_tm=False; /* [flg] Current dimension is fixed (not record) temporal dimension */
   nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
   nco_bool ncr_idx_in=True; /* [flg] Input vertical coordinate increases monotonically in index (not geometric) space */
   nco_bool ncr_idx_out=True; /* [flg] Output vertical coordinate increases monotonically in index (not geometric) space */
@@ -1326,12 +1327,17 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
 	  if(dmn_ids_out[dmn_idx] == dmn_ids_rec[rec_idx])
 	    break; 
-	if(rec_idx == dmn_nbr_rec || dmn_nbr_out == 1){
+	/* 20250101: Above loop fails to identify temporal dimensions that are fixed not record dimensions
+	   NASA MERRA2 pressure-level timeseries contain PS with fixed time dimension
+	   Treat dimensions named "[Tt]ime" as temporal */
+	rcd=nco_inq_dimname(tpl_id,dmn_ids_out[dmn_idx],dmn_nm);
+	if(strcasestr(dmn_nm,"time")) flg_dmn_is_fx_tm=True; else flg_dmn_is_fx_tm=False;
+	if(!flg_dmn_is_fx_tm && (rec_idx == dmn_nbr_rec || dmn_nbr_out == 1)){
 	  /* This PS dimension is not record dimension, or is sole PS dimension */
 	  grd_sz_out*=dmn_cnt_out[dmn_idx];
 	  dmn_hrz_nbr_out++;
-	} /* !rec_idx, !dmn_nbr_out */
-	if(rec_idx != dmn_nbr_rec && dmn_nbr_out > 1 && dmn_cnt_out[dmn_idx] > 1L){
+	} /* !flg_dmn_is_fx_tm !rec_idx, !dmn_nbr_out */
+	if((flg_dmn_is_fx_tm || rec_idx != dmn_nbr_rec) && dmn_nbr_out > 1 && dmn_cnt_out[dmn_idx] > 1L){
 	  /* Multi-dimensional PS contains this multi-element record dimension, which we assume is time (not space) */
 	  tm_nbr_out=dmn_cnt_out[dmn_idx];
 	  if(tm_nbr_out > 1L) flg_vrt_tm=True;
@@ -1749,8 +1755,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if((rcd=nco_inq_varid_flg(in_id,ps_nm_in,&ps_id)) == NC_NOERR){ /* NB: Use in_id not vrt_in_id to search for PS in pure-pressure files since the surface pressure field is likely to be in the data file */
       /* Output file-creation procedure discriminates between input surface pressure dimensioned as CAM/EAM vs. ECMWF */
       flg_grd_hyb_cameam=True;
-      if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field %s in pure-pressure input data file. %s will be copied directly from pure-pressure grid input dataset to, and used to construct the pressures of, the output hybrid sigma-pressure coordinate data file, where it will be named %s.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_in,ps_nm_out);
-      if(flg_grd_out_hyb && (ps_id_tpl != NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field in both vertical-grid file as %s, and in pure-pressure input data file as %s. The vertical grid-file takes precedence. %s will be copied directly from vertical-grid file to, and used to construct the pressures of, the output hybrid sigma-pressure coordinate data file, where it will be named %s. %s in input pure-pressure file will be ignored.\n",nco_prg_nm_get(),fnc_nm,ps_nm_tpl,ps_nm_in,ps_nm_tpl,ps_nm_out,ps_nm_in);
+      if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field %s in pure-pressure input data file. %s will be copied directly from pure-pressure grid input dataset to, and used as the reference surface pressure of, the output hybrid sigma-pressure coordinate data file, where it will be named %s.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_in,ps_nm_out);
+      if(flg_grd_out_hyb && (ps_id_tpl != NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field in both vertical-grid file as %s, and in pure-pressure input data file as %s. The vertical grid-file takes precedence. %s will be copied directly from vertical-grid file to, and used as the reference surface pressure of, the output hybrid sigma-pressure coordinate data file, where it will be named %s. %s in input pure-pressure file will be ignored.\n",nco_prg_nm_get(),fnc_nm,ps_nm_tpl,ps_nm_in,ps_nm_tpl,ps_nm_out,ps_nm_in);
     }else{
       if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)){
 	(void)fprintf(stderr,"%s: ERROR %s does not find spatially varying surface pressure field %s in pure-pressure input data file or as %s in vertical grid-file for hybrid sigma-pressure output. A surface pressure field must be present in at least one of these files in order to construct the output hybrid sigma-pressure coordinate pressures.\nHINT: Append a valid surface pressure field to the input data file or to the vertical grid-file.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_tpl);
@@ -2319,18 +2325,23 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
 	  if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
 	    break; 
-	if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 1){
-	  /* This PS dimension is not record dimension, or is sole PS dimension */
+	/* 20250101: Above loop fails to identify temporal dimensions that are fixed not record dimensions
+	   NASA MERRA2 pressure-level timeseries contain PS with fixed time dimension
+	   Treat dimensions named "[Tt]ime" as temporal */
+	rcd=nco_inq_dimname(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_nm);
+	if(strcasestr(dmn_nm,"time")) flg_dmn_is_fx_tm=True; else flg_dmn_is_fx_tm=False;
+	if(!flg_dmn_is_fx_tm && (rec_idx == dmn_nbr_rec || dmn_nbr_in == 1)){
+	  /* This PS dimension is not fixed "time" dimension, and is not record dimension or is sole PS dimension */
 	  grd_sz_in*=dmn_cnt_in[dmn_idx];
 	  dmn_hrz_nbr_in++;
-	} /* !rec_idx, !dmn_nbr_in */
-	if(rec_idx != dmn_nbr_rec && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L){
+	} /* !flg_dmn_is_fx_tm !rec_idx, !dmn_nbr_in */
+	if((flg_dmn_is_fx_tm || rec_idx != dmn_nbr_rec) && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L){
 	  /* Multi-dimensional PS contains this multi-element record dimension, which we assume is time (not space) */
 	  dmn_id_tm_in=dmn_ids_in[dmn_idx];
 	  dmn_idx_tm_in=dmn_idx;
 	  tm_nbr_in=dmn_cnt_in[dmn_idx_tm_in];
 	  if(tm_nbr_in > 1L) flg_vrt_tm=True;
-	} /* !rec_idx, !dmn_nbr_out, !dmn_cnt_out */
+	} /* !flg_dmn_is_fx_tm !rec_idx !dmn_nbr_out !dmn_cnt_out */
 	dmn_srt[dmn_idx]=0L;
       } /* !dmn_idx */
 

@@ -1,8 +1,16 @@
-2024-12-31  Charlie Zender  <zender@uci.edu>
+2025-01-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.1-alpha02: Poison Enchilada';git push
 	git tag -a 5.3.1-alpha02 -m 'all: 2025; ';git push --tags
+
+	* Demonstrate prs->hyb intperolation for MERRA2 works correctly	for multi-timestep datasets
+
+2025-01-01  Charlie Zender  <zender@uci.edu>
+
+	* Handle fixed time dimension in PS in pure pressure input (like MERRA2)
+
+2024-12-31  Charlie Zender  <zender@uci.edu>
 
 	* 2025
 

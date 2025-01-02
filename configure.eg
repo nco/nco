@@ -349,7 +349,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/4.9.3 # 20201208
 # Personal recipe last modified: 20240221 (fix E3SMU paths, use anaconda, not bld/Makefile)
 # Personal recipe last borken: 20231129 /gpfs/alpine/cli115/proj-shared/e3sm-unified/base/envs/e3sm_unified_1.9.1_login/lib/libnetcdf.so: undefined reference to `H5Pset_dxpl_mpio' <-- Fix by manual linking to -lmfhdf -ldf -lhdf5_hl -lhdf5 
-# Personal recipe last successful: 20240220
+# Personal recipe last successful: 20250101
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -358,7 +358,6 @@ export NETCDF_ROOT=/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified
 export PATH=${PATH}:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/bin
 cd ~/nco;git reset --hard origin/master
 cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-# cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT=${NETCDF_ROOT} OPTS=D OMP=Y allinone;cd -
 # !Andes
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
@@ -444,7 +443,6 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Personal recipe last successful: 20230917
 module purge
 cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-cd ~/nco;ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
