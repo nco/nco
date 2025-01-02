@@ -2,9 +2,11 @@
 
 	* NCO 5.3.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.1-alpha02: Poison Enchilada';git push
-	git tag -a 5.3.1-alpha02 -m 'all: 2025; ';git push --tags
+	git tag -a 5.3.1-alpha02 -m 'all: 2025; ncremap: PS fix tm dmn';git push --tags
 
-	* Demonstrate prs->hyb intperolation for MERRA2 works correctly	for multi-timestep datasets
+	* Extrapolate variables named "t" as temperature profiles (like ERA5) using global lapse rate method
+
+	* Demonstrate prs->hyb interpolation for MERRA2 works correctly	for multi-timestep datasets
 
 2025-01-01  Charlie Zender  <zender@uci.edu>
 
