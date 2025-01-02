@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.1-alpha02
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 1 January 2025
+@set update-date 2 January 2025
 @set update-month January 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -29561,12 +29561,14 @@ By default @command{ncremap} sets all extrapolated values to the
 nearest valid value.
 
 Temperature and geopotential height are exceptions to this rule.
-Temperature variables (those named @code{T} or @code{ta}, anyway) are
-extrapolated upwards towards space using the nearest neighbor
-assumption, and downwards beneath the surface assuming a moist 
-adiabatic lapse rate of @w{6.5 degrees} centigrade per @w{100 millibars}.
-Geopotential variables (those named @code{Z3} or @code{zg}, anyway)
-are extrapolated upwards and downwards using the hypsometric equation
+Temperature variables (those named @code{T}, @code{t}, @code{ta},
+or @code{tpt_*}, anyway) are extrapolated upwards towards space using
+the nearest neighbor assumption, and downwards beneath the surface
+assuming a moist  adiabatic lapse rate of @w{6.5 degrees} centigrade
+per @w{100 millibars}. 
+Geopotential variables (those named @code{Z3}, @code{H}, @code{zg},
+or @code{VerticalLayerMidpoint}, anyway) are extrapolated upwards and
+downwards using the hypsometric equation 
 @footnote{@math{Z_2-Z_1=(R_d*T_v/g_0)*ln(p_1/p_2)=(R_d*T_v/g_0)*(ln(p_1)-ln(p_2))}}
 @c Z2-Z1=(Rd*Tv/g0)*ln(p1/p2)=(Rd*Tv/g0)*(ln(p1)-ln(p2))} 
 with constant global mean virtual temperature

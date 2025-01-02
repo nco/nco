@@ -3556,7 +3556,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	       Assume all regridded variables whose names are "T", "t", "T_mid", or "ta", or start with "tpt" are temperature variables
 	       Use the global lapse rate method to extrapolate them beyond the input domain */
 	    if(!strcasecmp(var_nm,"T") || !strcmp(var_nm,"T_mid") || !strcmp(var_nm,"ta") || (strstr(var_nm,"tpt") == var_nm)) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
-	    else if(!strcmp(var_nm,"Z3") || !strcmp(var_nm,"VerticalLayerMidpoint") || !strcmp(var_nm,"zg")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
+	    else if(!strcmp(var_nm,"Z3") || !strcmp(var_nm,"H") || !strcmp(var_nm,"VerticalLayerMidpoint") || !strcmp(var_nm,"zg")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
 	  } /* !xtr_mth */
 	  crd_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
 	  crd_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));

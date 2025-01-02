@@ -2,11 +2,15 @@
 
 	* NCO 5.3.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.1-alpha02: Poison Enchilada';git push
-	git tag -a 5.3.1-alpha02 -m 'all: 2025; ncremap: PS fix tm dmn';git push --tags
+	git tag -a 5.3.1-alpha02 -m 'all: 2025; ncremap: PS fix tm dmn,	ERA5 t MERRA2 H';git push --tags
+
+	* Extrapolate variables named "H" with geopotential height algorithm
+
+	* Verify MERRA2 prs->hyb interpolation works when time is fixed dimension
 
 	* Extrapolate variables named "t" as temperature profiles (like ERA5) using global lapse rate method
 
-	* Demonstrate prs->hyb interpolation for MERRA2 works correctly	for multi-timestep datasets
+	* Demonstrate prs->hyb interpolation for MERRA2 works correctly for multi-timestep datasets
 
 2025-01-01  Charlie Zender  <zender@uci.edu>
 
