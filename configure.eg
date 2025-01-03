@@ -533,6 +533,16 @@ make clean;make > nco.make.foo 2>&1
 make check >> nco.make.foo 2>&1
 make install >> nco.make.foo 2>&1
 scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
+
+# 20250102 Attempt to build on PM using entirely public directories
+export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
+export LINUX_CXX='g++ -std=c++11'
+export LINUX_FC='gfortran'
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest/lib
+export NETCDF_ROOT=/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest
+export PATH=${PATH}:/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest/bin
+cd ~/nco;git reset --hard origin/master
+cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${DATA} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # !Perlmutter
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on greenplanet

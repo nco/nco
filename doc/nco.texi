@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.1-alpha02
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 2 January 2025
+@set update-date 3 January 2025
 @set update-month January 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -30133,7 +30133,7 @@ whose attributes are to be renamed.
 <a name="bug_nc4_rename"></a> <!-- http://nco.sf.net/nco.html#bug_nc4_rename -->
 @end html
 @cartouche
-Caveat lector: Unforunately from 2007--present (August, 2023) the
+Caveat lector: Unforunately from 2007--present (January, 2025) the
 netCDF library (versions 4.0.0--4.9.3) contains bugs or limitations
 that sometimes prevent @acronym{NCO} from correctly renaming coordinate
 variables, dimensions, and groups in netCDF4 files. 

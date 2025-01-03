@@ -230,8 +230,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		    export PATH="${PATH}:${NCARG_ROOT}/bin"
 		    export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 		fi # !NCARG_ROOT
-		export PATH='/global/homes/z/zender/bin_perlmutter'\:${PATH}
-		export LD_LIBRARY_PATH='/global/homes/z/zender/lib_perlmutter'\:${LD_LIBRARY_PATH}
+		export PATH='/global/cfs/cdirs/e3sm/zender/bin_perlmutter'\:${PATH}
+		export LD_LIBRARY_PATH='/global/cfs/cdirs/e3sm/zender/lib_perlmutter'\:${LD_LIBRARY_PATH}
 	    fi # !LMOD_SYSTEM_NAME
 	    ;; # !login	
 	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] )
@@ -248,8 +248,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 	    fi # !NCARG_ROOT
-	    export PATH='/global/homes/z/zender/bin_perlmutter'\:${PATH}
-            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_perlmutter:/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/global/cfs/cdirs/e3sm/zender/bin_perlmutter'\:${PATH}
+            export LD_LIBRARY_PATH='/global/cfs/cdirs/e3sm/zender/lib_perlmutter:/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'\:${LD_LIBRARY_PATH} ; ;;
 	* ) # Default fall-through
 	    hrd_pth_fnd='No' ; ;;
     esac # !HOSTNAME
