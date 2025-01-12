@@ -1373,9 +1373,9 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 	   Too many other limits on string translation to list them all :)
 	   This only handles plain strings */
 	if(var_out.sz > 1L){
-	  (void)fprintf(stdout,"%s: ERROR Unable to autoconvert. %s reports string variable %s is an array of %li strings. Autoconversion of string variables is currently limited to scalar string variables (that contain a single string), and does not work on arrays of strings. Even single strings are currently translated incorrectly because each string is typically a distinct size, meaning a distinct phony dimension would need to be created for every single string and NCO is loathe to do that. Instead, NCO curretly translates single strings to a single character (instead of, say, creating a new string dimension of some arbitrary size). Complaints? Suggestions? Let us know.\n",nco_prg_nm_get(),fnc_nm,var_nm,var_out.sz);
+	  (void)fprintf(stdout,"%s: ERROR Unable to autoconvert. %s reports string variable %s is an array of %li strings. Autoconversion of string variables is currently limited to scalar string variables (that contain a single string), and does not work on arrays of strings. Even single strings are difficult to translate correctly because each string is typically a distinct size, meaning a distinct dimension would need to be created to store the character array for every single string. Currently, the scripts ncremap and ncclimo handle this by translating strings into character arrays of size 10, 100, 1000, or 10000. The NCO binaries (including this executable) currently keep only the first character of strings. A more complete solution is in the works. Complaints? Suggestions? Let us know.\nHINT: If you do not need variable %s, then consider excluding it from the input file to avoid this autoconversion error with, e.g., ncks -C -x -v %s in.nc out.nc\nc",nco_prg_nm_get(),fnc_nm,var_nm,var_out.sz,var_nm,var_nm);
 	  nco_exit(EXIT_FAILURE);
-	} /* endif err */
+	} /* !err */
 
 	var_out=var_in;
 	var_out.sz=strlen(var_out.val.sngp[0]);
