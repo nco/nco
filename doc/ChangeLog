@@ -1,12 +1,16 @@
 2025-01-12  Charlie Zender  <zender@uci.edu>
 
-	* 
+	* NCO 5.3.1 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.1: Dark Sunset (Palisades Lost)';git push
+	git tag -a 5.3.1 -m 'ncks: autoconversion in regridder/interpolator; ncremap: PS fix tm dmn, ERA5 t MERRA2 H, PM --npo';git push --tags
+
+	* Document 5.3.1
 
 2025-01-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.1-alpha02: Poison Enchilada';git push
-	git tag -a 5.3.1-alpha02 -m 'all: 2025; ncremap: PS fix tm dmn,	ERA5 t MERRA2 H, PM --npo';git push --tags
+	git tag -a 5.3.1-alpha02 -m 'all: 2025; ncremap: PS fix tm dmn, ERA5 t MERRA2 H, PM --npo';git push --tags
 
 	* Change Perlmutter --npo paths to /global/cfs/cdirs/e3sm/zender/[bin,lib]_perlmutter
 

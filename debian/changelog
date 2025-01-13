@@ -1,8 +1,8 @@
 nco (5.3.1-1) unstable; urgency=low
 
-  * new upstream version fxm:
+  * new upstream version Dark Sunset (Farewell Palisades and Altadena): ncks: autoconversion in regridder/interpolator; ncremap: PS fix tm dmn, ERA5 t MERRA2 H, PM --npo
 
- -- Charlie Zender <zender@uci.edu> Tue, 14 Jan 2025 12:26:18 -0700
+ -- Charlie Zender <zender@uci.edu> Sun, 12 Jan 2025 12:26:18 -0700
 
 nco (5.3.0-1) unstable; urgency=low
 

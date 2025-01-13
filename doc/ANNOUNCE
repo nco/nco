@@ -1,142 +1,124 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.0 wag their tails
+netCDF Operators NCO version 5.3.1 howl at the Moon
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.0 significantly improves the unpacking of ELM/CLM/CTSM
-history and restart datasets, and seems complete in this regard.
-ncrcat has more friendly behavior when appending, and ncclimo now
-outputs more metrics (such as valid area per gridcell) when in
-regional statistics mode. This release many be skipped if these
-changes do not interest you. 
+Version 5.3.1 adds features and fixes to ncremap and ncclimo.
+The new autoconversion feature allows these scripts to automagically
+convert netCDF4 string variables to netCDF3 character arrays.
+The improved treatment of fixed time dimensions allows ncclimo to work
+with raw MERRA2 files. Together these improvements make possible
+regridding and vertical interpolation of the new formatting of
+Copernicus Data Store (CDS) files used for, e.g., ERA5.
+Skip this release if these changes do not interest you. 
 
-Work on 5.3.1 is underway and includes improved NC_STRING for
-common text attributes.
+Work on 5.3.3 is underway and includes improved NC_STRING
+autoconversion support for other NCO operators.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Once again, ncks leveled-up how it unpacks ELM/CLM history/restart
-files. New features include automatic writing of fractional landunit
-and fractional column variables frc_landunit and frc_column,
-respectivly. frc_landunit is equivalent to the variable PCT_LANDUNIT
-sometimes placed in history files, but is expressed as a decimal
-fraction (not a percent) and is derived from restart files.
-The landunit dimension of frc_landunit is of size ten: Index zero
-contains the sum (should be 1.0) of standard landunit types/indexes
-1-9 soil, crop, ..., urban medium density).
-frc_column is a bespoke version of the same, only for column (not
-landunit) types. For datasets with Multiple Elevation Classes (MECs):
-index = 0 is soil column, index = 1 is MEC == 1, indexes 2..10
-are remaining MEC columns, index 11 is sub-total of MEC columns, index
-= 12 is deep lake column, index = 13 is wetland column, and index = 14
-is grand total of natural columns. For non-MEC datasets, index = 0 is
-soil column, index = 1 is glaciated column, index = 2 is deep lake
-column, index = 3 is wetland column, and index = 4 is grand total of
-natural columns. 
+A. Autoconversion of NC_STRING variables, i.e., automatic conversion
+from type NC_STRING to NC_CHAR as dictated by choosing a netCDF3
+output from a netCDF4 input file, work for all attributes, but not for
+all variables. This is because attributes are at most one-dimensional
+and may be of any size whereas variables require gridded dimensions
+that usually do not fit the ragged sizes of text strings.
+Hence scalar NC_STRING attributes are correctly converted to and
+stored as NC_CHAR attributes in the netCDF3 output file, but
+not all NC_STRING variables are correctly converted.
 
-ncks --s1d --hrz=history.nc restart.nc s1d_r05.nc # Restart file
-ncks -m -v frc.? s1d_r05.nc
-netcdf s1d_r05 {
-  dimensions:
-    column = 15 ;
-    landunit = 10 ;
-    lat = 360 ;
-    lon = 720 ;
+As of version 5.3.1, NCO has two distinct levels of support for
+autoconversion of NC_STRING variables. ncremap fully supports
+autoconversion of scalar NC_STRING variables in both horizontal
+regridder and vertical interpolation mode. This means that ncremap
+will produce netCDF3 output files from netCDF4 input files (if
+requested) and that any NC_STRING variables in the input files will be
+translated to NC_CHAR arrays in the netCDF3 output files. There is no
+loss of information since the entire contents of the string is
+preserved in the character array. Autoconversion stores the character
+array with a new dimension named sng_lng_X where X is the smallest
+power of ten between 10 and 10000 that is capable of containing the
+string contents (including the terminating NUL character).
+This type of variable autoconversion fails if the input string length
+exceeds 10000 (this is a safety measure, and could be expanded if
+people lobby me).
 
-  variables:
-    float frc_column(column,lat,lon) ;
-    float frc_landunit(landunit,lat,lon) ;
-} 
+All operators besides ncremap currently retain only the first
+character of the input NC_STRING array. This loses information.
+We are working to implement the same feature that ncremap enjoys. 
+Both types of autoconversion fail if the input string variable is 
+multidimensional, i.e., an array of type NC_STRING. A feature to solve
+that case is tractable, though we have not yet received any requests
+for it. 
 
-http://nco.sf.net/nco.html#s1d
-http://nco.sf.net/nco.html#unpack_sparse
+Thanks to Waler Hannah (LLNL) for prompting this feature.
+http://nco.sf.net/nco.html#autoconversion
+http://nco.sf.net/nco.html#ncclimo
 
-B. ncks can now grid snow-related variables into a top-down
-(ocean-like) vertical grid that many think is more intuitive. 
-By default ELM/CLM/CTSM store the negative of the number of active
-snow layers in the variable SNLSNO. Restart files for these models
-store the active snow layer butted-up against the lowest layers in
-the level dimension (so that they are continguous with soil layers
-to simplify hydrologic calculations). This makes snow variables in
-restart files hard to visualize. By default S1D now uses SNLSNO, if
-present, to unpack snow variables in a first layer downwards order,
-increasing with depth. Inactive layers at the bottom (i.e., where they
-reside physically). The resulting snow variables appear like ocean
-state variables over uneven bathymetry, with missing value
-underneath. We call this "snow-ocean" ordering to contrast it with
-the on-disk storage order of snow variables. 
+B. ncremap's vertical interpolator now automatically extrapolates
+variables named "t" (as in ERA5 raw data) as if they were temperature. 
+Futhermore the interpolator now automatically extrapolates variables
+named "H" (as in MERRA2 raw data) and VerticalLayerMidpoint (SCREAM)
+as if they were geopotential height. See the documentation for
+specifics about the temperature and geopotential height extrapolation
+algorithms.
+http://nco.sf.net/nco.html#vrt
 
-http://nco.sf.net/nco.html#s1d
-http://nco.sf.net/nco.html#snw_ocn
-http://nco.sf.net/nco.html#snw_rdr
-http://nco.sf.net/nco.html#no_snw_ocn
+C. For many years, users at select supercomputer centers have been
+able to access the latest versions of NCO scripts directly from
+C. Zender's build directories. However, this feature was not
+documented until now. Zender's build directories usually contain the
+latest NCO snapshot, and so may be unstable and are not for everyday
+use. This feature is instead intended to allow users to test and
+provide feedback on new features before they are distributed in a
+public release.
+Invoking ncclimo and ncremap with the --npo (or long-option equivalent
+--nco_path_override) flag as the first option (i.e., as $1) causes
+these scripts to utilize the binary NCO executables in Zender's build
+directories on the following machines at the national supercomputer
+centers in parentheses: 
+acme1 (LLNL), andes (ORNL), chrysalis (ANL), compy (PNNL), derecho
+(NCAR), frontier (ORNL), and perlmutter (NERSC).
 
-C. ncks S1D now accepts the "--rgr lut_out=$lut_out" option to specify 
-which column type(s) to place in each gridcell in the output file.
-The argument lut_out is the standard landunit type of the column,
-with (thus far) two additional values that will output area-weighted
-averages of multiple landunit types:
-
-lut_out Output will be value of column(s) in this Landunit 
-1       Vegetated or bare soil
-2       Crop
-3       Landice (plain, no MEC)
-4       Landice multiple elevation classes
-5       Deep lake
-6       Wetland
-7       Urban tall building district
-8       Urban high density
-9       Urban medium density
-10      Area-weighted average of all landunit types except MEC glaciers
-13      Area-weighted average of soil+(non-MEC) glacier
-
-For example,
-ncks --s1d --rgr lut_out=1 --hrz=hst.nc rst.nc s1d.nc # Output Soil LUT
-ncks --s1d --rgr lut_out=13 --hrz=hst.nc rst.nc s1d.nc # Avg Soil+Glacier
-
-http://nco.sf.net/nco.html#s1d
-http://nco.sf.net/nco.html#lut_out
-
-D. ncremap always warns when it regrids land model files that contain
-a "landfrac" variable and SGS renormalization is not requested. 
-This is because ELM/CLM/CTSM use "landfrac" for sub-gridscale
-fraction, and ignoring that causes errors along coastlines.
-EAMxx also archives that same "landfrac" but every EAMxx variable
-is valid throughout every gridcell so renormalization would be
-superfluous at best. Now ncremap no longer emits the "landfrac"
-WARNING for EAMxx files.
-http://nco.sf.net/nco.html#eamxx
-
-E. As of NCO version 5.3.0 (December, 2025) ncclimo automatically
-outputs additional metrics with global statistics. The output files
-containing the global timeseries also contain the variable
-valid_area_per_gridcell. This field is equivalent to the product of
-the area variable and the sgs_frc variable (if any). Thus for
-ELM/CLM/CTSM, this field equals area times landfrac, while for EAM/CAM
-this variable simply equals area. The output files also contain the
-area and sgs_frc variables separately. The presence of these variables
-in output allows downstream processors (e.g., zppy) to generate
-additional masks and weights for rescaling the statistics. For
-example, these fields can be used to rescale global sums into any
-units desired. 
-ncclimo -P elm --split --rgn_stt=sum -c v3.LR.piControl -s 460 -e 461 \
---drc_in=drc_in --drc_out=drc_out
-http://nco.sf.net/nco.html#glb_stt
-http://nco.sf.net/nco.html#rgn_stt
+If the latest features that you want are actually implemented in the
+NCO binaries or library, then it may suffice to invoke your own
+version of the scripts, as in the first examples below. However, if
+the latest features that you want are implemented in the scripts
+themselves, then you can either invoke Zender's scripts directly (as
+in the second set of examples), or copy those scripts into your own
+executable path: 
+@verbatim
+# Access Zender's latest binaries from your default scripts
+ncremap --npo -m map.nc in.nc out.nc 
+ncclimo --npo -P elm -c ${caseid} ...
+# Access Zender's latest binaries from Zender's latest scripts
+~zender/bin/ncremap --npo -m map.nc in.nc out.nc 
+~zender/bin/ncclimo --npo -P elm -c ${caseid} ...
+@end verbatim
+@end example
+In both cases, the --npo flag must be the first option invoked. 
+http://nco.sf.net/nco.html#npo
+http://nco.sf.net/nco.html#nco_path_override
 
 BUG FIXES:
    
-A. ncrcat ensures that the last time value and monotonicity are
-both defined before the monotonicity check is performed in REC_APN
-mode. This fixes overly noisy false-negative WARNINGs about
-monotonicity. Thanks to Seth McGinnis (NCAR) for reporting this
-problem.
+A. ncremap's vertical interpolator now understands that the time
+dimension in input surface pressure fields may be "fixed".
+Previously the interpolator assumed that the temporal dimension, if
+any, was an unlimited/record dimension. This could cause it to
+miscalculate the number of horizontal spatial dimensions, and then
+to fail. Now the interpolator considers any fixed dimension named
+"time", or most unlimited dimensions (except certain corner cases) to
+be temporal dimension. This allows it to interpolate raw MERRA2 or
+ERA5 data. Thanks to Naser Mahfouz (PNNL) for prompting this
+fix/feature. 
+http://nco.sf.net/nco.html#vrt
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

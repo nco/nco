@@ -128,11 +128,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.3.1-alpha02
-@set doc-edition 5.3.1-alpha02
+@set nco-edition 5.3.1
+@set doc-edition 5.3.1
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 3 January 2025
+@set update-date 12 January 2025
 @set update-month January 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -4381,16 +4381,43 @@ values instead.
 If this feature interests you, please be the squeaky wheel and let us
 know.
 
-String conversions (to @code{NC_CHAR}) work for all attributes, but
-not for variables.
+String conversions (from @code{NC_STRING} to @code{NC_CHAR}) work for
+all attributes, but not for all variables.
 This is because attributes are at most one-dimensional and may be of any
 size whereas variables require gridded dimensions that usually do not
 fit the ragged sizes of text strings.
 Hence scalar @code{NC_STRING} attributes are correctly converted to and
 stored as @code{NC_CHAR} attributes in the netCDF3 output file, but
-@code{NC_STRING} variables are not correctly converted. 
-If this limitation annoys or enrages you, please let us know by being
-the squeaky wheel.
+not all @code{NC_STRING} variables are correctly converted.
+
+As of version 5.3.1 (January, 2025), @acronym{NCO} has two distinct
+levels of support for autoconversion of @code{NC_STRING} variables.
+@command{ncremap} fully supports autoconversion of scalar
+@code{NC_STRING} variables in both horizontal regridder and vertical
+interpolation mode.
+This means that @command{ncremap} will produce netCDF3 output files
+from netCDF4 input files (if requested) and that any @code{NC_STRING}
+variables in the input files will be translated to @code{NC_CHAR}
+arrays in the netCDF3 output files.
+There is no loss of information since the entire contents of the
+string is preserved in the character array.
+The autoconversion stores the character array with a new dimension
+named @code{sng_lng_@var{X}} where @var{X} is the smallest power of
+ten between 10 and 10000 that is capable of containing the string
+contents (including the terminating @code{NUL} character).
+This type of variable autoconversion fails if the input string length
+exceeds 10000 (this is a safety measure, and will be expanded if
+people lobby me).
+
+All operators besides @command{ncremap} currently retain only the
+first character of the input @code{NC_STRING} array.
+This loses information.
+We are working to implement the same feature that @command{ncremap}
+enjoys. 
+Both types of autoconversion fail if the input string variable is 
+multidimensional, i.e., an array of type @code{NC_STRING}.
+A feature to solve that case would be tractable, though we have not
+yet received any requests for it.
 
 @item
 @cindex @code{--fix_rec_dmn all}
@@ -19517,7 +19544,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [--glb_avg] [--glb_stt=@var{glb_stt}] 
 [-h @var{hst_nm}] [-i @var{drc_in}] [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}]
 [-m @var{mdl_nm}] [--mth_end=@var{mth_end}] [--mth_srt=@var{mth_srt}]
-[-n @var{nco_opt}] [--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd] [--no_stdin] 
+[-n @var{nco_opt}] [--npo] [--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd] [--no_stdin] 
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-P @var{prc_typ}] [-p @var{par_typ}] [--qnt=@var{qnt_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}] [-S @var{yr_prv}] [-s @var{yr_srt}]
 [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}] [--split] [--sum_scl=@var{sum_scl}]
@@ -20128,6 +20155,55 @@ Note that @command{ncclimo} passes its @var{nco_opt} to
 This can cause unexpected results, so use the front-end options to
 @command{ncclimo} when possible, rather than attempting to subvert
 them with @var{nco_opt}.
+
+@html
+<a name="npo"></a> <!-- http://nco.sf.net/nco.html#npo -->
+<a name="nco_path_override"></a> <!-- http://nco.sf.net/nco.html#nco_path_override -->
+@end html
+@cindex @code{--npo}
+@cindex @code{--nco_path_override}
+As of @acronym{NCO} version 5.3.1 (released January, 2025) users at
+select supercomputer centers can access the latest versions of
+@acronym{NCO} scripts directly from @w{C. Zender's} build
+directories. 
+These build directories usually contain the latest @acronym{NCO}
+snapshot, and so may be unstable and are not for everyday use.
+This feature is instead intended to allow users to test and provide
+feedback on new features before they are distributed in a public
+release.
+Invoking @command{ncclimo} and @command{ncremap} with the @code{--npo}
+(or long-option equivalent @code{--nco_path_override}) flag as
+@emph{the first option} (i.e., as @code{$@{1@}}), causes these scripts
+to utilize the binary @acronym{NCO} executables in Zender's build
+directories on the following machines at the national supercomputer
+centers in parentheses: 
+@code{acme1} (LLNL),
+@code{andes} (ORNL),
+@code{chrysalis} (ANL),
+@code{compy} (PNNL),
+@code{derecho} (NCAR),
+@code{frontier} (ORNL), and 
+@code{perlmutter} (NERSC).
+@example
+
+If the latest features that you want are actually implemented in the
+@acronym{NCO} binaries or library, then it may suffice to invoke your
+own version of the scripts, as in the first examples below.
+However, if the latest features that you want are implemented in the
+scripts themselves, then you can either invoke Zender's scripts
+directly (as in the second set of examples), or copy those scripts
+into your own executable path:
+@verbatim
+# Access Zender's latest binaries from your default scripts
+ncremap --npo -m map.nc in.nc out.nc 
+ncclimo --npo -P elm -c ${caseid} ...
+# Access Zender's latest binaries from your Zender's latest scripts 
+~zender/bin/ncremap --npo -m map.nc in.nc out.nc 
+~zender/bin/ncclimo --npo -P elm -c ${caseid} ...
+@end verbatim
+@end example
+In both cases, the @code{--npo} flag must be the first option
+invoked. 
 
 @html
 <a name="drc_rgr"></a> <!-- http://nco.sf.net/nco.html#drc_rgr -->
@@ -26083,7 +26159,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-M] [-m @var{map_fl}] [--mpi_nbr=@var{mpi_nbr}] [--mpi_pfx=@var{mpi_pfx}] [--mpt_mss]
 [--msh_fl=@var{msh_fl}] [--msk_apl] [--msk_dst=@var{msk_dst}]
 [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
-[-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
+[-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] [--npo]
 [--no_add_fll] [--no_cll_msr] [--no_frm_trm] [--no_permute] [--no_stdin]
 [--no_stg_grd] [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
 [--pdq=@var{pdq_opt}] [--qnt=@var{qnt_opt}] [--preserve=@var{prs_stt}] [--ps_nm=@var{ps_nm}]
@@ -29561,14 +29637,19 @@ By default @command{ncremap} sets all extrapolated values to the
 nearest valid value.
 
 Temperature and geopotential height are exceptions to this rule.
-Temperature variables (those named @code{T}, @code{t}, @code{ta},
-or @code{tpt_*}, anyway) are extrapolated upwards towards space using
+As of version 5.3.1 (January, 2025), temperature variables are assumed
+to be those named @code{T} (@acronym{CESM}, @acronym{E3SM}), 
+@code{t} (as in @acronym{ERA5} raw data), @code{ta} (@acronym{CMIP}),
+or @code{tpt_*}, 
+anyway) are extrapolated upwards towards space using 
 the nearest neighbor assumption, and downwards beneath the surface
 assuming a moist  adiabatic lapse rate of @w{6.5 degrees} centigrade
 per @w{100 millibars}. 
-Geopotential variables (those named @code{Z3}, @code{H}, @code{zg},
-or @code{VerticalLayerMidpoint}, anyway) are extrapolated upwards and
-downwards using the hypsometric equation 
+As of version 5.3.1 geopotential variables are assumed to be those
+named @code{Z3} (@acronym{CESM}, @acronym{E3SM}), @code{H} (as in
+@acronym{MERRA2} raw data), @code{zg} (@acronym{CMIP}), or
+@code{VerticalLayerMidpoint} (@acronym{SCREAM}) are extrapolated
+upwards and downwards using the hypsometric equation  
 @footnote{@math{Z_2-Z_1=(R_d*T_v/g_0)*ln(p_1/p_2)=(R_d*T_v/g_0)*(ln(p_1)-ln(p_2))}}
 @c Z2-Z1=(Rd*Tv/g0)*ln(p1/p2)=(Rd*Tv/g0)*(ln(p1)-ln(p2))} 
 with constant global mean virtual temperature
