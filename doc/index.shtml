@@ -664,15 +664,19 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 5.3.1 http://github.com/nco/nco.git nco-5.3.1</tt></a>.
 <ul>
-<li><b>NCO 5.3.2</b>: (<i>Future</i>)
+<li><b>NCO 5.3.3</b>: (<i>Future</i>)
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> CF Convention for longitude vertices in map-files;
 <tt>ncremap</tt> small-circle weights;</li>
-<li><b>NCO 5.3.1</b>: (<i>In Progress, features in-progress or complete include</i>)
-<tt>ncremap</tt> Gracefully autoconvert 0-D NC_STRING->1-D NC_CHAR variables</li>
-<li><b>NCO 5.3.0</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 5.3.2</b>: (<i>In Progress, features in-progress or complete include</i>)
+<tt>ncremap</tt> Gracefully autoconvert N-D NC_STRING->(N+1)-D NC_CHAR variables</li>
+<li><b>NCO 5.3.1</b>: (<i>Current Stable Release</i>)
+<tt>ncclimo/ncremap</tt> <tt>--npo</tt>, build revamp;
+<tt>ncremap</tt> Gracefully autoconvert 0-D NC_STRING->1-D NC_CHAR variables;
+<tt>ncremap</tt> Fixed time dimension OK, <tt>t, H</tt> interpolation;</li>
+<li><b>NCO 5.3.0</b>: 
 <tt>ncclimo area_wgt</tt>;
 <tt>ncks --s1d --snw_ocn --lut_out</tt>;
 <tt>ncks --s1d</tt> <tt>frc_landunit</tt>, <tt>frc_column</tt>;
