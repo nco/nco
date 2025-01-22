@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha01: Hotel Van Zandt';git push
 	git tag -a 5.3.2-alpha01 -m 'Functionally identical to 5.3.1';git push --tags
 
+	* ncclimo/ncremap: Shift default node manager from mpirun to srun
+
 	* nco.texi: Contrast NCO behavior with CF/NUG for type of _FillValue when packing (patch from lguez)
 
 2025-01-12  Charlie Zender  <zender@uci.edu>

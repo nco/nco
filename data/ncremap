@@ -1380,7 +1380,9 @@ if [ -n "${mpi_nbr_usr}" ]; then
 	frontier* ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
 	login[0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
 	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; 
-	* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; # Other
+	# 20250122: Shift default node manager from mpirun to srun
+	#	* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; # Default
+	* ) mpi_pfx="srun -n ${mpi_nbr}" ; ;; # Default
     esac # !HOSTNAME
 fi # !mpi_nbr
 if [ -n "${mpi_pfx_usr}" ]; then 
