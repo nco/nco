@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.1 howl at the Moon
+netCDF Operators NCO version 5.3.2 howl at the Moon
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.1 adds features and fixes to ncremap and ncclimo.
+Version 5.3.2 adds features and fixes to ncremap and ncclimo.
 The new autoconversion feature allows these scripts to automagically
 convert netCDF4 string variables to netCDF3 character arrays.
 The improved treatment of fixed time dimensions allows ncclimo to work
@@ -33,7 +33,7 @@ Hence scalar NC_STRING attributes are correctly converted to and
 stored as NC_CHAR attributes in the netCDF3 output file, but
 not all NC_STRING variables are correctly converted.
 
-As of version 5.3.1, NCO has two distinct levels of support for
+As of version 5.3.2, NCO has two distinct levels of support for
 autoconversion of NC_STRING variables. ncremap fully supports
 autoconversion of scalar NC_STRING variables in both horizontal
 regridder and vertical interpolation mode. This means that ncremap
