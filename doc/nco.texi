@@ -11680,9 +11680,13 @@ When @code{scale_factor} and @code{add_offset} are used for packing, the
 associated variable (containing the packed data) is typically of type
 @code{byte} or @code{short}, whereas the unpacked values are intended to
 be of type @code{int}, @code{float}, or @code{double}. 
-An attribute's @code{scale_factor} and @code{add_offset} and
-@code{_FillValue}, if any, should all be of the type intended for the
-unpacked data, i.e., @code{int}, @code{float} or @code{double}. 
+An attribute's @code{scale_factor} and @code{add_offset} if any, should
+be of the type intended for the unpacked data, i.e., @code{int},
+@code{float} or @code{double}. NCO also expects @code{_FillValue} to be
+of the type intended for the unpacked data@footnote{The NetCDF guide and
+the CF conventions say that @code{_FillValue} should have the type of
+the packed data. NCO convention for @code{_FillValue} pre-dates the one
+of Unidata and CF. A patch to fix this would be welcome.}.
 
 @unnumberedsubsec Non-Standard Packing and Unpacking Algorithms
 @html
