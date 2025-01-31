@@ -2894,7 +2894,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
   /* Print extraction list in developer mode */
   if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
-} /* end nco_xtr_wrt() */
+} /* !nco_xtr_wrt() */
 
 void                          
 nco_prn_dmn_grp /* [fnc] Print dimensions for a group  */
