@@ -1,8 +1,12 @@
-2025-01-22  Charlie Zender  <zender@uci.edu>
+2025-01-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.2-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha01: Hotel Van Zandt';git push
 	git tag -a 5.3.2-alpha01 -m 'Functionally identical to 5.3.1';git push --tags
+
+	* Pass grp_out_id not nc_id to nco_qnt_mtd() so quantization metadata works on variables in non-root groups
+
+2025-01-22  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo/ncremap: Shift default node manager from mpirun to srun
 

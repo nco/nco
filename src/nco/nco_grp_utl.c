@@ -2166,7 +2166,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 	 https://github.com/cf-convention/cf-conventions/issues/403
 	 20240130 fxm nco_qnt_mtd() does not yet write metadata for DSD algorithm (rounding) */
       if(var_trv.ppc != NC_MAX_INT && var_trv.flg_nsd){
-	(void)nco_qnt_mtd(nc_out_id,var_out_id,(nco_flt_typ_enm)nco_baa_cnv_get(),(nco_flt_typ_enm)nco_flt_nil,var_trv.ppc);
+	(void)nco_qnt_mtd(grp_out_id,var_out_id,(nco_flt_typ_enm)nco_baa_cnv_get(),(nco_flt_typ_enm)nco_flt_nil,var_trv.ppc);
       } /* !var_trv.ppc */
 
       /* Memory management after current extracted variable */
