@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha02: FireAid';git push
 	git tag -a 5.3.2-alpha02 -m '';git push --tags
 
+	* ncremap: support recent CAMS changes by not expecting lev_2 dimension in ECMWF/IFS lnps
+
 	* NCO 5.3.2-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha01: Hotel Van Zandt';git push
 	git tag -a 5.3.2-alpha01 -m 'Functionally identical to 5.3.1 plus srun default and quantization with groups works again';git push --tags

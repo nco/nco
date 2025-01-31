@@ -29595,7 +29595,8 @@ log-surface pressure) for the destination grid.
 
 The @code{lev} and @code{ilev} coordinates of a hybrid grid are
 defined by the hybrid coefficients and reference pressure, and are
-by convention stored in millibars (not Pascals) as follows:
+by convention stored in millibars or hecto-Pascals (not Pascals) as
+follows: 
 @example
 @verbatim
 ilev[ilev]=P0*(hyai+hybi)/100.0;

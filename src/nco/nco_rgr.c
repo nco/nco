@@ -1729,6 +1729,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
     /* Assume ECMWF files use "lnsp" for (log) surface pressure, otherwise CAM/EAM style */
     if(!strcmp(ps_nm_in,"lnsp")) flg_grd_hyb_ecmwf=True; else flg_grd_hyb_cameam=True;
+    if(flg_grd_hyb_ecmwf) (void)fprintf(stdout,"%s: INFO %s input dataset contains \"lnsp\" variable and is assumed to use ECMWF/IFS-format hybrid sigma-pressure grid\n",nco_prg_nm_get(),fnc_nm);
     /* 20190602: ECMWF hybrid sigma-pressure vertical grid parameters and dimensions differ from CAM/EAM:
        ECMWF defines vertical dimensions "nhym" and "nhyi" specifically for hy[ab][im] and uses "lev" and "lev_2" for all other variables, whereas CAM/EAM uses same dimensions "lev" and "ilev" for all vertical variables including hybrid coefficients
        ECMWF provides "hya?" as a constant in Pa and "hyb?" as a dimensionless coefficient of PS, whereas CAM/EAM provides "hya?" and "hyb?" both as dimensionless coefficients of P0 and PS
@@ -1746,8 +1747,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !flg_grd_hyb_cameam */
 
     /* 20190603: Require ECMWF IFS input to have a "lev" coordinate so we can use "lev" dimension not "nhyb" */
-    if(flg_grd_hyb_ecmwf)
-      rcd=nco_inq_varid(vrt_in_id,"lev",&lev_id);
+    if(flg_grd_hyb_ecmwf) rcd=nco_inq_varid(vrt_in_id,"lev",&lev_id);
   } /* !flg_grd_in_hyb */
 
   if(flg_grd_in_prs){
@@ -2316,6 +2316,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
       rcd=nco_inq_vardimid(fl_xtr_id,ps_id,dmn_ids_in);
       for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	dmn_srt[dmn_idx]=0L;
 	rcd=nco_inq_dimlen(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
 	/* 20190330: Allow possibility that PS has time dimension > 1 
 	   We want horizontal not temporal dimensions to contribute to grd_sz 
@@ -2325,10 +2326,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
 	  if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
 	    break; 
+	rcd=nco_inq_dimname(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_nm);
+	/* 20250131: "lev_2" is both a degenerate and a non-horizontal dimension for ECMWF/IFS lnsp variables
+	   Skip it here so that "lev_2" is not counted towards dmn_hrz_nbr_in */
+	if(flg_grd_hyb_ecmwf)
+	  if(!strcmp(dmn_nm,"lev_2"))
+	    continue; // Jump to next iteration
 	/* 20250101: Above loop fails to identify temporal dimensions that are fixed not record dimensions
 	   NASA MERRA2 pressure-level timeseries contain PS with fixed time dimension
 	   Treat dimensions named "[Tt]ime" as temporal */
-	rcd=nco_inq_dimname(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_nm);
 	if(strcasestr(dmn_nm,"time")) flg_dmn_is_fx_tm=True; else flg_dmn_is_fx_tm=False;
 	if(!flg_dmn_is_fx_tm && (rec_idx == dmn_nbr_rec || dmn_nbr_in == 1)){
 	  /* This PS dimension is not fixed "time" dimension, and is not record dimension or is sole PS dimension */
@@ -2342,7 +2348,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  tm_nbr_in=dmn_cnt_in[dmn_idx_tm_in];
 	  if(tm_nbr_in > 1L) flg_vrt_tm=True;
 	} /* !flg_dmn_is_fx_tm !rec_idx !dmn_nbr_out !dmn_cnt_out */
-	dmn_srt[dmn_idx]=0L;
       } /* !dmn_idx */
 
       /* Given all input PS information, define output PS information */
@@ -2669,7 +2674,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	rcd=nco_inq_dimlen(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_cnt_out+dmn_idx);
       } /* !ps_id_tpl */
       if(flg_grd_hyb_cameam) rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
-      /* 20190602: ECMWF IFS PS variable has degenerate vertical dimension (lev_2). Avoid re-definition */
+      /* 20190602: ECMWF IFS PS variable may have degenerate vertical dimension (lev_2). Avoid re-definition */
       if(flg_grd_hyb_ecmwf)
 	if(strcmp(dmn_nm,ilev_nm_out))
 	  if(strcmp(dmn_nm,lev_nm_out))
@@ -2896,7 +2901,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     
     if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,ps_nm_out,crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
     if(flg_grd_hyb_ecmwf){
-      /* Remove degenerate ECMWF vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions */
+      /* Remove any degenerate ECMWF lev_2 vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions
+	 20250131: This is a tricky block of code! */
       int dmn_nbr_out_ecmwf=0;
       for(dmn_idx=0;dmn_idx<dmn_nbr_ps;dmn_idx++){
 	rcd=nco_inq_dimname(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_nm);
@@ -3244,9 +3250,47 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   /* Results of heuristic method of determining whether vertical or horizontal MRV dimension */
   int dmn_hrz_dgn_nbr=0; /* [nbr] Number of "degenerate" or "artificial" horizontal dimensions expected to be detected */
-  /* ECMWF/IFS defines log of surface pressure with degenerate dimension "lev_2" */
-  if(flg_grd_hyb_ecmwf) dmn_hrz_dgn_nbr=1;
-  /* [nbr] Remove degernate/horizontal dimensions from number of detected input horizontal dimensions */
+  /* ECMWF/IFS sometimes defines log of surface pressure with degenerate dimension "lev_2"
+     For example, NCO vrt routines were developed in 2019 with this in mind:
+     % ncks -C -v lnsp -m ${DATA}/hdf/ecmwf_ifs_f640L137.nc
+       netcdf ecmwf_ifs_f640L137 {
+         dimensions:
+           lat = 1280 ;
+           lev_2 = 1 ;
+           lon = 2560 ;
+           time = UNLIMITED ; // (1 currently)
+       
+         variables:
+           float lnsp(time,lev_2,lat,lon) ;
+             lnsp:long_name = "Logarithm of surface pressure" ;
+             lnsp:param = "25.3.0" ;
+       } // group /
+
+       However, CAMS started issuing ECMWF data in new format as of late ~2024
+       The new format can include NC_STRING variables and a new (and saner) lnsp rank:
+
+       zender@spectral:~$ ncks -C -v lnsp -m ~/cams_light.nc 
+       netcdf cams_light {
+         dimensions:
+           ncells = 21184 ;
+       
+         variables:
+           double lnsp(ncells) ;
+             lnsp:_FillValue = NaN ;
+             lnsp:CDI_grid_type = "unstructured" ;
+             lnsp:coordinates = "clat clon" ;
+             lnsp:long_name = "Surface pressure" ;
+             lnsp:missing_value = NaN ;
+             lnsp:units = "Pa" ;
+     } // group /
+  
+     Explicitly check for presence of "lev_2" dimension in ps variable before adjusting for it ... */
+#if 0
+  if(flg_grd_hyb_ecmwf){
+    dmn_hrz_dgn_nbr=1;
+  } /* !flg_grd_hyb_ecmwf */
+#endif
+  /* [nbr] Remove degenerate/horizontal dimensions from number of detected input horizontal dimensions */
   dmn_hrz_nbr_in-=dmn_hrz_dgn_nbr;
   if(dmn_hrz_nbr_in == 0 || grd_sz_in == 1L){flg_grd_hrz_0D=True;}
   else if(dmn_hrz_nbr_in == 1){flg_grd_hrz_1D=True;}
