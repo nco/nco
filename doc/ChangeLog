@@ -1,7 +1,11 @@
 2025-02-01  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.2-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha03: Café Dirty Bird';git push
+	git tag -a 5.3.2-alpha03 -m '';git push --tags
+
 	* NCO 5.3.2-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha02: FireAid';git push
+	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha02: ';git push
 	git tag -a 5.3.2-alpha02 -m 'all: doc log_lvl; ncremap: CAMS lnsp lev_2, ps_nm_out mtd, hyb cff cf mtd, fix ECMWF/IFS ntp';git push --tags
 
 	* ncks: Fix ECMWF/IFS interpolation when PS is in vertical grid	template file
