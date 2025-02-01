@@ -1614,13 +1614,16 @@ We usually fix those within one or two days.
 Core dumps and sementation violations receive lower priority.
 They are always fixed, eventually. 
 
-How do you simplify a problem that reveal a bug?
+How do you simplify a problem to reveal a bug?
 Cut out extraneous variables, dimensions, and metadata from the
 offending files and re-run the command until it no longer breaks.  
 Then back up one step and report the problem.
 Usually the file(s) will be very small, i.e., one variable with one or
 two small dimensions ought to suffice.
+
 @html
+<a name="logging"></a> <!-- http://nco.sf.net/nco.html#logging -->
+<a name="log"></a> <!-- http://nco.sf.net/nco.html#log -->
 <a name="dbg"></a> <!-- http://nco.sf.net/nco.html#dbg -->
 <a name="-D"></a> <!-- http://nco.sf.net/nco.html#-D -->
 @end html
@@ -1631,6 +1634,7 @@ two small dimensions ought to suffice.
 @cindex @code{-D @var{debug-level}}
 @cindex @code{--debug-level @var{debug-level}}
 @cindex @code{--dbg_lvl @var{debug-level}}
+@cindex @code{--log_lvl @var{log-level}}
 @cindex @var{debug-level}
 @cindex @var{dbg_lvl}
 Run the operator with @samp{-r} and then run the command with 
@@ -1639,7 +1643,15 @@ It is very important that your report contain the exact error messages
 and compile-time environment.
 Include a copy of your sample input file, or place one on a 
 publicly accessible location, of the file(s).
-If you are sure it is a bug, post the full report to the 
+
+You can also access the netCDF library @def{logging} capability.
+This might help you determine whether the problem is with
+@acronym{NCO} or with netCDF.
+Invoke the operator with @samp{--log_lvl=@var{log-level}},
+where @math{0 < @var{log-level} < 5} is an integer that increases
+the verbosity of the library reporting.
+
+If you are sure you have found an @acronym{NCO} bug, post your report to the 
 @uref{http://sf.net/p/nco/bugs, NCO Project buglist}.
 Otherwise post all the information to 
 @uref{http://sf.net/p/nco/discussion/9830, NCO Help forum}.

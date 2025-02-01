@@ -2,13 +2,17 @@
 
 	* NCO 5.3.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha02: FireAid';git push
-	git tag -a 5.3.2-alpha02 -m '';git push --tags
+	git tag -a 5.3.2-alpha02 -m 'all: doc log_lvl; ncremap: CAMS lnsp lev_2';git push --tags
 
-	* ncremap: support recent CAMS changes by not expecting lev_2 dimension in ECMWF/IFS lnps
+	* nco.texi: Add a short section on --log_lvl
+
+	* all: No longer report debugging configuration with -r
+
+	* ncremap: Support recent CAMS changes by not expecting lev_2 dimension in ECMWF/IFS lnps
 
 	* NCO 5.3.2-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha01: Hotel Van Zandt';git push
-	git tag -a 5.3.2-alpha01 -m 'Functionally identical to 5.3.1 plus srun default and quantization with groups works again';git push --tags
+	git tag -a 5.3.2-alpha01 -m 'Functionally identical to 5.3.1; ncremap/ncclimo srun default; all: fix qnt w/ grp';git push --tags
 
 	* Pass grp_out_id not nc_id to nco_qnt_mtd() so quantization metadata works on variables in non-root groups
 
