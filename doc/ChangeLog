@@ -2,7 +2,10 @@
 
 	* NCO 5.3.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha02: FireAid';git push
-	git tag -a 5.3.2-alpha02 -m 'all: doc log_lvl; ncremap: CAMS lnsp lev_2, ps_nm_out mtd';git push --tags
+	git tag -a 5.3.2-alpha02 -m 'all: doc log_lvl; ncremap: CAMS lnsp lev_2, ps_nm_out mtd, hyb cff cf mtd, fix ECMWF/IFS ntp';git push --tags
+
+	* ncks: Fix ECMWF/IFS interpolation when PS is in vertical grid	template file
+	Solves regression reported by Erik Koene on SourceForge 20250117
 
 	* ncks: Add CF metadata hybrid sigma-pressure grid coordinates
 

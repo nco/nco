@@ -2908,16 +2908,22 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     
     if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,ps_nm_out,crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
     if(flg_grd_hyb_ecmwf){
-      /* Remove any degenerate ECMWF lev_2 vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions
-	 20250131: This is a tricky block of code! */
-      int dmn_nbr_out_ecmwf=0;
-      for(dmn_idx=0;dmn_idx<dmn_nbr_ps;dmn_idx++){
-	/* 20250131: dmn_ids_in is NULL here! Should contain dmn ID of ncells */
-	rcd=nco_inq_dimname(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_nm);
-	if(strcmp(dmn_nm,ilev_nm_out) && strcmp(dmn_nm,lev_nm_out) && strcmp(dmn_nm,"lev_2"))
-	  rcd=nco_inq_dimid(out_id,dmn_nm,dmn_ids_out+dmn_nbr_out_ecmwf++);
-      } /* !dmn_idx */
-      rcd+=nco_def_var(out_id,ps_nm_out,crd_typ_out,dmn_nbr_out_ecmwf,dmn_ids_out,&ps_id);
+      if(ps_id_tpl == NC_MIN_INT){
+	/* When output PS template ps_nm_tpl="PS" is NOT in tpl_id (vertical grid template file) then and ps_id_tpl == NC_MIN_INT and we must template the output PS based on the PS in the input data file 
+	   The input data file may have strange ECMWF/IFS formatting, e.g., degenerate lev_2 dimension
+	   Remove any degenerate ECMWF lev_2 vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions */
+	int dmn_nbr_out_ecmwf=0;
+	for(dmn_idx=0;dmn_idx<dmn_nbr_ps;dmn_idx++){
+	  /* 20250131: dmn_ids_in is NULL here! Should contain dmn ID of ncells? */
+	  rcd=nco_inq_dimname(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_nm);
+	  if(strcmp(dmn_nm,ilev_nm_out) && strcmp(dmn_nm,lev_nm_out) && strcmp(dmn_nm,"lev_2"))
+	    rcd=nco_inq_dimid(out_id,dmn_nm,dmn_ids_out+dmn_nbr_out_ecmwf++);
+	} /* !dmn_idx */
+	rcd+=nco_def_var(out_id,ps_nm_out,crd_typ_out,dmn_nbr_out_ecmwf,dmn_ids_out,&ps_id);
+      }else{ /* !ps_id_tpl */
+	/* When output PS template ps_nm_tpl="PS" is in tpl_id (vertical grid template file) then the template for the output PS is the same as for CAM/EAM templating */
+	rcd+=nco_def_var(out_id,ps_nm_out,crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
+      } /* !ps_id_tpl */
     } /* !flg_grd_hyb_ecmwf */
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,ps_id,NULL,nco_flt_flg_prc_fll);
     var_crt_nbr++;
