@@ -1730,7 +1730,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     /* Assume ECMWF files use "lnsp" for (log) surface pressure, otherwise CAM/EAM style */
     if(!strcmp(ps_nm_in,"lnsp")) flg_grd_hyb_ecmwf=True; else flg_grd_hyb_cameam=True;
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s input dataset %s \"lnsp\" variable and is assumed to use %s-format (not %s-format) hybrid sigma-pressure vertical grid\n",nco_prg_nm_get(),fnc_nm,flg_grd_hyb_ecmwf ? "contains" : "omits",flg_grd_hyb_ecmwf ? "ECMWF/IFS" : "CAM/EAM",flg_grd_hyb_ecmwf ? "CAM/EAM" : "ECMWF/IFS");
-    if(flg_grd_hyb_ecmwf){
+    if(flg_grd_hyb_ecmwf && ps_id_tpl == NC_MIN_INT){
+      /* If output surface pressure comes from input lnsp variable (not PS in vertical grid template file)... */
       if(!strcmp(ps_nm_out,"lnsp")){
 	ps_nm_out=(char *)strdup("PS");
 	(void)fprintf(stdout,"%s: INFO %s renamed output surface pressure variable to %s since copying input name %s would confuse users of output data. To specify the output surface pressure name yourself, invoke the regridder with, e.g., --rgr ps_nm_out=my_name\n",nco_prg_nm_get(),fnc_nm,ps_nm_out,ps_nm_in);
@@ -2947,7 +2948,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
     if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(fl_xtr_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
-    if(flg_grd_hyb_ecmwf){
+    if(flg_grd_hyb_ecmwf && ps_id_tpl == NC_MIN_INT){
       (void)fprintf(stdout,"%s: INFO Output surface pressure variable %s adheres to CAM/EAM hybrid sigma-pressure vertical grid conventions and is the actual surface pressure, even though the input dataset surface pressure variable %s was in ECMWF/IFS format and contained the natural log of the surface pressure. All variable metadata was copied directly from input %s to output %s though some was likely incorrect. For example, input %s long_name attribute might be \"Logarithm of surface pressure\". For this reason, the regridder overwrote the output variable attributes long_name, standard_name, and units to accurately reflect the actual output variable contents.\n",nco_prg_nm_get(),ps_nm_out,ps_nm_in,ps_nm_in,ps_nm_out,ps_nm_in);
       rcd=nco_char_att_put(out_id,ps_nm_out,"long_name","Surface pressure");
       rcd=nco_char_att_put(out_id,ps_nm_out,"standard_name","surface_air_pressure");

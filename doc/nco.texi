@@ -29525,7 +29525,7 @@ To invoke @command{ncremap} on a hybrid coordinate dataset in
 @acronym{IFS} format, one must specify that the surface pressure 
 variable is named @code{lnsp}. 
 No modifications to the @acronym{IFS} dataset are necessary.
-The vertical grid file should be in @acronym{CESM}/@acronym{E3SM} format.
+The desired output vertical grid-file should be in @acronym{CESM}/@acronym{E3SM} format.
 @example
 @verbatim
 zender@spectral:~$ ncks -m -C -v lnsp,hyai,hyam,hybi,hybm,lev,lev_2 ifs.nc
@@ -29599,11 +29599,22 @@ invocation.
 @command{ncremap} automagically handles all of the other details.
 Currently @command{ncremap} can only interpolate data from (not to) an 
 @acronym{IFS}-format hybrid vertical grid data file.
-To interpolate to an @acronym{IFS}-format hybrid vertical grid, one
-must place the destination vertical grid into a
-@acronym{CESM/E3SM}-format hybrid vertical grid file (see above) 
-that includes a @code{PS} surface pressure field (not @code{lnsp}
-log-surface pressure) for the destination grid.
+To interpolate to an @acronym{IFS}-format hybrid sigma-pressure
+vertical grid, must first completely convert that grid to
+@acronym{CESM/E3SM} hybrid vertical grid file format (see above).
+Once again, the destination grid must be in @acronym{CESM/E3SM}
+hybrid sigma-pressure grid format.
+
+When interpolating ECMWF/IFS data the only surface pressure variable
+in the input data file should be @code{lnsp}.
+Do not include a variable named @code{PS} in the input data file.
+(It will probably be ignored, and so will confuse everyone).
+The desired output surface pressure can be placed as @code{PS} in the
+destination vertical grid file.
+If @code{PS} is not in the destination vertical grid file then the
+regridder will use @code{lnsp} as the desired output surface pressure.
+In that case it will automatically convert @code{lnsp} into @code{PS}
+and place that variable in the output file with appropriate metadata.
 
 The @code{lev} and @code{ilev} coordinates of a hybrid grid are
 defined by the hybrid coefficients and reference pressure, and are
