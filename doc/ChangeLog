@@ -1,10 +1,18 @@
-2025-01-31  Charlie Zender  <zender@uci.edu>
+2025-02-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha02: FireAid';git push
-	git tag -a 5.3.2-alpha02 -m 'all: doc log_lvl; ncremap: CAMS lnsp lev_2';git push --tags
+	git tag -a 5.3.2-alpha02 -m 'all: doc log_lvl; ncremap: CAMS lnsp lev_2, ps_nm_out mtd';git push --tags
 
-	* nco.texi: Add a short section on --log_lvl
+	* ncks: Add CF metadata hybrid sigma-pressure grid coordinates
+
+	* ncks: Rename ECMWF/IFS output surface pressure from lnsp to PS
+
+	* ncks: Overwrite metadata to ECMWF/IFS output surface pressure
+
+2025-01-31  Charlie Zender  <zender@uci.edu>
+
+	* nco.texi: Add short section on --log_lvl
 
 	* all: No longer report debugging configuration with -r
 
@@ -24021,6 +24029,11 @@ Tue Jun 17 14:15:53 1997  Charlie Zender  <zender@heinlein.cgd.ucar.edu>
 	* Changed Makefile compile rules for f90 on CRAY to explicitly
  	preprocess *.F files. This had stopped working, perhaps when I
 	switched CRAY default from f77 to f90.
+
+Fri Jun  6 17:11:29 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Announce nco-1.0 release on netCDF Group E-mail list:
+	https://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/1997/msg00052.html
 
 Fri May 30 13:12:25 1997  Charlie Zender  <zender@heinlein.cgd.ucar.edu>
 

@@ -1644,7 +1644,7 @@ and compile-time environment.
 Include a copy of your sample input file, or place one on a 
 publicly accessible location, of the file(s).
 
-You can also access the netCDF library @def{logging} capability.
+You can also access the netCDF library @dfn{logging} capability.
 This might help you determine whether the problem is with
 @acronym{NCO} or with netCDF.
 Invoke the operator with @samp{--log_lvl=@var{log-level}},

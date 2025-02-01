@@ -1729,7 +1729,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
     /* Assume ECMWF files use "lnsp" for (log) surface pressure, otherwise CAM/EAM style */
     if(!strcmp(ps_nm_in,"lnsp")) flg_grd_hyb_ecmwf=True; else flg_grd_hyb_cameam=True;
-    if(flg_grd_hyb_ecmwf) (void)fprintf(stdout,"%s: INFO %s input dataset contains \"lnsp\" variable and is assumed to use ECMWF/IFS-format hybrid sigma-pressure grid\n",nco_prg_nm_get(),fnc_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s input dataset %s \"lnsp\" variable and is assumed to use %s-format (not %s-format) hybrid sigma-pressure vertical grid\n",nco_prg_nm_get(),fnc_nm,flg_grd_hyb_ecmwf ? "contains" : "omits",flg_grd_hyb_ecmwf ? "ECMWF/IFS" : "CAM/EAM",flg_grd_hyb_ecmwf ? "CAM/EAM" : "ECMWF/IFS");
+    if(flg_grd_hyb_ecmwf){
+      if(!strcmp(ps_nm_out,"lnsp")){
+	ps_nm_out=(char *)strdup("PS");
+	(void)fprintf(stdout,"%s: INFO %s renamed output surface pressure variable to %s since copying input name %s would confuse users of output data. To specify the output surface pressure name yourself, invoke the regridder with, e.g., --rgr ps_nm_out=my_name\n",nco_prg_nm_get(),fnc_nm,ps_nm_out,ps_nm_in);
+      } /* !ps_nm_out */
+    } /* !flg_grd_hyb_ecmwf */
     /* 20190602: ECMWF hybrid sigma-pressure vertical grid parameters and dimensions differ from CAM/EAM:
        ECMWF defines vertical dimensions "nhym" and "nhyi" specifically for hy[ab][im] and uses "lev" and "lev_2" for all other variables, whereas CAM/EAM uses same dimensions "lev" and "ilev" for all vertical variables including hybrid coefficients
        ECMWF provides "hya?" as a constant in Pa and "hyb?" as a dimensionless coefficient of PS, whereas CAM/EAM provides "hya?" and "hyb?" both as dimensionless coefficients of P0 and PS
@@ -2674,11 +2680,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	rcd=nco_inq_dimlen(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_cnt_out+dmn_idx);
       } /* !ps_id_tpl */
       if(flg_grd_hyb_cameam) rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
-      /* 20190602: ECMWF IFS PS variable may have degenerate vertical dimension (lev_2). Avoid re-definition */
+      /* 20190602: ECMWF IFS PS variable may have degenerate vertical dimension (lev_2). Do not define it in output. And avoid re-definition of vertical dimensions. */
       if(flg_grd_hyb_ecmwf)
 	if(strcmp(dmn_nm,ilev_nm_out))
 	  if(strcmp(dmn_nm,lev_nm_out))
-	    rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
+	    if(strcmp(dmn_nm,"lev_2"))
+	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
     } /* !dmn_idx */
   } /* !flg_grd_out_hyb */
 
@@ -2905,6 +2912,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	 20250131: This is a tricky block of code! */
       int dmn_nbr_out_ecmwf=0;
       for(dmn_idx=0;dmn_idx<dmn_nbr_ps;dmn_idx++){
+	/* 20250131: dmn_ids_in is NULL here! Should contain dmn ID of ncells */
 	rcd=nco_inq_dimname(fl_xtr_id,dmn_ids_in[dmn_idx],dmn_nm);
 	if(strcmp(dmn_nm,ilev_nm_out) && strcmp(dmn_nm,lev_nm_out) && strcmp(dmn_nm,"lev_2"))
 	  rcd=nco_inq_dimid(out_id,dmn_nm,dmn_ids_out+dmn_nbr_out_ecmwf++);
@@ -2917,11 +2925,28 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     (void)nco_att_cpy(tpl_id,out_id,hyam_id_tpl,hyam_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,hybi_id_tpl,hybi_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,hybm_id_tpl,hybm_id,PCK_ATT_CPY);
-
     if(p0_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY); /* p0 not expected to be in ECMWF grids */
+    rcd=nco_char_att_put(out_id,"P0","long_name","Reference pressure");
+    rcd=nco_char_att_put(out_id,"P0","standard_name","reference_pressure");
+    rcd=nco_char_att_put(out_id,"P0","units","Pa");
+    rcd=nco_char_att_put(out_id,"hyai","standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+    rcd=nco_char_att_put(out_id,"hyai","units","1");
+    rcd=nco_char_att_put(out_id,"hybi","standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+    rcd=nco_char_att_put(out_id,"hybi","units","1");
+    rcd=nco_char_att_put(out_id,"hyam","standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+    rcd=nco_char_att_put(out_id,"hyam","units","1");
+    rcd=nco_char_att_put(out_id,"hybm","standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+    rcd=nco_char_att_put(out_id,"hybm","units","1");
+
     if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
     if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(fl_xtr_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
+    if(flg_grd_hyb_ecmwf){
+      (void)fprintf(stdout,"%s: INFO Output surface pressure variable %s adheres to CAM/EAM hybrid sigma-pressure vertical grid conventions and is the actual surface pressure, even though the input dataset surface pressure variable %s was in ECMWF/IFS format and contained the natural log of the surface pressure. All variable metadata was copied directly from input %s to output %s though some was likely incorrect. For example, input %s long_name attribute might be \"Logarithm of surface pressure\". For this reason, the regridder overwrote the output variable attributes long_name, standard_name, and units to accurately reflect the actual output variable contents.\n",nco_prg_nm_get(),ps_nm_out,ps_nm_in,ps_nm_in,ps_nm_out,ps_nm_in);
+      rcd=nco_char_att_put(out_id,ps_nm_out,"long_name","Surface pressure");
+      rcd=nco_char_att_put(out_id,ps_nm_out,"standard_name","surface_air_pressure");
+      rcd=nco_char_att_put(out_id,ps_nm_out,"units","Pa");
+    } /* !flg_grd_hyb_ecmwf */
   } /* !flg_grd_out_hyb */
 
   /* No further access to external surface pressure file, close it */
