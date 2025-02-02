@@ -8,16 +8,10 @@ platform:
   - x64
 
 image:
-  - Visual Studio 2015
+  - Visual Studio 2022
 
 init:
-  # We need to define these b/c we are not using conda-build.
-  - "ECHO %MINICONDA%"
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" set VCVARPATH="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" set VCARGUMENT=%PLATFORM%
-  - if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Previous Visual Studio 2017" if "%PLATFORM%" == "x64" set VCVARPATH="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-  - echo "%VCVARPATH% %VCARGUMENT%"
-  - "%VCVARPATH% %VCARGUMENT%"
+   - call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
 
 install:
   # If there is a newer build queued for the same PR, cancel this one.
