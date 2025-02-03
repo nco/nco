@@ -2440,7 +2440,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: xtr_xpn  = ${xtr_xpn}\n"
     printf "dbg: Will regrid ${fl_nbr} files:\n"
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
-	printf "${fl_in[${fl_idx}]}\n"
+	printf "\${fl_in[${fl_idx}]} = ${fl_in[${fl_idx}]}\n"
     done # !fl_idx
 fi # !dbg
 if [ ${dbg_lvl} -ge 2 ]; then
@@ -3014,9 +3014,11 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	else # !out_usr_flg
 	    out_fl="${drc_out}/$(basename "${in_fl}")"
 	fi # !out_fl
-	if [ "${in_fl}" = "${out_fl}" ]; then
-	    echo "ERROR: Input file = Output file = ${in_fl}"
-	    echo "HINT: To prevent inadvertent data loss, ${spt_nm} insists that Input file and Output filenames differ"
+	# Test whether input and output filenames point to the same file (i.e., same device and inode numbers)
+	if [ "${in_fl}" -ef "${out_fl}" ]; then
+	# if [ "${in_fl}" = "${out_fl}" ]; then
+	    echo "ERROR: Input file = ${in_fl} and Output file = ${out_fl} point to the same file, i.e., point to the same device and inode numbers"
+	    echo "HINT: To prevent inadvertent data loss/corruption, ${spt_nm} insists that the Input and Output files be distinct. Retry command after renaming the Output file to a distinct location."
 	    exit 1
 	fi # !basename
 	fl_in[${fl_idx}]=${in_fl}

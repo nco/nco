@@ -2,7 +2,9 @@
 
 	* NCO 5.3.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha03: Café Dirty Bird';git push
-	git tag -a 5.3.2-alpha03 -m 'ncremap: doc ECMWF/IFS';git push --tags
+	git tag -a 5.3.2-alpha03 -m 'ncremap: doc ECMWF/IFS, HINT lnsp,	ERROR/HINT inode dpl';git push --tags
+
+	* ncremap: ERROR and HINT when Input and Output files point to same device+inode
 
 	* ncremap: HINT when lnsp present yet ps_nm=lnsp not invoked
 

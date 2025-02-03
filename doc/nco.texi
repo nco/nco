@@ -31307,8 +31307,9 @@ Large work-load testing
 @cindex Aleksandar Jelenak
 @cindex Markus Liebig
 @cindex Keith Lindsay
-@cindex Daniel Macks, 
-@cindex Seth McGinnis, 
+@cindex Erik Koene
+@cindex Daniel Macks
+@cindex Seth McGinnis
 @cindex Stu Muller
 @cindex Daniel Neumann
 @cindex Mike Page
@@ -31328,7 +31329,7 @@ Large work-load testing
 @cindex Min Xu
 @cindex Remik Ziemlinski
 @cindex Jill Zhang
-@item Xylar Asay-Davis, Sterling Baldwin, Tony Bartoletti, Dave Blodgett, Peter Caldwell, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Ryan Forsyth, Chris Golaz, Barron Henderson, Ben Hillman, Aleksandar Jelenak, Markus Liebig, Keith Lindsay, Daniel Macks, Seth McGinnis, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Mark Taylor, Matthew Thompson, Qi Tang, Adrian Tompkins, Paul Ullrich, George White, Andrew Wittenberg, Min Xu, Remik Ziemlinski, Jill Zhang
+@item Xylar Asay-Davis, Sterling Baldwin, Tony Bartoletti, Dave Blodgett, Peter Caldwell, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Ryan Forsyth, Chris Golaz, Barron Henderson, Ben Hillman, Aleksandar Jelenak, Erik Koene, Markus Liebig, Keith Lindsay, Daniel Macks, Seth McGinnis, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Mark Taylor, Matthew Thompson, Qi Tang, Adrian Tompkins, Paul Ullrich, George White, Andrew Wittenberg, Min Xu, Remik Ziemlinski, Jill Zhang
 Excellent bug reports and feature requests.
 @cindex Xylar Asay-Davis
 @cindex Filipe Fernandes
