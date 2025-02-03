@@ -1,8 +1,14 @@
-2025-02-01  Charlie Zender  <zender@uci.edu>
+2025-02-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha03: Café Dirty Bird';git push
-	git tag -a 5.3.2-alpha03 -m '';git push --tags
+	git tag -a 5.3.2-alpha03 -m 'ncremap: doc ECMWF/IFS';git push --tags
+
+	* ncremap: HINT when lnsp present yet ps_nm=lnsp not invoked
+
+2025-02-01  Charlie Zender  <zender@uci.edu>
+
+	* Update ECMWF/IFS documentation, fix INFO messages
 
 	* NCO 5.3.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha02: ';git push

@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.2-alpha03
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 24 January 2025
-@set update-month January 2025
+@set update-date 3 February 2025
+@set update-month February 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -29489,6 +29489,11 @@ vertical grids (as opposed to pure pressure grids).
 
 @html
 <a name="vrt_hyb_ifs"></a> <!-- http://nco.sf.net/nco.html#vrt_hyb_ifs -->
+<a name="vrt_hyb_ecmwf"></a> <!-- http://nco.sf.net/nco.html#vrt_hyb_ecmwf -->
+<a name="vrt_hyb_cams"></a> <!-- http://nco.sf.net/nco.html#vrt_hyb_cams -->
+<a name="cams"></a> <!-- http://nco.sf.net/nco.html#cams -->
+<a name="ifs"></a> <!-- http://nco.sf.net/nco.html#ifs -->
+<a name="ecmwf"></a> <!-- http://nco.sf.net/nco.html#ecmwf -->
 @end html
 As of July 2019 and @acronym{NCO} @w{version 4.8.1}, @acronym{NCO} 
 supports regridding @acronym{ECMWF} datasets in @acronym{IFS} hybrid

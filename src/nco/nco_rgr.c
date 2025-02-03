@@ -1033,6 +1033,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_ntp_typ_enm ntp_mth=rgr->ntp_mth; /* [enm] Interpolation method */
   nco_xtr_typ_enm xtr_mth=rgr->xtr_mth; /* [enm] Extrapolation method */
 
+  const char *ps_nm_ecmwf=(char *)strdup("lnsp"); /* [sng] Name of log-pressure variable in ECMWF/IFS/CAMS-format hybrid sigma-pressure grid datasets */
+    
   char *dpt_nm_in; /* [sng] Depth field name in input file */
   char *dpt_nm_out; /* [sng] Depth field name in output file */
   char *dpt_nm_tpl; /* [sng] Depth field name in template file */
@@ -1728,11 +1730,20 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_varid(vrt_in_id,"hybm",&hybm_id);
 
     /* Assume ECMWF files use "lnsp" for (log) surface pressure, otherwise CAM/EAM style */
-    if(!strcmp(ps_nm_in,"lnsp")) flg_grd_hyb_ecmwf=True; else flg_grd_hyb_cameam=True;
+    if(!strcmp(ps_nm_in,ps_nm_ecmwf)){
+      flg_grd_hyb_ecmwf=True;
+    }else{
+      flg_grd_hyb_cameam=True;
+      /* Prompt user to request ECMWF if "lnsp" is present and was not requested */
+      rcd=nco_inq_varid_flg(fl_xtr_id,ps_nm_ecmwf,(int *)NULL);
+      if(rcd == NC_NOERR){
+	(void)fprintf(stdout,"%s: HINT %s input dataset contains \"lnsp\" variable and thus may be stored on hybrid sigma-pressure grid in ECMWF/IFS/CAMS-format. However, the user must invoke the regridder with either \"ncremap --ps_nm=lnsp ...\" or \"ncks --rgr ps_nm_in=lnsp ...\" in order to vertically interpolate data stored in t ECMWF/IFS/CAMS-format. See http://nco.sf.net/nco.html#cams for more information.\n",nco_prg_nm_get(),fnc_nm);
+      } /* !rcd */
+    } /* !ps_nm_in */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s input dataset %s \"lnsp\" variable and is assumed to use %s-format (not %s-format) hybrid sigma-pressure vertical grid\n",nco_prg_nm_get(),fnc_nm,flg_grd_hyb_ecmwf ? "contains" : "omits",flg_grd_hyb_ecmwf ? "ECMWF/IFS" : "CAM/EAM",flg_grd_hyb_ecmwf ? "CAM/EAM" : "ECMWF/IFS");
     if(flg_grd_hyb_ecmwf && ps_id_tpl == NC_MIN_INT){
       /* If output surface pressure comes from input lnsp variable (not PS in vertical grid template file)... */
-      if(!strcmp(ps_nm_out,"lnsp")){
+      if(!strcmp(ps_nm_out,ps_nm_ecmwf)){
 	ps_nm_out=(char *)strdup("PS");
 	(void)fprintf(stdout,"%s: INFO %s renamed output surface pressure variable to %s since copying input name %s would confuse users of output data. To specify the output surface pressure name yourself, invoke the regridder with, e.g., --rgr ps_nm_out=my_name\n",nco_prg_nm_get(),fnc_nm,ps_nm_out,ps_nm_in);
       } /* !ps_nm_out */
@@ -2934,7 +2945,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     (void)nco_att_cpy(tpl_id,out_id,hybm_id_tpl,hybm_id,PCK_ATT_CPY);
     if(p0_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY); /* p0 not expected to be in ECMWF grids */
     rcd=nco_char_att_put(out_id,"P0","long_name","Reference pressure");
-    rcd=nco_char_att_put(out_id,"P0","standard_name","reference_pressure");
+    rcd=nco_char_att_put(out_id,"P0","standard_name","reference_air_pressure_for_atmosphere_vertical_coordinate");
     rcd=nco_char_att_put(out_id,"P0","units","Pa");
     rcd=nco_char_att_put(out_id,"hyai","standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
     rcd=nco_char_att_put(out_id,"hyai","units","1");
