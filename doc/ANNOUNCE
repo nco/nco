@@ -1,18 +1,17 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.2 howl at the Moon
+netCDF Operators NCO version 5.3.2 hit the streets
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.2 adds features and fixes to ncremap and ncclimo.
-The new autoconversion feature allows these scripts to automagically
-convert netCDF4 string variables to netCDF3 character arrays.
-The improved treatment of fixed time dimensions allows ncclimo to work
-with raw MERRA2 files. Together these improvements make possible
-regridding and vertical interpolation of the new formatting of
-Copernicus Data Store (CDS) files used for, e.g., ERA5.
+Version 5.3.2 mainly adds features and fixes to ncremap and
+quantization. Support for vertical interpolation of ECMWF
+IFS, and CAMS-format hybrid sigma-pressure vertical coordinate
+datasets has been improved. And the output is more CF-compliant.
+All arithmetic operators are once again able to use NCO quantization
+algorithms on variables in non-root groups.
 Skip this release if these changes do not interest you. 
 
 Work on 5.3.3 is underway and includes improved NC_STRING
@@ -23,102 +22,60 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Autoconversion of NC_STRING variables, i.e., automatic conversion
-from type NC_STRING to NC_CHAR as dictated by choosing a netCDF3
-output from a netCDF4 input file, work for all attributes, but not for
-all variables. This is because attributes are at most one-dimensional
-and may be of any size whereas variables require gridded dimensions
-that usually do not fit the ragged sizes of text strings.
-Hence scalar NC_STRING attributes are correctly converted to and
-stored as NC_CHAR attributes in the netCDF3 output file, but
-not all NC_STRING variables are correctly converted.
+A. ncremap will vertically interpolate a broader array of ECMWF
+IFS and CAMS-format hybrid sigma-pressure vertical coordinate
+datasets. Recent NCO versions required the log of the surface
+pressure to be in the template vertical coordinate file, rather
+than in the main dataset. Now the (log of) surface pressure can 
+be either in the source dataset or the vertical grid file.
+Previous versions requires the lnsp variable to contain a dimension
+named lev_2 (as in IFS data). Now the regridder also accomodates
+CAMS-format data that does not contain the lev_2 dimension.
+Thanks to Erik Koene (LLNL) for persistently reporting this :)
 
-As of version 5.3.2, NCO has two distinct levels of support for
-autoconversion of NC_STRING variables. ncremap fully supports
-autoconversion of scalar NC_STRING variables in both horizontal
-regridder and vertical interpolation mode. This means that ncremap
-will produce netCDF3 output files from netCDF4 input files (if
-requested) and that any NC_STRING variables in the input files will be
-translated to NC_CHAR arrays in the netCDF3 output files. There is no
-loss of information since the entire contents of the string is
-preserved in the character array. Autoconversion stores the character
-array with a new dimension named sng_lng_X where X is the smallest
-power of ten between 10 and 10000 that is capable of containing the
-string contents (including the terminating NUL character).
-This type of variable autoconversion fails if the input string length
-exceeds 10000 (this is a safety measure, and could be expanded if
-people lobby me).
+ncremap --ps_nm=lnsp --vrt_fl=era5.nc cams_in.nc cams_out.nc
 
-All operators besides ncremap currently retain only the first
-character of the input NC_STRING array. This loses information.
-We are working to implement the same feature that ncremap enjoys. 
-Both types of autoconversion fail if the input string variable is 
-multidimensional, i.e., an array of type NC_STRING. A feature to solve
-that case is tractable, though we have not yet received any requests
-for it. 
-
-Thanks to Waler Hannah (LLNL) for prompting this feature.
-http://nco.sf.net/nco.html#autoconversion
-http://nco.sf.net/nco.html#ncclimo
-
-B. ncremap's vertical interpolator now automatically extrapolates
-variables named "t" (as in ERA5 raw data) as if they were temperature. 
-Futhermore the interpolator now automatically extrapolates variables
-named "H" (as in MERRA2 raw data) and VerticalLayerMidpoint (SCREAM)
-as if they were geopotential height. See the documentation for
-specifics about the temperature and geopotential height extrapolation
-algorithms.
+http://nco.sf.net/nco.html#ifs
 http://nco.sf.net/nco.html#vrt
 
-C. For many years, users at select supercomputer centers have been
-able to access the latest versions of NCO scripts directly from
-C. Zender's build directories. However, this feature was not
-documented until now. Zender's build directories usually contain the
-latest NCO snapshot, and so may be unstable and are not for everyday
-use. This feature is instead intended to allow users to test and
-provide feedback on new features before they are distributed in a
-public release.
-Invoking ncclimo and ncremap with the --npo (or long-option equivalent
---nco_path_override) flag as the first option (i.e., as $1) causes
-these scripts to utilize the binary NCO executables in Zender's build
-directories on the following machines at the national supercomputer
-centers in parentheses: 
-acme1 (LLNL), andes (ORNL), chrysalis (ANL), compy (PNNL), derecho
-(NCAR), frontier (ORNL), and perlmutter (NERSC).
+B. ncremap's vertical interpolator now attaches CF metadata
+(standard_name), units, and long_name attributes to output files
+stored on hybrid sigma-pressure vertical coordinate grids, e.g.,
+  double P0 ;
+      P0:long_name = "Reference pressure" ;
+      P0:standard_name = "reference_air_pressure_for_atmosphere_vertical_coordinate" ;
+      P0:units = "Pa" ;
+    double hybm(nhym) ;
+      hybm:long_name = "hybrid B coefficient at layer midpoints" ;
+      hybm:units = "1" ;
+      hybm:standard_name = "atmosphere_hybrid_sigma_pressure_coordinate" ;
 
-If the latest features that you want are actually implemented in the
-NCO binaries or library, then it may suffice to invoke your own
-version of the scripts, as in the first examples below. However, if
-the latest features that you want are implemented in the scripts
-themselves, then you can either invoke Zender's scripts directly (as
-in the second set of examples), or copy those scripts into your own
-executable path: 
-@verbatim
-# Access Zender's latest binaries from your default scripts
-ncremap --npo -m map.nc in.nc out.nc 
-ncclimo --npo -P elm -c ${caseid} ...
-# Access Zender's latest binaries from Zender's latest scripts
-~zender/bin/ncremap --npo -m map.nc in.nc out.nc 
-~zender/bin/ncclimo --npo -P elm -c ${caseid} ...
-@end verbatim
-@end example
-In both cases, the --npo flag must be the first option invoked. 
-http://nco.sf.net/nco.html#npo
-http://nco.sf.net/nco.html#nco_path_override
+C. ncremap and ncclimo previously prevented refused to overwrite
+input files with the same name as output files. However, this safety
+feature failed to detect when input and output filenames were symbolic
+links to the same file. Now ncremap and ncclimo refuse to overwrite
+input files that are the same inode/device as output files.
+Thanks to Juan Tolento (UCI) for reporting this.
+
+D. ncremap and ncclimo previously defaulted to using PBS "mpi_run -n
+nd_nbr" to manage MPI-mode climatologies and regridding. Now
+ncremap and ncclimo previously default to using SLURM "srun -n
+nd_nbr". This make supporting MPI-mode on unknown (not in the internal
+database of ncremap/ncclimo) machines more likely to work on SLURM,
+which has become increasingly popular (at least at DOE).
+Thanks to Jason Boutte (LLNL) for suggesting this.
+http://nco.sf.net/nco.html#mpi
 
 BUG FIXES:
    
-A. ncremap's vertical interpolator now understands that the time
-dimension in input surface pressure fields may be "fixed".
-Previously the interpolator assumed that the temporal dimension, if
-any, was an unlimited/record dimension. This could cause it to
-miscalculate the number of horizontal spatial dimensions, and then
-to fail. Now the interpolator considers any fixed dimension named
-"time", or most unlimited dimensions (except certain corner cases) to
-be temporal dimension. This allows it to interpolate raw MERRA2 or
-ERA5 data. Thanks to Naser Mahfouz (PNNL) for prompting this
-fix/feature. 
-http://nco.sf.net/nco.html#vrt
+A. Previous versions of NCO would sometimes fail to store
+quantization metadata for variables in non-root groups. Now
+quantization metadata works on variables in non-root groups.
+
+ncks -O --qnt=btr --ppc dfl=6 -g g1 in_grp.nc out.nc
+
+Thanks to Matt Thompson (GSFC) for reporting this.
+http://nco.sf.net/nco.html#qnt
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

@@ -1,6 +1,6 @@
 nco (5.3.2-1) unstable; urgency=low
 
-  * new upstream version fxm
+  * new upstream version Prime Rib: all: fix qnt w/ grp; ncremap: ECMWF/IFS CAMS lnsp lev_2, ps_nm_out mtd, hyb cff cf mtd, fix ECMWF/IFS ntp ERROR/HINT, inode dpl, srun default
 
  -- Charlie Zender <zender@uci.edu> Wed, 05 Feb 2025 12:26:19 -0700
 

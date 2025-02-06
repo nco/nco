@@ -1,8 +1,10 @@
-2025-02-03  Charlie Zender  <zender@uci.edu>
+2025-02-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.2 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2: Prime Rib';git push
 	git tag -a 5.3.2 -m 'all: fix qnt w/ grp; ncremap: ECMWF/IFS CAMS lnsp lev_2, ps_nm_out mtd, hyb cff cf mtd, fix ECMWF/IFS ntp ERROR/HINT, inode dpl, srun default';git push --tags
+
+2025-02-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha03: Café Dirty Bird';git push
