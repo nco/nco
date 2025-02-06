@@ -1,5 +1,9 @@
 2025-02-03  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.2 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.2: Café Dirty Bird';git push
+	git tag -a 5.3.2 -m 'all: fix qnt w/ grp; ncremap: ECMWF/IFS CAMS lnsp lev_2, ps_nm_out mtd, hyb cff cf mtd, fix ECMWF/IFS ntp ERROR/HINT, inode dpl, srun default';git push --tags
+
 	* NCO 5.3.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha03: Café Dirty Bird';git push
 	git tag -a 5.3.2-alpha03 -m 'ncremap: doc ECMWF/IFS, HINT lnsp,	ERROR/HINT inode dpl';git push --tags
@@ -13,7 +17,7 @@
 	* Update ECMWF/IFS documentation, fix INFO messages
 
 	* NCO 5.3.2-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha02: ';git push
+	cd ~/nco;git commit -a -m 'Version 5.3.2-alpha02: FireAid';git push
 	git tag -a 5.3.2-alpha02 -m 'all: doc log_lvl; ncremap: CAMS lnsp lev_2, ps_nm_out mtd, hyb cff cf mtd, fix ECMWF/IFS ntp';git push --tags
 
 	* ncks: Fix ECMWF/IFS interpolation when PS is in vertical grid	template file
