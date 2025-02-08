@@ -1,3 +1,9 @@
+nco (5.3.3-1) unstable; urgency=low
+
+  * new upstream version Arcade: fxm
+
+ -- Charlie Zender <zender@uci.edu> Wed, 12 Mar 2025 12:26:20 -0700
+
 nco (5.3.2-1) unstable; urgency=low
 
   * new upstream version Prime Rib: all: fix qnt w/ grp; ncremap: ECMWF/IFS CAMS lnsp lev_2, ps_nm_out mtd, hyb cff cf mtd, fix ECMWF/IFS ntp ERROR/HINT, inode dpl, srun default
