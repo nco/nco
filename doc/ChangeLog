@@ -1,3 +1,11 @@
+2025-02-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.3.3-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha01: Arcane';git push
+	git tag -a 5.3.3-alpha01 -m 'Functionally identical to 5.3.2; ncrename WARN on netCDF4';git push --tags
+
+	* ncrename: WARN when renaming variables or dimensions in netCDF4 files
+
 2025-02-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.2 release procedure:

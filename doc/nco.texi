@@ -25557,6 +25557,9 @@ The first command re-orders every variable in the input file.
 The second command extracts and re-orders only the variable
 @code{three_dmn_var}. 
 
+@html
+<a name="xmp_rvr"></a> <!-- http://nco.sf.net/nco.html#xmp_rvr -->
+@end html
 @cindex reverse dimensions
 Suppose the dimension @code{lat} represents latitude and monotonically 
 increases increases from south to north. 
