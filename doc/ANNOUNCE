@@ -1,70 +1,48 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.2 hit the streets
+netCDF Operators NCO version 5.3.3 hit the streets
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.2 mainly adds features and fixes to ncremap and
-quantization. Support for vertical interpolation of ECMWF
-IFS, and CAMS-format hybrid sigma-pressure vertical coordinate
-datasets has been improved. And the output is more CF-compliant.
-All arithmetic operators are once again able to use NCO quantization
-algorithms on variables in non-root groups.
+Version 5.3.3 mainly adds features and fixes to ... ncremap and
+quantization.
+ncremap now WARNs users attempting to rename coordinates in netCDF4
+files. 
 Skip this release if these changes do not interest you. 
 
-Work on 5.3.3 is underway and includes improved NC_STRING
+Work on 5.3.4 is underway and includes improved NC_STRING
 autoconversion support for other NCO operators.
+
+A. ncremap now WARNs users attempting to rename coordinates in netCDF4 
+files. The WARNING, which prints only when debugging level > 0, the
+input file is a netCDF4 format, and the user tries to rename a
+variable or dimension, is self-explanatory:
+
+zender@spectral:~$ ncrename -D 1 -O -v lat,latitude in.nc out.nc
+ncrename: WARNING Renaming variables, dimensions, and attributes in any netCDF3-format file (i.e., classic, 64-bit, and CDF5) ALWAYS works. Moreover, renaming groups and attributes in any netCDF4-format file always works. However, these re-assuring notes precede a discomfitting message: A longstanding problem in the netCDF library (it is not an NCO issue per se) sometimes crashes ncrename or, even worse, silently corrupts data in the output file when input file is netCDF4-format. These outcomes are only known to occur when attempting to rename variables to/from the same names as dimensions (i.e., coordinate variables), and or dimensions to/from the same names as variables. A long thread describing the status of this issue since 2017 is at https://github.com/Unidata/netcdf-c/issues/597. A chronology of the issue dating back to 2007 is at https://nco.sourceforge.net/nco.html#bug_nc4_rename.
+ncrename HINT: Do not expect this issue to be fixed in the near future :)
+ncrename HINT: There is a straightforward two- or three-step workaround that ALWAYS works: 1. Translate the file to any netCDF3 format (e.g., with "ncks -5 in.nc out.nc"). 2. Perform the renaming. 3. (Optional, only necessary if you wish to recover the netCDF4 features like compression) Translate back to a netCDF4-format (e.g., with "ncks -7 in.nc out.nc").
+ncrename: In total renamed 0 attributes, 0 dimensions, 0 groups, and 1 variable
+zender@spectral:~$ ncrename -O -v lat,latitude in.nc out.nc
+zender@spectral:~$ ncrename -D 1 -O -a lat@units,meaning in.nc out.nc
+ncrename: In total renamed 1 attribute, 0 dimensions, 0 groups, and 0 variables
+zender@spectral:~$ 
+
+The second and third examples show no WARNING output because the
+debugging level is the default (0) in the second, and because the
+user is not renaming a variable or dimension in the third.
+The decision was made to turn-on this WARNING only in a non-default
+debug level to avoid annoying users with existing workflows that
+expect no text output from ncrename. This compromise is intended
+to prevent widespread panic and mass hysteria. Thanks to Toby Searle
+(UKMO) for prompting this change.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
-
-A. ncremap will vertically interpolate a broader array of ECMWF
-IFS and CAMS-format hybrid sigma-pressure vertical coordinate
-datasets. Recent NCO versions required the log of the surface
-pressure to be in the template vertical coordinate file, rather
-than in the main dataset. Now the (log of) surface pressure can 
-be either in the source dataset or the vertical grid file.
-Previous versions requires the lnsp variable to contain a dimension
-named lev_2 (as in IFS data). Now the regridder also accomodates
-CAMS-format data that does not contain the lev_2 dimension.
-Thanks to Erik Koene (LLNL) for persistently reporting this :)
-
-ncremap --ps_nm=lnsp --vrt_fl=era5.nc cams_in.nc cams_out.nc
-
-http://nco.sf.net/nco.html#ifs
-http://nco.sf.net/nco.html#vrt
-
-B. ncremap's vertical interpolator now attaches CF metadata
-(standard_name), units, and long_name attributes to output files
-stored on hybrid sigma-pressure vertical coordinate grids, e.g.,
-  double P0 ;
-      P0:long_name = "Reference pressure" ;
-      P0:standard_name = "reference_air_pressure_for_atmosphere_vertical_coordinate" ;
-      P0:units = "Pa" ;
-    double hybm(nhym) ;
-      hybm:long_name = "hybrid B coefficient at layer midpoints" ;
-      hybm:units = "1" ;
-      hybm:standard_name = "atmosphere_hybrid_sigma_pressure_coordinate" ;
-
-C. ncremap and ncclimo previously prevented refused to overwrite
-input files with the same name as output files. However, this safety
-feature failed to detect when input and output filenames were symbolic
-links to the same file. Now ncremap and ncclimo refuse to overwrite
-input files that are the same inode/device as output files.
-Thanks to Juan Tolento (UCI) for reporting this.
-
-D. ncremap and ncclimo previously defaulted to using PBS "mpi_run -n
-nd_nbr" to manage MPI-mode climatologies and regridding. Now
-ncremap and ncclimo previously default to using SLURM "srun -n
-nd_nbr". This make supporting MPI-mode on unknown (not in the internal
-database of ncremap/ncclimo) machines more likely to work on SLURM,
-which has become increasingly popular (at least at DOE).
-Thanks to Jason Boutte (LLNL) for suggesting this.
-http://nco.sf.net/nco.html#mpi
 
 BUG FIXES:
    
