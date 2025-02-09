@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.3-alpha02
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 8 February 2025
+@set update-date 9 February 2025
 @set update-month February 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -30250,7 +30250,7 @@ whose attributes are to be renamed.
 <a name="bug_nc4_rename"></a> <!-- http://nco.sf.net/nco.html#bug_nc4_rename -->
 @end html
 @cartouche
-Caveat lector: Unforunately from 2007--present (January, 2025) the
+Caveat lector: Unforunately from 2007--present (February, 2025) the
 netCDF library (versions 4.0.0--4.9.3) contains bugs or limitations
 that sometimes prevent @acronym{NCO} from correctly renaming coordinate
 variables, dimensions, and groups in netCDF4 files. 
@@ -30562,6 +30562,40 @@ ncrename -O -d grid_xt,lon -d grid_yt,lat -v grid_xt,lon -v grid_yt,lat \
 @end verbatim
 @end example
 The fix is to upgrade to netCDF version 4.6.1.
+
+The preceding list of failures with renaming netCDF4 coordinates
+became too tedious to maintain in 2017.
+Moreover, most users are unlikely to read this manual and to learn of
+the pitfalls and worksarounds in renaming netCDF4 coordinates.
+Thus, as of @acronym{NCO} @w{version 4.3.3}, released in February, 2025, 
+@command{ncrename} warns users attempting to rename coordinates in
+netCDF4 files. The warning, which prints only when the debugging level
+is non-default (i.e., is greater than 0), the input file is in netCDF4
+format, and the user tries to rename a variable or dimension, is
+self-explanatory: 
+@example
+@verbatim
+zender@spectral:~$ ncrename -D 1 -O -v lat,latitude in.nc out.nc
+ncrename: WARNING Renaming variables, dimensions, and attributes in any netCDF3-format file (i.e., classic, 64-bit, and CDF5) ALWAYS works. Moreover, renaming groups and attributes in any netCDF4-format file always works. However, these re-assuring notes precede a discomfitting message: A longstanding problem in the netCDF library (it is not an NCO issue per se) sometimes crashes ncrename or, even worse, silently corrupts data in the output file when input file is netCDF4-format. These outcomes are only known to occur when attempting to rename variables to/from the same names as dimensions (i.e., coordinate variables), and or dimensions to/from the same names as variables. A long thread describing the status of this issue since 2017 is at https://github.com/Unidata/netcdf-c/issues/597. A chronology of the issue dating back to 2007 is at https://nco.sourceforge.net/nco.html#bug_nc4_rename.
+ncrename HINT: Do not expect this issue to be fixed in the near future :)
+ncrename HINT: There is a straightforward two- or three-step workaround that ALWAYS works: 1. Translate the file to any netCDF3 format (e.g., with "ncks -5 in.nc out.nc"). 2. Perform the renaming. 3. (Optional, only necessary if you wish to recover the netCDF4 features like compression) Translate back to a netCDF4-format (e.g., with "ncks -7 in.nc out.nc").
+ncrename: In total renamed 0 attributes, 0 dimensions, 0 groups, and 1 variable
+zender@spectral:~$ ncrename -O -v lat,latitude in.nc out.nc
+zender@spectral:~$ ncrename -D 1 -O -a lat@units,meaning in.nc out.nc
+ncrename: In total renamed 1 attribute, 0 dimensions, 0 groups, and 0 variables
+zender@spectral:~$ ncrename -D 1 -O -v lat,latitude in3.nc out.nc
+zender@spectral:~$ 
+@end verbatim
+@end example
+The second and third and fourth examples show no WARNING output
+because the debugging level is the default (0) in the second, and
+because the user is not renaming a variable or dimension in the
+third, and because the input file is netCDF3-format in the fourth.
+The decision was made to turn-on this WARNING only in a non-default
+debug level to avoid annoying users with existing workflows that
+expect no text output from @command{ncrename}.
+This compromise is intended to prevent widespread panic and mass
+hysteria. 
 
 @cindex global attributes
 @cindex group attributes

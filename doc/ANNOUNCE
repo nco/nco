@@ -17,7 +17,7 @@ autoconversion support for other NCO operators.
 
 A. ncremap now WARNs users attempting to rename coordinates in netCDF4 
 files. The WARNING, which prints only when debugging level > 0, the
-input file is a netCDF4 format, and the user tries to rename a
+input file is in netCDF4 format, and the user tries to rename a
 variable or dimension, is self-explanatory:
 
 zender@spectral:~$ ncrename -D 1 -O -v lat,latitude in.nc out.nc
@@ -28,11 +28,13 @@ ncrename: In total renamed 0 attributes, 0 dimensions, 0 groups, and 1 variable
 zender@spectral:~$ ncrename -O -v lat,latitude in.nc out.nc
 zender@spectral:~$ ncrename -D 1 -O -a lat@units,meaning in.nc out.nc
 ncrename: In total renamed 1 attribute, 0 dimensions, 0 groups, and 0 variables
+zender@spectral:~$ ncrename -D 1 -O -v lat,latitude in3.nc out.nc
 zender@spectral:~$ 
 
-The second and third examples show no WARNING output because the
-debugging level is the default (0) in the second, and because the
-user is not renaming a variable or dimension in the third.
+The second and third and fourth examples show no WARNING output
+because the debugging level is the default (0) in the second, and
+because the user is not renaming a variable or dimension in the
+third, and because the input file is netCDF3-format in the fourth.
 The decision was made to turn-on this WARNING only in a non-default
 debug level to avoid annoying users with existing workflows that
 expect no text output from ncrename. This compromise is intended
