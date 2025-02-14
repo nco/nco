@@ -553,7 +553,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Threads: Routine is thread safe and calls no unsafe routines */
 
   /* Purpose: Implement NCO NSD PPC algorithm (BitGroom) from Zen16 by masking-out insignificant bits of op1 values
-     Also performs all other bitmasking algorithms, including BitRound, Granular BitGroom, BitSet, BitShave, ... 
+     Also performs all other bitmasking algorithms, including BitRound, Granular BitRound, BitSet, BitShave, ... 
      As of 20240408 (total solar eclipse day!), also calls nco_qnt_mtd() to write CF-compliant lossy metadata */
 
   /* Bitmask is currently defined as op1:=bitmask(op1,ppc) */  
@@ -619,7 +619,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     }; /* !mnt_log10_tbl_dgr */
 #if false /* Not currently used */
   const double mnt_log10_tbl_gbr[5][2]=
-    { /* NB: Granular BitGroom extends Digit Round tabular precision from 9 to 15 digits */
+    { /* NB: Granular BitRound extends Digit Round tabular precision from 9 to 15 digits */
      {0.6,-dgt_per_bit}, /* Approximate log10(mnt) for mantissas in [0.5,0.6) as log10(0.5) = log10(2^(-1)) = -log10(2) = -dgt_per_bit = -0.301 */
      {0.7,-0.221848749616356}, /* Approximate log10(mnt) for mantissas in [0.6,0.7) as log10(0.6) = -0.222 */
      {0.8,-0.154901959985743}, /* Approximate log10(mnt) for mantissas in [0.7,0.8) as log10(0.7) = -0.155 */
@@ -819,21 +819,23 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     case nco_baa_btg:
       /* Bit-Groom: alternately shave and set LSBs */
       for(idx=0L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_cmp_flt) u32_ptr[idx]&=msk_f32_u32_zro;
+	/* 20250215 Protect from adjusting negative zero and NaN */
+	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val))
+	  u32_ptr[idx]&=msk_f32_u32_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(op1.fp[idx] != mss_val_cmp_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
+	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)) /* Never quantize upwards floating point values of zero */
 	  u32_ptr[idx]|=msk_f32_u32_one;
       break;
       /* !BitGroom = BTG */
     case nco_baa_shv:
       /* Bit-Shave: always shave LSBs */
       for(idx=0L;idx<sz;idx++)
-	if(op1.fp[idx] != mss_val_cmp_flt) u32_ptr[idx]&=msk_f32_u32_zro;
+	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)) u32_ptr[idx]&=msk_f32_u32_zro;
       break;
     case nco_baa_set:
       /* Bit-Set: always set LSBs */
       for(idx=0L;idx<sz;idx++)
-	if(op1.fp[idx] != mss_val_cmp_flt && u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
+	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)) /* Never quantize upwards floating point values of zero */
 	  u32_ptr[idx]|=msk_f32_u32_one;
       break;
     case nco_baa_dgr:
@@ -874,7 +876,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 LOG2_10 bit_per_dgt
 	 LOG10_2 dgt_per_bit_dgr */
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
+	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)){
 	  /* Algorithm flow chart in DCG19 has equation numbers one less than actual
 	     Equations indicated below are the actual equation numbers in DCG19 */
 
@@ -939,13 +941,15 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       break;
       /* !DigitRound = DGR */
     case nco_baa_gbr:
-      /* Granular BitGroom
+      /* Granular BitRound
 	 Test GBR:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
 	 ncks -O -7 -C -D 1 --baa=4 -v ppc_btg --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -7 -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
+	// 20250214: Eliminate floating point exceptions (FPEs) cased by negative zero and NaNf
+	//if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
+	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)){
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  //tbl_idx=0;
 	  //while(mnt_log10_tbl_gbr[tbl_idx][0] < mnt) tbl_idx++;
@@ -1001,7 +1005,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using IEEE floating-point arithmetic, shave LSB using bit-mask */
       for(idx=0L;idx<sz;idx++){
-	if(op1.fp[idx] != mss_val_cmp_flt){
+	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)){
 	  u32_ptr[idx]+=msk_f32_u32_hshv; /* Add 1 to the MSB of LSBs, carry 1 to mantissa or even exponent */
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
 	} /* !mss_val_cmp_flt */
@@ -1014,7 +1018,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 Shave LSBs and set MSB of them
 	 See figures at https://github.com/nco/nco/pull/200 */
       for(idx=0L;idx<sz;idx++){
-	if(op1.fp[idx] != mss_val_cmp_flt){
+	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)){
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave as normal */
 	  u32_ptr[idx]|=msk_f32_u32_hshv; /* Set MSB of LSBs */
 	} /* !mss_val_cmp_flt */
@@ -1081,21 +1085,22 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     case nco_baa_btg:
       /* Bit-Groom: alternately shave and set LSBs */
       for(idx=0L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_cmp_dbl)
+	/* 20250215 Protect from adjusting negative zero and NaN */
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val))
 	  u64_ptr[idx]&=msk_f64_u64_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if(op1.dp[idx] != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)) /* Never quantize upwards floating point values of zero */
 	  u64_ptr[idx]|=msk_f64_u64_one;
       break;
     case nco_baa_shv:
       /* Bit-Shave: always shave LSBs */
       for(idx=0L;idx<sz;idx++)
-	if(op1.dp[idx] != mss_val_cmp_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)) u64_ptr[idx]&=msk_f64_u64_zro;
       break;
     case nco_baa_set:
       /* Bit-Set: always set LSBs */
       for(idx=0L;idx<sz;idx++)
-	if(op1.dp[idx] != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)) /* Never quantize upwards floating point values of zero */
 	  u64_ptr[idx]|=msk_f64_u64_one;
       break;
     case nco_baa_dgr:
@@ -1105,7 +1110,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 3. Compare u64_ptr (not u32_ptr) to zero
 	 DO NOT EDIT the NC_DOUBLE code except for dp-specific changes, use fp code as template */
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL){
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)){
 	  /* Compute number of digits before decimal point of input floating-point value val
 	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 * mnt, 0.5 <= mnt < 1.0 <--Correct 
 	     Note that DCG19 filter code is incorrectly commented with:
@@ -1134,7 +1139,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       /* !DigitRound = DGR */
     case nco_baa_gbr:
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL){
+	// 20250214: Eliminate floating point exceptions (FPEs) cased by negative zero and NaNf
+	//	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL){
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)){
 	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  mnt_fabs=fabs(mnt);
 	  mnt_log10_fabs=log10(mnt_fabs);
@@ -1165,14 +1172,14 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !mss_val_cmp_dbl */
       } /* !idx */
       break;
-      /* !GranularBitRound = GBG */
+      /* !GranularBitRound = GBR */
     case nco_baa_bgr:
     case nco_baa_btr:
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using software emulation of IEEE arithmetic, shave LSB using bit-mask
 	 See figures at https://github.com/nco/nco/pull/199 */
       for(idx=0L;idx<sz;idx++){
-	if(op1.dp[idx] != mss_val_cmp_dbl){
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)){
 	  u64_ptr[idx]+=msk_f64_u64_hshv; /* Add 1 at MSB of LSBs */
 	  u64_ptr[idx]&=msk_f64_u64_zro; /* Shave it */
 	} /* !mss_val_cmp_dbl */
@@ -1185,7 +1192,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 Shave LSBs and set MSB of them
 	 See figures at https://github.com/nco/nco/pull/200 */
       for(idx=0L;idx<sz;idx++){
-	if(op1.dp[idx] != mss_val_cmp_dbl){
+	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)){
 	  u64_ptr[idx]&=msk_f64_u64_zro; /* Shave as normal */
 	  u64_ptr[idx]|=msk_f64_u64_hshv; /* Set MSB of LSBs */
 	} /* !mss_val_cmp_dbl */
