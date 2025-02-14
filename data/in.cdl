@@ -482,6 +482,12 @@ variables:
 	double ppc_zro_dbl(time);
 	ppc_zro_dbl:long_name = "array of double precision floating point zeros";
 
+	float ppc_zro_ngt_nan_flt(time);
+	ppc_zro_ngt_nan_flt:long_name = "array of single precision floating point NaNs and negative zeros";
+
+	double ppc_zro_ngt_nan_dbl(time);
+	ppc_zro_ngt_nan_dbl:long_name = "array of double precision floating point NaNs and negative zeros";
+
 	int ppc_zro_int(time);
 	ppc_zro_int:long_name = "array of integer zeros";
 
@@ -1628,6 +1634,8 @@ data:
         ppc_tst=0.0,_,0.1234567,-0.1234567,64,-64,123456789e25,123456789e-25,3.1415926535897932384626433832795029,-3.1415926535897932384626433832795029;
 	ppc_zro_flt=0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0;
 	ppc_zro_dbl=0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0;
+	ppc_zro_ngt_nan_flt=-0.0,0.0,NaNf,-0.0,0.0,NaNf,-0.0,-0.0,NaNf,3.1415926535897932384626433832795029;
+	ppc_zro_ngt_nan_dbl=-0.0,0.0,NaN,-0.0,0.0,NaN,-0.0,-0.0,NaN,3.14159265358;
 	ppc_zro_int=0,0,0,0,0,0,0,0,0,0;
 	qnt_flt_tst1=1.1111111;
 	qnt_dbl_tst1=1.111111111111;

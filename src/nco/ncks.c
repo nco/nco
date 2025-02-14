@@ -75,6 +75,10 @@
 #include <string.h> /* strcmp() */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
+#if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__NVCC__)
+# define _GNU_SOURCE
+# include <fenv.h> /* feenableexcept() */
+#endif /* !__GNUC__ */
 #ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */
 #endif
@@ -375,6 +379,7 @@ main(int argc,char **argv)
     {"cpy",no_argument,0,0},
     {"dmm_in_mk",no_argument,0,0}, /* [flg] Make dummy input file */
     {"fl_dmm",no_argument,0,0}, /* [flg] Make dummy input file */
+    {"fpe",no_argument,0,0}, /* [flg] Activate floating-point-exceptions */
     {"license",no_argument,0,0},
     {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
     {"hdn",no_argument,0,0}, /* [flg] Print hidden attributes */
@@ -758,6 +763,13 @@ main(int argc,char **argv)
         rec_dmn_nm=strcat(rec_dmn_nm,optarg);
         rec_dmn_nm_fix=strdup(optarg);
       } /* !fix_rec_dmn */
+      if(!strcmp(opt_crr,"fpe")){
+#if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__NVCC__)
+	feenableexcept(FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW);
+#else /* !__GNUC__ */
+	;
+#endif /* !__GNUC__ */
+      } /* !fpe */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"cmp_sng") || !strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec") || !strcmp(opt_crr,"compress")) cmp_sng=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"fl_prn") || !strcmp(opt_crr,"file_print") || !strcmp(opt_crr,"prn_fl") || !strcmp(opt_crr,"print_file")) fl_prn=(char *)strdup(optarg);

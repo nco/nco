@@ -1,8 +1,12 @@
-2025-02-08  Charlie Zender  <zender@uci.edu>
+2025-02-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha02: Toyota Matrix';git push
 	git tag -a 5.3.3-alpha02 -m 'fxm';git push --tags
+
+	* ncks: Add --fpe to test floating point exceptions
+
+2025-02-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.3-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha01: Arcane';git push
