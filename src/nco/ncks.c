@@ -68,12 +68,9 @@
 # include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
-#if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__NVCC__)
-# include <fenv.h> /* feenableexcept() */
-#endif /* !__GNUC__ */
-
 /* Standard C headers */
 #include <assert.h> /* assert() */
+#include <fenv.h> /* fesetexceptflag() */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* abs, getopt, malloc, strtol */
 #include <string.h> /* strcmp() */
@@ -309,6 +306,7 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_area_wgt=False; /* [flg] Area-weight map-file statistics */
   nco_bool flg_dmm_in=False; /* [flg] Make dummy input file */
+  nco_bool flg_fpe=False; /* [flg] Activate/report floating-point-exceptions */
   nco_bool flg_frac_b_nrm=False; /* [flg] Normalize map-file weights when frac_b >> 1 */
   nco_bool flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_rgr=False; /* [flg] Regrid */
@@ -764,18 +762,16 @@ main(int argc,char **argv)
         rec_dmn_nm_fix=strdup(optarg);
       } /* !fix_rec_dmn */
       if(!strcmp(opt_crr,"fpe")){
-#if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__NVCC__)
-	fexcept_t flag;
-	if(fesetexceptflag(&flag,FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW) != 0){
-	  (void)fprintf(stdout,"Failed to set FE_INVALID exception flag.\n");
+	flg_fpe=True;
+	/* https://www.tutorialspoint.com/c_standard_library/c_function_fesetexceptflag.htm */
+	fexcept_t flg_xcp;
+	// Clear all exceptions
+	feclearexcept(FE_ALL_EXCEPT);
+	if(fesetexceptflag(&flg_xcp,FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW) != 0){
+	  (void)fprintf(stdout,"%s: Failed to set FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW exception flags\n",nco_prg_nm_get());
 	}else{
-	  (void)fprintf(stdout,"Successfully set FE_INVALID exception flag.\n");
+	  (void)fprintf(stdout,"%s: Successfully set FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW exception flags\n",nco_prg_nm_get());
 	} /* !fesetexceptflag() */
-	//feclearexcept(FE_ALL_EXCEPT);
-	//	feenableexcept(FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW);
-#else /* !__GNUC__ */
-	;
-#endif /* !__GNUC__ */
       } /* !fpe */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"cmp_sng") || !strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec") || !strcmp(opt_crr,"compress")) cmp_sng=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
@@ -1683,6 +1679,16 @@ close_and_free:
   MPI_Finalize();
 #endif /* !ENABLE_MPI */
   
+  if(flg_fpe){
+    int exceptions;
+    exceptions=fetestexcept(FE_ALL_EXCEPT);
+    (void)fprintf(stdout,"%s: FE_DIVBYZERO %s raised\n",nco_prg_nm_get(),(exceptions & FE_DIVBYZERO) ? "is" : "is not");
+    (void)fprintf(stdout,"%s: FE_INEXACT %s raised\n",nco_prg_nm_get(),(exceptions & FE_INEXACT) ? "is" : "is not");
+    (void)fprintf(stdout,"%s: FE_INVALID %s raised\n",nco_prg_nm_get(),(exceptions & FE_INVALID) ? "is" : "is not");
+    (void)fprintf(stdout,"%s: FE_OVERFLOW %s raised\n",nco_prg_nm_get(),(exceptions & FE_OVERFLOW) ? "is" : "is not");
+    (void)fprintf(stdout,"%s: FE_UNDERFLOW %s raised\n",nco_prg_nm_get(),(exceptions & FE_UNDERFLOW) ? "is" : "is not");
+  } /* !flg_fpe */
+
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
