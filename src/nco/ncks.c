@@ -68,6 +68,10 @@
 # include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
+#if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__NVCC__)
+# include <fenv.h> /* feenableexcept() */
+#endif /* !__GNUC__ */
+
 /* Standard C headers */
 #include <assert.h> /* assert() */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
@@ -75,10 +79,6 @@
 #include <string.h> /* strcmp() */
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
-#if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__NVCC__)
-# define _GNU_SOURCE
-# include <fenv.h> /* feenableexcept() */
-#endif /* !__GNUC__ */
 #ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */
 #endif
@@ -765,7 +765,14 @@ main(int argc,char **argv)
       } /* !fix_rec_dmn */
       if(!strcmp(opt_crr,"fpe")){
 #if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__NVCC__)
-	feenableexcept(FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW);
+	fexcept_t flag;
+	if(fesetexceptflag(&flag,FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW) != 0){
+	  (void)fprintf(stdout,"Failed to set FE_INVALID exception flag.\n");
+	}else{
+	  (void)fprintf(stdout,"Successfully set FE_INVALID exception flag.\n");
+	} /* !fesetexceptflag() */
+	//feclearexcept(FE_ALL_EXCEPT);
+	//	feenableexcept(FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW);
 #else /* !__GNUC__ */
 	;
 #endif /* !__GNUC__ */
