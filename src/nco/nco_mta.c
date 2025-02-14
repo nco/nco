@@ -277,7 +277,7 @@ nco_input_check /* [fnc] Check whether input has valid syntax */
     return NCO_ERR;
   }
   if(strstr(arg,"=") == arg+strlen(arg)-1L){ // Equal sign is at argument end
-    (void)fprintf(stderr,"%s: ERROR %s reports no value in key-value pair for argument \"%s\".\n%s: HINT This usually occurs when the value of a key is unintentionally omitted, e.g., --gaa foo= , --ppc foo= , --rgr foo= , or --trr foo= . Each equal sign must immediatte precede a value for the specified key(s).\n",nco_prg_nm_get(),fnc_nm,arg,nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR %s reports no value in key-value pair for argument \"%s\".\n%s: HINT This usually occurs when the value of a key is unintentionally omitted, e.g., --gaa foo= , --ppc foo= , --rgr foo= , or --trr foo= . Each equal sign must immediately precede a value for the specified key(s).\n",nco_prg_nm_get(),fnc_nm,arg,nco_prg_nm_get());
     return NCO_ERR;
   }
   return NCO_NOERR;
