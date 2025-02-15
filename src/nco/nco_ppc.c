@@ -635,7 +635,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   double qnt_grr; /* [frc] Guaranteed maximum allowed quantization error */ 
   double qnt_prx; /* [frc] Quantization approximation */
   double qnt_val; /* [frc] Quantized value */
-  double val; /* [frc] Copy of input value to avoid indirection */
+  double val_dbl; /* [frc] Copy of input value to avoid indirection */
+  double val_flt; /* [frc] Copy of input value to avoid indirection */
   
   int dgt_nbr; /* [nbr] Number of digits before decimal point */
   int qnt_pwr; /* [nbr] Power of two in quantization mask: qnt_msk = 2^qnt_pwr */
@@ -819,23 +820,23 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     case nco_baa_btg:
       /* Bit-Groom: alternately shave and set LSBs */
       for(idx=0L;idx<sz;idx+=2L)
-	/* 20250215 Protect from adjusting negative zero and NaN */
-	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val))
+	/* 20250215 Do not quantize _FillValue, +/- zero, or NaN */
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt))
 	  u32_ptr[idx]&=msk_f32_u32_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)) /* Never quantize upwards floating point values of zero */
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt))
 	  u32_ptr[idx]|=msk_f32_u32_one;
       break;
       /* !BitGroom = BTG */
     case nco_baa_shv:
       /* Bit-Shave: always shave LSBs */
       for(idx=0L;idx<sz;idx++)
-	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)) u32_ptr[idx]&=msk_f32_u32_zro;
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt)) u32_ptr[idx]&=msk_f32_u32_zro;
       break;
     case nco_baa_set:
       /* Bit-Set: always set LSBs */
       for(idx=0L;idx<sz;idx++)
-	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)) /* Never quantize upwards floating point values of zero */
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt))
 	  u32_ptr[idx]|=msk_f32_u32_one;
       break;
     case nco_baa_dgr:
@@ -876,7 +877,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 LOG2_10 bit_per_dgt
 	 LOG10_2 dgt_per_bit_dgr */
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)){
+	/* 20250215: NB DigitRound implementation continues to use double precision "val", isnan(), etc. */
+	if((val_dbl=op1.fp[idx]) != mss_val_cmp_flt && val_dbl != 0.0 && !isnan(val_dbl)){
 	  /* Algorithm flow chart in DCG19 has equation numbers one less than actual
 	     Equations indicated below are the actual equation numbers in DCG19 */
 
@@ -885,7 +887,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	     NB: DCG19 filter code is incorrectly commented with:
 	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 + mnt, 0 <= mnt < 0.5 <--Incorrect
 	     double frexp(double x, int *y) returns double mnt=mantissa, exponent y (no FP math) */
-	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
+	  mnt=frexp(val_dbl,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  /* Initialize bin index */
 	  tbl_idx=0;
 	  /* Search upper bounds to identify appropriate mantissa bin */
@@ -926,14 +928,14 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	     Add 0.5 prior to floor to ensure IEEE-rounded value emerges
 	     NB: Adding 0.5 produces poorer-than necessary accuracy for some numbers
 	     However, it is guaranteed to be bias-free for random distributions */
-	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
+	  qnt_val=SIGN(val_dbl)*(floor(fabs(val_dbl)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
 	  /* Implicit conversion casts double to float */
 	  op1.fp[idx]=qnt_val;
 	  if(nco_dbg_lvl_get() >= nco_dbg_var){
 	    /* Verify NSD precision guarantee NB: this check increases time ~30% */
-	    qnt_prx=fabs(val-qnt_val);
+	    qnt_prx=fabs(val_dbl-qnt_val);
 	    qnt_grr=0.5*pow(10.0,dgt_nbr-nsd);
-	    if(nco_dbg_lvl_get() >= nco_dbg_crr || qnt_prx > qnt_grr) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,qnt_val,qnt_prx);
+	    if(nco_dbg_lvl_get() >= nco_dbg_crr || qnt_prx > qnt_grr) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val_dbl,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,qnt_val,qnt_prx);
 	    assert(qnt_prx <= qnt_grr);
 	  } /* !dbg */
 	} /* !mss_val_cmp_flt */
@@ -949,8 +951,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       for(idx=0L;idx<sz;idx++){
 	// 20250214: Eliminate floating point exceptions (FPEs) cased by negative zero and NaNf
 	//if((val=op1.fp[idx]) != mss_val_cmp_flt && u32_ptr[idx] != 0U){
-	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)){
-	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
+	/* 20250215: NB Granular BitRound implementation continues to use double precision "val_dbl", isnan(), etc. */
+	if((val_dbl=op1.fp[idx]) != mss_val_cmp_flt && val_dbl != 0.0 && !isnan(val_dbl)){
+	  mnt=frexp(val_dbl,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  //tbl_idx=0;
 	  //while(mnt_log10_tbl_gbr[tbl_idx][0] < mnt) tbl_idx++;
 	  //mnt_log10_prx=mnt_log10_tbl_gbr[tbl_idx][1];
@@ -988,9 +991,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  qnt_val=op1.fp[idx];
 	  if(nco_dbg_lvl_get() >= nco_dbg_var){
 	    /* Verify NSD precision guarantee NB: this assert() increases time ~30% */
-	    qnt_prx=fabs(val-qnt_val);
+	    qnt_prx=fabs(val_dbl-qnt_val);
 	    qnt_grr=0.5*pow(10.0,dgt_nbr-nsd);
-	    if(nco_dbg_lvl_get() >= nco_dbg_crr || qnt_prx > qnt_grr) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, pbxr = %d, bxnz = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,prc_bnr_xpl_rqr,bit_xpl_nbr_zro,qnt_val,qnt_prx);
+	    if(nco_dbg_lvl_get() >= nco_dbg_crr || qnt_prx > qnt_grr) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, pbxr = %d, bxnz = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val_dbl,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,prc_bnr_xpl_rqr,bit_xpl_nbr_zro,qnt_val,qnt_prx);
 	    assert(qnt_prx <= qnt_grr);
 	    assert(bit_xpl_nbr_zro >= -1); /* NB: 0.0 might require -1 bits, i.e., "setting" the implicit first bit to zero */
 	  } /* !dbg */
@@ -1005,7 +1008,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using IEEE floating-point arithmetic, shave LSB using bit-mask */
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)){
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt)){
 	  u32_ptr[idx]+=msk_f32_u32_hshv; /* Add 1 to the MSB of LSBs, carry 1 to mantissa or even exponent */
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
 	} /* !mss_val_cmp_flt */
@@ -1018,7 +1021,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 Shave LSBs and set MSB of them
 	 See figures at https://github.com/nco/nco/pull/200 */
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.fp[idx]) != mss_val_cmp_flt && val != 0.0 && !isnan(val)){
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt)){
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave as normal */
 	  u32_ptr[idx]|=msk_f32_u32_hshv; /* Set MSB of LSBs */
 	} /* !mss_val_cmp_flt */
@@ -1085,22 +1088,22 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     case nco_baa_btg:
       /* Bit-Groom: alternately shave and set LSBs */
       for(idx=0L;idx<sz;idx+=2L)
-	/* 20250215 Protect from adjusting negative zero and NaN */
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val))
+	/* Do not quantize _FillValue, +/- zero, or NaN */
+	if((val_dbl=op1.dp[idx]) != mss_val_cmp_dbl && val_dbl != 0.0 && !isnan(val_dbl))
 	  u64_ptr[idx]&=msk_f64_u64_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)) /* Never quantize upwards floating point values of zero */
+	if((val_dbl=op1.dp[idx]) != mss_val_cmp_dbl && val_dbl != 0.0 && !isnan(val_dbl)) /* Never quantize upwards floating point values of zero */
 	  u64_ptr[idx]|=msk_f64_u64_one;
       break;
     case nco_baa_shv:
       /* Bit-Shave: always shave LSBs */
       for(idx=0L;idx<sz;idx++)
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)) u64_ptr[idx]&=msk_f64_u64_zro;
+	if((val_dbl=op1.dp[idx]) != mss_val_cmp_dbl && val_dbl != 0.0 && !isnan(val_dbl)) u64_ptr[idx]&=msk_f64_u64_zro;
       break;
     case nco_baa_set:
       /* Bit-Set: always set LSBs */
       for(idx=0L;idx<sz;idx++)
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)) /* Never quantize upwards floating point values of zero */
+	if((val_dbl=op1.dp[idx]) != mss_val_cmp_dbl && val_dbl != 0.0 && !isnan(val_dbl)) /* Never quantize upwards floating point values of zero */
 	  u64_ptr[idx]|=msk_f64_u64_one;
       break;
     case nco_baa_dgr:
@@ -1110,27 +1113,27 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 3. Compare u64_ptr (not u32_ptr) to zero
 	 DO NOT EDIT the NC_DOUBLE code except for dp-specific changes, use fp code as template */
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)){
+	if((val_dbl=op1.dp[idx]) != mss_val_cmp_dbl && val_dbl != 0.0 && !isnan(val_dbl)){
 	  /* Compute number of digits before decimal point of input floating-point value val
 	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 * mnt, 0.5 <= mnt < 1.0 <--Correct 
 	     Note that DCG19 filter code is incorrectly commented with:
 	     Value val = 10^d + eps = sign(val) * 2^xpn_bs2 + mnt, 0 <= mnt < 0.5 <--Incorrect
 	     Note that algorithm flow chart in DCG19 has equation numbers one less than actual
 	     Equations indicated below are the actual equations in DCG19 */
-	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
+	  mnt=frexp(val_dbl,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  tbl_idx=0;
 	  while(mnt_log10_tbl_dgr[tbl_idx][0] < mnt) tbl_idx++;
 	  mnt_log10_prx=mnt_log10_tbl_dgr[tbl_idx][1];
 	  dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit_dgr+mnt_log10_prx)+1; /* DGG19 p. 4102 (9) */
 	  qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd)); /* DGG19 p. 4101 (7) */
 	  qnt_fct=ldexp(1.0,qnt_pwr); /* DGG19 p. 4101 (5) */
-	  qnt_val=SIGN(val)*(floor(fabs(val)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
+	  qnt_val=SIGN(val_dbl)*(floor(fabs(val_dbl)/qnt_fct)+0.5)*qnt_fct; /* DGG19 p. 4101 (1) */
 	  op1.dp[idx]=qnt_val;
 	  if(nco_dbg_lvl_get() >= nco_dbg_var){
 	    /* Verify NSD precision guarantee NB: this check increases time ~30% */
-	    qnt_prx=fabs(val-qnt_val);
+	    qnt_prx=fabs(val_dbl-qnt_val);
 	    qnt_grr=0.5*pow(10.0,dgt_nbr-nsd);
-	    if(nco_dbg_lvl_get() >= nco_dbg_crr || qnt_prx > qnt_grr) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,qnt_val,qnt_prx);
+	    if(nco_dbg_lvl_get() >= nco_dbg_crr || qnt_prx > qnt_grr) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val_dbl,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,qnt_val,qnt_prx);
 	    assert(qnt_prx <= qnt_grr);
 	  } /* !dbg */
 	} /* !mss_val_cmp_dbl */
@@ -1141,8 +1144,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       for(idx=0L;idx<sz;idx++){
 	// 20250214: Eliminate floating point exceptions (FPEs) cased by negative zero and NaNf
 	//	if((val=op1.dp[idx]) != mss_val_cmp_dbl && u64_ptr[idx] != 0ULL){
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)){
-	  mnt=frexp(val,&xpn_bs2); /* DGG19 p. 4102 (8) */
+	if((val_dbl=op1.dp[idx]) != mss_val_cmp_dbl && val_dbl != 0.0 && !isnan(val_dbl)){
+	  mnt=frexp(val_dbl,&xpn_bs2); /* DGG19 p. 4102 (8) */
 	  mnt_fabs=fabs(mnt);
 	  mnt_log10_fabs=log10(mnt_fabs);
 	  /* 20211003 Continuous determination of dgt_nbr improves CR by ~10% */
@@ -1163,9 +1166,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  qnt_val=op1.dp[idx];
 	  if(nco_dbg_lvl_get() >= nco_dbg_var){
 	    /* Verify NSD precision guarantee NB: this assert() increases time ~30% */
-	    qnt_prx=fabs(val-qnt_val);
+	    qnt_prx=fabs(val_dbl-qnt_val);
 	    qnt_grr=0.5*pow(10.0,dgt_nbr-nsd);
-	    if(nco_dbg_lvl_get() >= nco_dbg_crr || qnt_prx > qnt_grr) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, pbxr = %d, bxnz = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,prc_bnr_xpl_rqr,bit_xpl_nbr_zro,qnt_val,qnt_prx);
+	    if(nco_dbg_lvl_get() >= nco_dbg_crr || qnt_prx > qnt_grr) (void)fprintf(stdout,"%s: %g = %g * %d^%d, dgt_nbr = %d, qnt_pwr = %d, pbxr = %d, bxnz = %d, qnt_val = %g, qnt_prx = %g\n",nco_prg_nm_get(),val_dbl,mnt,FLT_RADIX,xpn_bs2,dgt_nbr,qnt_pwr,prc_bnr_xpl_rqr,bit_xpl_nbr_zro,qnt_val,qnt_prx);
 	    assert(qnt_prx <= qnt_grr);
 	    assert(bit_xpl_nbr_zro >= -1); /* NB: 0.0 might require -1 bits, i.e., "setting" the implicit first bit to zero */
 	  } /* !dbg */
@@ -1179,7 +1182,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 Round mantissa using software emulation of IEEE arithmetic, shave LSB using bit-mask
 	 See figures at https://github.com/nco/nco/pull/199 */
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)){
+	if((val_dbl=op1.dp[idx]) != mss_val_cmp_dbl && val_dbl != 0.0 && !isnan(val_dbl)){
 	  u64_ptr[idx]+=msk_f64_u64_hshv; /* Add 1 at MSB of LSBs */
 	  u64_ptr[idx]&=msk_f64_u64_zro; /* Shave it */
 	} /* !mss_val_cmp_dbl */
@@ -1192,7 +1195,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 Shave LSBs and set MSB of them
 	 See figures at https://github.com/nco/nco/pull/200 */
       for(idx=0L;idx<sz;idx++){
-	if((val=op1.dp[idx]) != mss_val_cmp_dbl && val != 0.0 && !isnan(val)){
+	if((val_dbl=op1.dp[idx]) != mss_val_cmp_dbl && val_dbl != 0.0 && !isnan(val_dbl)){
 	  u64_ptr[idx]&=msk_f64_u64_zro; /* Shave as normal */
 	  u64_ptr[idx]|=msk_f64_u64_hshv; /* Set MSB of LSBs */
 	} /* !mss_val_cmp_dbl */
