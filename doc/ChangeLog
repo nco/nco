@@ -1,8 +1,12 @@
-2025-02-14  Charlie Zender  <zender@uci.edu>
+2025-02-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha02: Toyota Matrix';git push
-	git tag -a 5.3.3-alpha02 -m 'fxm';git push --tags
+	git tag -a 5.3.3-alpha02 -m 'all: qnt ngt zro NaN; ncks: --fpe';git push --tags
+
+	* nco_exit_lbr_rcd() implement new rcd convention for netCDF versions 4.10.0 and beyond
+
+2025-02-14  Charlie Zender  <zender@uci.edu>
 
 	* nco_ppc.c: nco_ppc_bitmask() protect all quantization algorithms from modifying negative zero and NaN
 

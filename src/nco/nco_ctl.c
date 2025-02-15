@@ -582,9 +582,13 @@ void
 nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code */
 {
   /* Purpose: Exit with status equaling a numeric code determined by netCDF library version
-     Exit status must be 0-255
-     Modern netCDF versions range from 300-493
-     Hence program returns netCDF version minus an offset of 300 so version 4.4.0 exit()s with $?=140
+     UNIX exit status must be 0-255
+     Modern netCDF versions ranged from 300-493 from 1997--2025
+     Hence program returns netCDF version minus an offset of 300 so, e.g., version 4.4.0 exit()s with $?=140 and 4.9.4 exit()s with $?=194 
+     20250215: netCDF development version 4.10.0 released 20250207 changes that!
+     What convention to adopt for versions 4.10.0 and beyond?
+     Ugly yet workable convention is to pretend verion 4.10.0 is version 5.0.0 so rcd=500 and $?=200 ...
+     This buys us another decade or so
      Usage: ncks --lbr_rcd
      Verify exit status with "echo $?" */
   char lbr_sng[NC_MAX_NAME+1];
@@ -594,8 +598,13 @@ nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code 
   strcpy(lbr_sng,nc_inq_libvers());
   rcd=400;
   /* Detect buggy netCDF version 4.1 so that workarounds may be implemented
-     Other versions used to enable version-specific regression tests in NCO_rgr.pm */
-  if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '1'){rcd=410;}
+     Other versions used to enable version-specific regression tests in NCO_rgr.pm
+     20250215: Modify identification of version 4.1 to disambiguate identification of version 4.10 (below) */
+  if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '1'){
+    if(lbr_sng[3] == '.'){rcd=410;}
+    else if(lbr_sng[3] == '0' && lbr_sng[4] == '.' && lbr_sng[5] == '0' ){rcd=500;}
+    else if(lbr_sng[3] == '0' && lbr_sng[4] == '.' && lbr_sng[5] == '1' ){rcd=501;}
+  }
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '0'){rcd=430;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '1'){rcd=431;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '2'){rcd=432;}
@@ -627,8 +636,8 @@ nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code 
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '9' && lbr_sng[3] == '.' && lbr_sng[4] == '1'){rcd=491;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '9' && lbr_sng[3] == '.' && lbr_sng[4] == '2'){rcd=492;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '9' && lbr_sng[3] == '.' && lbr_sng[4] == '3'){rcd=493;}
+  /* NB: 4.9.4 was never released, though some development branches employ this version number */
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '9' && lbr_sng[3] == '.' && lbr_sng[4] == '4'){rcd=494;}
-  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '9' && lbr_sng[3] == '.' && lbr_sng[4] == '5'){rcd=495;}
 #endif /* HAVE_NETCDF4_H */
   /* Use exit() not nco_exit(), because behavior of latter depends on NCO_ABORT_ON_ERROR
      When True, NCO_ABORT_ON_ERROR causes NCO to abort() not exit(rcd)
