@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha02: Toyota Matrix';git push
 	git tag -a 5.3.3-alpha02 -m 'all: qnt ngt zro NaN; ncks: --fpe';git push --tags
 
-	* Distinguish val_flt and val_dbl de-reference, and use isnanf() where appropriate (except DigitRound and Granular BitRound, for now)
+	* Verify --fpe test passes when using either internal NCO or patched libnetcdf.a quantize algorithms
+
+	* Distinguish val_flt and val_dbl de-reference where appropriate (except DigitRound and Granular BitRound, for now)
 
 	* nco_exit_lbr_rcd() implement new rcd convention for netCDF versions 4.10.0 and beyond
 

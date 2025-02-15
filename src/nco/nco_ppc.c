@@ -636,7 +636,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   double qnt_prx; /* [frc] Quantization approximation */
   double qnt_val; /* [frc] Quantized value */
   double val_dbl; /* [frc] Copy of input value to avoid indirection */
-  double val_flt; /* [frc] Copy of input value to avoid indirection */
+  float val_flt; /* [frc] Copy of input value to avoid indirection */
   
   int dgt_nbr; /* [nbr] Number of digits before decimal point */
   int qnt_pwr; /* [nbr] Power of two in quantization mask: qnt_msk = 2^qnt_pwr */
@@ -821,22 +821,22 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       /* Bit-Groom: alternately shave and set LSBs */
       for(idx=0L;idx<sz;idx+=2L)
 	/* 20250215 Do not quantize _FillValue, +/- zero, or NaN */
-	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt))
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0f && !isnan(val_flt))
 	  u32_ptr[idx]&=msk_f32_u32_zro;
       for(idx=1L;idx<sz;idx+=2L)
-	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt))
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0f && !isnan(val_flt))
 	  u32_ptr[idx]|=msk_f32_u32_one;
       break;
       /* !BitGroom = BTG */
     case nco_baa_shv:
       /* Bit-Shave: always shave LSBs */
       for(idx=0L;idx<sz;idx++)
-	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt)) u32_ptr[idx]&=msk_f32_u32_zro;
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0f && !isnan(val_flt)) u32_ptr[idx]&=msk_f32_u32_zro;
       break;
     case nco_baa_set:
       /* Bit-Set: always set LSBs */
       for(idx=0L;idx<sz;idx++)
-	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt))
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0f && !isnan(val_flt))
 	  u32_ptr[idx]|=msk_f32_u32_one;
       break;
     case nco_baa_dgr:
@@ -1008,7 +1008,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using IEEE floating-point arithmetic, shave LSB using bit-mask */
       for(idx=0L;idx<sz;idx++){
-	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt)){
+	/* 20250215 Do not quantize _FillValue, +/- zero, or NaN */
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0f && !isnan(val_flt)){
 	  u32_ptr[idx]+=msk_f32_u32_hshv; /* Add 1 to the MSB of LSBs, carry 1 to mantissa or even exponent */
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
 	} /* !mss_val_cmp_flt */
@@ -1021,7 +1022,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 Shave LSBs and set MSB of them
 	 See figures at https://github.com/nco/nco/pull/200 */
       for(idx=0L;idx<sz;idx++){
-	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0 && !isnanf(val_flt)){
+	if((val_flt=op1.fp[idx]) != mss_val_cmp_flt && val_flt != 0.0f && !isnan(val_flt)){
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave as normal */
 	  u32_ptr[idx]|=msk_f32_u32_hshv; /* Set MSB of LSBs */
 	} /* !mss_val_cmp_flt */
@@ -1182,6 +1183,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 Round mantissa using software emulation of IEEE arithmetic, shave LSB using bit-mask
 	 See figures at https://github.com/nco/nco/pull/199 */
       for(idx=0L;idx<sz;idx++){
+	/* 20250215 Do not quantize _FillValue, +/- zero, or NaN */
 	if((val_dbl=op1.dp[idx]) != mss_val_cmp_dbl && val_dbl != 0.0 && !isnan(val_dbl)){
 	  u64_ptr[idx]+=msk_f64_u64_hshv; /* Add 1 at MSB of LSBs */
 	  u64_ptr[idx]&=msk_f64_u64_zro; /* Shave it */
