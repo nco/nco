@@ -1,5 +1,9 @@
 2025-02-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.3-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha03: Equalizer';git push
+	git tag -a 5.3.3-alpha03 -m '';git push --tags
+
 	* NCO 5.3.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha02: Toyota Matrix';git push
 	git tag -a 5.3.3-alpha02 -m 'all: qnt ngt zro NaN; ncks: --fpe; ncremap: fix prs->hyb w/fat tpl';git push --tags
