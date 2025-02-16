@@ -1,8 +1,14 @@
-2025-02-15  Charlie Zender  <zender@uci.edu>
+2025-02-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha02: Toyota Matrix';git push
-	git tag -a 5.3.3-alpha02 -m 'all: qnt ngt zro NaN; ncks: --fpe';git push --tags
+	git tag -a 5.3.3-alpha02 -m 'all: qnt ngt zro NaN; ncks: --fpe; ncremap: fix prs->hyb w/fat tpl';git push --tags
+
+	* Migrate to netcdf-c 4.10.0-development
+
+	* nco_rgr.c: Fix write of PS to output from fat templates when input is pure-pressure output is hybrid
+
+2025-02-15  Charlie Zender  <zender@uci.edu>
 
 	* Verify --fpe test passes when using either internal NCO or patched libnetcdf.a quantize algorithms
 

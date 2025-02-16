@@ -1776,10 +1776,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field %s in pure-pressure input data file. %s will be copied directly from pure-pressure grid input dataset to, and used as the reference surface pressure of, the output hybrid sigma-pressure coordinate data file, where it will be named %s.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_in,ps_nm_out);
       if(flg_grd_out_hyb && (ps_id_tpl != NC_MIN_INT)) (void)fprintf(stderr,"%s: INFO %s detects spatially varying surface pressure field in both vertical-grid file as %s, and in pure-pressure input data file as %s. The vertical grid-file takes precedence. %s will be copied directly from vertical-grid file to, and used as the reference surface pressure of, the output hybrid sigma-pressure coordinate data file, where it will be named %s. %s in input pure-pressure file will be ignored.\n",nco_prg_nm_get(),fnc_nm,ps_nm_tpl,ps_nm_in,ps_nm_tpl,ps_nm_out,ps_nm_in);
     }else{
-      if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)){
-	(void)fprintf(stderr,"%s: ERROR %s does not find spatially varying surface pressure field %s in pure-pressure input data file or as %s in vertical grid-file for hybrid sigma-pressure output. A surface pressure field must be present in at least one of these files in order to construct the output hybrid sigma-pressure coordinate pressures.\nHINT: Append a valid surface pressure field to the input data file or to the vertical grid-file.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_tpl);
-	nco_exit(EXIT_FAILURE);
-      } /* !ps_id_tpl */
+      if(flg_grd_out_hyb){
+	if(ps_id_tpl == NC_MIN_INT){
+	  (void)fprintf(stderr,"%s: ERROR %s does not find spatially varying surface pressure field %s in pure-pressure input data file or as %s in vertical grid-file for hybrid sigma-pressure output. A surface pressure field must be present in at least one of these files in order to construct the output hybrid sigma-pressure coordinate pressures.\nHINT: Append a valid surface pressure field to the input data file or to the vertical grid-file.\n",nco_prg_nm_get(),fnc_nm,ps_nm_in,ps_nm_tpl);
+	  nco_exit(EXIT_FAILURE);
+	}else{ /* !ps_id_tpl */
+	  flg_grd_hyb_cameam=True;
+	} /* !ps_id_tpl */
+      } /* !flg_grd_out_hyb */
     } /* !ps_id */
   } /* !flg_grd_in_prs */
 
