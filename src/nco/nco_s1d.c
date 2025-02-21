@@ -1303,6 +1303,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     } /* !flg_sgs_msk_out */
   } /* !flg_grd_2D */
 
+  /* Write new attributes here so they apply to both 1D and 2D output datasets */
   if(flg_frc_column_out){
     rcd=nco_char_att_put(out_id,frc_column_nm,"long_name","Fraction of gridcell occupied by snow-related columns");
     rcd=nco_char_att_put(out_id,frc_column_nm,"legend","For datasets with Multiple Elevation Classes (MECs): index = 0 is soil column, index = 1 is MEC == 1, indexes 2..10 are remaining MEC columns, index 11 is sub-total of MEC columns, index = 12 is deep lake column, index = 13 is wetland column, and index = 14 is grand total of natural columns. For non-MEC datasets, index = 0 is soil column, index = 1 is glaciated column, index = 2 is deep lake column, index = 3 is wetland column, and index = 4 is grand total of natural columns.");
