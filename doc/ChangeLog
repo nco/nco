@@ -2,7 +2,9 @@
 
 	* NCO 5.3.3-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha03: Equalizer';git push
-	git tag -a 5.3.3-alpha03 -m 'ncks: ngl rsn chk map';git push --tags
+	git tag -a 5.3.3-alpha03 -m 'ncks: ngl rsn chk map, s1d frc_column frc_landunit attribute fix';git push --tags
+
+	* nco_s1d.c: Move location where frc_column, frc_landunit attributes written
 
 	* nco_map.c: Add min/max angular resolution to --chk_map
 

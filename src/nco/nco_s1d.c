@@ -1213,8 +1213,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       rcd+=nco_def_var(out_id,frc_column_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_column_out_id);
       if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,frc_column_out_id,NULL,nco_flt_flg_prc_fll);
       var_crt_nbr++;
-      rcd=nco_char_att_put(out_id,frc_column_nm,"long_name","Fraction of gridcell occupied by snow-related columns");
-      rcd=nco_char_att_put(out_id,frc_column_nm,"legend","For datasets with Multiple Elevation Classes (MECs): index = 0 is soil column, index = 1 is MEC == 1, indexes 2..10 are remaining MEC columns, index 11 is sub-total of MEC columns, index = 12 is deep lake column, index = 13 is wetland column, and index = 14 is grand total of natural columns. For non-MEC datasets, index = 0 is soil column, index = 1 is glaciated column, index = 2 is deep lake column, index = 3 is wetland column, and index = 4 is grand total of natural columns.");
     } /* !flg_frc_column_out */
     if(flg_frc_landunit_out){
       dmn_ids_out[0]=dmn_id_lnd_out;
@@ -1222,8 +1220,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       rcd+=nco_def_var(out_id,frc_landunit_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_landunit_out_id);
       if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,frc_landunit_out_id,NULL,nco_flt_flg_prc_fll);
       var_crt_nbr++;
-      rcd=nco_char_att_put(out_id,frc_landunit_nm,"long_name","Fraction of gridcell occupied by Landunit");
-      rcd=nco_char_att_put(out_id,frc_landunit_nm,"legend","landunit index = 0 is sum of all landunit fractions, indexes = 1..9 are standard landunit types");
     } /* !flg_frc_landunit_out */
     if(flg_area_out){
       rcd+=nco_def_var(out_id,area_nm,crd_typ_out,dmn_nbr_1D,&dmn_id_col_out,&area_out_id);
@@ -1307,6 +1303,15 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     } /* !flg_sgs_msk_out */
   } /* !flg_grd_2D */
 
+  if(flg_frc_column_out){
+    rcd=nco_char_att_put(out_id,frc_column_nm,"long_name","Fraction of gridcell occupied by snow-related columns");
+    rcd=nco_char_att_put(out_id,frc_column_nm,"legend","For datasets with Multiple Elevation Classes (MECs): index = 0 is soil column, index = 1 is MEC == 1, indexes 2..10 are remaining MEC columns, index 11 is sub-total of MEC columns, index = 12 is deep lake column, index = 13 is wetland column, and index = 14 is grand total of natural columns. For non-MEC datasets, index = 0 is soil column, index = 1 is glaciated column, index = 2 is deep lake column, index = 3 is wetland column, and index = 4 is grand total of natural columns.");
+  } /* !flg_frc_column_out */
+  if(flg_frc_landunit_out){
+    rcd=nco_char_att_put(out_id,frc_landunit_nm,"long_name","Fraction of gridcell occupied by Landunit");
+    rcd=nco_char_att_put(out_id,frc_landunit_nm,"legend","landunit index = 0 is sum of all landunit fractions, indexes = 1..9 are standard landunit types");
+  } /* !flg_frc_landunit_out */
+  
   /* levgrnd coordinate: ncks -v lev.? ${DATA}/bm/elmv3_r05l15.nc */
   const double levgrnd[15]={0.007100635,0.027925,0.06225858,0.1188651,0.2121934,0.3660658,0.6197585,1.038027,1.727635,2.864607,4.739157,7.829766,12.92532,21.32647,35.17762}; /* [m] Coordinate lake levels */
   int levgrnd_out_id=NC_MIN_INT; /* [id] Variable ID for levgrnd */
