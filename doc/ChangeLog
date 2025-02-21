@@ -1,8 +1,12 @@
-2025-02-16  Charlie Zender  <zender@uci.edu>
+2025-02-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.3-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha03: Equalizer';git push
-	git tag -a 5.3.3-alpha03 -m '';git push --tags
+	git tag -a 5.3.3-alpha03 -m 'ncks: ngl rsn chk map';git push --tags
+
+	* nco_map.c: Add min/max angular resolution to --chk_map
+
+2025-02-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha02: Toyota Matrix';git push

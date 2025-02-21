@@ -2390,7 +2390,6 @@ nco_map_chk /* Map-file evaluation */
     double s_min,s_max,s_ttl;
     size_t idx_min_area_a,idx_max_area_a;;
     size_t idx_min_area_b,idx_max_area_b;;
-    size_t idx_max;
 
     nco_map_var_min_max_ttl(var_col,(double *)NULL,flg_area_wgt,(int *)NULL,&col_min,&idx_min,&col_max,&idx_max,&col_ttl,&avg,&mebs,&rms,&sdn);
     nco_map_var_min_max_ttl(var_row,(double *)NULL,flg_area_wgt,(int *)NULL,&row_min,&idx_min,&row_max,&idx_max,&row_ttl,&avg,&mebs,&rms,&sdn);
@@ -2469,8 +2468,8 @@ nco_map_chk /* Map-file evaluation */
       fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
       // 20240708: Output radius (rds) or diameter (dmt) of circle with same area as smallest/largest gridcell A_g:
       // s=r_e*theta, A=r_e^2*sr=pi*rds^2 -> rds=r_e*sqrt(sr/pi), dmt=2*r_e*sqrt(sr/pi), dx=r_e*sqrt(sr) <--dx is side of square
-      fprintf(stdout,"area_a min, ~dx: %0.16e sr, %0.2f km in grid A cell [%lu,%+g,%+g]\n",area_a_min,rds_earth*sqrt(area_a_min)/1000.0,idx_min_area_a+1UL,var_yc_a->val.dp[idx_min_area_a],var_xc_a->val.dp[idx_min_area_a]);
-      fprintf(stdout,"area_a max, ~dx: %0.16e sr, %0.2f km in grid A cell [%lu,%+g,%+g]\n",area_a_max,rds_earth*sqrt(area_a_max)/1000.0,idx_max_area_a+1UL,var_yc_a->val.dp[idx_max_area_a],var_xc_a->val.dp[idx_max_area_a]);
+      fprintf(stdout,"area_a min, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid A cell [%lu,%+g,%+g]\n",area_a_min,rds_earth*sqrt(area_a_min)/1000.0,sqrt(area_a_min)*180.0/M_PI,idx_min_area_a+1UL,var_yc_a->val.dp[idx_min_area_a],var_xc_a->val.dp[idx_min_area_a]);
+      fprintf(stdout,"area_a max, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid A cell [%lu,%+g,%+g]\n",area_a_max,rds_earth*sqrt(area_a_max)/1000.0,sqrt(area_a_max)*180.0/M_PI,idx_max_area_a+1UL,var_yc_a->val.dp[idx_max_area_a],var_xc_a->val.dp[idx_max_area_a]);
       if(fabs(1.0-area_a_ttl/4.0/M_PI) < 1.0e-2) grid_a_tiles_sphere=True;
     }else{
       fprintf(stdout,"area_a sum/4*pi: map-file does not provide completely non-zero area_a\n");
@@ -2489,8 +2488,8 @@ nco_map_chk /* Map-file evaluation */
     if(var_mask_b) fprintf(stdout,"mask_b S errors: %lu%s\n",mask_b_err,mask_b_err ? " <--- # of weights that, in violation of mask_b, contribute from source gridcells to masked destination gridcells WARNING WARNING WARNING" : ""); else fprintf(stdout,"mask_b S errors: map-file omits mask_b\n");
     if(has_area_b){
       fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
-      fprintf(stdout,"area_b min, ~dx: %0.16e sr, %0.2f km in grid B cell [%lu,%+g,%+g]\n",area_b_min,rds_earth*sqrt(area_b_min)/1000.0,idx_min_area_b+1UL,var_yc_b->val.dp[idx_min_area_b],var_xc_b->val.dp[idx_min_area_b]);
-      fprintf(stdout,"area_b max, ~dx: %0.16e sr, %0.2f km in grid B cell [%lu,%+g,%+g]\n",area_b_max,rds_earth*sqrt(area_b_max)/1000.0,idx_max_area_b+1UL,var_yc_b->val.dp[idx_max_area_b],var_xc_b->val.dp[idx_max_area_b]);
+      fprintf(stdout,"area_b min, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid B cell [%lu,%+g,%+g]\n",area_b_min,rds_earth*sqrt(area_b_min)/1000.0,sqrt(area_b_min)*180.0/M_PI,idx_min_area_b+1UL,var_yc_b->val.dp[idx_min_area_b],var_xc_b->val.dp[idx_min_area_b]);
+      fprintf(stdout,"area_b max, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid B cell [%lu,%+g,%+g]\n",area_b_max,rds_earth*sqrt(area_b_max)/1000.0,sqrt(area_a_max)*180.0/M_PI,idx_max_area_b+1UL,var_yc_b->val.dp[idx_max_area_b],var_xc_b->val.dp[idx_max_area_b]);
       if(fabs(1.0-area_b_ttl/4.0/M_PI) < 1.0e-2) grid_b_tiles_sphere=True;
     }else{
       fprintf(stdout,"area_b sum/4*pi: map-file does not provide completely non-zero area_b\n");
