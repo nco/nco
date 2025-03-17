@@ -16290,7 +16290,7 @@ print(idx);
 print(idx);
 
 // Add 200 (long method)
-*@vpx=*@vpx+200; //idx now 250
+*@vpx=*@vpx+200; // idx now 250
 print(idx);
 
 @vpy="idy";
@@ -16320,7 +16320,7 @@ expression.
 Thus in the below script using @code{*all(idx)} would be a fundamental
 mistake.
 In the below example the vpointer @code{var_nm} is of type
-@code{NC_STRING}. 
+@code{NC_STRING}.  
 @example
 @verbatim
 @all=get_vars_in();
@@ -24365,8 +24365,8 @@ lut_out Output will be value of column(s) in this andunit
 This feature is necessarily restricted to restart datasets, e.g.,
 @example
 @verbatim
-ncks --s1d --lut_out=1 --hrz=hst.nc rst.nc s1d.nc # Output Soil LUT
-ncks --s1d --lut_out=13 --hrz=hst.nc rst.nc s1d.nc # Avg Soil+Glacier
+ncks --s1d --rgr lut_out=1 --hrz=hst.nc rst.nc s1d.nc # Output Soil LUT
+ncks --s1d --rgr lut_out=13 --hrz=hst.nc rst.nc s1d.nc # Avg Soil+Glacier
 @end verbatim
 @end example
 
