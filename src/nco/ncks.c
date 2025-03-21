@@ -378,6 +378,7 @@ main(int argc,char **argv)
     {"dmm_in_mk",no_argument,0,0}, /* [flg] Make dummy input file */
     {"fl_dmm",no_argument,0,0}, /* [flg] Make dummy input file */
     {"fpe",no_argument,0,0}, /* [flg] Activate floating-point-exceptions */
+    {"floating_point_exceptions",no_argument,0,0}, /* [flg] Activate floating-point-exceptions */
     {"license",no_argument,0,0},
     {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
     {"hdn",no_argument,0,0}, /* [flg] Print hidden attributes */
@@ -761,7 +762,7 @@ main(int argc,char **argv)
         rec_dmn_nm=strcat(rec_dmn_nm,optarg);
         rec_dmn_nm_fix=strdup(optarg);
       } /* !fix_rec_dmn */
-      if(!strcmp(opt_crr,"fpe")){
+      if(!strcmp(opt_crr,"fpe") || !strcmp(opt_crr,"floating_point_exceptions")){
 	flg_fpe=True;
 	/* https://www.tutorialspoint.com/c_standard_library/c_function_fesetexceptflag.htm */
 	fexcept_t flg_xcp;

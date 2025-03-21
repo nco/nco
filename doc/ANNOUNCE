@@ -6,7 +6,8 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.3 mainly adds features and fixes to ... ncremap and
+Version 5.3.3 adds minor features and fixes to many operators.
+... ncremap and
 quantization.
 ncremap now WARNs users attempting to rename coordinates in netCDF4
 files. 
@@ -14,6 +15,33 @@ Skip this release if these changes do not interest you.
 
 Work on 5.3.4 is underway and includes improved NC_STRING
 autoconversion support for other NCO operators.
+
+A. The new ncks --fpe option reports the status of all IEEE Floating
+Point Exceptions (FPEs) after execution. This can be useful to verify
+whether input datasets contain strange numbers that could be
+arithmetically processed, and to ensure the integrity of NCO
+arithmetic. 
+
+% ncks --fpe -O -7 -L 1 -C -v ppc_zro_ngt_nan_flt --qnt_alg=gbr \
+       --qnt default=3 --cmp='shf|zst' in.nc out.nc
+ncks: Successfully set FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW exception flags
+ncks: FE_DIVBYZERO is not raised
+ncks: FE_INEXACT is raised
+ncks: FE_INVALID is not raised
+ncks: FE_OVERFLOW is not raised
+ncks: FE_UNDERFLOW is not raised
+
+http://nco.sf.net/nco.html#fpe
+http://nco.sf.net/nco.html#ncks
+
+A. All operators can now quantize -0.0 (a legal number) without
+triggering and IEEE Floating Point Exceptions (FPEs). Other weird
+numbers, like NaN, already avoided FPEs. Moreover, the necessary
+changes to avoid FPEs have been merged upstream into the quantization
+algorithms in libnetcdf version 4.10-development. Thanks to fxm
+
+Thanks to fxm for reporting this, and to Ward Fisher for merging.
+http://nco.sf.net/nco.html#qnt
 
 A. ncremap now WARNs users attempting to rename coordinates in netCDF4 
 files. The WARNING, which prints only when debugging level > 0, the
@@ -40,8 +68,6 @@ debug level to avoid annoying users with existing workflows that
 expect no text output from ncrename. This compromise is intended
 to prevent widespread panic and mass hysteria. Thanks to Toby Searle
 (UKMO) for prompting this change.
-
-
 
 Enjoy,
 Charlie

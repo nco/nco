@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.4: Sea Shanty';git push
 	git tag -a 5.3.3 -m 'all: qnt ngt zro NaN; ncks: --fpe, ngl rsn chk map, s1d frc_column frc_landunit attribute fix; ncremap: fix prs->hyb w/fat tpl; ncrename: WARN crd/dmn netCDF4';git push --tags
 
+	* Document --fpe, add to man and usage pages
+
 	* NCO 5.3.3-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha03: Equalizer';git push
 	git tag -a 5.3.3-alpha03 -m 'all: perlmutter bld; ncks: ngl rsn chk map, s1d frc_column frc_landunit attribute fix';git push --tags
