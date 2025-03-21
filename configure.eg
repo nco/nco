@@ -520,28 +520,9 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/ccs/p
 # Personal recipe last modified: 20240118 (remove gcc/11.2.0, update to cray-hdf5/1.12.2.9 cray-netcdf/4.9.0.9)
 # Personal recipe last borken: 20231103
 # Personal recipe last successful: 20240214
-module load PrgEnv-gnu
-module load cray-hdf5/1.12.2.9
-module load cray-netcdf/4.9.0.9
-export HDF5_DISABLE_VERSION_CHECK=1
-export HDF5_USE_FILE_LOCKING=FALSE
-cd ~/nco;/bin/rm -f *.foo;make distclean
-cd ~/nco;ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_perlmutter CC='gcc' CXX='g++' NETCDF_DIR='/opt/cray/pe/netcdf/4.9.0.9/gnu/12.3' NETCDF_INC='/opt/cray/pe/netcdf/4.9.0.9/gnu/12.3/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.9.0.9/gnu/12.3/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.9.0.9' UDUNITS2_ROOT=${HOME} ./configure --prefix=${HOME} --bindir=${HOME}/bin_perlmutter --datadir=${HOME}/nco/data --libdir=${HOME}/lib_perlmutter --mandir=${HOME}/man > nco.configure.foo 2>&1
-/bin/cp -f config.log nco.config.log.foo
-/bin/cp -f libtool nco.libtool.foo
-make clean;make > nco.make.foo 2>&1
-make check >> nco.make.foo 2>&1
-make install >> nco.make.foo 2>&1
-scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
-
-# 20250102 Attempt to build on PM using entirely public directories
 # 20250317 NB: /usr/bin/insall dumps core on PM, must install and use Anaconda coreutils version of 'install' to install into /global/cfs/cdirs/e3sm/zender
-export PATH="./:/global/cfs/cdirs/e3sm/zender/sh:/global/cfs/cdirs/e3sm/zender/bin_perlmutter:/global/cfs/cdirs/e3sm/zender/anaconda/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/bin:/opt/cray/pe/netcdf/4.8.1.1/gnu/9.1/bin"
-export LD_LIBRARY_PATH="./:/global/cfs/cdirs/e3sm/zender/lib_perlmutter:/global/cfs/cdirs/e3sm/zender/anaconda/lib:/usr/local/lib:/lib:/usr/lib:/usr/lib:/opt/cray/pe/netcdf/4.8.1.1/gnu/9.1/lib:/global/common/software/spackecp/perlmutter/e4s-21.11/software/cray-sles15-zen3/gcc-11.2.0/gsl-2.7-2p3pcjckzogek2dubph7q4yd5msjuhxt/lib"
-export MY_BIN_DIR=/global/cfs/cdirs/e3sm/zender/bin_perlmutter
-export MY_LIB_DIR=/global/cfs/cdirs/e3sm/zender/lib_perlmutter
-export MY_OBJ_DIR=/global/cfs/cdirs/e3sm/zender/obj_perlmutter
-
+# 20250321 Build on PM in $DATA using entirely public directories
+cd ~/nco;/bin/rm -f *.foo;make distclean
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -549,7 +530,14 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/global/common/software/e3sm/anaconda_
 export NETCDF_ROOT=/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest
 export PATH=${PATH}:/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest/bin
 cd ~/nco;git reset --hard origin/master
+cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 cd ~/nco;CC=${LINUX_CC} CPPFLAGS="-I${DATA}/anaconda/include -I/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest/include" CXX=${LINUX_CXX} LDFLAGS="-L${DATA}/anaconda/lib -L/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest/lib" NETCDF_ROOT=${DATA}/anaconda UDUNITS2_ROOT=${HOME} ./configure --prefix=${DATA} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+/bin/cp -f config.log nco.config.log.foo
+/bin/cp -f libtool nco.libtool.foo
+make clean;make > nco.make.foo 2>&1
+make check >> nco.make.foo 2>&1
+make install >> nco.make.foo 2>&1
+scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.uci.edu:Sites/nco/rgr
 # !Perlmutter
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on greenplanet
