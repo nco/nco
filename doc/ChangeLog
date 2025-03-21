@@ -1,8 +1,14 @@
-2025-02-27  Charlie Zender  <zender@uci.edu>
+2025-03-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.3-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.3-alpha03: Equalizer';git push
-	git tag -a 5.3.3-alpha03 -m 'ncks: ngl rsn chk map, s1d frc_column frc_landunit attribute fix';git push --tags
+	git tag -a 5.3.3-alpha03 -m 'all: perlmutter bld; ncks: ngl rsn chk map, s1d frc_column frc_landunit attribute fix';git push --tags
+
+2025-03-19  Charlie Zender  <zender@uci.edu>
+
+	* Fix Perlmutter environment to avoid /usr/bin/install and use Conda coreutils install to install in ${DATA}/[bin,lib]
+
+2025-02-27  Charlie Zender  <zender@uci.edu>
 
 	* Tidy nco_ply_lst.c
 
