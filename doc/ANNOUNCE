@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.3 hit the streets
+netCDF Operators NCO version 5.3.3 splits the uprights
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
@@ -41,6 +41,8 @@ expect no text output from ncrename. This compromise is intended
 to prevent widespread panic and mass hysteria. Thanks to Toby Searle
 (UKMO) for prompting this change.
 
+
+
 Enjoy,
 Charlie
 
@@ -48,7 +50,7 @@ NEW FEATURES (full details always in ChangeLog):
 
 BUG FIXES:
    
-A. Previous versions of NCO would sometimes fail to store
+A. donePrevious versions of NCO would sometimes fail to store
 quantization metadata for variables in non-root groups. Now
 quantization metadata works on variables in non-root groups.
 
