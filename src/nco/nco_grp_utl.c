@@ -1276,7 +1276,74 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
   } /* !xtr_nbr_crr */
     
   return;
-} /* end nco_xtr_ND_lst() */
+} /* !nco_xtr_ND_lst() */
+
+void
+nco_xtr_hrz_lst /* [fnc] Print extraction list of horizontal (lat, lon, no lev) variables and exit */
+(trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Print extraction list of horizontal (lat, lon, no lev) variables and exit
+     Used by ncks to supply arguments to splitter that will work in ncap2 regional averaging
+     Hence we restrict returned list to non-coordinate record variables
+     Based on nco_xtr_ND_lst()
+     Usage:
+     ncks --lst_hrz ~/nco/data/in.nc
+     ncks --lst_hrz ~/data/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc
+     ncks --lst_hrz ~/data/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc */
+
+  const char fnc_nm[]="nco_xtr_hrz_lst()"; /* [sng] Function name */
+
+  const int rnk_xtr=2; /* [nbr] Minimum rank to extract */
+
+  int xtr_nbr_crr=0; /* [nbr] Number of N>=D variables found so far */
+
+  int grp_id; /* [id] Group ID */
+  int nc_id; /* [id] File ID */
+  int var_id; /* [id] Variable ID */
+
+  trv_sct var_trv;
+
+  nc_id=trv_tbl->in_id_arr[0];
+
+  /* 20170414: csz add new definitions is_crd_lk_var and is_rec_lk_var, avoid PVN definitions for sanity */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    var_trv=trv_tbl->lst[idx_var];
+    if(var_trv.nco_typ == nco_obj_typ_var){
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+      trv_tbl->lst[idx_var].is_crd_lk_var=trv_tbl->lst[idx_var].is_crd_lk_var;
+      if(nco_is_spc_in_cf_att(grp_id,"bounds",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
+      if(nco_is_spc_in_cf_att(grp_id,"cell_measures",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
+      if(nco_is_spc_in_cf_att(grp_id,"climatology",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
+      for(int dmn_idx=0;dmn_idx<var_trv.nbr_dmn;dmn_idx++){
+	if(var_trv.var_dmn[dmn_idx].is_rec_dmn) trv_tbl->lst[idx_var].is_rec_lk_var=True;
+      } /* !dmn_idx */
+    } /* !nco_typ */
+  } /* !idx_var */
+
+  /* If variable has N>=D dimensions, add it to list */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var){
+      if((trv_tbl->lst[idx_var].nbr_dmn >= rnk_xtr) && /* Rank at least 2 */
+	 (!trv_tbl->lst[idx_var].is_crd_lk_var) && /* Not a coordinate-like variable */
+	 (trv_tbl->lst[idx_var].is_rec_lk_var) && /* Is a record variable */
+	 (trv_tbl->lst[idx_var].var_typ != NC_CHAR) && /* Not an array of characters */
+	 True){
+	(void)fprintf(stdout,"%s%s",(xtr_nbr_crr > 0) ? "," : "",trv_tbl->lst[idx_var].nm);
+	xtr_nbr_crr++;
+      } /* !N>=D */
+    } /* !nco_typ */
+  } /* !idx_var */
+  if(xtr_nbr_crr > 0){
+    (void)fprintf(stdout,"\n");
+    nco_exit(EXIT_SUCCESS);
+  }else{
+    (void)fprintf(stdout,"%s: ERROR %s reports no variables found with rank >= %d\n",nco_prg_nm_get(),fnc_nm,rnk_xtr);
+    nco_exit(EXIT_FAILURE);
+  } /* !xtr_nbr_crr */
+    
+  return;
+} /* !nco_xtr_hrz_lst() */
 
 void
 nco_xtr_cf_add /* [fnc] Add to extraction list variables associated with CF convention */

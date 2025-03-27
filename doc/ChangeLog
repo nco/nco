@@ -1,8 +1,12 @@
-2025-03-21  Charlie Zender  <zender@uci.edu>
+2025-03-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4: Sea Shanty';git push
 	git tag -a 5.3.3 -m 'all: qnt ngt zro NaN; ncks: --fpe, ngl rsn chk map, s1d frc_column frc_landunit attribute fix; ncremap: fix prs->hyb w/fat tpl; ncrename: WARN crd/dmn netCDF4';git push --tags
+
+	* Add stubs for ncks --lst_hrz, nco_xtr_hrz_lst() customized for ncap2 splitter
+
+2025-03-21  Charlie Zender  <zender@uci.edu>
 
 	* Simplify Perlmutter build to be nearly identical to Chrysalis, Andes
 

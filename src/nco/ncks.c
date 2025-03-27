@@ -272,6 +272,7 @@ main(int argc,char **argv)
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
+  nco_bool LST_HRZ=False; /* [flg] Print extraction list of horizontal (lat, lon, no lev) variables */
   nco_bool LST_RNK_GE2=False; /* [flg] Print extraction list of rank >= 2 variables */
   nco_bool LST_XTR=False; /* [flg] Print extraction list */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -389,6 +390,7 @@ main(int argc,char **argv)
     {"id",no_argument,0,0}, /* [flg] Print normally hidden information, like file, group, and variable IDs */
     {"lbr",no_argument,0,0},
     {"library",no_argument,0,0},
+    {"lst_hrz",no_argument,0,0}, /* [flg] Print extraction list of horizontal (lat, lon, no lev) variables */
     {"lst_rnk_ge2",no_argument,0,0}, /* [flg] Print extraction list of rank >= 2 variables */
     {"lst_xtr",no_argument,0,0}, /* [flg] Print extraction list */
     {"frac_b_nrm",no_argument,0,0}, /* [flg] Normalize map-file weights when frac_b >> 1 */
@@ -808,7 +810,8 @@ main(int argc,char **argv)
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
 	nc_set_log_level(log_lvl);
       } /* !log_lvl */
-      if(!strcmp(opt_crr,"lst_rnk_ge2") || !strcmp(opt_crr,"rank_ge2"))	LST_RNK_GE2=True; /* [flg] Print extraction list of rank >= 2 variables */
+      if(!strcmp(opt_crr,"lst_hrz")) LST_HRZ=True; /* [flg] Print extraction list of horizontal (lat, lon, no lev) */
+      if(!strcmp(opt_crr,"lst_rnk_ge2")) LST_RNK_GE2=True; /* [flg] Print extraction list of rank >= 2 variables */
       if(!strcmp(opt_crr,"lst_xtr") || !strcmp(opt_crr,"xtr_lst")) LST_XTR=True; /* [flg] Print extraction list */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")){
 	if(strchr(optarg,',')){
@@ -890,7 +893,7 @@ main(int argc,char **argv)
 	rgr_var=(char *)strdup(optarg);
       } /* !rgr_var */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nBit-Adjustment Alg.\t--baa, --bit_alg\nBuild-engine\t\t--bld, --build_engine\nByte-swap algorithm\t--bsa, --byte_swap\nCompiler used\t\t--cpl, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --shh, --secret\nLibrary used\t\t--lbr, --library\nLog level\t\t--log_lvl, --log_level\nList rank >= 2 vars\t--lst_rnk_ge2\nList extracted vars\t--lst_xtr\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nBit-Adjustment Alg.\t--baa, --bit_alg\nBuild-engine\t\t--bld, --build_engine\nByte-swap algorithm\t--bsa, --byte_swap\nCompiler used\t\t--cpl, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --shh, --secret\nLibrary used\t\t--lbr, --library\nLog level\t\t--log_lvl, --log_level\nList horizontal vars\t--lst_hrz\nList rank >= 2 vars\t--lst_rnk_ge2\nList extracted vars\t--lst_xtr\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"srm")) PRN_SRM=True; /* [flg] Print ncStream */
@@ -1208,6 +1211,9 @@ main(int argc,char **argv)
 
   /* [fnc] Print extraction list of N>=D variables and exit */
   if(LST_RNK_GE2) nco_xtr_ND_lst(trv_tbl);
+
+  /* [fnc] Print extraction list of horizontal (lat, lon, no lev) variables and exit */
+  if(LST_HRZ) nco_xtr_hrz_lst(trv_tbl);
 
   /* Were all user-specified dimensions found? */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);    
