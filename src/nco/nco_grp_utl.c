@@ -1283,20 +1283,28 @@ nco_xtr_hrz_lst /* [fnc] Print extraction list of horizontal (lat, lon, no lev) 
 (trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Print extraction list of horizontal (lat, lon, no lev) variables and exit
+     ncclimo calls ncks for an extraction list of variables when users do not specify explicit extraction list
+     When ncclimo is in timeseries mode and creating regional statistics, variables must be horizontal-only
+     Otherwise ncap2 call in ncclimo will fail
      Used by ncks to supply arguments to splitter that will work in ncap2 regional averaging
      Hence we restrict returned list to non-coordinate record variables
      Based on nco_xtr_ND_lst()
      Usage:
      ncks --lst_hrz ~/nco/data/in.nc
-     ncks --lst_hrz ~/data/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc
-     ncks --lst_hrz ~/data/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc */
+     ncks --lst_hrz ~/data/bm/elmv3_r05l15.nc
+     ncks --lst_hrz ~/data/ne30/rgr/ */
 
   const char fnc_nm[]="nco_xtr_hrz_lst()"; /* [sng] Function name */
 
-  const int rnk_xtr=2; /* [nbr] Minimum rank to extract */
+  const int rnk_min=2; /* [nbr] Minimum rank to extract */
+  const int rnk_max=3; /* [nbr] Maximum rank to extract */
+
+  char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
 
   int xtr_nbr_crr=0; /* [nbr] Number of N>=D variables found so far */
 
+  int dmn_idx; /* [idx] Dimension index */
+  int dmn_nbr_in; /* [nbr] Number of dimensions in input variable */
   int grp_id; /* [id] Group ID */
   int nc_id; /* [id] File ID */
   int var_id; /* [id] Variable ID */
@@ -1315,22 +1323,32 @@ nco_xtr_hrz_lst /* [fnc] Print extraction list of horizontal (lat, lon, no lev) 
       if(nco_is_spc_in_cf_att(grp_id,"bounds",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
       if(nco_is_spc_in_cf_att(grp_id,"cell_measures",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
       if(nco_is_spc_in_cf_att(grp_id,"climatology",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
-      for(int dmn_idx=0;dmn_idx<var_trv.nbr_dmn;dmn_idx++){
+      for(dmn_idx=0;dmn_idx<var_trv.nbr_dmn;dmn_idx++){
 	if(var_trv.var_dmn[dmn_idx].is_rec_dmn) trv_tbl->lst[idx_var].is_rec_lk_var=True;
       } /* !dmn_idx */
     } /* !nco_typ */
   } /* !idx_var */
 
-  /* If variable has N>=D dimensions, add it to list */
+  /* If variable has rnk_min <= N <= rnk_max dimensions, then examine for lev dimensions */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var){
-      if((trv_tbl->lst[idx_var].nbr_dmn >= rnk_xtr) && /* Rank at least 2 */
+      if(
+	 (trv_tbl->lst[idx_var].nbr_dmn >= rnk_min) && /* Rank at least 2 */
+	 (trv_tbl->lst[idx_var].nbr_dmn <= rnk_max) && /* Rank at most 3 */
 	 (!trv_tbl->lst[idx_var].is_crd_lk_var) && /* Not a coordinate-like variable */
 	 (trv_tbl->lst[idx_var].is_rec_lk_var) && /* Is a record variable */
 	 (trv_tbl->lst[idx_var].var_typ != NC_CHAR) && /* Not an array of characters */
 	 True){
-	(void)fprintf(stdout,"%s%s",(xtr_nbr_crr > 0) ? "," : "",trv_tbl->lst[idx_var].nm);
-	xtr_nbr_crr++;
+	/* 20250327: Ensure dimension names are only lat, lon, ncol, or time */
+	dmn_nbr_in=trv_tbl->lst[idx_var].nbr_dmn;
+	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	  dmn_nm_cp=trv_tbl->lst[idx_var].var_dmn[dmn_idx].dmn_nm;
+	  if(strcmp(dmn_nm_cp,"lat") && strcmp(dmn_nm_cp,"lon") && strcmp(dmn_nm_cp,"ncol") && strcmp(dmn_nm_cp,"time")) break;
+	} /* !dmn_idx */	
+	if(dmn_idx == dmn_nbr_in){
+	  (void)fprintf(stdout,"%s%s",(xtr_nbr_crr > 0) ? "," : "",trv_tbl->lst[idx_var].nm);
+	  xtr_nbr_crr++;
+	} /* !dmn_idx */
       } /* !N>=D */
     } /* !nco_typ */
   } /* !idx_var */
@@ -1338,7 +1356,7 @@ nco_xtr_hrz_lst /* [fnc] Print extraction list of horizontal (lat, lon, no lev) 
     (void)fprintf(stdout,"\n");
     nco_exit(EXIT_SUCCESS);
   }else{
-    (void)fprintf(stdout,"%s: ERROR %s reports no variables found with rank >= %d\n",nco_prg_nm_get(),fnc_nm,rnk_xtr);
+    (void)fprintf(stdout,"%s: ERROR %s reports no horizontal-only (lat, lon, ncol, time-only) variables found with %d <= rank <= %d\n",nco_prg_nm_get(),fnc_nm,rnk_min,rnk_max);
     nco_exit(EXIT_FAILURE);
   } /* !xtr_nbr_crr */
     

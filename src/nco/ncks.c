@@ -272,7 +272,7 @@ main(int argc,char **argv)
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
-  nco_bool LST_HRZ=False; /* [flg] Print extraction list of horizontal (lat, lon, no lev) variables */
+  nco_bool LST_HRZ=False; /* [flg] Print extraction list of horizontal (lat,lon,ncol,time) variables */
   nco_bool LST_RNK_GE2=False; /* [flg] Print extraction list of rank >= 2 variables */
   nco_bool LST_XTR=False; /* [flg] Print extraction list */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -390,7 +390,7 @@ main(int argc,char **argv)
     {"id",no_argument,0,0}, /* [flg] Print normally hidden information, like file, group, and variable IDs */
     {"lbr",no_argument,0,0},
     {"library",no_argument,0,0},
-    {"lst_hrz",no_argument,0,0}, /* [flg] Print extraction list of horizontal (lat, lon, no lev) variables */
+    {"lst_hrz",no_argument,0,0}, /* [flg] Print extraction list of horizontal (lat,lon,ncol,time) variables */
     {"lst_rnk_ge2",no_argument,0,0}, /* [flg] Print extraction list of rank >= 2 variables */
     {"lst_xtr",no_argument,0,0}, /* [flg] Print extraction list */
     {"frac_b_nrm",no_argument,0,0}, /* [flg] Normalize map-file weights when frac_b >> 1 */
@@ -810,7 +810,7 @@ main(int argc,char **argv)
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
 	nc_set_log_level(log_lvl);
       } /* !log_lvl */
-      if(!strcmp(opt_crr,"lst_hrz")) LST_HRZ=True; /* [flg] Print extraction list of horizontal (lat, lon, no lev) */
+      if(!strcmp(opt_crr,"lst_hrz")) LST_HRZ=True; /* [flg] Print extraction list of horizontal (lat,lon,ncol,time) */
       if(!strcmp(opt_crr,"lst_rnk_ge2")) LST_RNK_GE2=True; /* [flg] Print extraction list of rank >= 2 variables */
       if(!strcmp(opt_crr,"lst_xtr") || !strcmp(opt_crr,"xtr_lst")) LST_XTR=True; /* [flg] Print extraction list */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")){
@@ -1212,7 +1212,7 @@ main(int argc,char **argv)
   /* [fnc] Print extraction list of N>=D variables and exit */
   if(LST_RNK_GE2) nco_xtr_ND_lst(trv_tbl);
 
-  /* [fnc] Print extraction list of horizontal (lat, lon, no lev) variables and exit */
+  /* [fnc] Print extraction list of horizontal (lat,lon,ncol,time) variables and exit */
   if(LST_HRZ) nco_xtr_hrz_lst(trv_tbl);
 
   /* Were all user-specified dimensions found? */ 

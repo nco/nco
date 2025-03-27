@@ -1571,7 +1571,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    echo "${spt_nm}: WARNING Splitter mode without explicitly specified variable list (i.e., -v var_lst) splits all variables of rank >= 2 into separate files, thus doubling the on-disk data amount"
 	fi # !var_lst
 	if [ "${rgn_stt}" != 'No' ]; then 
-	    # 20250327 Restrict regional statistics to horizontal-only (lat, lon, no lev) timeseries
+	    # 20250327 Restrict regional statistics to horizontal-only (lat, lon, ncol) timeseries
 	    # ncap2 regional timeseries will break when extra (e.g., vertical) dimensions are present
 	    var_lst_flg_opt='--lst_hrz'
 	else # !rgn_stt
