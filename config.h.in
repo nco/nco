@@ -31,6 +31,9 @@
 /* Enable Large File Support (LFS) */
 #undef ENABLE_LARGEFILE
 
+/* Operators transmit --log_lvl to libnetCDF nc_set_log_level() */
+#undef ENABLE_LOGGING
+
 /* Define to 1 if libnetcdf.a contains netCDF4 functions */
 #undef ENABLE_NETCDF4
 

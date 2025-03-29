@@ -3765,6 +3765,9 @@ printf "%s\n" "#define HOSTNAME ${nco_hostname}" >>confdefs.h
 printf "%s\n" "#define GNU_TRP ${build}" >>confdefs.h
 
 
+printf "%s\n" "#define ENABLE_LOGGING 1" >>confdefs.h
+
+
 # Begin pvmgetarch Compatibility
 # Compatibility map between pvmgetarch and GNU triplets
 # Maintained as master list of architectures on which NCO is known to work

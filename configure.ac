@@ -110,6 +110,7 @@ fi
 AC_DEFINE_UNQUOTED(HOST,${nco_hostname},Hostname)
 AC_DEFINE_UNQUOTED(HOSTNAME,${nco_hostname},Hostname alias)
 AC_DEFINE_UNQUOTED(GNU_TRP,${build},Autoconf-generated architecture \"triplet\")
+AC_DEFINE([ENABLE_LOGGING],[1],[Operators transmit --log_lvl to libnetCDF nc_set_log_level()])
 
 # Begin pvmgetarch Compatibility
 # Compatibility map between pvmgetarch and GNU triplets
