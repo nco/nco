@@ -1,3 +1,9 @@
+nco (5.3.4-1) unstable; urgency=low
+
+  * new upstream version fxm:
+
+ -- Charlie Zender <zender@uci.edu> Fri, 16 May 2025 12:26:21 -0700
+
 nco (5.3.3-1) unstable; urgency=low
 
   * new upstream version Sea Shanty: all: qnt ngt zro NaN; ncks: --fpe, ngl rsn chk map, s1d frc_column frc_landunit attribute fix; ncclimo: rgn_stt uses --lst_hrz; ncremap: fix prs->hyb w/fat tpl; ncrename: WARN crd/dmn netCDF4

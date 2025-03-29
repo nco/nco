@@ -1,8 +1,14 @@
+2025-03-29  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.3.4-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha01: Severence';git push
+	git tag -a 5.3.4-alpha01 -m 'Functionally identical to 5.3.3';git push --tags
+
 2025-03-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.3 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.3: Sea Shanty';git push
-	git tag -a 5.3.3 -m 'all: qnt ngt zro NaN; ncks: --fpe, ngl rsn	chk map, s1d frc_column frc_landunit attribute fix; ncclimo: rgn_stt uses --lst_hrz; ncremap: fix prs->hyb w/fat tpl; ncrename: WARN crd/dmn netCDF4';git push --tags
+	git tag -a 5.3.3 -m 'all: qnt ngt zro NaN; ncks: --fpe, ngl rsn chk map, s1d frc_column frc_landunit attribute fix; ncclimo: rgn_stt uses --lst_hrz; ncremap: fix prs->hyb w/fat tpl; ncrename: WARN crd/dmn netCDF4';git push --tags
 
 	* Acceptance tests pass again on Perlmutter after switching from private to Conda-Forge UDUnits
 

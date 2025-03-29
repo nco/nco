@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.3 split the uprights
+netCDF Operators NCO version 5.3.4 split the uprights
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.3 adds IEEE floating-point exception testing to ncks.
+Version 5.3.4 adds IEEE floating-point exception testing to ncks.
 All operators include corner-case quantization fixes for strange
 numbers (-0.0, NaN) that are also now in the netCDF-C Library.
 ncclimo now only tries to create regional timeseries statistics
@@ -18,7 +18,7 @@ Skip this release if these changes do not interest you.
 
 Did you realize that the first public release of ncks was May 2, 1995?
 https://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/1995/msg00069.html
-Happy 30th birthday ncks! 
+Happy 30th birthday ncks!!!
 
 Enjoy,
 Charlie
