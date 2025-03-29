@@ -1,20 +1,27 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.3 splits the uprights
+netCDF Operators NCO version 5.3.3 split the uprights
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.3 adds minor features and fixes to many operators.
-... ncremap and
-quantization.
-ncremap now WARNs users attempting to rename coordinates in netCDF4
-files. 
+Version 5.3.3 adds IEEE floating-point exception testing to ncks.
+All operators include corner-case quantization fixes for strange
+numbers (-0.0, NaN) that are also now in the netCDF-C Library.
+ncclimo now only tries to create regional timeseries statistics
+on variables that are single-level horizontal lat/lon/ncol fields.
+ncremap supports interpolation of pure-pressure to hybrid
+sigma-pressure coordinates with distinct source and destination
+surface pressure fields. And ncrename adds some words of caution.
 Skip this release if these changes do not interest you. 
 
-Work on 5.3.4 is underway and includes improved NC_STRING
-autoconversion support for other NCO operators.
+Did you realize that the first public release of ncks was May 2, 1995?
+https://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/1995/msg00069.html
+Happy 30th birthday ncks! 
+
+Enjoy,
+Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
@@ -126,9 +133,6 @@ for the frc_column and frc_landunit variables created by the S1D
 feature. This is fixed. There is no workaround. The solution is
 to upgrade
 http://nco.sf.net/nco.html#s1d
-
-Enjoy,
-Charlie
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
