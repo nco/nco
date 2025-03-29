@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.3
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 21 March 2025
+@set update-date 28 March 2025
 @set update-month March 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -25760,7 +25760,8 @@ ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
 [--prm_int] [--prw wgt_arr] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
-[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x] [-y @var{op_typ}]
+[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x]
+[-Y @var{prg_nm}] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -25915,6 +25916,37 @@ This allows useful arithmetic to be performed on Boolean values stored
 in the space-conserving @code{NC_BYTE} (single-byte) format.
 @example
 ncra --prm_ints in*.nc out.nc
+@end example
+
+@html
+<a name="pseudonym"></a> <!-- http://nco.sf.net/nco.html#pseudonym -->
+<a name="prg_nm"></a> <!-- http://nco.sf.net/nco.html#prg_nm -->
+@end html
+@cindex @code{--pseudonym}
+@cindex @code{--prg_nm}
+@cindex @code{-Y}
+@cindex pseudonym
+One odd feature of @command{ncra} is that its source code is also the
+source code for @command{ncrcat} and @command{nces}.
+In the @acronym{NCO} @acronym{UNIX} installation, @command{ncrcat} and
+@command{nces} are symbolic links to the @command{ncra} executable.
+The binary executable determines how to behave based on the name with
+which it was invoked.
+(This is not good programming style, do not try this at home).
+The @samp{-Y @var{prg_nm}} option (and long-option equivalents
+@samp{--prg_nm=@var{prg_nm}} or @samp{--pseudonym=@var{prg_nm}})
+can also be used to tell the @command{ncra} binary to behave like
+program specified by @var{prg_nm}.
+Valid values of @var{prg_nm} are @code{nces}, @code{ncra}, and
+@code{ncrcat}. 
+These three examples produce identical result via three different
+invocations:
+@example
+@verbatim
+nces in*.nc out.nc
+ncra -Y nces in*.nc out.nc
+ncra --prg_nm=nces in*.nc out.nc
+@end verbatim
 @end example
 
 @ignore
@@ -31412,9 +31444,10 @@ Excellent bug reports and feature requests.
 @cindex Craig MacLachlan
 @cindex Hugo Oliveira
 @cindex Rich Signell
+@cindex Jeff Whitaker
 @cindex Kyle Wilcox
 @cindex Klaus Zimmermann
-@item Filipe Fernandes, Isuru Fernando, Craig MacLachlan, Hugo Oliveira, Rich Signell, Kyle Wilcox, Klaus Zimmermann
+@item Filipe Fernandes, Isuru Fernando, Craig MacLachlan, Hugo Oliveira, Rich Signell, Jeff Whitaker, Kyle Wilcox, Klaus Zimmermann
 Anaconda packaging
 @cindex Xylar Asay-Davis
 @cindex Daniel Baumann

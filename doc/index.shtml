@@ -156,8 +156,8 @@ and
 
 <ul>
 <li>2025 May&nbsp;??: 5.3.4 <i>In Progress...</i>
-<li>2025 Mar&nbsp;??: 5.3.3 Minor features + fixes
-<li>2025 Feb&nbsp;??: 5.3.2 ECMWF/IFS/CAMS support
+<li>2025 Mar&nbsp;28: 5.3.3 Minor features + fixes
+<li>2025 Feb&nbsp;05: 5.3.2 ECMWF/IFS/CAMS support
 <li>2025 Jan&nbsp;12: 5.3.1 ncclimo/ncremap features
 <li>2024 Dec&nbsp;23: 5.3.0 S1D more features
 <li>2024 Oct&nbsp;18: 5.2.9 S1D features
@@ -676,11 +676,12 @@ netCDF4 user-defined types support;
 <li><b>NCO 5.3.4</b>: (<i>In Progress, features in-progress or complete include</i>)
 <tt>ncremap --vrt</tt> works with 3D pressure fields (e.g., MERRA2)</li>
 <li><b>NCO 5.3.3</b>: (<i>Current Stable Release</i>)
-<tt>all</tt> Quantization fix so -0.0 does not trigger SIGFPE;
+<tt>all</tt> Quantization fix so -0.0, NaN do not trigger SIGFPE;
 <tt>ncks --fpe</tt> activates IEEE Floating Point Exception WARNINGs;
 <tt>ncks --chk_map</tt> prints grids' angular resolutions;
 <tt>ncks --s1d</tt> saves frc_column frc_landunit correctly;
 <tt>ncremap --vrt</tt> interpolates prs->hyb with fat templates;
+<tt>ncclimo --rgn_stt</tt> selects only 2D spatial variables;
 <tt>ncrename</tt> WARNs on coordinate renaming in netCDF4 files;</li>
 <li><b>NCO 5.3.2</b>: 
 <tt>all</tt> Quantization fix for non-root group variables;

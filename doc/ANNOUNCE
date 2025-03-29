@@ -16,6 +16,8 @@ Skip this release if these changes do not interest you.
 Work on 5.3.4 is underway and includes improved NC_STRING
 autoconversion support for other NCO operators.
 
+NEW FEATURES (full details always in ChangeLog):
+
 A. The new ncks --fpe option reports the status of all IEEE Floating
 Point Exceptions (FPEs) after execution. This can be useful to verify
 whether input datasets contain strange numbers that could be
@@ -34,19 +36,67 @@ ncks: FE_UNDERFLOW is not raised
 http://nco.sf.net/nco.html#fpe
 http://nco.sf.net/nco.html#ncks
 
-A. All operators can now quantize -0.0 (a legal number) without
-triggering and IEEE Floating Point Exceptions (FPEs). Other weird
+B. All operators can now quantize -0.0 (a legal number) without
+triggering any IEEE Floating Point Exceptions (FPEs). Other weird
 numbers, like NaN, already avoided FPEs. Moreover, the necessary
 changes to avoid FPEs have been merged upstream into the quantization
-algorithms in libnetcdf version 4.10-development. Thanks to fxm
-
-Thanks to fxm for reporting this, and to Ward Fisher for merging.
+algorithms in libnetcdf version 4.10-development. Thanks to Jeff
+Whitaker (NOAA) for bringing this to our attention, to M. Garcia
+for the original bug report, and to Ward Fisher for merging.
 http://nco.sf.net/nco.html#qnt
 
-A. ncremap now WARNs users attempting to rename coordinates in netCDF4 
-files. The WARNING, which prints only when debugging level > 0, the
-input file is in netCDF4 format, and the user tries to rename a
-variable or dimension, is self-explanatory:
+C. When no explicit variable extraction list is specified in
+timeseries mode, ncclimo automatically creates timeseries for all
+input variables with at least two dimension. However, when regional
+statistics are also requested with --rgn_stt, these statistics are
+only meaningful for spatial timeseries, i.e., single level fields with
+latitude, longitude, and time. Under these circumstances ncclimo now
+only creates regional statistics for single level spatial timeseries.
+Previously it would try (and fail) to generate regional statistics 
+for multi-level or otherwise inappropriate rank >=2 variables.
+
+ls caseid*.nc | ncclimo --split --rgn_avg -s 2013 -e 2014 -o foo
+
+http://nco.sf.net/nco.html#ncclimo
+
+D. Previous versions of NCO could only interpolate ECMWF/IFS
+data to hybrid sigma-pressure coordinates when the input
+surface pressure (lnsp) was for the output as well. Now NCO
+can interpolate to a distinct output surface pressure that
+is storeed in the vertical template file (a so-called "fat"
+template that includes the surface pressure, rather than a
+"skinny" template that does not).
+
+ncremap --ps_nm=lnsp --vrt_fl=vrt.nc in.nc out.nc
+
+http://nco.sf.net/nco.html#vrt
+http://nco.sf.net/nco.html#ncremap
+
+E. ncks --chk_map now prints the minimum and maximum angular
+and horizontal resolution of the source and destination grids.
+The angular resolution is estimated as the square-root of the area
+(in sr) of the smallest/largest gridcells, and is expressed in
+degrees. The spatial resolution is estimated 
+This is the angle subtended by a spherical cap with the same area
+as the gridcell.
+
+% ncks --chk_map map_ne30pg2_to_cmip6_180x360_ncoaave.20231201.nc
+...
+area_a min, ~dx: 4.9093515660647374e-04 sr, ~141.14 km, ~1.27 degrees in grid A cell [14462,-45.7267,+177.69]
+area_a max, ~dx: 6.8523331840188574e-04 sr, ~166.75 km, ~1.50 degrees in grid A cell [1858,+0.749936,+359.25]
+...
+area_b min, ~dx: 2.6580860638549116e-06 sr, ~10.39 km, ~0.09 degrees in grid B cell [60,-89.5,+59.5]
+area_b max, ~dx: 3.0460968486221404e-04 sr, ~111.18 km, ~1.50 degrees in grid B cell [32272,-0.5,+231.5]
+...
+
+This feature can be useful in assessing the uniformity of grids, and
+http://nco.sf.net/nco.html#chk_map
+http://nco.sf.net/nco.html#ncks
+
+F. ncrename now WARNs users attempting to rename coordinates in
+netCDF4 files. The WARNING, which prints only when debugging level
+> 0, the input file is in netCDF4 format, and the user tries to
+rename a variable or dimension, is self-explanatory:
 
 zender@spectral:~$ ncrename -D 1 -O -v lat,latitude in.nc out.nc
 ncrename: WARNING Renaming variables, dimensions, and attributes in any netCDF3-format file (i.e., classic, 64-bit, and CDF5) ALWAYS works. Moreover, renaming groups and attributes in any netCDF4-format file always works. However, these re-assuring notes precede a discomfitting message: A longstanding problem in the netCDF library (it is not an NCO issue per se) sometimes crashes ncrename or, even worse, silently corrupts data in the output file when input file is netCDF4-format. These outcomes are only known to occur when attempting to rename variables to/from the same names as dimensions (i.e., coordinate variables), and or dimensions to/from the same names as variables. A long thread describing the status of this issue since 2017 is at https://github.com/Unidata/netcdf-c/issues/597. A chronology of the issue dating back to 2007 is at https://nco.sourceforge.net/nco.html#bug_nc4_rename.
@@ -69,21 +119,16 @@ expect no text output from ncrename. This compromise is intended
 to prevent widespread panic and mass hysteria. Thanks to Toby Searle
 (UKMO) for prompting this change.
 
-Enjoy,
-Charlie
-
-NEW FEATURES (full details always in ChangeLog):
-
 BUG FIXES:
    
-A. donePrevious versions of NCO would sometimes fail to store
-quantization metadata for variables in non-root groups. Now
-quantization metadata works on variables in non-root groups.
+A. Previous versions of NCO could omit storing the attributes
+for the frc_column and frc_landunit variables created by the S1D
+feature. This is fixed. There is no workaround. The solution is
+to upgrade
+http://nco.sf.net/nco.html#s1d
 
-ncks -O --qnt=btr --ppc dfl=6 -g g1 in_grp.nc out.nc
-
-Thanks to Matt Thompson (GSFC) for reporting this.
-http://nco.sf.net/nco.html#qnt
+Enjoy,
+Charlie
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

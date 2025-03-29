@@ -1,11 +1,14 @@
+2025-03-28  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.3.3 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.3: Sea Shanty';git push
+	git tag -a 5.3.3 -m 'all: qnt ngt zro NaN; ncks: --fpe, ngl rsn	chk map, s1d frc_column frc_landunit attribute fix; ncclimo: rgn_stt uses --lst_hrz; ncremap: fix prs->hyb w/fat tpl; ncrename: WARN crd/dmn netCDF4';git push --tags
+
+	* Document ncra -Y --prg_nm --pseudonym
+
 2025-03-27  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.3.4 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.4: Sea Shanty';git push
-	git tag -a 5.3.3 -m 'all: qnt ngt zro NaN; ncks: --fpe, ngl rsn
-	chk map, s1d frc_column frc_landunit attribute fix; ncclimo: rgn_stt uses --lst_hrz; ncremap: fix prs->hyb w/fat tpl; ncrename: WARN crd/dmn netCDF4';git push --tags
-
-	* Add nCells, Time to allowed horizontal dimensions in --lst_hrz
+	* Add nCells, Time to allowed horizontal dimensions in ncks --lst_hrz
 
 	* ncks --lst_hrz seems to work in ncclimo
 
