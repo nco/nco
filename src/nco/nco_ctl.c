@@ -1142,6 +1142,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--nsm_sfx")) (void)fprintf(stdout,"    --nsm_sfx, ensemble_suffix\tPlace ensemble output in group parent/parent+nsm_sfx\n");
   if(strstr(opt_sng,"[-O]")) (void)fprintf(stdout,"-O, --ovr, overwrite\tOverwrite existing output file, if any\n");
   if(strstr(opt_sng,"[-o")) (void)fprintf(stdout,"-o, --output, fl_out \tOutput file name (or use last positional argument)\n");
+  if(strstr(opt_sng,"--rad")) (void)fprintf(stdout,"    --orphan, rph_dmn\tRetain or print all (including orphaned) dimensions\n");
   if(strstr(opt_sng,"[-P")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-P, --prn, print\tPrint data, metadata, and units. Abbrev. for -C -H -M -m -u.\n");
     if(prg_lcl == ncpdq) (void)fprintf(stdout,"-P, --pck_plc, pack_policy pck_plc\tPacking policy [all_new,all_xst,xst_new,upk]\n");
@@ -1155,7 +1156,6 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--qnt_alg")) (void)fprintf(stdout,"    --qnt_alg=alg_nm\tQuantization algorithm name\n");
   if(strstr(opt_sng,"[-R]")) (void)fprintf(stdout,"-R, --rtn, retain\tRetain remotely-retrieved files after use\n");
   if(strstr(opt_sng,"[-r]")) (void)fprintf(stdout,"-r, --revision, version\tCompile-time configuration and/or program version\n");
-  if(strstr(opt_sng,"--rad")) (void)fprintf(stdout,"    --orphan, rph_dmn\tRetain or print all (including orphaned) dimensions\n");
   if(strstr(opt_sng,"--ram_all")) (void)fprintf(stdout,"    --ram_all, diskless_all\tOpen netCDF3 files and create output files in RAM\n");
   if(strstr(opt_sng,"--rec_apn")) (void)fprintf(stdout,"    --rec_apn, record_append\tAppend records directly to output file\n");
   if(strstr(opt_sng,"--rgr")) (void)fprintf(stdout,"    --rgr key=value\tSee http://nco.sf.net/nco.html#regrid for valid keys\n");

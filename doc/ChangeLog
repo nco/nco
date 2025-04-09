@@ -1,8 +1,12 @@
-2025-03-29  Charlie Zender  <zender@uci.edu>
+2025-04-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha01: Severence';git push
-	git tag -a 5.3.4-alpha01 -m 'Functionally identical to 5.3.3 and ENABLE_LOGGING';git push --tags
+	git tag -a 5.3.4-alpha01 -m 'Functionally identical to 5.3.3 except ENABLE_LOGGING, !mnt_chk';git push --tags
+
+	* ncrcat: Do not perform monotonicity checks on bounds variables (they are never monotonic)
+
+2025-03-29  Charlie Zender  <zender@uci.edu>
 
 	* all: Implement ENABLE_LOGGING in configure.ac
 

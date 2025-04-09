@@ -1629,7 +1629,9 @@ main(int argc,char **argv)
             } /* end if ncrcat */
 
             /* Warn if record coordinate, if any, is not monotonic (unless interleaved) */
-            if(!FLG_ILV && nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)nco_rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
+	    //            if(!FLG_ILV && nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)nco_rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
+            /* Warn if record coordinate (except bounds coordinates, which are never monotonic), if any, is not monotonic (unless interleaved) */
+            if(!FLG_ILV && nco_prg_id == ncrcat && var_prc[idx]->is_crd_var && !nco_is_spc_in_cf_att(in_id,"bounds",var_prc[idx]->id,NULL)) (void)nco_rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
             /* Convert missing_value, if any, back to unpacked or unpromoted type
 	       Otherwise missing_value will be double-promoted when next record read in nco_msa_var_get_trv()
 	       Do not convert after last record otherwise normalization fails

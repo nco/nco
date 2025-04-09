@@ -230,7 +230,7 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
 
   return CNV_CCM_CCSM_CF;
   
-} /* end nco_cnv_ccm_ccsm_cf_inq() */
+} /* !nco_cnv_ccm_ccsm_cf_inq() */
 
 void
 nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF files */
@@ -300,7 +300,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
   } /* end else */
   
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
-} /* end nco_cnv_ccm_ccsm_cf_date */
+} /* !nco_cnv_ccm_ccsm_cf_date */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
@@ -391,7 +391,7 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
   
   return xtr_lst;
   
-} /* end nco_cnv_cf_crd_add() */
+} /* !nco_cnv_cf_crd_add() */
 
 int                                  /* O [rcd] Return code */
 nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
@@ -735,7 +735,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   if(dmn_mch) dmn_mch=(int *)nco_free(dmn_mch);
 
   return NC_NOERR;
-} /* end nco_cnv_cf_cll_mth_add() */
+} /* !nco_cnv_cf_cll_mth_add() */
 
 int
 nco_rdc_sng_to_op_typ /* [fnc] Convert operation string to integer */
