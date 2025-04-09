@@ -5522,6 +5522,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"j",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("j"); /* CMIP5 NorESM1 ocean */
     else if((rcd=nco_inq_dimid_flg(in_id,"latitude0",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("latitude0"); /* Oxford */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y"); /* NEMO */
+    else if((rcd=nco_inq_dimid_flg(in_id,"Y",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("Y"); /* Krakauer (2025) */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
     else if((rcd=nco_inq_dimid_flg(in_id,"a2x_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("a2x_ny"); /* E3SM coupler atmosphere domain */
     else if((rcd=nco_inq_dimid_flg(in_id,"g2x_ny",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("g2x_ny"); /* E3SM coupler glacier domain */
@@ -5571,6 +5572,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"i",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("i"); /* CMIP5 NorESM1 ocean */
     else if((rcd=nco_inq_dimid_flg(in_id,"longitude0",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("longitude0"); /* Oxford */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x"); /* NEMO */
+    else if((rcd=nco_inq_dimid_flg(in_id,"X",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("X"); /* Krakauer (2025) */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("y"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
     else if((rcd=nco_inq_dimid_flg(in_id,"x1",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x1"); /* NSIDC EASE */
     else if((rcd=nco_inq_dimid_flg(in_id,"a2x_nx",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("a2x_nx"); /* E3SM coupler atmosphere domain */
@@ -10049,6 +10051,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"south_north",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("south_north"); /* StackOverflow question https://stackoverflow.com/questions/68896581 */
     else if((rcd=nco_inq_varid_flg(in_id,"gridlat_0",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("gridlat_0"); /* NWS HRRR */
     else if((rcd=nco_inq_varid_flg(in_id,"y",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("y"); /* Rignot (2013) */
+    else if((rcd=nco_inq_varid_flg(in_id,"Y",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("Y"); /* Krakauer (2025) */
   } /* !lat_ctr_id */
   
   if(lon_ctr_id == NC_MIN_INT){
@@ -10080,6 +10083,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"west_east",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("west_east"); /* StackOverflow question https://stackoverflow.com/questions/68896581 */
     else if((rcd=nco_inq_varid_flg(in_id,"gridlon_0",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("gridlon_0"); /* NWS HRRR */
     else if((rcd=nco_inq_varid_flg(in_id,"x",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("x"); /* Rignot (2013) */
+    else if((rcd=nco_inq_varid_flg(in_id,"X",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("X"); /* Krakauer (2025) */
   } /* !lon_ctr_id */
   
   if(!lat_nm_in || !lon_nm_in){

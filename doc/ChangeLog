@@ -2,7 +2,9 @@
 
 	* NCO 5.3.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha02: Hypr Paddle';git push
-	git tag -a 5.3.4-alpha02 -m '';git push --tags
+	git tag -a 5.3.4-alpha02 -m 'ncremap: nfr X,Y crd';git push --tags
+
+	* Add X,Y as lon, lat dimensions in ncremap database (solves Nir Krakauer's issue)
 
 	* NCO 5.3.4-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha01: Severence';git push
