@@ -1,8 +1,12 @@
-2025-04-09  Charlie Zender  <zender@uci.edu>
+2025-04-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha02: Hypr Paddle';git push
 	git tag -a 5.3.4-alpha02 -m 'ncremap: nfr X,Y crd';git push --tags
+
+	* ncks squelch map-checker false-positive frac_a/b WARNINGs on TR bilinear maps
+
+2025-04-09  Charlie Zender  <zender@uci.edu>
 
 	* Add X,Y as lon, lat dimensions in ncremap database (solves Nir Krakauer's issue)
 

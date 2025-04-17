@@ -2201,7 +2201,20 @@ nco_map_chk /* Map-file evaluation */
     if(strcasestr(att_val,"none")) nco_rgr_mth_typ=nco_rgr_mth_none;
   } /* !att_val */
   if(nco_rgr_mth_typ == nco_rgr_mth_nil){
-    /* Search for TR metadata, global attribute changed from no_conserve to noconserve in ~2022 */
+    /* Search "method" metadata (TR introduced "method" attribute in ~2022)
+       NB: "method" is most reliable TR map-algorithm attribute and should be tested first
+       20250417: TR "method" attribute = "bilin" but "no_conserve" is "false" for at least some TR bilin maps, e.g.,
+       /global/cfs/cdirs/e3sm/wlin/remap/ne256pg2_RRSwISC6to18E3r5/alt2/map_ne256pg2_to_RRSwISC6to18E3r5_trbilin.c20250415.nc */
+    if(att_val) att_val=(char *)nco_free(att_val);
+    if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
+    cnv_sng=strdup("method");
+    att_val=nco_char_att_get(in_id,NC_GLOBAL,cnv_sng);
+    if(att_val)
+      if(strcasestr(att_val,"bilin"))
+	nco_rgr_mth_typ=nco_rgr_mth_bilinear;
+  } /* !nco_rgr_mth_typ */
+  if(nco_rgr_mth_typ == nco_rgr_mth_nil){
+    /* Search "no_conserve" metadata (TR changed attribute from "no_conserve" to "noconserve" ~2022) */
     if(att_val) att_val=(char *)nco_free(att_val);
     if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
     cnv_sng=strdup("no_conserve");
@@ -2211,7 +2224,7 @@ nco_map_chk /* Map-file evaluation */
 	nco_rgr_mth_typ=nco_rgr_mth_bilinear;
   } /* !nco_rgr_mth_typ */
   if(nco_rgr_mth_typ == nco_rgr_mth_nil){
-    /* Search for TR metadata, global attribute changed from no_conserve to noconserve in ~2022 */
+    /* Search "noconserve" metadata (TR changed attribute from "no_conserve" to "noconserve" ~2022) */
     if(att_val) att_val=(char *)nco_free(att_val);
     if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
     cnv_sng=strdup("noconserve");
