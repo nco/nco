@@ -5639,8 +5639,6 @@ if(0){
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-
-
     
 ####################
 #### ncrename tests #### OK!
@@ -6101,6 +6099,22 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
 
+#ncrename #32
+#ncap2 -O -4 -h -s 'global@history="Pre-existing history attribute"s' ~/foo.nc
+#ncap2 -O -s 'one=1' ~/foo.nc ~/foo.nc
+#ncrename --dbg=1 -O -v .one,two ~/foo.nc ~/foo2.nc
+#ncks -M ~/foo2.nc | wc | cut -d ' ' -f 7
+# Check that NC_STRING history attribute appending works with ncrename
+    $dsc_sng="netCDF4: Check that NC_STRING history attribute appending works";
+    $tst_cmd[0]="ncap2 -O -4 -h -s 'global\@history=\"Pre-existing history attribute\"s' %tmp_fl_00%";
+    $tst_cmd[1]="ncap2 -O -s 'one=1' %tmp_fl_00% %tmp_fl_00%";
+    $tst_cmd[2]="ncrename -O -v .one,two %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[3]="ncks -M %tmp_fl_01% | wc | cut -d ' ' -f 6"; # Should be 3 history attribute lines, 11 total lines 
+    $tst_cmd[4]="11";
+    $tst_cmd[5]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.		
+    
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
 ####################

@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha02: Hypr Paddle';git push
 	git tag -a 5.3.4-alpha02 -m 'ncks: map chk trbilin fix, brk sng	att prn; ncremap: nfr XY crd';git push --tags
 
+	* NCO_rgr.pl: Add ncrename #32 to check that NC_STRING history attribute appending works
+
 	* ncks break CDL NC_STRING attributes at every '\n' like NC_CHAR attributes nco_prn.c
 
 2025-04-17  Charlie Zender  <zender@uci.edu>
