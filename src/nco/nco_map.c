@@ -2520,7 +2520,7 @@ nco_map_chk /* Map-file evaluation */
     
     /* Ignore frac_a values when area_a or area_b are all invalid or zero */
     if(!has_area_a || !has_area_b) fprintf(stdout,"INFO: The following frac_a metrics may be safely ignored because either or both area_a and area_b are everywhere undefined or zero\n");
-    if(nco_rgr_mth_typ == nco_rgr_mth_bilinear) fprintf(stdout,"INFO: Map-file metadata indicates these weights were produced by an intentionally non-conservative algorithm (e.g., bilinear). Scary-looking conservation metrics are therefore expected.\n");
+    if(nco_rgr_mth_typ == nco_rgr_mth_bilinear) fprintf(stdout,"INFO: Map-file metadata indicates that these weights were produced by an intentionally non-conservative algorithm (e.g., bilinear). Scary-looking conservation metrics are therefore expected.\n");
     fprintf(stdout,"Conservation metrics (column-sums of area_b-weighted weights normalized by area_a) and errors\nPerfect metrics for global unmasked Grid B are avg = min = max = 1.0, mbs = rms = sdn = 0.0:\n");
     fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_a ? "Area-weighted m" : "M");
     fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Minimum in grid A cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);

@@ -1136,9 +1136,9 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     rcd+=nco_inq_att(out_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
     if(att_typ != NC_CHAR){
       /* 20240809: NC_STRING patch currently fails with ncatted, ncrename */
-      if(att_typ == NC_STRING && nco_prg_id_get() != ncatted && nco_prg_id_get() != ncrename){
-	//      if(att_typ == NC_STRING && nco_prg_id_get() != ncrename){ // 20240811
-      //if(att_typ == NC_STRING){ // NC_STRING type history attribute is supported
+      //if(att_typ == NC_STRING && nco_prg_id_get() != ncatted && nco_prg_id_get() != ncrename){
+      /* 20250418: Try to fix NC_STRING patch for ncatted, ncrename */
+      if(att_typ == NC_STRING){ // NC_STRING type history attribute is supported
 	;
       }else{
 	if(att_typ == NC_STRING && (nco_prg_id_get() == ncatted || nco_prg_id_get() == ncrename)) (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s. Command will proceed normally except current command line will not be appended to \"%s\" attribute in output file because of a bug (that we are trying to solve) in the implementation of modifying NC_STRING \"%s\" attributes for ncatted and ncrename.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),att_nm,att_nm); else (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s or %s, in violation of NUG and CF conventions. Therefore current command line will not be appended to \"%s\" attribute in output file.\n",nco_prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),nco_typ_sng(NC_STRING),att_nm);
@@ -1165,7 +1165,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     /* Add 4 for formatting characters */
     hst_new=(char *)nco_malloc((strlen(hst_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4UL)*sizeof(char));
     (void)sprintf(hst_new,"%s: %s\n%s",time_stamp_sng,hst_sng,hst_crr);
-  } /* endif history global attribute currently exists */
+  } /* !idx (i.e., history global attribute currently exists) */
 
   if(att_typ == NC_CHAR) rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,att_typ,(long int)(strlen(hst_new)+1UL),(void *)hst_new);
   if(att_typ == NC_STRING) rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,att_typ,(long int)att_sz,(void *)hst_new_sngp);

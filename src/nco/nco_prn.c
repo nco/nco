@@ -702,7 +702,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	sng_lngm1=sng_lng-1UL;
 	if(CDL||XML||JSN){
 	  /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
-	  sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
+	  sng_val_sng_cpy=sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
 	  if(CDL||JSN) (void)fprintf(fp_out,"\"");
 	  sng_val_sng[0]='\0';
 	  for(chr_idx=0;chr_idx<sng_lng;chr_idx++){
@@ -710,7 +710,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    chr_val=sng_val[chr_idx];
 	    /* (void)strcat(sng_val_sng,(CDL) ? chr2sng_cdl(chr_val,val_sng) : chr2sng_xml(chr_val,val_sng)); */
 	    (void)strcat(sng_val_sng,(CDL ? chr2sng_cdl(chr_val,val_sng) : XML ? chr2sng_xml(chr_val,val_sng) : chr2sng_jsn(chr_val,val_sng)));
-	  } /* end loop over character */
+	    /* 20250418: break NC_STRING attributes at every newling "\n" just like NC_CHAR attributes */
+	    if(chr_val == '\n' && chr_idx != sng_lngm1 && CDL) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
+	  } /* !chr_idx */
 	  (void)fprintf(fp_out,"%s%s",sng_val_sng,(XML) ? "" : "\"");
 	  /* Print separator after non-final string */
 	  if(lmn != att_szm1) (void)fprintf(fp_out,"%s",spr_sng);
