@@ -1,8 +1,10 @@
-2025-04-18  Charlie Zender  <zender@uci.edu>
+2025-04-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha02: Hypr Paddle';git push
-	git tag -a 5.3.4-alpha02 -m 'ncatted, ncrename: apn NC_STRING hst att; ncks: map chk trbilin fix, brk sng att prn; ncremap: nfr XY crd';git push --tags
+	git tag -a 5.3.4-alpha02 -m 'ncatted, ncrename: apn NC_STRING hst att pls rgr tst; ncks: map chk trbilin fix, sng att prn ln brk; ncremap: nfr XY crd';git push --tags
+
+2025-04-18  Charlie Zender  <zender@uci.edu>
 
 	* ncrcat fix regression introduced by using in_id not grp_id in	monotonicity bounds checks
 
