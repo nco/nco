@@ -1555,7 +1555,7 @@ main(int argc,char **argv)
                   nco_exit(EXIT_FAILURE);
                 } /* !nco_cln_clc_dbl_var_dff() */
                 //nco_free(fl_udu_sng);
-              } /* end !do_rebase */
+              } /* !do_rebase */
             } /* !crd_var */
               
             if(nco_prg_id == ncra){
@@ -1606,7 +1606,7 @@ main(int argc,char **argv)
 		/* Perform arithmetic operations: avg, min, max, ttl, ... */
 		if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_typ,var_prc[idx],var_prc_out[idx]); else nco_opr_drv((long)1L,nco_op_typ,var_prc[idx],var_prc_out[idx]);
 	      } /* end else */ 
-            } /* end if ncra */
+            } /* !ncra */
 
             /* All processed variables contain record dimension and both ncrcat and ncra write records singly */
             var_prc_out[idx]->srt[rec_dmn_idx]=var_prc_out[idx]->end[rec_dmn_idx]=idx_rec_out[idx_rec];
@@ -1618,7 +1618,7 @@ main(int argc,char **argv)
               if(CNV_ARM && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
 	      if(var_trv->ppc != NC_MAX_INT){
 		if(var_trv->flg_nsd) (void)nco_ppc_bitmask(grp_out_id,var_prc_out[idx]->id,var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->val); else (void)nco_ppc_around(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->val);
-	      } /* endif ppc */
+	      } /* !ppc */
 	      if(nco_is_xcp(var_trv->nm)) nco_xcp_prc(var_trv->nm,var_prc_out[idx]->type,var_prc_out[idx]->sz,(char *)var_prc[idx]->val.vp);
 #ifdef _OPENMP
 #pragma omp critical
@@ -1626,10 +1626,10 @@ main(int argc,char **argv)
               if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
               /* Perform MD5 digest of input and output data if requested */
               if(md5) (void)nco_md5_chk(md5,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),grp_out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
-            } /* end if ncrcat */
+            } /* !ncrcat */
 
             /* Warn if record coordinate (except bounds coordinates, like time_bnds, which are never monotonic), if any, is not monotonic (unless interleaved) */
-            if(!FLG_ILV && nco_prg_id == ncrcat && var_prc[idx]->is_crd_var && !nco_is_spc_in_cf_att(in_id,"bounds",var_prc[idx]->id,NULL)) (void)nco_rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
+            if(!FLG_ILV && nco_prg_id == ncrcat && var_prc[idx]->is_crd_var && !nco_is_spc_in_cf_att(grp_id,"bounds",var_prc[idx]->id,NULL)) (void)nco_rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
             /* Convert missing_value, if any, back to unpacked or unpromoted type
 	       Otherwise missing_value will be double-promoted when next record read in nco_msa_var_get_trv()
 	       Do not convert after last record otherwise normalization fails

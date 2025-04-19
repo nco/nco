@@ -2,7 +2,11 @@
 
 	* NCO 5.3.4-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha02: Hypr Paddle';git push
-	git tag -a 5.3.4-alpha02 -m 'ncks: map chk trbilin fix, brk sng	att prn; ncremap: nfr XY crd';git push --tags
+	git tag -a 5.3.4-alpha02 -m 'ncatted, ncrename: apn NC_STRING hst att; ncks: map chk trbilin fix, brk sng att prn; ncremap: nfr XY crd';git push --tags
+
+	* ncrcat fix regression introduced by using in_id not grp_id in	monotonicity bounds checks
+
+	* nco_inq_varname() fix false negative in info loop when var_id not found
 
 	* NCO_rgr.pl: Add ncrename #32 to check that NC_STRING history attribute appending works
 
