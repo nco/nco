@@ -14708,7 +14708,7 @@ a1($time.size-1)=a1@max;
 @end verbatim
 @end example
 
-NetCDF allows all attribute types to have a size between one
+NetCDF allows all attribute types to have a size between one and
 @code{NC_MAX_ATTRS}. 
 Here is the metadata for variable @var{a1}:
 @example 
@@ -14786,7 +14786,7 @@ push(&number@squares,25ull); // numbers@squares=1,4,9,16,25
 @end example
 
 @noindent Now some text examples.@* 
-Remember, an atttribute identifier that begins with @@ implies a global
+Remember, an atttribute identifier that begins with @@ is a global
 attribute.
 For example, '@@institution' is short for 'global@@institution'.
 @example
@@ -14795,7 +14795,7 @@ global@greetings=push("hello"," world !!");
 global@greek={"alpha"s,"beta"s,"gamma"s};
 // Append an NC_STRING
 push(&@greek,"delta"s);
-// Pushing an NC_CHAR to a NC_STRING attribute is allowed, it is converted to an an NC_CHAR
+// Pushing an NC_CHAR to an NC_STRING attribute is allowed, it is converted to an NC_CHAR
 @e="epsilon";
 push(&@greek,@e);
 push(&@greek,"zeta"); 
@@ -16271,7 +16271,7 @@ The easiest method is to use an @code{NC_STRING} attribute.
 
 Below is a simple illustration that uses a vpointer of type
 @code{NC_CHAR}. 
-Remember an attribute starting with @code{@@} implies 'global', e.g.,  
+Remember an attribute starting with @code{@@} implies 'global', e.g.,
 @code{@@vpx} is short for @code{global@@vpx}. 
 @example
 @verbatim
@@ -18470,7 +18470,7 @@ regular expressions (@pxref{Subsetting Files}) for attribute names
 (it has ``always'' accepted regular expressions for variable names). 
 Regular expressions will select all matching attribute names. 
 @item var_nm
-Variable name. 
+Variable name.
 Example: @code{pressure}, @code{'^H2O'}.
 @cindex extended regular expressions
 @cindex regular expressions

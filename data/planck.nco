@@ -7,7 +7,7 @@
 
    Instacopy:
    scp ~/nco/data/planck.nco dust.ess.uci.edu:
-   scp ~/nco/data/planck.nco e3sm.ess.uci.edu:
+   scp ~/nco/data/planck.nco imua.ess.uci.edu:
 
    Purpose: ESS 138 examples of Planck's law, brightness temperature, and emissivity
 
@@ -32,7 +32,7 @@ msv_sfc=1.0; // [frc]
 msv_sfc@long_name="Greybody emissivity of emitting surface";
 msv_sfc@units="fraction";
 
-*wvl_nbr=100000;
+*wvl_nbr=100;
 defdim("wvl_ctr",wvl_nbr);
 defdim("wvl_ctr_mcr",wvl_nbr);
 defdim("wvn_ctr",wvl_nbr);
@@ -40,7 +40,7 @@ defdim("wvn_ctr_cgs",wvl_nbr);
 defdim("frq_ctr",wvl_nbr);
 *wvl_srt_mcr=0.2; // [um]
 *wvl_srt_ln=ln(wvl_srt_mcr);
-*wvl_end_mcr=1000.0; // [um]
+*wvl_end_mcr=100.0; // [um]
 *wvl_end_ln=ln(wvl_end_mcr);
 *wvl_ncr_ln=(wvl_end_ln-wvl_srt_ln)/$wvl_ctr_mcr.size;
 *wvl_ln=array(wvl_srt_ln,wvl_ncr_ln,$wvl_ctr_mcr);
@@ -52,7 +52,7 @@ wvl_ctr_mcr@units="microns";
 
 // 20200517: Two-step "trick" copies array values between arrays with same dimension sizes and different dimension names
 wvl_ctr[$wvl_ctr]=0.0;
-wvl_ctr(:)=wvl_ctr_mcr*1.0e-6; // [um]->[m]
+wvl_ctr(:)=wvl_ctr_mcr(:)*1.0e-6; // [um]->[m]
 wvl_ctr@long_name="Wavelength at band center";
 wvl_ctr@standard_name="sensor_band_central_radiation_wavelength";
 wvl_ctr@units="meters";
@@ -76,9 +76,12 @@ wvn_ctr_cgs@long_name="Wavenumber";
 wvn_ctr_cgs@standard_name="sensor_band_central_radiation_wavenumber";
 wvn_ctr_cgs@units="cm-1";
 
-plk_wvl[$wvl_ctr]=msv_sfc*2.0*hc2/wvl_ctr^5/(-1.0+exp(hc/(wvl_ctr*cst_Boltzmann*tpt_sfc)));
+//plk_wvl[$wvl_ctr]=msv_sfc*2.0*hc2/(wvl_ctr^5*(-1.0+exp(hc/(wvl_ctr*cst_Boltzmann*tpt_sfc))));
+plk_wvl[$wvl_ctr]=msv_sfc*2.0*cst_Planck*speed_of_light*speed_of_light/(wvl_ctr^5*(-1.0+exp(cst_Planck*speed_of_light/(wvl_ctr*cst_Boltzmann*tpt_sfc))));
 plk_wvl@long_name="Radiance at band center";
 plk_wvl@units="W m-2 sr-1 m-1";
+// 20250527: Excessively small values can create a dynamic range > 10^36 that breaks Panoply plotting
+where(plk_wvl < 10.0e-6) plk_wvl=0.0;
 
 plk_wvl_mcr[$wvl_ctr_mcr]=0.0;
 plk_wvl_mcr(:)=plk_wvl/1.0e6;
@@ -101,7 +104,7 @@ plk_frq@units="W m-2 sr-1 Hz-1";
 
 // Invert radiance field to obtain brightness temperature
 tpt_brt=hc/(wvl_ctr*cst_Boltzmann)/ln(1.0+2.0*hc2/(plk_wvl*wvl_ctr^5)); // Invert Planck equation for Tb
-tpt_brt@long_name="Brightness Temperature";
+tpt_brt@long_name="Retrieved Brightness Temperature";
 tpt_brt@standard_name="toa_brightness_temperature";
 tpt_brt@units="K";
 

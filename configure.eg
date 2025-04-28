@@ -763,14 +763,10 @@ ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CPPFLAG
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CPPFLAGS='-I/opt/netcdf/include -I/opt/homebrew/include' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' LDFLAGS='-L/opt/netcdf/lib -L/opt/homebrew/lib' NETCDF_ROOT=/opt/netcdf ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Spectral 20220624 with netCDF-dev and CCR
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CPPFLAGS='-I/opt/netcdf/include -I/opt/homebrew/include' CXX=${LINUX_CXX} CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' LDFLAGS='-L/opt/netcdf/lib -L/opt/homebrew/lib' NETCDF_ROOT=/opt/netcdf ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-# Spectral 20220713 old netCDF, no CCR
-ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Rigb 20190912 (fxm)
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='' CXX=${LINUX_CXX} CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-# Imua 20230509
-CC='gcc' CFLAGS='-I/usr/include/udunits2' CXX='g++' CXXFLAGS='-I/usr/include/udunits2' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-# Imua debug 20240809
-CC='gcc' CFLAGS='-I/usr/include/udunits2' CXX='g++' CXXFLAGS='-I/usr/include/udunits2' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+# Imua 20250419
+CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man
 
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
