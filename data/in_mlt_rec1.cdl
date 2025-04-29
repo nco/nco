@@ -1,13 +1,14 @@
 // -*-C++-*-
 
 // Purpose: CDL file to generate netCDF test file with multiple record dimensions
+// This file has two stations each with 10 time values
 
 // Usage:
-// ncgen -k netCDF-4 -b -o in_mlt_rec.nc in_mlt_rec.cdl
-// ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_mlt_rec.nc ${HOME}/nco/data/in_mlt_rec.cdl
-// ncgen -7 -lb -o "file://${HOME}/in#mode=nczarr,file" ${HOME}/nco/data/in_mlt_rec.cdl
+// ncgen -k netCDF-4 -b -o in_mlt_rec1.nc in_mlt_rec1.cdl
+// ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_mlt_rec1.nc ${HOME}/nco/data/in_mlt_rec1.cdl
+// ncgen -4 -lb -o "file://${HOME}/in#mode=nczarr,file" ${HOME}/nco/data/in_mlt_rec1.cdl
 
-netcdf in_mlt_rec {
+netcdf in_mlt_rec1 {
 dimensions:
 bnd=2,lat=2,lev=3,lon=4,station=unlimited,time=unlimited;
 variables:
@@ -67,6 +68,9 @@ variables:
 	int station(station);
 	station:long_name = "Station ID";
 
+	float stn_tm_val(station,time);
+	stn_tm_val:long_name = "Precipitation timeseries at each station";
+	
  data:
 	lat=-90,90;
 	lat_bnd=-90,0,0,90;
@@ -78,12 +82,7 @@ variables:
 	one_dmn_rec_var_dbl=1,2,3,4,5,6,7,8,9,10;
 	station = 1,2;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+        stn_tm_val={1.,1.,1.,1.,1.,1.,1.,1.,1.,1.},
+                   {2.,2.,2.,2.,2.,2.,2.,2.,2.,2.};
 
 } // !netcdf
-
-
-
-
-
-
-

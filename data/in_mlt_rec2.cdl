@@ -1,0 +1,89 @@
+// -*-C++-*-
+
+// Purpose: CDL file to generate netCDF test file with multiple record dimensions
+// This file has three stations each with 10 time values
+
+// Usage:
+// ncgen -k netCDF-4 -b -o in_mlt_rec2.nc in_mlt_rec2.cdl
+// ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_mlt_rec2.nc ${HOME}/nco/data/in_mlt_rec2.cdl
+// ncgen -4 -lb -o "file://${HOME}/in#mode=nczarr,file" ${HOME}/nco/data/in_mlt_rec2.cdl
+
+netcdf in_mlt_rec2 {
+dimensions:
+bnd=2,lat=2,lev=3,lon=4,station=unlimited,time=unlimited;
+variables:
+  :Conventions = "CF-1.5";
+
+	float lat(lat);
+	lat:long_name = "Latitude (typically midpoints)";
+	lat:units = "degrees_north";
+	lat:bounds = "lat_bnd";
+
+	float lat_bnd(lat,bnd);
+	lat_bnd:purpose = "Cell boundaries for lat coordinate";
+
+	float lev(lev);
+	lev:purpose = "Monotonically increasing coordinate pressure";
+	lev:long_name = "hybrid level at midpoints (1000*(A+B))";
+	lev:units = "hPa";
+	lev:positive = "down";
+	lev:A_var = "hyam";
+	lev:B_var = "hybm";
+	lev:P0_var = "P0";
+	lev:PS_var = "PS";
+	lev:bounds = "lev_bnd";
+        lev:standard_name = "atmosphere_hybrid_sigma_pressure_coordinate";
+        lev:formula_terms = "a: hyam b: hybm p0: P0 ps: PS";
+        lev:formula_readable = "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm";
+
+	float lev_bnd(lev,bnd);
+	lev_bnd:purpose = "Cell boundaries for lev coordinate";
+
+	float lon(lon);
+	lon:long_name = "Longitude (typically midpoints)";
+	lon:units = "degrees_east";
+
+	double time(time);
+	time:long_name = "time";
+	time:units = "days since 1964-03-12 12:09:00 -9:00"; 
+	time:calendar = "gregorian";
+	time:bounds = "time_bnds";
+	time:climatology = "climatology_bounds";
+
+	float time_bnds(time,bnd);
+	time_bnds:purpose = "Cell boundaries for time coordinate";
+
+	int one_dmn_rec_var(time);
+	one_dmn_rec_var:long_name = "one dimensional record variable";
+	one_dmn_rec_var:coordinates = "time";
+	one_dmn_rec_var:units = "kelvin";
+
+	float one_dmn_rec_var_flt(time);
+	one_dmn_rec_var_flt:long_name = "one dimensional record variable, single precision";
+
+	float one_dmn_rec_var_dbl(time);
+	one_dmn_rec_var_dbl:long_name = "one dimensional record variable, double precision";
+	one_dmn_rec_var_dbl:units = "second";
+
+	int station(station);
+	station:long_name = "Station ID";
+
+	float stn_tm_val(station,time);
+	stn_tm_val:long_name = "Precipitation timeseries at each station";
+	
+ data:
+	lat=-90,90;
+	lat_bnd=-90,0,0,90;
+	lev=100,500,1000;
+	lev_bnd=0,300,300,750,750,1013.25;
+	lon=0,90,180,270;
+	one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;
+	one_dmn_rec_var_flt=1,2,3,4,5,6,7,8,9,10;
+	one_dmn_rec_var_dbl=1,2,3,4,5,6,7,8,9,10;
+	station = 3,4,5;
+	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+        stn_tm_val={3.,3.,3.,3.,3.,3.,3.,3.,3.,3.},
+	           {4.,4.,4.,4.,4.,4.,4.,4.,4.,4.},
+                   {5.,5.,5.,5.,5.,5.,5.,5.,5.,5.};
+
+} // !netcdf
