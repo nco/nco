@@ -1505,6 +1505,16 @@ if [ ${fl_nbr} -eq 0 ] || [ -z ${fl_in[0]} ]; then
     exit 1
 fi # !fl_nbr
 
+# Sanity check that monthly climatologies received a multiple of twelve files
+if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then 
+    fpy=12
+    let fl_rmd=${fl_nbr}%${fpy}
+    if [ ${fl_rmd} -ne 0 ]; then
+	printf "${spt_nm}: ERROR User requested climatology of monthly files but number of input files supplied is ${fl_nbr} is not a multiple of 12. Climatologies of monthly resolution data are only supported for whole years, not partial years (although the splitter works with partial years if the --mth_srt and --mth_end options are used).\n"
+	printf "${spt_nm}: HINT Provide input filenames in multiples of 12\n"
+    fi # !fl_rmn
+fi # !clm_flg, !clm_md
+
 # Prepend drc_in to fl_in in MFOs (ncra, ncrcat)
 # 20240401 Also prepend drc_in to fl_in in SFOs (ncks, ncap2) used in hfc/hfs modes and in rgn_stt
 # Otherwise operators will fail to find input files when cwd != drc_in
@@ -1523,7 +1533,7 @@ if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
 	tm_var='time'
 	tm_bnds=`ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
 	if [ -z "${tm_bnds}" ]; then
-	    printf "${spt_nm}: ERROR High-frequency mode needs but failed to find bounds variable for record coordinate named \"${time}\" in input file \"${fl_in[0]}\". CF requires bounds variable to be specified as value of \"bounds\" attribute of coordinate. Typically record bounds variable is named \"time_bnds\" or \"time_bounds\".\nHINT: A workaround to this is to explicitly specify the number of timesteps-per-day in every input file with the --tpd option.\n"
+	    printf "${spt_nm}: ERROR High-frequency mode needs but failed to find bounds variable for record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\". CF requires bounds variable name to be specified as value of \"bounds\" attribute of coordinate. Typically record bounds variable is named \"time_bnds\" or \"time_bounds\".\nHINT: A workaround to this is to explicitly specify the number of timesteps-per-day in every input file with the --tpd option.\n"
 	    exit 1
 	fi # !tm_bnds
 	# 20201220: Using %g not %f in format results in tpd=10 not tpd=8 for 3-hourly EAM data!
@@ -2426,7 +2436,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     for mth in {01..12}; do
 	let clm_idx=${clm_idx}+1
 	MM=`printf "%02d" ${clm_idx}`
-	# Monthly filenames are every twelfth file from input list
+	# Monthly filenames are every twelfth file from input list (which is assumed to start with January)
 	if [ ${clm_md} = 'mth' ]; then 
 	    fl_all=''
 	    for ((yr_idx=0;yr_idx<yr_nbr;yr_idx++)); do

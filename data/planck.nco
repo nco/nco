@@ -32,7 +32,7 @@ msv_sfc=1.0; // [frc]
 msv_sfc@long_name="Greybody emissivity of emitting surface";
 msv_sfc@units="fraction";
 
-*wvl_nbr=100;
+*wvl_nbr=10000;
 defdim("wvl_ctr",wvl_nbr);
 defdim("wvl_ctr_mcr",wvl_nbr);
 defdim("wvn_ctr",wvl_nbr);
@@ -52,7 +52,7 @@ wvl_ctr_mcr@units="microns";
 
 // 20200517: Two-step "trick" copies array values between arrays with same dimension sizes and different dimension names
 wvl_ctr[$wvl_ctr]=0.0;
-wvl_ctr(:)=wvl_ctr_mcr(:)*1.0e-6; // [um]->[m]
+wvl_ctr(:)=wvl_ctr_mcr*1.0e-6; // [um]->[m]
 wvl_ctr@long_name="Wavelength at band center";
 wvl_ctr@standard_name="sensor_band_central_radiation_wavelength";
 wvl_ctr@units="meters";

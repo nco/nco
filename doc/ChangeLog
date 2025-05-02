@@ -1,8 +1,16 @@
-2025-04-19  Charlie Zender  <zender@uci.edu>
+2025-05-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha03: Complete Unknown';git push
 	git tag -a 5.3.4-alpha03 -m '';git push --tags
+
+	* ncclimo: Print $tm_var not $time in ERROR message
+
+2025-04-29  Charlie Zender  <zender@uci.edu>
+
+	* Add in_mlt_rec[12].cdl files to test concatenating station timeseries
+
+2025-04-19  Charlie Zender  <zender@uci.edu>
 
 	* Update build on Imua with Fedora 42 to use Anaconda
 
