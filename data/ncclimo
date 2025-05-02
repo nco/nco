@@ -1510,8 +1510,9 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     fpy=12
     let fl_rmd=${fl_nbr}%${fpy}
     if [ ${fl_rmd} -ne 0 ]; then
-	printf "${spt_nm}: ERROR User requested climatology of monthly files but number of input files supplied is ${fl_nbr} is not a multiple of 12. Climatologies of monthly resolution data are only supported for whole years, not partial years (although the splitter works with partial years if the --mth_srt and --mth_end options are used).\n"
-	printf "${spt_nm}: HINT Provide input filenames in multiples of 12\n"
+	printf "${spt_nm}: ERROR User requested climatology of monthly files and supplied ${fl_nbr} (not a multiple of 12) input files. Climatologies of monthly resolution data are only supported for whole years, not partial years (although the splitter works with partial years if the --mth_srt and --mth_end options are used).\n"
+	printf "${spt_nm}: HINT Provide input files in multiples of 12\n"
+	exit 1
     fi # !fl_rmn
 fi # !clm_flg, !clm_md
 
