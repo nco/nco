@@ -1506,11 +1506,13 @@ if [ ${fl_nbr} -eq 0 ] || [ -z ${fl_in[0]} ]; then
 fi # !fl_nbr
 
 # Sanity check that monthly climatologies received a multiple of twelve files
+# Automatically generated filenames have always adhered to this requirement
+# 20250509: Provision of filenames via other methods never checked this until NCO 5.3.4
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then 
     fpy=12
     let fl_rmd=${fl_nbr}%${fpy}
     if [ ${fl_rmd} -ne 0 ]; then
-	printf "${spt_nm}: ERROR User requested climatology of monthly files and supplied ${fl_nbr} (not a multiple of 12) input files. Climatologies of monthly resolution data are only supported for whole years, not partial years (although the splitter works with partial years if the --mth_srt and --mth_end options are used).\n"
+	printf "${spt_nm}: ERROR User requested climatology of monthly files and supplied ${fl_nbr} (not a multiple of 12) input files. Climatologies of monthly resolution data are only supported for whole years, not partial years (although the splitter works with partial years when the --mth_srt and --mth_end options are supplied).\n"
 	printf "${spt_nm}: HINT Provide input files in multiples of 12\n"
 	exit 1
     fi # !fl_rmn
@@ -1534,7 +1536,7 @@ if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
 	tm_var='time'
 	tm_bnds=`ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
 	if [ -z "${tm_bnds}" ]; then
-	    printf "${spt_nm}: ERROR High-frequency mode needs but failed to find bounds variable for record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\". CF requires bounds variable name to be specified as value of \"bounds\" attribute of coordinate. Typically record bounds variable is named \"time_bnds\" or \"time_bounds\".\nHINT: A workaround to this is to explicitly specify the number of timesteps-per-day in every input file with the --tpd option.\n"
+	    printf "${spt_nm}: ERROR High-frequency mode needs but failed to find bounds variable for record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\". CF requires bounds variable name to be specified as value of \"bounds\" attribute of coordinate used for time-mean output. Typically record bounds variable is named \"time_bnds\" or \"time_bounds\".\nHINT: A workaround, that also works for temporally instantaneous data (e.g., cell_methods=\"time: point\") that lacks a time bounds variable, is to explicitly specify the number of timesteps-per-day in every input file with the --tpd=\$tpd option.\n"
 	    exit 1
 	fi # !tm_bnds
 	# 20201220: Using %g not %f in format results in tpd=10 not tpd=8 for 3-hourly EAM data!

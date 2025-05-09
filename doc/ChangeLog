@@ -2,7 +2,9 @@
 
 	* NCO 5.3.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha03: Complete Unknown';git push
-	git tag -a 5.3.4-alpha03 -m '';git push --tags
+	git tag -a 5.3.4-alpha03 -m 'ncclimo: fix hfc wrn/err msg';git push --tags
+
+	* ncclimo: ERROR when monthly climo mode receives file list not divisible by 12
 
 	* ncclimo: Print $tm_var not $time in ERROR message
 

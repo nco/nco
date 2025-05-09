@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.4-alpha03
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 9 Apr 2025
-@set update-month Apr 2025
+@set update-date 8 May 2025
+@set update-month May 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -6194,7 +6194,7 @@ used in @w{Step 1} above.
 The new @acronym{SSC} option aggregates more than one input record at
 a time before performing arithmetic operations, and, with an
 additional switch, allows archival of those results in
-multiple-record output (MRO) files.  
+multiple-record output (@acronym{MRO}) files.  
 This reduces the task of producing the climatological summertime
 mean to @emph{one} step:
 @example
@@ -6230,8 +6230,30 @@ These operations generate and require no intermediate files.
 This contrasts to previous @acronym{NCO} methods, which require
 generating, averaging, then catenating 150 files.  
 The @samp{--mro} option only works on @command{ncra} and has no effect
-on (or rather is redundant for) @command{ncrcat}, since
+on (or rather, is redundant for) @command{ncrcat}, since
 @command{ncrcat} always outputs all selected records.
+
+Another example of the power of this sub-cycle feature is in
+coarsening the resolution of high frequency timeseries.
+Say you have 3-hourly data stored in a series of consecutive input
+files named @code{in1.nc, in2.nc, inN.nc}.
+You can coarsen this to a single file of daily-mean data with: 
+@example
+@verbatim
+ncra -O --mro -d time,${srt_idx},,8,8 in*.nc out.nc
+@end verbatim
+@end example
+@noindent
+Set @math{@var{srt_idx}=0} if the first timestep is identical to the
+rest, or @math{@var{srt_idx=1}} if the first timestep is an
+instantaneous output (e.g., restart value) associated with no time
+interval, e.g., @math{@code{time_bnds[0,0]=time_bnds[0,1]}}).
+The first eight in the temporal hyperslab argument is the stride
+between first elements of a group (i.e., every @math{8*3=24} hours),
+and the second eight is the number of records to average 
+within the group (i.e., average all @math{8*3=24} hours).
+The @samp{--mro} (multi-record output) switch tells @command{ncra}
+to create a single output record from each input group. 
 
 @html
 <a name="interleave"></a> <!-- http://nco.sf.net/nco.html#interleave -->

@@ -476,8 +476,9 @@ make install >> nco.make.foo 2>&1
 # Latest ticket to build NCO: 216373 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.9.2 module load nco/5.1.6 # 20240107
 # Personal recipe last modified: 20241119 (new paths)
-# Personal recipe last borken: 20241119 (NCO base works, ncap2 unable to link to antlr)
-# Personal recipe last successful: 20231103
+# Personal recipe borken since: 20241119 (NCO base works, ncap2 unable to link to antlr)
+# Personal recipe last fully successful: 20231103
+# Personal recipe last successful on base NCO (not ncap2): 20250507
 # Derecho GNU:
 module purge
 module load ncarenv gcc ncarcompilers netcdf udunits
