@@ -1,8 +1,14 @@
-2025-05-02  Charlie Zender  <zender@uci.edu>
+2025-05-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha03: Complete Unknown';git push
-	git tag -a 5.3.4-alpha03 -m 'ncclimo: fix hfc wrn/err msg';git push --tags
+	git tag -a 5.3.4-alpha03 -m 'ncclimo: fix hfc wrn/err msg; nfr tpd dpf from tm_var';git push --tags
+
+	* ncclimo infer tpd and dpf when time bounds not present
+
+	* ncclimo allow hfc and hfs input files that contain no time bounds variables
+
+2025-05-02  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo: ERROR when monthly climo mode receives file list not divisible by 12
 

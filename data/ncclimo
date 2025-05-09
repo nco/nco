@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Purpose: Climatology script tailored to CESM'ish monthly input and E3SM output guidelines
+# Purpose: Climatology script tailored to E3SM (and hence CESM'ish) input and E3SM output guidelines
 # Produces (and optionally regrids) climatological monthly means, seasonal means, annual means, CMIP6-style timeseries, global-mean timeseries, diurnal cycles
 
 # Copyright (C) 2015--present Charlie Zender
@@ -581,6 +581,7 @@ sgs_frc='' # [sng] Sub-grid fraction variable
 std_chk='Yes' # [sng] Check stdin for input file list
 sum_scl='1.0f' # Factor to convert area, time units ([sr], [km2], [s]) to desired units (e.g., [m2], [yr]) in sums
 thr_nbr=2 # [nbr] Thread number for regridder
+tm_bnd_flg='Yes' # [sng] Time coordinate contains valid bounds variable
 tms_flg='No' # [sng] Split (subset into timeseries) climatologies
 tpd_out=1 # [nbr] Timesteps-per-day in output
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
@@ -1534,22 +1535,35 @@ if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
 	# User requested high-frequency mode and did not specify tpd so (try to) infer it
 	# Examine bounds of second timestep in case first timestep is instantaneous (e.g., restart values)
 	tm_var='time'
-	tm_bnds=`ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
-	if [ -z "${tm_bnds}" ]; then
-	    printf "${spt_nm}: ERROR High-frequency mode needs but failed to find bounds variable for record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\". CF requires bounds variable name to be specified as value of \"bounds\" attribute of coordinate used for time-mean output. Typically record bounds variable is named \"time_bnds\" or \"time_bounds\".\nHINT: A workaround, that also works for temporally instantaneous data (e.g., cell_methods=\"time: point\") that lacks a time bounds variable, is to explicitly specify the number of timesteps-per-day in every input file with the --tpd=\$tpd option.\n"
-	    exit 1
-	fi # !tm_bnds
+	tm_bnd=`ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
+	if [ -z "${tm_bnd}" ]; then
+	    # 20250509 Use time-coordinate values when time bounds DNE
+	    tm_bnd_flg='No'
+	    #printf "${spt_nm}: ERROR High-frequency mode needs but failed to find bounds variable for record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\". CF requires bounds variable name to be specified as value of \"bounds\" attribute of coordinate used for time-mean output. Typically record bounds variable is named \"time_bnds\" or \"time_bounds\".\nHINT: A workaround, that also works for temporally instantaneous data (e.g., cell_methods=\"time: point\") that lacks a time bounds variable, is to explicitly specify the number of timesteps-per-day in every input file with the --tpd=\$tpd option.\n"
+	    #exit 1
+	fi # !tm_bnd
 	# 20201220: Using %g not %f in format results in tpd=10 not tpd=8 for 3-hourly EAM data!
 	# 20210815: Prefer to hyperslab second time index since some files contain an "instantaneous" (i.e., zero-duration) first timestep.
 	# However this presumes file has multiple timesteps---fails with monthly data
 	# 20210902: Use first time index if file has only one timestep
 	tm_nbr=`ncks --trd -M ${ppn_opt} ${fl_in[0]} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
-	[ "${tm_nbr}" -gt 1 ] 2>/dev/null && tm_idx='1' || tm_idx='0'
-	tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_bnds} -d ${tm_var},${tm_idx} -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
+	if [ "${tm_bnd_flg}" = 'Yes' ]; then
+	    [ "${tm_nbr}" -gt 1 ] 2>/dev/null && tm_idx='1' || tm_idx='0'
+	    tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_bnd} -d ${tm_var},${tm_idx} -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
+	else # !tm_bnd_flg
+	    if [ "${tm_nbr}" -le 1 ]; then
+		printf "${spt_nm}: ERROR High-frequency mode needs to know temporal resolution in timesteps-per-day and user did not did not explicitly specify the number of timesteps-per-day with the --tpd=\$tpd option. Therefore ${spt_nm} attempted to infer it. No time bounds variable was found for the record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\", therefore ${spt_nm} attempted to infer tpd from the interval between the first two values of \"${tm_var}\". However the time coordinate has only one value in the first input file so no time interval could be computed.\nHINT: Put multiple timesteps in the first input file and/or add a time bounds variable to it.\n"
+		exit 1
+	    fi # !tm_nbr
+	    echo "quark1"
+	    tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_var} -d ${tm_var},0,1 -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
+	    echo "tpd_out = ${tpd_out}"
+	    echo "quark2"
+	fi # !tm_bnd_flg
 	# Ensure result is positive integer
 	[ "${tpd_out}" -ge 0 ] 2>/dev/null && tpd_ntg='Yes' || tpd_ntg='No'
 	if [ "${tpd_ntg}" != 'Yes' ]; then
-	    printf "${spt_nm}: ERROR Inferred value of tpd=${tpd_out} is not a positive integer. User requested high-frequency climatology or splitter operations without specifying the number of timesteps per day (tpd) in the input files, so ${spt_nm} tried to infer tpd from the first input file. This operation resulted in a nonsense value. This is not surprising since a number of assumptions must hold true for the inferral to work correctly.\nHINT: Explicitly specify the number of timesteps-per-day in every input file with the --tpd option.\n"
+	    printf "${spt_nm}: ERROR Inferred value of tpd=${tpd_out} is not a positive integer. User requested high-frequency climatology or splitter operations without specifying the number of timesteps per day (tpd) in the input files, so ${spt_nm} tried to infer tpd from the first input file. This operation resulted in a nonsense value. This is not surprising since a number of assumptions must hold true for the inferral to work correctly.\nHINT: Explicitly specify the number of timesteps-per-day in every input file with the --tpd=\$tpd option.\n"
 	    exit 1
 	fi # !tpd_ntg
     fi # !tpd_usr
@@ -1688,8 +1702,24 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    # Solution: Base dpf on second file, not first file, if it exists
 	    fl_idx=$((fl_nbr > 1 ? 1 : 0))
 	    tm_var='time'
-	    tm_bnds=`ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[${fl_idx}]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
-	    dpf=`ncks --trd -H -s '%25.15f ' -v ${tm_bnds} -d ${tm_var},0 -d ${tm_var},-1 -C ${ppn_opt} ${fl_in[${fl_idx}]} | awk '{ print $4-$1; exit }'`
+	    tm_bnd=`ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[${fl_idx}]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
+	    if [ -z "${tm_bnd}" ]; then
+		# 20250509 Use time-coordinate values when time bounds DNE
+		tm_bnd_flg='No'
+	    fi # !tm_bnd
+	    if [ "${tm_bnd_flg}" = 'Yes' ]; then
+		dpf=`ncks --trd -H -s '%25.15f ' -v ${tm_bnd} -d ${tm_var},0 -d ${tm_var},-1 -C ${ppn_opt} ${fl_in[${fl_idx}]} | awk '{ print $4-$1; exit }'`
+	    else # !tm_bnd_flg
+		echo "quark3"
+		dpf=`ncks --trd -H -s '%25.15f ' -v ${tm_var} -d ${tm_var},0 -d ${tm_var},-1 -C ${ppn_opt} ${fl_in[${fl_idx}]} | awk '{ printf "%.0f\n",$2-$1; exit }'`
+		# This is a time coordinate not a time bounds so last-first value is often a decimal fraction not an integer
+		# For example, output files at 3 hourly resolution often have multiples of 8 timesteps with first at
+		# dayM day-fraction 0.0, last at dayN day-fraction 0.875, and difference is integer N-M plus 0.875.
+		# When difference > 0.5 it is often correct to round-up, i.e., to integer dpf=1.
+		echo "dpf = ${dpf}"
+		echo "quark4"
+	    fi # !tm_bnd_flg
+		
 	    # Ensure result is positive integer
 	    [ "${dpf}" -ge 0 ] 2>/dev/null && dpf_ntg='Yes' || dpf_ntg='No'
 	    if [ "${dpf_ntg}" != 'Yes' ]; then
@@ -2207,6 +2237,9 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: sgs_frc  = ${sgs_frc}\n"
     printf "dbg: sum_scl  = ${sum_scl}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
+    printf "dbg: tm_bnd   = ${tm_bnd}\n"
+    printf "dbg: tm_nbr   = ${tm_nbr}\n"
+    printf "dbg: tm_var   = ${tm_var}\n"
     printf "dbg: tms_flg  = ${tms_flg}\n"
     printf "dbg: tpd_out  = ${tpd_out}\n"
     printf "dbg: uio_flg  = ${uio_flg}\n"
