@@ -1640,9 +1640,9 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
 } /* end nco_trv_tbl_nm_id() */
 
 void
-nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordinates associated with extracted variables */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+nco_xtr_crd_ass_add /* [fnc] Add to extraction list all coordinates associated with extracted variables */
+(const int nc_id, /* I [ID] netCDF file ID */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Add to extraction list all coordinates associated with extracted variables */
 
@@ -1711,7 +1711,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
         /* Obtain dimension IDs */
         (void)nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_id_grp,flg_prn);
 
-        /* Loop dimensions visible to group  */
+        /* Loop dimensions visible to group */
         for(int idx_dmn=0;idx_dmn<nbr_dmn_grp;idx_dmn++){
 
           /* Get dimension info */
@@ -9133,15 +9133,11 @@ nco_bld_crd_aux /* [fnc] Build auxiliary coordinates information into table */
       char units_lon[NC_MAX_NAME+1L];
 
       has_lat=nco_find_lat_lon_trv(nc_id,var_trv,"latitude",&var_nm_fll,&dmn_id,&crd_typ,units_lat);
-
                
       /* has_lat and has_lon mutually exclusive */
-      if(!has_lat)    
-          has_lon=nco_find_lat_lon_trv(nc_id,var_trv,"longitude",&var_nm_fll,&dmn_id,&crd_typ,units_lon);
-
+      if(!has_lat) has_lon=nco_find_lat_lon_trv(nc_id,var_trv,"longitude",&var_nm_fll,&dmn_id,&crd_typ,units_lon);
 
       if(has_lat){
-	
 	nbr_lat++;
         /* Variable contains 'standard_name' attribute 'latitude' */ 
         var_trv->flg_std_att_lat=True; 
@@ -9200,10 +9196,7 @@ nco_bld_crd_aux /* [fnc] Build auxiliary coordinates information into table */
         } /* end inner loop over possible coordinates */
       } /* !has_lat */
       
-
-      
       if(has_lon){
-	
 	nbr_lon++;
         /* Variable contains 'standard_name' attribute 'longitude' */ 
         var_trv->flg_std_att_lon=True; 

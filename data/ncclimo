@@ -1555,10 +1555,7 @@ if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
 		printf "${spt_nm}: ERROR High-frequency mode needs to know temporal resolution in timesteps-per-day and user did not did not explicitly specify the number of timesteps-per-day with the --tpd=\$tpd option. Therefore ${spt_nm} attempted to infer it. No time bounds variable was found for the record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\", therefore ${spt_nm} attempted to infer tpd from the interval between the first two values of \"${tm_var}\". However the time coordinate has only one value in the first input file so no time interval could be computed.\nHINT: Put multiple timesteps in the first input file and/or add a time bounds variable to it.\n"
 		exit 1
 	    fi # !tm_nbr
-	    echo "quark1"
 	    tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_var} -d ${tm_var},0,1 -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
-	    echo "tpd_out = ${tpd_out}"
-	    echo "quark2"
 	fi # !tm_bnd_flg
 	# Ensure result is positive integer
 	[ "${tpd_out}" -ge 0 ] 2>/dev/null && tpd_ntg='Yes' || tpd_ntg='No'
@@ -1710,14 +1707,11 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    if [ "${tm_bnd_flg}" = 'Yes' ]; then
 		dpf=`ncks --trd -H -s '%25.15f ' -v ${tm_bnd} -d ${tm_var},0 -d ${tm_var},-1 -C ${ppn_opt} ${fl_in[${fl_idx}]} | awk '{ print $4-$1; exit }'`
 	    else # !tm_bnd_flg
-		echo "quark3"
 		dpf=`ncks --trd -H -s '%25.15f ' -v ${tm_var} -d ${tm_var},0 -d ${tm_var},-1 -C ${ppn_opt} ${fl_in[${fl_idx}]} | awk '{ printf "%.0f\n",$2-$1; exit }'`
 		# This is a time coordinate not a time bounds so last-first value is often a decimal fraction not an integer
 		# For example, output files at 3 hourly resolution often have multiples of 8 timesteps with first at
 		# dayM day-fraction 0.0, last at dayN day-fraction 0.875, and difference is integer N-M plus 0.875.
 		# When difference > 0.5 it is often correct to round-up, i.e., to integer dpf=1.
-		echo "dpf = ${dpf}"
-		echo "quark4"
 	    fi # !tm_bnd_flg
 		
 	    # Ensure result is positive integer

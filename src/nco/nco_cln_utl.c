@@ -276,7 +276,7 @@ nco_cln_days_in_year_prior_to_given_month /* [fnc] Number of days in year prior 
 } /* !nco_cln_days_in_year_prior_to_given_month() */
 
 void
-nco_cln_pop_tm /* [fnc] Calculate other members  in cln_sct from value*/
+nco_cln_pop_tm /* [fnc] Calculate other members in cln_sct from value */
 (tm_cln_sct *cln_sct) /* I/O [ptr] Calendar structure */
 {
   int idx;
@@ -310,13 +310,13 @@ nco_cln_pop_tm /* [fnc] Calculate other members  in cln_sct from value*/
       break;
   } /* end switch */
 
-  /* take account of origin */
-  /* get integer value and fraction part - nb add origin */
+  /* Take account of origin */
+  /* Get integer value and fraction part - nb add origin */
   fr_value=modf(cln_sct->value+(double)data[6],&m_value);
 
   ivalue=(long)m_value;
 
-  /* integer arithmetic kind of */
+  /* Integer arithmetic kind of */
   cln_sct->sec= (ivalue % 60);
   cln_sct->sec+=fr_value;
 
@@ -324,10 +324,10 @@ nco_cln_pop_tm /* [fnc] Calculate other members  in cln_sct from value*/
   cln_sct->hour =  (ivalue % (long)data[2]) / (long)data[3];
   cln_sct->year=  ivalue / (long)data[0];
 
-  /* days from start of year remember  zero based */
+  /* Days from start of year remember  zero based */
   days= ivalue % (long)data[0] / (long)data[2];
 
-  /* remember a calendar is one based NOT zero based */
+  /* Remember a calendar is one based NOT zero based */
   days+=1;
   cln_sct->month=1;
 
@@ -357,7 +357,7 @@ nco_cln_pop_val /* [fnc] Calculate value in cln_sct */
       data[3]*cln_sct->hour+
       data[4]*cln_sct->min+
       data[5]*cln_sct->sec;
-      /* subtract origin */
+      /* Subtract origin */
       cln_sct->value-=data[6];
       break;
   case cln_365:  
@@ -368,7 +368,7 @@ nco_cln_pop_val /* [fnc] Calculate value in cln_sct */
       data[3]*cln_sct->hour+
       data[4]*cln_sct->min+
       data[5]*cln_sct->sec;
-      /* subtract origin */
+      /* Subtract origin */
       cln_sct->value-=data[6];
       break;
   case cln_366:
@@ -379,7 +379,7 @@ nco_cln_pop_val /* [fnc] Calculate value in cln_sct */
       data[3]*cln_sct->hour+
       data[4]*cln_sct->min+
       data[5]*cln_sct->sec;
-      /* subtract origin */
+      /* Subtract origin */
       cln_sct->value-=data[6];
       break;
   case cln_std:
@@ -394,7 +394,7 @@ nco_cln_pop_val /* [fnc] Calculate value in cln_sct */
 
 double /* O [dbl] time in (base) seconds of tm_typ */
 nco_cln_val_tm_typ
-( nco_cln_typ cln_typ, /* I [enm] Calendar type */ 
+(nco_cln_typ cln_typ, /* I [enm] Calendar type */ 
  tm_typ bs_tm_typ) /* I [enm] Time units */
 {
   double *data=NULL_CEWI;
@@ -444,26 +444,22 @@ nco_cln_val_tm_typ
 } /* !nco_cln_typ_val() */
 
 void
-nco_cln_prn_tm         /* [fnc] print tm sct*/
+nco_cln_prn_tm /* [fnc] print tm sct*/
 (tm_cln_sct *cln_sct) /* I [ptr] Calendar structure */
 {
-
-  (void)fprintf(stderr ,"%s: tm_sct cln_type=%d date=\"%d-%d-%d %d:%d:%g\" value=%g\n",nco_prg_nm_get(),cln_sct->cln_typ,
-              cln_sct->year,cln_sct->month,cln_sct->day,cln_sct->hour,cln_sct->min,cln_sct->sec,cln_sct->value );
+  (void)fprintf(stderr ,"%s: tm_sct cln_type=%d date=\"%d-%d-%d %d:%d:%g\" value=%g\n",nco_prg_nm_get(),cln_sct->cln_typ,cln_sct->year,cln_sct->month,cln_sct->day,cln_sct->hour,cln_sct->min,cln_sct->sec,cln_sct->value );
 
    return;
-}
+} /* !nco_cln_prn_tm() */
 
 int /* O [flg] String is calendar date */
 nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
 (const char *unit_sng) /* I [sng] Units string */
 {
-  /* Purpose:
-     Determine whether the string is a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
+  /* Purpose: Determine whether string is a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
 
   /* Does string contain date keyword? */
   if(strcasestr(unit_sng," from ") || strcasestr(unit_sng," since ") || strcasestr(unit_sng," after ")) return True; else return False;
-
 } /* !nco_cln_chk_tm() */
 
 int /* O [rcd] Return code */
@@ -571,7 +567,7 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
     for(idx=0;idx<tpd;idx++){
       bnd_val[2*idx]=(step*idx)*3600;
       bnd_val[2*idx+1]=bnd_val[2*idx]+srt_end_dff;
-    }
+    } /* !idx */
 
     cast_void_nctype(NC_DOUBLE,&var_tmp->val);
     var_tmp->val.dp=bnd_val;
@@ -646,7 +642,7 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   (void)fprintf(stderr,"%s: WARNING NCO was built without UDUnits. NCO is therefore unable to interpret the string \"%s\".\n:  HINT Re-build or re-install NCO enabled with UDUnits.\n",nco_prg_nm_get(),unt_sng);
 
   return NCO_ERR;
-}
+} /*  !nco_cln_prs_tm() */
 
 #endif /* !ENABLE_UDUNITS */
 
