@@ -1,5 +1,9 @@
 2025-05-13  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.4-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha04: Yellowjackets';git push
+	git tag -a 5.3.4-alpha04 -m '';git push --tags
+
 	* NCO 5.3.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha03: Complete Unknown';git push
 	git tag -a 5.3.4-alpha03 -m 'ncclimo: fix hfc wrn/err msg; nfr tpd dpf from tm_var';git push --tags
