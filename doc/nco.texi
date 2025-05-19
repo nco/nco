@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.4-alpha04
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 13 May 2025
+@set update-date 16 May 2025
 @set update-month May 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -14776,10 +14776,10 @@ th_min=1.0 + 2*three_dmn_var_dbl.min($time);
 @cindex attribute concatenation
 @cindex push
 
-The push() function concatenates attributes, or appends an ``expression'' to a pre-existing attribute.
-It comes in two forms
+The push() function concatenates attributes, or appends an
+``expression'' to a pre-existing attribute, and comes in two forms:
 @example
-(A) att_new=push(att_exp, expr)
+(A) att_new=push(att_exp,expr)
 (B) att_size=push(&att_nm,expr)
 @end example
 
@@ -14787,14 +14787,13 @@ It comes in two forms
 identifier or an expression that evaluates to an attribute. 
 The second argument can evalute to an attribute or a variable. 
 The second argument is then converted to the type of @var{att_exp}; 
-and appended to @var{att_exp} ; and the resulting attribute is returned.@*
+and appended to @var{att_exp}, and the resulting attribute is returned.@*
 
 @noindent In form (B) the first argument is a call-by-reference
 attribute identifier (which may not yet exist). 
 The second argument is then evaluated (and type-converted as needed) and
 appended to the call-by-reference atttribute. 
 The final size of the attribute is then returned. 
-
 @example
 @verbatim
 temp@range=-10.0;
@@ -14808,8 +14807,7 @@ push(&number@squares,25ull); // numbers@squares=1,4,9,16,25
 @end example
 
 @noindent Now some text examples.@* 
-Remember, an atttribute identifier that begins with @@ is a global
-attribute.
+Remember, an atttribute identifier that begins with @@ is global.
 For example, '@@institution' is short for 'global@@institution'.
 @example
 @verbatim
@@ -15137,7 +15135,7 @@ print(att_var@float_att,"%g,")
 @end verbatim
 @end example
 
-@noindent @strong{sprint() & sprint4() @*@*}
+@noindent @strong{sprint() and sprint4()@*@*}
 These functions work in an identical fashion to (A1) except that @code{sprint()} outputs a regular netCDF3 @code{NC_CHAR} attribute 
 and @code{sprint4()} outputs a netCDF4 @code{NC_STRING} attribute
 @example
@@ -15149,23 +15147,24 @@ time@arr=sprint4(time,"%.2f,") // "1.00,2.00,3.00,4.00,5.00,6.00,7.00,8.00,9.00,
 @end verbatim
 @end example
 
-@noindent You can also use @code{sprint4()} to convert a @code{NC_CHAR} string to a @code{NC_STRING} string 
-and @code{sprint()} to convert a @code{NC_STRING} to a @code{NC_CHAR}
+@noindent You can also use @code{sprint4()} to convert a
+@code{NC_CHAR} string to a @code{NC_STRING} string, and
+@code{sprint()} to convert a @code{NC_STRING} to a @code{NC_CHAR}:
 @example
 @verbatim
 lat_1D_rct@long_name = "Latitude for 2D rectangular grid stored as 1D arrays"; // 
 
-// convert to NC_STRING
+// Convert to NC_STRING
 lat_1D_rct@long_name = sprint4(lat_1D_rct@long_name) 
 @end verbatim
 @end example
 
-@noindent @strong{hyperslab a netCDF string @*@*}
-It is possible to index-into an NC_CHAR string, similar to a C-String.
-Unlike a C-String, however, an NC_CHAR string has no null-character to
+@noindent @strong{Hyperslab a netCDF string@*}
+It is possible to index into an @code{NC_CHAR} string, similar to a C-String.
+Unlike a C-String, however, an @code{NC_CHAR} string has no null-character to
 mark its termination.
-One CANNOT index into an NC_STRING string.
-One must must convert to an NC_CHAR first. 
+On the other hand, one CANNOT index into an @code{NC_STRING} string.
+One must must convert to an @code{NC_CHAR} first. 
 @example
 @verbatim
 global@greeting="hello world!!!"
@@ -15199,7 +15198,7 @@ att_lst=get_vars_in(att_regexp?)
 att_lst=get_vars_out(att_regexp?) 
 @end example
 
-These functions are used to create a list of vars in Input or Output. The optional arg 'att_regexp'. Can be an NC_CHAR att or a NC_STRING att. If NC_CHAR then only a single reg-exp can be specified. If NC_STRING then multiple reg-exp can be specified.  The output is allways an NC_STRING att. The matching works in an identical fashion to the -v switch in ncks. if there is no arg then all vars are returned.
+These functions are used to create a list of vars in Input or Output. The optional arg 'att_regexp'. Can be an @code{NC_CHAR} att or a @code{NC_STRING} att. If @code{NC_CHAR} then only a single reg-exp can be specified. If @code{NC_STRING} then multiple reg-exp can be specified.  The output is allways an @code{NC_STRING} att. The matching works in an identical fashion to the -v switch in ncks. if there is no arg then all vars are returned.
 @example
 @verbatim
 @slist=get_vars_in("^time");  // "time", "time_bnds", "time_lon", "time_udunits"
@@ -15478,7 +15477,7 @@ Returns the netcdf type (see previous section)
 Return 1 (true) if var or att is present in I/O else return 0 (false)
 @item getdims()
 @cindex getdims()
-Returns an NC_STRING attribute of all the dim names of a variable
+Returns an @code{NC_STRING} attribute of all the dim names of a variable
 @end table
 
 @sp 1
@@ -16272,28 +16271,25 @@ ts="2017-08-11/envlog_netcdf_L1_ua-mac_2017-08-11.nc"
 @subsection Vpointer
 @cindex vpointer
 
-@noindent A variable-pointer or @emph{vpointer} is a pointer to a
-variable or attribute.
+A variable-pointer or @emph{vpointer} is a pointer to a variable or attribute.
 It is most useful when one needs to apply a set of operations on a list
 of variables.
 For example, after regular processing one may wish to set the
 @code{_FillValue} of all @code{NC_FLOAT} variables to a particular
 value, or to create min/max attributes for all 3D variables of type
 @code{NC_DOUBLE}.
-A vpointer is not a 'pointer' to a memory location in the C/C++
-sense.
-Rather the vpointer is a text attribute that contains the name of a
+A vpointer does not 'point' to a memory location in the C/C++ sense.
+Rather, a vpointer is a text attribute that contains the name of a
 variable.
 To use the pointer simply prefix the pointer with @code{*}.
 Then, most places where you use @code{VAR_ID} you can use
-*vpointer_nm.
+@code{*vpointer_nm}.
 There are a variety of ways to maintain a list of strings in
 @command{ncap2}.
 The easiest method is to use an @code{NC_STRING} attribute.  
 
-Below is a simple illustration that uses a vpointer of type
-@code{NC_CHAR}. 
-Remember an attribute starting with @code{@@} implies 'global', e.g.,
+The example below illustrates a vpointer of type @code{NC_CHAR}. 
+Remember, attributes that start with @code{@@} are 'global', e.g.,
 @code{@@vpx} is short for @code{global@@vpx}. 
 @example
 @verbatim
@@ -16301,8 +16297,8 @@ idx=9;
 idy=20;
 t2=time;
 
+// The vpointer is a global attribute named "idx"
 global@vpx="idx";
-
 // Increment idx by one
 *global@vpx++;  
 print(idx);
@@ -16310,14 +16306,11 @@ print(idx);
 // Multiply by 5
 *@vpx*=5; // idx now 50
 print(idx);
-
 // Add 200 (long method)
 *@vpx=*@vpx+200; // idx now 250
 print(idx);
-
 @vpy="idy";
-
-// Add idx idy to get idz
+// Add idx, idy to get idz
 idz=*@vpx+*@vpy; // idz == 270
 print(idz);
 
@@ -16326,8 +16319,7 @@ print(idz);
 // to the netCDF file until after the script has finished.
 @vpx="three_dmn_var";
 
-// We can convert this variable to type NC_DOUBLE and
-// write it to ouptut all at once
+// Convert this variable to type NC_DOUBLE and write it to ouptut
 *@vpx=*@vpx.double();
 @end verbatim
 @end example
@@ -16339,7 +16331,7 @@ The function @code{get_vars_in()} creates an @code{NC_STRING} attribute
 that contains all of the variable names in the input file.
 Note that a vpointer must be a plain attribute, NOT an a attribute
 expression. 
-Thus in the below script using @code{*all(idx)} would be a fundamental
+In the script below using @code{*all(idx)} would be a fundamental
 mistake.
 In the below example the vpointer @code{var_nm} is of type
 @code{NC_STRING}.  
@@ -16376,8 +16368,10 @@ for(*idx=0;idx<sz;idx++){
   @var_nm=@all(idx);
   if(*@var_nm.ndims() >= 3){
     *@var_nm=*@var_nm.float();
-    // The push function also takes a call-by-ref attribute: if it does not already exist then it will be created
-    // The call below pushes a NC_STRING to an att so the end result is a list of NC_STRINGS   
+    /* The push function also takes a call-by-ref attribute.
+       If it does not already exist then it will be created.
+       The call below pushes an NC_STRING to an attribute
+       so the end result is a list of NC_STRINGs. */
     push(&@prc,@var_nm); 
   }
 } 
@@ -16387,11 +16381,11 @@ for(*idx=0;idx<sz;idx++){
   @var_nm=@prc(idx);
 
   // We can work with attribute pointers as well 
-  // sprint() ouptut is of type NC_CHAR
+  // sprint() output is of type NC_CHAR
   @att_total=sprint(@var_nm,"%s@total"); 
   @att_range=sprint(@var_nm,"%s@range"); 
 
-  // If you are still confused then print out the attributes 
+  // If you are confused, then print out the attributes 
   print(@att_total); 
   print(@att_range);
  
@@ -16401,7 +16395,7 @@ for(*idx=0;idx<sz;idx++){
 @end verbatim
 @end example
 
-@noindent This is the @acronym{CDL} dump of a variable processed by the above script:
+The above script produces variable with @acronym{CDL} output like this:
 @example
 @verbatim
 float three_dmn_var_int(time, lat, lon) ;
@@ -16416,7 +16410,6 @@ three_dmn_var_int:units = "watt meter-2" ;
 @html
 <a name="rct"></a> <!-- http://nco.sf.net/nco.html#rct -->
 @end html
-
 @node Irregular grids, Bilinear interpolation, Vpointer, ncap2 netCDF Arithmetic Processor
 @subsection Irregular Grids
 @cindex irregular grids
@@ -31693,8 +31686,8 @@ There are detailed instructions on @command{ncra} (@pxref{ncra netCDF Record Ave
 @node Monthly data in one file, One time point one file, Daily data in one file, Quick Start
 @section Monthly data in one file
 @cindex monthly data
-Inside the input file @file{in.nc}, the record dimension @code{time} is from Jan 1990 to Dec 2005.
-
+Inside the input file @file{in.nc}, the record dimension @code{time}
+is from January 1990 to December 2005. 
 @noindent
 @strong{Seasonal average (e.g., @acronym{DJF}):}
 @cindex seasonal average
