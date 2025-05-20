@@ -1,8 +1,14 @@
-2025-05-13  Charlie Zender  <zender@uci.edu>
+2025-05-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha04: Yellowjackets';git push
 	git tag -a 5.3.4-alpha04 -m '';git push --tags
+
+	* Create new S1D lut_out=789 option for all urban types (preliminary feature works)
+
+	* Tidy nco.texi ncap2 and vpointer sections
+
+2025-05-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha03: Complete Unknown';git push

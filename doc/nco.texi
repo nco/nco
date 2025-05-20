@@ -31687,8 +31687,7 @@ There are detailed instructions on @command{ncra} (@pxref{ncra netCDF Record Ave
 @section Monthly data in one file
 @cindex monthly data
 Inside the input file @file{in.nc}, the record dimension @code{time}
-is from January 1990 to December 2005. 
-@noindent
+is from January 1990 to December 2005.@*
 @strong{Seasonal average (e.g., @acronym{DJF}):}
 @cindex seasonal average
 @cindex average

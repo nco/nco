@@ -86,6 +86,7 @@ nco_lut_out_sng /* [fnc] Convert landunit output type enum to string */
   case nco_lut_out_urban_md: return "Urban medium density"; /* 9 */
   case nco_lut_out_wgt_all: return "Area-weighted average of all landunit types except MEC glaciers"; /* 10 */
   case nco_lut_out_wgt_soi_glc: return "Area-weighted average of soil+(non-MEC) glacier types"; /* 13 */
+  case nco_lut_out_wgt_urb_all: return "Area-weighted average of all urban types"; /* 789 */
   default: nco_dfl_case_generic_err((int)nco_lut_out); break;
   } /* !nco_lut_out_enm */
 
@@ -1045,6 +1046,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   switch(lut_out){
   case nco_lut_out_wgt_all: /* Area-weighted average of columns of all landunit types in gridcell */
   case nco_lut_out_wgt_soi_glc: /* Area-weighted average of columns of soil+glacier types in gridcell */
+  case nco_lut_out_wgt_urb_all: /* Area-weighted average of columns of urban types in gridcell */
     if(!cols1d_wtxy) (void)fprintf(stdout,"%s: ERROR %s reports requested landunit output type lut_out = %s requires use of unavailable variable cols1d_wtxy\n",nco_prg_nm_get(),fnc_nm,nco_lut_out_sng(lut_out));
     break;
   default:
@@ -2431,7 +2433,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	      case nco_lut_out_wgt_all:
 		break;
 	      case nco_lut_out_wgt_soi_glc:
-		if(lnd_typ != nco_lnd_ilun_vegetated_or_bare_soil && (lnd_typ != nco_lnd_ilun_landice)) continue;
+		if(lnd_typ != nco_lnd_ilun_vegetated_or_bare_soil && lnd_typ != nco_lnd_ilun_landice) continue;
+		break;
+	      case nco_lut_out_wgt_urb_all:
+		if(lnd_typ != nco_lnd_ilun_urban_tbd && lnd_typ != nco_lnd_ilun_urban_hd && lnd_typ != nco_lnd_ilun_urban_md) continue;
 		break;
 	      default:
 		if(lnd_typ != lut_out) continue;
@@ -2474,28 +2479,31 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		       Non-MEC columns use this address (MEC index = 0) to store one value per gridcell
 		       Storing all non-MEC column types for each gridcell would require a column dimension for every variable
 		       That is too anal and storage-intensive so instead we store only one non-MEC column type per gridcell
-		       What column-type or combination of column types  (soil, lake, wetland, etc.) to store there is debatable
+		       What column-type or combination of column types (soil, lake, wetland, etc.) to store there is debatable
 		       For example, I am usually interested in glacier and soil columns and/or their area-weighted average
 		       To accomodate this, S1D provides the lut_out option to specify which landunit to store in each gridcell:
+		       ncks --rgr lut_out=0      Not used
 		       ncks --rgr lut_out=[1..9] specifies a single landunit type to output
-		       ncks --rgr lut_out=0      means output an area-weighted average of all landunit types
+		       ncks --rgr lut_out=10     Area-weighted average of all landunit types except MEC glaciers
+		       ncks --rgr lut_out=13     Area-weighted average of soil+(non-MEC) glacier (i.e., LUTs one and three hence "13"
+		       ncks --rgr lut_out=789    Area-weighted average of all () urban types (i.e., LUTs 7, 8, and 9 hence "789"
 		       Users can consecutively run S1D with different lut_out options to gain a more comprehensive view */
 		  case NC_FLOAT:
-		    if(lut_out == nco_lut_out_wgt_all || lut_out == nco_lut_out_wgt_soi_glc){
+		    if(lut_out == nco_lut_out_wgt_all || lut_out == nco_lut_out_wgt_soi_glc || lut_out == nco_lut_out_wgt_urb_all){
 		      if(var_val_out.fp[idx_out] == mss_val_unn.f) var_val_out.fp[idx_out]=var_val_in.fp[idx_in]*clm_wgt; else var_val_out.fp[idx_out]+=var_val_in.fp[idx_in]*clm_wgt;
 		    }else{
 		      var_val_out.fp[idx_out]=var_val_in.fp[idx_in];
 		    } /* !cols1d_wtxy */
 		    break;
 		  case NC_DOUBLE: 
-		    if(lut_out == nco_lut_out_wgt_all || lut_out == nco_lut_out_wgt_soi_glc){
+		    if(lut_out == nco_lut_out_wgt_all || lut_out == nco_lut_out_wgt_soi_glc || lut_out == nco_lut_out_wgt_urb_all){
 		      if(var_val_out.dp[idx_out] == mss_val_unn.d) var_val_out.dp[idx_out]=var_val_in.dp[idx_in]*clm_wgt; else var_val_out.dp[idx_out]+=var_val_in.dp[idx_in]*clm_wgt;
 		    }else{
 		      var_val_out.dp[idx_out]=var_val_in.dp[idx_in];
 		    } /* !cols1d_wtxy */
 		    break;
 		  case NC_INT: 
-		    if(lut_out == nco_lut_out_wgt_all || lut_out == nco_lut_out_wgt_soi_glc){
+		    if(lut_out == nco_lut_out_wgt_all || lut_out == nco_lut_out_wgt_soi_glc || lut_out == nco_lut_out_wgt_urb_all){
 		      if(var_val_out.ip[idx_out] == mss_val_unn.i) var_val_out.ip[idx_out]=var_val_in.ip[idx_in]*clm_wgt; else var_val_out.ip[idx_out]+=var_val_in.ip[idx_in]*clm_wgt;
 		    }else{
 		      var_val_out.ip[idx_out]=var_val_in.ip[idx_in];

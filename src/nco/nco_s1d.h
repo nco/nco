@@ -87,6 +87,7 @@ extern "C" {
     nco_lut_out_urban_md=9, /* Urban medium density */
     nco_lut_out_wgt_all=10, /* Area-weighted average of all landunit types */
     nco_lut_out_wgt_soi_glc=13, /* Area-weighted average of soil+glacier types */
+    nco_lut_out_wgt_urb_all=789, /* Area-weighted average of all urban types */
   } nco_lut_out_enm;
 
   /* Types used in landunit structure */
