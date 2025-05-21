@@ -395,7 +395,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     nco_exit(EXIT_FAILURE);
   } /* !flg_nm_hst */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will assume input attributes and variables use ELM/CLM %s naming conventions like %s\n",nco_prg_nm_get(),fnc_nm,flg_nm_hst ? "history file" : "restart file",flg_nm_hst ? "\"ltype_...\"" : "\"ilun_...\"");
-  if(nco_dbg_lvl_get() >= nco_dbg_std && flg_nm_rst) (void)fprintf(stderr,"%s: INFO %s will output landunit type (LUT) %d = \"%s\" for non-MEC columns and in index 0 of MEC dimension for MEC columns. A single LUT will contain the value of the last column of that LUT in the gridcell. Area-weighted averages will be over all columns of the requested LUTs in the gridcell.\n",nco_prg_nm_get(),fnc_nm,(int)lut_out,nco_lut_out_sng(lut_out));
+  if(nco_dbg_lvl_get() >= nco_dbg_std && flg_nm_rst) (void)fprintf(stderr,"%s: INFO Input variables at the column level will contain in the output only the column (or area-weight of multiple columns) of landunit type (LUT) %d = \"%s\" for non-MEC columns and in index 0 of MEC dimension for MEC columns. A single LUT will contain the value of the last column of that LUT in the gridcell. Area-weighted averages will be over all columns of the requested LUT in the gridcell.\n",nco_prg_nm_get(),(int)lut_out,nco_lut_out_sng(lut_out));
   if(nco_dbg_lvl_get() >= nco_dbg_std && flg_nm_rst){
     if(flg_snw_ocn) (void)fprintf(stderr,"%s: INFO %s will unpack multi-layer snow fields so the top layer is at index 0 of the levsno dimension in the output file, with deeper layers arranged subsequently. This shifts the empty cells for non-utilized snowpack layers from the top to the bottom of the output (analogous to bottom topography masking the lower layers of z-grid ocean datasets)\n",nco_prg_nm_get(),fnc_nm); else (void)fprintf(stderr,"%s: INFO %s will unpack multi-layer snow fields into their raw storage order, where active snow layers abut the end of the levsno dimension, and any empty, deeper layers appear at the beginning of the levsno dimension. This is non-intuitive, yet ensures the snow hydrological transport is contiguous with the underlying soil levels.\n",nco_prg_nm_get(),fnc_nm);
   } /* !dbg */
@@ -1060,8 +1060,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   if(pft_nbr_out == NC_MIN_INT) pft_nbr_out=pft_ntr_nbr_out=pft_crp_nbr_out=0;
   if(tpo_nbr_out == NC_MIN_INT) tpo_nbr_out=0;
   if(flg_frc_column_out){
-    clm_nbr_out=5; /* Soil column, Glaciated column, Lake column, Wetland column, Total column */
-    if(need_mec) clm_nbr_out=mec_nbr_out+5; /* Soil column, MECs, Total MEC, Lake column, Wetland column, Total column */
+    clm_nbr_out=6; /* Soil column, Glaciated column, Lake column, Wetland column, Subtotal natural columns, Subtotal urban columns */
+    if(need_mec) clm_nbr_out=mec_nbr_out+6; /* Soil column, MECs, subotal MEC, Lake column, Wetland column, Subtotal natural columns, Subtotal urban columns */
   } /* !flg_frc_column_out */
   if(flg_frc_landunit_out) lnd_nbr_out=1+lut_max; /* Total of all columns in index 0 plus nine input landunits with Fortran-based indexes */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO clm_nbr_out = %ld\n",nco_prg_nm_get(),clm_nbr_out);
@@ -1307,12 +1307,12 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 
   /* Write new attributes here so they apply to both 1D and 2D output datasets */
   if(flg_frc_column_out){
-    rcd=nco_char_att_put(out_id,frc_column_nm,"long_name","Fraction of gridcell occupied by snow-related columns");
-    rcd=nco_char_att_put(out_id,frc_column_nm,"legend","For datasets with Multiple Elevation Classes (MECs): index = 0 is soil column, index = 1 is MEC == 1, indexes 2..10 are remaining MEC columns, index 11 is sub-total of MEC columns, index = 12 is deep lake column, index = 13 is wetland column, and index = 14 is grand total of natural columns. For non-MEC datasets, index = 0 is soil column, index = 1 is glaciated column, index = 2 is deep lake column, index = 3 is wetland column, and index = 4 is grand total of natural columns.");
+    rcd=nco_char_att_put(out_id,frc_column_nm,"long_name","Fraction of gridcell occupied by various columns (or groups of columns)");
+    rcd=nco_char_att_put(out_id,frc_column_nm,"legend","For datasets with Multiple Elevation Classes (MECs): index = 0 is soil column, index = 1 is MEC == 1, indexes 2..10 are remaining MEC columns, index 11 is sub-total of MEC columns, index = 12 is deep lake column, index = 13 is wetland column, index = 14 is subtotal of natural (soil, MECs, lakes, wetlands) columns, and index = 15 is subtotal of urban columns. For non-MEC datasets, index = 0 is soil column, index = 1 is glaciated column, index = 2 is deep lake column, index = 3 is wetland column, index = 4 is subtotal of natural (soil, glacier, lakes, wetlands) columns, and index = 15 is subtotal of urban columns.");
   } /* !flg_frc_column_out */
   if(flg_frc_landunit_out){
-    rcd=nco_char_att_put(out_id,frc_landunit_nm,"long_name","Fraction of gridcell occupied by Landunit");
-    rcd=nco_char_att_put(out_id,frc_landunit_nm,"legend","landunit index = 0 is sum of all landunit fractions, indexes = 1..9 are standard landunit types");
+    rcd=nco_char_att_put(out_id,frc_landunit_nm,"long_name","Fraction of gridcell occupied by every Landunit type");
+    rcd=nco_char_att_put(out_id,frc_landunit_nm,"legend","landunit dimension index = 0 is sum of all landunit fractions and should = 1.0 over all gridcells with any land fraction. Indexes = 1..9 are standard landunit types: 1 = Vegetated or bare soil; 2 = Crop; 3 = Landice (plain, no MEC); 4 = Landice multiple elevation classes; 5 = Deep lake; 6 = Wetland; 7 = Urban tall building district; 8 = Urban high density; 9 = Urban medium density.");
   } /* !flg_frc_landunit_out */
   
   /* levgrnd coordinate: ncks -v lev.? ${DATA}/bm/elmv3_r05l15.nc */
@@ -1845,16 +1845,18 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
   /* Diagnose and write area-fractions for column-types of interest */
   if(flg_frc_column_out){
     double *frc_column=NULL; /* [frc] Column weight relative to corresponding gridcell */
-    int clm_idx_ttl=NC_MIN_INT; /* [idx] Output column index to store grand total weight of natural columns */
     int clm_idx_mec_ttl=NC_MIN_INT; /* [idx] Output column index to store sub-total weight of MEC columns */
+    int clm_idx_ntr_ttl=NC_MIN_INT; /* [idx] Output column index to store subtotal weight of natural columns */
+    int clm_idx_urb_ttl=NC_MIN_INT; /* [idx] Output column index to store subtotal weight of urban columns */
     int idx_ttl_out; /* [idx] Index to store total weight of soil+MEC columns */
 
     frc_column=(double *)nco_calloc(clm_nbr_out*grd_nbr_out,sizeof(double));
 
-    /* MECs: Store soil column in column index 0, MECs in indexes 1--10, total MECs in 11, lakes in 12, wetlands in 13, and grand total in index 14
-       No-MECs: Store soil column in column index 0, glaciated in index 1, lakes in 2, wetlands in 3, and grand total in index 4 */
+    /* MECs: Store soil column in column index 0, MECs in indexes 1--10, total MECs in 11, lakes in 12, wetlands in 13, subtotal of natural types (soil, MECs, lakes, wetlands) in index 14, subtotal of urban types in index 15
+       No-MECs: Store soil column in column index 0, glaciated in index 1, lakes in 2, wetlands in 3, subtotal of natural types (soil, glacier, lakes, wetlands) in index 4, and subtotal of urban types in index 5 */
     clm_idx_mec_ttl=mec_nbr_out+1;
-    clm_idx_ttl=clm_nbr_out-1;
+    clm_idx_ntr_ttl=clm_nbr_out-2;
+    clm_idx_urb_ttl=clm_nbr_out-1;
 
     for(clm_idx=0;clm_idx < clm_nbr_in;clm_idx++){
       clm_typ=cols1d_ityp[clm_idx];
@@ -1863,6 +1865,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
       else if(clm_typ >= nco_clm_icol_landice_multiple_elevation_class_01 && clm_typ <= nco_clm_icol_landice_multiple_elevation_class_10) clm_idx_out=clm_typ % clm_typ_mec_fst;
       else if(clm_typ == nco_clm_icol_deep_lake) clm_idx_out= need_mec ? 12 : 2;
       else if(clm_typ == nco_clm_icol_wetland) clm_idx_out= need_mec ? 13 : 3;
+      else if(clm_typ >= nco_clm_icol_urban_roof && clm_typ <= nco_clm_icol_urban_pervious_road) clm_idx_out=clm_idx_urb_ttl;
       else continue; /* Ignore Urban columns and Vegetated columns for now */
       /* Subtract one to shift from input 1-based (Fortran) convention to output 0-based (C) convention */
       grd_idx_out= flg_grd_1D ? cols1d_ixy[clm_idx]-1L : (cols1d_jxy[clm_idx]-1L)*lon_nbr+(cols1d_ixy[clm_idx]-1L);
@@ -1873,9 +1876,12 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 	idx_ttl_out=clm_idx_mec_ttl*grd_nbr_out+grd_idx_out;
 	frc_column[idx_ttl_out]+=cols1d_wtxy[clm_idx];
       } /* !clm_typ */
-      /* Grand total over natural columns */
-      idx_ttl_out=clm_idx_ttl*grd_nbr_out+grd_idx_out;
-      frc_column[idx_ttl_out]+=cols1d_wtxy[clm_idx];
+      /* Prevent urban types from contributing to subtotal of natural columns */
+      if(!(clm_typ >= nco_clm_icol_urban_roof && clm_typ <= nco_clm_icol_urban_pervious_road)){ 
+	/* Subtotal over natural columns */
+	idx_ttl_out=clm_idx_ntr_ttl*grd_nbr_out+grd_idx_out;
+	frc_column[idx_ttl_out]+=cols1d_wtxy[clm_idx];
+      } /* !clm_typ */
     } /* !clm_idx */
     if(frc_column_out_id != NC_MIN_INT) rcd=nco_put_var(out_id,frc_column_out_id,(void *)frc_column,NC_DOUBLE);
     if(frc_column) frc_column=(double *)nco_free(frc_column);
@@ -2442,7 +2448,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		if(lnd_typ != lut_out) continue;
 		break;
 	      } /* !lutout */
-	      /* Skip column types that this variable lack valid values for */
+	      /* Skip column types that this variable lacks valid values for */
 	      if(!lut_vld_flg[lnd_typ]) continue;
 	      switch(lnd_typ){
 	      case nco_lnd_ilun_landice_multiple_elevation_classes:
@@ -2486,7 +2492,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
 		       ncks --rgr lut_out=[1..9] specifies a single landunit type to output
 		       ncks --rgr lut_out=10     Area-weighted average of all landunit types except MEC glaciers
 		       ncks --rgr lut_out=13     Area-weighted average of soil+(non-MEC) glacier (i.e., LUTs one and three hence "13"
-		       ncks --rgr lut_out=789    Area-weighted average of all () urban types (i.e., LUTs 7, 8, and 9 hence "789"
+		       ncks --rgr lut_out=789    Area-weighted average of all urban types (i.e., LUTs 7, 8, and 9 hence "789"
 		       Users can consecutively run S1D with different lut_out options to gain a more comprehensive view */
 		  case NC_FLOAT:
 		    if(lut_out == nco_lut_out_wgt_all || lut_out == nco_lut_out_wgt_soi_glc || lut_out == nco_lut_out_wgt_urb_all){
