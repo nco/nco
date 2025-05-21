@@ -1,8 +1,12 @@
 2025-05-21  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.4-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha05: Gut Punch';git push
+	git tag -a 5.3.4-alpha05 -m '';git push --tags
+
 	* NCO 5.3.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha04: Yellowjackets';git push
-	git tag -a 5.3.4-alpha04 -m '';git push --tags
+	git tag -a 5.3.4-alpha04 -m 'ncks: S1D add lut_out=789 option, frc_column add urb_all';git push --tags
 
 	* Complete and test new S1D lut_out=789 option for all urban types
 
