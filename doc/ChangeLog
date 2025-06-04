@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha05: Gut Punch';git push
 	git tag -a 5.3.4-alpha05 -m '';git push --tags
 
+	* Implement nco_glb_att_del() in ncks, test it, it works
+
 	* Add nco_glb_att_del() routine to delete list of global attributes
 
 2025-05-21  Charlie Zender  <zender@uci.edu>

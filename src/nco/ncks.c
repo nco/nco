@@ -124,6 +124,7 @@ main(int argc,char **argv)
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **gaa_arg=NULL; /* [sng] Global attribute arguments */
+  char **gad_lst=NULL; /* [sng] Global attributes to delete */
   char **grp_lst_in=NULL;
   char **rgr_arg=NULL; /* [sng] Regridding arguments */
   char **trr_arg=NULL; /* [sng] Terraref arguments */
@@ -222,6 +223,7 @@ main(int argc,char **argv)
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int gaa_nbr=0; /* [nbr] Number of global attributes to add */
+  int gad_nbr=0; /* [nbr] Number of global attributes to delete */
   int grp_dpt_fl; /* [nbr] Maximum group depth (root = 0) */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int grp_nbr_fl;
@@ -501,6 +503,8 @@ main(int argc,char **argv)
     {"value_format",required_argument,0,0}, /* [sng] Format string for variable values */
     {"gaa",required_argument,0,0}, /* [sng] Global attribute add */
     {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
+    {"gad",required_argument,0,0}, /* [sng] Global attribute delete */
+    {"glb_att_del",required_argument,0,0}, /* [sng] Global attribute delete */
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
     {"jsn_fmt",required_argument,0,0}, /* [enm] JSON format */
@@ -789,6 +793,11 @@ main(int argc,char **argv)
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
         gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
       } /* !gaa */
+      if(!strcmp(opt_crr,"gad") || !strcmp(opt_crr,"glb_att_del")){
+	optarg_lcl=(char *)strdup(optarg);
+        gad_lst=nco_lst_prs_2D(optarg_lcl,",",&gad_nbr);
+	optarg_lcl=(char *)nco_free(optarg_lcl);
+      } /* !gad */
       if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdn") || !strcmp(opt_crr,"hidden")) PRN_HDN=True; /* [flg] Print hidden attributes */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
@@ -1327,6 +1336,7 @@ main(int argc,char **argv)
       /* Catenate time-stamped command line to "history" global attribute */
       if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
       if(gaa_nbr > 0) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
+      if(gad_nbr > 0) (void)nco_glb_att_del(out_id,gad_lst,gad_nbr);
       if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
       if(thr_nbr > 1 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
       char att_sng_ttl[]="title"; /* [sng] NUG-documented title string */
@@ -1381,6 +1391,7 @@ main(int argc,char **argv)
       if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
       if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in,in_id,out_id);
       if(gaa_nbr > 0) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
+      if(gad_nbr > 0) (void)nco_glb_att_del(out_id,gad_lst,gad_nbr);
       if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
       if(HISTORY_APPEND && FL_LST_IN_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
 
@@ -1662,6 +1673,7 @@ close_and_free:
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(gaa_nbr > 0) gaa_arg=nco_sng_lst_free(gaa_arg,gaa_nbr);
+    if(gad_nbr > 0) gad_lst=nco_sng_lst_free(gad_lst,gad_nbr);
     if(grp_lst_in_nbr > 0) grp_lst_in=nco_sng_lst_free(grp_lst_in,grp_lst_in_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
