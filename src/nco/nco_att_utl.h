@@ -168,6 +168,12 @@ nco_glb_att_add /* [fnc] Add global attributes */
  const int gaa_arg_nbr);  /* [nbr] Number of global attribute arguments */
 
 void 
+nco_glb_att_del /* [fnc] Delete global attributes */
+(const int out_id, /* I [id] netCDF output-file ID */
+ char **gad_lst,  /* [sng] Global attribute names */
+ const int gad_nbr);  /* [nbr] Number of global attributes */
+
+void 
 nco_thr_att_cat /* [fnc] Add threading global attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
  const int thr_nbr); /* I [nbr] Thread number */

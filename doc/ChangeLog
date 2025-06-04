@@ -1,8 +1,12 @@
-2025-05-21  Charlie Zender  <zender@uci.edu>
+2025-06-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha05: Gut Punch';git push
 	git tag -a 5.3.4-alpha05 -m '';git push --tags
+
+	* Add nco_glb_att_del() routine to delete list of global attributes
+
+2025-05-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha04: Yellowjackets';git push

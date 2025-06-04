@@ -2046,14 +2046,14 @@ nco_glb_att_add /* [fnc] Add global attributes */
   int gaa_nbr=0;
   kvm_sct *gaa_lst=NULL; /* [sct] List of all GAA specifications */
   ptr_unn att_val;
+
   /* Join arguments together */
   char *sng_fnl=nco_join_sng(gaa_arg,gaa_arg_nbr);
   gaa_lst=nco_arg_mlt_prs(sng_fnl);
-
   if(sng_fnl) sng_fnl=(char *)nco_free(sng_fnl);
 
-  /* jm fxm use more descriptive name than i---what does i count? */
-  for(int index=0;gaa_lst[index].key;index++,gaa_nbr++); /* end loop over i */
+  /* 20250604: Seems duplicative, why compute gaa_nbr instead of just using gaa_arg_nbr? */
+  for(int gaa_idx=0;gaa_lst[gaa_idx].key;gaa_idx++,gaa_nbr++);
 
   for(gaa_idx=0;gaa_idx<gaa_nbr;gaa_idx++){
     /* Insert attribute value */
@@ -2065,7 +2065,7 @@ nco_glb_att_add /* [fnc] Add global attributes */
     gaa_aed.type=NC_CHAR;
     /* Insert value into attribute structure */
     gaa_aed.val=att_val;
-    /* 20170428 jm: Update for flag parsing*/
+    /* 20170428 jm: Update for flag parsing */
     if(gaa_aed.val.cp)
       gaa_aed.sz=strlen(gaa_aed.val.cp);
     else
@@ -2082,8 +2082,36 @@ nco_glb_att_add /* [fnc] Add global attributes */
   
   /* Free kvms */
   if(gaa_lst) gaa_lst=nco_kvm_lst_free(gaa_lst,gaa_nbr);
+} /* !nco_glb_att_add() */
+ 
+void 
+nco_glb_att_del /* [fnc] Remove global attributes */
+(const int out_id, /* I [id] netCDF output-file ID */
+ char **gad_lst,  /* [sng] Global attribute names */
+ const int gad_nbr)  /* [nbr] Number of global attributes */
+{
+  /* Purpose: Decode arguments into attribute names and remove from output file global metadata */
+  aed_sct gad_aed;
+  int gad_idx=0;
+  ptr_unn att_val;
 
-} /* end nco_glb_att_add() */
+  for(gad_idx=0;gad_idx<gad_nbr;gad_idx++){
+    /* Insert attribute value */
+    att_val.cp=NULL_CEWI;
+    /* Initialize attribute edit structure */
+    gad_aed.att_nm=gad_lst[gad_idx];
+    gad_aed.var_nm=NULL;
+    gad_aed.id=NC_GLOBAL;
+    gad_aed.type=NC_CHAR;
+    /* Insert value into attribute structure */
+    gad_aed.val=att_val;
+    if(gad_aed.val.cp) gad_aed.sz=strlen(gad_aed.val.cp); else gad_aed.sz=0;
+    gad_aed.mode=aed_delete;
+    /* Write attribute to disk */
+    (void)nco_aed_prc(out_id,NC_GLOBAL,gad_aed);
+  } /* !gad_idx */
+  
+} /* !nco_glb_att_del() */
  
 void 
 nco_thr_att_cat /* [fnc] Add threading global attribute */

@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.4-alpha05
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 16 May 2025
+@set update-date 23 May 2025
 @set update-month May 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -619,7 +619,19 @@ ideas.
 Charlie Zender@*
 July, 2022@*
 Laguna Beach, California@*
+
 @ignore
+The @acronym{DOE} @acronym{E3SM} project, @acronym{NASA}, and
+@acronym{NSF} all contributed support to @acronym{NCO} for the
+past three years. The quantization and compression features are
+now mature and implemented in the netCDF C-Library where they
+can be used by other toolkits and languages.
+
+@sp 1
+@noindent
+Charlie Zender@*
+June, 2025@*
+Laguna Beach, California@*
 @end ignore
 
 @html
