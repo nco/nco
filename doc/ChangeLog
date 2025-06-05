@@ -6,7 +6,7 @@
 
 	* NCO 5.3.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha05: Gut Punch';git push
-	git tag -a 5.3.4-alpha05 -m 'all: --gad glb att del;';git push --tags
+	git tag -a 5.3.4-alpha05 -m 'all: --gad glb att del;ncremap cxl alg_typ=tempest';git push --tags
 
 	* Add --gad, --glb_att_del to all binary operators and ncremap
 
