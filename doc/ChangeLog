@@ -1,7 +1,7 @@
 2025-06-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha06 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha06: ';git push
+	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha06: Maximum Burn Rate';git push
 	git tag -a 5.3.4-alpha06 -m '';git push --tags
 
 	* NCO 5.3.4-alpha05 release procedure:
