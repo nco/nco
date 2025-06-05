@@ -69,7 +69,7 @@ main(int argc,char **argv)
 {
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
-  char **gaa_arg=NULL; /* [sng] Global attribute arguments */
+  char **gaa_arg=NULL; /* [sng] Global attribute addition arguments */
   char **ntp_lst_in;
   char **var_lst_in=NULL_CEWI;
   char *aux_arg[NC_MAX_DIMS];
@@ -377,7 +377,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
         gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
-      } /* endif gaa */
+      } /* !gaa */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);

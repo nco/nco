@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.4-alpha05
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 23 May 2025
-@set update-month May 2025
+@set update-date 5 June 2025
+@set update-month June 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -2756,6 +2756,7 @@ feature is automatic and cannot be controlled by the user.
 * Type Conversion::
 * Batch Mode::
 * Global Attribute Addition::
+* Global Attribute Deletion::
 * History Attribute::
 * File List Attributes::
 * CF Conventions::
@@ -3083,10 +3084,10 @@ name that most suits their taste.
 @cindex @code{--qnt @var{key}=@var{val}}
 @cindex @code{--rgr @var{key}=@var{val}}
 @cindex @code{--trr @var{key}=@var{val}}
-As of @acronym{NCO} version 4.6.2 (November, 2016), @acronym{NCO} accepts
-multiple key-value pair options for a single feature to be joined
-together into a single extended argument called a @dfn{multi-argument},
-sometimes abbreviated @acronym{MTA}. 
+As of @acronym{NCO} version 4.6.2 (November, 2016), @acronym{NCO}
+accepts multiple key-value pair options for a single feature to be
+joined together into a single extended argument called a
+@dfn{multi-argument}, sometimes abbreviated @acronym{MTA}. 
 Only four @acronym{NCO} features accept multiple key-value pairs that
 can be aggregated into multi-arguments. 
 These features are:
@@ -13018,29 +13019,27 @@ already contain the appended dimensions.
 <a name="glb"></a> <!-- http://nco.sf.net/nco.html#glb -->
 <a name="glb_att_add"></a> <!-- http://nco.sf.net/nco.html#glb_att_add -->
 @end html
-@node Global Attribute Addition, History Attribute, Batch Mode, Shared features
+@node Global Attribute Addition, Global Attribute Deletion, Batch Mode, Shared features
 @section Global Attribute Addition
 @cindex global attributes
 @cindex attributes, global
 @cindex @code{--gaa}
-@cindex @code{--glb @var{att_nm}=@var{att_val}}
-@cindex @code{--glb}
-@cindex @code{--glb_att_add}
+@cindex @code{--glb_att_add=@var{att_nm}=@var{att_val}}
 @cindex @command{ncatted}
 @cartouche
 Availability: All operators@*
 Short options: None@*
-Long options: @samp{--glb}, @samp{--gaa}, @samp{--glb_att_add}@*
-@samp{--glb @var{att_nm}=@var{att_val}} (multiple invocations allowed)@*
+Long options: @samp{--gaa} and @samp{--glb_att_add}@*
+@samp{--gaa @var{att_nm}=@var{att_val}} (multiple invocations allowed)@*
 @end cartouche
 All operators can add user-specified global attributes to output files.
 As of @acronym{NCO} version 4.5.2 (July, 2015), @acronym{NCO} supports
-multiple uses of the @samp{--glb} (or equivalent @samp{--gaa} or
-@samp{--glb_att_add}) switch.
+multiple uses of the @samp{--gaa} (or equivalent @samp{--glb_att_add})
+switch. 
 @cindex indicator option
 @cindex multi-arguments
-The option @samp{--gaa} (and its long option equivalents such as
-@samp{--glb_att_add}) indicates the argument syntax will be
+The option @samp{--gaa} (and its long option equivalent
+@samp{--glb_att_add}) indicates the argument syntax will be 
 @var{key}=@var{val}. 
 As such, @samp{--gaa} and its synonyms are indicator options that accept
 arguments supplied one-by-one like 
@@ -13050,7 +13049,7 @@ aggregated together in multi-argument format like
 (@pxref{Multi-arguments}).
 
 The switch takes mandatory arguments 
-@samp{--glb @var{att_nm}=@var{att_val}}   
+@samp{--gaa @var{att_nm}=@var{att_val}}   
 where @var{att_nm} is the desired name of the global attribute to add, 
 and @var{att_val} is its value.
 Currently only text attributes are supported (recorded as type
@@ -13062,7 +13061,7 @@ Multiple invocations can simplify the annotation of output file at
 creation (or modification) time:
 @example
 @verbatim
-ncra --glb machine=${HOSTNAME} --glb created_by=${USER} in*.nc out.nc
+ncra --gaa machine=${HOSTNAME} --gaa created_by=${USER} in*.nc out.nc
 @end verbatim
 @end example
 As of @acronym{NCO} version 4.6.2 (October, 2016), one may instead
@@ -13070,7 +13069,7 @@ combine the separate invocations into a single list of invocations
 separated by colons:
 @example
 @verbatim
-ncra --glb machine=${HOSTNAME}:created_by=${USER} in*.nc out.nc
+ncra --gaa machine=${HOSTNAME}:created_by=${USER} in*.nc out.nc
 @end verbatim
 @end example
 The list may contain any number of key-value pairs.
@@ -13088,11 +13087,54 @@ accepting valid @command{ncatted} arguments to modify attributes of any
 type and to apply regular expressions.
 
 @html
+<a name="gad"></a> <!-- http://nco.sf.net/nco.html#gad -->
+<a name="glb_att_del"></a> <!-- http://nco.sf.net/nco.html#glb_att_del -->
+@end html
+@node Global Attribute Deletion, History Attribute, Global Attribute Addition, Shared features
+@section Global Attribute Deletion
+@cindex global attributes
+@cindex attributes, global
+@cindex @code{--gad}
+@cindex @code{--glb_att_del}
+@cindex @command{ncatted}
+@cartouche
+Availability: All operators@*
+Short options: None@*
+Long options: @samp{--gad}, @samp{--glb_att_del}@*
+@end cartouche
+All operators can delete user-specified global attributes from output files.
+As of @acronym{NCO} version 5.3.4 (June, 2025), @acronym{NCO} supports the
+option @samp{--gad=@var{att1,att2,...,attN}} (or long-option equivalent
+@samp{--glb_att_del}).
+This option is deletes (rather than adds, like its sister option
+@code{--gaa}) global attributes to an output file.
+Global attribute deletion requires only the name of the global
+attribute without any further information, so the argument to the
+option is simply a comma separated list of all attributes to delete.
+No information about the type, size, or value of the attributes need
+be given.
+In other words, the option works on attributes of all types, sizes,
+and values.
+Therefore the  syntax is distinctly different from the key-value
+option syntax (@pxref{Multi-arguments}) required by @code{--gaa} to
+add global attributes. 
+@example
+@verbatim
+ncks --gad=history_of_appended_files,nco_openmp_thread_number,\
+           input_file,map_file,remap_version,remap_hostname,\
+           remap_command,remap_script,NCO in.nc out.nc
+@end verbatim
+@end example
+The global attribution deletion feature helps to avoid the performance
+penalty incurred by using @command{ncatted} separately to annotate
+large files.  
+
+@html
 <a name="hst"></a> <!-- http://nco.sf.net/nco.html#hst -->
 <a name="history"></a> <!-- http://nco.sf.net/nco.html#history -->
 <a name="-h"></a> <!-- http://nco.sf.net/nco.html#-h -->
 @end html
-@node History Attribute, File List Attributes, Global Attribute Addition, Shared features
+@node History Attribute, File List Attributes, Global Attribute Deletion, Shared features
 @section History Attribute
 @cindex @code{history}
 @cindex timestamp
@@ -13900,7 +13942,8 @@ in-depth examples of @command{ncap2} solutions to complex problems.
 SYNTAX
 @example
 ncap2 [-3] [-4] [-5] [-6] [-7] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] 
-[-D @var{dbg}] [-F] [-f] [--glb ...] [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss]
+[-D @var{dbg}] [-F] [-f] [--gaa ...] [--gad @var{att}[,@dots{}]]
+[-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] [-O] [-o @var{output-file}]
 [-p @var{path}] [-R] [-r] [--ram_all]
 [-s @var{algebra}] [-S @var{fl.nco}] [-t @var{thr_nbr}] [-v]
@@ -19085,7 +19128,8 @@ ncbo [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-H] [-h] [--hdr_pad @var{nbr}] [--hpss]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gaa ...] [--gad @var{att}[,@dots{}]]
+[-H] [-h] [--hdr_pad @var{nbr}] [--hpss]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{file_3}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
 [-R] [-r] [--ram_all] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]]
@@ -21857,7 +21901,7 @@ ncecat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [--glb ...]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [--gaa ...] [--gad @var{att}[,@dots{}]]
 [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [--mrd] [-n @var{loop}]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
@@ -22127,7 +22171,7 @@ nces [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb @var{y1},@var{y2},@var{m1},@v
 [--cmp @var{cmp_sng}] [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gaa ...] [--gad @var{att}[,@dots{}]]
 [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] [--nsm_fl|grp] [--nsm_sfx sfx]
@@ -22397,7 +22441,7 @@ ncflint [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]  [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--fl_fmt @var{fl_fmt}]
-[-F] [--fix_rec_crd] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...]
+[-F] [--fix_rec_crd] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gaa ...] [--gad @var{att}[,@dots{}]]
 [-H] [-h] [--hdr_pad @var{nbr}] [--hpss] 
 [-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [-N]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
@@ -22696,7 +22740,7 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [--area_wgt] [-b @var{fl_bnr}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [--fix_rec_dmn @var{dim}] [--fl_fmt @var{fl_fmt}] [--fmt_val @var{format}] [--fpe]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [--grp_xtr_var_xcl]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gaa ...] [--gad @var{att}[,@dots{}]] [--grp_xtr_var_xcl]
 [-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--hpss] [--hrz @var{fl_hrz}] [--jsn] [--jsn_fmt @var{lvl}] 
 [-L @var{dfl_lvl}] [-l @var{path}]
 [-M] [-m] [--map @var{map-file}] [--md5] [--mk_rec_dmn @var{dim}]
@@ -25126,7 +25170,7 @@ ncpdq [-3] [-4] [-5] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gaa ...] [--gad @var{att}[,@dots{}]]
 [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--mrd]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
@@ -25781,7 +25825,7 @@ ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]
 [-F] [--fl_fmt @var{fl_fmt}]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gaa ...] [--gad @var{att}[,@dots{}]]
 [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-N] [-n @var{loop}] 
 [--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 
@@ -26132,7 +26176,7 @@ ncrcat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]
 [-F] [--fl_fmt @var{fl_fmt}]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gaa ...] [--gad @var{att}[,@dots{}]]
 [-H] [-h] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}]
 [--no_tmp_fl] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
@@ -26270,7 +26314,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-a @var{alg_typ}] [--a2o] [--add_fll] [--alg_lst] [--area_dgn] [--cmp @var{cmp_sng}]
 [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f] [--dpt] [--dpt_fl=@var{dpt_fl}]
 [--dt_sng=@var{dt_sng}] [--esmf_typ=@var{esmf_typ}] 
-[--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}]
+[--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}] [--gad=@var{gad_lst}[,@dots{}]] 
 [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}] [-L @var{dfl_lvl}]
 [-M] [-m @var{map_fl}] [--mpi_nbr=@var{mpi_nbr}] [--mpi_pfx=@var{mpi_pfx}] [--mpt_mss]
 [--msh_fl=@var{msh_fl}] [--msk_apl] [--msk_dst=@var{msk_dst}]
@@ -26285,7 +26329,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-s @var{grd_src}] [--sgs_frc=@var{sgs_frc}] [--sgs_msk=@var{sgs_msk}] [--sgs_nrm=@var{sgs_nrm}]
 [--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}] [--uio]
-[-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
+[-V @var{rgr_var}] [-v @var{var1}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [--vrt_in=@var{vrt_fl}] [--vrt_out=@var{vrt_fl}] [--vrt_nm=@var{vrt_nm}]
 [--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
 [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] [--xcl_var]
@@ -26768,9 +26812,7 @@ grids.
 @cindex @code{mono_fv2se}
 @cindex @code{conservative_monotone_fv2se_alt}
 @command{ncremap} can invoke eight preconfigured TempestRemap 
-weight-generation algorithms, and one generic algorithm
-(@code{tempest}) for which users should provide their own 
-options. 
+weight-generation algorithms.
 As of @acronym{NCO} version 4.7.2 (January, 2018), @command{ncremap}
 implemented the six @acronym{E3SM}-recommended TempestRemap mapping
 algorithms between @acronym{FV} and @acronym{SE} flux, state, and
@@ -26795,17 +26837,15 @@ algorithm.
 These newer TempestRemap algorithms are briefly described at
 @url{https://acme-climate.atlassian.net/wiki/spaces/DOC/pages/1217757434/Mapping+file+algorithms+and+naming+convention}.
 
-The @samp{-a tempest} algorithm can be specified with the precise
-TempestRemap options as arguments to the @samp{-W} (or
-@samp{--wgt_opt}) option.  
+Note that custom TempestRemap options can be provided as arguments to
+the @samp{-W} (or @samp{--wgt_opt}) option for any Tempest algorithm.  
 Support for the named algorithms requires TempestRemap version 2.0.0
 or later (some option combinations fail with earlier versions).
 The @acronym{MOAB} algorithms are identical TempestRemap algorithms
 @footnote{
-However, mapping weights generated by
 Although @acronym{MOAB} and TempestRemap use the same numerical
-algorithms, they are likely to produce slightly different weights
-due to round-off differences. 
+algorithms, they often produce slightly different weights due to
+round-off differences.  
 @acronym{MOAB} is heavily parallelized and computes and adds terms
 together in an unpredictable order compared to the serial TempestRemap.}.
 Use the same algorithm names to select them.
@@ -26881,19 +26921,6 @@ ncremap -a tempest --src_grd=se.g --dst_grd=fv.nc -m map.nc \
         -W '--in_type cgll --in_np 4 --out_type fv --mono'
 @end verbatim
 @end example
-Specifying @samp{-a tempest} without additional options in the
-@samp{-W} clause causes TempestRemap to employ defaults.
-The default configuration requires both input and output grids to be
-@acronym{FV}, and produces a conservative, non-monotonic mapping.
-The @samp{-a traave} option described below may produce more desirable
-results than this default for many users.
-Using @samp{-a tempest} alone without other options for spectral
-element grids will lead to undefined and likely unintentional
-results. 
-In other words, @samp{-a tempest} is intended to be used in
-conjunction with a @samp{-W} option clause to supply your own
-combination of TempestRemap options that does not duplicate one of the 
-boutique option collections that already has its own name.
 
 The full list of supported canonical algorithm names, their synonyms,
 and boutique options passed to @command{GenerateOfflineMap} or to
@@ -30314,7 +30341,7 @@ SYNTAX
 @example
 ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
 [-d @var{old_name},@var{new_name}] [-d @dots{}] [-g @var{old_name},@var{new_name}] [-g @dots{}] 
-[--glb ...] [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss] 
+[--gaa ...] [--gad @var{att}[,@dots{}]] [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss] 
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-v @var{old_name},@var{new_name}] [-v @dots{}]
 @var{input-file} [[@var{output-file}]]
@@ -30771,7 +30798,8 @@ ncwa [-3] [-4] [-5] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-H] [-h] [--hdr_pad @var{nbr}] [--hpss] [-I]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gaa ...] [--gad @var{att}[,@dots{}]]
+[-H] [-h] [--hdr_pad @var{nbr}] [--hpss] [-I]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] 
 [--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]

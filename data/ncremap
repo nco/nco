@@ -488,7 +488,7 @@ fmt_sng_nc7='NETCDF4_CLASSIC (netCDF4 classic HDF5)'
 a2o_flg='No' # [flg] Atmosphere-to-ocean (only used by Tempest mesh generator)
 add_fll='No' # [flg] Add _FillValue to fields with empty destination cells
 alg_lst='esmfaave,esmfbilin,ncoaave,ncoidw,traave,trbilin,trfv2,trintbilin' # [sng] Algorithm list for MWF mode
-alg_typ='ncoaave' # [sng] Algorithm for remapping (esmfaave|esmfbilin|bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|traave|trbilin|trfv2|trintbilin|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|ncoaave|nco_con|ncoidw|ncoidw)
+alg_typ='ncoaave' # [sng] Algorithm for remapping (esmfaave|esmfbilin|bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|traave|trbilin|trfv2|trintbilin|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|ncoaave|nco_con|ncoidw|ncoidw)
 att_flg='No' # [flg] Add/alter attributes (e.g., _FillValue) before regridding
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
@@ -526,6 +526,7 @@ flg_hrz='No' # [flg] Perform horizontal regridding
 # 20200119 appending attribute containing remap_command causes ncatted to fail, temporarily remove it
 #gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_command=\"'${cmd_ln}'\" --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
 gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
+gad_sng='' # [sng] Global attributes to delete
 grd_dst='' # [sng] Destination grid-file
 grd_dst_xmp='grd_dst.nc' # [sng] Destination grid-file for examples
 grd_sng='' # [sng] Grid string
@@ -656,7 +657,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "            CDO algorithms: cdo_bilinear|cdo_conservative (same as ESMF)"
     echo "            ESMF algorithms: esmfbilin,bilinear|esmfaave,aave,conserve|conserve2nd|nearestdtos|neareststod|patch"
     echo "            NCO algorithms: ncoaave,nco,nco_con|ncoidw,nco_dwe (inverse-distance-weighted interpolation/extrapolation)"
-    echo "            Tempest (and MOAB-Tempest) algorithms: traave,fv2fv_flx|trbilin|trfv2|trintbilin|tempest|fv2fv|fv2fv_stt|fv2se_flx|fv2se_stt|fv2se_alt|se2fv_flx|se2fv_stt|se2fv_alt|se2se"
+    echo "            Tempest (and MOAB-Tempest) algorithms: traave,fv2fv_flx|trbilin|trfv2|trintbilin|fv2fv|fv2fv_stt|fv2se_flx|fv2se_stt|fv2se_alt|se2fv_flx|se2fv_stt|se2fv_alt|se2se"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
     echo " ${fnt_bld}--add_fll${fnt_nrm}  Add _FillValue to fields with empty destination cells (default ${fnt_bld}${add_fll}${fnt_nrm}) [${fnt_tlc}add_fll, add_fill_value, fll_mpt, fill_empty${fnt_nrm}]"
     echo " ${fnt_bld}--alg_lst${fnt_nrm}  Algorithms to generate maps with in MWF mode (default ${fnt_bld}${alg_lst}${fnt_nrm}) [${fnt_tlc}alg_lst, algorithm_list${fnt_nrm}]"
@@ -676,6 +677,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation arguments (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means none, i.e., infer from dst_fl or use map_fl) (default ${fnt_bld}${grd_dst}${fnt_nrm}) [${fnt_tlc}grd_dst, grid_dest, dst_grd, dest_grid, destination_grid${fnt_nrm}]"
+    echo " ${fnt_bld}--gad_lst${fnt_nrm}  Global attributes to delete from output files (default ${fnt_bld}${gad_lst}${fnt_nrm}) [${fnt_tlc}gad, glb_att_del, att_del${fnt_nrm}]"
     echo " ${fnt_bld}--hrd_pth${fnt_nrm}  Use CSZ's hard-coded paths on known machines (e.g., chrysalis, compy, perlmutter) NB: Must be first option! [${fnt_tlc}hrd_pth, hard_path, npo, nco_path_override${fnt_nrm}]"
     echo "${fnt_rvr}-I${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}in_fl${fnt_nrm}    Input file (empty means pipe to stdin or drc_in) (default ${fnt_bld}${in_fl}${fnt_nrm}) [${fnt_tlc}in_fl, in_file, input_file${fnt_nrm}]"
@@ -874,6 +876,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       dt_sng=?* | date_string=?* ) dt_sng="${LONG_OPTARG}" ;; # # Date string for MWF map names
 	       esmf_typ=?* | esmf_mth=?* | esmf_extrap_type=?* | esmf_extrap_method=?* ) esmf_typ="${LONG_OPTARG}" ;; # # ESMF extrapolation type (nearestidavg|neareststod|none)
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
+	       gad_lst=?* | gad=?* | att_del=?* | glb_att_del=?* ) gad_sng="--glb_att_del=${LONG_OPTARG}" ;; # # Global attributes to delete
 	       hrd_pth | hard_path | npo | nco_path_override | NCO_PATH_OVERRIDE ) hrd_pth='Yes' ;; # # Use hard-coded paths on known machines (intentional no-op because already handled prior to getopt())
 	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* | NCO_PATH_OVERRIDE=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
 	       in_fl=?* | in_file=?* | input_file=?* ) in_fl="${LONG_OPTARG}" ;; # -i # Input file
@@ -1184,7 +1187,7 @@ rgn_fl=${rgn_fl}${unq_sfx}
 tmp_out_fl=${tmp_out_fl}${unq_sfx}
 znl_fl=${znl_fl}${unq_sfx}
 
-# Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|traave|trbilin|trfv2|trintbilin|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|ncoaave|nco_con|ncoidw
+# Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|traave|trbilin|trfv2|trintbilin|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|ncoaave|nco_con|ncoidw
 if [ ${alg_typ} = 'cdo_con' ] || [ ${alg_typ} = 'cdo_cns' ] || [ ${alg_typ} = 'cdo_conserve' ] || [ ${alg_typ} = 'cdo' ]; then 
     alg_opt='gencon'
     wgt_typ='cdo'
@@ -1213,7 +1216,7 @@ elif [ ${alg_typ} = 'neareststod' ] || [ ${alg_typ} = 'esmfnstod' ] || [ ${alg_t
 elif [ ${alg_typ} = 'patch' ] || [ ${alg_typ} = 'patc' ] || [ ${alg_typ} = 'pch' ]; then 
     alg_opt='patch'
     wgt_typ='esmf'
-elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp' ]; then 
+elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # alg_sng='mono'
     # 20171108 'tempest' invokes TempestRemap with no automatic options, suitable for RLL re-mapping?
     # 20171108 TempestRemap boutique options based on particular remapping type
     # 20200221 Add --correct_areas to many TR maps as per Transition to TR page
@@ -1221,20 +1224,9 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     # 20220928 Replace --mono3 by --method mono3 since TR 2.1.14, 2.1.15 changed option name
     # 20231130 Correct wgt_opt_mbt for alg_typ=tempest to use order = ${se_np_nbr} == 4 by default (since TR uses order=4)
     # 20240110 Replace --method mono* by --mono* since MWF mode revealed some failures with --method mono*
+    # 20250604 Remove alg_typ=tempest because it is ambiguous and confused me, Walter H., and likely other users
     # https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids
     # alg_sng in comments is for E3SM naming convention map_src_to_dst_${alg_sng}.${dt_sng}.nc
-    cnv_opt_src="-B"
-    cnv_opt_dst="-B"
-    wgt_opt_mbt='--method fv --order ${se_np_nbr} --method fv --order ${se_np_nbr}'
-    alg_opt='tempest'
-    wgt_typ='tempest'
-    if [ -z "${wgt_opt_usr}" ]; then 
-	printf "${spt_nm}: INFO Specifying the TempestRemap default algorithm '--alg_typ=tempest' without giving any additional options with -W (--wgt_opt) works only for the default TR configuration where both input and output grids are Finite Volume (FV) grids. The default TR algorithm is conservative and non-monotonic, and uses 4th order polynomials.\n"
-	printf "${spt_nm}: WARNING It is atypical this TempestRemap default algorithm to be the optimal algorithm for regridding. Be sure you know what you are doing.\n"
-	printf "${spt_nm}: HINT Use one of the (many) boutique TempestRemap algorithm options described here: http://nco.sf.net/nco.html#alg_tr\n"
-    fi # !wgt_opt_usr    
-elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # alg_sng='mono'
-# NB: 20220922 TempestRemap began replacing the --mono* options with --method mono*
     cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
     cnv_opt_dst="-B"
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --global_id GLOBAL_DOFS --method fv --monotonicity 1 --global_id GLOBAL_ID"
@@ -1355,7 +1347,7 @@ else
     echo "${spt_nm}: HINT Valid CDO weight-generation algorithms and synonyms are cdo_bil,cdo_bilin,cdo_bilinear | cdo_con,cdo_cns,cdo_conserve"
     echo "${spt_nm}: HINT Valid ESMF weight-generation algorithms and synonyms are esmfbilin,bilinear,bilin,bln | esmfaave,conserve,cns,c1,aave | conserve2nd,c2,c2nd | nearestdtos,nds,dtos | neareststod,nsd,stod | patch,pch"
     echo "${spt_nm}: HINT Valid NCO weight-generation algorithms and synonyms are ncoaave,nco_con,nco_cns,nco_conserve,nco | nco_idw,nco_dwe"
-    echo "${spt_nm}: HINT Valid TempestRemap (and MOAB-TempestRemap) weight-generation options and synonyms are traave,fv2fv_flx,fv2fv_mono | trbilin | trfv2 | trintbilin | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | se2se,cs2cs | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se | fv2fv,rll2rll | tempest"
+    echo "${spt_nm}: HINT Valid TempestRemap (and MOAB-TempestRemap) weight-generation options and synonyms are traave,fv2fv_flx,fv2fv_mono | trbilin | trfv2 | trintbilin | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | se2se,cs2cs | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se | fv2fv,rll2rll"
     exit 1
 fi # !alg_typ
 
@@ -1581,6 +1573,9 @@ fi # !uio_flg
 if [ -n "${gaa_sng}" ]; then 
     nco_opt="${nco_opt} ${gaa_sng}"
 fi # !gaa_sng
+if [ -n "${gaa_sng}" ]; then 
+    nco_opt="${nco_opt} ${gad_sng}"
+fi # !gad_sng
 if [ "${no_cll_msr}" = 'Yes' ]; then 
     nco_opt="${nco_opt} --no_cll_msr"
 fi # !no_cll_msr
@@ -1837,7 +1832,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	map_nm="${drc_out}/map_${nm_dst}_to_${nm_src}_${alg_sng}.${dt_sng}.nc"
 	# MWF-mode must be invoked with ocean as grd_src, atmosphere as grd_dst
 	a2o_sng=''
-	if [ "${alg_typ}" = 'se2fv_flx' ] || [ "${alg_typ}" = 'se2fv_stt' ] || [ "${alg_typ}" = 'se2fv_alt' ] || [ "${alg_typ}" = 'tempest' ] || [ "${alg_typ}" = 'traave' ] || [ "${alg_typ}" = 'trbilin' ] || [ "${alg_typ}" = 'trfv2' ] || [ "${alg_typ}" = 'trintbilin' ]; then
+	if [ "${alg_typ}" = 'se2fv_flx' ] || [ "${alg_typ}" = 'se2fv_stt' ] || [ "${alg_typ}" = 'se2fv_alt' ] || [ "${alg_typ}" = 'traave' ] || [ "${alg_typ}" = 'trbilin' ] || [ "${alg_typ}" = 'trfv2' ] || [ "${alg_typ}" = 'trintbilin' ]; then
 	    a2o_sng='--a2o'
 	fi # !alg_typ
 	wgt_sng=''
@@ -2366,6 +2361,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: fl_nbr   = ${fl_nbr}\n"
     printf "dbg: flg_hrz  = ${flg_hrz}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
+    printf "dbg: gad_sng  = ${gad_sng}\n"
     printf "dbg: grd_dst  = ${grd_dst}\n"
     printf "dbg: grd_sng  = ${grd_sng}\n"
     printf "dbg: grd_src  = ${grd_src}\n"
@@ -2960,7 +2956,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 		hst_att="${hst_att}; ${cmd_trn[${fl_idx}]}"
 	    fi # !trn_map
 	fi # !tempest
-	cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' \"${map_fl}\""
+	cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${gad_sng} \"${map_fl}\""
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_att[${fl_idx}]}
 	fi # !dbg
@@ -3207,7 +3203,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		fi # !err
 		if [ "${map_usr_flg}" = 'Yes' ]; then
 		    hst_att="`date`: ${cmd_ln}; ${cmd_map[${fl_idx}]}"
-		    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' \"${map_rsl_fl}\""
+		    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${gad_sng} \"${map_rsl_fl}\""
 		    eval ${cmd_att[${fl_idx}]}
 		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"

@@ -2037,7 +2037,7 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
 void 
 nco_glb_att_add /* [fnc] Add global attributes */
 (const int out_id, /* I [id] netCDF output-file ID */
- char **gaa_arg,  /* [sng] Global attribute arguments */
+ char **gaa_arg,  /* [sng] Global attribute addition arguments */
  const int gaa_arg_nbr)  /* [nbr] Number of global attribute arguments */
 {
   /* Purpose: Decode arguments into attributes and add as global metadata to output file */

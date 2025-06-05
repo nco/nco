@@ -119,7 +119,8 @@ main(int argc,char **argv)
 {
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
-  char **gaa_arg=NULL; /* [sng] Global attribute arguments */
+  char **gaa_arg=NULL; /* [sng] Global attribute addition arguments */
+  char **gad_lst=NULL; /* [sng] Global attributes to delete */
   char **grp_lst_in=NULL_CEWI;
   char **var_lst_in=NULL_CEWI;
   char **wgt_lst_in=NULL_CEWI;
@@ -198,6 +199,7 @@ main(int argc,char **argv)
   int flg_input_complete_nbr=0; /* [nbr] Number of record dimensions completed */
   int fll_md_old; /* [enm] Old fill mode */
   int gaa_nbr=0; /* [nbr] Number of global attributes to add */
+  int gad_nbr=0; /* [nbr] Number of global attributes to delete */
   int grp_id;        /* [ID] Group ID */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int grp_out_id;    /* [ID] Group ID (output) */
@@ -415,6 +417,8 @@ main(int argc,char **argv)
     {"file_format",required_argument,0,0},
     {"gaa",required_argument,0,0}, /* [sng] Global attribute add */
     {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
+    {"gad",required_argument,0,0}, /* [sng] Global attribute delete */
+    {"glb_att_del",required_argument,0,0}, /* [sng] Global attribute delete */
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
     {"ilv_srd",required_argument,0,0}, /* [flg] Interleave stride */
@@ -584,7 +588,12 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
         gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
-      } /* endif gaa */
+      } /* !gaa */
+      if(!strcmp(opt_crr,"gad") || !strcmp(opt_crr,"glb_att_del")){
+	optarg_lcl=(char *)strdup(optarg);
+        gad_lst=nco_lst_prs_2D(optarg_lcl,",",&gad_nbr);
+	optarg_lcl=(char *)nco_free(optarg_lcl);
+      } /* !gad */
       if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdf_upk") || !strcmp(opt_crr,"hdf_unpack")) nco_upk_cnv=nco_upk_HDF_MOD10; /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
@@ -955,6 +964,7 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in,in_id,out_id);
   if(gaa_nbr > 0) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
+  if(gad_nbr > 0) (void)nco_glb_att_del(out_id,gad_lst,gad_nbr);
   if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
   if(HISTORY_APPEND && FL_LST_IN_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
   if(thr_nbr > 1 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
@@ -2166,6 +2176,7 @@ main(int argc,char **argv)
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(gaa_nbr > 0) gaa_arg=nco_sng_lst_free(gaa_arg,gaa_nbr);
+    if(gad_nbr > 0) gad_lst=nco_sng_lst_free(gad_lst,gad_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     if(wgt_nbr > 0) wgt_lst_in=nco_sng_lst_free(wgt_lst_in,wgt_nbr);
     /* Free limits */

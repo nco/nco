@@ -123,7 +123,7 @@ main(int argc,char **argv)
 {
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
-  char **gaa_arg=NULL; /* [sng] Global attribute arguments */
+  char **gaa_arg=NULL; /* [sng] Global attribute addition arguments */
   char **gad_lst=NULL; /* [sng] Global attributes to delete */
   char **grp_lst_in=NULL;
   char **rgr_arg=NULL; /* [sng] Regridding arguments */

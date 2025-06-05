@@ -1,10 +1,22 @@
-2025-06-04  Charlie Zender  <zender@uci.edu>
+2025-06-05  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.3.4-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha06: ';git push
+	git tag -a 5.3.4-alpha06 -m '';git push --tags
 
 	* NCO 5.3.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha05: Gut Punch';git push
-	git tag -a 5.3.4-alpha05 -m '';git push --tags
+	git tag -a 5.3.4-alpha05 -m 'all: --gad glb att del;';git push --tags
 
-	* Implement nco_glb_att_del() in ncks, test it, it works
+	* Add --gad, --glb_att_del to all binary operators and ncremap
+
+	* Document --gad in nco.texi and man-pages
+
+2025-06-04  Charlie Zender  <zender@uci.edu>
+
+	* Remove alg_typ=tempest to reduce ambiguity that confused me, Walter H., and likely other users
+
+	* Implement nco_glb_att_del() in ncks, test it, it works!
 
 	* Add nco_glb_att_del() routine to delete list of global attributes
 

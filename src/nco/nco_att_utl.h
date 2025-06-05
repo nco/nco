@@ -164,7 +164,7 @@ nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
 void 
 nco_glb_att_add /* [fnc] Add global attributes */
 (const int out_id, /* I [id] netCDF output-file ID */
- char **gaa_arg,  /* [sng] Global attribute arguments */
+ char **gaa_arg,  /* [sng] Global attribute addition arguments */
  const int gaa_arg_nbr);  /* [nbr] Number of global attribute arguments */
 
 void 
