@@ -173,6 +173,7 @@ main(int argc,char **argv)
   char *spr_nmr=NULL; /* [sng] Separator for XML numeric types */
   char *trr_in=NULL; /* [sng] File containing raw Terraref imagery */
   char *trr_wxy=NULL; /* [sng] Terraref dimension sizes */
+  char *var_nm=NULL; /* [sng] Variable name */
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
@@ -274,6 +275,7 @@ main(int argc,char **argv)
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
+  nco_bool IS_HRZ=False; /* [flg] Check whether single variable is horizontal (i.e., has dimensions lat,lon,ncol,time) */
   nco_bool LST_HRZ=False; /* [flg] Print extraction list of horizontal (lat,lon,ncol,time) variables */
   nco_bool LST_RNK_GE2=False; /* [flg] Print extraction list of rank >= 2 variables */
   nco_bool LST_XTR=False; /* [flg] Print extraction list */
@@ -505,6 +507,8 @@ main(int argc,char **argv)
     {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
     {"gad",required_argument,0,0}, /* [sng] Global attribute delete */
     {"glb_att_del",required_argument,0,0}, /* [sng] Global attribute delete */
+    {"is_hrz",required_argument,0,0}, /* [flg] */
+    {"var_is_hrz",required_argument,0,0}, /* [flg] */
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
     {"jsn_fmt",required_argument,0,0}, /* [enm] JSON format */
@@ -822,18 +826,22 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"lst_hrz")) LST_HRZ=True; /* [flg] Print extraction list of horizontal (lat,lon,ncol,time) */
       if(!strcmp(opt_crr,"lst_rnk_ge2")) LST_RNK_GE2=True; /* [flg] Print extraction list of rank >= 2 variables */
       if(!strcmp(opt_crr,"lst_xtr") || !strcmp(opt_crr,"xtr_lst")) LST_XTR=True; /* [flg] Print extraction list */
+      if(!strcmp(opt_crr,"is_hrz") || !strcmp(opt_crr,"var_is_hrz")){
+	var_nm=strdup(optarg);
+        IS_HRZ=True;
+      } /* !is_hrz */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")){
 	if(strchr(optarg,',')){
 	  (void)fprintf(stdout,"%s: ERROR record dimension name %s contains a comma and appears to be a list\n",nco_prg_nm_get(),optarg);
 	  (void)fprintf(stdout,"%s: HINT --mk_rec_dmn currently accepts only one dimension name as an argument (relaxing this limit is TODO nco1129, let us know if this is important to you). To change multiple dimensions into record dimensions, run ncks multiple times and change one dimension each time. Be sure the output file format is netCDF4.\n",nco_prg_nm_get());
 	  nco_exit(EXIT_FAILURE);
-	} /* endif */
+	} /* !strchr() */
 	rec_dmn_nm=strdup(optarg);
       } /* !mk_rec_dmn */
       if(!strcmp(opt_crr,"mpi_implementation")){
         (void)fprintf(stdout,"%s\n",nco_mpi_get());
         nco_exit(EXIT_SUCCESS);
-      } /* endif "mpi" */
+      } /* !"mpi" */
       if(!strcmp(opt_crr,"md5_dgs") || !strcmp(opt_crr,"md5_digest")){
         if(!md5) md5=nco_md5_ini();
 	md5->dgs=True;
@@ -1215,13 +1223,16 @@ main(int argc,char **argv)
 
   if(ALPHABETIZE_OUTPUT) trv_tbl_srt(srt_mth,trv_tbl);
 
-  /* [fnc] Print extraction list and exit */
+  /* Print extraction list and exit */
   if(LST_XTR) nco_xtr_lst(trv_tbl);
 
-  /* [fnc] Print extraction list of N>=D variables and exit */
+  /* Print extraction list of N>=D variables and exit */
   if(LST_RNK_GE2) nco_xtr_ND_lst(trv_tbl);
 
-  /* [fnc] Print extraction list of horizontal (lat,lon,ncol,time) variables and exit */
+  /* Check whether single variable is horizontal (i.e., has dimensions lat,lon,ncol,time) and exit */
+  if(IS_HRZ) (void)nco_var_is_hrz(var_nm,trv_tbl);
+  
+  /* Print extraction list of horizontal (lat,lon,ncol,time) variables and exit */
   if(LST_HRZ) nco_xtr_hrz_lst(trv_tbl);
 
   /* Were all user-specified dimensions found? */ 
@@ -1653,6 +1664,7 @@ close_and_free:
     if(fl_prn) fl_prn=(char *)nco_free(fl_prn);
     if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
+    if(var_nm) var_nm=(char *)nco_free(var_nm); 
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);

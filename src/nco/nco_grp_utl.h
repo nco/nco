@@ -207,6 +207,11 @@ nco_xtr_hrz_lst /* [fnc] Print extraction list of horizontal (lat, lon, no lev) 
 (trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
 void
+nco_var_is_hrz /* [fnc] Return True if variable is horizontal */
+(const char * const var_nm, /* I [sct] Variable name */
+ trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
+
+void
 nco_xtr_mpas_zmid_add /* [fnc] Add MPAS timeMonthly_avg_zMid auxiliary coordinate variable to extraction list */
 (trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 

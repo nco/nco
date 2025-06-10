@@ -1364,6 +1364,84 @@ nco_xtr_hrz_lst /* [fnc] Print extraction list of horizontal (lat, lon, no lev) 
 } /* !nco_xtr_hrz_lst() */
 
 void
+nco_var_is_hrz /* [fnc] Return True if variable is horizontal */
+(const char * const var_nm, /* I [sct] Variable name */
+ trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Return True if variable is horizontal (lat, lon, no lev) and exit
+     When ncclimo is in timeseries mode and creating regional statistics, variables must be horizontal-only
+     Otherwise ncap2 call in ncclimo will fail
+     Used by ncks to verify that a single splitter field will work in ncap2 regional averaging
+     Hence we restrict returned list to non-coordinate record variables
+     Based on nco_xtr_hrz_lst() and, before that, nco_xtr_ND_lst()
+     Usage:
+     ncks --is_hrz three_dmn_rec_var ~/nco/data/in.nc
+     ncks --is_hrz W_SCALAR ~/data/bm/elmv3_r05l15.nc */
+
+  const char fnc_nm[]="nco_var_is_hrz()"; /* [sng] Function name */
+
+  const int rnk_min=2; /* [nbr] Minimum rank to extract */
+  const int rnk_max=3; /* [nbr] Maximum rank to extract */
+
+  char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
+
+  int xtr_nbr_crr=0; /* [nbr] Number of N>=D variables found so far */
+
+  int dmn_idx; /* [idx] Dimension index */
+  int dmn_nbr_in; /* [nbr] Number of dimensions in input variable */
+  int grp_id; /* [id] Group ID */
+  int idx_var; /* [idx] Variable index */
+  int nc_id; /* [id] File ID */
+  int var_id; /* [id] Variable ID */
+
+  trv_sct var_trv;
+
+  nc_id=trv_tbl->in_id_arr[0];
+
+  /* 20170414: csz add new definitions is_crd_lk_var and is_rec_lk_var, avoid PVN definitions for sanity */
+  for(idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    var_trv=trv_tbl->lst[idx_var];
+    if(var_trv.nco_typ == nco_obj_typ_var && !strcmp(var_nm,var_trv.nm)){
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+      trv_tbl->lst[idx_var].is_crd_lk_var=trv_tbl->lst[idx_var].is_crd_lk_var;
+      if(nco_is_spc_in_cf_att(grp_id,"bounds",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
+      if(nco_is_spc_in_cf_att(grp_id,"cell_measures",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
+      if(nco_is_spc_in_cf_att(grp_id,"climatology",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
+      for(dmn_idx=0;dmn_idx<var_trv.nbr_dmn;dmn_idx++){
+	if(var_trv.var_dmn[dmn_idx].is_rec_dmn) trv_tbl->lst[idx_var].is_rec_lk_var=True;
+      } /* !dmn_idx */
+      /* Exit loop now because we only care about this single variable */
+      break;
+    } /* !nco_typ */
+  } /* !idx_var */
+
+  /* If variable has rnk_min <= N <= rnk_max dimensions, then examine for lev dimensions */
+  if(
+     (trv_tbl->lst[idx_var].nbr_dmn >= rnk_min) && /* Rank at least 2 */
+     (trv_tbl->lst[idx_var].nbr_dmn <= rnk_max) && /* Rank at most 3 */
+     (!trv_tbl->lst[idx_var].is_crd_lk_var) && /* Not a coordinate-like variable */
+     (trv_tbl->lst[idx_var].is_rec_lk_var) && /* Is a record variable */
+     (trv_tbl->lst[idx_var].var_typ != NC_CHAR) && /* Not an array of characters */
+     True){
+    /* 20250327: Ensure dimension names are only lat, lon, ncol, or time */
+    dmn_nbr_in=trv_tbl->lst[idx_var].nbr_dmn;
+    for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+      dmn_nm_cp=trv_tbl->lst[idx_var].var_dmn[dmn_idx].dmn_nm;
+      if(strcmp(dmn_nm_cp,"lat") && strcmp(dmn_nm_cp,"lon") && strcmp(dmn_nm_cp,"ncol") && strcmp(dmn_nm_cp,"nCells") && strcasecmp(dmn_nm_cp,"time")) break;
+    } /* !dmn_idx */	
+    if(dmn_idx == dmn_nbr_in){
+      xtr_nbr_crr++;
+    } /* !dmn_idx */
+  } /* !N>=D */
+  (void)fprintf(stdout,"%s\n",(xtr_nbr_crr > 0) ? "Yes" : "No");
+  if(nco_dbg_lvl_get() >= 1) (void)fprintf(stdout,"%s: %s reports variable %s %s horizontal\n",nco_prg_nm_get(),fnc_nm,var_nm,(xtr_nbr_crr > 0) ? "IS" : "is NOT");
+  nco_exit(EXIT_SUCCESS);
+    
+  return;
+} /* !nco_var_is_hrz() */
+
+void
 nco_xtr_cf_add /* [fnc] Add to extraction list variables associated with CF convention */
 (const int nc_id, /* I [ID] netCDF file ID */
  const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", "coordinates", "grid_mapping", or "quantization") */

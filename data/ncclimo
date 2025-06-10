@@ -3042,6 +3042,16 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    
 	    if [ "${rgn_stt}" != 'No' ]; then 
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
+		    # 20250610: Until today we always computed regional statistics of all variables in splitter list
+		    # However, regional statistics are fragile and break on non-horozontal variables
+		    # Moreover, it is difficult for users to know which of the potentially hundreds of variables are not horizontal
+		    # Starting today we always check first and skip regional statistics for non-horizontal variables
+		    is_hrz[${var_idx}]=`ncks --is_hrz ${var_sbs[${var_idx}]} ${fl_out[${var_idx}]}` 
+		    if [ ${is_hrz[${var_idx}]} = 'No' ]; then
+			echo "${spt_nm}: WARNING Splitter is skipping regional statistics for variable ${var_sbs[${var_idx}]} which is not a purely horizontal timeseries"
+			continue;
+		    fi # !is_hrz
+
 		    cmd_rgn="*rgn_nbr=3;defdim(\"rgn\",rgn_nbr);*${var_sbs[${var_idx}]}_tmp=0.0f*${var_sbs[${var_idx}]}.avg(${hrz_arg});*${var_sbs[${var_idx}]}_rgn[time,rgn]=${var_sbs[${var_idx}]}_tmp;${var_sbs[${var_idx}]}_rgn@coordinates=\"region_name\";*${lat_nm}_area=${lat_nm}+0.0*${area_nm};*msk_sth=0*${lat_nm}_area.int();delete_miss(msk_sth);*msk_nrt=0*${lat_nm}_area.int();delete_miss(msk_nrt);*idx_glb=0;*idx_nrt=1;*idx_sth=2;*rgn_len=19;defdim(\"rgn_len\",rgn_len);region_name[rgn,rgn_len]=\" \";region_name(idx_glb,0:5)=\"Global\";region_name(idx_nrt,:)=\"Northern Hemisphere\";region_name(idx_sth,:)=\"Southern Hemisphere\";if(${flg_sum}) region_name@long_name=\"${var_sbs[${var_idx}]} timeseries array contains area-weighted sums over these regions\"; else region_name@long_name=\"${var_sbs[${var_idx}]} timeseries array contains area-weighted averages over these regions\";where(${lat_nm}_area < 0.0) msk_sth=1; elsewhere msk_nrt=1;${var_sbs[${var_idx}]}_rgn(:,idx_glb)=((${var_sbs[${var_idx}]}*${area_wgt}).avg(${hrz_arg})/(${area_wgt}).avg(${hrz_arg})).float();${var_sbs[${var_idx}]}_rgn(:,idx_nrt)=((${var_sbs[${var_idx}]}*${area_wgt}*msk_nrt).avg(${hrz_arg})/(${area_wgt}*msk_nrt).avg(${hrz_arg})).float();${var_sbs[${var_idx}]}_rgn(:,idx_sth)=((${var_sbs[${var_idx}]}*${area_wgt}*msk_sth).avg(${hrz_arg})/(${area_wgt}*msk_sth).avg(${hrz_arg})).float();if(${flg_sum}){${var_sbs[${var_idx}]}_rgn(:,idx_glb)=${var_sbs[${var_idx}]}_rgn(:,idx_glb)*(${area_wgt}).total(${hrz_arg}).float()*${sum_scl};${var_sbs[${var_idx}]}_rgn(:,idx_nrt)=${var_sbs[${var_idx}]}_rgn(:,idx_nrt)*(${area_wgt}*msk_nrt).total(${hrz_arg}).float()*${sum_scl};${var_sbs[${var_idx}]}_rgn(:,idx_sth)=${var_sbs[${var_idx}]}_rgn(:,idx_sth)*(${area_wgt}*msk_sth).total(${hrz_arg}).float()*${sum_scl};}${var_sbs[${var_idx}]}=${var_sbs[${var_idx}]}_rgn;push(&${var_sbs[${var_idx}]}@cell_methods,\" area: mean\");if(exists(time_bnds)) time_bnds=time_bnds;if(exists(time_bounds)) time_bounds=time_bounds;valid_area_per_gridcell=${area_wgt};"
 		    # NB: We do not pass nco_opt to ncap2 here
 		    # nco_opt might contain switches like -x that have different meanings in ncap2
@@ -3079,17 +3089,19 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
 		if [ -n "${par_opt}" ]; then
 		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
-			wait ${avg_pid[${var_idx}]}
-			if [ "$?" -eq 0 ]; then
-			    printf "`date`: Global and regional statistics ${cmd_stt[${var_idx}]##* }\n"
-			else
-			    printf "${spt_nm}: ERROR Failed in global and regional statistics. cmd_stt[${var_idx}] failed. Debug this:\n${cmd_stt[${var_idx}]}\n"
-			    # 20190323: exiting parent here creates orphans, kill live children then exit
-			    for ((kid_idx=var_idx+1;kid_idx<=var_idx_end;kid_idx++)); do
-				kill -9 ${avg_pid[${kid_idx}]}
-			    done # !kid_idx
-			    exit 1
-			fi # !err
+			if [ ${is_hrz[${var_idx}]} = 'Yes' ]; then
+			    wait ${avg_pid[${var_idx}]}
+			    if [ "$?" -eq 0 ]; then
+				printf "`date`: Global and regional statistics ${cmd_stt[${var_idx}]##* }\n"
+			    else
+				printf "${spt_nm}: ERROR Failed in global and regional statistics. cmd_stt[${var_idx}] failed. Debug this:\n${cmd_stt[${var_idx}]}\n"
+				# 20190323: exiting parent here creates orphans, kill live children then exit
+				for ((kid_idx=var_idx+1;kid_idx<=var_idx_end;kid_idx++)); do
+				    kill -9 ${avg_pid[${kid_idx}]}
+				done # !kid_idx
+				exit 1
+			    fi # !err
+			fi # !is_hrz
 		    done # !var_idx
 		fi # !par_opt
 		

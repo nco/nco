@@ -1264,7 +1264,7 @@ nco_var_lst_dvd_ncbo                          /* [fnc] Divide input lists into o
   /* Export */
   *prc=var_op_typ;
 
-} /* end nco_var_lst_dvd_ncbo() */
+} /* !nco_var_lst_dvd_ncbo() */
 
 nco_bool
 nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */

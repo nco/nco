@@ -1,8 +1,20 @@
-2025-06-05  Charlie Zender  <zender@uci.edu>
+2025-06-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha06: Maximum Burn Rate';git push
-	git tag -a 5.3.4-alpha06 -m '';git push --tags
+	git tag -a 5.3.4-alpha06 -m 'ncclimo: skp hrz var; ncks: --is_hrz, nco_var_is_hrz()';git push --tags
+
+	* ncclimo skip wait() on cmd_rgn on skipped (horizontal) variables
+
+	* ncclimo implement ncks --is_hrz=var_nm to ensure rgn_stt only	attempted on horizontal variables
+
+	* Add ncks --is_hrz=var_nm to call nco_var_is_hrz()
+
+	* Add nco_var_is_hrz() to check whether single variable is horizontal
+
+	* Add function alias ncvarrnk to return variable rank
+
+2025-06-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha05: Gut Punch';git push

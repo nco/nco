@@ -24700,6 +24700,7 @@ include an NcML formatting characters (e.g., commas, angles, quotes).
 <a name="ncattget"></a> <!-- http://nco.sf.net/nco.html#ncattget -->
 <a name="nclst"></a> <!-- http://nco.sf.net/nco.html#nclst -->
 <a name="ncvarlst"></a> <!-- http://nco.sf.net/nco.html#ncvarlst -->
+<a name="ncvarrnk"></a> <!-- http://nco.sf.net/nco.html#ncvarrnk -->
 <a name="ncvardmnlst"></a> <!-- http://nco.sf.net/nco.html#ncvardmnlst -->
 <a name="ncdmnlst"></a> <!-- http://nco.sf.net/nco.html#ncdmnlst -->
 <a name="ncdmnsz"></a> <!-- http://nco.sf.net/nco.html#ncdmnsz -->
@@ -24725,19 +24726,20 @@ include an NcML formatting characters (e.g., commas, angles, quotes).
 @cindex @command{ncattget}
 @cindex @command{ncavg}
 @cindex @command{ncdmnlst}
-@cindex @command{ncvardmnlst}
-@cindex @command{ncvardmnlatlon}
 @cindex @command{ncdmnsz}
 @cindex @command{ncgrplst}
-@cindex @command{nclst}
 @cindex @command{nclst}
 @cindex @command{ncmax}
 @cindex @command{ncmdn}
 @cindex @command{ncmin}
+@cindex @command{ncmode}
 @cindex @command{ncrecsz}
 @cindex @command{ncrng}
 @cindex @command{nctypget}
 @cindex @command{ncunits}
+@cindex @command{ncvardmnlatlon}
+@cindex @command{ncvardmnlst}
+@cindex @command{ncvarrnk}
 @cindex @file{.bashrc}
 @cindex filters
 @cindex alias
@@ -24828,24 +24830,16 @@ These files are usually named @file{.bashrc}, @file{.cshrc}, and
 # Bash shell (/bin/bash), .bashrc examples
 # ncattget $att_nm $var_nm $fl_nm : What attributes does variable have?
 function ncattget { ncks --trd -M -m ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
-# ncunits $att_val $fl_nm : Which variables have given units?
-function ncunits { ncks --trd -m ${2} | grep -E -i " attribute [0-9]+: units.+ ${1}" | cut -f 1 -d ' ' | sort ; }
 # ncavg $var_nm $fl_nm : What is mean of variable?
 function ncavg { ncwa -y avg -O -C -v ${1} ${2} ~/foo.nc ; ncks --trd -H -C -v ${1} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncavg $var_nm $fl_nm : What is mean of variable?
 function ncavg { ncap2 -O -C -v -s "foo=${1}.avg();print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncdmnlst $fl_nm : What dimensions are in file?
 function ncdmnlst { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
-# ncvardmnlst $var_nm $fl_nm : What dimensions are in a variable?
-function ncvardmnlst { ncks --trd -m -v ${1} ${2} | grep -E -i "^${1} dimension [0-9]+: " | cut -f 4 -d ' ' | sed 's/,//' ; }
-# ncvardmnlatlon $var_nm $fl_nm : Does variable contain both lat and lon dimensions?
-function ncvardmnlatlon { flg=`ncks -C -v ${1} -m ${2} | grep -E -i "${1}\(" | grep -E "lat.*lon|lon.*lat"` ; [[ ! -z "$flg" ]] && echo "Yes, ${1} has both lat and lon dimensions" || echo "No, ${1} does not have both lat and lon dimensions" }
 # ncdmnsz $dmn_nm $fl_nm : What is dimension size?
 function ncdmnsz { ncks --trd -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
 # ncgrplst $fl_nm : What groups are in file?
 function ncgrplst { ncks -m ${1} | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort ; }
-# ncvarlst $fl_nm : What variables are in file?
-function ncvarlst { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 # ncmax $var_nm $fl_nm : What is maximum of variable?
 function ncmax { ncwa -y max -O -C -v ${1} ${2} ~/foo.nc ; ncks --trd -H -C -v ${1} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncmax $var_nm $fl_nm : What is maximum of variable?
@@ -24862,6 +24856,16 @@ function ncmode { ncap2 -O -C -v -s "foo=gsl_stats_median_from_sorted_data(${1}.
 function ncrecsz { ncks --trd -M ${1} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' ' ; }
 # nctypget $var_nm $fl_nm : What type is variable?
 function nctypget { ncks --trd -m -v ${1} ${2} | grep -E -i "^${1}: type" | cut -f 3 -d ' ' | cut -f 1 -d ',' ; }
+# ncunits $att_val $fl_nm : Which variables have given units?
+function ncunits { ncks --trd -m ${2} | grep -E -i " attribute [0-9]+: units.+ ${1}" | cut -f 1 -d ' ' | sort ; }
+# ncvardmnlst $var_nm $fl_nm : What dimensions are in a variable?
+function ncvardmnlst { ncks --trd -m -v ${1} ${2} | grep -E -i "^${1} dimension [0-9]+: " | cut -f 4 -d ' ' | sed 's/,//' ; }
+# ncvardmnlatlon $var_nm $fl_nm : Does variable contain both lat and lon dimensions?
+function ncvardmnlatlon { flg=`ncks -C -v ${1} -m ${2} | grep -E -i "${1}\(" | grep -E "lat.*lon|lon.*lat"` ; [[ ! -z "$flg" ]] && echo "Yes, ${1} has both lat and lon dimensions" || echo "No, ${1} does not have both lat and lon dimensions" }
+# ncvarlst $fl_nm : What variables are in file?
+function ncvarlst { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
+# ncvarrnk $var_nm $fl_nm : What is variable rank?
+function ncvarrnk { ncks --trd -m -C -v $1 $2 | grep -E -i ^$1: | cut -f 4 -d ' ' ; }
 
 # Csh shell (/bin/csh), .cshrc examples (derive others from Bash definitions):
 ncattget() { ncks --trd -M -m -v ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
