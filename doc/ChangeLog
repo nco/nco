@@ -1,8 +1,14 @@
 2025-06-10  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.4-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.4-beta01: ';git push
+	git tag -a 5.3.4-beta01 -m 'all: --gad glb att del; ncclimo: nfr tpd/dpf when !tm_bnds, use is_hrz; ncks: --is_hrz, S1D add lut_out=789 option, frc_column add urb_all, sng att prn ln brk; ncrcat: !mnt_chk bnd; ncremap cxl alg_typ=tempest';git push --tags
+
 	* NCO 5.3.4-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-alpha06: Maximum Burn Rate';git push
 	git tag -a 5.3.4-alpha06 -m 'ncclimo: skp hrz var; ncks: --is_hrz, nco_var_is_hrz()';git push --tags
+
+	* ncclimo takes ~1m30s longer to perform rgn_stt on all ELM variables when calling ncks --is_hrz
 
 	* ncclimo skip wait() on cmd_rgn on skipped (horizontal) variables
 
