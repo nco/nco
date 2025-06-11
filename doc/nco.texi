@@ -23882,7 +23882,14 @@ Introduced in @acronym{NCO} version 5.3.4 (June, 2025), this
 capability helps @command{ncclimo} determine whether a variable is
 suitable for creating a regional average timeseries from.
 Due to this context, coordinate variables (including latitude and
-longitude) are not identified as horiztonal variables. 
+longitude) are not identified as horiztonal variables.
+Furthermore, variables identified as horizontal may only have two
+or three dimensions, and those dimensions must be in this list:
+@code{lat}, @code{lon}, @code{ncol}, @code{nCells}, @code{time},
+and @code{Time}. 
+This @acronym{E3SM}-centric list of dimension names is simply a
+starting point.
+Please contact Charlie if you would like this list expanded.
 @example
 @verbatim
 zender@spectral:~$ ncks --is_hrz three_dmn_rec_var ~/nco/data/in.nc

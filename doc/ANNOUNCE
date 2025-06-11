@@ -50,6 +50,29 @@ large files.
 http://nco.sf.net/nco.html#gad
 http://nco.sf.net/nco.html#gaa
 
+A. ncks --is_var var_nm is a new option that checks whether the
+single variable var_nm is a ``horizontal variable''.
+In this context, horizontal variables are single level variables that
+have horizontal dimensions (in latitude and longitude) yet no vertical
+dimension and no other dimensions except possibly the temporal
+dimension (time). ncks prints "Yes" or "No" and then exits.
+This capability helps ncclimo determine whether a
+variable is suitable for creating a regional average timeseries from.
+Due to this context, coordinate variables (including latitude and
+longitude) are not identified as horiztonal variables.
+Furthermore, variables identified as horizontal may only have two
+or three dimensions, and those dimensions must be in this list:
+lat, lon, ncol, nCells, time, and Time. This E3SM-centric list of
+dimension names is simply a starting point.
+Please contact Charlie if you would like this list expanded.
+zender@spectral:~$ ncks --is_hrz three_dmn_rec_var ~/nco/data/in.nc
+Yes
+zender@spectral:~$ ncks --is_hrz one ~/nco/data/in.nc
+No
+zender@spectral:~$ 
+
+http://nco.sf.net/nco.html#is_hrz
+
 BUG FIXES:
    
 A. Fixed recent regression with ncrcat on hieraarchical files.
