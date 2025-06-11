@@ -1,33 +1,43 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.4 split the uprights
+netCDF Operators NCO version 5.3.4 stick the landing
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.4 prevents ncrcat from performing monotonicity checks
-on CF bounds variables (which are never monotonic).
+Version 5.3.4 contains of bevy of minor features that improve
+NCO in many different areas. These range from reduced monotonicity
+WARNINGs from ncrcat, to an easy new method for all operators
+to remove global attributes, to bulletproofing ncclimo to work
+as intended with instantaneous input, to new urban diagnostics
+in ncks.
 
 Skip this release if these changes do not interest you. 
 
-Did you realize that the first public release of ncks was May 2, 1995?
-https://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/1995/msg00069.html
-Happy 30th birthday ncks!!!
+Time machine:
+The first public release of ncrename was June 14, 1995:
+https://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/1995/msg00076.html
+Happy 30th birthday ncrename!!!
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Hi
+A. ncrcat no longer performs monotonicity checks on CF bounds
+variables (which are never monotonic). This eliminates a lot
+of noisy monotonicity WARNINGs from many datasets.
 
-http://nco.sf.net/nco.html#fpe
-http://nco.sf.net/nco.html#ncks
+http://nco.sf.net/nco.html#ncrcat
 
 BUG FIXES:
    
-A. Hi
+A. Fixed recent regression with ncrcat on hieraarchical files.
+The symptom is this message: " ERROR: nco_inq_varname() reports
+specified dataset ... has no variable ID 2". This problem was
+introduced sometime around NCO 5.3.3. There is no workaround.
+The solution is to upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

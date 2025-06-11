@@ -1364,11 +1364,11 @@ nco_xtr_hrz_lst /* [fnc] Print extraction list of horizontal (lat, lon, no lev) 
 } /* !nco_xtr_hrz_lst() */
 
 void
-nco_var_is_hrz /* [fnc] Return True if variable is horizontal */
+nco_var_is_hrz /* [fnc] Print "Yes"/"No" if variable is horizontal (i.e., has dimensions lat,lon,ncol,time) then exit */
 (const char * const var_nm, /* I [sct] Variable name */
  trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Return True if variable is horizontal (lat, lon, no lev) and exit
+  /* Purpose: Print "Yes"/"No" if variable is horizontal (i.e., has dimensions lat,lon,ncol,time) then exit
      When ncclimo is in timeseries mode and creating regional statistics, variables must be horizontal-only
      Otherwise ncap2 call in ncclimo will fail
      Used by ncks to verify that a single splitter field will work in ncap2 regional averaging

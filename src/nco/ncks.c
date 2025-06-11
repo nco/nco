@@ -507,8 +507,8 @@ main(int argc,char **argv)
     {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
     {"gad",required_argument,0,0}, /* [sng] Global attribute delete */
     {"glb_att_del",required_argument,0,0}, /* [sng] Global attribute delete */
-    {"is_hrz",required_argument,0,0}, /* [flg] */
-    {"var_is_hrz",required_argument,0,0}, /* [flg] */
+    {"is_hrz",required_argument,0,0}, /* [flg] Check and print "Yes"/"No" if variable is horizontal */
+    {"var_is_hrz",required_argument,0,0}, /* [flg] Check and print "Yes"/"No" if variable is horizontal */
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
     {"jsn_fmt",required_argument,0,0}, /* [enm] JSON format */
@@ -1223,16 +1223,16 @@ main(int argc,char **argv)
 
   if(ALPHABETIZE_OUTPUT) trv_tbl_srt(srt_mth,trv_tbl);
 
-  /* Print extraction list and exit */
+  /* Print extraction list then exit */
   if(LST_XTR) nco_xtr_lst(trv_tbl);
 
-  /* Print extraction list of N>=D variables and exit */
+  /* Print extraction list of N>=D variables then exit */
   if(LST_RNK_GE2) nco_xtr_ND_lst(trv_tbl);
 
-  /* Check whether single variable is horizontal (i.e., has dimensions lat,lon,ncol,time) and exit */
+  /* Print "Yes"/"No" if variable is horizontal (i.e., has dimensions lat,lon,ncol,time) then exit */
   if(IS_HRZ) (void)nco_var_is_hrz(var_nm,trv_tbl);
   
-  /* Print extraction list of horizontal (lat,lon,ncol,time) variables and exit */
+  /* Print extraction list of horizontal (lat,lon,ncol,time) variables then exit */
   if(LST_HRZ) nco_xtr_hrz_lst(trv_tbl);
 
   /* Were all user-specified dimensions found? */ 

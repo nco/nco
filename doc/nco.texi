@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.4-beta01
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 10 June 2025
+@set update-date 11 June 2025
 @set update-month June 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -23868,6 +23868,32 @@ lat[0]=90 lev[0]=1000 lon[0]=0 three_dmn_var[0]=20
 lat[0]=90 lev[0]=1000 lon[1]=90 three_dmn_var[1]=21 
 lat[0]=90 lev[0]=1000 lon[2]=180 three_dmn_var[2]=22 
 lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23 
+@end example
+
+@html
+<a name="is_hrz"></a> <!-- http://nco.sf.net/nco.html#is_hrz -->
+<a name="var_is_hrz"></a> <!-- http://nco.sf.net/nco.html#var_is_hrz -->
+@end html
+@cindex @code{--is_hrz @var{var}}
+@cindex @code{--var_is_hrz @var{var}}
+@item --is_hrz
+This option checks whether the single variable @var{var} is a ``horizontal variable''.
+In this context, horizontal variables are single level variables that
+have horizontal dimensions (in latitude and longitude) yet no vertical
+dimension and no other dimensions except possibly the temporal
+dimension (time).
+Introduced in @acronym{NCO} version 5.3.4 (June, 2025), this
+capability helps @command{ncclimo} determine whether a variable is
+suitable for creating a regional average timeseries from.
+Due to this context, coordinate variables (including latitude and
+longitude) are not identified as horiztonal variables. 
+@example
+@verbatim
+zender@spectral:~$ ncks --is_hrz three_dmn_rec_var ~/nco/data/in.nc
+Yes
+zender@spectral:~$ ncks --is_hrz one ~/nco/data/in.nc
+No
+@end verbatim
 @end example
 
 @html
