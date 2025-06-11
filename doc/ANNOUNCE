@@ -28,8 +28,27 @@ NEW FEATURES (full details always in ChangeLog):
 A. ncrcat no longer performs monotonicity checks on CF bounds
 variables (which are never monotonic). This eliminates a lot
 of noisy monotonicity WARNINGs from many datasets.
-
 http://nco.sf.net/nco.html#ncrcat
+
+A. All operators can now delete user-specified global attributes.
+The option --gad=att1,att2,...,attN (or long-option equivalent
+--glb_att_del=att1,att2,...,attN) deletes (rather than adds, like its
+sister option --gaa) global attributes in an output file.
+Global attribute deletion requires only the name of the global
+attribute without any further information, so the argument to the
+option is simply a comma-separated list of all attributes to delete.
+No information about the attributes' types, sizes, or values need be given.
+The option works on attributes of all types, sizes, and values.
+
+ncks --gad=history_of_appended_files,nco_openmp_thread_number,\
+           input_file,map_file,remap_version,remap_hostname,\
+           remap_command,remap_script,NCO in.nc out.nc
+
+The global attribution deletion feature helps to avoid the performance
+penalty incurred by using @command{ncatted} separately to annotate
+large files.  
+http://nco.sf.net/nco.html#gad
+http://nco.sf.net/nco.html#gaa
 
 BUG FIXES:
    

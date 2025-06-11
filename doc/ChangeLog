@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.4-beta01: Trombone Shorty at The Greek';git push
 	git tag -a 5.3.4-beta01 -m 'all: --gad glb att del; ncclimo: nfr tpd/dpf when !tm_bnds, use is_hrz; ncks: --is_hrz, S1D add lut_out=789 option, frc_column add urb_all, sng att prn ln brk; ncrcat: !mnt_chk bnd; ncremap cxl alg_typ=tempest';git push --tags
 
-	* Document --is_hrz
+	* Document --gad in release notes
+
+	* Document --is_hrz in nco.texi
 
 2025-06-10  Charlie Zender  <zender@uci.edu>
 

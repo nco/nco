@@ -13107,17 +13107,13 @@ As of @acronym{NCO} version 5.3.4 (June, 2025), @acronym{NCO} supports the
 option @samp{--gad=@var{att1,att2,...,attN}} (or long-option equivalent
 @samp{--glb_att_del}).
 This option is deletes (rather than adds, like its sister option
-@code{--gaa}) global attributes to an output file.
+@code{--gaa}) global attributes from the output file.
 Global attribute deletion requires only the name of the global
 attribute without any further information, so the argument to the
-option is simply a comma separated list of all attributes to delete.
-No information about the type, size, or value of the attributes need
-be given.
+option is simply a comma-separated list of all attributes to delete.
+No information about the attributes' types, sizes, or values need be given.
 In other words, the option works on attributes of all types, sizes,
 and values.
-Therefore the  syntax is distinctly different from the key-value
-option syntax (@pxref{Multi-arguments}) required by @code{--gaa} to
-add global attributes. 
 @example
 @verbatim
 ncks --gad=history_of_appended_files,nco_openmp_thread_number,\
@@ -22741,8 +22737,8 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [--area_wgt] [-b @var{fl_bnr}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [--fix_rec_dmn @var{dim}] [--fl_fmt @var{fl_fmt}] [--fmt_val @var{format}] [--fpe]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gaa ...] [--gad @var{att}[,@dots{}]] [--grp_xtr_var_xcl]
-[-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--hpss] [--hrz @var{fl_hrz}] [--jsn] [--jsn_fmt @var{lvl}] 
-[-L @var{dfl_lvl}] [-l @var{path}]
+[-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--hpss] [--hrz @var{fl_hrz}]
+[--is_hrz @var{var}] [--jsn] [--jsn_fmt @var{lvl}] [-L @var{dfl_lvl}] [-l @var{path}]
 [-M] [-m] [--map @var{map-file}] [--md5] [--mk_rec_dmn @var{dim}]
 [--no_blank] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P] [-p @var{path}] [--prn_fl @var{print-file}]
