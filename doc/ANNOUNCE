@@ -52,26 +52,49 @@ http://nco.sf.net/nco.html#gaa
 
 A. ncks --is_var var_nm is a new option that checks whether the
 single variable var_nm is a ``horizontal variable''.
-In this context, horizontal variables are single level variables that
-have horizontal dimensions (in latitude and longitude) yet no vertical
-dimension and no other dimensions except possibly the temporal
-dimension (time). ncks prints "Yes" or "No" and then exits.
-This capability helps ncclimo determine whether a
-variable is suitable for creating a regional average timeseries from.
+In this context, horizontal variables means single-level variables
+that have horizontal dimensions (e.g., lat and lon) yet no
+vertical dimension and no other dimensions except possibly the
+temporal dimension (time). ncks prints "Yes" or "No" and then exits.
+This capability helps ncclimo determine whether a variable is
+suitable for creating a regional average timeseries from.
 Due to this context, coordinate variables (including latitude and
 longitude) are not identified as horiztonal variables.
 Furthermore, variables identified as horizontal may only have two
 or three dimensions, and those dimensions must be in this list:
-lat, lon, ncol, nCells, time, and Time. This E3SM-centric list of
-dimension names is simply a starting point.
-Please contact Charlie if you would like this list expanded.
+lat, lon, ncol, nCells, time, and Time.
+
 zender@spectral:~$ ncks --is_hrz three_dmn_rec_var ~/nco/data/in.nc
 Yes
 zender@spectral:~$ ncks --is_hrz one ~/nco/data/in.nc
 No
 zender@spectral:~$ 
 
+The E3SM-centric list of allowed dimension names is only a starting point!
+Please contact Charlie if you would like this list expanded.
 http://nco.sf.net/nco.html#is_hrz
+
+A. ncclimo can now infer the timesteps per day (tpd) to use for
+high-frequency instantaneous (in the CF sense) data that lack a
+CF temporal bounds variable. ncclimo also uses tpd to help it
+discover how many days-per-file there are. Nevertheless, the metadata
+in the ncclimo output may be more accurate if the input data contains
+a temporal bounds variable.
+
+A. The ncks S1D functionality that "gridifies" ELM/CTSM data has
+new features to aggregate and report Urban landunit characteristics.
+First, the new S1D option "--rgr lut_out=789" stores the area-weighted
+mean of the three Urban landunit types (7, 8, and 9) in the output
+for every variable in a restart file that is defined on columns.
+
+ncks --s1d --rgr lut_out=789 --hrz=hst.nc rst.nc s1d.nc # Avg Urban
+
+Second, the frc_column diagnostic variable stores the subtotal of
+the three Urban landunits areas in (C-based) index 15 of output files
+with MECs, and in index 5 of output files without MECs. Users can now
+easily assess the total fraction of a gridcell that is Urban. 
+
+A. 
 
 BUG FIXES:
    

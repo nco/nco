@@ -24481,7 +24481,7 @@ The @samp{--rgr lut_out=$lut_out} option specifies that only columns
 of specified landunit type(s) should appear in the output for
 column-variables. 
 The value @var{lut_out} is the standard landunit type of the column.
-Two additional values specify to output area-weighted averages of
+Three additional values specify to output area-weighted averages of
 multiple landunit types: 
 @example
 @verbatim
@@ -24497,16 +24497,45 @@ lut_out Output will be value of column(s) in this andunit
 8       Urban high density
 9       Urban medium density
 10      Area-weighted average of all landunit types except MEC glaciers
-13      Area-weighted average of soil+(non-MEC) glacier
+13      Area-weighted average of soil+(non-MEC) glacier (types 1+3)
+789     Area-weighted average of all urban types (types 7+8+9)
 @end verbatim
 @end example
 This feature is necessarily restricted to restart datasets, e.g.,
 @example
 @verbatim
-ncks --s1d --rgr lut_out=1 --hrz=hst.nc rst.nc s1d.nc # Output Soil LUT
-ncks --s1d --rgr lut_out=13 --hrz=hst.nc rst.nc s1d.nc # Avg Soil+Glacier
+ncks --s1d --rgr lut_out=1   --hrz=hst.nc rst.nc s1d.nc # Output Soil LUT
+ncks --s1d --rgr lut_out=13  --hrz=hst.nc rst.nc s1d.nc # Avg Soil+Glacier
+ncks --s1d --rgr lut_out=789 --hrz=hst.nc rst.nc s1d.nc # Avg Urban
 @end verbatim
 @end example
+In conjunction with this capability, the @command{ncks} @acronym{S1D}
+functionality also outputs two diagnostic variables that contain the
+area-fraction of different landunits and column types.
+The @code{frc_landunit} field contains the gridcell fraction occupied
+by every Landunit type and has dimension @code{landunit} of size 10.
+Index = 0 is the sum of all landunit fractions and should be 1.0 over
+all gridcells with any land fraction.
+Indexes 1 through 9 are the standard Landunit types: 1 = Vegetated or
+bare soil; 2 = Crop; 3 = Landice (plain, no MEC); 4 = Landice multiple
+elevation classes; 5 = Deep lake; 6 = Wetland; 7 = Urban tall building
+district; 8 = Urban high density; 9 = Urban medium density. 
+
+The @code{frc_column} field contains the gridcell fraction occupied
+by various columns (or groups of columns).
+It has dimension @code{landunit} of size 16 for datasets with
+Multiple Elevation Classes @acronym{MECs} and size 6 for datasets
+without @acronym{MECs}. 
+For datasets with @acronym{MECs}: index = 0 is soil column, index = 1
+is MEC == 1, indexes 2..10 are remaining MEC columns, index 11 is
+sub-total of MEC columns, index = 12 is deep lake column, index = 13
+is wetland column, index = 14 is subtotal of natural (soil, MECs,
+lakes, wetlands) columns, and index = 15 is subtotal of urban
+columns.
+For non-MEC datasets, index = 0 is soil column, index = 1 is
+glaciated column, index = 2 is deep lake column, index = 3 is wetland
+column, index = 4 is subtotal of natural (soil, glacier, lakes,
+wetlands) columns, and index = 5 is subtotal of urban columns. 
 
 @html
 <a name="snw_ocn"></a> <!-- http://nco.sf.net/nco.html#snw_ocn -->
