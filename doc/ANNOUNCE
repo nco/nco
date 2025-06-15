@@ -93,8 +93,33 @@ Second, the frc_column diagnostic variable stores the subtotal of
 the three Urban landunits areas in (C-based) index 15 of output files
 with MECs, and in index 5 of output files without MECs. Users can now
 easily assess the total fraction of a gridcell that is Urban. 
+http://nco.sf.net/nco.html#s1d
+http://nco.sf.net/nco.html#frc_column
 
-A. 
+A. ncks now inserts line-breaks in NC_STRING-valued text when it
+encounters a C-format carriage return "\n". Now printing text
+stored as NC_STRING and as NC_CHAR has the same appearance.
+This makes it easier to read "history" global attributes that are
+stored as NC_STRING:
+
+ncap2 -O -4 -h -s 'global@history="Previous history"s' ~/foo.nc
+ncap2 -O -s 'one=1' ~/foo.nc ~/foo.nc
+ncks -M ~/foo.nc # NC_STRING history is now more legible
+
+http://nco.sf.net/nco.html#ncks
+http://nco.sf.net/nco.html#history
+
+A. ncremap has deprecated the use of the "--alg_typ=tempest"
+regridding algorithm value.
+This algorithm name simply meantthat NCO invoked the TempestRemap
+(TR) regridder with all default choices, i.e., with no options.
+However, the default TR algorithm is rarely employed anymore, and many
+users misinterpreted the meaning of "tempest". 
+Instead of supplying ncremap with their own options, they
+received the default, which usually was sub-optimal. We encourage
+users to migrate to the appropriate and specifically-named TR
+algorithms such as "fv2fv_flx", "traave", "trfv2", etc.
+http://nco.sf.net/nco.html#alg_typ
 
 BUG FIXES:
    
