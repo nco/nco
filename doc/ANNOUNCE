@@ -25,11 +25,6 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncrcat no longer performs monotonicity checks on CF bounds
-variables (which are never monotonic). This eliminates a lot
-of noisy monotonicity WARNINGs from many datasets.
-http://nco.sf.net/nco.html#ncrcat
-
 A. All operators can now delete user-specified global attributes.
 The option --gad=att1,att2,...,attN (or long-option equivalent
 --glb_att_del=att1,att2,...,attN) deletes (rather than adds, like its
@@ -50,7 +45,12 @@ large files.
 http://nco.sf.net/nco.html#gad
 http://nco.sf.net/nco.html#gaa
 
-A. ncks --is_var var_nm is a new option that checks whether the
+B. ncrcat no longer performs monotonicity checks on CF bounds
+variables (which are never monotonic). This eliminates a lot
+of noisy monotonicity WARNINGs from many datasets.
+http://nco.sf.net/nco.html#ncrcat
+
+C. ncks --is_var var_nm is a new option that checks whether the
 single variable var_nm is a ``horizontal variable''.
 In this context, horizontal variables means single-level variables
 that have horizontal dimensions (e.g., lat and lon) yet no
@@ -74,14 +74,14 @@ The E3SM-centric list of allowed dimension names is only a starting point!
 Please contact Charlie if you would like this list expanded.
 http://nco.sf.net/nco.html#is_hrz
 
-A. ncclimo can now infer the timesteps per day (tpd) to use for
+D. ncclimo can now infer the timesteps per day (tpd) to use for
 high-frequency instantaneous (in the CF sense) data that lack a
 CF temporal bounds variable. ncclimo also uses tpd to help it
 discover how many days-per-file there are. Nevertheless, the metadata
 in the ncclimo output may be more accurate if the input data contains
 a temporal bounds variable.
 
-A. The ncks S1D functionality that "gridifies" ELM/CTSM data has
+E. The ncks S1D functionality that "gridifies" ELM/CTSM data has
 new features to aggregate and report Urban landunit characteristics.
 First, the new S1D option "--rgr lut_out=789" stores the area-weighted
 mean of the three Urban landunit types (7, 8, and 9) in the output
@@ -96,7 +96,7 @@ easily assess the total fraction of a gridcell that is Urban.
 http://nco.sf.net/nco.html#s1d
 http://nco.sf.net/nco.html#frc_column
 
-A. ncks now inserts line-breaks in NC_STRING-valued text when it
+F. ncks now inserts line-breaks in NC_STRING-valued text when it
 encounters a C-format carriage return "\n". Now printing text
 stored as NC_STRING and as NC_CHAR has the same appearance.
 This makes it easier to read "history" global attributes that are
@@ -109,7 +109,7 @@ ncks -M ~/foo.nc # NC_STRING history is now more legible
 http://nco.sf.net/nco.html#ncks
 http://nco.sf.net/nco.html#history
 
-A. ncremap has deprecated the use of the "--alg_typ=tempest"
+G. ncremap has deprecated the use of the "--alg_typ=tempest"
 regridding algorithm value.
 This algorithm name simply meantthat NCO invoked the TempestRemap
 (TR) regridder with all default choices, i.e., with no options.

@@ -1,5 +1,9 @@
 2025-06-15  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.4 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.4: Fourth Fourth';git push
+	git tag -a 5.3.4 -m 'all: --gad glb att del; ncclimo: nfr tpd/dpf when !tm_bnds, use is_hrz; ncks: --is_hrz, S1D add lut_out=789 option, frc_column add urb_all, sng att prn ln brk; ncrcat: !mnt_chk bnd; ncremap cxl alg_typ=tempest';git push --tags
+
 	* NCO 5.3.4-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4-beta01: Trombone Shorty at The Greek';git push
 	git tag -a 5.3.4-beta01 -m 'all: --gad glb att del; ncclimo: nfr tpd/dpf when !tm_bnds, use is_hrz; ncks: --is_hrz, S1D add lut_out=789 option, frc_column add urb_all, sng att prn ln brk; ncrcat: !mnt_chk bnd; ncremap cxl alg_typ=tempest';git push --tags
