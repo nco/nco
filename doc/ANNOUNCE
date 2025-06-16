@@ -10,8 +10,8 @@ Version 5.3.4 contains of bevy of minor features that improve
 NCO in many different areas. These range from reduced monotonicity
 WARNINGs from ncrcat, to an easy new method for all operators
 to remove global attributes, to bulletproofing ncclimo to work
-as intended with instantaneous input, to new urban diagnostics
-in ncks.
+as intended with instantaneous input, to new urban landunit
+diagnostics in ncks.
 
 Skip this release if these changes do not interest you. 
 
