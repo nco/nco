@@ -1,3 +1,9 @@
+nco (5.3.5-1) unstable; urgency=low
+
+  * new upstream version Fourth Fourth: fxm
+
+ -- Charlie Zender <zender@uci.edu> Fri, 18 Jul 2025 12:26:22 -0700
+
 nco (5.3.4-1) unstable; urgency=low
 
   * new upstream version Fourth Fourth: all: --gad glb att del; ncclimo: nfr tpd/dpf when !tm_bnds, use is_hrz; ncks: --is_hrz, S1D add lut_out=789 option, frc_column add urb_all, sng att prn ln brk; ncrcat: !mnt_chk bnd; ncremap cxl alg_typ=tempest

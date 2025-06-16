@@ -944,7 +944,7 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <h3><a href="http://www.apple.com/macosx/">MacOS&nbsp;Darwin</a></h3>
 <ul>
 <!-- 
-# MacOS 15.3 (Sequoia) systems (firn, sastrugi, spectral):
+# MacOS 15.5 (Sequoia) systems (sastrugi, spectral):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
 cd ~/bin;tar cvzf ${DATA}/nco-5.3.4.macos.15.5.tar.gz nc*;scp ${DATA}/nco-5.3.4.macos.15.5.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->

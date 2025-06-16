@@ -1,5 +1,9 @@
 2025-06-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.5-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.5-alpha01: Department Q';git push
+	git tag -a 5.3.5-alpha01 -m 'Functionally identical to 5.3.4 except ...';git push --tags
+
 	* NCO 5.3.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.4: Fourth Place Fourth Time';git push
 	git tag -a 5.3.4 -m 'all: --gad glb att del; ncclimo: nfr tpd/dpf when !tm_bnds, use is_hrz; ncks: --is_hrz, S1D add lut_out=789 option, frc_column add urb_all, sng att prn ln brk; ncrcat: !mnt_chk bnd; ncremap cxl alg_typ=tempest';git push --tags
