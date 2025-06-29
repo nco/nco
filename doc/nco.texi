@@ -29647,7 +29647,7 @@ are in the same dimensional units (e.g., Pa or hPa) as @code{P0}.
 It is often useful to create a vertical grid file from existing
 model or reanalysis output.
 We call vertical grid files ``skinny'' if they contain only the
-vertical information.
+vertical information and not the surface pressure.
 Skinny grid-files are easy to create with @command{ncks}, e.g.,
 @example
 @verbatim
@@ -29838,9 +29838,26 @@ lev[lev]=P0*(hyam+hybm)/100.0;
 
 A vertical hybrid grid file @var{vrt_fl} must contain at least
 @code{hyai}, @code{hybi}, @code{hyam}, @code{hybm(lev)} and
-@code{P0}; @code{PS}, @code{lev}, and @code{ilev} are optional. 
+@code{P0}.
+The @code{PS}, @code{lev}, and @code{ilev} fields are optional. 
 (Exceptions for @acronym{ECMWF} grids are noted above).
-All hybrid-coordinate data files must contain @code{PS}.
+All hybrid-coordinate data files must be associated with a
+@code{PS} field.
+@code{PS} is normally in hybrid data input files, but can
+optionally be located in a file pointed to with the @code{--ps_nm}
+option, or in a ``fat'' input vertical grid file: 
+@example
+@verbatim
+# 1. Input data file in.nc contains input PS (also used as output PS):
+ncremap --vrt_out=vrt_hyb.nc in.nc out.nc
+# 2. Input data file in.nc contains input PS but output PS is in
+# vertical grid file vrt_hyb_fat.nc:
+ncremap --vrt_out=vrt_hyb_fat.nc in.nc out.nc
+# 3. PS for input data file in.nc is located in file.nc
+# vertical grid file vrt_hyb_fat.nc:
+ncremap --vrt_in=vrt_hyb.nc --ps_nm=/external/file.nc/ps in.nc out.nc
+@end verbatim
+@end example
 Interpolating a pure-pressure coordinate data file to hybrid
 coordinates requires, therefore, that the hybrid-coordinate
 @var{vrt_fl} must contain @code{PS} and/or the input data file
