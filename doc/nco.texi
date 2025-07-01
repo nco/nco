@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.5-alpha01
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 16 June 2025
-@set update-month June 2025
+@set update-date 1 July 2025
+@set update-month July 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -26013,14 +26013,21 @@ As of @acronym{NCO} @w{version 4.9.4}, released in September, 2020,
 specified by @samp{-w @var{wgt_arr}} (or @samp{--wgt @var{wgt_arr}})
 for per-record weights instead of per-file-weights, where
 @var{wgt_arr} is a 1-D array of weights.
-This is useful when computing weighted averages with cyclically
-varying weights, since the weights given on the command line will be 
-repeated for the length of the timeseries.
+This is useful when computing weighted averages with cyclicly varying
+weights, since the weights given on the command line will be repeated
+for the length of the timeseries. 
 Consider, for example, a @acronym{CMIP6} timeseries of historical
 monthly mean emissions that one wishes to convert to a timeseries of
 annual-mean emissions.
-One can now weight each month by its number of days via:
+Consider three methods for weighting each month to average a
+monthly-resolution interannual file: 
 @example
+# Uniform weighted monthly averages form a crude climatological mean
+ncra ~/monthly.nc ~/annual.nc
+# Properly weighted months produce an accurate climatological mean
+ncra --per_record_weights       -d time,,,12,12 --wgt \
+  31,28,31,30,31,30,31,31,30,31,30,31 ~/monthly.nc ~/annual.nc
+# Time series of accurate annual means 
 ncra --per_record_weights --mro -d time,,,12,12 --wgt \
   31,28,31,30,31,30,31,31,30,31,30,31 ~/monthly.nc ~/annual.nc
 @end example

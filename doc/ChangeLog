@@ -1,8 +1,12 @@
-2025-06-22  Charlie Zender  <zender@uci.edu>
+2025-07-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.5-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.5-alpha01: Department Q';git push
 	git tag -a 5.3.5-alpha01 -m 'Functionally identical to 5.3.4 except ...';git push --tags
+
+	* Document more examples of ncra --per-record-weighting (--prw)
+
+2025-06-22  Charlie Zender  <zender@uci.edu>
 
 	* Document locations for input/output PS with vrt_in vrt_out
 
