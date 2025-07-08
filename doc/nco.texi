@@ -620,19 +620,26 @@ Charlie Zender@*
 July, 2022@*
 Laguna Beach, California@*
 
-@ignore
-The @acronym{DOE} @acronym{E3SM} project, @acronym{NASA}, and
-@acronym{NSF} all contributed support to @acronym{NCO} for the
-past three years. The quantization and compression features are
-now mature and implemented in the netCDF C-Library where they
-can be used by other toolkits and languages.
+The @acronym{DOE} @acronym{E3SM} project, @acronym{NASA OSTFL}
+program, and @acronym{NSF CSSI} program all supported @acronym{NCO}
+for the past three years.
+Our quantization and compression features are now mature and
+implemented in the netCDF C-Library where they can be used by other 
+toolkits and languages, and may be used and CMIP7.
+Help from my colleagues at @acronym{CF}, @acronym{CMOR},
+@acronym{E3SM}, @acronym{NOAA}, and Unidata was indispensable.
+The future of US-based support for these organizations and
+collaborators is dire due to the climate denialism and science budget 
+cutbacks of the current administration.  
+Fortunately, the University of California affords me the independence
+and base support to continue maintainining and improving @acronym{NCO}
+for years to come.
 
 @sp 1
 @noindent
 Charlie Zender@*
-June, 2025@*
+July, 2025@*
 Laguna Beach, California@*
-@end ignore
 
 @html
 <a name="smr"></a> <!-- http://nco.sf.net/nco.html#smr -->
@@ -26022,6 +26029,7 @@ annual-mean emissions.
 Consider three methods for weighting each month to average a
 monthly-resolution interannual file: 
 @example
+@verbatim
 # Uniform weighted monthly averages form a crude climatological mean
 ncra ~/monthly.nc ~/annual.nc
 # Properly weighted months produce an accurate climatological mean
@@ -26030,6 +26038,7 @@ ncra --per_record_weights       -d time,,,12,12 --wgt \
 # Time series of accurate annual means 
 ncra --per_record_weights --mro -d time,,,12,12 --wgt \
   31,28,31,30,31,30,31,31,30,31,30,31 ~/monthly.nc ~/annual.nc
+@end verbatim
 @end example
 Note that the twelve weights will be implicitly repeated throughtout
 the duration of the input file(s), which in this case may therefore
