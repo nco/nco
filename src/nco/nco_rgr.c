@@ -1014,6 +1014,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_grd_in_dpt_3D=False; /* [flg] Input 3D depth coordinate vertical grid */
   nco_bool flg_grd_in_hyb=False; /* [flg] Input hybrid coordinate vertical grid */
   nco_bool flg_grd_in_prs=False; /* [flg] Input pressure coordinate vertical grid */
+  nco_bool flg_grd_in_prs_1D=False; /* [flg] Input 1D pressure coordinate vertical grid */
+  nco_bool flg_grd_in_prs_3D=False; /* [flg] Input 3D pressure coordinate vertical grid */
   nco_bool flg_grd_out_dpt=False; /* [flg] Output depth coordinate vertical grid */
   nco_bool flg_grd_out_hyb=False; /* [flg] Output hybrid coordinate vertical grid */
   nco_bool flg_grd_out_prs=False; /* [flg] Output pressure coordinate vertical grid */
@@ -1659,6 +1661,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. The signal variables default to \"hyai\" for hybrid sigma-pressure, \"plev\" for pure pressure, and the signature dimension defaults to \"nVertLevels\" for height/depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
     return NCO_ERR;
   } /* !hyai */
+  if(flg_grd_in_prs){
+    /* If input pressure has no horizontal dimensions, expect it to be 1D pressure, otherwise 3D pressure */
+    int dmn_nbr_plev_in; /* [nbr] Number of dimensions in depth variable in output file */
+    rcd=nco_inq_varndims(vrt_in_id,plev_id,&dmn_nbr_plev_in);
+    /* fxm 20250717 must account for possibility of time-varying 1D plev */
+    if(dmn_nbr_plev_in <= 1) flg_grd_in_prs_1D=True; else flg_grd_in_prs_3D=True; 
+  } /* !flg_grd_in_prs */
   if(flg_grd_in_dpt){
     /* If variable exists with same name as depth dimension, expect it to be 1D depth */
     if((rcd=nco_inq_varid_flg(vrt_in_id,lev_nm_in,&dpt_id)) == NC_NOERR) flg_grd_in_dpt_1D=True; else flg_grd_in_dpt_3D=True; 
@@ -1673,8 +1682,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   assert(!(flg_grd_out_hyb && flg_grd_out_dpt));
   assert(!(flg_grd_out_prs && flg_grd_out_dpt));
   assert(flg_grd_out_hyb || flg_grd_out_prs || flg_grd_out_dpt);
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO Input grid flags : flg_grd_in_hyb = %d, flg_grd_in_prs = %d, flg_grd_in_dpt_1D = %d, flg_grd_in_dpt_3D = %d\n",nco_prg_nm_get(),flg_grd_in_hyb,flg_grd_in_prs,flg_grd_in_dpt_1D,flg_grd_in_dpt_3D);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO Input grid flags : flg_grd_in_hyb = %d, flg_grd_in_prs_1D = %d, flg_grd_in_prs_3D = %d, flg_grd_in_dpt_1D = %d, flg_grd_in_dpt_3D = %d\n",nco_prg_nm_get(),flg_grd_in_hyb,flg_grd_in_prs_1D,flg_grd_in_prs_3D,flg_grd_in_dpt_1D,flg_grd_in_dpt_3D);
   
+  // fxm: 20250717 got to here with prs_3D modifications 
+
   /* 20191219: This block is not used, deprecate it? Or use once new coordinates like altitude, depth supported? */
   nco_vrt_ntp_typ_enm nco_vrt_ntp_typ=nco_ntp_nil; /* Vertical interpolation type */
   if(nco_vrt_grd_in == nco_vrt_grd_hyb && nco_vrt_grd_out == nco_vrt_grd_hyb) nco_vrt_ntp_typ=nco_ntp_hyb_to_hyb;

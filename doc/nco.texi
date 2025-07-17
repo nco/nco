@@ -625,15 +625,21 @@ program, and @acronym{NSF CSSI} program all supported @acronym{NCO}
 for the past three years.
 Our quantization and compression features are now mature and
 implemented in the netCDF C-Library where they can be used by other 
-toolkits and languages, and may be used and CMIP7.
+toolkits and languages.
+These @acronym{IPCC} @acronym{AR7} @acronym{CMIP7} model
+intercomparison project will allow use of these features.
+This lays the groundwork for their widespread adoption throughout
+geoscientific computing, potentially saving enormous amounts of
+storage and reducing its attendant power requirements and
+@acronym{GHG} emissions. 
 Help from my colleagues at @acronym{CF}, @acronym{CMOR},
-@acronym{E3SM}, @acronym{NOAA}, and Unidata was indispensable.
-The future of US-based support for these organizations and
-collaborators is dire due to the climate denialism and science budget 
-cutbacks of the current administration.  
-Fortunately, the University of California affords me the independence
-and base support to continue maintainining and improving @acronym{NCO}
-for years to come.
+@acronym{E3SM}, @acronym{NOAA}, and Unidata has been indispensable.
+Unfortunately the future of US-based support for these organizations
+and collaborators is dire due to the climate denialism and science
+budget cutbacks of the current administration.  
+So I am especially grateful to the University of California which
+affords me the independence and support to continue maintainining and
+improving @acronym{NCO} for years to come.
 
 @sp 1
 @noindent
