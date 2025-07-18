@@ -1004,7 +1004,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int lev_id=NC_MIN_INT; /* [id] Midpoint pressure ID */
   int p0_id=NC_MIN_INT; /* [id] Reference pressure ID */
   int ps_id=NC_MIN_INT; /* [id] Surface pressure ID */
-  int plev_id; /* [id] Air pressure ID */
+  int plev_id=NC_MIN_INT; /* [id] Air pressure ID */
   nco_bool flg_dpt_in_pst_dwn=False; /* [flg] Input depth/height coordinate increases downwards */
   nco_bool flg_dpt_out_pst_dwn=False; /* [flg] Output depth/height coordinate increases downwards */
   nco_bool flg_grd_hyb_cameam=False; /* [flg] Hybrid coordinate vertical grid uses CAM/EAM conventions */
@@ -1627,11 +1627,21 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !fl_vrt_in */
   
   /* Determine input grid type */
+  int fl_xtr_id; /* [id] netCDF file ID for external surface pressure or 3D pressure or depth/height-variable file */
+  fl_xtr_id=vrt_in_id;
+  plev_id=NC_MIN_INT;
   if((rcd=nco_inq_varid_flg(vrt_in_id,"hyai",&hyai_id)) == NC_NOERR){
     nco_vrt_grd_in=nco_vrt_grd_hyb; /* EAM */
     flg_grd_in_hyb=True;
-  }else if((rcd=nco_inq_varid_flg(vrt_in_id,plev_nm_in,&plev_id)) == NC_NOERR){
-    nco_vrt_grd_in=nco_vrt_grd_prs; /* NCEP */
+  }else if((rcd=nco_xtr_var_get(&fl_xtr_id,&plev_nm_in,&plev_nm_out,&rgr->plev_nm_out,&plev_id)) == NC_NOERR){
+    /* Identifying whether pressure field is present, and therefore whether input grid is pressure is distinct from other input grid types
+       Both hybrid and depth grids have required variables (e.g., "hyai" or depth-dimension names)
+       1D pressure variables are relatively easy to spot because they are nearly always in the input file
+       This search is already performed above
+       3D pressure variables, however, are voluminous and so may be stored in an external file 
+       Much check both input data file and (potential) filepath embedded in pressure-variable name to determine whether input grid is 3D pressure
+       This combined search (of input and external file) means we must always read input plev from fl_xtr_id, not vrt_in_id */
+    nco_vrt_grd_in=nco_vrt_grd_prs; /* NCEP, MERRA2 */
     flg_grd_in_prs=True;
   }else if((rcd=nco_inq_dimid_flg(vrt_in_id,lev_nm_in,&lev_id)) == NC_NOERR){
     /* User may have manually altered lev dimension name to be a depth dimension */
@@ -1656,17 +1666,23 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     lev_nm_in=(char *)strdup("z");
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* SOSE */
     flg_grd_in_dpt=True;
-  }else{ /* !hyai */
+  } /* !rcd */
+
+  /* SOL? */
+  if(!flg_grd_in_hyb && !flg_grd_in_prs && !flg_grd_in_dpt){
     (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid sigma-pressure or pure-pressure or depth vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. The signal variables default to \"hyai\" for hybrid sigma-pressure, \"plev\" for pure pressure, and the signature dimension defaults to \"nVertLevels\" for height/depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
     return NCO_ERR;
   } /* !hyai */
+
+  /* Discriminate between globally uniform (1D) and spatially varying pressure and depth grids */
   if(flg_grd_in_prs){
     /* If input pressure has no horizontal dimensions, expect it to be 1D pressure, otherwise 3D pressure */
     int dmn_nbr_plev_in; /* [nbr] Number of dimensions in depth variable in output file */
-    rcd=nco_inq_varndims(vrt_in_id,plev_id,&dmn_nbr_plev_in);
-    /* fxm 20250717 must account for possibility of time-varying 1D plev */
-    if(dmn_nbr_plev_in <= 1) flg_grd_in_prs_1D=True; else flg_grd_in_prs_3D=True; 
+    rcd=nco_inq_varndims(fl_xtr_id,plev_id,&dmn_nbr_plev_in);
+    /* fxm 20250717 account for possibility of time-varying 1D plev */
+    if(dmn_nbr_plev_in == 1) flg_grd_in_prs_1D=True; else flg_grd_in_prs_3D=True; 
+    if(flg_grd_in_prs_3D) (void)fprintf(stdout,"%s: WARNING Input data is detected to be on 3D-pressure grid stored in variable \"%s\". Work on this feature began on 20250717 and it is not yet fully supported. Anticipate bugs and crashes!\n",nco_prg_nm_get(),plev_nm_in);
   } /* !flg_grd_in_prs */
   if(flg_grd_in_dpt){
     /* If variable exists with same name as depth dimension, expect it to be 1D depth */
@@ -1684,8 +1700,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   assert(flg_grd_out_hyb || flg_grd_out_prs || flg_grd_out_dpt);
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO Input grid flags : flg_grd_in_hyb = %d, flg_grd_in_prs_1D = %d, flg_grd_in_prs_3D = %d, flg_grd_in_dpt_1D = %d, flg_grd_in_dpt_3D = %d\n",nco_prg_nm_get(),flg_grd_in_hyb,flg_grd_in_prs_1D,flg_grd_in_prs_3D,flg_grd_in_dpt_1D,flg_grd_in_dpt_3D);
   
-  // fxm: 20250717 got to here with prs_3D modifications 
-
   /* 20191219: This block is not used, deprecate it? Or use once new coordinates like altitude, depth supported? */
   nco_vrt_ntp_typ_enm nco_vrt_ntp_typ=nco_ntp_nil; /* Vertical interpolation type */
   if(nco_vrt_grd_in == nco_vrt_grd_hyb && nco_vrt_grd_out == nco_vrt_grd_hyb) nco_vrt_ntp_typ=nco_ntp_hyb_to_hyb;
@@ -1696,10 +1710,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(nco_vrt_ntp_typ == nco_ntp_nil) (void)fprintf(stdout,"%s: ERROR %s unable to diagnose commensurate input and output vertical grid types. vrt_grd_in = %s, vrt_grd_out = %s\n",nco_prg_nm_get(),fnc_nm,nco_vrt_grd_sng(nco_vrt_grd_in),nco_vrt_grd_sng(nco_vrt_grd_out));
   assert(nco_vrt_ntp_typ != nco_ntp_nil);
 
+  // fxm: 20250717 got to here with input prs_3D modifications 
+
   /* Variables on input grid, i.e., on grid in data file to be interpolated */
-  char *var_nm; /* [sng] Variable name */
-  int fl_xtr_id; /* [id] netCDF file ID for external surface pressure or depth/height-variable file */
-  fl_xtr_id=vrt_in_id;
   if(flg_grd_in_hyb){
     ps_id=NC_MIN_INT;
     rcd=nco_xtr_var_get(&fl_xtr_id,&ps_nm_in,&ps_nm_out,&rgr->ps_nm_out,&ps_id);
@@ -3123,6 +3136,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_add_msv_att */
 
   /* Define interpolated and copied variables in output file */
+  char *var_nm; /* [sng] Variable name */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
@@ -12610,7 +12624,7 @@ nco_xtr_var_get /* [fnc] Obtain variable specified by [external_path]/var_nm */
     char *sls_ptr; /* [sng] Pointer to last slash character (' ') */
     sls_ptr=strrchr(var_nm,sls_chr);
     if(!sls_ptr){
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s (aka \"the regridder\") reports unable to find (required) surface pressure or (optional) depth/height variable var_nm = %s for hybrid sigma-pressure grid in input file, and unable to identify filename (ending with slash '/' or backslash '\\', depending on the operating system) portion of that string to serve as local external file for vertical grid input\n",nco_prg_nm_get(),fnc_nm,var_nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s (aka \"the regridder\") reports unable to find surface pressure (required for hybrid sigma-pressure grid), or pure pressure (required for pressure grid), or (optional) depth/height variable var_nm = %s in input file, and unable to identify filename (ending with slash '/' or backslash '\\', depending on the operating system) portion of that string to serve as local external file for vertical grid input\n",nco_prg_nm_get(),fnc_nm,var_nm);
       return rcd;
     } /* !sls_ptr */
     
@@ -12624,8 +12638,8 @@ nco_xtr_var_get /* [fnc] Obtain variable specified by [external_path]/var_nm */
     fl_xtr=(char *)strdup(var_nm);
     var_nm=*var_nm_in; /* NB: too tricky? */
     rcd=nco_open(fl_xtr,NC_NOWRITE,fl_xtr_id);
-    if((rcd=nco_inq_varid_flg(*fl_xtr_id,var_nm,var_id)) != NC_NOERR) (void)fprintf(stdout,"%s: INFO %s (aka \"the regridder\") reports unable to find surface pressure or depth/height = \"%s\" in local external file %s\n",nco_prg_nm_get(),fnc_nm,*var_nm_in,fl_xtr);
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s will obtain surface pressure or depth/height = %s from file %s\n",nco_prg_nm_get(),fnc_nm,*var_nm_in,fl_xtr);
+    if((rcd=nco_inq_varid_flg(*fl_xtr_id,var_nm,var_id)) != NC_NOERR) (void)fprintf(stdout,"%s: INFO %s (aka \"the regridder\") reports unable to find surface pressure or pure pressure or depth/height variable = \"%s\" in local external file %s\n",nco_prg_nm_get(),fnc_nm,*var_nm_in,fl_xtr);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s will obtain surface pressure or pure pressure or depth/height = %s from file %s\n",nco_prg_nm_get(),fnc_nm,*var_nm_in,fl_xtr);
   } /* !rcd */
 
   return rcd;
