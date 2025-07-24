@@ -8018,7 +8018,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	   ncol=0 on conus chevrons file:
 	   3.653857995295246e-05 raw GLL weight
 	   3.653857995294305e-05 ESMF weight (area_b from map-file)
-	   3.653857995294302e-05 matlab CSZ decomposition (N-2 triangles)    computed at SNL by MAT
+	   3.653857995294302e-05 matlab CSZ decomposition (N-2 triangles) computed at SNL by MAT
 	   3.653857995294301e-05 matlab centroidal decomposition (N triangles) computed at SNL by MAT
 	   3.653857995294258e-05 NCO CSZ _and_ centroidal decompositions (new haversine)
 	   3.653857995289623e-05 NCO CSZ decomposition (old acos)

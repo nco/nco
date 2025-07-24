@@ -1,0 +1,66 @@
+// Purpose: Compare accuracy/precision of Haversine and Law of Cosines great arc distance methods
+// NB: Code based on implementation in nco_rgr.c
+
+/* Interior angle/great circle arc a, haversine formula:
+   lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_a],lon_bnd_rdn[idx_b]));
+   lat_dlt=fabs(lat_bnd_rdn[idx_a]-lat_bnd_rdn[idx_b]);
+   sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*pow(sin(0.5*lon_dlt),2));
+   ngl_a=2.0*asin(sin_hlf_tht);
+
+   Interior angle/great circle arc a, spherical law of cosines formula (loses precision):
+   cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
+   lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
+   lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];ngl_a=acos(cos_a); */
+
+// Inputs
+rds_earth=6.370e+06; // (6.370e+06) [m] Radius of sphere of same volume as Earth
+pi=3.1415926535897932384626433832795029L; // (3.1415926535897932384626433832795029L) [frc] 3
+ngl_sz_dgr=1.0;
+
+// Outputs
+lat_a_dgr=90.0;
+lat_b_dgr=90.0-ngl_sz_dgr;
+// NB: Longitudes must be on same branch cut
+lon_a_dgr=0.0;
+lon_b_dgr=lon_a_dgr+ngl_sz_dgr;
+
+ngl_sz_rdn=pi*ngl_sz_dgr/180.0;
+lat_a_rdn=pi*lat_a_dgr/180.0;
+lat_b_rdn=pi*lat_b_dgr/180.0;
+lon_a_rdn=pi*lon_a_dgr/180.0;
+lon_b_rdn=pi*lon_b_dgr/180.0;
+
+lat_a_sin=sin(lat_a_rdn);
+lat_b_sin=sin(lat_b_rdn);
+lat_a_cos=cos(lat_a_rdn);
+lat_b_cos=cos(lat_b_rdn);
+
+lon_a_sin=sin(lon_a_rdn);
+lon_b_sin=sin(lon_b_rdn);
+lon_a_cos=cos(lon_a_rdn);
+lon_b_cos=cos(lon_b_rdn);
+
+lon_dlt=fabs(lon_a_rdn-lon_b_rdn);
+lat_dlt=fabs(lat_a_rdn-lat_b_rdn);
+
+// Law of Cosines
+cos_a_loc=lat_a_cos*lon_a_cos*lat_b_cos*lon_b_cos+
+          lat_a_cos*lon_a_sin*lat_b_cos*lon_b_sin+
+          lat_a_sin*lat_b_sin;
+ngl_a_rdn_loc=acos(cos_a_loc);
+ngl_a_dgr_loc=180.0*ngl_a_rdn_loc/pi;
+
+// Haversine
+sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_a_cos*lat_b_cos*pow(sin(0.5*lon_dlt),2));
+ngl_a_rdn_hvr=2.0*asin(sin_hlf_tht);
+ngl_a_dgr_hvr=180.0*ngl_a_rdn_hvr/pi;
+
+ngl_a_dff_rdn=fabs(ngl_a_rdn_hvr-ngl_a_rdn_loc);
+ngl_a_dff_dgr=180.0*ngl_a_dff_rdn/pi;
+dst_dff_earth=ngl_a_dff_rdn*rds_earth;
+
+print("ngl_sz_dgr = ");print(ngl_sz_dgr,"%g");
+print("ngl_a_dgr_loc = ");print(ngl_a_dgr_loc,"% 0.16e");
+print("ngl_a_dgr_hvr = ");print(ngl_a_dgr_hvr,"% 0.16e");
+print("ngl_a_dff_dgr = ");print(ngl_a_dff_dgr,"% 0.16e");
+print("dst_dff_earth = ");print(dst_dff_earth,"% 0.16e");
