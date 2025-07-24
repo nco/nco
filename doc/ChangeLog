@@ -2,7 +2,7 @@
 
 	* NCO 5.3.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.5-alpha02: Iron Champs 2nd Place';git push
-	git tag -a 5.3.5-alpha02 -m 'fxm';git push --tags
+	git tag -a 5.3.5-alpha02 -m 'ncks: plev/p3d in xtr fl, ';git push --tags
 
 	* Change obsolete GPL copyright statement in obsolete ncap_lex.[cl] files
 
