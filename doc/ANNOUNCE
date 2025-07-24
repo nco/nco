@@ -25,109 +25,14 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. All operators can now delete user-specified global attributes.
-The option --gad=att1,att2,...,attN (or long-option equivalent
---glb_att_del=att1,att2,...,attN) deletes (rather than adds, like its
-sister option --gaa) global attributes in an output file.
-Global attribute deletion requires only the name of the global
-attribute without any further information, so the argument to the
-option is simply a comma-separated list of all attributes to delete.
-No information about the attributes' types, sizes, or values need be given.
-The option works on attributes of all types, sizes, and values.
+A. plev can be full path name
 
-ncks --gad=history_of_appended_files,nco_openmp_thread_number,\
-           input_file,map_file,remap_version,remap_hostname,\
-           remap_command,remap_script,NCO in.nc out.nc
-
-The global attribution deletion feature helps to avoid the performance
-penalty incurred by using @command{ncatted} separately to annotate
-large files.  
 http://nco.sf.net/nco.html#gad
 http://nco.sf.net/nco.html#gaa
 
-B. ncrcat no longer performs monotonicity checks on CF bounds
-variables (which are never monotonic). This eliminates a lot
-of noisy monotonicity WARNINGs from many datasets.
-http://nco.sf.net/nco.html#ncrcat
-
-C. ncks --is_var var_nm is a new option that checks whether the
-single variable var_nm is a ``horizontal variable''.
-In this context, horizontal variables means single-level variables
-that have horizontal dimensions (e.g., lat and lon) yet no
-vertical dimension and no other dimensions except possibly the
-temporal dimension (time). ncks prints "Yes" or "No" and then exits.
-This capability helps ncclimo determine whether a variable is
-suitable for creating a regional average timeseries from.
-Due to this context, coordinate variables (including latitude and
-longitude) are not identified as horiztonal variables.
-Furthermore, variables identified as horizontal may only have two
-or three dimensions, and those dimensions must be in this list:
-lat, lon, ncol, nCells, time, and Time.
-
-zender@spectral:~$ ncks --is_hrz three_dmn_rec_var ~/nco/data/in.nc
-Yes
-zender@spectral:~$ ncks --is_hrz one ~/nco/data/in.nc
-No
-zender@spectral:~$ 
-
-The E3SM-centric list of allowed dimension names is only a starting point!
-Please contact Charlie if you would like this list expanded.
-http://nco.sf.net/nco.html#is_hrz
-
-D. ncclimo can now infer the timesteps per day (tpd) to use for
-high-frequency instantaneous (in the CF sense) data that lack a
-CF temporal bounds variable. ncclimo also uses tpd to help it
-discover how many days-per-file there are. Nevertheless, the metadata
-in the ncclimo output may be more accurate if the input data contains
-a temporal bounds variable.
-
-E. The ncks S1D functionality that "gridifies" ELM/CTSM data has
-new features to aggregate and report Urban landunit characteristics.
-First, the new S1D option "--rgr lut_out=789" stores the area-weighted
-mean of the three Urban landunit types (7, 8, and 9) in the output
-for every variable in a restart file that is defined on columns.
-
-ncks --s1d --rgr lut_out=789 --hrz=hst.nc rst.nc s1d.nc # Avg Urban
-
-Second, the frc_column diagnostic variable stores the subtotal of
-the three Urban landunits areas in (C-based) index 15 of output files
-with MECs, and in index 5 of output files without MECs. Users can now
-easily assess the total fraction of a gridcell that is Urban. 
-http://nco.sf.net/nco.html#s1d
-http://nco.sf.net/nco.html#frc_column
-
-F. ncks now inserts line-breaks in NC_STRING-valued text when it
-encounters a C-format carriage return "\n". Now printing text
-stored as NC_STRING and as NC_CHAR has the same appearance.
-This makes it easier to read "history" global attributes that are
-stored as NC_STRING:
-
-ncap2 -O -4 -h -s 'global@history="Previous history"s' ~/foo.nc
-ncap2 -O -s 'one=1' ~/foo.nc ~/foo.nc
-ncks -M ~/foo.nc # NC_STRING history is now more legible
-
-http://nco.sf.net/nco.html#ncks
-http://nco.sf.net/nco.html#history
-
-G. ncremap has deprecated the use of the "--alg_typ=tempest"
-regridding algorithm value.
-This algorithm name simply meantthat NCO invoked the TempestRemap
-(TR) regridder with all default choices, i.e., with no options.
-However, the default TR algorithm is rarely employed anymore, and many
-users misinterpreted the meaning of "tempest". 
-Instead of supplying ncremap with their own options, they
-received the default, which usually was sub-optimal. We encourage
-users to migrate to the appropriate and specifically-named TR
-algorithms such as "fv2fv_flx", "traave", "trfv2", etc.
-http://nco.sf.net/nco.html#alg_typ
-
 BUG FIXES:
    
-A. Fixed recent regression with ncrcat on hieraarchical files.
-The symptom is this message: " ERROR: nco_inq_varname() reports
-specified dataset ... has no variable ID 2". This problem was
-introduced sometime around NCO 5.3.3. There is no workaround.
-The solution is to upgrade.
+A. fxm
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

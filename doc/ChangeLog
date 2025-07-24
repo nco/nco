@@ -1,8 +1,20 @@
-2025-07-17  Charlie Zender  <zender@uci.edu>
+2025-07-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.5-alpha02: Iron Champs 2nd Place';git push
 	git tag -a 5.3.5-alpha02 -m 'fxm';git push --tags
+
+	* Change obsolete GPL copyright statement in obsolete ncap_lex.[cl] files
+
+2025-07-22  Charlie Zender  <zender@uci.edu>
+
+	* Fix ncvardmnlatlon filter definition typo
+
+2025-07-18  Charlie Zender  <zender@uci.edu>
+
+	* Allow pure pressure input variables plev (or p3d) to be stored in external file
+
+2025-07-17  Charlie Zender  <zender@uci.edu>
 
 	* nco_rgr.c nco_vrt_ntp(): Add stubs for prs_3d interpolation
 

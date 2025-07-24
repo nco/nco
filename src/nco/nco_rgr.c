@@ -1635,12 +1635,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     flg_grd_in_hyb=True;
   }else if((rcd=nco_xtr_var_get(&fl_xtr_id,&plev_nm_in,&plev_nm_out,&rgr->plev_nm_out,&plev_id)) == NC_NOERR){
     /* Identifying whether pressure field is present, and therefore whether input grid is pressure is distinct from other input grid types
-       Both hybrid and depth grids have required variables (e.g., "hyai" or depth-dimension names)
-       1D pressure variables are relatively easy to spot because they are nearly always in the input file
-       This search is already performed above
+       Hybrid and depth grids have required markers (e.g., "hyai" or depth-dimension names) in the input data file
+       Pressure grids do not
+       1D pressure variables are relatively easy to spot because then plev is likely in the input file
        3D pressure variables, however, are voluminous and so may be stored in an external file 
        Much check both input data file and (potential) filepath embedded in pressure-variable name to determine whether input grid is 3D pressure
-       This combined search (of input and external file) means we must always read input plev from fl_xtr_id, not vrt_in_id */
+       This combined search (of input and external file) means we must always read input plev from fl_xtr_id, not from vrt_in_id */
     nco_vrt_grd_in=nco_vrt_grd_prs; /* NCEP, MERRA2 */
     flg_grd_in_prs=True;
   }else if((rcd=nco_inq_dimid_flg(vrt_in_id,lev_nm_in,&lev_id)) == NC_NOERR){
@@ -1710,8 +1710,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(nco_vrt_ntp_typ == nco_ntp_nil) (void)fprintf(stdout,"%s: ERROR %s unable to diagnose commensurate input and output vertical grid types. vrt_grd_in = %s, vrt_grd_out = %s\n",nco_prg_nm_get(),fnc_nm,nco_vrt_grd_sng(nco_vrt_grd_in),nco_vrt_grd_sng(nco_vrt_grd_out));
   assert(nco_vrt_ntp_typ != nco_ntp_nil);
 
-  // fxm: 20250717 got to here with input prs_3D modifications 
-
   /* Variables on input grid, i.e., on grid in data file to be interpolated */
   if(flg_grd_in_hyb){
     ps_id=NC_MIN_INT;
@@ -1733,8 +1731,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_in_hyb */
   const int dpt_id_in=dpt_id; /* [id] Ocean depth ID for input grid */
 
-  /* 20221203: Allow plev_nm_in to be path/name too? */
-  
   if(flg_grd_in_dpt){
     /* Obtain ancillary depth/height grid variables from in_id or vrt_in_id
        Depth grids already have defined lev_id from in_id or vrt_in_id */
@@ -1793,7 +1789,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_in_hyb */
 
   if(flg_grd_in_prs){
-    rcd=nco_inq_varid(vrt_in_id,plev_nm_in,&lev_id);
+    rcd=nco_inq_varid(fl_xtr_id,plev_nm_in,&lev_id);
     if((rcd=nco_inq_varid_flg(in_id,ps_nm_in,&ps_id)) == NC_NOERR){ /* NB: Use in_id not vrt_in_id to search for PS in pure-pressure files since the surface pressure field is likely to be in the data file */
       /* Output file-creation procedure discriminates between input surface pressure dimensioned as CAM/EAM vs. ECMWF */
       flg_grd_hyb_cameam=True;
@@ -1815,7 +1811,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int lev_id_in=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_in=ps_id; /* [id] Surface pressure ID */
 
-  /* Identify all record-dimensions in surface pressure or depth/height file */
+  /* Identify all record-dimensions in surface pressure or external pure-pressure or depth/height file */
   rcd=nco_inq_unlimdims(fl_xtr_id,&dmn_nbr_rec,(int *)NULL);
   if(dmn_nbr_rec > 0){
     dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
@@ -1974,8 +1970,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     
   } /* !flg_grd_in_hyb */
 
+  // fxm: 20250718 got to here with input prs_3D modifications 
+
   if(flg_grd_in_prs){
-    /* Interrogate plev to obtain plev dimensions */
+    /* Interrogate plev to obtain plev dimensions
+       Even if pressure variable is stored in external file, level dimension of same name must be in input file */
     rcd=nco_inq_vardimid(vrt_in_id,lev_id,&dmn_id_lev_in);
     rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
     rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);

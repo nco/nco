@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.5-alpha02
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 1 July 2025
+@set update-date 22 July 2025
 @set update-month July 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -24947,7 +24947,7 @@ function ncunits { ncks --trd -m ${2} | grep -E -i " attribute [0-9]+: units.+ $
 # ncvardmnlst $var_nm $fl_nm : What dimensions are in a variable?
 function ncvardmnlst { ncks --trd -m -v ${1} ${2} | grep -E -i "^${1} dimension [0-9]+: " | cut -f 4 -d ' ' | sed 's/,//' ; }
 # ncvardmnlatlon $var_nm $fl_nm : Does variable contain both lat and lon dimensions?
-function ncvardmnlatlon { flg=`ncks -C -v ${1} -m ${2} | grep -E -i "${1}\(" | grep -E "lat.*lon|lon.*lat"` ; [[ ! -z "$flg" ]] && echo "Yes, ${1} has both lat and lon dimensions" || echo "No, ${1} does not have both lat and lon dimensions" }
+function ncvardmnlatlon { flg=`ncks -C -v ${1} -m ${2} | grep -E -i "${1}\(" | grep -E "lat.*lon|lon.*lat"` ; [[ ! -z "$flg" ]] && echo "Yes, ${1} has both lat and lon dimensions" || echo "No, ${1} does not have both lat and lon dimensions" ; }
 # ncvarlst $fl_nm : What variables are in file?
 function ncvarlst { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 # ncvarrnk $var_nm $fl_nm : What is variable rank?

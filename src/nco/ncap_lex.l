@@ -3,10 +3,10 @@
 
   /* Purpose: Token generator for ncap parser */
 
-  /* Copyright (C) 1995--2013 Charlie Zender
+  /* Copyright (C) 1995--present Charlie Zender
      
    License: 3-Clause BSD License
-   The full license text is at http://www.gnu.org/copyleft/gpl.html 
+   The full license text is at https://opensource.org/licenses/BSD-3-Clause	
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
    You are permitted to link NCO with the HDF, netCDF, OPeNDAP, and UDUnits
