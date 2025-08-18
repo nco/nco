@@ -70,6 +70,9 @@
 # define H5Z_FILTER_SZIP 4
 #endif
 /* Other Standard Filters */
+#ifndef H5Z_FILTER_ZFP
+# define H5Z_FILTER_ZFP 32013
+#endif
 #ifndef H5Z_FILTER_ZSTD
 # define H5Z_FILTER_ZSTD 32015
 #endif
@@ -121,7 +124,8 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_bls_dfl=17, /* 17 [enm] BLOSC DEFLATE */
   nco_flt_bls_zst=18, /* 18 [enm] BLOSC Zstandard */
   nco_flt_dns=19, /* 19 [enm] DEFLATE No Shuffle */
-  nco_flt_unk=20, /* 20 [enm] Unknown filter (reference by ID not name) */
+  nco_flt_zfp=20, /* 20 [enm] ZFP */
+  nco_flt_unk=21, /* 21 [enm] Unknown filter (reference by ID not name) */
 } nco_flt_typ_enm; /* !nco_flt_typ_enm */
 
 /* Filter flags */

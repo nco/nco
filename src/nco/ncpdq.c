@@ -781,7 +781,7 @@ main(int argc,char **argv)
       dmn_rdr[idx_rdr]->nm=(char *)strdup(dmn_rdr_lst_in[idx_rdr]);
       dmn_rdr[idx_rdr]->nm_fll=NULL;
       dmn_rdr[idx_rdr]->id=-1;
-    }
+    } /* !idx_rdr */
 
     /* Determine and set new dimensionality in metadata of each re-ordered variable */
     (void)nco_var_dmn_rdr_mtd_trv(trv_tbl,nbr_var_prc,var_prc,var_prc_out,nbr_var_fix,var_fix,dmn_rdr,dmn_rdr_nbr,dmn_rvr_rdr);
@@ -789,7 +789,7 @@ main(int argc,char **argv)
     for(idx_rdr=0; idx_rdr<dmn_rdr_nbr_in; idx_rdr++){
       dmn_rdr[idx_rdr]->nm=(char *)nco_free(dmn_rdr[idx_rdr]->nm);
       dmn_rdr[idx_rdr]=(dmn_sct *)nco_free(dmn_rdr[idx_rdr]);
-    }
+    } /* !idx_rdr */
     dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
   } /* IS_REORDER */
 
@@ -806,8 +806,8 @@ main(int argc,char **argv)
         /* Use same copy of attribute name for all edits */
         aed_lst_add_fst[idx].att_nm=add_fst_sng;
         aed_lst_scl_fct[idx].att_nm=scl_fct_sng;
-      } /* endif packing */
-    } /* end loop over var_prc */
+      } /* !nco_pck_plc */
+    } /* !idx */
 
     /* Transfer variable type to table. NB: Use processed variables set with new type. MUST be done before variable definition. */
     (void)nco_var_typ_trv(nbr_var_prc,var_prc_out,trv_tbl);    
@@ -1014,7 +1014,7 @@ main(int argc,char **argv)
     /* Remove local copy of file */
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
 
-  } /* end loop over fl_idx */
+  } /* !fl_idx */
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
@@ -1030,10 +1030,10 @@ main(int argc,char **argv)
         dmn_rdr_trv[idx_rdr]->nm=(char *)nco_free(dmn_rdr_trv[idx_rdr]->nm);
         dmn_rdr_trv[idx_rdr]->nm_fll=(char *)nco_free(dmn_rdr_trv[idx_rdr]->nm_fll);
         dmn_rdr_trv[idx_rdr]=(dmn_sct *)nco_free(dmn_rdr_trv[idx_rdr]);
-      }
+      } /* !idx_rdr */
       dmn_rdr_trv=(dmn_sct **)nco_free(dmn_rdr_trv);
       /* Dimension structures in dmn_rdr are owned by dmn and dmn_out, free'd later */
-    } /* endif dmn_rdr_nbr > 0 */
+    } /* !dmn_rdr_nbr */
     if(nco_pck_plc != nco_pck_plc_nil){
       if(nco_pck_plc_sng) nco_pck_plc_sng=(char *)nco_free(nco_pck_plc_sng);
       if(nco_pck_map_sng) nco_pck_map_sng=(char *)nco_free(nco_pck_map_sng);

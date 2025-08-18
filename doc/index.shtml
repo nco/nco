@@ -667,7 +667,7 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 5.3.4 http://github.com/nco/nco.git nco-5.3.4</tt></a>.
 <ul>
-<li><b>NCO 5.3.5</b>: (<i>Future</i>)
+<li><b>NCO 5.3.6</b>: (<i>Future</i>)
 netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
@@ -700,7 +700,7 @@ netCDF4 user-defined types support;
 <li><b>NCO 5.3.1</b>: 
 <tt>ncclimo/ncremap</tt> <tt>--npo</tt>, build revamp;
 <tt>ncremap</tt> Gracefully autoconvert 0-D NC_STRING->1-D NC_CHAR variables;
-<tt>ncremap</tt> Fixed time dimension OK, <tt>t, H</tt> interpolation;</li>
+<tt>ncremap</tt> Fixed time dimension, <tt>t, H</tt> interpolation;</li>
 <li><b>NCO 5.3.0</b>: 
 <tt>ncclimo area_wgt</tt>;
 <tt>ncks --s1d --snw_ocn --lut_out</tt>;
@@ -729,14 +729,14 @@ netCDF4 user-defined types support;
 <li><b>NCO 5.2.4</b>: 
 <tt>all</tt> CF lossy metadata support for NCO algorithms;
 <tt>ncclimo/ncremap</tt> add debug info</tt></li>
-<li><b>NCO 5.2.3</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 5.2.3</b>:
 <tt>ncclimo --rgn_avg</tt> fixes;
 <tt>ncremap</tt> documentation updates</tt></li>
 <li><b>NCO 5.2.2</b>:
 <tt>ncchecker</tt> debuts;
 <tt>ncclimo --rgn_avg</tt> includes <tt>time_bounds</tt> in ELM/CLM;
 <tt>ncremap</tt> MBTR <tt>--monotonicity</tt></li>
-<li><b>NCO 5.2.1</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 5.2.1</b>:
 <tt>ncclimo/ncremap</tt> MPI fix</li>
 <li><b>NCO 5.2.0</b>: 
 <tt>all</tt> CF Convention for lossy compression metadata;

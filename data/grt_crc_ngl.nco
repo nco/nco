@@ -15,7 +15,7 @@
 // Inputs
 rds_earth=6.370e+06; // (6.370e+06) [m] Radius of sphere of same volume as Earth
 pi=3.1415926535897932384626433832795029L; // (3.1415926535897932384626433832795029L) [frc] 3
-ngl_sz_dgr=1.0;
+ngl_sz_dgr=0.001;
 
 // Outputs
 lat_a_dgr=90.0;

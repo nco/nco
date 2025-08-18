@@ -169,6 +169,7 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   const int lvl_dfl_dfl=1; /* [enm] Default level for DEFLATE */
   const int lvl_dfl_shf=4; /* [enm] Default level for Shuffle */
   const int lvl_dfl_bz2=1; /* [enm] Default level for Bzip2 */
+  const int lvl_dfl_zfp=1; /* [enm] Default level for ZFP */
   const int lvl_dfl_zst=3; /* [enm] Default level for Zstandard */
   const int lvl_dfl_btg=3; /* [enm] Default level (NSD) for BitGroom */
   const int lvl_dfl_gbr=3; /* [enm] Default level (NSD) for GranularBR */
@@ -199,6 +200,14 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 	/* '--cmp=bz2' with unspecified level causes NCO to use default Bzip2 level */
 	flt_prm_nbr[flt_idx]=1;
 	flt_prm[flt_idx][0]=lvl_dfl_bz2;
+	flt_lvl[flt_idx]=flt_prm[flt_idx][0];
+	break;
+
+	/* 20250808: NB: ZFP is completely untested */
+      case nco_flt_zfp:
+	/* '--cmp=zfp' with unspecified level causes NCO to use default ZFP level */
+	flt_prm_nbr[flt_idx]=1;
+	flt_prm[flt_idx][0]=lvl_dfl_zfp;
 	flt_lvl[flt_idx]=flt_prm[flt_idx][0];
 	break;
 
@@ -502,6 +511,7 @@ nco_flt_id2nm /* [fnc] Convert compression filter HDF5 ID to string */
   case 32023 : return "Granular BitRound"; break; /* 32023 */
     //  case : return "DigitRound"; break;
   case 37373: return "BitRound"; break; /* 37373 */
+  case H5Z_FILTER_ZFP : return "ZFP"; break; /* 32013 */ /* 20250808: NB: ZFP is completely untested */
   case H5Z_FILTER_ZSTD : return "Zstandard"; break; /* 32015 */
   case H5Z_FILTER_BLOSC : return "Blosc"; break; /* 32001 */
   default:
@@ -660,6 +670,8 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     else if(!strcasecmp(flt_nm,"bit round")) flt_enm=nco_flt_btr;
     else if(!strcasecmp(flt_nm,"bit-round")) flt_enm=nco_flt_btr;
     else if(!strcasecmp(flt_nm,"Kou20")) flt_enm=nco_flt_btr;
+    
+    else if(!strcasecmp(flt_nm,"zfp")) flt_enm=nco_flt_zfp; /* 20250808: NB: ZFP is completely untested */
     
     else if(!strcasecmp(flt_nm,"zst")) flt_enm=nco_flt_zst;
     else if(!strcasecmp(flt_nm,"zstd")) flt_enm=nco_flt_zst;
@@ -1346,6 +1358,13 @@ nco_cdc_lst_bld
     if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Bzip2"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 #endif /* !BZIP2 */
     
+#if defined(CCR_HAS_ZFP) || (NC_LIB_VERSION >= 490)
+    /* 20250808: NB: ZFP is completely untested */
+    flt_id=H5Z_FILTER_ZFP;
+    rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
+    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", ZFP"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
+#endif /* !ZFP */
+
 #if defined(CCR_HAS_ZSTD) || (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_ZSTD;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
