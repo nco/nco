@@ -3120,18 +3120,18 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 	/* Add dimension to list of dimensions defined in group */
 	dmn_idx_grp[dmn_nbr]=dmn_idx;
 	dmn_nbr++;
-      } /* end if */
-    } /* end if flg_xtr */
-  } /* end loop over dmn_idx */
+      } /* !grp_nm_fll */
+    } /* !flg_xtr */
+  } /* !dmn_idx */
 
   /* Create arrays of these dimensions */
   dmn_lst=(nm_id_sct *)nco_malloc(dmn_nbr*(sizeof(nm_id_sct)));
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     /* NB: ID here is actually index into trv_tbl->lst_dmn. It is NOT an ID. 
-       However, it is same type (int) as an ID so we can use nm_id infrastructure. */
+       However, it is same type (int) as an ID so we can use nm_id infrastructure */
     dmn_lst[dmn_idx].id=dmn_idx_grp[dmn_idx];
     dmn_lst[dmn_idx].nm=strdup(trv_tbl->lst_dmn[dmn_idx_grp[dmn_idx]].nm);
-  } /* end loop over dmn_idx */
+  } /* !dmn_idx */
 
   /* Sort dimensions alphabetically */
   if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg->ALPHA_BY_STUB_GROUP);
@@ -3188,7 +3188,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       nm_jsn=(char *)nco_free(nm_jsn);   
       JSN_BLOCK=True;    
     } /* !JSN */
-  } /* end loop over dimension */
+  } /* !dmn_idx */
 
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,dmn_nbr);
@@ -3233,7 +3233,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
 
-  } /* end loop over variables */
+  } /* !var_idx */
 
   /* Compactify array to hold names and indices of extracted variables in this group */
   var_lst=(nm_id_sct *)nco_realloc(var_lst,var_nbr_xtr*(sizeof(nm_id_sct)));
@@ -3254,7 +3254,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* Print variable full name */
     if(var_trv.grp_dpt > 0 && prn_flg->fll_pth && TRD) (void)fprintf(fp_out,"%*s%s\n",prn_flg->ndn,spc_sng,var_trv.nm_fll);
 
-    /* NB: CDL and TRD place data in seperate tag, while XML and JSN place data in same tag as metadata */  
+    /* NB: CDL and TRD place data in seperate tag, while XML and JSN place data in same tag as metadata */ 
    
     /* Following IFs are mutually exclusive */
     if(CDL || TRD){
@@ -3307,10 +3307,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       (void)fprintf(fp_out,"%*s}%s",prn_flg->ndn,spc_sng,(var_idx<var_nbr_xtr-1) ? ",\n" : "\n");
       /* special indents for jsn */
       prn_flg->ndn-=prn_flg->sxn_fst;  
-    }
-   } /* end loop over var_idx */
+    } /* !JSN */
+  } /* !var_idx */
 
-  /* close out json variable tag */
+  /* Close-out JSON variable tag */
   if(JSN && var_nbr_xtr > 0) (void)fprintf(fp_out,"%*s}",prn_flg->ndn,spc_sng);
 
   /* Print attribute information for group 
@@ -3326,19 +3326,19 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     if(CDL || TRD){ 
       (void)fprintf(fp_out,"\n%*s%s%sattributes:\n",prn_flg->ndn,spc_sng,(CDL) ? "// " : "",(grp_dpt == 0) ? "global " : "group ");
       nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
-    }
+    } /* !CDL || TRD */
     if(XML) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
     if(JSN && nco_att_nbr(grp_id,NC_GLOBAL) > 0){
       if(JSN_BLOCK) (void)fprintf(fp_out,",\n"); else JSN_BLOCK=True;              
       nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
-    }
-  }  
+    } /* !JSN */
+  } /* !nbr_att */
 
-  /* Print data for group only CDL and TRD have a separate data block*/
-  if( (CDL||TRD) && var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA){
+  /* Print data for group only CDL and TRD have a separate data block */
+  if((CDL || TRD) && var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA){
     (void)fprintf(fp_out,"\n%*sdata:\n",prn_flg->ndn,spc_sng);
     for(var_idx=0;var_idx<var_nbr_xtr;var_idx++) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
-  } /* end if */
+  } /* !CDL || TRD */
 
   /* Variable list no longer needed */
   var_lst=nco_nm_id_lst_free(var_lst,var_nbr_xtr);
@@ -3382,7 +3382,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
       /* Free constructed name */
       sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
-    } /* end loop over grp_idx */
+    } /* !grp_idx */
 
     /* Recurse block for JSN */
   }else{
@@ -3732,7 +3732,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
     if(prn_flg->PRN_VAR_METADATA) (void)nco_prn_att(grp_id,prn_flg,var_id);
            
     if(var_idx != var_nbr_xtr-1) (void)fprintf(fp_out,"\n"); 
-  } /* end loop over var_idx */
+  } /* !var_idx */
 
   if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA){
     (void)fprintf(fp_out,"\n%*s%s%sattributes:\n",prn_flg->ndn,spc_sng,(CDL) ? "// " : "",(grp_dpt == 0) ? "global " : "group ");
@@ -3743,7 +3743,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   if(var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA){
     (void)fprintf(fp_out,"\n%*sdata:\n",prn_flg->ndn,spc_sng);
     for(var_idx=0;var_idx<var_nbr_xtr;var_idx++) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
-  } /* end if */
+  } /* !var_nbr_xtr */
 
   /* Variable list no longer needed */
   var_lst=nco_nm_id_lst_free(var_lst,var_nbr_xtr);
@@ -3783,12 +3783,12 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
-  } /* end loop over grp_idx */
+  } /* !grp_idx */
   
   /* Mark end of output */
   (void)fprintf(fp_out,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nm2sng_cdl(nco_gpe_evl(prn_flg->gpe,grp_nm_fll)));
   return rcd;
-} /* end nco_prn_cdl_trd() */
+} /* !nco_prn_cdl_trd() */
 
 int /* [rcd] Return code */
 nco_prn_xml /* [fnc] Recursively print group contents */
