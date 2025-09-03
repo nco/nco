@@ -273,6 +273,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Regression:
 # ncremap -P eam -7 -L 1 -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo_eamv1.nc
 # ncremap -P eam -7 -L 1 -m ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo_eamv2.nc
+# ncremap -P eam -7 -L 1 -m ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc ${DATA}/bm/eamv3_ne30pg2l80.nc ~/foo_eamv3.nc
 # ncremap -P elm -7 -L 1 -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/elmv1_ne30np4l15.nc ~/foo_elmv1.nc
 # ncremap -P elm -7 -L 1 -m ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc ${DATA}/bm/elmv2_ne30pg2l15.nc ~/foo_elmv2.nc
 # ncremap -P elm -7 -L 1 -m ${DATA}/maps/map_r05_to_cmip6_180x360_traave.20240901.nc ${DATA}/bm/elmv3_r05l15.nc ~/foo_elmv3.nc
