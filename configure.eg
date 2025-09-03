@@ -411,7 +411,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20241219 (change to Andes build method)
 # Personal recipe last borken: 20241218 "checking for netcdf.h... yes; checking for nc_open in -lnetcdf... no"
-# Personal recipe last successful: 20241219
+# Personal recipe last successful: 20250902
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # Default as of 20210924 is to build with personal Anaconda netCDF
 # Default as of 20230425 is to build with personal Anaconda gcc/g++
