@@ -1,8 +1,12 @@
-2025-09-03  Charlie Zender  <zender@uci.edu>
+2025-09-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.5-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.5-alpha03: Bodkin';git push
 	git tag -a 5.3.5-alpha03 -m 'all: ';git push --tags
+
+	* ncclimo/ncremap Add ~/anaconda/lib to LD_LIBRARY_PATH for Chrysalis, Perlmutter
+
+2025-09-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.5-alpha02: Iron Champs 2nd Place';git push
