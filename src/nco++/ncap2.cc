@@ -360,7 +360,7 @@ main(int argc,char **argv)
     {"script",required_argument,0,'s'},
     {"thr_nbr",required_argument,0,'t'},
     {"units",no_argument,0,'u'},
-    {"variable",no_argument,0,'v'},
+    {"variables",no_argument,0,'v'},
     {"output_user_defined_variables",no_argument,0,'v'},
     {"usr_dfn_var",no_argument,0,'v'},
     {"exclude",no_argument,0,'x'},

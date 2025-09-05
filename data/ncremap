@@ -420,16 +420,22 @@ while [ -h "${nco_exe}" ]; do
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
 nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
-nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk -F '"' '{print $2}')
 # 20190218: Die quickly when NCO is found yet cannot run, e.g., due to linker errors
 if [ -z "${nco_vrs}" ]; then
     echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
     $(ncks --version)
-    if [ "${NCO_PATH_OVERRIDE}" != 'Yes' ]; then
-	printf "HINT: Run-time errors due to link issues (e.g., libraries missing or not found) might be solved at supported national labs (ALCF, NCAR, NERSC, OLCF, PNNL) by employing NCO machine-dependent hardcoded paths/modules. To try this, re-run command after setting \"export NCO_PATH_OVERRIDE=Yes\".\n"
+    # 20250905: Additional information for debugging link issues
+    if [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
+	echo "${spt_nm}: DEBUG Next line shows contents of \$LD_LIBRARY_PATH:"
+	echo "${LD_LIBRARY_PATH}"
+	echo "${spt_nm}: DEBUG Next line shows contents of \$PATH:"
+	echo "${PATH}"
+    else # !NCO_PATH_OVERRIDE
+	printf "HINT: Run-time error due to link issues (e.g., libraries missing or not found) might be solved at supported national labs (ALCF, NCAR, NERSC, OLCF, PNNL) by employing machine-dependent hardcoded paths/modules. To try this, re-run command with \"--npo\" as first option, i.e., \"${spt_src} --npo ...\" or after setting \"export NCO_PATH_OVERRIDE=Yes\".\n"
     fi # !NCO_PATH_OVERRIDE
     exit 1
 fi # !nco_vrs
+nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk -F '"' '{print $2}')
 lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 
 # Detect and warn about mixed modules (for Qi Tang 20170531)

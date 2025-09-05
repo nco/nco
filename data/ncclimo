@@ -467,6 +467,7 @@ nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
 if [ -z "${nco_vrs}" ]; then
     echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
     $(ncks --version)
+    # 20250905: Additional information for debugging link issues
     if [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	echo "${spt_nm}: DEBUG Next line shows contents of \$LD_LIBRARY_PATH:"
 	echo "${LD_LIBRARY_PATH}"

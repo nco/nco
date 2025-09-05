@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.5-alpha03
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 22 July 2025
-@set update-month July 2025
+@set update-date 5 September 2025
+@set update-month September 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -4667,6 +4667,7 @@ build time.
 @cindex extraction
 @cindex @code{-v @var{var}}
 @cindex @code{--variable @var{var}}
+@cindex @code{--var_lst @var{var}}
 @cindex @code{-g @var{grp}}
 @cindex @code{--grp @var{grp}}
 @cindex @code{--group @var{grp}}
@@ -4689,7 +4690,7 @@ Availability: (@command{ncap2}), @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-v}, @samp{-x}@*
-Long options: @samp{--variable}, @samp{--exclude} or @samp{--xcl}@*
+Long options: @samp{--variable}, @samp{--var_lst}, @samp{--exclude} or @samp{--xcl}@*
 Options @code{--unn}@*
 Availability: @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
@@ -20920,7 +20921,7 @@ If this hinders you, please let us know and we will split the options.
 @item -v @var{var_lst} (@code{--var_lst}, @code{--var}, @code{--vars}, @code{--variables}, @code{--variable_list})
 Variables to subset or to split.
 Same behavior as @ref{Subsetting Files}.
-The use of @var{var_lst} is optional in clim-generation mode.
+The use of @var{var_lst} is optional in climo-generation mode.
 We suggest using this feature to test whether an @command{ncclimo}
 command, especially one that is lengthy and/or time-consuming, works as
 intended on one or a few variables with, e.g., @samp{-v T,FSNT} before
@@ -25008,6 +25009,7 @@ is useful (see description of @code{-a} switch).
 @cindex extraction
 @cindex @code{-v @var{var}}
 @cindex @code{--variable @var{var}}
+@cindex @code{--var_lst @var{var}}
 @cindex @code{-x}
 @cindex @code{--exclude}
 @cindex @code{--xcl}

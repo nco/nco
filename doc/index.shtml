@@ -1291,6 +1291,7 @@ For Conda-based systems (any OS, particularly useful for building NCO with newer
 <dt>conda install libgomp # OpenMP [linux]</dt>
 <dt>conda install libnetcdf # netCDF</dt>
 <dt>conda install llvm-openmp # OpenMP [macos]</dt>
+<!-- <dt>conda install openjdk # Java</dt> -->
 <dt>conda install tempest-remap # (external executables for ncremap)</dt>
 <dt>conda install udunits2 # UDUnits</dt>
 <p>or, in one giant install,</p>

@@ -2,7 +2,9 @@
 
 	* NCO 5.3.5-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.5-alpha03: Bodkin';git push
-	git tag -a 5.3.5-alpha03 -m 'all: ';git push --tags
+	git tag -a 5.3.5-alpha03 -m 'all: --var_lst = --variables = -v';git push --tags
+
+	* all: Add --var_lst as synonym to -v and --variables
 
 	* ncclimo: Additional debug information when ncks cannot link
 

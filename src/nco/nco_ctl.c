@@ -1187,7 +1187,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-v")){
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-v, --variable old_var,new_var Variable's old and new names\n");
     if(prg_lcl == ncap) (void)fprintf(stdout,"-v, --variable \t\tOutput file includes ONLY user-defined variables\n");
-    if(prg_lcl != ncrename && prg_lcl != ncap) (void)fprintf(stdout,"-v, --variable var1[,var2[...]] Variable(s) to process (regular expressions supported)\n");
+    if(prg_lcl != ncrename && prg_lcl != ncap) (void)fprintf(stdout,"-v, --variables var1[,var2[...]] Variable(s) to process (regular expressions supported)\n");
   } /* end if */
   if(strstr(opt_sng,"--vrt_in")) (void)fprintf(stdout,"    --vrt_in vrt.nc\tFile containing input vertical coordinate grid\n");
   if(strstr(opt_sng,"--vrt_out")) (void)fprintf(stdout,"    --vrt_out vrt.nc\tFile containing output vertical coordinate grid\n");
