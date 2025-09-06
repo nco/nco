@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.5-alpha03: Bodkin';git push
 	git tag -a 5.3.5-alpha03 -m 'all: --var_lst = --variables = -v';git push --tags
 
+	* ncks: Diagnose and count bad values of row, col, then exit()
+
+	* ncks: Add extra diagnostics to mask_a/b in nco_map_chk()
+
 	* all: Add --var_lst as synonym to -v and --variables
 
 	* ncclimo: Additional debug information when ncks cannot link

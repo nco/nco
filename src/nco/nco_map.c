@@ -2260,6 +2260,41 @@ nco_map_chk /* Map-file evaluation */
   var_yc_a=nco_map_var_init(in_id,"yc_a",dmn_in,dmn_in_nbr);
   var_yc_b=nco_map_var_init(in_id,"yc_b",dmn_in,dmn_in_nbr);
 
+  /* 20250905 Sanity check on row,col because Walter H. produced and tried to use a map with uninitialized values of row, col, and S! */
+  sz=var_S->sz;
+  if(1){
+    int idx_row; /* Use int not size_t in case values are corrupt and contain negative numbers */
+    int idx_col; /* Use int not size_t in case values are corrupt and contain negative numbers */
+    size_t cnt_bad; /* [nbr] Number of invalid indexes */
+    sz=var_frac_a->sz;
+    cnt_bad=0L;
+    for(idx=0;idx<sz;idx++){
+      idx_row=var_row->val.ip[idx]-1L;
+      if(idx_row < 1L) cnt_bad++;
+    } /* !idx */
+    for(idx=0;idx<sz;idx++){
+      idx_row=var_row->val.ip[idx]-1L;
+      if(idx_row < 1L) break;
+    } /* !idx */
+    if(idx != sz){
+      (void)fprintf(stderr,"%s: ERROR %s (aka \"the map-checker\") reports map-file variable \"row\" contains %lu illegal value(s) among %lu total values. First illegal value found is, in Fortran (1-based) index notation, row(%lu) = %ld. \"row\" contains indexes into the weight matrix S. Each Fortran-convention index must be >= 1. Without valid indexes, the map-file is unusable.\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,idx+1L,idx_row+1L);
+      nco_exit(EXIT_FAILURE);
+    } /* !idx */
+    cnt_bad=0L;
+    for(idx=0;idx<sz;idx++){
+      idx_col=var_col->val.ip[idx]-1L;
+      if(idx_col < 1L) cnt_bad++;
+    } /* !idx */
+    for(idx=0;idx<sz;idx++){
+      idx_col=var_col->val.ip[idx]-1L;
+      if(idx_col < 1L) break;
+    } /* !idx */
+    if(idx != sz){
+      (void)fprintf(stderr,"%s: ERROR %s (aka \"the map-checker\") reports map-file variable \"col\" contains %lu illegal value(s) among %lu total values. First illegal value found is, in Fortran (1-based) index notation, col(%lu) = %ld. \"col\" contains indexes into the weight matrix S. Each Fortran-convention index must be >= 1. Without valid indexes, the map-file is unusable.\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,idx+1L,idx_col+1L);
+      nco_exit(EXIT_FAILURE);
+    } /* !idx */
+  } /* !1 */
+
   if(!var_area_a) (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports var_area_a is not in map-file. This is barely legal and highly unusual. This may be a weight-only map-file, and as such its quality cannot be assessed by the map-checker. Expect failure soon.\n",nco_prg_nm_get(),fnc_nm);
   if(!var_area_b) (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports var_area_b is not in map-file. This is barely legal and highly unusual. This may be a weight-only map-file, and as such its quality cannot be assessed by the map-checker. This field is necessary for some diagnostics. Expect failure soon.\n",nco_prg_nm_get(),fnc_nm);
   if(!var_frac_a) (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports var_frac_a is not in map-file. This is barely legal and highly unusual. This may be a weight-only map-file, and as such its quality cannot be assessed by the map-checker. This field is necessary for some diagnostics. Expect failure soon.\n",nco_prg_nm_get(),fnc_nm);
@@ -2270,8 +2305,14 @@ nco_map_chk /* Map-file evaluation */
   if(var_area_b && var_area_b->type != NC_DOUBLE) var_area_b=nco_var_cnf_typ(NC_DOUBLE,var_area_b);
   if(var_frac_a && var_frac_a->type != NC_DOUBLE) var_frac_a=nco_var_cnf_typ(NC_DOUBLE,var_frac_a);
   if(var_frac_b && var_frac_b->type != NC_DOUBLE) var_frac_b=nco_var_cnf_typ(NC_DOUBLE,var_frac_b);
-  if(var_mask_a && var_mask_a->type != NC_INT) var_mask_a=nco_var_cnf_typ(NC_INT,var_mask_a);
-  if(var_mask_b && var_mask_b->type != NC_INT) var_mask_b=nco_var_cnf_typ(NC_INT,var_mask_b);
+  if(var_mask_a && var_mask_a->type != NC_INT){
+    (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports mask_a is type %s not NC_INT as expected. Will convert to NC_INT but this may cause issues later...\n",nco_prg_nm_get(),fnc_nm,nco_typ_sng(var_mask_a->type));
+    var_mask_a=nco_var_cnf_typ(NC_INT,var_mask_a);
+  } /* !var_mask_a */
+  if(var_mask_b && var_mask_b->type != NC_INT){
+    (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports mask_b is type %s not NC_INT as expected. Will convert to NC_INT but this may cause issues later...\n",nco_prg_nm_get(),fnc_nm,nco_typ_sng(var_mask_b->type));
+    var_mask_b=nco_var_cnf_typ(NC_INT,var_mask_b);
+  } /* !var_mask_b */
 
   /* Odd cells */
   size_t wgt_zro_nbr;
@@ -2362,25 +2403,25 @@ nco_map_chk /* Map-file evaluation */
   mask_a_err=0L;
   mask_b_err=0L;
   if(has_mask_a || has_mask_b){
-    int *ival_a;
-    int *ival_b;
+    int *msk_ival_a;
+    int *msk_ival_b;
     size_t idx_col;
     size_t idx_row;
     /* Reduce indirection */
-    if(has_mask_a) ival_a=var_mask_a->val.ip;
-    if(has_mask_b) ival_b=var_mask_b->val.ip;
+    if(has_mask_a) msk_ival_a=var_mask_a->val.ip;
+    if(has_mask_b) msk_ival_b=var_mask_b->val.ip;
     sz=var_S->sz;
     val=var_S->val.dp;
     for(idx=0;idx<sz;idx++){
-      /* var_row and var_col are one-based (Fortran) indices on disk, adjust to C indices */
+      /* var_row ("row") and var_col ("col") are one-based (Fortran) indices on disk, adjust to C indices in idx_row and idx_col */
       idx_row=var_row->val.ip[idx]-1L;
       idx_col=var_col->val.ip[idx]-1L;
       /* Maps may have millions of mask errors so print individual ones when dbg >= 2 */
-      if(has_mask_a && ival_a[idx_col] == 0){
+      if(has_mask_a && msk_ival_a[idx_col] == 0){
 	mask_a_err++;
 	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"WARNING Grid A cell [%lu,%+g,%+g] is masked yet contributes weight S(%lu) = % 0.16e to Grid B cell [%lu,%+g,%+g]\n",idx_col+1UL,var_yc_a->val.dp[idx_col],var_xc_a->val.dp[idx_col],idx+1UL,val[idx],idx_row+1UL,var_yc_b->val.dp[var_row->val.ip[idx_row]-1],var_xc_b->val.dp[var_row->val.ip[idx_row]-1]);
       } /* !has_mask_a */
-      if(has_mask_b && ival_b[idx_row] == 0){
+      if(has_mask_b && msk_ival_b[idx_row] == 0){
 	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"WARNING Grid B cell [%lu,%+g,%+g] is masked yet receives weight S(%lu) = % 0.16e from Grid A cell [%lu,%+g,%+g]\n",idx_row+1UL,var_yc_b->val.dp[idx_row],var_xc_b->val.dp[idx_row],idx+1UL,val[idx],idx_col+1UL,var_yc_a->val.dp[var_col->val.ip[idx_col]-1],var_xc_a->val.dp[var_col->val.ip[idx_col]-1]);
 	mask_b_err++;
       } /* !has_mask_b */
