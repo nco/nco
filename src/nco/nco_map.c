@@ -2270,11 +2270,11 @@ nco_map_chk /* Map-file evaluation */
     cnt_bad=0L;
     for(idx=0;idx<sz;idx++){
       idx_row=var_row->val.ip[idx]-1L;
-      if(idx_row < 1L) cnt_bad++;
+      if(idx_row < 0L) cnt_bad++;
     } /* !idx */
     for(idx=0;idx<sz;idx++){
       idx_row=var_row->val.ip[idx]-1L;
-      if(idx_row < 1L) break;
+      if(idx_row < 0L) break;
     } /* !idx */
     if(idx != sz){
       (void)fprintf(stderr,"%s: ERROR %s (aka \"the map-checker\") reports map-file variable \"row\" contains %lu illegal value(s) among %lu total values. First illegal value found is, in Fortran (1-based) index notation, row(%lu) = %ld. \"row\" contains indexes into the weight matrix S. Each Fortran-convention index must be >= 1. Without valid indexes, the map-file is unusable.\nHINT: Re-generate this map and check it again before using it.\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,idx+1L,idx_row+1L);
@@ -2283,11 +2283,11 @@ nco_map_chk /* Map-file evaluation */
     cnt_bad=0L;
     for(idx=0;idx<sz;idx++){
       idx_col=var_col->val.ip[idx]-1L;
-      if(idx_col < 1L) cnt_bad++;
+      if(idx_col < 0L) cnt_bad++;
     } /* !idx */
     for(idx=0;idx<sz;idx++){
       idx_col=var_col->val.ip[idx]-1L;
-      if(idx_col < 1L) break;
+      if(idx_col < 0L) break;
     } /* !idx */
     if(idx != sz){
       (void)fprintf(stderr,"%s: ERROR %s (aka \"the map-checker\") reports map-file variable \"col\" contains %lu illegal value(s) among %lu total values. First illegal value found is, in Fortran (1-based) index notation, col(%lu) = %ld. \"col\" contains indexes into the weight matrix S. Each Fortran-convention index must be >= 1. Without valid indexes, the map-file is unusable.\nHINT: Re-generate this map and check it again before using it.\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,idx+1L,idx_col+1L);
