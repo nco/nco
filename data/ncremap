@@ -34,7 +34,8 @@
 # Source: https://github.com/nco/nco/tree/master/data/ncremap
 # Documentation: http://nco.sf.net/nco.html#ncremap
 # Additional Documentation:
-# HowTo: https://acme-climate.atlassian.net/wiki/display/SIM/Generate%2C+Regrid%2C+and+Split+Climatologies+%28climo+files%29+with+ncclimo+and+ncremap
+# ncremap HowTo: https://e3sm.atlassian.net/wiki/spaces/DOC/pages/754286611/Regridding+E3SM+Data+with+ncremap
+# ncclimo HowTo: https://e3sm.atlassian.net/wiki/spaces/DOC/pages/31129737/Generate+Regrid+and+Split+Climatologies+climo+files+with+ncclimo
 # E3SM Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs (includes useful discussion of normalization in comments section)
 # Benchmarks: https://acme-climate.atlassian.net/wiki/spaces/ATM/pages/25231711/Validation+and+Benchmarking+of+Regridders
 
