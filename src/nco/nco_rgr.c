@@ -6981,7 +6981,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	float tm_drn; /* [s] Seconds elapsed */
 	if(nco_dbg_lvl_get() >= nco_dbg_var) tm_srt=clock();
  
-	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: DEBUG renormalization configuration for %s: sgs_frc_out = %s, flg_frc_nrm = %d, has_mss_val = %d, flg_rnr = %d, wgt_vld_thr = %g, flg_add_fll = %d, flg_mpt_mss = %d, flg_msk_apl = %d\n",nco_prg_nm_get(),var_nm,sgs_frc_out ? "Yes" : "No",flg_frc_nrm,has_mss_val,flg_rnr,wgt_vld_thr,flg_add_fll,flg_mpt_mss,flg_msk_apl);
+	if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s: DEBUG renormalization configuration for %s: sgs_frc_out = %s, flg_frc_nrm = %d, has_mss_val = %d, flg_rnr = %d, wgt_vld_thr = %g, flg_add_fll = %d, flg_mpt_mss = %d, flg_msk_apl = %d\n",nco_prg_nm_get(),var_nm,sgs_frc_out ? "Yes" : "No",flg_frc_nrm,has_mss_val,flg_rnr,wgt_vld_thr,flg_add_fll,flg_mpt_mss,flg_msk_apl);
 
 	/* This first block is for "normal" variables without sub-gridscale fractions */
 	if(!sgs_frc_out){
