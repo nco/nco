@@ -3522,28 +3522,31 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Interpolation progress: # means interpolated, ~ means copied\n");
 
-#ifdef __GNUG__
+#ifdef __GNUC__
 # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
-# if GCC_LIB_VERSION < 490
-#  define GXX_OLD_OPENMP_SHARED_TREATMENT 1
-# endif /* 480 */
-# if GCC_LIB_VERSION >= 900
-#  define GXX_WITH_OPENMP5_GPU_SUPPORT 1
-# endif /* 900 */
 #endif /* !__GNUC__ */
-#if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_autoconvert,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
-#else /* !__INTEL_COMPILER */
-# ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_autoconvert,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
-# else /* !old g++ */
-#  if defined(GXX_WITH_OPENMP5_GPU_SUPPORT) && 0
-#   pragma omp target teams distribute parallel for
-#  else
-#   pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_autoconvert,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
-#  endif /* !GCC > 9.0 */
-# endif /* !GCC < 4.9 */
+#if defined(_OPENMP) && defined(NCO_OPENMP_DEFINED)
+  (void)fprintf(stderr,"%s: WARNING %s reports that NCO_OPENMP_DEFINED is defined before regridder OpenMP pragmas that will therefore not be read\n",nco_prg_nm_get(),fnc_nm);
+#endif /* !NCO_OPENMP_DEFINED */
+#if defined( __clang__ ) && !defined(NCO_OPENMP_DEFINED)
+# define NCO_OPENMP_DEFINED
+  /* OpenMP clause to build NCO with Clang compilers */
+# pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_autoconvert,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
+#endif /* !__clang__ */
+#if defined( __INTEL_COMPILER ) && !defined(NCO_OPENMP_DEFINED)
+# define NCO_OPENMP_DEFINED
+  /* OpenMP clause to build NCO with Intel compilers */
+# pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_autoconvert,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 #endif /* !__INTEL_COMPILER */
+#if defined(GCC_LIB_VERSION) && (GCC_LIB_VERSION >= 490) && !defined(NCO_OPENMP_DEFINED)
+# define NCO_OPENMP_DEFINED
+  /* Standard OpenMP clause to build NCO on modern GCC versions >= 4.9.0 */
+# pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_fst_in,idx_fst_out,idx_in,idx_out,idx_tbl,in_id,lrv_idx,lrv_nbr,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mrv_nbr_in,mrv_nbr_out,mss_val_cmp_dbl,mss_val_dbl,ncr_idx_in,ncr_idx_out,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_autoconvert,flg_hrz_mrv,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,mlc_in,mlc_out,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
+#endif /* !GCC >= 490 */
+#if defined(_OPENMP) && !defined(NCO_OPENMP_DEFINED)
+  (void)fprintf(stderr,"%s: WARNING %s reports that NCO_OPENMP_DEFINED is not defined before regridder OpenMP pragmas although code was compiled+linked with OpenMP\n",nco_prg_nm_get(),fnc_nm);
+  (void)fprintf(stderr,"%s: INFO %s reports that GCC version constructed as integer is %d\n",nco_prg_nm_get(),fnc_nm,GCC_LIB_VERSION);
+#endif /* !NCO_OPENMP_DEFINED */
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
       trv=trv_tbl->lst[idx_tbl];
       thr_idx=omp_get_thread_num();
@@ -3605,7 +3608,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    mrv_nbr_in*=ilev_nbr_in;
 	    mrv_nbr_out*=ilev_nbr_out;
 	  } /* !has_lev */
-	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s: flg_vrt_tm = %d, has_tm = %d, tm_idx = %ld, lev_nbr_in = %lu, grd_nbr = %lu, var_sz_in = %lu, lrv_nbr = %lu, mrv_nbr_in = %lu, mrv_nbr_out = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,flg_vrt_tm,has_tm,tm_idx,lev_nbr_in,grd_nbr,var_sz_in,lrv_nbr,mrv_nbr_in,mrv_nbr_out);
+	  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s: flg_vrt_tm = %d, has_tm = %d, tm_idx = %ld, lev_nbr_in = %lu, grd_nbr = %lu, var_sz_in = %lu, lrv_nbr = %lu, mrv_nbr_in = %lu, mrv_nbr_out = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,flg_vrt_tm,has_tm,tm_idx,lev_nbr_in,grd_nbr,var_sz_in,lrv_nbr,mrv_nbr_in,mrv_nbr_out);
 	  
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	    /* Dimension count vector is same as input except for lvl dimension */
@@ -6814,9 +6817,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      4. assert() cannot be used in OpenMP blocks
      5. Good discussion of "const" variables in shared() clause here http://jakascorner.com/blog/2016/07/omp-default-none-and-const.html
      20200221: fxm Revisit default(none) in light of above article */
-#ifdef __GNUG__
+#ifdef __GNUC__
 # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
-#endif /* !__GNUG__ */
+#endif /* !__GNUC__ */
+#if defined(_OPENMP) && defined(NCO_OPENMP_DEFINED)
+  (void)fprintf(stderr,"%s: WARNING %s reports that NCO_OPENMP_DEFINED is defined before regridder OpenMP pragmas that will therefore not be read\n",nco_prg_nm_get(),fnc_nm);
+#endif /* !NCO_OPENMP_DEFINED */
 #if defined( __clang__ ) && !defined(NCO_OPENMP_DEFINED)
 # define NCO_OPENMP_DEFINED
   /* OpenMP clause to build NCO with Clang compilers */
@@ -6842,6 +6848,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* Standard OpenMP clause to build NCO on modern GCC versions >= 4.9.0 */
 # pragma omp parallel for firstprivate(caas_tally,caas_wgt_vld_out,dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_cmp_dbl,mss_val_dbl,nllnk_idx,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(caas_sgs_frc_in,caas_sgs_frc_out,col_src_adr,dmn_nbr_hrz_crd,flg_add_fll,flg_autoconvert,flg_frc_nrm,flg_mpt_mss,flg_msk_apl,flg_msk_out,frc_out,lnk_nbr,msk_out,nlcol_src_adr,nllnk_nbr,nlrow_dst_adr,nlwgt_raw,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #endif /* !GCC >= 490 */
+#if defined(_OPENMP) && !defined(NCO_OPENMP_DEFINED)
+  (void)fprintf(stderr,"%s: WARNING %s reports that NCO_OPENMP_DEFINED is not defined before regridder OpenMP pragmas although code was compiled+linked with OpenMP\n",nco_prg_nm_get(),fnc_nm);
+  (void)fprintf(stderr,"%s: INFO %s reports that GCC version constructed as integer is %d\n",nco_prg_nm_get(),fnc_nm,GCC_LIB_VERSION);
+#endif /* !NCO_OPENMP_DEFINED */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
     thr_idx=omp_get_thread_num();
