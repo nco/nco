@@ -153,14 +153,14 @@ NCOXX_SRC_DIR := ${MY_SRC_DIR}/../nco++
 ifndef ABI
 # 32- vs. 64-bit ABI: 32=32-bit mode, 64=64-bit mode (default) if available
  ABI := 64
-endif # endif ABI
+endif # !ABI
 ifndef CCACHE
  CCACHE := N
 endif # CCACHE
 ifndef CNK
 # Use newer netCDF4.1 chunking API
  CNK := Y
-endif # endif CNK
+endif # !CNK
 ifndef CUDA
  CUDA := N
 endif # CUDA
@@ -170,27 +170,27 @@ endif # DAP
 ifndef DBG
 # Debugging token N=No (default) Y=Yes
  DBG := N
-endif # endif DBG
+endif # !DBG
 ifndef DPKG
 # Debian hardening tokens
  DPKG := N
-endif # endif DPKG
+endif # !DPKG
 ifdef FL_FMT
 # Pass this netCDF4 argument to nco_bm.pl
  FL_FMT_SNG := "--fl_fmt=${FL_FMT}"
-else # endif FL_FMT
+else # !FL_FMT
  FL_FMT_SNG :=
-endif # endif FL_FMT
+endif # !FL_FMT
 ifndef GCC_RCH_ARG
  GCC_RCH_ARG :=
-endif # endif GCC_RCH_ARG
+endif # !GCC_RCH_ARG
 ifndef GSL
 # Use GSL functionality
  GSL := Y
-endif # endif GSL
+endif # !GSL
 ifndef ICC_RCH_ARG
  ICC_RCH_ARG :=
-endif # endif ICC_RCH_ARG
+endif # !ICC_RCH_ARG
 ifndef I18N
  I18N := N
 endif
@@ -200,13 +200,13 @@ endif
 ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
  MK_DPN_CXX = ${CXX} -M # NB: Recursive expansion required
-endif # endif MK_DPN
+endif # !MK_DPN
 ifndef MPI # MPI
  MPI := N
-endif # endif MPI
+endif # !MPI
 ifndef MPI_FAKE # MPI
  MPI_FAKE := N
-endif # endif MPI_FAKE
+endif # !MPI_FAKE
 ifndef NCO_BUILDENGINE
  NCO_BUILDENGINE := Traditional \(nco/bld/Makefile\)
 endif # NCO_BUILDENGINE
@@ -216,7 +216,7 @@ ifndef NCO_VRS
 endif
 ifndef NETCDF4 # netCDF4 support
  NETCDF4 := Y
-endif # endif NETCDF4
+endif # !NETCDF4
 ifndef NETCDF_ROOT
  NETCDF_ROOT := /usr/local
 endif
@@ -228,33 +228,33 @@ ifdef INC_NCAR
  NETCDF_INC := ${INC_NCAR} # NCAR module path
 else # endelse INC_NCAR
  NETCDF_INC := ${NETCDF_ROOT}/include # Directory containing netcdf.h
-endif # endif INC_NCAR
-endif # endif NETCDF_INC
+endif # !INC_NCAR
+endif # !NETCDF_INC
 ifndef NETCDF_LIB
 ifdef LIB_NCAR
  NETCDF_LIB := ${LIB_NCAR} # NCAR module path
 else # endelse LIB_NCAR
  NETCDF_LIB := ${NETCDF_ROOT}/lib # Directory containing libnetcdf.a
-endif # endif LIB_NCAR
-endif # endif NETCDF_LIB
+endif # !LIB_NCAR
+endif # !NETCDF_LIB
 ifndef ${OMP} # OpenMP
  OMP := N
-endif # endif OMP
+endif # !OMP
 ifndef OPTS
  OPTS := D
 endif
 ifndef PGI_RCH_ARG
  PGI_RCH_ARG :=
-endif # endif PGI_RCH_ARG
+endif # !PGI_RCH_ARG
 ifndef PNETCDF # pnetCDF support
  PNETCDF := N
-endif # endif PNETCDF
+endif # !PNETCDF
 ifndef PSC_RCH_ARG
  PSC_RCH_ARG :=
-endif # endif PSC_RCH_ARG
+endif # !PSC_RCH_ARG
 ifndef RPM
  RPM := N
-endif # endif RPM
+endif # !RPM
 ifndef STC
 # Created statically linked executable
  STC := N
@@ -272,16 +272,16 @@ ifndef UNAMES
 endif
 ifndef USR_TKN
  USR_TKN := 
-endif # endif USR_TKN
+endif # !USR_TKN
 ifndef VRS_SNG
 # VRS_SNG := $(shell date +%Y%m%d)
 # 20150622
 # VRS_SNG := $(shell git describe --abbrev=7 --dirty --always --tags)
  VRS_SNG := $(shell cat ${MY_DOC_DIR}/VERSION)
-endif # endif VRS_SNG
+endif # !VRS_SNG
 ifndef ZNETCDF # znetcdf support
  ZNETCDF := N
-endif # endif ZNETCDF
+endif # !ZNETCDF
 # Derived-tokens based on primary tokens
 # These tokens should not be altered by hand
 
@@ -341,7 +341,7 @@ ifndef LINUX_CXX
  #LINUX_CXX := insure
  #LINUX_CXX := pathCC
  #LINUX_CXX := pgCC
-endif # endif LINUX_CXX
+endif # !LINUX_CXX
 ifndef LINUX_CC
 # C compiler for Linux
  LINUX_CC := gcc -std=c99 -pedantic -D_DEFAULT_SOURCE
@@ -352,7 +352,7 @@ ifndef LINUX_CC
  #LINUX_CC := nvcc
  #LINUX_CC := pathcc -std=c99
  #LINUX_CC := pgcc -c9x
-endif # endif LINUX_CC
+endif # !LINUX_CC
 ifndef LINUX_FC
 # Fortran compiler for Linux
  #LINUX_FC := g95
@@ -361,25 +361,25 @@ ifndef LINUX_FC
  #LINUX_FC := lf95
  #LINUX_FC := pathf95
  #LINUX_FC := pgf90
-endif # endif LINUX_CC
-endif # endif LINUX_OR_MACOS
+endif # !LINUX_CC
+endif # !LINUX_OR_MACOS
 
 # OpenMP
 ifeq (${OMP},Y)
 ifdef THR_NBR
 # Pass this OpenMP argument to nco_bm.pl
  THR_NBR_SNG := "--thr_nbr=${THR_NBR}"
-else # endif THR_NBR
+else # !THR_NBR
  THR_NBR_SNG :=
-endif # endif THR_NBR
-endif # endif OMP
+endif # !THR_NBR
+endif # !OMP
 
 ifeq (${RPM},Y)
 # rpm command, and thus RPM variables only guaranteed in RedHat Linux
 # Use recursive expansion so rpm command is not executed on non-RPM systems
  MDL_RPM_NST_NM = $(shell rpm -qa | grep nco-) # Name of installed package
 # MDL_RPM_PRV_NM = $(shell rpm -qp foo) # Name of package provided by specified RPM
-endif # endif RPM
+endif # !RPM
 
 ifeq (${PVM_ARCH},WINOS)
  BNR_SFX := .exe
@@ -398,11 +398,11 @@ ifeq (${PVM_ARCH},MACOS)
    ESMF_INC_FLG := -I${ESMF_ROOT}/include/esmf
 else
    ESMF_INC_FLG := -I${ESMF_ROOT}/include
-endif # endif MACOS
+endif # !MACOS
 else
   ESMF_INC_FLG := -I/usr/local/include
-endif # endif ESMF_ROOT
-endif # endif ESMF_INC
+endif # !ESMF_ROOT
+endif # !ESMF_INC
 # 20150319: For some reason, ESMC.h #includes ESMC_VM.h which #includes mpi.h
 ifeq (${PVM_ARCH},MACOS)
 # Use stub header for uniprocessor MPI emulation provided by ESMF
@@ -410,13 +410,13 @@ ifeq (${PVM_ARCH},MACOS)
  ESMF_LIB_RT := ${null}
  ESMF_LIB_LAPACK := -llapack
  ESMF_LIB_XERCES := -lxerces-c
-else # endif MACOS
+else # !MACOS
 # Use real MPI
  ESMF_INC_FLG += -I/usr/include/openmpi-x86_64
  ESMF_LIB_RT := -lrt
  ESMF_LIB_LAPACK := ${null}
  ESMF_LIB_XERCES := ${null}
-endif # endif MACOS
+endif # !MACOS
 ifdef ESMF_LIB
  ESMF_LIB_FLG := -L${ESMF_LIB} -lesmf ${ESMF_LIB_LAPACK} ${ESMF_LIB_RT} ${ESMF_LIB_XERCES} -lgfortran -ldl -lnetcdff -lnetcdf_c++
 else
@@ -424,8 +424,8 @@ ifdef ESMF_ROOT
   ESMF_LIB_FLG := -L${ESMF_ROOT}/lib -lesmf ${ESMF_LIB_LAPACK} ${ESMF_LIB_RT} ${ESMF_LIB_XERCES} -lgfortran -ldl -lnetcdff -lnetcdf_c++
 else
   ESMF_LIB_FLG := -L/usr/local/lib -lesmf ${ESMF_LIB_LAPACK} ${ESMF_LIB_RT} ${ESMF_LIB_XERCES} -lgfortran -ldl -lnetcdff -lnetcdf_c++
-endif # endif ESMF_ROOT
-endif # endif ESMF_LIB
+endif # !ESMF_ROOT
+endif # !ESMF_LIB
 endif # end if ESMF
 
 ifeq (${GSL},Y)
@@ -440,16 +440,16 @@ ifdef GSL_INC
  GSL_INC_FLG := -I${GSL_INC}
 else
  GSL_INC_FLG := $(shell ${GSL_CONFIG} --cflags)
-endif # endif GSL_INC
+endif # !GSL_INC
 ifdef GSL_LIB
  GSL_LIB_FLG := -L${GSL_LIB} -lgsl -lgslcblas
 else
  GSL_LIB_FLG := $(shell ${GSL_CONFIG} --libs)
-endif # endif GSL_LIB
+endif # !GSL_LIB
 ifndef GSL_MAJOR_VERSION
 # 20161118: Following line is always accurate
   GSL_MAJOR_VERSION := $(shell ${GSL_CONFIG} --version | cut -c 1 )
-endif # endif GSL_MAJOR_VERSION
+endif # !GSL_MAJOR_VERSION
 ifndef GSL_MINOR_VERSION
 # gsl-config --version: 1.16 (old GSL versioning)
 # gsl-config --version: 2.2.1 (new GSL versioning)
@@ -465,10 +465,10 @@ ifndef GSL_MINOR_VERSION
    GSL_MINOR_VERSION := 4
    GSL_PATCH_VERSION := 0
   endif # end if GSL_MINOR_VERSION
- endif # endif GSL_PATCH_VERSION
+ endif # !GSL_PATCH_VERSION
  ifndef GSL_PATCH_VERSION
    GSL_PATCH_VERSION := 0
- endif # endif GSL_PATCH_VERSION
+ endif # !GSL_PATCH_VERSION
 endif # end if GSL
 
 ifeq (${SZ},Y)
@@ -486,7 +486,7 @@ ifdef UDUNITS_INC
  UDUNITS_INC_FLG := -I${UDUNITS_INC}
 else
  UDUNITS_INC_FLG := -I/usr/include/udunits2
-endif # endif UDUNITS_INC
+endif # !UDUNITS_INC
 ifdef UDUNITS_LIB
  UDUNITS_LIB_FLG := -L${UDUNITS_LIB} -ludunits2
 else
@@ -505,7 +505,7 @@ ifeq (${MPI},Y)
  NC_LDFLAGS := $(shell /usr/local/parallel/bin/nc-config --libs)
  MPI_CFLAGS := -I/usr/include/openmpi-x86_64
  MPI_LDFLAGS := -L/usr/lib64/openmpi/lib -lmpi
-endif # endif MPI
+endif # !MPI
 
 ifdef LIB_NCAR
  NC_LDFLAGS := ${LIB_NCAR} ${NC_LDFLAGS}
@@ -563,7 +563,7 @@ ifeq (${MPI},Y)
  MDL_MPI_OBJ := $(addsuffix .o,$(addprefix ${MY_OBJ_DIR}/,${MDL_MPI_TRG})) # mpi_cln removes these files
  MDL_BIN_TRG += ${MDL_MPI_TRG} # NCO binary targets
  MDL_BIN_SYM_LNK += ${MDL_MPI_SYM_LNK} # Symbolic links
-endif # endif MPI
+endif # !MPI
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SPT} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
 MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # distclean removes these files
 MDL_SPT_SRC := $(addprefix ${MY_DAT_DIR}/,${MDL_BIN_SPT})
@@ -724,11 +724,11 @@ ifeq (${UDUNITS},Y)
 endif # !UDUNITS
 ifeq (${NETCDF4},Y)
  CPP_TKN_OS += -DENABLE_NETCDF4 -DHAVE_NETCDF4_H
-endif # endif NETCDF4
+endif # !NETCDF4
 ifeq (${PNETCDF},Y)
  CPP_TKN_OS += -DENABLE_PNETCDF
 endif # !PNETCDF
-# endif PNETCDF
+# !PNETCDF
 # Assume strcasecmp() and strdup() routines are present (Comeau, Pathscale are exceptions)
 CPP_TKN_OS += 
 # fxm: Define HAVE_LIBINTL, HAVE_LOCALE_H, HAVE_GETTEXT, HAVE_OMP_H
@@ -780,7 +780,7 @@ ifeq (${OMP},Y)
 else
  CPP_DFN += -U_OPENMP
  FC := xlf95
-endif # endif OMP
+endif # !OMP
 ifeq (${OPTS},O)
 # -O : -O3 is safe, -O5 is dangerous
 # -qstrict: Ensure that -O3 optimizations do not alter program semantics
@@ -808,7 +808,7 @@ ifeq (${ABI},64)
  LDFLAGS += -q64 
 else
  CPPFLAGS += -D_LARGE_FILES
-endif # endif ABI
+endif # !ABI
 # Additional flags for AIX:
 # -M Generate information to be included in a "make" description file; output goes to .u file
 # -c Do not send object files to the linkage editor
@@ -821,7 +821,7 @@ ${MY_DPN_DIR}/%.d : %.c
 ${MY_DPN_DIR}/%.d : %.cc
 	${MK_DPN_CXX} ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
 	rm -f $*.i $*.o $*.u;
-endif # endif AIX VA Compiler Collection
+endif # !AIX VA Compiler Collection
 # GNU Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
  CFLAGS := -Wall -Werror=format-security -Wunused
@@ -841,9 +841,9 @@ endif
 ifeq (${ABI},64)
  CC += -maix64 
  CXX += -maix64 
-endif # endif ABI
+endif # !ABI
  CXXFLAGS := ${CFLAGS}
-endif # endif GNU Compiler Collection
+endif # !GNU Compiler Collection
 # -q64: Select 64-bit compiler mode (required for accessing large files)
 # -qwarn64: Warn on possible long-to-integer or pointer-to-integer truncation
 CXXFLAGS := ${CFLAGS}
@@ -852,14 +852,14 @@ ifeq (${OMP},Y)
  CXXFLAGS += ${OMP_FLG}
  FFLAGS += ${OMP_FLG}
  LDFLAGS := ${OMP_FLG} ${LDFLAGS}
-endif # endif OMP
+endif # !OMP
 endif
-# endif AIX
+# !AIX
 
 ifeq (${PVM_ARCH},ALPHA)
 ifeq (${OMP},Y)
  OMP_FLG := -omp
-endif # endif OMP
+endif # !OMP
 CXX := cxx
 CC := cc
 CFLAGS := ${OMP_FLG}
@@ -892,7 +892,7 @@ ${MY_OBJ_DIR}/%.o : %.F90
 ${MY_OBJ_DIR}/%.o : %.F
 	${FC} -c ${FIXEDFLAGS} ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 endif
-# endif ALPHA
+# !ALPHA
 
 ifeq (${PVM_ARCH},CRAY)
 CXX := CC
@@ -930,7 +930,7 @@ ${MY_OBJ_DIR}/%.o : %.f
 	${FC} -c ${FFLAGS} $<
 	mv -f $(notdir $@) ${MY_OBJ_DIR}
 endif
-# endif CRAY
+# !CRAY
 
 ifeq (${PVM_ARCH},HPPA)
 CXX := g++
@@ -955,7 +955,7 @@ ifeq (${OPTS},X)
  FFLAGS := -g -e
 endif
 endif
-# endif HPPA
+# !HPPA
 
 # Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD and MACOS
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDMACOS))
@@ -989,7 +989,7 @@ LD := ld
 LDFLAGS += ${OTHER_LDFLAGS} -lm
 ifeq (${PVM_ARCH},MACOS)
  LDFLAGS += -lresolv
-endif # endif MACOS
+endif # !MACOS
 LEX := flex
 LINT := lint
 YACC := bison
@@ -1012,7 +1012,7 @@ ifeq (${OPTS},X)
  CFLAGS += -g
 endif
  CXXFLAGS := ${CFLAGS}
-endif # endif Comeau C Compiler
+endif # !Comeau C Compiler
 # GNU Compiler Collection or LLVM
 # 20140204: gcc and clang should receive identical options
 ifeq (gcc,$(firstword ${CC}))
@@ -1068,14 +1068,14 @@ ifneq (clang,$(firstword ${CC}))
  OMP_FLG_C := -fopenmp
  OMP_FLG_F := -fopenmp
  LDFLAGS += -lgomp -lpthread
-endif # endif clang
-endif # endif OMP
+endif # !clang
+endif # !OMP
 ifeq (${OPTS},O)
 ifeq (clang,$(firstword ${CC}))
  CFLAGS += -O3 -g ${GCC_RCH_ARG}
-else # endif clang
+else # !clang
  CFLAGS += -O4 -g ${GCC_RCH_ARG}
-endif # endif clang
+endif # !clang
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g -Wno-switch
@@ -1095,7 +1095,7 @@ ifeq (${OPTS},X)
 ifneq (clang,$(firstword ${CC}))
 # 20150106 clang does not recognize/utilize -z
  CFLAGS += -Wl,-z,relro
-endif # endif clang
+endif # !clang
 # 20090715: -Werror triggers known nc_put_var?_string() and nco_def_var_chunking() errors
 # CFLAGS += -g -pg -fno-inline -Werror
 # CFLAGS += -g -O -pg -fno-inline
@@ -1108,10 +1108,10 @@ ifeq (${ABI},64)
  CFLAGS += -m64
  FFLAGS += -m64
  LDFLAGS += -m64
-endif # endif ABI
-endif # endif LINUXAMD64
+endif # !ABI
+endif # !LINUXAMD64
  CXXFLAGS := ${CFLAGS}
-endif # endif GNU Compiler Collection or LLVM
+endif # !GNU Compiler Collection or LLVM
 # Intel (Kai) C Compiler
 ifeq (icc,$(firstword ${CC}))
 # -fast: enable -xP -O3 -ipo -static
@@ -1151,7 +1151,7 @@ ifeq (${OPTS},X)
  CFLAGS += -g -Wall -wd810,981,1572 -inline_debug_info
 endif
  CXXFLAGS := ${CFLAGS}
-endif # endif Intel (Kai) C Compiler
+endif # !Intel (Kai) C Compiler
 # Intel (Kai) Fortran Compiler
 ifeq (${FC},ifc)
 # -e95 issues warnings for non-standard fortran
@@ -1177,7 +1177,7 @@ endif
 ifeq (${OPTS},X)
  FFLAGS += -g -C -e95
 endif
-endif # endif Intel (Kai) Fortran Compiler
+endif # !Intel (Kai) Fortran Compiler
 # cd ~;nvcc -o libcuda_add.a -deviceemu -lib simpleTemplates.cu
 # cd ~;g++ -I/usr/local/cuda/include -c -o test.o test.c
 # cd ~;g++ -o ~/test test.o libcuda_add.a
@@ -1191,7 +1191,7 @@ ifeq (${OMP},Y)
  OMP_FLG_C := 
  OMP_FLG_F := 
  LDFLAGS += 
-endif # endif OMP
+endif # !OMP
 ifeq (${OPTS},O)
  CFLAGS += -O -g
 endif
@@ -1210,10 +1210,10 @@ ifeq (${ABI},64)
  CFLAGS += 
  FFLAGS += 
  LDFLAGS += 
-endif # endif ABI
-endif # endif LINUXAMD64
+endif # !ABI
+endif # !LINUXAMD64
  CXXFLAGS := ${CFLAGS}
-endif # endif NVidia C Compiler
+endif # !NVidia C Compiler
 # Pathscale (QLogic) C Compiler
 ifeq (pathcc,$(firstword ${CC}))
 # pathcc -show-defaults
@@ -1261,7 +1261,7 @@ ifeq (${OPTS},X)
  CFLAGS += -g -Mbounds
 endif
  CXXFLAGS := ${CFLAGS}
-endif # endif Portland Group C++ Compiler
+endif # !Portland Group C++ Compiler
 # Portland Group Fortran Compiler
 ifeq (${FC},pgf90)
  FFLAGS := -Mextend -Mnosecond_underscore -byteswapio -Mrecursive -Mdalign -Ktrap=fp -Mlfs
@@ -1281,7 +1281,7 @@ endif
 ifeq (${OPTS},X)
  FFLAGS += -g -Mbounds
 endif
-endif # endif Portland Group Fortran Compiler
+endif # !Portland Group Fortran Compiler
 # G77 Fortran compiler
 ifeq (${FC},g77)
  FFLAGS := -ffixed-line-length-132 -fno-second-underscore
@@ -1297,22 +1297,22 @@ endif
 ifeq (${OPTS},X)
  FFLAGS := -g -O -fdebug-kludge -fbounds-check
 endif
-endif # endif G77 Fortran compiler
+endif # !G77 Fortran compiler
 ifeq (${DPKG},Y)
  CPPFLAGS+=$(shell dpkg-buildflags --get CPPFLAGS)
  CFLAGS+=$(shell dpkg-buildflags --get CFLAGS)
  CXXFLAGS+=$(shell dpkg-buildflags --get CXXFLAGS)
  LDFLAGS+=$(shell dpkg-buildflags --get LDFLAGS)
-endif # endif OMP
+endif # !OMP
 ifeq (${OMP},Y)
  CFLAGS += ${OMP_FLG_C}
  CXXFLAGS += ${OMP_FLG_C}
  FFLAGS += ${OMP_FLG_C}
 # LD behavior assumes C source code
  LDFLAGS := ${OMP_FLG_C} ${LDFLAGS}
-endif # endif OMP
+endif # !OMP
 endif
-# endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, FREEBSD, MACOS
+# !LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, FREEBSD, MACOS
 
 # NB: Deprecated as of 201403. Now LINUX* subsumes MACOS
 ifeq (${PVM_ARCH},MACOSOLD)
@@ -1348,14 +1348,14 @@ ifeq (${OMP},Y)
  CFLAGS += ${OMP_FLG}
  FFLAGS += ${OMP_FLG}
  LDFLAGS := ${OMP_FLG} ${LDFLAGS}
-endif # endif OMP
+endif # !OMP
 endif
-# endif MACOSOLD
+# !MACOSOLD
 
 ifeq (${PVM_ARCH},NECSX)
 ifeq (${OMP},Y)
  OMP_FLG := -Popenmp
-endif # endif OMP
+endif # !OMP
 CXX := c++
 #CC := c++ -Xa
 CC := cc
@@ -1386,7 +1386,7 @@ MK_DPN = /usr/local/bin/mkdep.perl /usr/lib/cpp # NECSX try this
 ${MY_DPN_DIR}/%.d : %.c
 	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 endif
-# endif NECSX
+# !NECSX
 
 ifeq (${PVM_ARCH},RS6K)
 CXX := g++
@@ -1417,13 +1417,13 @@ ${MY_OBJ_DIR}/%.o : %.F
 ${MY_OBJ_DIR}/%.o : %.f
 	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 endif
-# endif RS6K
+# !RS6K
 
 # SGI6, SGI64, SGIMP64
 ifneq (${null},$(findstring SGI,${PVM_ARCH}))
 ifeq (${OMP},Y)
  OMP_FLG := -mp -mpio
-endif # endif OMP
+endif # !OMP
 CXX := CC -LANG:std
 CC := cc -c99
 # 20000302: -w suppresses warnings which will swamp linker
@@ -1452,8 +1452,8 @@ else # ABI=32
  GCC_ABI_FLG := -mabi=32
  GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4
  SGI_ABI_FLG := -n32 -mips4 ${OMP_FLG}
-endif # endif ABI
-endif # endif SGI64, SGIMP64
+endif # !ABI
+endif # !SGI64, SGIMP64
 ifeq (gcc,$(firstword ${CC}))
  LDFLAGS += ${GCC_LDFLAGS_SZ_SPC} ${OTHER_LDFLAGS} -lm
  CFLAGS := ${GCC_ABI_FLG} -Wall -Werror=format-security
@@ -1471,7 +1471,7 @@ ifeq (${OPTS},X)
 endif
  CXXFLAGS := ${CFLAGS}
 endif
-# endif CC=gcc
+# !CC=gcc
 ifeq (cc,$(firstword ${CC}))
  LDFLAGS += ${SGI_ABI_FLG} ${OTHER_LDFLAGS} -lm
  CFLAGS := ${SGI_ABI_FLG}
@@ -1488,7 +1488,7 @@ ifeq (${OPTS},X)
  CFLAGS += -g -trapuv
 endif
 endif
-# endif CC=cc
+# !CC=cc
 # Fortran flags
 FFLAGS := ${SGI_ABI_FLG} -extend_source
 ifeq (${OPTS},O)
@@ -1505,7 +1505,7 @@ ifeq (${OPTS},X)
 endif
 # end fortran flags
 endif
-# endif SGI6, SGI64, SGIMP64
+# !SGI6, SGI64, SGIMP64
 
 ifeq (${UNAMES},SunOS) 
 CXX := CC
@@ -1543,7 +1543,7 @@ endif
 endif
  CXXFLAGS := ${CFLAGS}
 endif
-# endif SunOS=SUN4SOL2,SUNMP
+# !SunOS=SUN4SOL2,SUNMP
 
 ifeq (${PVM_ARCH},WINOS)
 CXX := g++
@@ -1569,14 +1569,14 @@ ${MY_OBJ_DIR}/%.o : %.F
 ${MY_OBJ_DIR}/%.o : %.f
 	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 endif
-# endif WINOS
+# !WINOS
 
 # Resolve nvcc CUDA run-time library functions
 ifeq (${CUDA},Y)
  CUDA_FLG_C := 
  CUDA_FLG_F := 
  LDFLAGS += -L/usr/local/cuda/lib -lcudart
-endif # endif CUDA
+endif # !CUDA
 
 # Internationalize NCO with i18n features
 ifeq (${I18N},Y)
@@ -1585,7 +1585,7 @@ ifneq (${null},$(findstring MACOS,${PVM_ARCH}))
  LDFLAGS += -lintl
 endif
 endif
-# endif I18N
+# !I18N
 
 # Default to MPICC, MPICXX to CC, CXX and cross your fingers
 MPICC := ${CC}
@@ -1596,21 +1596,21 @@ ifneq (${null},$(findstring xl,${CC}))
 # NB: AIX is not debugged yet
  MPICC := $(subst xlc,mpcc,${CC})
  MPICXX := $(subst xlC,mpCC,${CXX})
-endif # endif AIX VA Compiler Collection
+endif # !AIX VA Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
  MPICC := $(subst gcc,mpicc,${CC})
  MPICXX := $(subst g++,mpicxx,${CXX})
-endif # endif GNU Compiler Collection
+endif # !GNU Compiler Collection
 ifeq (icpc,$(firstword ${CXX}))
  MPICC := $(subst icc,mpicc,${CC})
  MPICXX := $(subst icpc,mpicxx,${CXX})
-endif # endif Intel (Kai) C++ Compiler
+endif # !Intel (Kai) C++ Compiler
 ifneq (${null},$(findstring pathcc,${CC}))
  MPICC := $(subst pathcc,mpicc,${CC})
  MPICXX := $(subst pathCC,mpicxx,${CXX})
-endif # endif Pathscale (QLogic) Compilers
+endif # !Pathscale (QLogic) Compilers
  CPP := ${MPICC}
-endif # endif MPI
+endif # !MPI
 # Use MPI modifications, if any, to build all objects
 CC := ${MPICC}
 CXX := ${MPICXX}
@@ -1620,9 +1620,9 @@ ifneq (${OMP},Y)
 ifneq (${null},$(findstring SGI,${PVM_ARCH}))
  CFLAGS := $(filter-out -mp -mpio,${CFLAGS})
  LDFLAGS := $(filter-out -mp -mpio,${LDFLAGS})
-endif # endif SGI
+endif # !SGI
  CPPFLAGS += -U_OPENMP
-endif # endif OMP
+endif # !OMP
 
 ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 ifeq (${CCACHE},Y)
@@ -1635,7 +1635,7 @@ endif # !LINUX
 ifeq (${STC},Y)
 # Created statically linked executable
  LDFLAGS := -static ${LDFLAGS}
-endif # endif STC
+endif # !STC
 
 # Define CPPCXXFLAGS after making all possible modifications to CPPFLAGS
 # Add nco_c++ to directory search path
@@ -1691,7 +1691,7 @@ ncecat : CFLAGS := $(filter-out -axW,${CFLAGS})
 ifeq (${MPI_FAKE},Y)
 mpncecat : CFLAGS := $(filter-out -axW,${CFLAGS})
 endif # !MPI_FAKE
-endif # endif Intel (Kai) C Compiler
+endif # !Intel (Kai) C Compiler
 mpncecat:   ${MY_BIN_DIR}/mpncecat
 ${MY_BIN_DIR}/mpncecat:	${MY_OBJ_DIR}/mpncecat.o lib
 	${MPICC} -o $@${BNR_SFX} $< ${LDFLAGS}
@@ -1979,11 +1979,11 @@ library: lib
 lib : inc ${libnco}.a
 ifeq (${PVM_ARCH},MACOS)
 	ranlib ${libnco}.a
-endif # endif LINUX
+endif # !LINUX
 # If not using glibc, build Sittler's getopt() and getopt_long() functions
 ifeq (${null},$(findstring ${PVM_ARCH},FREEBSDLINUXALPHALINUXAMD64LINUXARMMACOSWINOS))
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_getopt.o)
-endif # endif not glibc
+endif # !not glibc
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_aux.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_bnr.o) \
@@ -2215,8 +2215,8 @@ ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSD))
 ifeq (gcc,$(firstword ${CC}))
 ${MY_OBJ_DIR}/nco_grp_trv.o : CFLAGS := $(filter-out -Wcast-qual,${CFLAGS})
 ${MY_OBJ_DIR}/nco_grp_trv.o : CXXFLAGS := $(filter-out -Wcast-qual,${CXXFLAGS})
-endif # endif GCC
-endif # endif LINUX
+endif # !GCC
+endif # !LINUX
 
 # ncap, and only ncap, requires AIX system C++ library
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
@@ -2224,8 +2224,8 @@ ifneq (${null},$(findstring xl,${CC}))
 # Target-specific variable values syntax TARGET ... : VARIABLE-ASSIGNMENT
 # Rules begin in leftmost column else interpreted as commands
 ncap : LDFLAGS += -lC
-endif # endif AIX VA Compiler Collection
-endif # endif AIX
+endif # !AIX VA Compiler Collection
+endif # !AIX
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
 ncap:	${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
 

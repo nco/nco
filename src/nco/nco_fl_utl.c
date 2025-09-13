@@ -1857,7 +1857,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   flg_rqs_vrb_mpl = ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_var && FIRST_INFO) ? True : False;
 
   /* Is request explicit and sufficiently verbose? */
-  flg_rqs_vrb_xpl = ((bfr_sz_hnt != NULL && *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_fl && FIRST_INFO) ? True : False;
+  flg_rqs_vrb_xpl = ((bfr_sz_hnt != NULL && *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_var && FIRST_INFO) ? True : False;
 
   /* Print implicit or explicit buffer request depending on debugging level */
   if(flg_rqs_vrb_mpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() will request file buffer of default size\n",nco_prg_nm_get(),fnc_nm); 
