@@ -326,6 +326,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # OpenMP:
 # ncremap --dbg=1 --thr_nbr=8 --vrb=3 --devnull=No --nco='--dbg=0' --map=${DATA}/maps/map_ne30pg2_to_r05_traave.20240701.nc ${DATA}/bm/eamv3_ne30pg2l80.nc ~/foo.nc # Horizontal
 # ncremap --dbg=1 --thr_nbr=8 --vrb=3 --devnull=No --nco='--dbg=0' --vrt_xtr=mss_val --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv3_ne30pg2l80.nc ~/foo.nc # Vertical
+# ncremap --dbg=1 --thr_nbr=8 --vrb=3 --devnull=No --nco='--dbg=5' --ps_nm=lnsp --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/hdf/ecmwf_ifs_f640L137.nc ~/foo.nc
 # Positional arguments:
 # ncremap --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/rgr ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-??.nc
 # Omit cell_measures:

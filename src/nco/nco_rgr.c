@@ -3525,9 +3525,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 #ifdef __GNUC__
 # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
 #endif /* !__GNUC__ */
-#if defined(_OPENMP) && defined(NCO_OPENMP_DEFINED)
-  (void)fprintf(stderr,"%s: WARNING %s reports that NCO_OPENMP_DEFINED is defined before regridder OpenMP pragmas that will therefore not be read\n",nco_prg_nm_get(),fnc_nm);
-#endif /* !NCO_OPENMP_DEFINED */
+#undef NCO_OPENMP_DEFINED
 #if defined( __clang__ ) && !defined(NCO_OPENMP_DEFINED)
 # define NCO_OPENMP_DEFINED
   /* OpenMP clause to build NCO with Clang compilers */
@@ -6820,9 +6818,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 #ifdef __GNUC__
 # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
 #endif /* !__GNUC__ */
-#if defined(_OPENMP) && defined(NCO_OPENMP_DEFINED)
-  (void)fprintf(stderr,"%s: WARNING %s reports that NCO_OPENMP_DEFINED is defined before regridder OpenMP pragmas that will therefore not be read\n",nco_prg_nm_get(),fnc_nm);
-#endif /* !NCO_OPENMP_DEFINED */
+#undef NCO_OPENMP_DEFINED
 #if defined( __clang__ ) && !defined(NCO_OPENMP_DEFINED)
 # define NCO_OPENMP_DEFINED
   /* OpenMP clause to build NCO with Clang compilers */
