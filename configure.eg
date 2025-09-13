@@ -412,13 +412,13 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20241219 (change to Andes build method)
 # Personal recipe last borken: 20241218 "checking for netcdf.h... yes; checking for nc_open in -lnetcdf... no"
-# Personal recipe last successful: 20250902
+# Personal recipe last successful: 20250915
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # Default as of 20210924 is to build with personal Anaconda netCDF
 # Default as of 20230425 is to build with personal Anaconda gcc/g++
 # Default as of 20241219 is to build with System gcc/g++, personal Anaconda netCDF, and E3SM anaconda everything else
-export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
-export LINUX_CXX='g++ -std=c++11'
+export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -fopenmp'
+export LINUX_CXX='g++ -std=c++11 -fopenmp'
 export LINUX_FC='gfortran'
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest/lib
 export NETCDF_ROOT=/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest

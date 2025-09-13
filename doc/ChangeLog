@@ -1,8 +1,14 @@
-2025-09-12  Charlie Zender  <zender@uci.edu>
+2025-09-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.5-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.5-alpha04: Guava cream-cheese danish';git push
-	git tag -a 5.3.5-alpha04 -m 'ncremap/ncclimo: update docs';git push --tags
+	git tag -a 5.3.5-alpha04 -m 'all: openmp on doe hpcs; ncremap/ncclimo: update docs';git push --tags
+
+	* Refactor OpenMP diagnostics
+
+	* ncremap: quiet renormalization file opening debug output
+
+2025-09-12  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: quiet renormalization configuration debug output
 
