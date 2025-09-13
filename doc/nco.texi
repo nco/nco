@@ -20606,7 +20606,7 @@ for them is specified with @samp{-O} (NB: capital ``O'').
 @cindex @code{--parallel_mode}
 @cindex @code{--parallel}
 @item -p @var{par_typ} (@code{--par_typ}, @code{--par_md}, @code{--parallel_type}, @code{--parallel_mode}, @code{--parallel})
-Specifies the parallelism mode desired.
+Specifies the parallelism mode for files.
 The options are serial mode (@samp{-p srl}, @samp{-p serial}, or @samp{-p nil}), 
 background mode parallelism (@samp{-p bck} or @samp{-p background})),
 and @acronym{MPI} parallelism (@samp{-p mpi} or @samp{-p MPI}). 

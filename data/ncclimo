@@ -411,7 +411,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #          AMWG omits the YYYYMM components of climo filenames, resulting in shorter names
 #          This switch (on by default) symbolically links the full (E3SM) filename to the shorter (AMWG) name
 #          AMWG diagnostics scripts can produce plots directly from these linked filenames
-# par_typ: Parallelism type
+# par_typ: Parallelism type for files
 #          bck = Background: Spawn children (basic blocks) as background processes on control node then wait()
 #                Works best when available RAM > 12*4*sizeof(monthly input file), otherwise jobs swap-to-disk
 #          mpi = MPI: Spawn children (basic blocks) as MPI processes (one per node in batch environment) then wait()
@@ -577,7 +577,7 @@ nd_nbr=1 # [nbr] Number of nodes
 nm_typ='cesm' # [sng] Name type ('cesm', 'mpas', 'yyyymm', 'yyyy-mm', 'yyyy-mm-01', 'yyyy-mm-01-00000') (for filenames)
 no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
-par_typ="${par_bck}" # [sng] Parallelism type
+par_typ="${par_bck}" # [sng] Parallelism type for files
 prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'cpl', 'eam', 'eamxx', 'elm', 'mali', 'mpas', 'mpasa', 'mpasatmosphere', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi')
 qnt_prc='' # [nbr] Quantization precision
 rgn_avg='No' # [sng] Regional/global average timeseries
@@ -651,7 +651,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_rgr${fnt_nrm}  Regridded directory (default ${fnt_bld}${drc_rgr}${fnt_nrm}) [${fnt_tlc}drc_rgr, rgr_drc, dir_regrid, regrid${fnt_nrm}]"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, procedure${fnt_nrm}] (cpl|eam|eamxx|elm|mpaso|mpassi|cam|clm|pop|...)"
-    echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}] [${fnt_tlc}serial | background | mpi${fnt_nrm}]"
+    echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type for files (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}] [${fnt_tlc}serial | background | mpi${fnt_nrm}]"
     echo " ${fnt_bld}--qnt_prc${fnt_nrm}  Quantization precision (empty means none) (default ${fnt_bld}${qnt_prc}${fnt_nrm}) [${fnt_tlc}qnt, qnt_prc, ppc, ppc_prc, precision, quantize${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map-file (horizontal) (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm}) [${fnt_tlc}rgr_map, regrid_map, map, map_file, map_fl${fnt_nrm}]"
@@ -765,7 +765,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	o) drc_out_usr="${OPTARG}" ;; # Output directory
 	O) drc_rgr_usr="${OPTARG}" ;; # Regridded directory
 	P) prc_typ="${OPTARG}" ;; # Procedure type
-	p) par_typ="${OPTARG}" ;; # Parallelism type
+	p) par_typ="${OPTARG}" ;; # Parallelism type for files
 	R) rgr_opt_usr="${OPTARG}" ;; # Regridding options
 	r) rgr_map="${OPTARG}" ;; # Regridding map (horizontal)
 	S) yr_srt_prv="${OPTARG}" ;; # Start year previous
@@ -824,7 +824,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       drc_out=?* | out_drc=?* | dir_out=?* | out_dir=?* | output=?* ) drc_out_usr="${LONG_OPTARG}" ;; # -o # Output directory
 	       drc_rgr=?* | rgr_drc=?* | dir_regrid=?* | regrid_dir=?* | regrid=?* ) drc_rgr_usr="${LONG_OPTARG}" ;; # -O # Regridded directory
 	       prc_typ=?* | procedure=?* ) prc_typ="${LONG_OPTARG}" ;; # -P # Procedure type
-	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
+	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type for files
 	       qnt=?* | qnt_prc=?* | precision=?* | ppc=?* | ppc_prc=?* | quantize=?* ) qnt_prc="${LONG_OPTARG}" ;; # # Quantization precision
 	       rgn_avg | glb_avg | hms_avg | regional_average ) rgn_avg='Yes'; rgn_stt='avg' ;; # # Regional/global average timeseries
 	       rgn_avg=?* | glb_avg=?* | hms_avg=?* | regional_average=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Regional average timeseries
@@ -1342,7 +1342,7 @@ elif [ "${par_typ}" = ${par_srl} ] || [ "${par_typ}" = 'srl' ] || [[ "${par_typ}
     par_typ=${par_srl}
 else 
     echo "ERROR: Invalid -p par_typ option = ${par_typ}"
-    echo "HINT: Valid par_typ arguments include '${par_bck}' (or 'bck'), '${par_mpi}' (or 'MPI'), and '${par_srl}' (or 'srl' or 'nil' or 'none'). For background parallelism, select '${par_bck}' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select '${par_mpi}' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism (aka serial mode), select '${par_srl}', which causes ${spt_nm} to spawn all processes serially on a single compute node."
+    echo "HINT: Valid par_typ arguments for file-level parallelism include '${par_bck}' (or 'bck'), '${par_mpi}' (or 'MPI'), and '${par_srl}' (or 'srl' or 'nil' or 'none'). For background parallelism, select '${par_bck}' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select '${par_mpi}' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism (aka serial mode), select '${par_srl}', which causes ${spt_nm} to spawn all processes serially on a single compute node."
     exit 1
 fi # !par_typ
 if [ -n "${rgr_opt_usr}" ]; then
@@ -2312,7 +2312,7 @@ else
 fi # !tms_flg
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
-printf "Parallelism mode = ${par_typ}\n"
+printf "Parallelism mode for files = ${par_typ}\n"
 if [ "${tms_flg}" = 'Yes' ]; then
     if [ ${var_nbr} -gt 1 ]; then
 	printf "Timeseries will be created for each of ${var_nbr} variables\n"
