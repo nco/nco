@@ -1,8 +1,13 @@
-2025-09-18  Charlie Zender  <zender@uci.edu>
+2025-09-24  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.3.5-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.5-alpha05: Ally Maz and Nicole Wild';git push
-	git tag -a 5.3.5-alpha05 -m '';git push --tags
+	* NCO 5.3.5-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.5-beta01: Ally Maz and Nicole Wild';git push
+	git tag -a 5.3.5-beta01 -m 'all: quiet dbg output, --var_lst = -v;
+	ncks: add mask_a/b dgn; ncclimo/ncremap: Fix OpenMP w/ GCC, add par doc, dgn bad map row/col, --npo refactor, plev xtr fl';git push --tags
+
+	* Add regridding and map-generation scaling tests to parallelism section of Confluence page
+
+2025-09-18  Charlie Zender  <zender@uci.edu>
 
 	* Add English translations of Conservation and Consistency to map-checker output
 
@@ -52,7 +57,7 @@
 
 	* NCO 5.3.5-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.5-alpha03: Bodkin';git push
-	git tag -a 5.3.5-alpha03 -m 'all: ';git push --tags
+	git tag -a 5.3.5-alpha03 -m 'ncremap/ncclimo add ~/anaconda/lib to LD_LIBRARY_PATH for Chrysalis, Perlmutter';git push --tags
 
 	* ncclimo/ncremap: Add ~/anaconda/lib to LD_LIBRARY_PATH for Chrysalis, Perlmutter
 
