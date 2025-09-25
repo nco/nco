@@ -1,9 +1,16 @@
+2025-09-25  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.3.5 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.5: Playground';git push
+	git tag -a 5.3.5 -m 'all: quiet dbg output, --var_lst = -v; ncks: add mask_a/b dgn; ncclimo/ncremap: Fix OpenMP w/ GCC, add par doc, dgn bad map row/col, --npo refactor, plev xtr fl';git push --tags
+
+	* Preliminary updates for 5.3.5-final
+
 2025-09-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.5-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.5-beta01: Ally Maz and Nicole Wild';git push
-	git tag -a 5.3.5-beta01 -m 'all: quiet dbg output, --var_lst = -v;
-	ncks: add mask_a/b dgn; ncclimo/ncremap: Fix OpenMP w/ GCC, add par doc, dgn bad map row/col, --npo refactor, plev xtr fl';git push --tags
+	git tag -a 5.3.5-beta01 -m 'all: quiet dbg output, --var_lst = -v; ncks: add mask_a/b dgn; ncclimo/ncremap: Fix OpenMP w/ GCC, add par doc, dgn bad map row/col, --npo refactor, plev xtr fl';git push --tags
 
 	* Add regridding and map-generation scaling tests to parallelism section of Confluence page
 
@@ -23,8 +30,6 @@
 
 	* Refactor OpenMP diagnostics for vertical and horizontal
 
-	* ncremap: quiet renormalization file-opening debug output
-
 2025-09-12  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: quiet renormalization configuration debug output
@@ -33,7 +38,7 @@
 
 	* Update ncremap/ncclimo self-documentation
 
-	* Clarify --thr_nbr option in ncremap Conflluence page
+	* Clarify --thr_nbr option in ncremap Confluence page
 
 2025-09-07  Charlie Zender  <zender@uci.edu>
 
@@ -44,8 +49,6 @@
 	* ncks: Diagnose and count bad values of row, col, then exit() in nco_rgr_wgt()
 
 2025-09-05  Charlie Zender  <zender@uci.edu>
-
-	* ncks: Diagnose and count bad values of row, col, then exit() in nco_map_chk()
 
 	* ncks: Add extra diagnostics to mask_a/b in nco_map_chk()
 

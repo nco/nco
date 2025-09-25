@@ -1,38 +1,79 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.4 stick the landing
+netCDF Operators NCO version 5.3.5 ring the bell
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.4 contains of bevy of minor features that improve
-NCO in many different areas. These range from reduced monotonicity
-WARNINGs from ncrcat, to an easy new method for all operators
-to remove global attributes, to bulletproofing ncclimo to work
-as intended with instantaneous input, to new urban landunit
-diagnostics in ncks.
-
+Version 5.3.5 contains mostly speed, robustness, and documentation
+improvements for the regridder. The ability to select alternate
+executable and library paths for testing snapshots is also improved. 
 Skip this release if these changes do not interest you. 
-
-Time machine:
-The first public release of ncrename was June 14, 1995:
-https://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/1995/msg00076.html
-Happy 30th birthday ncrename!!!
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. plev can be full path name
+A. The map checker (ncks --chk_map) is more robust and clear in its
+reports. For robustness, the checker now ensures that all row/col
+indices are valid before attempting to use them. Illegal values are
+summarized and printed. The regridder also does now. Illegal values
+previously caused the checker and regridder to die with baffling
+core-dumps. Conservation and Consistency metrics now include
+plain-language definitions. 
 
-http://nco.sf.net/nco.html#gad
-http://nco.sf.net/nco.html#gaa
+B. The ncremap tutorial on the E3SM Confluence page
+https://e3sm.atlassian.net/wiki/spaces/DOC/pages/edit-v2/754286611
+now contains extensive documentation on how to exploit the three types
+of parallelism (node-, workflow-, and thread-level) supported by
+ncremap. New examples show the scaling of performance with OpenMP
+threads for regridding and for weight-generation.
+
+C. The --npo (NCO Path Override) option allows other users to
+easily test bleeding-edge features present in development versions
+of NCO in C. Zender's home directories at DOE HPC centers.
+This feature has been updated to work with the latest paths on Andes,
+Chrysalis, and Perlmutter. 
+http://nco.sf.net/nco.html#npo
+http://nco.sf.net/nco.html#nco_path_override
+
+D. All operators that accept -v as the option to indicate
+a list of variables now also accept --var_lst. This makes
+the binary executables consistent with ncremap/ncclimo.
+http://nco.sf.net/nco.html#var_lst
+
+E. plev can now be a full path name. Previously the pressure
+levels for vertical interpolation were always contained in
+the destination vertical grid file. However, pure pressure
+vertical grids require only the plev variable so requiring
+that variable to be in its own file was unnecessary. Now the 'plev'
+variable can be specified as a full path name, e.g.,
+--vrt=/home/bar/data.nc/plev. Here the variable "plev" will
+be searched for in the file /home/bar/data.nc. This is similar to the
+way the surface pressure ps for hybrid sigma-pressure coordinates can
+be a full-pathname. This is the first step to supporting 3D pressure
+fields as target grids.
+ncremap --vrt=/path/to/file.nc/plev in.nc out.nc
+http://nco.sf.net/nco.html#vrt
 
 BUG FIXES:
    
-A. fxm
+A. GCC-compiled executables once again have working OpenMP parallelism
+in the regridder. Previously only Clang or Intel-compiled executables
+could access OpenMP parallelism in the regridder. GCC-compiled
+installations always used one thread, no matter how many were
+requested via --thr_nbr=# threads or OMP_NUM_THREADS. An incorrect CPP
+token caused this misbehavior. Now both horizontal regridding and
+vertical interpolation adhere to the requested parallelism. OpenMP
+increases throughput by about a factor of two, so users of this update
+may notice significant speed improvements. Safeguards and additional
+checks have been implemented to prevent this problem from occuring
+again. There is no workaround, users must upgrade to exploit OpenMP
+while regridding with GCC-compiled installations. 
+http://nco.sf.net/nco.html#thr_nbr
+http://nco.sf.net/nco.html#thr_nbr_ncremap
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

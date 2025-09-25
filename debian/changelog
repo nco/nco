@@ -1,8 +1,8 @@
 nco (5.3.5-1) unstable; urgency=low
 
-  * new upstream version Fourth Fourth: fxm
+  * new upstream version Playground: all: quiet dbg output, --var_lst = -v; ncks: add mask_a/b dgn; ncclimo/ncremap: Fix OpenMP w/ GCC, add par doc, dgn bad map row/col, --npo refactor, plev xtr fl
 
- -- Charlie Zender <zender@uci.edu> Fri, 18 Jul 2025 12:26:22 -0700
+ -- Charlie Zender <zender@uci.edu> Thu, 25 Sep 2025 12:26:22 -0700
 
 nco (5.3.4-1) unstable; urgency=low
 
