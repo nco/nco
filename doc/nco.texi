@@ -633,19 +633,20 @@ geoscientific computing, potentially saving enormous amounts of
 storage and reducing its attendant power requirements and
 @acronym{GHG} emissions. 
 Help from my colleagues at @acronym{CF}, @acronym{CMOR},
-@acronym{E3SM}, @acronym{NOAA}, and Unidata has been indispensable.
+@acronym{E3SM}, @acronym{NASA}, @acronym{NOAA}, and Unidata has been
+indispensable.
 Unfortunately the future of US-based support for these organizations
 and collaborators is dire due to the climate denialism and science
 budget cutbacks of the current administration.  
-So I am especially grateful to the University of California which
-affords me the independence and support to continue maintainining and
-improving @acronym{NCO} for years to come.
+Thankfully the University of California (though it too is threatened
+by the federal government) still affords me the independence to
+continue maintaining and improving @acronym{NCO} for years to come.  
 
 @sp 1
 @noindent
 Charlie Zender@*
-July, 2025@*
-Laguna Beach, California@*
+September, 2025@*
+Santa Fe, New Mexico@*
 
 @html
 <a name="smr"></a> <!-- http://nco.sf.net/nco.html#smr -->
