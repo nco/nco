@@ -1,5 +1,9 @@
 2025-09-25  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.6-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha01: Alien: Earth';git push
+	git tag -a 5.3.6-alpha01 -m 'Functionally identical to 5.3.5 except fxm';git push --tags
+
 	* NCO 5.3.5 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.5: Playground';git push
 	git tag -a 5.3.5 -m 'all: quiet dbg output, --var_lst = -v; ncks: add mask_a/b dgn; ncclimo/ncremap: Fix OpenMP w/ GCC, add par doc, dgn bad map row/col, --npo refactor, plev xtr fl';git push --tags

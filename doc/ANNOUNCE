@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.5 strikes a chord
+netCDF Operators NCO version 5.3.6 strikes a chord
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.5 contains mostly speed, robustness, and documentation
+Version 5.3.6 contains mostly speed, robustness, and documentation
 improvements for the regridder. The ability to select alternate
 executable and library paths for testing snapshots is also improved. 
 Skip this release if these changes do not interest you. 
