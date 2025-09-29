@@ -1,8 +1,12 @@
 2025-09-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.6-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha02: fxm';git push
+	git tag -a 5.3.6-alpha02 -m '';git push --tags
+
 	* NCO 5.3.6-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha01: Alien: Earth';git push
-	git tag -a 5.3.6-alpha01 -m 'Functionally identical to 5.3.5 except fxm';git push --tags
+	git tag -a 5.3.6-alpha01 -m 'Functionally identical to 5.3.5 plus nco_is_hrz() fix';git push --tags
 
 	* nco_is_hrz() add lndgrid as valid 1D horizontal dimension, fixes ncclimo timeseries generation on bigrid data
 
