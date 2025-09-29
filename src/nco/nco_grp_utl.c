@@ -1376,7 +1376,8 @@ nco_var_is_hrz /* [fnc] Print "Yes"/"No" if variable is horizontal (i.e., has di
      Based on nco_xtr_hrz_lst() and, before that, nco_xtr_ND_lst()
      Usage:
      ncks --is_hrz three_dmn_rec_var ~/nco/data/in.nc
-     ncks --is_hrz W_SCALAR ~/data/bm/elmv3_r05l15.nc */
+     ncks --is_hrz W_SCALAR ~/data/bm/elmv3_r05l15.nc
+     ncks --is_hrz LAISUN ~/data/bm/elmv2_ne30pg2l15.nc */
 
   const char fnc_nm[]="nco_var_is_hrz()"; /* [sng] Function name */
 
@@ -1428,7 +1429,7 @@ nco_var_is_hrz /* [fnc] Print "Yes"/"No" if variable is horizontal (i.e., has di
     dmn_nbr_in=trv_tbl->lst[idx_var].nbr_dmn;
     for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
       dmn_nm_cp=trv_tbl->lst[idx_var].var_dmn[dmn_idx].dmn_nm;
-      if(strcmp(dmn_nm_cp,"lat") && strcmp(dmn_nm_cp,"lon") && strcmp(dmn_nm_cp,"ncol") && strcmp(dmn_nm_cp,"nCells") && strcasecmp(dmn_nm_cp,"time")) break;
+      if(strcmp(dmn_nm_cp,"lat") && strcmp(dmn_nm_cp,"lon") && strcmp(dmn_nm_cp,"ncol") && strcmp(dmn_nm_cp,"lndgrid") && strcmp(dmn_nm_cp,"nCells") && strcasecmp(dmn_nm_cp,"time")) break;
     } /* !dmn_idx */	
     if(dmn_idx == dmn_nbr_in){
       xtr_nbr_crr++;
