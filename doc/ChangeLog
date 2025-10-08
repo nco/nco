@@ -1,8 +1,12 @@
-2025-09-29  Charlie Zender  <zender@uci.edu>
+2025-10-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.6-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha02: fxm';git push
-	git tag -a 5.3.6-alpha02 -m '';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha02: Casa Chimayo';git push
+	git tag -a 5.3.6-alpha02 -m 'ncclimo/ncremap: E3SMU_PATH/lib';git push --tags
+
+	* Add E3SMU_PATH/lib to ncclimo/ncremap
+
+2025-09-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.6-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha01: Alien: Earth';git push

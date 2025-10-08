@@ -237,6 +237,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     # Append E3SM-U binaries to _end_ of PATH so NCO binaries not redirected, e.g., from CSZ's development directory to E3SM-U
     if [ -n "${E3SMU_ROOT}" ] && [ ${spt_nm} = 'ncremap' ]; then
 	export PATH="${PATH}:${E3SMU_ROOT}/bin"
+	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${E3SMU_ROOT}/lib"
     fi # !E3SMU_ROOT
 fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
