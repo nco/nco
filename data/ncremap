@@ -1492,7 +1492,7 @@ elif [ ${wgt_typ} = 'esmf' ]; then
     wgt_exe="${wgt_exe_esmf}"
     wgt_opt="${wgt_opt_esmf}"
 elif [ ${wgt_typ} = 'nco' ]; then
-    if [ "${alg_opt}" = 'nco_idw' ]; then
+    if [ "${alg_opt}" = 'ncoidw' ]; then
 	wgt_opt_nco="${wgt_opt_nco} --rgr wgt_typ=${alg_opt} --rgr xtr_nsp=${xtr_nsp} --rgr xtr_xpn=${xtr_xpn}"
     fi # alg_opt
     wgt_cmd="${wgt_exe_nco}"

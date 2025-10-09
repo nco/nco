@@ -1,8 +1,12 @@
-2025-10-08  Charlie Zender  <zender@uci.edu>
+2025-10-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha02: Casa Chimayo';git push
-	git tag -a 5.3.6-alpha02 -m 'ncclimo/ncremap: E3SMU_PATH/lib';git push --tags
+	git tag -a 5.3.6-alpha02 -m 'ncclimo/ncremap: E3SMU_PATH/lib; ncremap ncoidw fix';git push --tags
+
+	* Change ncremap nco_idw to new normalized name ncoidw. Fixes GitHub Issue #295 from Zachary Moon.
+
+2025-10-08  Charlie Zender  <zender@uci.edu>
 
 	* Add E3SMU_PATH/lib to ncclimo/ncremap
 
