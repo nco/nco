@@ -5134,7 +5134,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd=nco_get_vars(in_id,wgt_raw_id,dmn_srt,dmn_cnt,dmn_srd,wgt_raw,NC_DOUBLE);
   } /* !SCRIP */
 
-  /* 20250906 Sanity check on row,col because Walter H. produced and tried to use a map with uninitialized values of row, col, and wgt! */
+  /* 20250905 Sanity check on row,col because Walter H. produced and tried to use a map with uninitialized values of row, col, and wgt! All values of row + col in that file were NC_MIN_INT. */
   /* NB: Identical code in nco_map.c:nco_map_chk() */
   size_t sz; /* [nbr] Number of links */
   sz=mpf.num_links;
@@ -5144,29 +5144,29 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     size_t cnt_bad; /* [nbr] Number of invalid indexes */
     cnt_bad=0L;
     for(idx=0;idx<sz;idx++){
-      idx_row=row_dst_adr[idx]-1L;
+      idx_row=row_dst_adr[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
       if(idx_row < 0L) cnt_bad++;
     } /* !idx */
     for(idx=0;idx<sz;idx++){
-      idx_row=row_dst_adr[idx]-1L;
+      idx_row=row_dst_adr[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
       if(idx_row < 0L) break;
     } /* !idx */
     if(idx != sz){
-      (void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports map-file variable \"row\" contains %lu illegal value(s) among %lu total values. First illegal value found is, in Fortran (1-based) index notation, row(%lu) = %ld. \"row\" contains indexes into the weight matrix S. Each Fortran-convention index must be >= 1. Without valid indexes, the map-file is unusable.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_row+1L);
-      nco_exit(EXIT_FAILURE);
+      (void)fprintf(stderr,"%s: WARNING %s (aka \"the regridder\") reports map-file variable \"row\" contains %lu questionable value(s) among %lu total values. \"row\" contains indexes into the weight matrix S. First questionable value found is, in Fortran (1-based) index notation, row(%lu) = %ld. Each Fortran-convention index must be >= 1. Questionable indexes make this map-file suspect.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_row+1L);
+      //nco_exit(EXIT_FAILURE);
     } /* !idx */
     cnt_bad=0L;
     for(idx=0;idx<sz;idx++){
-      idx_col=col_src_adr[idx]-1L;
+      idx_col=col_src_adr[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
       if(idx_col < 0L) cnt_bad++;
     } /* !idx */
     for(idx=0;idx<sz;idx++){
-      idx_col=col_src_adr[idx]-1L;
+      idx_col=col_src_adr[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
       if(idx_col < 0L) break;
     } /* !idx */
     if(idx != sz){
-      (void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports map-file variable \"col\" contains %lu illegal value(s) among %lu total values. First illegal value found is, in Fortran (1-based) index notation, col(%lu) = %ld. \"col\" contains indexes into the weight matrix S. Each Fortran-convention index must be >= 1. Without valid indexes, the map-file is unusable.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_col+1L);
-      nco_exit(EXIT_FAILURE);
+      (void)fprintf(stderr,"%s: WARNING %s (aka \"the regridder\") reports map-file variable \"col\" contains %lu questionable value(s) among %lu total values. \"col\" contains indexes into the weight matrix S. First questionable value found is, in Fortran (1-based) index notation, col(%lu) = %ld. Each Fortran-convention index must be >= 1. Questionable indexes make this map-file suspect.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_col+1L);
+      //nco_exit(EXIT_FAILURE);
     } /* !idx */
   } /* !1 */
 

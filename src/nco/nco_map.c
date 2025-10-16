@@ -2189,6 +2189,9 @@ nco_map_chk /* Map-file evaluation */
   if(flg_frac_b_nrm) rcd=nco_fl_open(fl_in,NC_WRITE,&bfr_sz_hnt,&in_id); else rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
+  /* Print filename first so batch invocation informs reader of current map-file */
+  (void)fprintf(stdout,"Map-checker characterization of %s\n",fl_in);
+
   /* Read weight type, if it exists */
   char *cnv_sng=NULL; /* [sng] Convention string (i.e., attribute name) */
   char *att_val;
@@ -2260,7 +2263,7 @@ nco_map_chk /* Map-file evaluation */
   var_yc_a=nco_map_var_init(in_id,"yc_a",dmn_in,dmn_in_nbr);
   var_yc_b=nco_map_var_init(in_id,"yc_b",dmn_in,dmn_in_nbr);
 
-  /* 20250905 Sanity check on row,col because Walter H. produced and tried to use a map with uninitialized values of row, col, and wgt! */
+  /* 20250905 Sanity check on row,col because Walter H. produced and tried to use a map with uninitialized values of row, col, and wgt! All values of row + col in that file were NC_MIN_INT. */
   sz=var_S->sz;
   if(1){
     int idx_row; /* Use int not size_t in case values are corrupt and contain negative numbers */
@@ -2269,29 +2272,29 @@ nco_map_chk /* Map-file evaluation */
     sz=var_frac_a->sz;
     cnt_bad=0L;
     for(idx=0;idx<sz;idx++){
-      idx_row=var_row->val.ip[idx]-1L;
+      idx_row=var_row->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
       if(idx_row < 0L) cnt_bad++;
     } /* !idx */
     for(idx=0;idx<sz;idx++){
-      idx_row=var_row->val.ip[idx]-1L;
+      idx_row=var_row->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
       if(idx_row < 0L) break;
     } /* !idx */
     if(idx != sz){
-      (void)fprintf(stderr,"%s: ERROR %s (aka \"the map-checker\") reports map-file variable \"row\" contains %lu illegal value(s) among %lu total values. First illegal value found is, in Fortran (1-based) index notation, row(%lu) = %ld. \"row\" contains indexes into the weight matrix S. Each Fortran-convention index must be >= 1. Without valid indexes, the map-file is unusable.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_row+1L);
-      nco_exit(EXIT_FAILURE);
+      (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports map-file variable \"row\" contains %lu questionable value(s) among %lu total values. \"row\" contains indexes into the weight matrix S. First questionable value found is, in Fortran (1-based) index notation, row(%lu) = %ld. Each Fortran-convention index must be >= 1. Questionable indexes make this map-file suspect.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_row+1L);
+      //nco_exit(EXIT_FAILURE);
     } /* !idx */
     cnt_bad=0L;
     for(idx=0;idx<sz;idx++){
-      idx_col=var_col->val.ip[idx]-1L;
+      idx_col=var_col->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
       if(idx_col < 0L) cnt_bad++;
     } /* !idx */
     for(idx=0;idx<sz;idx++){
-      idx_col=var_col->val.ip[idx]-1L;
+      idx_col=var_col->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
       if(idx_col < 0L) break;
     } /* !idx */
     if(idx != sz){
-      (void)fprintf(stderr,"%s: ERROR %s (aka \"the map-checker\") reports map-file variable \"col\" contains %lu illegal value(s) among %lu total values. First illegal value found is, in Fortran (1-based) index notation, col(%lu) = %ld. \"col\" contains indexes into the weight matrix S. Each Fortran-convention index must be >= 1. Without valid indexes, the map-file is unusable.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_col+1L);
-      nco_exit(EXIT_FAILURE);
+      (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports map-file variable \"col\" contains %lu questionable value(s) among %lu total values. \"col\" contains indexes into the weight matrix S. First questionable value found is, in Fortran (1-based) index notation, col(%lu) = %ld. Each Fortran-convention index must be >= 1. Questionable indexes make this map-file suspect.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_col+1L);
+      //nco_exit(EXIT_FAILURE);
     } /* !idx */
   } /* !1 */
 
@@ -2331,7 +2334,7 @@ nco_map_chk /* Map-file evaluation */
       if(val[idx] == 0.0) break;
     if(idx < sz) area_wgt_a=False;
     if(idx < sz) has_area_a=False;
-    if(idx < sz) fprintf(stdout,"WARNING area_a = %g for grid A cell [%lu,%+g,%+g] (and possibly others). Empty areas are legal (e.g., for bilinear maps) yet prevent calculation of some diagnostics.\n",val[idx],idx+1UL,var_yc_a->val.dp[idx],var_xc_a->val.dp[idx]);
+    if(idx < sz) (void)fprintf(stdout,"WARNING area_a = %g for grid A cell [%lu,%+g,%+g] (and possibly others). Empty areas are legal (e.g., for bilinear maps) yet prevent calculation of some diagnostics.\n",val[idx],idx+1UL,var_yc_a->val.dp[idx],var_xc_a->val.dp[idx]);
   } /* !var_area_a */
   if(var_area_b){
     has_area_b=True;
@@ -2341,7 +2344,7 @@ nco_map_chk /* Map-file evaluation */
       if(val[idx] == 0.0) break;
     if(idx < sz) area_wgt_b=False;
     if(idx < sz) has_area_b=False;
-    if(idx < sz) fprintf(stdout,"WARNING area_b = %g for grid B cell [%lu,%+g,%+g] (and possibly others). Empty areas are legal (e.g., for bilinear maps) yet prevent calculation of some diagnostics.\n",val[idx],idx+1UL,var_yc_b->val.dp[idx],var_xc_b->val.dp[idx]);
+    if(idx < sz) (void)fprintf(stdout,"WARNING area_b = %g for grid B cell [%lu,%+g,%+g] (and possibly others). Empty areas are legal (e.g., for bilinear maps) yet prevent calculation of some diagnostics.\n",val[idx],idx+1UL,var_yc_b->val.dp[idx],var_xc_b->val.dp[idx]);
   } /* !var_area_b */
   if(var_frac_a){
     has_frac_a=True;
@@ -2464,9 +2467,8 @@ nco_map_chk /* Map-file evaluation */
     if(has_area_a) nco_map_var_min_max_ttl(var_area_a,(double *)NULL,flg_area_wgt,(int *)NULL,&area_a_min,&idx_min_area_a,&area_a_max,&idx_max_area_a,&area_a_ttl,&avg,&mebs,&rms,&sdn);
     if(var_mask_a) nco_map_var_min_max_ttl(var_mask_a,(double *)NULL,flg_area_wgt,(int *)NULL,&mask_a_min,&idx_min,&mask_a_max,&idx_max,&mask_a_ttl,&avg,&mebs,&rms,&sdn);
 
-    fprintf(stdout,"Characterization of map-file %s\n",fl_in);
-    fprintf(stdout,"Cell triplet elements : [Fortran (1-based) index, center latitude, center longitude]\n");
-    fprintf(stdout,"Sparse-matrix size n_s: %lu\n",var_S->sz);
+    (void)fprintf(stdout,"Cell triplet elements : [Fortran (1-based) index, center latitude, center longitude]\n");
+    (void)fprintf(stdout,"Sparse-matrix size n_s: %lu\n",var_S->sz);
     nco_map_var_min_max_ttl(var_S,(double *)NULL,flg_area_wgt,(int *)NULL,&s_min,&idx_min,&s_max,&idx_max,&s_ttl,&avg,&mebs,&rms,&sdn);
     idx_sng_lng_max=(long)ceil(log10((double)var_S->sz));
     if(idx_sng_lng_max == (long)log10((double)var_S->sz)) idx_sng_lng_max++;
@@ -2474,14 +2476,14 @@ nco_map_chk /* Map-file evaluation */
     idx_sng=(char *)nco_malloc((idx_sng_lng_max+1UL)*sizeof(char));
     (void)sprintf(idx_sng,idx_sng_fmt,idx_min+1UL);
     //(void)fprintf(stdout,"idx_sng_fmt = %s, idx_sng = %s\n",idx_sng_fmt,idx_sng);
-    fprintf(stdout,"Weight min S(%s): % 0.16e from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_sng,s_min,var_col->val.ip[idx_min],var_yc_a->val.dp[var_col->val.ip[idx_min]-1],var_xc_a->val.dp[var_col->val.ip[idx_min]-1],var_row->val.ip[idx_min],var_yc_b->val.dp[var_row->val.ip[idx_min]-1],var_xc_b->val.dp[var_row->val.ip[idx_min]-1]);
+    (void)fprintf(stdout,"Weight min S(%s): % 0.16e from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_sng,s_min,var_col->val.ip[idx_min],var_yc_a->val.dp[var_col->val.ip[idx_min]-1],var_xc_a->val.dp[var_col->val.ip[idx_min]-1],var_row->val.ip[idx_min],var_yc_b->val.dp[var_row->val.ip[idx_min]-1],var_xc_b->val.dp[var_row->val.ip[idx_min]-1]);
     (void)sprintf(idx_sng,idx_sng_fmt,idx_max+1UL);
-    fprintf(stdout,"Weight max S(%s): % 0.16e from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_sng,s_max,var_col->val.ip[idx_max],var_yc_a->val.dp[var_col->val.ip[idx_max]-1],var_xc_a->val.dp[var_col->val.ip[idx_max]-1],var_row->val.ip[idx_max],var_yc_b->val.dp[var_row->val.ip[idx_max]-1],var_xc_b->val.dp[var_row->val.ip[idx_max]-1]);
-    fprintf(stdout,"Ignored weights (S=0.0): %ld\n",wgt_zro_nbr);
+    (void)fprintf(stdout,"Weight max S(%s): % 0.16e from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_sng,s_max,var_col->val.ip[idx_max],var_yc_a->val.dp[var_col->val.ip[idx_max]-1],var_xc_a->val.dp[var_col->val.ip[idx_max]-1],var_row->val.ip[idx_max],var_yc_b->val.dp[var_row->val.ip[idx_max]-1],var_xc_b->val.dp[var_row->val.ip[idx_max]-1]);
+    (void)fprintf(stdout,"Ignored weights (S=0.0): %ld\n",wgt_zro_nbr);
     if(nco_dbg_lvl_get() >= nco_dbg_std){
-      fprintf(stdout,"Commands to examine extrema:\n");
-      fprintf(stdout,"min(S): ncks --fortran -H --trd -d n_s,%lu -d n_a,%d -d n_b,%d -v S,row,col,.?_a,.?_b %s\n",idx_min+1UL,var_col->val.ip[idx_min],var_row->val.ip[idx_min],fl_in);
-      fprintf(stdout,"max(S): ncks --fortran -H --trd -d n_s,%lu -d n_a,%d -d n_b,%d -v S,row,col,.?_a,.?_b %s\n",idx_max+1UL,var_col->val.ip[idx_max],var_row->val.ip[idx_max],fl_in);
+      (void)fprintf(stdout,"Commands to examine extrema:\n");
+      (void)fprintf(stdout,"min(S): ncks --fortran -H --trd -d n_s,%lu -d n_a,%d -d n_b,%d -v S,row,col,.?_a,.?_b %s\n",idx_min+1UL,var_col->val.ip[idx_min],var_row->val.ip[idx_min],fl_in);
+      (void)fprintf(stdout,"max(S): ncks --fortran -H --trd -d n_s,%lu -d n_a,%d -d n_b,%d -v S,row,col,.?_a,.?_b %s\n",idx_max+1UL,var_col->val.ip[idx_max],var_row->val.ip[idx_max],fl_in);
     } /* !dbg */
     /* Check for and report NaNs in weight array */
     sz=var_S->sz;
@@ -2490,10 +2492,10 @@ nco_map_chk /* Map-file evaluation */
     for(idx=0;idx<sz;idx++){
       if(isnan(val[idx])){
 	(void)sprintf(idx_sng,idx_sng_fmt,idx+1UL);
-	if(nco_dbg_lvl_get() >= nco_dbg_quiet) fprintf(stdout,"WARNING: Weight S(%s) = NaN from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_sng,var_col->val.ip[idx],var_yc_a->val.dp[var_col->val.ip[idx]-1],var_xc_a->val.dp[var_col->val.ip[idx]-1],var_row->val.ip[idx],var_yc_b->val.dp[var_row->val.ip[idx]-1],var_xc_b->val.dp[var_row->val.ip[idx]-1]);
+	if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"WARNING: Weight S(%s) = NaN from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_sng,var_col->val.ip[idx],var_yc_a->val.dp[var_col->val.ip[idx]-1],var_xc_a->val.dp[var_col->val.ip[idx]-1],var_row->val.ip[idx],var_yc_b->val.dp[var_row->val.ip[idx]-1],var_xc_b->val.dp[var_row->val.ip[idx]-1]);
       } /* !isnan */
     } /* !idx */
-    fprintf(stdout,"\n");
+    (void)fprintf(stdout,"\n");
     if(idx_sng) idx_sng=(char *)nco_free(idx_sng);
       
     int hst_idx;
@@ -2514,44 +2516,44 @@ nco_map_chk /* Map-file evaluation */
       } /* !hst_idx */
     } /* !idx */
     
-    fprintf(stdout,"Grid A size n_a: %lu // Number of columns/sources\n",var_area_a->sz);
-    if(var_mask_a) fprintf(stdout,"mask_a 0's, 1's: %lu, %lu\n",mask_a_zro,mask_a_one); else fprintf(stdout,"mask_a 0's, 1's: map-file omits mask_a\n");
-    if(var_mask_a) fprintf(stdout,"mask_a min, max: %.0f, %.0f\n",mask_a_min,mask_a_max); else fprintf(stdout,"mask_a min, max: map-file omits mask_a\n");
-    if(var_mask_a) fprintf(stdout,"mask_a S errors: %lu%s\n",mask_a_err,mask_a_err ? " <--- # of weights that, in violation of mask_a, contribute from masked source cells to destination gridcells WARNING WARNING WARNING" : ""); else fprintf(stdout,"mask_a S errors: map-file omits mask_a\n");
+    (void)fprintf(stdout,"Grid A size n_a: %lu // Number of columns/sources\n",var_area_a->sz);
+    if(var_mask_a) (void)fprintf(stdout,"mask_a 0's, 1's: %lu, %lu\n",mask_a_zro,mask_a_one); else (void)fprintf(stdout,"mask_a 0's, 1's: map-file omits mask_a\n");
+    if(var_mask_a) (void)fprintf(stdout,"mask_a min, max: %.0f, %.0f\n",mask_a_min,mask_a_max); else (void)fprintf(stdout,"mask_a min, max: map-file omits mask_a\n");
+    if(var_mask_a) (void)fprintf(stdout,"mask_a S errors: %lu%s\n",mask_a_err,mask_a_err ? " <--- # of weights that, in violation of mask_a, contribute from masked source cells to destination gridcells WARNING WARNING WARNING" : ""); else (void)fprintf(stdout,"mask_a S errors: map-file omits mask_a\n");
     if(has_area_a){
-      fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
+      (void)fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
       // 20240708: Output radius (rds) or diameter (dmt) of circle with same area as smallest/largest gridcell A_g:
       // s=r_e*theta, A=r_e^2*sr=pi*rds^2 -> rds=r_e*sqrt(sr/pi), dmt=2*r_e*sqrt(sr/pi), dx=r_e*sqrt(sr) <--dx is side of square
-      fprintf(stdout,"area_a min, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid A cell [%lu,%+g,%+g]\n",area_a_min,rds_earth*sqrt(area_a_min)/1000.0,sqrt(area_a_min)*180.0/M_PI,idx_min_area_a+1UL,var_yc_a->val.dp[idx_min_area_a],var_xc_a->val.dp[idx_min_area_a]);
-      fprintf(stdout,"area_a max, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid A cell [%lu,%+g,%+g]\n",area_a_max,rds_earth*sqrt(area_a_max)/1000.0,sqrt(area_a_max)*180.0/M_PI,idx_max_area_a+1UL,var_yc_a->val.dp[idx_max_area_a],var_xc_a->val.dp[idx_max_area_a]);
+      (void)fprintf(stdout,"area_a min, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid A cell [%lu,%+g,%+g]\n",area_a_min,rds_earth*sqrt(area_a_min)/1000.0,sqrt(area_a_min)*180.0/M_PI,idx_min_area_a+1UL,var_yc_a->val.dp[idx_min_area_a],var_xc_a->val.dp[idx_min_area_a]);
+      (void)fprintf(stdout,"area_a max, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid A cell [%lu,%+g,%+g]\n",area_a_max,rds_earth*sqrt(area_a_max)/1000.0,sqrt(area_a_max)*180.0/M_PI,idx_max_area_a+1UL,var_yc_a->val.dp[idx_max_area_a],var_xc_a->val.dp[idx_max_area_a]);
       if(fabs(1.0-area_a_ttl/4.0/M_PI) < 1.0e-2) grid_a_tiles_sphere=True;
     }else{
-      fprintf(stdout,"area_a sum/4*pi: map-file does not provide completely non-zero area_a\n");
-      fprintf(stdout,"area_a min, ~dx: map-file does not provide completely non-zero area_a\n");
-      fprintf(stdout,"area_a max, ~dx: map-file does not provide completely non-zero area_a\n");
+      (void)fprintf(stdout,"area_a sum/4*pi: map-file does not provide completely non-zero area_a\n");
+      (void)fprintf(stdout,"area_a min, ~dx: map-file does not provide completely non-zero area_a\n");
+      (void)fprintf(stdout,"area_a max, ~dx: map-file does not provide completely non-zero area_a\n");
     } /* !has_area_a */
-    fprintf(stdout,"Column (source cell) indices utilized min, max: %.0f, %.0f\n",col_min,col_max);
-    fprintf(stdout,"Ignored source cells (empty columns): %d\n\n",hst_col[0]);
+    (void)fprintf(stdout,"Column (source cell) indices utilized min, max: %.0f, %.0f\n",col_min,col_max);
+    (void)fprintf(stdout,"Ignored source cells (empty columns): %d\n\n",hst_col[0]);
 
     if(has_area_b) nco_map_var_min_max_ttl(var_area_b,(double *)NULL,flg_area_wgt,(int *)NULL,&area_b_min,&idx_min_area_b,&area_b_max,&idx_max_area_b,&area_b_ttl,&avg,&mebs,&rms,&sdn);
     if(var_mask_b) nco_map_var_min_max_ttl(var_mask_b,(double *)NULL,flg_area_wgt,(int *)NULL,&mask_b_min,&idx_min,&mask_b_max,&idx_max,&mask_b_ttl,&avg,&mebs,&rms,&sdn);
 
-    fprintf(stdout,"Grid B size n_b: %lu // Number of rows/destinations\n",var_area_b->sz);
-    if(var_mask_b) fprintf(stdout,"mask_b 0's, 1's: %lu, %lu\n",mask_b_zro,mask_b_one); else fprintf(stdout,"mask_b 0's, 1's: map-file omits mask_b\n");
-    if(var_mask_b) fprintf(stdout,"mask_b min, max: %.0f, %.0f\n",mask_b_min,mask_b_max); else fprintf(stdout,"mask_b min, max: map-file omits mask_b\n");
-    if(var_mask_b) fprintf(stdout,"mask_b S errors: %lu%s\n",mask_b_err,mask_b_err ? " <--- # of weights that, in violation of mask_b, contribute from source gridcells to masked destination gridcells WARNING WARNING WARNING" : ""); else fprintf(stdout,"mask_b S errors: map-file omits mask_b\n");
+    (void)fprintf(stdout,"Grid B size n_b: %lu // Number of rows/destinations\n",var_area_b->sz);
+    if(var_mask_b) (void)fprintf(stdout,"mask_b 0's, 1's: %lu, %lu\n",mask_b_zro,mask_b_one); else (void)fprintf(stdout,"mask_b 0's, 1's: map-file omits mask_b\n");
+    if(var_mask_b) (void)fprintf(stdout,"mask_b min, max: %.0f, %.0f\n",mask_b_min,mask_b_max); else (void)fprintf(stdout,"mask_b min, max: map-file omits mask_b\n");
+    if(var_mask_b) (void)fprintf(stdout,"mask_b S errors: %lu%s\n",mask_b_err,mask_b_err ? " <--- # of weights that, in violation of mask_b, contribute from source gridcells to masked destination gridcells WARNING WARNING WARNING" : ""); else (void)fprintf(stdout,"mask_b S errors: map-file omits mask_b\n");
     if(has_area_b){
-      fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
-      fprintf(stdout,"area_b min, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid B cell [%lu,%+g,%+g]\n",area_b_min,rds_earth*sqrt(area_b_min)/1000.0,sqrt(area_b_min)*180.0/M_PI,idx_min_area_b+1UL,var_yc_b->val.dp[idx_min_area_b],var_xc_b->val.dp[idx_min_area_b]);
-      fprintf(stdout,"area_b max, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid B cell [%lu,%+g,%+g]\n",area_b_max,rds_earth*sqrt(area_b_max)/1000.0,sqrt(area_a_max)*180.0/M_PI,idx_max_area_b+1UL,var_yc_b->val.dp[idx_max_area_b],var_xc_b->val.dp[idx_max_area_b]);
+      (void)fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
+      (void)fprintf(stdout,"area_b min, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid B cell [%lu,%+g,%+g]\n",area_b_min,rds_earth*sqrt(area_b_min)/1000.0,sqrt(area_b_min)*180.0/M_PI,idx_min_area_b+1UL,var_yc_b->val.dp[idx_min_area_b],var_xc_b->val.dp[idx_min_area_b]);
+      (void)fprintf(stdout,"area_b max, ~dx: %0.16e sr, ~%0.2f km, ~%0.2f degrees in grid B cell [%lu,%+g,%+g]\n",area_b_max,rds_earth*sqrt(area_b_max)/1000.0,sqrt(area_a_max)*180.0/M_PI,idx_max_area_b+1UL,var_yc_b->val.dp[idx_max_area_b],var_xc_b->val.dp[idx_max_area_b]);
       if(fabs(1.0-area_b_ttl/4.0/M_PI) < 1.0e-2) grid_b_tiles_sphere=True;
     }else{
-      fprintf(stdout,"area_b sum/4*pi: map-file does not provide completely non-zero area_b\n");
-      fprintf(stdout,"area_b min, ~dx: map-file does not provide completely non-zero area_b\n");
-      fprintf(stdout,"area_b max, ~dx: map-file does not provide completely non-zero area_b\n");
+      (void)fprintf(stdout,"area_b sum/4*pi: map-file does not provide completely non-zero area_b\n");
+      (void)fprintf(stdout,"area_b min, ~dx: map-file does not provide completely non-zero area_b\n");
+      (void)fprintf(stdout,"area_b max, ~dx: map-file does not provide completely non-zero area_b\n");
     } /* !has_area_b */
-    fprintf(stdout,"Row (destination cell) indices utilized min, max: %.0f, %.0f\n",row_min,row_max);
-    fprintf(stdout,"Ignored destination cells (empty rows): %d\n\n",hst_row[0]);
+    (void)fprintf(stdout,"Row (destination cell) indices utilized min, max: %.0f, %.0f\n",row_min,row_max);
+    (void)fprintf(stdout,"Ignored destination cells (empty rows): %d\n\n",hst_row[0]);
 
     /* Compute frac_a statistics from frac_a disk values */
     if(has_frac_a) nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,mask_a_val,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
@@ -2560,15 +2562,15 @@ nco_map_chk /* Map-file evaluation */
     nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,mask_a_val,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
     
     /* Ignore frac_a values when area_a or area_b are all invalid or zero */
-    if(!has_area_a || !has_area_b) fprintf(stdout,"INFO: The following frac_a metrics may be safely ignored because either or both area_a and area_b are everywhere undefined or zero\n");
-    if(nco_rgr_mth_typ == nco_rgr_mth_bilinear) fprintf(stdout,"INFO: Map-file metadata indicates that these weights were produced by an intentionally non-conservative algorithm (e.g., bilinear). Scary-looking conservation metrics are therefore expected.\n");
-    fprintf(stdout,"Conservation metrics (column-sums of area_b-weighted weights normalized by area_a) and errors\nEnglish translation: Conservation measures the total fraction of an input/source gridcell that contributes to the output/destination grid\nPerfect conservation metrics for global unmasked Grid B are frac_a avg = min = max = 1.0, frac_a mbs = rms = sdn = 0.0:\n");
-    fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_a ? "Area-weighted m" : "M");
-    fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Minimum in grid A cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
-    fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Maximum in grid A cell [%lu,%+g,%+g]\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);
-    fprintf(stdout,"frac_a mbs: %0.16f =     %0.1e // %sean absolute bias from 1.0\n",mebs,mebs,area_wgt_a ? "Area-weighted m" : "M");
-    fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_a ? "Area-weighted " : "");
-    fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
+    if(!has_area_a || !has_area_b) (void)fprintf(stdout,"INFO: The following frac_a metrics may be safely ignored because either or both area_a and area_b are everywhere undefined or zero\n");
+    if(nco_rgr_mth_typ == nco_rgr_mth_bilinear) (void)fprintf(stdout,"INFO: Map-file metadata indicates that these weights were produced by an intentionally non-conservative algorithm (e.g., bilinear). Scary-looking conservation metrics are therefore expected.\n");
+    (void)fprintf(stdout,"Conservation metrics (column-sums of area_b-weighted weights normalized by area_a) and errors\nEnglish translation: Conservation measures the total fraction of an input/source gridcell that contributes to the output/destination grid\nPerfect conservation metrics for global unmasked Grid B are frac_a avg = min = max = 1.0, frac_a mbs = rms = sdn = 0.0:\n");
+    (void)fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_a ? "Area-weighted m" : "M");
+    (void)fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Minimum in grid A cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
+    (void)fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Maximum in grid A cell [%lu,%+g,%+g]\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);
+    (void)fprintf(stdout,"frac_a mbs: %0.16f =     %0.1e // %sean absolute bias from 1.0\n",mebs,mebs,area_wgt_a ? "Area-weighted m" : "M");
+    (void)fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_a ? "Area-weighted " : "");
+    (void)fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
 
     /* Inform/Warn if difference between disk and computed values */
     double cmp_dsk_dff;
@@ -2587,7 +2589,7 @@ nco_map_chk /* Map-file evaluation */
       if(var_area_a->val.dp[idx] == 0.0) cnt_zro++;
 
     if(has_area_a && has_area_b && nco_rgr_mth_typ != nco_rgr_mth_bilinear)
-      if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_b_tiles_sphere && !mask_b_zro && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
+      if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_b_tiles_sphere && !mask_b_zro && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) (void)fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
     
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       sz=var_frac_a->sz;
@@ -2597,18 +2599,18 @@ nco_map_chk /* Map-file evaluation */
       for(idx=0;idx<sz;idx++){
 	if(!has_mask_a || (has_mask_a && var_mask_a->val.ip[idx] == 1)){
 	  if((val[idx]-1.0 > eps_err) || (grid_b_tiles_sphere && (fabs(val[idx]-1.0) > eps_err))){
-	    if(nco_dbg_lvl_get() >= nco_dbg_fl) fprintf(stdout,"WARNING conservation = %0.16f = 1.0%s%0.1e for grid A cell [%lu,%+g,%+g]\n",val[idx],val[idx] > 1 ? "+" : "-",fabs(1.0-val[idx]),idx+1UL,var_yc_a->val.dp[idx],var_xc_a->val.dp[idx]);
+	    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"WARNING conservation = %0.16f = 1.0%s%0.1e for grid A cell [%lu,%+g,%+g]\n",val[idx],val[idx] > 1 ? "+" : "-",fabs(1.0-val[idx]),idx+1UL,var_yc_a->val.dp[idx],var_xc_a->val.dp[idx]);
 	    wrn_nbr++;
 	  } /* !err */
 	} /* !msk */
       } /* !idx */
-      if(wrn_nbr > 0) fprintf(stdout,"WARNING non-conservative weighted column-sums (error exceeds tolerance = %0.1e) for %d of %lu grid A cells\nNB: conservation WARNINGS may be safely ignored for Grid A cells not completely overlapped with unmasked Grid B cells (e.g., coastlines)\nThese diagnostics imperfectly attempt to rule-out such false-positive WARNINGs\nTrue-positive WARNINGs occur in source gridcells that this map under-extracts (error < 0) or over-extracts (error > 0)\n\n",eps_err,wrn_nbr,var_area_a->sz);
+      if(wrn_nbr > 0) (void)fprintf(stdout,"WARNING non-conservative weighted column-sums (error exceeds tolerance = %0.1e) for %d of %lu grid A cells\nNB: conservation WARNINGS may be safely ignored for Grid A cells not completely overlapped with unmasked Grid B cells (e.g., coastlines)\nThese diagnostics imperfectly attempt to rule-out such false-positive WARNINGs\nTrue-positive WARNINGs occur in source gridcells that this map under-extracts (error < 0) or over-extracts (error > 0)\n\n",eps_err,wrn_nbr,var_area_a->sz);
     } /* !dbg */
     
     if(nco_dbg_lvl_get() >= nco_dbg_std){
-      fprintf(stdout,"Commands to examine conservation extrema:\n");
-      fprintf(stdout,"min(frac_a): ncks --fortran -H --trd -d n_a,%lu -v .?_a %s\n",idx_min+1UL,fl_in);
-      fprintf(stdout,"max(frac_a): ncks --fortran -H --trd -d n_a,%lu -v .?_a %s\n",idx_max+1UL,fl_in);
+      (void)fprintf(stdout,"Commands to examine conservation extrema:\n");
+      (void)fprintf(stdout,"min(frac_a): ncks --fortran -H --trd -d n_a,%lu -v .?_a %s\n",idx_min+1UL,fl_in);
+      (void)fprintf(stdout,"max(frac_a): ncks --fortran -H --trd -d n_a,%lu -v .?_a %s\n",idx_max+1UL,fl_in);
     } /* !dbg */
 
     /* Compute frac_b statistics from frac_b disk values */
@@ -2617,14 +2619,14 @@ nco_map_chk /* Map-file evaluation */
     nco_map_frac_b_clc(var_S,var_row,var_frac_b);
     nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,mask_b_val,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
 
-    fprintf(stdout,"\n");
-    fprintf(stdout,"Consistency metrics (row-sums of weights) and errors\nEnglish Translation: Consistency measures the total fraction of an output/destination gridcell that is contributed by the input/source grid\nPerfect consistency metrics for global unmasked Grid A are frac_b avg = min = max = 1.0, frac_b mbs = rms = sdn = 0.0:\n");
-    fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_b ? "Area-weighted m" : "M");
-    fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Minimum in grid B cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_b->val.dp[idx_min],var_xc_b->val.dp[idx_min]);
-    fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Maximum in grid B cell [%lu,%+g,%+g]\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_b->val.dp[idx_max],var_xc_b->val.dp[idx_max]);
-    fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sean absolute bias from 1.0\n",mebs,mebs,area_wgt_b ? "Area-weighted m" : "M");
-    fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_b ? "Area-weighted " : "");
-    fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
+    (void)fprintf(stdout,"\n");
+    (void)fprintf(stdout,"Consistency metrics (row-sums of weights) and errors\nEnglish Translation: Consistency measures the total fraction of an output/destination gridcell that is contributed by the input/source grid\nPerfect consistency metrics for global unmasked Grid A are frac_b avg = min = max = 1.0, frac_b mbs = rms = sdn = 0.0:\n");
+    (void)fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_b ? "Area-weighted m" : "M");
+    (void)fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Minimum in grid B cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_b->val.dp[idx_min],var_xc_b->val.dp[idx_min]);
+    (void)fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Maximum in grid B cell [%lu,%+g,%+g]\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_b->val.dp[idx_max],var_xc_b->val.dp[idx_max]);
+    (void)fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sean absolute bias from 1.0\n",mebs,mebs,area_wgt_b ? "Area-weighted m" : "M");
+    (void)fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_b ? "Area-weighted " : "");
+    (void)fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
 
     /* Inform/Warn if difference between disk and computed values */
     if(has_frac_b){
@@ -2636,7 +2638,7 @@ nco_map_chk /* Map-file evaluation */
       
     /* NB: fabs() does not enclose frac_max_cmp below yet does in corresponding expression for frac_a above
        I think this is correct, or at least harmless, and rejects some false positive WARNINGs */
-    if(frac_max_cmp-1.0 > eps_max_wrn || (grid_a_tiles_sphere && !mask_a_zro && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) or min(frac_b) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\n%sWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn,(frac_max_cmp-1.0 > eps_max_wrn) ? "\tFor example, a source grid that overlaps itself will usually result in frac_b >> 1\n" : "");
+    if(frac_max_cmp-1.0 > eps_max_wrn || (grid_a_tiles_sphere && !mask_a_zro && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) (void)fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) or min(frac_b) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\n%sWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn,(frac_max_cmp-1.0 > eps_max_wrn) ? "\tFor example, a source grid that overlaps itself will usually result in frac_b >> 1\n" : "");
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       sz=var_frac_b->sz;
@@ -2646,12 +2648,12 @@ nco_map_chk /* Map-file evaluation */
       for(idx=0;idx<sz;idx++){
 	if(!has_mask_b || (has_mask_b && var_mask_b->val.ip[idx] == 1)){
 	  if((val[idx]-1.0 > eps_err) || (grid_a_tiles_sphere && (fabs(val[idx]-1.0) > eps_err))){
-	    if(nco_dbg_lvl_get() >= nco_dbg_fl) fprintf(stdout,"WARNING consistency = %0.16f = 1.0%s%0.1e for grid B cell [%lu,%+g,%+g]\n",val[idx],val[idx] > 1 ? "+" : "-",fabs(1.0-val[idx]),idx+1UL,var_yc_b->val.dp[idx],var_xc_b->val.dp[idx]);
+	    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"WARNING consistency = %0.16f = 1.0%s%0.1e for grid B cell [%lu,%+g,%+g]\n",val[idx],val[idx] > 1 ? "+" : "-",fabs(1.0-val[idx]),idx+1UL,var_yc_b->val.dp[idx],var_xc_b->val.dp[idx]);
 	    wrn_nbr++;
 	  } /* !err */
 	} /* !msk */
       } /* !idx */
-      if(wrn_nbr > 0) fprintf(stdout,"WARNING non-consistent row-sums (error exceeds tolerance = %0.1e) for %d of %lu grid B cells\nNB: consistency WARNINGS may be safely ignored for Grid B cells not completely overlapped with unmasked Grid A cells (e.g., coastlines)\nThese diagnostics imperfectly attempt to rule-out such false-positive WARNINGs\nTrue-positive WARNINGs occur in destination gridcells that this map underfills (error < 0) or overfills (error > 0)\n\n",eps_err,wrn_nbr,var_area_b->sz);
+      if(wrn_nbr > 0) (void)fprintf(stdout,"WARNING non-consistent row-sums (error exceeds tolerance = %0.1e) for %d of %lu grid B cells\nNB: consistency WARNINGS may be safely ignored for Grid B cells not completely overlapped with unmasked Grid A cells (e.g., coastlines)\nThese diagnostics imperfectly attempt to rule-out such false-positive WARNINGs\nTrue-positive WARNINGs occur in destination gridcells that this map underfills (error < 0) or overfills (error > 0)\n\n",eps_err,wrn_nbr,var_area_b->sz);
     } /* !dbg */
 
     if(flg_frac_b_nrm){
@@ -2690,27 +2692,27 @@ nco_map_chk /* Map-file evaluation */
     } /* !flg_frac_b_nrm */
     
     if(nco_dbg_lvl_get() >= nco_dbg_std){
-      fprintf(stdout,"Commands to examine consistency extrema:\n");
-      fprintf(stdout,"min(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_min+1UL,fl_in);
-      fprintf(stdout,"max(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_max+1UL,fl_in);
+      (void)fprintf(stdout,"Commands to examine consistency extrema:\n");
+      (void)fprintf(stdout,"min(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_min+1UL,fl_in);
+      (void)fprintf(stdout,"max(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_max+1UL,fl_in);
     } /* !dbg */
 
-    fprintf(stdout,"\nHistogram of non-zero entries in sparse-matrix:\n");
-    fprintf(stdout,"  Column 1: Number of non-zero entries (histogram bin)\n");
-    fprintf(stdout,"  Column 2: Number of columns (source cells) with that many non-zero entries\n");
-    fprintf(stdout,"  Column 3: Number of rows (destination cells) with that many non-zero entries\n");
-    fprintf(stdout,"  [");
+    (void)fprintf(stdout,"\nHistogram of non-zero entries in sparse-matrix:\n");
+    (void)fprintf(stdout,"  Column 1: Number of non-zero entries (histogram bin)\n");
+    (void)fprintf(stdout,"  Column 2: Number of columns (source cells) with that many non-zero entries\n");
+    (void)fprintf(stdout,"  Column 3: Number of rows (destination cells) with that many non-zero entries\n");
+    (void)fprintf(stdout,"  [");
     hst_sz_nnz=hst_sz;
     for(idx=0;idx<=hst_sz;idx++)
       if(hst_col[idx] > 0 || hst_row[idx] > 0) hst_sz_nnz=idx;
     for(idx=0;idx<=hst_sz_nnz;idx++)
-      if(hst_col[idx] > 0 || hst_row[idx] > 0) fprintf(stdout,"[%s%lu,%d,%d]%s",idx == hst_sz ? ">= " : "",idx,hst_col[idx],hst_row[idx],idx != hst_sz_nnz ? ", " : "]\n");
+      if(hst_col[idx] > 0 || hst_row[idx] > 0) (void)fprintf(stdout,"[%s%lu,%d,%d]%s",idx == hst_sz ? ">= " : "",idx,hst_col[idx],hst_row[idx],idx != hst_sz_nnz ? ", " : "]\n");
 
-    fprintf(stdout,"\nHistogram of weights S: [bin_min < weights <= bin_max]\n");
-    fprintf(stdout,"  Column 1: Lower bound on weights (bin_min)\n");
-    fprintf(stdout,"  Column 2: Number of weights in bin\n");
-    fprintf(stdout,"  Column 3: Upper bound on weights (bin_max)\n");
-    fprintf(stdout,"  [");
+    (void)fprintf(stdout,"\nHistogram of weights S: [bin_min < weights <= bin_max]\n");
+    (void)fprintf(stdout,"  Column 1: Lower bound on weights (bin_min)\n");
+    (void)fprintf(stdout,"  Column 2: Number of weights in bin\n");
+    (void)fprintf(stdout,"  Column 3: Upper bound on weights (bin_max)\n");
+    (void)fprintf(stdout,"  [");
     hst_sz_nnz=0;
     int hst_vld_crr=0;
     for(idx=0;idx<hst_wgt_nbr;idx++)
