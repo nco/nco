@@ -2,9 +2,9 @@
 
 	* NCO 5.3.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha02: Casa Chimayo';git push
-	git tag -a 5.3.6-alpha02 -m 'ncclimo/ncremap: E3SMU_PATH/lib; ncremap ncoidw fix';git push --tags
+	git tag -a 5.3.6-alpha02 -m 'ncclimo/ncremap: E3SMU_PATH/lib; ncremap ncoidw fix, row/col chk sz fix';git push --tags
 
-	* Change row/col sanity check from ERROR to WARNING since it always occurs (why?) with regional maps
+	* Fix 20250905 row/col sanity check to use correct size
 
 	* ncks: map-checker print filename first so batch invocation informs reader of current map-file
 

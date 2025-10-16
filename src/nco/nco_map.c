@@ -1848,7 +1848,7 @@ nco_map_hst_mk /* Create histogram */
 var_sct * /* [sct] Variable structure */
 nco_map_var_init /* Fill-in variable or return NULL */
 (int in_id,
- char * var_nm,
+ char *var_nm,
  dmn_sct **dmn,
  int dmn_in_nbr)
 {
@@ -2269,32 +2269,31 @@ nco_map_chk /* Map-file evaluation */
     int idx_row; /* Use int not size_t in case values are corrupt and contain negative numbers */
     int idx_col; /* Use int not size_t in case values are corrupt and contain negative numbers */
     size_t cnt_bad; /* [nbr] Number of invalid indexes */
-    sz=var_frac_a->sz;
     cnt_bad=0L;
     for(idx=0;idx<sz;idx++){
-      idx_row=var_row->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
+      idx_row=var_row->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to in-RAM 0-based C index */
       if(idx_row < 0L) cnt_bad++;
     } /* !idx */
     for(idx=0;idx<sz;idx++){
-      idx_row=var_row->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
+      idx_row=var_row->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to in-RAM 0-based C index */
       if(idx_row < 0L) break;
     } /* !idx */
     if(idx != sz){
-      (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports map-file variable \"row\" contains %lu questionable value(s) among %lu total values. \"row\" contains indexes into the weight matrix S. First questionable value found is, in Fortran (1-based) index notation, row(%lu) = %ld. Each Fortran-convention index must be >= 1. Questionable indexes make this map-file suspect.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_row+1L);
-      //nco_exit(EXIT_FAILURE);
+      (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports map-file variable \"row\" contains %lu illegal value(s) among %lu total values. \"row\" contains indexes into the weight matrix S. First illegal value found is, in Fortran (1-based) index notation, row(%lu) = %ld. Each Fortran-convention index must be >= 1. Illegal indexes make this map-file corrupt.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_row+1L);
+      nco_exit(EXIT_FAILURE);
     } /* !idx */
     cnt_bad=0L;
     for(idx=0;idx<sz;idx++){
-      idx_col=var_col->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
+      idx_col=var_col->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to in-RAM 0-based C index */
       if(idx_col < 0L) cnt_bad++;
     } /* !idx */
     for(idx=0;idx<sz;idx++){
-      idx_col=var_col->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to NCO 0-based C index */
+      idx_col=var_col->val.ip[idx]-1L; /* Convert from on-disk 1-based Fortran index to in-RAM 0-based C index */
       if(idx_col < 0L) break;
     } /* !idx */
     if(idx != sz){
-      (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports map-file variable \"col\" contains %lu questionable value(s) among %lu total values. \"col\" contains indexes into the weight matrix S. First questionable value found is, in Fortran (1-based) index notation, col(%lu) = %ld. Each Fortran-convention index must be >= 1. Questionable indexes make this map-file suspect.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_col+1L);
-      //nco_exit(EXIT_FAILURE);
+      (void)fprintf(stderr,"%s: WARNING %s (aka \"the map-checker\") reports map-file variable \"col\" contains %lu illegal value(s) among %lu total values. \"col\" contains indexes into the weight matrix S. First illegal value found is, in Fortran (1-based) index notation, col(%lu) = %ld. Each Fortran-convention index must be >= 1. Illegal indexes make this map-file corrupt.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_col+1L);
+      nco_exit(EXIT_FAILURE);
     } /* !idx */
   } /* !1 */
 
