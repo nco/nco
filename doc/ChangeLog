@@ -1,5 +1,9 @@
 2025-10-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.6-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha03: Spinach Salmon Salad';git push
+	git tag -a 5.3.6-alpha03 -m '';git push --tags
+
 	* NCO 5.3.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha02: Casa Chimayo';git push
 	git tag -a 5.3.6-alpha02 -m 'ncclimo/ncremap: E3SMU_PATH/lib; ncremap ncoidw fix, row/col chk sz fix';git push --tags

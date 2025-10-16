@@ -5152,7 +5152,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       if(idx_row < 0L) break;
     } /* !idx */
     if(idx != sz){
-      (void)fprintf(stderr,"%s: WARNING %s (aka \"the regridder\") reports map-file variable \"row\" contains %lu illegal value(s) among %lu total values. \"row\" contains indexes into the weight matrix S. First illegal value found is, in Fortran (1-based) index notation, row(%lu) = %ld. Each Fortran-convention index must be >= 1. Illegal indexes make this map-file corrupt.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_row+1L);
+      (void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports map-file variable \"row\" contains %lu illegal value(s) among %lu total values. \"row\" contains indexes into the weight matrix S. First illegal value found is, in Fortran (1-based) index notation, row(%lu) = %ld. Each Fortran-convention index must be >= 1. Illegal indexes make this map-file corrupt.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_row+1L);
       nco_exit(EXIT_FAILURE);
     } /* !idx */
     cnt_bad=0L;
@@ -5165,7 +5165,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       if(idx_col < 0L) break;
     } /* !idx */
     if(idx != sz){
-      (void)fprintf(stderr,"%s: WARNING %s (aka \"the regridder\") reports map-file variable \"col\" contains %lu illegal value(s) among %lu total values. \"col\" contains indexes into the weight matrix S. First illegal value found is, in Fortran (1-based) index notation, col(%lu) = %ld. Each Fortran-convention index must be >= 1. Illegal indexes make this map-file corrupt.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_col+1L);
+      (void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports map-file variable \"col\" contains %lu illegal value(s) among %lu total values. \"col\" contains indexes into the weight matrix S. First illegal value found is, in Fortran (1-based) index notation, col(%lu) = %ld. Each Fortran-convention index must be >= 1. Illegal indexes make this map-file corrupt.\nHINT: Re-generate this map and, before using it, check it with \"ncks --chk_map map.nc\"\n",nco_prg_nm_get(),fnc_nm,cnt_bad,sz,(size_t)(idx+1L),idx_col+1L);
       nco_exit(EXIT_FAILURE);
     } /* !idx */
   } /* !1 */
