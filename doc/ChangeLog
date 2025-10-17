@@ -1,8 +1,12 @@
-2025-10-16  Charlie Zender  <zender@uci.edu>
+2025-10-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.6-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha03: Spinach Salmon Salad';git push
 	git tag -a 5.3.6-alpha03 -m '';git push --tags
+
+	* nco_grd_nfr() Add stubs to correctly infer corners of 2D regional grids that cross longitude branch cut
+
+2025-10-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha02: Casa Chimayo';git push

@@ -5672,7 +5672,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      If necessary, use remap data to diagnose them from scratch
      Other extensive variables (like counts, population) will be extracted and summed not averaged */
   /* Exception list source:
-     ALM/CLM: landmask (20170504: Debatable, including erroneous mask may be better than completely excluding an expected mask) (20170504: must keep landfrac since regridded by ncremap for SGS option)
+     ALM/CLM/CTSM/ELM: landmask (20170504: Debatable, including erroneous mask may be better than completely excluding an expected mask) (20170504: must keep landfrac since regridded by ncremap for SGS option)
      AMSR: Latitude, Longitude
      ARGO: LATITUDE, LONGITUDE
      CAM, CERES, CMIP5: lat, lon
@@ -10397,7 +10397,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"Mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("Mask");
     else if((rcd=nco_inq_varid_flg(in_id,"mask_b",&msk_id)) == NC_NOERR) msk_nm_in=strdup("mask_b");
     else if((rcd=nco_inq_varid_flg(in_id,"grid_imask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("grid_imask");
-    else if((rcd=nco_inq_varid_flg(in_id,"landmask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("landmask"); /* ALM/CLM */
+    else if((rcd=nco_inq_varid_flg(in_id,"landmask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("landmask"); /* ALM/CLM/CTSM/ELM */
     else if((rcd=nco_inq_varid_flg(in_id,"tmask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("tmask"); /* CICE */
   } /* !msk_nm_in */
   
@@ -11542,6 +11542,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double lat_min; /* [dgr] Minimum latitude */
   double lon_max; /* [dgr] Maximum longitude */
   double lon_min; /* [dgr] Minimum longitude */
+  double lon_dff; /* [dgr] Current longitude difference between adjacent cells */
+  double lon_dff_max; /* [dgr] Maximum longitude difference between adjacent cells */
+  nco_bool flg_2D_brnch_cut=False; /* [flg] Domain of 2D grid crosses longitude branch cut */
   idx_ctr=0;
   if(has_mss_val_ctr){
     /* Find first non-missing value center and thus corners */
@@ -11568,12 +11571,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !idx */
   }else{ /* !flg_wrt_crn */
     /* 20170424: Diagnose grid-extent when corners were not provided or inferred
-       This is usually (always?) for 1d unstructured grids with only centers provided */
+       This can be for 1D unstructured grids or 2D grids with only centers provided */
     lon_max=grd_ctr_lon[idx_ctr];
     lat_max=grd_ctr_lat[idx_ctr];
     lon_min=grd_ctr_lon[idx_ctr];
     lat_min=grd_ctr_lat[idx_ctr];
-    for(idx_ctr=1;idx_ctr<grd_sz_nbr;idx_ctr++){
+    for(idx_ctr=1;idx_ctr<grd_sz_nbr;idx_ctr++){ /* NB: Starts from 1 */
       if(has_mss_val_ctr)
 	if(grd_ctr_lat[idx_ctr] == mss_val_ctr_dbl)
 	  continue;
@@ -11585,6 +11588,23 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* flg_wrt_crn */
   lat_spn=lat_max-lat_min;
   lon_spn=lon_max-lon_min;
+  /* 20251017 lon_spn=lon_max-lon_min fails for regional 2D grids that cross branch cut, e.g., lon_ctr=[358,359,0,1,2]
+     Solution: Search for whether adjacent cells longitude is more than 360 degrees apart */
+  lon_dff_max=0.0;
+  if(flg_grd_2D){
+    for(idx_ctr=1;idx_ctr<grd_sz_nbr;idx_ctr++){ /* NB: Starts from 1 */
+      if(has_mss_val_ctr)
+	if(grd_ctr_lat[idx_ctr] == mss_val_ctr_dbl)
+	  continue;
+      lon_dff=fabs(grd_ctr_lon[idx_ctr]-grd_ctr_lon[idx_ctr-1]);
+      lon_dff_max=(lon_dff > lon_dff_max) ? lon_dff : lon_dff_max;
+    } /* !idx_ctr */
+    if((float)lon_dff_max > 340.0f){
+      (void)fprintf(stderr,"%s: INFO %s Greatest angle between adjacent longitudes in 2D grid exceeds 340 degrees (lon_dff_max = %g) which implies this is a regional grid that crosses the longitudinal branch cut\n",nco_prg_nm_get(),fnc_nm,lon_dff_max);
+      (void)fprintf(stderr,"%s: INFO %s Recomputing longitude span by placing all longitudes on same branch cut\n",nco_prg_nm_get(),fnc_nm);
+      flg_2D_brnch_cut=True;
+    } /* lon_dff_max */
+  } /* !flg_grd_2D */
   /* Use strict rules for rectangular grids, looser for spans that are inferred, or center-to-center not corner-to-corner */
   if(flg_grd_2D){
     if((float)lon_spn == 360.0f && (float)lat_spn == 180.0f) nco_grd_xtn=nco_grd_xtn_glb; else nco_grd_xtn=nco_grd_xtn_rgn;
@@ -11621,8 +11641,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !nco_grd_xtn */
   
   /* Diagnose area if necessary
-     20170510: ALM/CLM "area" is _FillValue=1.0e36f over ocean and total gridcell area in km2 (not multiplied by landfrac) elsewhere
-     Writing this ALM/CLM "area" variable to gridfile, then using with ERWG --user_areas could be disastrous (depending on mask array and interpolation type)
+     20170510: ALM/CLM/CTSM/ELM "area" is _FillValue=1.0e36f over ocean and total gridcell area in km2 (not multiplied by landfrac) elsewhere
+     Writing this ALM/CLM/CTSM/ELM "area" variable to gridfile, then using with ERWG --user_areas could be disastrous (depending on mask array and interpolation type)
      On the other hand CAM "area" variable is exactly what we want for gridfile
      Input areas are considered "untrustworthy" iff they have _and use_ missing value attribute
      Re-diagnose areas considered untrustworthy so output area array does not contain missing values */
@@ -11664,7 +11684,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Change missing-value-masked points to 0 integer mask for SCRIP grids (SCRIP has no missing value convention)
        Input mask can be any type and output mask will always be NC_INT
        Applications: 
-       ALM/CLM mask (landmask) is NC_FLOAT and defines though does not use NC_FLOAT missing value
+       ALM/CLM/CTSM/ELM mask (landmask) is NC_FLOAT and defines though does not use NC_FLOAT missing value
        CICE mask (tmask/umask) is NC_FLOAT and defines and uses NC_FLOAT missing value
        RACMO mask is NC_FLOAT and defines though does not use NC_FLOAT missing value
        AMSR mask is NC_SHORT and has no missing value
