@@ -11544,6 +11544,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double lon_min; /* [dgr] Minimum longitude */
   double lon_dff; /* [dgr] Current longitude difference between adjacent cells */
   double lon_dff_max; /* [dgr] Maximum longitude difference between adjacent cells */
+  double lon_dff_max_thr; /* [dgr] Threshold maximum longitude difference between adjacent cells for branch cut */
   nco_bool flg_2D_brnch_cut=False; /* [flg] Domain of 2D grid crosses longitude branch cut */
   idx_ctr=0;
   if(has_mss_val_ctr){
@@ -11589,8 +11590,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   lat_spn=lat_max-lat_min;
   lon_spn=lon_max-lon_min;
   /* 20251017 lon_spn=lon_max-lon_min fails for regional 2D grids that cross branch cut, e.g., lon_ctr=[358,359,0,1,2]
-     Solution: Search for whether adjacent cells longitude is more than 360 degrees apart */
+     Solution: Search for whether adjacent cells' longitude spacing exceeds lon_dff_max_thr=340 degrees
+     This threshold chosen because lon_dff_max for 1 degree grids e.g., lon_ctr=[358,359,0,1,2] == 359 degrees
+     This threshold accomodates reasonably large regions of grids with resolution < ~10 degrees */
   lon_dff_max=0.0;
+  lon_dff_max_thr=340.0;
   if(flg_grd_2D){
     for(idx_ctr=1;idx_ctr<grd_sz_nbr;idx_ctr++){ /* NB: Starts from 1 */
       if(has_mss_val_ctr)
@@ -11599,8 +11603,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       lon_dff=fabs(grd_ctr_lon[idx_ctr]-grd_ctr_lon[idx_ctr-1]);
       lon_dff_max=(lon_dff > lon_dff_max) ? lon_dff : lon_dff_max;
     } /* !idx_ctr */
-    if((float)lon_dff_max > 340.0f){
-      (void)fprintf(stderr,"%s: INFO %s Greatest angle between adjacent longitudes in 2D grid exceeds 340 degrees (lon_dff_max = %g) which implies this is a regional grid that crosses the longitudinal branch cut\n",nco_prg_nm_get(),fnc_nm,lon_dff_max);
+    if((float)lon_dff_max > lon_dff_max_thr){
+      (void)fprintf(stderr,"%s: INFO %s Greatest angle between adjacent longitudes in 2D grid exceeds lon_dff_max_thr = %g degrees (lon_dff_max = %g) which implies that this grid crosses the longitudinal branch cut\n",nco_prg_nm_get(),fnc_nm,lon_dff_max_thr,lon_dff_max);
       (void)fprintf(stderr,"%s: INFO %s Recomputing longitude span by placing all longitudes on same branch cut\n",nco_prg_nm_get(),fnc_nm);
       flg_2D_brnch_cut=True;
     } /* lon_dff_max */

@@ -673,13 +673,13 @@ netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncks --bsa</tt> Byte-swap algoritm;
 <tt>ncremap</tt> CF Convention for longitude vertices in map-files;
-<tt>ncremap</tt> Gracefully autoconvert N-D NC_STRING->(N+1)-D NC_CHAR variables</li>
-<tt>ncremap</tt> small-circle weights;</li>
+<tt>ncremap</tt> Gracefully autoconvert N-D NC_STRING->(N+1)-D NC_CHAR variables;
+<tt>ncremap</tt> small-circle weights;
+<tt>ncremap --vrt</tt> works with 3D pressure fields (e.g., MERRA2)</li>
 <li><b>NCO 5.3.6</b>: (<i>In Progress, features in-progress or complete include</i>)
 <tt>ncks --chk_map</tt> row+col index checking;
 <tt>ncremap/ncclimo --npo</tt> works on Andes, Chrysalis, Perlmutter;
-<tt>ncremap --thr_nbr</tt> GCC OpenMP is fixed;
-<tt>ncremap --vrt</tt> works with 3D pressure fields (e.g., MERRA2)</li>
+<tt>ncremap --thr_nbr</tt> GCC OpenMP is fixed</li>
 <li><b>NCO 5.3.5</b>: (<i>Current Stable Release</i>)
 <tt>ncremap --vrt=/path/to/file.nc/plev</tt> </li>
 <li><b>NCO 5.3.4</b>: 
