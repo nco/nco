@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.6-alpha03
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 16 October 2025
+@set update-date 27 October 2025
 @set update-month October 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -31628,11 +31628,12 @@ Anaconda packaging
 @cindex Daniel Baumann
 @cindex Nick Bower
 @cindex Luk Claes
+@cindex Bas Couwenberg
 @cindex Barry deFreese
 @cindex Francesco Lovergine
-@cindex Bas Couwenberg
+@cindex Andrew Nolan
 @cindex Matej Vela
-@item Xylar Asay-Davis, Daniel Baumann, Nick Bower, Luk Claebs, Bas Couwenberg, Barry deFreese, Francesco Lovergine, Matej Vela
+@item Xylar Asay-Davis, Daniel Baumann, Nick Bower, Luk Claebs, Bas Couwenberg, Barry deFreese, Francesco Lovergine, Andrew Nolan, Matej Vela
 Cygwin packaging
 @cindex Marco Atzeri
 @item Marco Atzeri

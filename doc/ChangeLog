@@ -1,8 +1,12 @@
-2025-10-17  Charlie Zender  <zender@uci.edu>
+2025-10-27  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.3.6-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.6-alpha03: Spinach Salmon Salad';git push
-	git tag -a 5.3.6-alpha03 -m '';git push --tags
+	* NCO 5.3.6-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.6-beta01: Spinach Salmon Salad';git push
+	git tag -a 5.3.6-beta01 -m '';git push --tags
+
+	* Merge changes to E3SMU_PATH by Andrew Nolan into ncremap/ncclimo
+
+2025-10-17  Charlie Zender  <zender@uci.edu>
 
 	* nco_grd_nfr() Add stubs to correctly infer corners of 2D regional grids that cross longitude branch cut
 
