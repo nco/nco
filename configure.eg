@@ -354,9 +354,9 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
-export NETCDF_ROOT=/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/lib
-export PATH=${PATH}:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/bin
+export NETCDF_ROOT=/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/andes 
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/andes/lib
+export PATH=${PATH}:/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/andes/bin
 cd ~/nco;git reset --hard origin/master
 cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # !Andes
@@ -420,9 +420,9 @@ cd ~/nco;/bin/rm -f *.foo;make distclean
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -fopenmp'
 export LINUX_CXX='g++ -std=c++11 -fopenmp'
 export LINUX_FC='gfortran'
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest/lib
-export NETCDF_ROOT=/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest
-export PATH=${PATH}:/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest/bin
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/chrysalis/lib
+export NETCDF_ROOT=/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/chrysalis
+export PATH=${PATH}:/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/chrysalis/bin
 cd ~/nco;git reset --hard origin/master
 cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
@@ -507,12 +507,12 @@ export LINUX_FC='gfortran'
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/anaconda/lib
 export NETCDF_ROOT=${HOME}/anaconda
 export PATH=${PATH}:${HOME}/anaconda/bin
-#export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/lib
-#export NETCDF_ROOT=/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest
-#export PATH=${PATH}:/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest/bin
+#export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/frontier/lib
+#export NETCDF_ROOT=/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/frontier
+#export PATH=${PATH}:/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/frontier/bin
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make ANTLR_ROOT=${HOME}/anaconda ANTLR_LIB=${HOME}/anaconda NETCDF_ROOT=${HOME}/anaconda OPTS=D OMP=Y allinone;cd -
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest' OPTS=D OMP=Y allinone;cd -
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/frontier' OPTS=D OMP=Y allinone;cd -
 # !Frontier
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on Perlmutter with GNU:
@@ -528,12 +528,12 @@ cd ~/nco;/bin/rm -f *.foo;make distclean
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest/lib
-export NETCDF_ROOT=/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest
-export PATH=${PATH}:/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest/bin
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu/lib
+export NETCDF_ROOT=/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu
+export PATH=${PATH}:/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu/bin
 cd ~/nco;git reset --hard origin/master
 cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
-cd ~/nco;CC=${LINUX_CC} CPPFLAGS="-I${DATA}/anaconda/include -I/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest/include" CXX=${LINUX_CXX} LDFLAGS="-L${DATA}/anaconda/lib -L/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest/lib" NETCDF_ROOT=${DATA}/anaconda UDUNITS2_ROOT=${HOME} ./configure --prefix=${DATA} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+cd ~/nco;CC=${LINUX_CC} CPPFLAGS="-I${DATA}/anaconda/include -I/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu/include" CXX=${LINUX_CXX} LDFLAGS="-L${DATA}/anaconda/lib -L/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu/lib" NETCDF_ROOT=${DATA}/anaconda UDUNITS2_ROOT=${HOME} ./configure --prefix=${DATA} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 /bin/cp -f config.log nco.config.log.foo
 /bin/cp -f libtool nco.libtool.foo
 make clean;make > nco.make.foo 2>&1
