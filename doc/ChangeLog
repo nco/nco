@@ -1,8 +1,10 @@
-2025-10-27  Charlie Zender  <zender@uci.edu>
+2025-10-28  Charlie Zender  <zender@uci.edu>
 
-	* NCO 5.3.6-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.6-beta01: Spinach Salmon Salad';git push
-	git tag -a 5.3.6-beta01 -m '';git push --tags
+	* NCO 5.3.6 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.6: Goff Island';git push
+	git tag -a 5.3.6 -m '';git push --tags
+
+2025-10-27  Charlie Zender  <zender@uci.edu>
 
 	* Merge changes to E3SMU_PATH by Andrew Nolan into ncremap/ncclimo
 

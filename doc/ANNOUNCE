@@ -38,6 +38,14 @@ NCO's inverse-distance-weighted algorithm. 'nco_idw' was not
 recognized on some earlier versions. Thanks to Zachary Moon for
 reporting this.
 
+C. ncclimo's 5.3.5 feature to automatically detect surface fields
+did not recognized the 'lndgrid' dimension of ELM and CLM as
+indicating a horizontal spatial dimension. This prevented ncclimo
+from constructing automated spatial timeseries averages of datasets
+on native unstructured grids. That is now fixed. The workaround is
+to downgrade to version 5.3.3 and explicitly specify the desired
+fields. The solution is to upgrade.
+
 Full release statement at http://nco.sf.net/ANNOUNCE
     
 KNOWN PROBLEMS DUE TO NCO:
