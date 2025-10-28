@@ -2,7 +2,7 @@
 
 	* NCO 5.3.6 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.6: Goff Island';git push
-	git tag -a 5.3.6 -m '';git push --tags
+	git tag -a 5.3.6 -m 'ncremap/ncks: Fix 5.3.5 row/col check, nco_idw=ncoidw; ncremap/ncclimo: E3SMU_PATH for v1.12; ncclimo lndgrid is 2D';git push --tags
 
 2025-10-27  Charlie Zender  <zender@uci.edu>
 
