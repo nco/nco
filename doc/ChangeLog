@@ -1,3 +1,11 @@
+2025-10-29  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.3.7-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha01: Reuptake Inhibitor';git push
+	git tag -a 5.3.7-alpha01 -m 'Functionally identical to 5.3.6';git push --tags
+
+	* ncks: Note that i,j are lat,lon not lon,lat with CMCC-ESM2 convention (opposite of usual NEMO CMIP5 convention)
+
 2025-10-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.6 release procedure:

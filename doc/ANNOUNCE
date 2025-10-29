@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.6 makes landfall
+netCDF Operators NCO version 5.3.7 makes landfall
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.6 consists mainly of bugfixes:
+Version 5.3.7 consists mainly of bugfixes:
 There is a regridder fix that prevent it from failing to work
 with some regional destination grids (global grids are not affected).
 ncclimo fixes an issue computing global timeseries from ELM/CLM data
@@ -31,7 +31,7 @@ A. The map checker (ncks --chk_map) and regridder robustness check
 implemented in 5.3.5 contained a bug that affected regional
 destination grids. The bug could cause these tools to report correct
 mapfiles as invalid. This has been fixed. The solution is to upgrade
-to 5.3.6 or downgrade to 5.3.4.
+to 5.3.7-alpha01 or downgrade to 5.3.4.
 
 B. The regridder now accepts 'nco_idw' and 'ncoidw' as synonyms for
 NCO's inverse-distance-weighted algorithm. 'nco_idw' was not

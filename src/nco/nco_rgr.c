@@ -5581,6 +5581,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Along_Swath_mod04",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("Cell_Along_Swath_mod04"); /* MODIS MOD04 L2 (ncl_convert2nc changes colon to underscore) */
     else if((rcd=nco_inq_dimid_flg(in_id,"CO_Latitude",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("CO_Latitude");
     else if((rcd=nco_inq_dimid_flg(in_id,"j",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("j"); /* CMIP5 NorESM1 ocean */
+    //else if((rcd=nco_inq_dimid_flg(in_id,"i",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("i"); /* CMCC ESM2 ocean 20251029: CMCC ESM2 convention is opposite of usual NEMO-like convention */
     else if((rcd=nco_inq_dimid_flg(in_id,"latitude0",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("latitude0"); /* Oxford */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"Y",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("Y"); /* Krakauer (2025) */
@@ -5631,6 +5632,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Across_Swath:mod04",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("Cell_Across_Swath:mod04"); /* MODIS MOD04 L2 */
     else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Across_Swath_mod04",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("Cell_Across_Swath_mod04"); /* MODIS MOD04 L2 (ncl_convert2nc changes colon to underscore) */
     else if((rcd=nco_inq_dimid_flg(in_id,"i",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("i"); /* CMIP5 NorESM1 ocean */
+    //else if((rcd=nco_inq_dimid_flg(in_id,"j",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("j"); /* CMIP5 NorESM1 ocean 20251029: CMCC ESM2 convention is opposite of usual NEMO-like convention */
     else if((rcd=nco_inq_dimid_flg(in_id,"longitude0",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("longitude0"); /* Oxford */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"X",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("X"); /* Krakauer (2025) */
