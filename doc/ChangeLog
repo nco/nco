@@ -2,7 +2,9 @@
 
 	* NCO 5.3.7-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha01: Reuptake Inhibitor';git push
-	git tag -a 5.3.7-alpha01 -m 'Functionally identical to 5.3.6';git push --tags
+	git tag -a 5.3.7-alpha01 -m 'Functionally identical to 5.3.6 except for two ncclimo name generation corner case fixes';git push --tags
+
+	* ncclimo MPAS automatic name generation fixed to insert dot only when caseid option is used
 
 	* ncclimo fix trim_leading_zeros() to work when input year is 0, 00, 000, or 0000
 
