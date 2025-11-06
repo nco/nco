@@ -6,7 +6,7 @@
 
 	* ncclimo MPAS automatic name generation fixed to insert dot only when caseid option is used
 
-	* ncclimo fix trim_leading_zeros() to work when input year is 0, 00, 000, or 0000
+	* ncclimo fix trim_leading_zeros() to work when input year is 0
 
 2025-10-29  Charlie Zender  <zender@uci.edu>
 
