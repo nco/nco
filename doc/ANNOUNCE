@@ -31,7 +31,7 @@ A. The map checker (ncks --chk_map) and regridder robustness check
 implemented in 5.3.5 contained a bug that affected regional
 destination grids. The bug could cause these tools to report correct
 mapfiles as invalid. This has been fixed. The solution is to upgrade
-to 5.3.7-alpha01 or downgrade to 5.3.4.
+to 5.3.7-alpha02 or downgrade to 5.3.4.
 
 B. The regridder now accepts 'nco_idw' and 'ncoidw' as synonyms for
 NCO's inverse-distance-weighted algorithm. 'nco_idw' was not
