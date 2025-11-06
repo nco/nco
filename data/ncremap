@@ -393,7 +393,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 0 --vrb=1 -a esmfaave --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a esmfaave --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
 # MWF (202401):
-# ncremap -D 1 -P mwf -s ${DATA}/grids/ocean.QU.240km.scrip.181106.nc -g ${DATA}/grids/ne11np4.g --nm_src=QU240 --nm_dst=ne11np4 --dt_sng=20240201 > ~/ncremap.out 2>&1 &
+# ncremap -D 1 -P mwf -s ${DATA}/grids/ocean.QU.240km.scrip.181106.nc -g ${DATA}/grids/ne11np4.g --nm_src=QU240 --nm_dst=ne11np4 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/ne30pg2.g --nm_src=IcoswISC30E3r5 --nm_dst=ne30pg2 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --alg_lst='traave,trbilin,trfv2' --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/ne30pg2.g --nm_src=IcoswISC30E3r5 --nm_dst=ne30pg2 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.nc --nm_src=IcoswISC30E3r5 --nm_dst=cmip6_180x360 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &

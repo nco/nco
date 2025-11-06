@@ -1028,7 +1028,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     /* Warn about any expected weird behavior */
     if(var_op_typ[idx] == prc_typ){
       if(var_typ_fnk && ((nco_prg_id != ncecat) && (nco_prg_id != ncpdq) && (nco_prg_id != ncrcat))){
-        if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",nco_prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
+        if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (e.g., averaging, differencing) is ill-defined\n",nco_prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
       } /* end if */
     } /* end if prc */
 
@@ -1249,7 +1249,7 @@ nco_var_lst_dvd_ncbo                          /* [fnc] Divide input lists into o
   /* Warn about any expected weird behavior */
   if(var_op_typ == prc_typ){
     if(var_typ_fnk && ((nco_prg_id != ncecat) && (nco_prg_id != ncpdq) && (nco_prg_id != ncrcat))){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",nco_prg_nm_get(),var->nm,nco_typ_sng(var->type));
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (e.g., averaging, differencing) is ill-defined\n",nco_prg_nm_get(),var->nm,nco_typ_sng(var->type));
     } /* end if */
   } /* end if prc */
 

@@ -759,7 +759,7 @@ function trim_leading_zeros {
     sng_trm=${sng_trm##0}
     sng_trm=${sng_trm##0}
     # If all zeros removed, replace with single zero
-    if [ ${sng_trm} = '' ]; then 
+    if [ "${sng_trm}" = '' ]; then 
 	sng_trm='0'
     fi # !sng_trm
 } # !trim_leading_zeros()
