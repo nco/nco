@@ -132,7 +132,7 @@ NCO exploits the geophysical expressivity and logic of many
 <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.10/cf-conventions.html">CF</a> 
 (Climate &amp; Forecast) metadata conventions, 
 the flexible description of physical dimensions translated by
-<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>,
+<a href="https://www.unidata.ucar.edu/software/udunits">UDUnits</a>,
 the network transparency of
 <a href="http://opendap.org">OPeNDAP</a>, 
 the storage capabilities (e.g., compression, chunking, groups) of
@@ -1250,7 +1250,7 @@ install the pre-requisites:
 <a href="http://www.gnu.org/software/gsl">GSL</a> (desirable for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
-<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (allows dimensional unit transformations).
+<a href="https://www.unidata.ucar.edu/software/udunits">UDUnits</a> (allows dimensional unit transformations).
 If possible, install this software stack from pre-built executables 
 (commands to do so on Debian, Mac, and RPM systems follow below).
 ANTLR executables from major distributions are pre-built with the source
@@ -1698,7 +1698,7 @@ community.
 [<a href="http://www.unidata.ucar.edu/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://github.com/nco/swamp">SWAMP</a>]
-[<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
+[<a href="https://www.unidata.ucar.edu/software/udunits">UDUnits</a>] 
 </td></tr></table>
 
 </body>
