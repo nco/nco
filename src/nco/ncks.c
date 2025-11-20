@@ -947,10 +947,10 @@ main(int argc,char **argv)
         cp=strdup(optarg); 
         args=nco_lst_prs_1D(cp,",",&lmt_nbr);         
         nco_cln_clc_dbl_org(args[0],args[1],(lmt_nbr > 2 ? nco_cln_get_cln_typ(args[2]) : cln_nil),&crr_val);        
-        (void)fprintf(stdout,"Value+Units in=%s, units out=%s, time-difference (for dates) or value-conversion (for non-dates) = %f\n",args[0],args[1],crr_val);
+        (void)fprintf(stdout,"Value+Units input = %s, Value+Units output = %f %s [output is value-conversion (for non-dates) or time-difference for dates)\n",args[0],crr_val,args[1]);
         if(cp) cp=(char *)nco_free(cp);
         nco_exit(EXIT_SUCCESS);
-      } /* endif "tst_udunits" */
+      } /* !tst_udunits() */
       if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;
       if(!strcmp(opt_crr,"nsx") || !strcmp(opt_crr,"intersection")) GRP_VAR_UNN=False;
       if(!strcmp(opt_crr,"grp_xtr_var_xcl")){
@@ -1520,6 +1520,7 @@ main(int argc,char **argv)
       /* JSON numerical arrays have no notion of missing values */
       prn_flg.PRN_MSS_VAL_BLANK=False;
       prn_flg.jsn_data_brk=JSN_DATA_BRK;
+      prn_flg.jsn_att_fmt=JSN_ATT_FMT;
       prn_flg.jsn_var_fmt=JSN_VAR_FMT;
     }else { /* endif JSON */
       prn_flg.jsn_att_fmt=0;
