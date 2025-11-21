@@ -966,9 +966,9 @@ main(int argc,char **argv)
 	JSN_ATT_FMT=(int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
 	if(JSN_ATT_FMT >= 4) JSN_DATA_BRK=False; /* [flg] Print JSON with bracket data */
+	//	JSN_VAR_FMT=JSN_ATT_FMT; /* 20251120 Must always print shape with JSON data */
 	JSN_ATT_FMT%=4; /* 20161221: Valid values are 0,1,2 */
 	if(JSN_ATT_FMT == 3) JSN_ATT_FMT=2;
-	JSN_VAR_FMT=JSN_ATT_FMT;
       } /* !jsn_att_fmt */
       if(!strcmp(opt_crr,"jsn") || !strcmp(opt_crr,"json") || !strcmp(opt_crr,"w10") || !strcmp(opt_crr,"w10n")) PRN_JSN=True; /* [flg] Print JSON */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
@@ -1524,8 +1524,8 @@ main(int argc,char **argv)
       prn_flg.jsn_var_fmt=JSN_VAR_FMT;
     }else { /* endif JSON */
       prn_flg.jsn_att_fmt=0;
-      prn_flg.jsn_data_brk=False;
       prn_flg.jsn_var_fmt=2;
+      prn_flg.jsn_data_brk=False;
     } /* !JSON */
       
     if(prn_flg.xml) prn_flg.PRN_MSS_VAL_BLANK=False;
