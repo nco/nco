@@ -2,7 +2,9 @@
 
 	* NCO 5.3.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha02: Black-eyed P\'s';git push
-	git tag -a 5.3.7-alpha02 -m 'ncks: jsn att fmt fix';git push --tags
+	git tag -a 5.3.7-alpha02 -m 'ncks: jsn att/var fmt fix';git push --tags
+
+	* Fix variable JSON format to always be type = 2 and print type, shape
 
 	* Fix jsn_att_fmt regression, restore printing attributes as objects, reported by Andrew Barna
 

@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.7-alpha02
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 29 October 2025
-@set update-month October 2025
+@set update-date 20 November 2025
+@set update-month November 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -23931,6 +23931,7 @@ No
 
 @html
 <a name="jsn"></a> <!-- http://nco.sf.net/nco.html#jsn -->
+<a name="jsn_fmt"></a> <!-- http://nco.sf.net/nco.html#jsn_fmt -->
 <a name="json"></a> <!-- http://nco.sf.net/nco.html#json -->
 <a name="JSON"></a> <!-- http://nco.sf.net/nco.html#JSON -->
 @end html
