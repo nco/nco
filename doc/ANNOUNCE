@@ -31,7 +31,8 @@ were missing their "type" and "shape" specifiers, and attributes
 could not add these not matter what --jsn_fmt option was given.
 This has been fixed. The workaround is to use an earlier version
 of NCO. The solution is to upgrade.
-http://nco.sf.net/nco.html#
+http://nco.sf.net/nco.html#json
+http://nco.sf.net/nco.html#jsn_fmt
 
 A. In all previous versions ncclimo failed to handle
 starting and ending years specified as 0, 00, or 000.

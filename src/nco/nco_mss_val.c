@@ -441,11 +441,11 @@ nco_mss_val_get_dbl /* [fnc] Return missing value of variable, if any, as double
     if(att_sz != 1L){
       (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s has %li elements and so will not be used\n",nco_prg_nm_get(),att_nm,var_nm,att_sz);
       continue;
-    } /* end if */
+    } /* !att_sz */
     if(att_typ == NC_CHAR || att_typ == NC_STRING){
       (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s has type %s and so will not be used\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ));
       continue;
-    } /* end if */
+    } /* !att_typ */
     /* If we got this far then retrieve attribute */
     has_mss_val=True;
     /* Only retrieve value when pointer is non-NULL
@@ -454,10 +454,10 @@ nco_mss_val_get_dbl /* [fnc] Return missing value of variable, if any, as double
       /* Oddly, ARM uses NC_CHAR for type of missing_value, so make allowances for this */
       (void)nco_get_att(nc_id,var_id,att_nm,mss_val_dbl,NC_DOUBLE);
       //(void)fprintf(stderr,"%s: INFO NC_DOUBLE version of \"%s\" attribute for %s is %g\n",nco_prg_nm_get(),att_nm,var_nm,*mss_val_dbl);
-      if(!isfinite(*mss_val_dbl)) (void)fprintf(stderr,"%s: WARNING NC_DOUBLE version of \"%s\" attribute for %s is %s and this value fails isfinite(). Therefore valid values cannot be arithmetically compared to the %s, and this can lead to unpredictable results.\nHINT: If arithmetic results (e.g., from regridding) fails or values seem weird, retry after first converting %s to a normal number with, e.g., \"ncatted -a %s,%s,m,f,1.0e36 in.nc out.nc\"\n",nco_prg_nm_get(),att_nm,var_nm,(isnan(*mss_val_dbl)) ? "NaN" : ((isinf(*mss_val_dbl)) ? "Infinity" : ""),nco_mss_val_sng_get(),nco_mss_val_sng_get(),nco_mss_val_sng_get(),var_id != NC_GLOBAL ? var_nm : "");
+      if(!isfinite(*mss_val_dbl)) (void)fprintf(stderr,"%s: WARNING NC_DOUBLE version of \"%s\" attribute for %s is %s and this value fails isfinite(). Therefore valid values cannot be arithmetically compared to the %s, and this can lead to unpredictable results.\nHINT: If arithmetic results (e.g., from regridding) fails or values seem weird, retry after first converting %s to a normal number with, e.g., \"ncatted --type_match -a %s,%s,m,f,1.0e36 -a %s,%s,m,d,1.0e36 in.nc out.nc\"\n",nco_prg_nm_get(),att_nm,var_nm,(isnan(*mss_val_dbl)) ? "NaN" : ((isinf(*mss_val_dbl)) ? "Infinity" : ""),nco_mss_val_sng_get(),nco_mss_val_sng_get(),nco_mss_val_sng_get(),var_id != NC_GLOBAL ? var_nm : "",nco_mss_val_sng_get(),var_id != NC_GLOBAL ? var_nm : "");
     } /* !mss_val_dbl */
     break;
-  } /* end loop over att */
+  } /* !att_idx */
 
   /* Warn when NCO looks for _FillValue but file has missing_value, and/or
      warn when NCO looks for missing_value but file has _FillValue.

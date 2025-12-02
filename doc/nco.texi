@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.7-alpha02
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 20 November 2025
+@set update-date 30 November 2025
 @set update-month November 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -28570,14 +28570,14 @@ because @acronym{SE} gridcells are essentially weights without
 vertices and @acronym{SE} weight-generators are not yet flexible
 enough to output regional weights.
 To summarize, regridding @acronym{RRG} data leads to three
-@acronym{SE}-specific difficulties (#1--3 below) and two difficulties 
+@acronym{SE}-specific difficulties (#1--3 below) and two difficulties  
 (#4--5) shared with @acronym{FV} @acronym{RRG} files: 
 
 @enumerate
 @item @acronym{RRG} files contain only regional gridcell center
-locations, not weights 
-@item Global @acronym{SE} grids have well-defined weights not vertices
-for each gridpoint 
+locations, yet lack gridcell weights and vertices
+@item Global @acronym{SE} grids have well-defined gridcell weights yet
+lack vertices
 @item Grid generation software (@acronym{ESMF} and TempestRemap) only create
 global not regional @acronym{SE} grid files 
 @item Non-standard variable names and dimension names
@@ -28585,13 +28585,13 @@ global not regional @acronym{SE} grid files
 @end enumerate
 
 @command{ncremap}'s @acronym{RRG} mode resolves these issues to allow
-trouble-free regridding of @acronym{SE} @acronym{RRG} files. The user
+trouble-free regridding of @acronym{FV} @acronym{RRG} files. The user
 must provide two additional input arguments,
 @samp{--dat_glb=@var{dat_glb}} (or synonynms @samp{--rrg_dat_glb},
 @samp{--data_global}, or @samp{--global_data}) and
 @samp{--grd_glb=@var{grd_glb}} (or synonyms @samp{--rrg_grd_glb},
 @samp{--grid_global}, or @samp{global_grid}) that point to a global
-@acronym{SE} dataset and grid, respectively, of the same resolution as
+@acronym{FV} dataset and grid, respectively, of the same resolution as 
 the model that generated the @acronym{RRG} datasets.
 Hence a typical @acronym{RRG} regridding invocation is: 
 @example
@@ -28607,16 +28607,15 @@ Typically @file{grd_rgn.nc} is a uniform rectangular grid covering the
 same region as the @acronym{RRG} file.
 Generate this as described in the last example in the section that
 describes Manual Grid-file Generation with the @samp{-G} option.
-@file{grd_glb.nc} is the standard dual-grid grid-file for the
-@acronym{SE} resolution, e.g.,
-@file{ne30np4_pentagons.091226.nc}.
-@command{ncremap} regrids the
-global data file @file{dat_glb.nc} to the global dual-grid in order to 
-produce a intermediate global file annotated with gridcell
-vertices.
+@file{grd_glb.nc} is the global @acronym{FV} grid-file for the
+simulation, e.g.,
+@file{ne30np4_pentagons.091226.nc} or @file{ne30pg2.nc}.
+@command{ncremap} regrids the global data file @file{dat_glb.nc} to
+the global dual-grid in order to produce an intermediate global file
+annotated with gridcell vertices.
 Then it hyperslabs the lat/lon coordinates (and vertices) from the
 regional domain to use with regridding the @acronym{RRG} file.
-A @file{grd_glb.nc} file with only one 2D field suffices (and is
+A @file{dat_glb.nc} file with only one 2D field suffices (and is
 fastest) for producing the information needed by the @acronym{RRG} 
 procedure.
 One can prepare an optimal @file{dat_glb.nc} file by subsetting any 2D
@@ -31575,6 +31574,7 @@ Auxiliary coordinate support.
 Large work-load testing
 @cindex Xylar Asay-Davis
 @cindex Sterling Baldwin 
+@cindex Andrew Barna
 @cindex Tony Bartoletti
 @cindex Dave Blodgett
 @cindex Peter Campbell
@@ -31612,7 +31612,7 @@ Large work-load testing
 @cindex Min Xu
 @cindex Remik Ziemlinski
 @cindex Jill Zhang
-@item Xylar Asay-Davis, Sterling Baldwin, Tony Bartoletti, Dave Blodgett, Peter Caldwell, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Ryan Forsyth, Chris Golaz, Barron Henderson, Ben Hillman, Aleksandar Jelenak, Erik Koene, Markus Liebig, Keith Lindsay, Daniel Macks, Seth McGinnis, Zachary Moon, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Mark Taylor, Matthew Thompson, Qi Tang, Adrian Tompkins, Paul Ullrich, George White, Andrew Wittenberg, Min Xu, Remik Ziemlinski, Jill Zhang
+@item Xylar Asay-Davis, Sterling Baldwin, Andrew Barna, Tony Bartoletti, Dave Blodgett, Peter Caldwell, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Ryan Forsyth, Chris Golaz, Barron Henderson, Ben Hillman, Aleksandar Jelenak, Erik Koene, Markus Liebig, Keith Lindsay, Daniel Macks, Seth McGinnis, Zachary Moon, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Mark Taylor, Matthew Thompson, Qi Tang, Adrian Tompkins, Paul Ullrich, George White, Andrew Wittenberg, Min Xu, Remik Ziemlinski, Jill Zhang
 Excellent bug reports and feature requests.
 @cindex Xylar Asay-Davis
 @cindex Filipe Fernandes
