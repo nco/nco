@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha03: Chafing';git push
 	git tag -a 5.3.7-alpha03 -m 'all: Add LZF';git push --tags
 
+	* Prevent LZF and LZ4 invocation unless ENABLE_NEP defined (otherwise must write NCO stub functions for NEP codecs)
+
 	* NCO 5.3.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha02: Black-eyed P\'s';git push
 	git tag -a 5.3.7-alpha02 -m 'all: NEP, LZ4 working; ncremap: hone nco_mss_val_get_dbl()-suggested ncatted command; ncks: jsn att/var fmt fix';git push --tags

@@ -1177,27 +1177,21 @@ nco_flt_def_out /* [fnc]  */
       break;
 
     case nco_flt_lz4: /* Accept LZ4 from CCR or NEP */
-      rcd+=nco_inq_filter_avail_flg(nc_out_id,flt_id[flt_idx]);
-      if(rcd == NC_NOERR){
-	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_lz4(nc_out_id,var_out_id,flt_lvl[flt_idx]);
-      }else{ /* !rcd */
-	/* Reset rcd */
-	rcd=NC_NOERR;
-	cdc_has_flt=False;
-      } /* !rcd */
+#if CCR_HAS_LZ4 || ENABLE_NEP
+      if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_lz4(nc_out_id,var_out_id,flt_lvl[flt_idx]);
+#else /* !NEP */
+      cdc_has_flt=False;
+#endif /* !CCR_HAS_LZ4 || !ENABLE_NEP */
       break;
 
     case nco_flt_lzf: /* Accept LZF from NEP */
-      rcd+=nco_inq_filter_avail_flg(nc_out_id,flt_id[flt_idx]);
-      if(rcd == NC_NOERR){
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG quark INFO invoking LZF with cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, rcd=%d\n",nco_prg_nm_get(),cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],rcd);
-	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_lzf(nc_out_id,var_out_id);
-      }else{ /* !rcd */
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG quark WARNING LZF requested but could not be invoked cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, rcd=%d\n",nco_prg_nm_get(),cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],rcd);
-	/* Reset rcd */
-	rcd=NC_NOERR;
-	cdc_has_flt=False;
-      } /* !rcd */
+#if ENABLE_NEP
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG quark INFO invoking LZF with cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, rcd=%d\n",nco_prg_nm_get(),cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],rcd);
+      if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_lzf(nc_out_id,var_out_id);
+#else /* !ENABLE_NEP */
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG quark WARNING LZF requested but could not be invoked cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, rcd=%d\n",nco_prg_nm_get(),cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],rcd);
+      cdc_has_flt=False;
+#endif /* !ENABLE_NEP */
       break;
 
     case nco_flt_btg: /* BitGroom */
