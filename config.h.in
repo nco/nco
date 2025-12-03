@@ -34,6 +34,9 @@
 /* Operators transmit --log_lvl to libnetCDF nc_set_log_level() */
 #undef ENABLE_LOGGING
 
+/* Compile operators with NEP support */
+#undef ENABLE_NEP
+
 /* Define to 1 if libnetcdf.a contains netCDF4 functions */
 #undef ENABLE_NETCDF4
 
@@ -237,6 +240,9 @@
 
 /* Define to 1 if compiler finds external `nearbyintf' function */
 #undef HAVE_NEARBYINTF
+
+/* Define to 1 if <ncsqueeze.h> is present */
+#undef HAVE_NEP_H
 
 /* Define to 1 if netcdf.h contains netCDF4 definitions */
 #undef HAVE_NETCDF4_H

@@ -143,7 +143,9 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 	flt_prm[flt_idx][prm_idx-1]=(int)strtol(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtol",sng_cnv_rcd);
       } /* !prm_idx */
-      /* Allocate room for at least one parameter so default values can be imposed */
+      /* Allocate room for at least one parameter so default values can be imposed
+	 20251203: LZF is the first supported filter that takes no parameter
+	 We set though never use a parameter value for it just for consistency with other filters */
       if(flt_prm_nbr[flt_idx] == 0) flt_prm[flt_idx][0]=NC_MIN_INT;
       flt_lvl[flt_idx]=flt_prm[flt_idx][0];
     } /* !flt_idx */
@@ -170,6 +172,8 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   const int lvl_dfl_shf=4; /* [enm] Default level for Shuffle */
   const int lvl_dfl_bz2=1; /* [enm] Default level for Bzip2 */
   const int lvl_dfl_zfp=1; /* [enm] Default level for ZFP */
+  const int lvl_dfl_lz4=1; /* [enm] Default level for LZ4 */
+  const int lvl_dfl_lzf=NC_MIN_INT; /* [enm] Default level for LZF */
   const int lvl_dfl_zst=3; /* [enm] Default level for Zstandard */
   const int lvl_dfl_btg=3; /* [enm] Default level (NSD) for BitGroom */
   const int lvl_dfl_gbr=3; /* [enm] Default level (NSD) for GranularBR */
@@ -219,6 +223,24 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 	flt_lvl[flt_idx]=flt_prm[flt_idx][0];
 	break;
 
+      case nco_flt_lz4:
+      case nco_flt_bls_lz4:
+	/* '--cmp=lz4' with unspecified level causes NCO to use default LZ4 level */
+	flt_prm_nbr[flt_idx]=1;
+	flt_prm[flt_idx][0]=lvl_dfl_lz4;
+	flt_lvl[flt_idx]=flt_prm[flt_idx][0];
+	break;
+
+      case nco_flt_lzf:
+	/* NB: LZF does not require or allow a level parameter
+	   '--cmp=lzf' with unspecified level is all that is allowed
+	   20251203: LZF is the first supported filter that takes no parameter
+	   We set though never use a parameter value for it just for consistency with other filters */
+	flt_prm_nbr[flt_idx]=1;
+	flt_prm[flt_idx][0]=lvl_dfl_lzf;
+	flt_lvl[flt_idx]=flt_prm[flt_idx][0];
+	break;
+
       case nco_flt_btg:
 	flt_prm_nbr[flt_idx]=1;
 	flt_prm[flt_idx][0]=lvl_dfl_btg;
@@ -241,7 +263,6 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
 
       case nco_flt_bls:
       case nco_flt_bls_lz:
-      case nco_flt_bls_lz4:
       case nco_flt_bls_lzh:
       case nco_flt_bls_snp:
 	/* '--cmp=bls_???' with unspecified level causes NCO to use default Blosc level */
@@ -473,6 +494,7 @@ nco_flt_enm2nmid /* [fnc] Convert compression filter enum to string */
   case nco_flt_szp: if(flt_idp) *flt_idp=H5Z_FILTER_SZIP; return "Szip"; break; /* 4 */
   case nco_flt_bz2: if(flt_idp) *flt_idp=H5Z_FILTER_BZIP2; return "Bzip2"; break; /* 307 */
   case nco_flt_lz4: if(flt_idp) *flt_idp=32004U; return "LZ4"; break; /* 32004 */
+  case nco_flt_lzf: if(flt_idp) *flt_idp=32004U; return "LZF"; break; /* 32000 */
   case nco_flt_btg: if(flt_idp) *flt_idp=32022U; return "BitGroom"; break; /* 32022 */
   case nco_flt_gbr: if(flt_idp) *flt_idp=32023U; return "Granular BitRound"; break; /* 32023 */
   case nco_flt_dgr: return "DigitRound"; break;
@@ -506,6 +528,7 @@ nco_flt_id2nm /* [fnc] Convert compression filter HDF5 ID to string */
   case H5Z_FILTER_FLETCHER32 : return "Fletcher32"; break; /* 3 */
   case H5Z_FILTER_SZIP : return "Szip"; break; /* 4 */
   case H5Z_FILTER_BZIP2 : return "Bzip2"; break; /* 307 */
+  case 32000 : return "LZF"; break; /* 32000 */
   case 32004 : return "LZ4"; break; /* 32004 */
   case 32022 : return "BitGroom"; break; /* 32022 */
   case 32023 : return "Granular BitRound"; break; /* 32023 */
@@ -557,6 +580,7 @@ nco_flt_id2enm /* [fnc] Convert HDF5 compression filter ID to enum */
   case 3 : flt_enm=nco_flt_f32; break;
   case 4 : flt_enm=nco_flt_szp; break;
   case 307 : flt_enm=nco_flt_bz2; break;
+  case 32000 : flt_enm=nco_flt_lzf; break;
   case 32004 : flt_enm=nco_flt_lz4; break;
   case 32022 : flt_enm=nco_flt_btg; break;
   case 32023 : flt_enm=nco_flt_gbr; break;
@@ -645,6 +669,8 @@ nco_flt_nm2enmid /* [fnc] Convert user-specified filter name to NCO enum */
     else if(!strcasecmp(flt_nm,"bzip2")) flt_enm=nco_flt_bz2;
     
     else if(!strcasecmp(flt_nm,"lz4")) flt_enm=nco_flt_lz4;
+    
+    else if(!strcasecmp(flt_nm,"lzf")) flt_enm=nco_flt_lzf;
     
     else if(!strcasecmp(flt_nm,"btg")) flt_enm=nco_flt_btg;
     else if(!strcasecmp(flt_nm,"bitgroom")) flt_enm=nco_flt_btg;
@@ -1150,12 +1176,28 @@ nco_flt_def_out /* [fnc]  */
       } /* !rcd */
       break;
 
-    case nco_flt_lz4: /* LZ4 */ 
-#if CCR_HAS_LZ4
-      if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_lz4(nc_out_id,var_out_id,flt_lvl[flt_idx]);
-#else /* !CCR_HAS_LZ4 */
-      cdc_has_flt=False;
-#endif /* !CCR_HAS_LZ4 */
+    case nco_flt_lz4: /* Accept LZ4 from CCR or NEP */
+      rcd+=nco_inq_filter_avail_flg(nc_out_id,flt_id[flt_idx]);
+      if(rcd == NC_NOERR){
+	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_lz4(nc_out_id,var_out_id,flt_lvl[flt_idx]);
+      }else{ /* !rcd */
+	/* Reset rcd */
+	rcd=NC_NOERR;
+	cdc_has_flt=False;
+      } /* !rcd */
+      break;
+
+    case nco_flt_lzf: /* Accept LZF from NEP */
+      rcd+=nco_inq_filter_avail_flg(nc_out_id,flt_id[flt_idx]);
+      if(rcd == NC_NOERR){
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG quark INFO invoking LZF with cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, rcd=%d\n",nco_prg_nm_get(),cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],rcd);
+	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_lzf(nc_out_id,var_out_id);
+      }else{ /* !rcd */
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG quark WARNING LZF requested but could not be invoked cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, rcd=%d\n",nco_prg_nm_get(),cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],rcd);
+	/* Reset rcd */
+	rcd=NC_NOERR;
+	cdc_has_flt=False;
+      } /* !rcd */
       break;
 
     case nco_flt_btg: /* BitGroom */
@@ -1377,6 +1419,19 @@ nco_cdc_lst_bld
     if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Blosc (LZ = default, LZ4, LZ4 HC, DEFLATE, Snappy, Zstandard)"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 #endif /* !BLOSC */
 
+    /* Filters likely implemented with netCDF Expansion Pack (NEP) */
+#if defined(LZ4_ID) || (NC_LIB_VERSION >= 490)
+    flt_id=H5Z_FILTER_LZ4;
+    rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
+    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", LZ4"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
+#endif /* !LZ4 */
+
+#if defined(LZF_ID) || (NC_LIB_VERSION >= 490)
+    flt_id=H5Z_FILTER_LZF;
+    rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
+    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", LZF"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
+#endif /* !LZF */
+    
     /* Reset return code */
     rcd=NC_NOERR;
 

@@ -652,8 +652,9 @@ extern "C" {
 # endif
 #endif /* !ENABLE_ZNETCDF */
 
-  /* NB: Use NCO_NOERR and NCO_ERR as return codes to other functions, not to shell (e.g., Bash, Csh)
-     Shell exit codes (where 0 indicates success) are traditionally opposite C exit codes (where 0 indicates failure) */
+  /* 20251203: For some dumb reason I decided that NCO_NOERR should have the opposite convention to NC_NOERR
+     Now I am too afraid to change it to match NC_NOERR!
+     Ultimately, NCO_NOERR should be redefined to equal EXIT_SUCCESS, just as NC_NOERR already does */
 /* Internal NCO function return code indicating success */
 #define NCO_NOERR 1
 /* Internal NCO function return code indicating failure */
@@ -663,7 +664,7 @@ extern "C" {
 #define UDUNITS_NOERR 0
 
   /* NB: Use EXIT_SUCCESS and EXIT_FAILURE as return codes to shell (e.g., Bash, Csh), not to other functions
-     Shell exit codes (where 0 indicates success) are traditionally opposite C-function (not C-program) exit codes (where 0 indicates failure)
+     Shell exit codes (where 0 indicates success) are traditionally opposite C-function (not C-program) exit codes (where 0 or NULL indicates failure)
      20130711: FC19 x86_64 Linux defines EXIT_FAILURE == 134 */
 #ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
 # define EXIT_SUCCESS 0

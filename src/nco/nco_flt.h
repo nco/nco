@@ -41,6 +41,10 @@
 # include <ccr_meta.h> /* CCR_VERSION, CCR_HAS_BITGROOM, ... */
 #endif /* !ENABLE_CCR */
 
+#if ENABLE_NEP
+# include <ncsqueeze.h> /* netCDF Expansion Pack prototypes */
+#endif /* !ENABLE_CCR */
+
 /* Quantization tokens introduced in netcdf.h 4.9.0 ~202206 */
 #ifndef NC_NOQUANTIZE
 # define NC_NOQUANTIZE 0 /**< No quantization in use. */    
@@ -72,6 +76,12 @@
 /* Other Standard Filters */
 #ifndef H5Z_FILTER_ZFP
 # define H5Z_FILTER_ZFP 32013
+#endif
+#ifndef H5Z_FILTER_LZ4
+# define H5Z_FILTER_LZ4 32004
+#endif
+#ifndef H5Z_FILTER_LZF
+# define H5Z_FILTER_LZF 32000
 #endif
 #ifndef H5Z_FILTER_ZSTD
 # define H5Z_FILTER_ZSTD 32015
@@ -125,7 +135,8 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_bls_zst=18, /* 18 [enm] BLOSC Zstandard */
   nco_flt_dns=19, /* 19 [enm] DEFLATE No Shuffle */
   nco_flt_zfp=20, /* 20 [enm] ZFP */
-  nco_flt_unk=21, /* 21 [enm] Unknown filter (reference by ID not name) */
+  nco_flt_lzf=21, /* 21 [enm] LZF */
+  nco_flt_unk=22, /* 22 [enm] Unknown filter (reference by ID not name) */
 } nco_flt_typ_enm; /* !nco_flt_typ_enm */
 
 /* Filter flags */

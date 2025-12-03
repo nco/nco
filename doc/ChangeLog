@@ -1,8 +1,18 @@
-2025-12-02  Charlie Zender  <zender@uci.edu>
+2025-12-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha02: Black-eyed P\'s';git push
-	git tag -a 5.3.7-alpha02 -m 'ncremap: hone nco_mss_val_get_dbl()-suggested ncatted command; ncks: jsn att/var fmt fix';git push --tags
+	git tag -a 5.3.7-alpha02 -m 'all: NEP, LZ4 working; ncremap: hone nco_mss_val_get_dbl()-suggested ncatted command; ncks: jsn att/var fmt fix';git push --tags
+
+	* LZF infrastructure added but not working after library rebuild. Does no harm. Fix next version.
+
+	* LZ4 works after libnetcdf rebuild!
+
+	* Add support for standalone (not BLOSC) LZ4 filter handling when NEP installed
+
+	* Add configure machinery for netCDF Expansion Pack (NEP) support
+
+2025-12-02  Charlie Zender  <zender@uci.edu>
 
 	* Improve suggested ncatted command when mss_val_dbl = NaN in nco_mss_val_get_dbl()
 

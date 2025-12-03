@@ -712,6 +712,37 @@ fi
 AM_CONDITIONAL(ENABLE_CCR, [test "x$enable_ccr" = xyes])
 # End CCR
 
+echo "########################################"
+echo "#     Testing for NEP support          #"
+echo "########################################"
+# Begin NEP
+AC_MSG_CHECKING([whether netCDF Expansion Pack should be used])
+AC_ARG_ENABLE([nep],AS_HELP_STRING([--enable-nep],[Build-in NEP support if possible [default=no]]),enable_nep=${enableval},enable_nep=no)
+test "x$enable_nep" = xyes || enable_nep=no
+AC_MSG_RESULT([$enable_nep])
+
+# Check for NEP library
+if test "x$enable_nep" = xyes; then
+    CPPFLAGS_backup="${CPPFLAGS}"
+    LIBS_backup="${LIBS}"
+    LDFLAGS_backup="${LDFLAGS}"
+    LDFLAGS="-L${HDF5_PLUGIN_PATH} ${LDFLAGS}"
+    AC_CHECK_HEADER([ncsqueeze.h],AC_DEFINE([HAVE_NEP_H],1,[Define to 1 if <ncsqueeze.h> is present]),nco_have_nep=no)
+    AC_SEARCH_LIBS([nc_def_var_lz4], [ncsqueeze], [enable_nep=yes], [AC_MSG_NOTICE([Cannot find or link to the NEP library, set CPPFLAGS/LDFLAGS])])
+    test "x$enable_nep" = xyes || enable_nep=no
+    if test "x$enable_nep" = xno; then
+	AC_MSG_WARN([NEP support disabled (missing/unusable library or header file)])
+	CPPFLAGS="${CPPFLAGS_backup}"
+	LIBS="${LIBS_backup}"  
+	LDFLAGS="${LDFLAGS_backup}"  
+    fi
+    if test "x$enable_nep" = xyes; then
+	AC_DEFINE(ENABLE_NEP,1,Compile operators with NEP support)
+    fi
+fi
+AM_CONDITIONAL(ENABLE_NEP, [test "x$enable_nep" = xyes])
+# End NEP
+
 # Begin rx
 # Check to enable regular expression stuff, allow user to override
 AC_ARG_ENABLE(regex,AS_HELP_STRING([--enable-regex],[Allow extended regular expressions [default=yes]]),nco_have_regex=${enableval},nco_have_regex=yes)
@@ -1250,6 +1281,7 @@ echo "CXXFLAGS............. ${CXXFLAGS}"
 echo "ENABLE_CCR........... ${enable_ccr}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
+echo "ENABLE_NEP........... ${enable_nep}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
 echo "ENABLE_OPENMP........ ${enable_openmp}"
 echo "ENABLE_UDUNITS2...... ${enable_udunits2}"

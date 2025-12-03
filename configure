@@ -664,6 +664,8 @@ HAVE_MAKEINFO
 NCOXX
 NCO_CXX
 PATH_TO_NCGEN
+ENABLE_NEP_FALSE
+ENABLE_NEP_TRUE
 ENABLE_CCR_FALSE
 ENABLE_CCR_TRUE
 ENABLE_GSL_FALSE
@@ -850,6 +852,7 @@ enable_nco_cplusplus
 enable_gsl
 with_hdf5_plugin_path
 enable_ccr
+enable_nep
 enable_regex
 enable_udunits
 enable_udunits2
@@ -1543,6 +1546,7 @@ Optional Features:
   --enable-nco_cplusplus  Build NCO C++ interface library [default=no]
   --enable-gsl            Build-in GSL support if possible [default=yes]
   --enable-ccr            Build-in CCR support if possible [default=no]
+  --enable-nep            Build-in NEP support if possible [default=no]
   --enable-regex          Allow extended regular expressions [default=yes]
   --enable-udunits        Build-in UDUnits2 support if possible [default=no]
   --enable-udunits2       Build-in UDUnits2 support if possible [default=yes]
@@ -21702,6 +21706,137 @@ fi
 
 # End CCR
 
+echo "########################################"
+echo "#     Testing for NEP support          #"
+echo "########################################"
+# Begin NEP
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether netCDF Expansion Pack should be used" >&5
+printf %s "checking whether netCDF Expansion Pack should be used... " >&6; }
+# Check whether --enable-nep was given.
+if test ${enable_nep+y}
+then :
+  enableval=$enable_nep; enable_nep=${enableval}
+else case e in #(
+  e) enable_nep=no ;;
+esac
+fi
+
+test "x$enable_nep" = xyes || enable_nep=no
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $enable_nep" >&5
+printf "%s\n" "$enable_nep" >&6; }
+
+# Check for NEP library
+if test "x$enable_nep" = xyes; then
+    CPPFLAGS_backup="${CPPFLAGS}"
+    LIBS_backup="${LIBS}"
+    LDFLAGS_backup="${LDFLAGS}"
+    LDFLAGS="-L${HDF5_PLUGIN_PATH} ${LDFLAGS}"
+    ac_fn_c_check_header_compile "$LINENO" "ncsqueeze.h" "ac_cv_header_ncsqueeze_h" "$ac_includes_default"
+if test "x$ac_cv_header_ncsqueeze_h" = xyes
+then :
+
+printf "%s\n" "#define HAVE_NEP_H 1" >>confdefs.h
+
+else case e in #(
+  e) nco_have_nep=no ;;
+esac
+fi
+
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing nc_def_var_lz4" >&5
+printf %s "checking for library containing nc_def_var_lz4... " >&6; }
+if test ${ac_cv_search_nc_def_var_lz4+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char nc_def_var_lz4 (void);
+int
+main (void)
+{
+return nc_def_var_lz4 ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ncsqueeze
+do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_search_nc_def_var_lz4=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext
+  if test ${ac_cv_search_nc_def_var_lz4+y}
+then :
+  break
+fi
+done
+if test ${ac_cv_search_nc_def_var_lz4+y}
+then :
+
+else case e in #(
+  e) ac_cv_search_nc_def_var_lz4=no ;;
+esac
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_nc_def_var_lz4" >&5
+printf "%s\n" "$ac_cv_search_nc_def_var_lz4" >&6; }
+ac_res=$ac_cv_search_nc_def_var_lz4
+if test "$ac_res" != no
+then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  enable_nep=yes
+else case e in #(
+  e) { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Cannot find or link to the NEP library, set CPPFLAGS/LDFLAGS" >&5
+printf "%s\n" "$as_me: Cannot find or link to the NEP library, set CPPFLAGS/LDFLAGS" >&6;} ;;
+esac
+fi
+
+    test "x$enable_nep" = xyes || enable_nep=no
+    if test "x$enable_nep" = xno; then
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: NEP support disabled (missing/unusable library or header file)" >&5
+printf "%s\n" "$as_me: WARNING: NEP support disabled (missing/unusable library or header file)" >&2;}
+	CPPFLAGS="${CPPFLAGS_backup}"
+	LIBS="${LIBS_backup}"
+	LDFLAGS="${LDFLAGS_backup}"
+    fi
+    if test "x$enable_nep" = xyes; then
+
+printf "%s\n" "#define ENABLE_NEP 1" >>confdefs.h
+
+    fi
+fi
+ if test "x$enable_nep" = xyes; then
+  ENABLE_NEP_TRUE=
+  ENABLE_NEP_FALSE='#'
+else
+  ENABLE_NEP_TRUE='#'
+  ENABLE_NEP_FALSE=
+fi
+
+# End NEP
+
 # Begin rx
 # Check to enable regular expression stuff, allow user to override
 # Check whether --enable-regex was given.
@@ -22786,6 +22921,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${ENABLE_CCR_TRUE}" && test -z "${ENABLE_CCR_FALSE}"; then
   as_fn_error $? "conditional \"ENABLE_CCR\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_NEP_TRUE}" && test -z "${ENABLE_NEP_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_NEP\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -25226,6 +25365,7 @@ echo "CXXFLAGS............. ${CXXFLAGS}"
 echo "ENABLE_CCR........... ${enable_ccr}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
+echo "ENABLE_NEP........... ${enable_nep}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
 echo "ENABLE_OPENMP........ ${enable_openmp}"
 echo "ENABLE_UDUNITS2...... ${enable_udunits2}"
