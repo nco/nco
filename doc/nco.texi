@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.7-alpha03
 @set copyright-years 1995--2025
 @set update-year 2025
-@set update-date 3 December 2025
+@set update-date 11 December 2025
 @set update-month December 2025
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -29875,12 +29875,16 @@ option, or in a ``fat'' input vertical grid file:
 @verbatim
 # 1. Input data file in.nc contains input PS (also used as output PS):
 ncremap --vrt_out=vrt_hyb.nc in.nc out.nc
-# 2. Input data file in.nc contains input PS but output PS is in
-# vertical grid file vrt_hyb_fat.nc:
+# 2. Input data file in.nc contains input PS and output PS is in
+#    vertical grid file vrt_hyb_fat.nc:
 ncremap --vrt_out=vrt_hyb_fat.nc in.nc out.nc
-# 3. PS for input data file in.nc is located in file.nc
-# vertical grid file vrt_hyb_fat.nc:
-ncremap --vrt_in=vrt_hyb.nc --ps_nm=/external/file.nc/ps in.nc out.nc
+# 3. PS for input data file in.nc is located in file.nc and will be
+     used for output as well
+ncremap --vrt_in=vrt_hyb.nc --ps_nm=/external/file.nc/PS in.nc out.nc
+# 4. Input data file in.nc contains vertical grid but not input PS
+     PS for input data file in.nc is located in file.nc
+     PS for output is in vertical grid file vrt_hyb_fat.nc:
+ncremap --vrt_out=vrt_hyb_fat.nc --ps_nm=/external/file.nc/PS in.nc out.nc
 @end verbatim
 @end example
 Interpolating a pure-pressure coordinate data file to hybrid

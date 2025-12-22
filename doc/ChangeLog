@@ -1,8 +1,14 @@
-2025-12-03  Charlie Zender  <zender@uci.edu>
+2025-12-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha03: Chafing';git push
-	git tag -a 5.3.7-alpha03 -m 'all: Add LZF';git push --tags
+	git tag -a 5.3.7-alpha03 -m 'all: Add LZF stubs, deprecate CCR';git push --tags
+
+2025-12-09  Charlie Zender  <zender@uci.edu>
+
+	* Remove CCR hooks and stubs in favor of NEP
+
+2025-12-03  Charlie Zender  <zender@uci.edu>
 
 	* Prevent LZF and LZ4 invocation unless ENABLE_NEP defined (otherwise must write NCO stub functions for NEP codecs)
 

@@ -22,7 +22,7 @@
    20220609: fxm free() this/these global variables */
 static char *nco_cdc_lst_glb=NULL; /* [sng] List of available filters */
 
-#if !defined(CCR_HAS_BZIP2) && (NC_LIB_VERSION < 490)
+#if (NC_LIB_VERSION < 490) && !ENABLE_NEP
 int nc_def_var_bzip2
 (const int nc_id, /* I [ID] netCDF ID */
  const int var_id, /* I [ID] Variable ID */
@@ -34,7 +34,7 @@ int nc_def_var_bzip2
   int rcd;
   const char fnc_nm[]="nc_def_var_bzip2()";
   rcd=NC_NOERR+0*(nc_id+var_id+cmp_lvl);
-  (void)fprintf(stdout,"ERROR: %s reports Bzip2 filter wrapper was foiled because neither libnetcdf.a nor CCR contain a real %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.9.0 (released ~20220610) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  (void)fprintf(stdout,"ERROR: %s reports Bzip2 filter wrapper was foiled because neither libnetcdf.a nor NEP contain a real %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.9.0 (released ~20220610) or later, or install the NEP.\nExiting...\n",fnc_nm,fnc_nm);
   nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* !nc_def_var_bzip2() */
@@ -1176,12 +1176,12 @@ nco_flt_def_out /* [fnc]  */
       } /* !rcd */
       break;
 
-    case nco_flt_lz4: /* Accept LZ4 from CCR or NEP */
-#if CCR_HAS_LZ4 || ENABLE_NEP
+    case nco_flt_lz4: /* Accept LZ4 from NEP */
+#if ENABLE_NEP
       if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_lz4(nc_out_id,var_out_id,flt_lvl[flt_idx]);
 #else /* !NEP */
       cdc_has_flt=False;
-#endif /* !CCR_HAS_LZ4 || !ENABLE_NEP */
+#endif /* !ENABLE_NEP */
       break;
 
     case nco_flt_lzf: /* Accept LZF from NEP */
@@ -1198,11 +1198,9 @@ nco_flt_def_out /* [fnc]  */
       if(lsy_flt_ok){
 #if NC_HAS_QUANTIZE 
 	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_quantize(nc_out_id,var_out_id,NC_QUANTIZE_BITGROOM,flt_lvl[flt_idx]);
-#elif CCR_HAS_BITGROOM
-	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_bitgroom(nc_out_id,var_out_id,flt_lvl[flt_idx]);
-# else /* !CCR_HAS_BITGROOM */
+# else /* !NC_HAS_QUANTIZE */
 	cdc_has_flt=False;
-#endif /* !CCR_HAS_BITGROOM */
+#endif /* !NC_HAS_QUANTIZE */
       } /* !lsy_flt_ok */
       break;
 
@@ -1210,11 +1208,9 @@ nco_flt_def_out /* [fnc]  */
       if(lsy_flt_ok){
 #if NC_HAS_QUANTIZE 
 	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_quantize(nc_out_id,var_out_id,NC_QUANTIZE_BITROUND,flt_lvl[flt_idx]);
-#elif CCR_HAS_BITROUND
-	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_bitround(nc_out_id,var_out_id,flt_lvl[flt_idx]);
-#else /* !CCR_HAS_BITROUND */
+# else /* !NC_HAS_QUANTIZE */
 	cdc_has_flt=False;
-#endif /* !CCR_HAS_BITROUND */
+#endif /* !NC_HAS_QUANTIZE */
       } /* !lsy_flt_ok */
       break;
 
@@ -1222,22 +1218,20 @@ nco_flt_def_out /* [fnc]  */
       if(lsy_flt_ok){
 #if NC_HAS_QUANTIZE 
 	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_quantize(nc_out_id,var_out_id,NC_QUANTIZE_GRANULARBR,flt_lvl[flt_idx]);
-#elif CCR_HAS_GRANULARBR
-	if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_granularbr(nc_out_id,var_out_id,flt_lvl[flt_idx]);
-#else /* !CCR_HAS_GRANULARBR */
+# else /* !NC_HAS_QUANTIZE */
 	cdc_has_flt=False;
-#endif /* !CCR_HAS_GRANULARBR */
+#endif /* !NC_HAS_QUANTIZE */
       } /* !lsy_flt_ok */
       break;
 
     case nco_flt_zst: /* Zstandard */
-#if CCR_HAS_ZSTD || NC_HAS_ZSTD
+#if NC_HAS_ZSTD
       /* NB: Zstandard accepts negative compression levels */
       rcd+=nc_def_var_zstandard(nc_out_id,var_out_id,flt_lvl[flt_idx]);
       //(void)fprintf(stdout,"%s: DEBUG quark5 cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, rcd=%d\n",nco_prg_nm_get(),cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],rcd);
 #else /* !NC_HAS_ZSTD */
       cdc_has_flt=False;
-#endif /* !CCR_HAS_ZSTD || NC_HAS_ZSTD */
+#endif /* NC_HAS_ZSTD */
       break;
 
       /* Set Blosc sub-compressor here, then execute filter after switch statement (though still within filter loop) */
@@ -1308,7 +1302,7 @@ nco_flt_def_out /* [fnc]  */
 
       char *nvr_HDF5_PLUGIN_PATH=NULL; /* [sng] Path where netCDF-HDF5 plugins are stored */
       nvr_HDF5_PLUGIN_PATH=getenv("HDF5_PLUGIN_PATH");
-      (void)fprintf(stdout,"%s: ERROR %s reports the netCDF library does not appear to define an API for requested filter (aka codec) \"%s\". If this filter name was not a typo, then probably this filter was not built and/or not installed by netCDF (nor CCR).\nHINT: If the filter is supposed to be in netCDF (e.g., Zstandard), be sure that the external filter libraries (e.g., libzstd.a) is installed. Moreover, the netCDF-HDF5 \"glue\" library (e.g., lib__nch5zstd.so) for each HDF5-style filter must reside where libnetcdf looks for it. The location where it was built during netCDF installation can be determined by executing 'nc-config --plugindir'. Unless configured otherwise during installation, it will be /usr/local/hdf5/lib/plugin. However, the environment variable HDF5_PLUGIN_PATH (if it exists) will override this location. Currently, HDF5_PLUGIN_PATH = %s. If the preceding hints do not resolve the problem, re-try this command and specify only filters included in this list of available filters: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2nmid(flt_alg[flt_idx],NULL),(nvr_HDF5_PLUGIN_PATH) ? nvr_HDF5_PLUGIN_PATH : "not set",nco_cdc_lst_glb);
+      (void)fprintf(stdout,"%s: ERROR %s reports the netCDF library does not appear to define an API for requested filter (aka codec) \"%s\". If this filter name was not a typo, then probably this filter was not built and/or not installed by netCDF (nor NEP).\nHINT: If the filter is supposed to be in netCDF (e.g., Zstandard), be sure that the external filter libraries (e.g., libzstd.a) is installed. Moreover, the netCDF-HDF5 \"glue\" library (e.g., lib__nch5zstd.so) for each HDF5-style filter must reside where libnetcdf looks for it. The location where it was built during netCDF installation can be determined by executing 'nc-config --plugindir'. Unless configured otherwise during installation, it will be /usr/local/hdf5/lib/plugin. However, the environment variable HDF5_PLUGIN_PATH (if it exists) will override this location. Currently, HDF5_PLUGIN_PATH = %s. If the preceding hints do not resolve the problem, re-try this command and specify only filters included in this list of available filters: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2nmid(flt_alg[flt_idx],NULL),(nvr_HDF5_PLUGIN_PATH) ? nvr_HDF5_PLUGIN_PATH : "not set",nco_cdc_lst_glb);
       nco_exit(EXIT_FAILURE);
     } /* !cdc_has_flt */
 
@@ -1353,14 +1347,13 @@ nco_cdc_lst_bld
 (const int nc_out_id) /* I [id] netCDF output file/group ID */
 {
   /* Purpose: Build list of available quantization algorithms and HDF5 Filters */
-  /* Build list of available filters once */
   const char fnc_nm[]="nco_cdc_lst_bld()";
 
   char char_foo;
 
   int rcd=NC_NOERR; /* [rcd] Return code */
 
-  /* Build list of available filters once */
+  /* Build list of available filters only once */
   if(!nco_cdc_lst_glb){
     /* Lame attempt to avoid races when multiple threads "simultaneously" check this pointer
        Idea is to instantly set the global value before waiting for the following system
@@ -1371,43 +1364,39 @@ nco_cdc_lst_bld
 
     strcat(nco_cdc_lst_glb,"DEFLATE, Shuffle, Fletcher32");
 
-    /* CCR, netCDF define tokens like CCR_HAS_BITGROOM, NC_HAS_ZSTD in ccr_meta.h, netcdf_meta.h */
-#if defined(CCR_HAS_BITGROOM) || defined(NC_HAS_QUANTIZE)
+    /* netCDF define tokens NC_HAS_ZSTD are in netcdf_meta.h */
+#if NC_HAS_QUANTIZE
     strcat(nco_cdc_lst_glb,", BitGroom");
-#endif /* !CCR_HAS_BITGROOM */
-#if defined(CCR_HAS_BITROUND)|| defined(NC_HAS_QUANTIZE)
     strcat(nco_cdc_lst_glb,", BitRound");
-#endif /* !CCR_HAS_BITROUND */
-#if defined(CCR_HAS_GRANULARBR) || defined(NC_HAS_QUANTIZE)
     strcat(nco_cdc_lst_glb,", GranularBR");
-#endif /* !CCR_HAS_GRANULARBR */
+#endif /* !NC_HAS_QUANTIZE */
 
-#if defined(_CCR_H) || (NC_LIB_VERSION >= 490)
+#if (NC_LIB_VERSION >= 490)
   unsigned int flt_id; /* [ID] HDF5 filter ID */
   const char hlp_txt[]="This is probably fixable because this filter is supported by all default installations of netCDF version 4.9.0 or higher. HINT: If you build netCDF from source, please be sure it was configured with the following options: \"--enable-nczarr\" and \"--with-plugin-dir=${HDF5_PLUGIN_PATH}\". The latter is especially important in netCDF 4.9.0. Also, please be sure the library for the missing filter (e.g., libzstd.a, libblosc.a, libbz2.a) is in an automatically searched directory, e.g., $LD_LIBRARY_PATH or /usr/lib.";
 #endif /* NC_LIB_VERSION >= 490 */
   
-    /* Only call nc_inq_filter_avail() if it exists and might be successful */
-#if defined(CCR_HAS_BZIP2) || (NC_LIB_VERSION >= 490)
+  /* Only call nc_inq_filter_avail() if it exists and might be successful */
+#if ENABLE_NEP || (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_BZIP2;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
     if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Bzip2"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 #endif /* !BZIP2 */
     
-#if defined(CCR_HAS_ZFP) || (NC_LIB_VERSION >= 490)
+#if (NC_LIB_VERSION >= 490)
     /* 20250808: NB: ZFP is completely untested */
     flt_id=H5Z_FILTER_ZFP;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
     if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", ZFP"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 #endif /* !ZFP */
 
-#if defined(CCR_HAS_ZSTD) || (NC_LIB_VERSION >= 490)
+#if (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_ZSTD;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
     if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Zstandard"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 #endif /* !ZSTD */
 
-#if defined(CCR_HAS_BLOSC) || (NC_LIB_VERSION >= 490)
+#if (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_BLOSC;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
     if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Blosc (LZ = default, LZ4, LZ4 HC, DEFLATE, Snappy, Zstandard)"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
