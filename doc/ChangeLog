@@ -1,4 +1,4 @@
-2025-12-11  Charlie Zender  <zender@uci.edu>
+2026-01-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha03: Chafing';git push
