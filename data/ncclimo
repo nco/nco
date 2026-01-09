@@ -116,7 +116,7 @@ if [ -z "${DATA}" ]; then
 		DATA="${SCRATCH}"
 	    fi # !LMOD_SYSTEM_NAME
 	    ;; # !login	
-	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) DATA="${SCRATCH}" ; ;; # NERSC perlmutter compute nodes named nidNNNNNN (CPU) with (64)|(512) cores|GB/node (cpu) (login nodes 512 GB)
+	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) DATA="${SCRATCH}" ; ;; # NERSC perlmutter compute nodes named nidNNNNNN (CPU) with (128)|(512) cores|GB/node (cpu) (login nodes 512 GB)
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
@@ -726,7 +726,6 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "chrys: srun -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo --pty bash\n" # Login node
     printf "chrys: srun --nodes=1 --time=30 --job-name=ncclimo --pty bash\n" # Compute node
     printf "compy: srun -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash\n"
-    printf "coole: qsub -I -A ClimateEnergy_4 --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
     printf "front: salloc -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash\n"
     printf "perlm: srun -A e3sm --constraint=cpu --nodes=1 --time=00:30:00 --qos=debug --job-name=ncclimo --pty bash\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
