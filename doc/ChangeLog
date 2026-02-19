@@ -1,5 +1,9 @@
 2026-02-18  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.7-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha04: Manitou';git push
+	git tag -a 5.3.7-alpha04 -m 'all: ';git push --tags
+
 	* NCO 5.3.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha03: Chafing';git push
 	git tag -a 5.3.7-alpha03 -m 'all: Add LZF stubs, deprecate CCR;	ncclimo/ncremap LCRC improv';git push --tags
@@ -10,7 +14,7 @@
 
 2026-01-01  Charlie Zender  <zender@uci.edu>
 
-	* Updated libnetcdf main branch snapshot increased regressions (from 3 to 6) in tests with --trd -s %fmt
+	* Updated libnetcdf main branch snapshot caused three new ncks regressions, all in tests with --trd -s %fmt
 
 2025-12-09  Charlie Zender  <zender@uci.edu>
 

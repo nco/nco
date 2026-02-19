@@ -370,7 +370,7 @@ if($USER eq 'zender'){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 # printf("paused @ [%s:%d] - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
-    } # endif false
+    } # !0
 
 # ncap2 #1
 # ncap2 -O -v -s 'tpt_mod=tpt%273.0f' ~/nco/data/in.nc ~/foo.nc
@@ -1807,7 +1807,7 @@ if($USER eq 'zender'){
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
-    } # endif 0
+    } # !0
     
 #ncks #09
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. $in_pth_arg in.nc %tmp_fl_00%";
@@ -1880,13 +1880,13 @@ if($USER eq 'zender'){
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
-    } # endif 0
+    } # !0
 
 #ncks #16
 # ncks -C -H --trd -s '%d' -v byte_var ~/nco/data/in.nc
     $tst_cmd[0]="ncks -C -H --trd -s '%d' -v byte_var $in_pth_arg in.nc";
     $dsc_sng="Print byte value";
-    $tst_cmd[1]=122;
+    $tst_cmd[1]="122";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -2285,7 +2285,7 @@ if($USER eq 'zender'){
 	$tst_cmd[3]="SS_OK";   
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array 			
-    } # endif false
+    } # !0
     
 # NCO 4.2.6 tests
 # This version has a major change in dimension handling---global array lmt_all was eliminated and replaced
@@ -5979,7 +5979,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
-    } # endif 0
+    } # !0
 
 #ncrename #28
 #ncrename -O -d time,newrec ~/nco/data/in.nc ~/foo.nc
