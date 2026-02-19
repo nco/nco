@@ -108,7 +108,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
     cvs_mnr_vrs_len=usc_2_ptr-usc_1_ptr-1;
     cvs_pch_vrs_len=cvs_nm_sng_len-cvs_mjr_vrs_len-1-cvs_mnr_vrs_len-1;
     cvs_vrs_sng_len=cvs_mjr_vrs_len+1+cvs_mnr_vrs_len+1+cvs_pch_vrs_len;
-  } /* end else */
+  } /* !usc_2_ptr */
   cvs_mnr_vrs_sng=(char *)nco_malloc((size_t)cvs_mnr_vrs_len+1);
   cvs_mnr_vrs_sng=strncpy(cvs_mnr_vrs_sng,usc_1_ptr+1,(size_t)cvs_mnr_vrs_len);
   cvs_mnr_vrs_sng[cvs_mnr_vrs_len]='\0';
@@ -125,7 +125,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
     (void)sprintf(cvs_vrs_sng,"%li.%li.%li",cvs_mjr_vrs,cvs_mnr_vrs,cvs_pch_vrs);
   }else{
     (void)sprintf(cvs_vrs_sng,"%li.%li",cvs_mjr_vrs,cvs_mnr_vrs);
-  }/* end else */
+  }/* !usc_2_ptr */
 
   if(nco_dbg_lvl_get() >= nco_dbg_vrb){
     (void)fprintf(stderr,"NCO version %s\n",cvs_vrs_sng);
@@ -144,7 +144,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   cvs_nm_sng=(char *)nco_free(cvs_nm_sng);
 
   return cvs_vrs_sng;
-} /* end cvs_vrs_prs() */
+} /* !cvs_vrs_prs() */
 
 void
 nco_cpy_prn(void) /* [fnc] Print copyright notice */
@@ -152,7 +152,7 @@ nco_cpy_prn(void) /* [fnc] Print copyright notice */
   /* Purpose: Print copyright notice */
   (void)fprintf(stderr,"Copyright (C) 1995--2026 Charlie Zender\n");
   (void)fprintf(stdout,"This program is part of NCO, the netCDF Operators.\nNCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\nYou may redistribute and/or modify NCO under the terms of the\n3-Clause BSD License with exceptions described in the LICENSE file\nBSD: https://opensource.org/licenses/BSD-3-Clause\nLICENSE: https://github.com/nco/nco/tree/master/LICENSE\n");
-} /* end copyright_prn() */
+} /* !copyright_prn() */
 
 void
 nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
@@ -210,7 +210,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
   /* Purpose: Return mnemonic describing current NCO version
      20191221: ncremap/ncclimo print left quote and first word of this string, so one-word strings look best
      20200117: fixed this limitation, multi-word versions work fine */
-  return "Chafing";
+  return "Manitou";
 } /* !nco_nmn_get() */
 
 void
