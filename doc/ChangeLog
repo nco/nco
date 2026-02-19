@@ -1,8 +1,16 @@
-2026-01-09  Charlie Zender  <zender@uci.edu>
+2026-02-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha03: Chafing';git push
-	git tag -a 5.3.7-alpha03 -m 'all: Add LZF stubs, deprecate CCR';git push --tags
+	git tag -a 5.3.7-alpha03 -m 'all: Add LZF stubs, deprecate CCR;	ncclimo/ncremap LCRC improv';git push --tags
+
+2026-02-18  Charlie Zender  <zender@uci.edu>
+
+	* Update ncclimo/ncremap to work with LCRC Improv and PBSPro
+
+2026-01-01  Charlie Zender  <zender@uci.edu>
+
+	* Updated libnetcdf main branch snapshot increased regressions (from 3 to 6) in tests with --trd -s %fmt
 
 2025-12-09  Charlie Zender  <zender@uci.edu>
 

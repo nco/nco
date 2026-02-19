@@ -1734,7 +1734,8 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array
 
 #ncks #02   
-#passes, but returned string includes tailing NULLS (<nul> in nedit)
+# passes, but returned string includes trailing NULLs (<nul> in nedit)
+# ncks -C -H --trd -s '%c' -v fl_nm ~/nco/data/in.nc
     $dsc_sng="extract filename string";
     $tst_cmd[0]="ncks -C -H --trd -s '%c' -v fl_nm $in_pth_arg in.nc";
     $tst_cmd[1]="/home/zender/nco/data/in.cdl";
@@ -1882,9 +1883,10 @@ if($USER eq 'zender'){
     } # endif 0
 
 #ncks #16
+# ncks -C -H --trd -s '%d' -v byte_var ~/nco/data/in.nc
     $tst_cmd[0]="ncks -C -H --trd -s '%d' -v byte_var $in_pth_arg in.nc";
     $dsc_sng="Print byte value";
-    $tst_cmd[1]="122";
+    $tst_cmd[1]=122;
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array

@@ -119,12 +119,13 @@ if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
 	acme1* ) DATA="/home/${USER}" ; ;; # LLNL acme1 
 	andes* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
-	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC blues compute nodes named bNNN, 36|64 cores|GB/node 
-	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
+	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC blues compute nodes named bNNN, 36|64 cores|GB/node 
+	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	compy* | n[0123456789][0123456789][0123456789][0123456789] ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
 	frontier* ) DATA="/lustre/orion/cli115/world-shared/${USER}" ; ;; # OLCF frontier compute nodes named frontier01276 64|512 cores|GB/node
+	ilogin* | i[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC improv compute nodes named iNNN, 128|256 cores|GB/node 
 	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
 	    if [ "${LMOD_SYSTEM_NAME}" = 'frontier' ]; then
 		DATA="/lustre/orion/cli115/world-shared/${USER}"
@@ -176,7 +177,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
         fi
 	    export PATH='/home/zender/bin_blues'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_blues'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
-	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
+	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | ilogin* | i[0123456789][0123456789][0123456789] )
         if [ -d '/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco' ]; then
             E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/chrysalis'
         else
