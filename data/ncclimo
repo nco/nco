@@ -724,10 +724,10 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_rvr}Interactive batch queues:${fnt_nrm}\n"
     printf "andes: srun -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash\n"
     printf "blues: srun -A condo --nodes=1 --partition=acme-small --time=00:30:00 --job-name=ncclimo --pty bash\n"
-    printf "cheye: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
     printf "chrys: srun -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo --pty bash\n" # Login node
     printf "chrys: srun --nodes=1 --time=30 --job-name=ncclimo --pty bash\n" # Compute node
     printf "compy: srun -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash\n"
+    printf "derec: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
     printf "front: salloc -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash\n"
     printf "impro: qsub -I -A E3SM -l select=1:ncpus=128:mpiprocs=128,walltime=00:30:00 -q compute\n"
     printf "perlm: srun -A e3sm --constraint=cpu --nodes=1 --time=00:30:00 --qos=debug --job-name=ncclimo --pty bash\n"

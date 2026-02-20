@@ -298,7 +298,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncks -O --dbg=1 --var=TREFHT --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc 2>&1 | m
 # ncks -O --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30pg2_to_r05_traave.20240701.nc --nlm=${DATA}/maps/map_ne30pg2_to_r05_trfv2.20240701.nc ${DATA}/bm/eamv3_ne30pg2l80.nc ~/foo.nc 2>&1 | m
 # Map-only, threading:
-# ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=5' --alg_typ=ncoaave --grd_src=${DATA}/grids/ne30np4_pentagons.20190501.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
+# ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=5' --alg_typ=ncoaave --grd_src=${DATA}/grids/ne30pg2 --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
 # ncks -O --dbg=5 --thr_nbr=6 --grd_src=${DATA}/grids/ne30np4_pentagons.20190501.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ~/nco/data/in.nc ~/foo.nc
 # ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=ncoidw --xtr_nsp=8 --xtr_xpn=2.0 --grd_src=${DATA}/grids/ne30np4_pentagons.20190501.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
 # ncremap --dbg=1 --alg_typ=bilin   --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
@@ -530,7 +530,8 @@ cmp_sng='' # [sng] Compression string
 cnv_exe_mbt='mbconvert' # [sng] MOAB-Tempest SCRIP/Exodus conversion to H5M executable
 #cnv_exe_tps='ConvertSCRIPToExodus' # Command was deprecated in 2022
 cnv_exe_tps='ConvertMeshToExodus' # [sng] TempestRemap SCRIP and Mesh-to-Exodus conversion executable
-cnv_opt_e2m='-o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS' # [sng] Recommended options to mbconvert for (high-resolution) Exodus to MOAB grids https://acme-climate.atlassian.net/wiki/spaces/ED/pages/932380820/Offline+remapping+workflow+with+mbtempest
+cnv_opt_srl_e2m='-B' # [sng] Recommended options to serial mbconvert for (high-resolution, Tempest-compatible *.g files) Exodus to MOAB grids
+cnv_opt_par_n2m='-o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS' # [sng] Recommended options to mbconvert for parallel conversion of (high-resolution) SCRIP to MOAB grids https://acme-climate.atlassian.net/wiki/spaces/ED/pages/932380820/Offline+remapping+workflow+with+mbtempest
 col_dmn='' # [sng] Name of unstructured (column) dimension (for coupler files)
 d2f_flg='No' # [flg] Convert double-precision fields to single-precision
 d2f_opt='-M dbl_flt' # [sng] Option string to convert double-precision fields to single-precision
@@ -1258,29 +1259,29 @@ elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_ty
     # 20250604 Remove alg_typ=tempest because it is ambiguous and confused me, Walter H., and likely other users
     # https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids
     # alg_sng in comments is for E3SM naming convention map_src_to_dst_${alg_sng}.${dt_sng}.nc
-    cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
-    cnv_opt_dst="-B"
+    cnv_opt_src="-i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_dst=""
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --global_id GLOBAL_DOFS --method fv --monotonicity 1 --global_id GLOBAL_ID"
     wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono"
     alg_opt='se2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2fv' ]; then # alg_sng='highorder'
-    cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
-    cnv_opt_dst="-B"
+    cnv_opt_src="-i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_dst=""
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv"
     wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv"
     alg_opt='se2fv_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_se2fv' ]; then # alg_sng='intbilin'
-    cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
-    cnv_opt_dst="-B"
+    cnv_opt_src="-i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_dst=""
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonicity 3 --noconserve"
     wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono3 --noconserve"
     alg_opt='se2fv_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'conservative_monotone_se2se' ]; then # alg_sng='se2se'
-    cnv_opt_src="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
-    cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_src="-i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_dst="-i GLOBAL_DOFS -r ${se_np_nbr}"
     # 20190227: Add mono for se2se per recommendation of Mark Taylor
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method cgll --order ${se_np_nbr} --monotonicity 1"
     wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type cgll --out_np ${se_np_nbr} --mono"
@@ -1288,32 +1289,32 @@ elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'con
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # alg_sng='monotr'
     # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-    cnv_opt_src="-B"
-    cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_src=""
+    cnv_opt_dst="-i GLOBAL_DOFS -r ${se_np_nbr}"
     wgt_opt_mbt="--method cgll --order ${se_np_nbr} --method fv --monotonicity 1"
     wgt_opt_tps="--in_type cgll --in_np ${se_np_nbr} --out_type fv --mono"
     alg_opt='fv2se_flx'
     wgt_typ='tempest'
     trn_map='Yes'
 elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # alg_sng='highorder'
-    cnv_opt_src="-B"
-    cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_src=""
+    cnv_opt_dst="-i GLOBAL_DOFS -r ${se_np_nbr}"
     # 20190716: Remove "--volumetric" from fv2se_stt per Mark Taylor and Paul Ullrich
     wgt_opt_mbt="--method fv --order 2 --method cgll --order ${se_np_nbr}"
     wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np ${se_np_nbr}"
     alg_opt='fv2se_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # alg_sng='mono'
-    cnv_opt_src="-B"
-    cnv_opt_dst="-B -i GLOBAL_DOFS -r ${se_np_nbr}"
+    cnv_opt_src=""
+    cnv_opt_dst="-i GLOBAL_DOFS -r ${se_np_nbr}"
     # 20200525: Remove "--volumetric" from fv2se_mono per Mark Taylor modifying Confluence instructions
     wgt_opt_mbt="--method fv --order 1 --method cgll --order ${se_np_nbr} --monotonicity 1"
     wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np ${se_np_nbr} --mono"
     alg_opt='fv2se_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ]; then # alg_sng='highorder'
-    cnv_opt_src="-B"
-    cnv_opt_dst="-B"
+    cnv_opt_src=""
+    cnv_opt_dst=""
     # 20190227: Add --mono3 --noconserve for fv2fv per (misinterpreted) recommendation of Mark Taylor
     # 20200115: Replace --mono3 --noconserve with --in_np 2 per recommendation of Mark Taylor and Paul Ullrich
     wgt_opt_mbt='--method fv --order 2 --method fv'
@@ -1321,8 +1322,8 @@ elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ]; then # alg_sng='hig
     alg_opt='fv2fv'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv_flx' ] || [ ${alg_typ} = 'traave' ] || [ ${alg_typ} = 'fv2fv_mono' ] || [ ${alg_typ} = 'conservative_monotone_fv2fv' ]; then # alg_sng='traave'
-    cnv_opt_src="-B"
-    cnv_opt_dst="-B"
+    cnv_opt_src=""
+    cnv_opt_dst=""
     # 20191115: Add per recommendation of Paul Ullrich
     # 20200221: Add --out_np 1 per (new?) settings in on Transition to TR page
     # Classic cell-integrated piecewise constant map similar to aave and nco_con
@@ -1331,8 +1332,8 @@ elif [ ${alg_typ} = 'fv2fv_flx' ] || [ ${alg_typ} = 'traave' ] || [ ${alg_typ} =
     alg_opt='fv2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'trfv2' ] || [ ${alg_typ} = 'trfvnp2' ]; then # alg_sng='trfv2'
-    cnv_opt_src="-B"
-    cnv_opt_dst="-B"
+    cnv_opt_src=""
+    cnv_opt_dst=""
     # 20231129: E3SMv3 recommended for fluxes when source grid resolution uniformly is _not_ >> target grid resolution (e.g., ne30pg2->r05), i.e., coarse->fine
     # 20231129: E3SMv3 recommended for states when source grid resolution uniformly << target grid resolution (e.g., ne30pg2->r05), i.e., coarse->fine
     # 2nd order FV reconstruction, cell integrated on target grid (conservative, though not monotone unless used with FV2+CAAS method)
@@ -1343,8 +1344,8 @@ elif [ ${alg_typ} = 'trfv2' ] || [ ${alg_typ} = 'trfvnp2' ]; then # alg_sng='trf
     alg_opt='trfv2'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2fv' ]; then # alg_sng='highorder'
-    cnv_opt_src="-B"
-    cnv_opt_dst="-B"
+    cnv_opt_src=""
+    cnv_opt_dst=""
     # 20191115: Add per recommendation of Paul Ullrich
     # --in_np 2 means all nearest neighbor cells will be used for higher order reconstruction of source data, which is then integrated over target cell. Unlike SE case, no mass matrix is used for FV target grids, and thus --out_np is ignored (and will always be 1 internally).
     wgt_opt_mbt='--method fv --order 2 --method fv'
@@ -1353,16 +1354,16 @@ elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${a
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'trbilin' ]; then # alg_sng='trbilin'
     # 20231001: Added with options per https://acme-climate.atlassian.net/wiki/spaces/DOC/pages/1217757434/Mapping+file+algorithms+and+naming+convention
-    cnv_opt_src="-B"
-    cnv_opt_dst="-B"
+    cnv_opt_src=""
+    cnv_opt_dst=""
     wgt_opt_mbt='--method fv --method fv --order 1 --order 1 --fvmethod bilin'
     wgt_opt_tps='--in_type fv --out_type fv --method bilin'
     alg_opt='trbilin'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'trintbilin' ]; then # alg_sng='trintbilin'
     # 20231001: Added with options per https://acme-climate.atlassian.net/wiki/spaces/DOC/pages/1217757434/Mapping+file+algorithms+and+naming+convention
-    cnv_opt_src="-B"
-    cnv_opt_dst="-B"
+    cnv_opt_src=""
+    cnv_opt_dst=""
     wgt_opt_mbt='--method fv --method fv --order 1 --order 1 --fvmethod intbilin'
     wgt_opt_tps='--in_type fv --out_type fv --method intbilin'
     alg_opt='trintbilin'
@@ -2811,14 +2812,17 @@ if [ "${map_mk}" = 'Yes' ]; then
 	    [[ ${grd_dst} == *.g ]] && grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
 	    [[ ${grd_dst} == *.exo ]] && grd_dst_h5m_tmp="${grd_dst/.exo/.h5m}"
 	    [[ ${grd_dst} == *".nc"* ]] && grd_dst_h5m_tmp="${grd_dst/.nc/.h5m}"
-	    cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_e2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
+	    # 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
+	    # mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
+	    [[ ${grd_dst} == *.g ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
+	    cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_g2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_e2m[${fl_idx}]}
+		echo ${cmd_g2m[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_e2m[${fl_idx}]}
+		eval ${cmd_g2m[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m} ]; then
-		    printf "${spt_nm}: ERROR Failed to convert destination grid to MOAB H5M format. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to convert destination grid to MOAB H5M format. Debug this:\n${cmd_g2m[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
 		    exit 1
 		fi # !err
@@ -2886,15 +2890,18 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    [[ ${grd_src} == *.g ]] && grd_src_h5m_tmp="${grd_src/.g/.h5m}"
 	    [[ ${grd_src} == *.exo ]] && grd_src_h5m_tmp="${grd_src/.exo/.h5m}"
 	    [[ ${grd_src} == *".nc"* ]] && grd_src_h5m_tmp="${grd_src/.nc/.h5m}"
-	    cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_e2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
+	    # 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
+	    # mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
+	    [[ ${grd_src} == *.g ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
+	    cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_g2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_e2m[${fl_idx}]}
+		echo ${cmd_g2m[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_e2m[${fl_idx}]}
+		eval ${cmd_g2m[${fl_idx}]}
 		if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_tmp} ]; then
-		    printf "${spt_nm}: ERROR Failed to convert source grid to MOAB H5M format. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
-		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) Environment paths must resolve the correct version of libTempestRemap. 2) mbconvert must support the -B option. Some versions of mbconvert do not. 3) mbconvert must support the PARALLEL option. Serial versions of mbconvert do not.\n"
+		    printf "${spt_nm}: ERROR Failed to convert source grid to MOAB H5M format. Debug this:\n${cmd_g2m[${fl_idx}]}\n"
+		    printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) Environment paths must resolve the correct version of libTempestRemap. 2) mbconvert must support the -B option. Older versions of mbconvert do not. 3) mbconvert must support the PARALLEL option. Serial versions of mbconvert do not.\n"
 		    printf "${spt_nm}: HINT a simple way to install a MOAB compatible with ncremap is install them both into their own environment, e.g., \n\tconda create -n moab_nco -c conda-forge moab=5.3.0=*mpich_tempest* nco\n"
 		    exit 1
 		fi # !err
@@ -3117,14 +3124,17 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			[[ ${grd_src} == *.g ]] && grd_src_h5m_tmp="${grd_src/.g/.h5m}"
 			[[ ${grd_src} == *.exo ]] && grd_src_h5m_tmp="${grd_src/.exo/.h5m}"
 			[[ ${grd_src} == *".nc"* ]] && grd_src_h5m_tmp="${grd_src/.nc/.h5m}"
-			cmd_e2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_e2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
+			# 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
+			# mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
+			[[ ${grd_src} == *.g ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
+			cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_g2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
 			if [ ${dbg_lvl} -ge 1 ]; then
-			    echo ${cmd_e2m[${fl_idx}]}
+			    echo ${cmd_g2m[${fl_idx}]}
 			fi # !dbg
 			if [ ${dbg_lvl} -ne 2 ]; then
-			    eval ${cmd_e2m[${fl_idx}]}
+			    eval ${cmd_g2m[${fl_idx}]}
 			    if [ "$?" -ne 0 ] || [ ! -f ${grd_src_h5m_tmp} ]; then
-				printf "${spt_nm}: ERROR Failed to convert source grid to MOAB H5M format. Debug this:\n${cmd_e2m[${fl_idx}]}\n"
+				printf "${spt_nm}: ERROR Failed to convert source grid to MOAB H5M format. Debug this:\n${cmd_g2m[${fl_idx}]}\n"
 				printf "${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) Environment paths must resolve the correct version of libTempestRemap. 2) mbconvert must support the -B option. Some versions of mbconvert do not. 3) mbconvert must support the PARALLEL option. Serial versions of mbconvert do not.\n"
 				printf "${spt_nm}: HINT a simple way to install a MOAB compatible with ncremap is install them both into their own environment, e.g., \n\tconda create -n moab_nco -c conda-forge moab=5.3.0=*mpich_tempest* nco\n"
 				exit 1

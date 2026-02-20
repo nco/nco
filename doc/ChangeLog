@@ -1,8 +1,14 @@
-2026-02-18  Charlie Zender  <zender@uci.edu>
+2026-02-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha04: Manitou';git push
 	git tag -a 5.3.7-alpha04 -m 'all: ';git push --tags
+
+	* ncremap mbconvert always use -B for serial TR reader on Exodus *.g grids
+
+	* ncremap mbconvert always parallel reader on true Exodus (*.exo) and SCRIP grids
+
+2026-02-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha03: Chafing';git push

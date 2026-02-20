@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.7-alpha04
 @set copyright-years 1995--2026
 @set update-year 2025
-@set update-date 18 February 2026
+@set update-date 20 February 2026
 @set update-month December 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -26983,10 +26983,10 @@ components of the @acronym{MOAB} toolchain:
 @verbatim
 mbconvert -B -o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE \
   -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS \
-  "src.g" "src.h5m"
+  "dst.nc" "dst.h5m"
 mbconvert -B -o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE \
   -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS \
-  "dst.nc" "dst.h5m"
+  "src.g" "src.h5m"
 mbpart 8 --zoltan RCB "src.h5m" "src_8p.h5m"
 mbpart 8 --zoltan RCB --recompute_rcb_box --scale_sphere \
   --project_on_sphere 2 "dst.h5m" "dst_8p.h5m"
