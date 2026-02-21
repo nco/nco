@@ -39,7 +39,7 @@
 # Insta-install:
 # scp ~/nco/data/ncclimo zender1@acme1.llnl.gov:bin
 # scp ~/nco/data/ncclimo andes.olcf.ornl.gov:bin_andes
-# scp ~/nco/data/ncclimo ac.zender@blues.lcrc.anl.gov:bin_blues
+# scp ~/nco/data/ncclimo ac.zender@bebop.lcrc.anl.gov:bin
 # scp ~/nco/data/ncclimo ac.zender@chrysalis.lcrc.anl.gov:bin_chrysalis
 # scp ~/nco/data/ncclimo compy.pnl.gov:bin
 # scp ~/nco/data/ncclimo derecho.hpc.ucar.edu:bin
@@ -103,7 +103,7 @@ if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
 	acme1* ) DATA="/home/${USER}" ; ;; # LLNL acme1 
 	andes* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
-	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC blues compute nodes named bNNN, 36|64 cores|GB/node 
+	bebop* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC bebop compute nodes named bNNN, 36|64 cores|GB/node 
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
 	compy* | n[0123456789][0123456789][0123456789][0123456789] ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
@@ -152,14 +152,14 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
         fi
         export PATH='/ccs/home/zender/bin_andes'\:${PATH}
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
-	blues* | blogin* | b[0123456789][0123456789][0123456789] )
+	bebop* | blogin* | b[0123456789][0123456789][0123456789] )
         if [ -d '/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco' ]; then
             E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/anvil'
         else
             E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
         fi
-	    export PATH='/home/zender/bin_blues'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/zender/lib_blues'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/home/zender/bin'\:${PATH}
+	    export LD_LIBRARY_PATH='/home/zender/lib'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | ilogin* | i[0123456789][0123456789][0123456789] )
         if [ -d '/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco' ]; then
             E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/chrysalis'
@@ -385,7 +385,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # SLURM:   salloc, sbatch, squeue, scancel,   srun
 # Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute ncclimo command interactively
 #   Andes:  salloc  -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo # Bigmem: --partition=gpu
-#   Blues:  salloc  -A condo --nodes=1 --partition=acme-small --time=00:30:00 --job-name=ncclimo
+#   Bebop:  qsub -I -A E3SM -l select=1:ncpus=128:mpiprocs=128,walltime=00:10:00 -N ncclimo
 #   Chrysalis: salloc  -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # Use compute queue instead if debug is slow to grant resources
 #   Compy:  salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo
 #   Derecho: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
@@ -401,14 +401,14 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s
 #   Andes a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #                   echo "ncclimo -a djf -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1 -e 2 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
-#   Blues a): echo "ncclimo -a djf -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
+#   Bebop a): echo "ncclimo -a djf -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Compy a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #             echo "ncclimo -d 1 -p mpi -c 20180215.DECKv1b_H1.ne30_oEC.edison -s 2010 -e 2010 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Derec a): echo "ncclimo -a djf -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Front a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #             echo "ncclimo -a djf -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1 -e 2 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Andes b): sbatch -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
-#   Blues b): qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
+#   Bebop b): qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Derec b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Front b): sbatch -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
@@ -723,7 +723,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
 # 20210831: NB: Alternative access to interactive batch queues via, e.g., "salloc -A e3sm --constraint=knl --nodes=1 --time=00:30:00 --job-name=ncclimo" works well everywhere except Compy
     printf "${fnt_rvr}Interactive batch queues:${fnt_nrm}\n"
     printf "andes: srun -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash\n"
-    printf "blues: srun -A condo --nodes=1 --partition=acme-small --time=00:30:00 --job-name=ncclimo --pty bash\n"
+    printf "bebop: qsub -I -A E3SM -l select=1:ncpus=128:mpiprocs=128,walltime=00:30:00\n" # No queue argument
     printf "chrys: srun -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo --pty bash\n" # Login node
     printf "chrys: srun --nodes=1 --time=30 --job-name=ncclimo --pty bash\n" # Compute node
     printf "compy: srun -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo --pty bash\n"
@@ -2132,7 +2132,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		let mpi_idx=${mpi_idx_zro}+1
 	    fi # !tms_flg
 	    case "${HOSTNAME}" in 
-		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | compy* | constance* | frontier* | login[0123456789][0123456789] | nid* | node* | perlmutter* )
+		andes* | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | compy* | constance* | frontier* | login[0123456789][0123456789] | nid* | node* | perlmutter* )
 		    # 20220518: Non-interactive batch jobs at NERSC/Perlmutter return HOSTNAME as login??, and nodes as nid??????
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
@@ -2141,14 +2141,14 @@ if [ "${mpi_flg}" = 'Yes' ]; then
  		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
 		    # cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
 		    # cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=1" ; ;; # SLURM
-		derecho* | ilogin* | i[0123456789][0123456789][0123456789] )
+		bebop* | blogin* | b[0123456789][0123456789][0123456789] | derecho* | ilogin* | i[0123456789][0123456789][0123456789] )
 		    # 20180120: Non-interactive batch jobs at NCAR return HOSTNAME as derecho?
 		    # Derecho prefers 'mpiexec_mpt dplace -s 1 ncclimo ...'
 		    # Unsure how to specify nd_nm to mpiexec_mpt
 		    # mpirun from SGI MPT does not accept '-H nd_nm', unlike regular PBS
 		    # PBSPro considers ncclimo a 'non-MPT application' so must set MPI_SHEPHERD=true
 		    export MPI_SHEPHERD=true
-		    # PBSPro on Improv is untested
+		    # PBSPro on Bebop and Improv are untested
 #		    cmd_mpi[${mpi_idx}]="mpiexec_mpt dplace ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
 		    cmd_mpi[${mpi_idx}]="mpirun ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
 		* )

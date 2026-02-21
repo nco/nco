@@ -4,9 +4,15 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha04: Manitou';git push
 	git tag -a 5.3.7-alpha04 -m 'all: ';git push --tags
 
+	* ncremap mbconvert use mpi_pfx for SCRIP, not for TR Exodus
+
+	* ncclimo/ncremap replace blues with bebop
+
+	* ncremap always use srun to run mbconvert
+
 	* ncremap mbconvert always use -B for serial TR reader on Exodus *.g grids
 
-	* ncremap mbconvert always parallel reader on true Exodus (*.exo) and SCRIP grids
+	* ncremap mbconvert always use parallel reader on true Exodus (*.exo) and SCRIP grids
 
 2026-02-18  Charlie Zender  <zender@uci.edu>
 
