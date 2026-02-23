@@ -2815,9 +2815,10 @@ if [ "${map_mk}" = 'Yes' ]; then
 	    [[ ${grd_dst} == *".nc"* ]] && grd_dst_h5m_tmp="${grd_dst/.nc/.h5m}"
 	    # 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
 	    # mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
+	    # "g2m" stands for "grid-to-MOAB", meaning command converts any grid-type to MOAB
 	    [[ ${grd_dst} == *.g ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
 	    cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_g2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
-	    if [[ ${grd_dst} == *.exo ]] || [[ ${grd_dst} == *".nc"* ]]; then cmd_g2m[${fl_idx}]="${mpi_pfx} cmd_g2m[${fl_idx}]"; fi
+	    if [[ ${grd_dst} == *.exo ]] || [[ ${grd_dst} == *".nc"* ]]; then cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"; fi
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_g2m[${fl_idx}]}
 	    fi # !dbg
@@ -2896,7 +2897,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    # mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
 	    [[ ${grd_src} == *.g ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
 	    cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_g2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
-	    if [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *".nc"* ]]; then cmd_g2m[${fl_idx}]="${mpi_pfx} cmd_g2m[${fl_idx}]"; fi
+	    if [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *".nc"* ]]; then cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"; fi
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_g2m[${fl_idx}]}
 	    fi # !dbg
@@ -3131,8 +3132,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			# mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
 			[[ ${grd_src} == *.g ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
 			cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_g2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
-			if [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *".nc"* ]]; then cmd_g2m[${fl_idx}]="${mpi_pfx} cmd_g2m[${fl_idx}]"; fi
-
+			if [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *".nc"* ]]; then cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"; fi
 			if [ ${dbg_lvl} -ge 1 ]; then
 			    echo ${cmd_g2m[${fl_idx}]}
 			fi # !dbg

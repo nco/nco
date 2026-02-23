@@ -1,8 +1,12 @@
-2026-02-20  Charlie Zender  <zender@uci.edu>
+2026-02-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha04: Manitou';git push
 	git tag -a 5.3.7-alpha04 -m 'all: ';git push --tags
+
+	* Fix mpi_pfx prepend command
+
+2026-02-20  Charlie Zender  <zender@uci.edu>
 
 	* ncremap mbconvert use mpi_pfx for SCRIP, not for TR Exodus
 
