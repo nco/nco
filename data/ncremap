@@ -582,6 +582,8 @@ map_trn_fl='' # [sng] Map-file transpose (for Tempest)
 map_mk='No' # [flg] Generate map-file (i.e., map does not yet exist)
 map_usr_flg='No' # [flg] User supplied argument to --map option
 map_xmp='map.nc' # [sng] Map-file for examples
+mbt_grd_nc4='No' # [sng] Either grid for MOAB mbconvert to read is netCDF4 format
+mbt_grd_rd_srl='No' # [sng] MOAB mbconvert is to read grids in serial
 mbt_typ_grd=0 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, OVERLAP_MEMORY=4, OVERLAP_MOAB=5])
 mbt_typ_map=5 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, OVERLAP_MEMORY=4, OVERLAP_MOAB=5])
 mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indicates unlimited RAM)
@@ -717,6 +719,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
     echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one map-file per input file) [${fnt_tlc}mlt_map, no_multimap${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
+    echo " ${fnt_bld}--mbt_grd_nc4${fnt_nrm} Either grid for MOAB mbconvert to read is netCDF4 format (default ${fnt_bld}${mbt_grd_nc4}${fnt_nrm}) [${fnt_tlc}mbt_grd_nc4, mbt_grd_rd_srl, grd_fmt_nc4$, {fnt_nrm}]"
     echo " ${fnt_bld}--mpi_nbr${fnt_nrm}  Number of tasks-per-node that MPI-enabled weight generators will request (default ${fnt_bld}${mpi_nbr}${fnt_nrm}) [${fnt_tlc}mpi_nbr, mpi_number, tsk_nbr, task_number${fnt_nrm}]"
     echo " ${fnt_bld}--mpi_pfx${fnt_nrm}  Prefix for MPI-enabled weight generators (empty means weight generator is not MPI-enabled) (default ${fnt_bld}${mpi_pfx}${fnt_nrm}) [${fnt_tlc}mpi_pfx, mpi_prefix, srun_cmd, srun_command${fnt_nrm}]"
     echo " ${fnt_bld}--mpt_mss${fnt_nrm}  Set empty (sgs_frc==0.0) SGS cells to missing value (default ${fnt_bld}${mpt_mss}${fnt_nrm}) [${fnt_tlc}mpt_mss, sgs_zro_mss$, empty_missing{fnt_nrm}]"
@@ -914,6 +917,8 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       in_fl=?* | in_file=?* | input_file=?* ) in_fl="${LONG_OPTARG}" ;; # -i # Input file
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       map_fl=?* | map=?* | map_file=?* | rgr_map=?* | regrid_map=?* ) map_fl="${LONG_OPTARG}" ;; # -m # Map-file
+	       mbt_grd_nc4 | mbt_grd_rd_srl | grd_fmt_nc4 ) mbt_grd_nc4='Yes' ;; # # Either grid for MOAB mbconvert to read is netCDF4 format (so read it in serial)
+	       mbt_grd_nc4=?* | mbt_grd_rd_srl=?* | grd_fmt_nc4=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Either grid for MOAB mbconvert to read is netCDF4 format (so read it in serial)
 	       mem_mb=?* ) mem_mb="${LONG_OPTARG}" ;; # # Megabytes of RAM per srun job in Cori SLURM in MPI mode
 	       mlt_map | multimap | no_multimap | nomultimap ) mlt_map_flg='No' ;; # -M # Multi-map flag
 	       mlt_map=?* | multimap=?* | no_multimap=?* | nomultimap=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -M # Multi-map flag
@@ -2409,6 +2414,8 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: in_fl    = ${in_fl}\n"
     printf "dbg: map_fl   = ${map_fl}\n"
     printf "dbg: map_mk   = ${map_mk}\n"
+    printf "dbg: mbt_nc4  = ${mbt_grd_nc4}\n"
+    printf "dbg: mbt_srl  = ${mbt_grd_rd_srl}\n"
     printf "dbg: mlt_map  = ${mlt_map_flg}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
     printf "dbg: mpi_nbr  = ${mpi_nbr}\n"
@@ -2816,9 +2823,10 @@ if [ "${map_mk}" = 'Yes' ]; then
 	    # 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
 	    # mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
 	    # "g2m" stands for "grid-to-MOAB", meaning command converts any grid-type to MOAB
-	    [[ ${grd_dst} == *.g ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
+	    [[ ${grd_dst} == *.g ]] || [[ ${mbt_grd_nc4} = 'Yes' ]] && mbt_grd_rd_srl='Yes' || mbt_grd_rd_srl='No'
+	    [[ ${mbt_grd_rd_srl} = 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
 	    cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_g2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
-	    if [[ ${grd_dst} == *.exo ]] || [[ ${grd_dst} == *".nc"* ]]; then cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"; fi
+	    [[ ${mbt_grd_rd_srl} = 'No' ]] && cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_g2m[${fl_idx}]}
 	    fi # !dbg
@@ -2896,9 +2904,10 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    [[ ${grd_src} == *".nc"* ]] && grd_src_h5m_tmp="${grd_src/.nc/.h5m}"
 	    # 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
 	    # mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
-	    [[ ${grd_src} == *.g ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
+	    [[ ${grd_src} == *.g ]] || [[ ${mbt_grd_nc4} = 'Yes' ]] && mbt_grd_rd_srl='Yes' || mbt_grd_rd_srl='No'
+	    [[ ${mbt_grd_rd_srl} = 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
 	    cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_g2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
-	    if [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *".nc"* ]]; then cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"; fi
+	    [[ ${mbt_grd_rd_srl} = 'No' ]] && cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_g2m[${fl_idx}]}
 	    fi # !dbg
@@ -3131,9 +3140,10 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			[[ ${grd_src} == *".nc"* ]] && grd_src_h5m_tmp="${grd_src/.nc/.h5m}"
 			# 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
 			# mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
-			[[ ${grd_src} == *.g ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
+			[[ ${grd_src} == *.g ]] || [[ ${mbt_grd_nc4} = 'Yes' ]] && mbt_grd_rd_srl='Yes' || mbt_grd_rd_srl='No'
+			[[ ${mbt_grd_rd_srl} = 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
 			cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_g2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
-			if [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *".nc"* ]]; then cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"; fi
+			[[ ${mbt_grd_rd_srl} = 'No' ]] && cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"
 			if [ ${dbg_lvl} -ge 1 ]; then
 			    echo ${cmd_g2m[${fl_idx}]}
 			fi # !dbg
