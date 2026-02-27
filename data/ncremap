@@ -2841,31 +2841,9 @@ if [ "${map_mk}" = 'Yes' ]; then
 	    fi # !dbg
 	    grd_dst=${grd_dst_h5m_tmp}
 	fi # !grd_dst
-	if [[ ${grd_dst} == *.h5m ]] && [[ ${grd_dst} != *p.h5m ]]; then
-	    grd_dst_prt_tmp="${grd_dst/.h5m/_${prt_nbr}p.h5m}"
-	    if [ ${prt_alg} = 'zoltan' ]; then
-		# 20210829: NB: Compy installation only has Zoltan not METIS
-		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 --recompute_rcb_box --scale_sphere --project_on_sphere 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
-	    else # !prt_alg
-		# 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan, lacks --scale_sphere completely, and must use -p instead of --project_on_sphere
-		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_dst} \"${grd_dst}\" \"${grd_dst_prt_tmp}\"${devnull}"
-	    fi # !HOSTNAME
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_prt[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_prt[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_prt_tmp} ]; then
-		    printf "${spt_nm}: ERROR Failed to partition MOAB destination grid. Debug this:\n${cmd_prt[${fl_idx}]}\n"
-		    printf "${spt_nm}: HINT ${prt_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	    grd_dst=${grd_dst_prt_tmp}
-	fi # !grd_dst
     fi # !mbtempest
 fi # !map_mk
-    
+
 # If user provides source gridfile, or it was inferred in RRG or SGS modes, assume it applies to every input file
 # In that case, no need to infer source gridfiles within file loop
 # Generate map-file once outside of file loop, and re-use it for every input file
@@ -2924,12 +2902,10 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	fi # !grd_src
 	if [[ ${grd_src} == *.h5m ]] && [[ ${grd_src} != *p.h5m ]]; then
 	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
+	    grd_dst_prt_tmp="${grd_dst/.h5m/_inferred.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
 		# 20210829: NB: Compy installation only has Zoltan not METIS
-		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 --recompute_rcb_box --project_on_sphere 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
-	    else # !prt_alg
-		# 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan, lacks --scale_sphere completely, and must use -p instead of --project_on_sphere
-		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --project_on_sphere 2 --scale_sphere --imbalance 1.002 --inferred \"${grd_dst}\" \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    fi # !HOSTNAME
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_prt[${fl_idx}]}
@@ -2943,10 +2919,9 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 		fi # !err
 	    fi # !dbg
 	    grd_src=${grd_src_prt_tmp}
+	    grd_dst=${grd_dst_prt_tmp}
 	fi # !grd_src
 	if [ ${prt_alg} = 'zoltan' ]; then
-	    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
-	else # !prt_alg
 	    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
 	fi # !prt_alg
     elif [ "${wgt_typ}" = 'tempest' ]; then 
@@ -3160,12 +3135,10 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		    fi # !grd_src
 		    if [[ ${grd_src} == *.h5m ]] && [[ ${grd_src} != *p.h5m ]]; then
 			grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
+			grd_dst_prt_tmp="${grd_dst/.h5m/_inferred.h5m}"
 			if [ ${prt_alg} = 'zoltan' ]; then
 			    # 20210829: NB: Compy installation only has Zoltan not METIS
-			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB -i 1.002 --recompute_rcb_box --project_on_sphere 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
-			else # !prt_alg
-			    # 20210829: moab=5.3.0=*nompi_tempest* only supplies METIS, not Zoltan, lacks --scale_sphere completely, and must use -p instead of --project_on_sphere
-			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --metis ML_RB -i 1.005 -p 2 ${prt_opt_src} \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --project_on_sphere 2 --scale_sphere --imbalance 1.002 --inferred \"${grd_dst}\" \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 			fi # !HOSTNAME
 			if [ ${dbg_lvl} -ge 1 ]; then
 			    echo ${cmd_prt[${fl_idx}]}
@@ -3179,6 +3152,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			    fi # !err
 			fi # !dbg
 			grd_src=${grd_src_prt_tmp}
+			grd_dst=${grd_dst_prt_tmp}
 		    fi # !grd_src
 		fi # !mbtempest
 	    fi # !cdo
@@ -3214,8 +3188,6 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
 	    elif [ "${wgt_typ}" = 'mbtempest' ]; then 
 		if [ ${prt_alg} = 'zoltan' ]; then
-		    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
-		else # !prt_alg
 		    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
 		fi # !prt_alg
 	    elif [ "${wgt_typ}" = 'tempest' ]; then 

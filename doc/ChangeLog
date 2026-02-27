@@ -1,3 +1,7 @@
+2026-02-26  Charlie Zender  <zender@uci.edu>
+
+	* ncremap use single mbpart command with --inferred dst.h5m to partition source and destination meshes
+
 2026-02-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha04 release procedure:
