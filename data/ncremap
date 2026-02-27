@@ -612,7 +612,7 @@ prc_sgs='No' # [sng] SGS requested
 prc_typ='' # [sng] Procedure type
 prt_alg='zoltan' # [sng] MOAB-Tempest H5M partition algorithm
 prt_exe_mbt='mbpart' # [sng] MOAB-Tempest H5M partition executable
-prt_nbr=8 # [nbr] Partition number for mbpart (should be multiple of mpi_nbr)
+prt_nbr=1 # [nbr] Partition number for mbpart (should be multiple of mpi_nbr)
 prs_stt='' # [sng] Preserved statistic ('integral' or 'mean')
 ps_nm='' # [sng] Name of variable containing surface pressure in input file
 ps_nm_dfl='PS' # [sng] Name of variable containing surface pressure in input file
@@ -2900,6 +2900,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    fi # !dbg
 	    grd_src=${grd_src_h5m_tmp}
 	fi # !grd_src
+	# 20260226: NB: this fails if non-MOAB .h5m grid-name ends with "p"
 	if [[ ${grd_src} == *.h5m ]] && [[ ${grd_src} != *p.h5m ]]; then
 	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 	    grd_dst_prt_tmp="${grd_dst/.h5m/_inferred.h5m}"

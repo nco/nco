@@ -1,12 +1,12 @@
 2026-02-26  Charlie Zender  <zender@uci.edu>
 
-	* ncremap use single mbpart command with --inferred dst.h5m to partition source and destination meshes
-
-2026-02-24  Charlie Zender  <zender@uci.edu>
-
 	* NCO 5.3.7-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha04: Manitou';git push
 	git tag -a 5.3.7-alpha04 -m 'all: ';git push --tags
+
+	* ncremap use single mbpart command with --inferred dst.h5m to partition source and destination meshes
+
+2026-02-24  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add --mbt_grd_nc4/--mbt_grd_rd_srl flag
 
