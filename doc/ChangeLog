@@ -1,5 +1,9 @@
 2026-03-03  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.7-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha05: East Fork';git push
+	git tag -a 5.3.7-alpha05 -m 'all: ';git push --tags
+
 	* NCO 5.3.7-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha04: Manitou';git push
 	git tag -a 5.3.7-alpha04 -m 'all: Support bebop; ncremap: Refactor mbtempest workflow, ps search-order fix';git push --tags
