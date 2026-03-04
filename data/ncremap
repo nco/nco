@@ -612,7 +612,7 @@ prc_sgs='No' # [sng] SGS requested
 prc_typ='' # [sng] Procedure type
 prt_alg='zoltan' # [sng] MOAB-Tempest H5M partition algorithm
 prt_exe_mbt='mbpart' # [sng] MOAB-Tempest H5M partition executable
-prt_nbr=1 # [nbr] Partition number for mbpart (should be multiple of mpi_nbr)
+prt_nbr=8 # [nbr] Partition number for mbpart (should be greater than one and a multiple of mpi_nbr)
 prs_stt='' # [sng] Preserved statistic ('integral' or 'mean')
 ps_nm='' # [sng] Name of variable containing surface pressure in input file
 ps_nm_dfl='PS' # [sng] Name of variable containing surface pressure in input file
@@ -1426,7 +1426,7 @@ if [ -n "${mpi_pfx}" ]; then
     fi # !prt_nbr
     let prt_nbr_rmd=${prt_nbr}%${mpi_nbr}
     if [ ${prt_nbr_rmd} -ne 0 ]; then
-	echo "${spt_nm}: ERROR Partition number prt_nbr=${prt_nbr} must be a multiple of the number of MPI tasks, mpi_nbr=${mpi_nbr}"
+	echo "${spt_nm}: ERROR Partition number prt_nbr=${prt_nbr} must be greater than one and be a multiple of the number of MPI tasks, mpi_nbr=${mpi_nbr}"
 	echo "${spt_nm}: HINT Set partition number with --prt_nbr=${mpi_nbr} unless otherwise warranted"
 	exit 1
     fi # !prt_nbr_rmd
