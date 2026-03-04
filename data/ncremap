@@ -2905,7 +2905,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 	    grd_dst_prt_tmp="${grd_dst/.h5m/_inferred.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
-		# 20210829: NB: Compy installation only has Zoltan not METIS
+		# 20260302: Use Recursive Coordinate Bisection (RCB) repartitioning scheme
 		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --project_on_sphere 2 --scale_sphere --imbalance 1.002 --inferred \"${grd_dst}\" \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    fi # !HOSTNAME
 	    if [ ${dbg_lvl} -ge 1 ]; then
@@ -3138,7 +3138,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
 			grd_dst_prt_tmp="${grd_dst/.h5m/_inferred.h5m}"
 			if [ ${prt_alg} = 'zoltan' ]; then
-			    # 20210829: NB: Compy installation only has Zoltan not METIS
+			    # 20260302: Use Recursive Coordinate Bisection (RCB) repartitioning scheme
 			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --project_on_sphere 2 --scale_sphere --imbalance 1.002 --inferred \"${grd_dst}\" \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 			fi # !HOSTNAME
 			if [ ${dbg_lvl} -ge 1 ]; then

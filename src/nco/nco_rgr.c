@@ -1713,10 +1713,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Variables on input grid, i.e., on grid in data file to be interpolated */
   if(flg_grd_in_hyb){
     ps_id=NC_MIN_INT;
-    rcd=nco_xtr_var_get(&fl_xtr_id,&ps_nm_in,&ps_nm_out,&rgr->ps_nm_out,&ps_id);
-    if(rcd != NC_NOERR){
-      (void)fprintf(stdout,"%s: ERROR %s did not find required surface pressure variable %s for input data, exiting...\n",nco_prg_nm_get(),fnc_nm,ps_nm_in);
-      nco_exit(EXIT_FAILURE);
+    /* 20260303: User may have supplied a skinny (i.e., without surface pressure) external grid file
+       Check data file for ps before requiring that it be in external grid file or in full ps_nm filepath */
+    rcd=nco_inq_varid_flg(in_id,ps_nm_in,&ps_id);
+    if(rcd == NC_NOERR){
+      /* 20260303: Read ps and horizontal dimensions from in_id which is spoofed by fl_xtr_id */
+      fl_xtr_id=in_id;
+    }else{
+      /* 20260303: Did not find ps in data file. Now use fancy methods to look in external data file or long ps_nm filepath */
+      rcd=nco_xtr_var_get(&fl_xtr_id,&ps_nm_in,&ps_nm_out,&rgr->ps_nm_out,&ps_id);
+      if(rcd != NC_NOERR){
+	(void)fprintf(stdout,"%s: ERROR %s did not find required surface pressure variable %s for input data, exiting...\n",nco_prg_nm_get(),fnc_nm,ps_nm_in);
+	nco_exit(EXIT_FAILURE);
+      } /* !rcd */
     } /* !rcd */
   }else if(flg_grd_in_dpt){
     /* Store depth variable ID in dpt_id for both 1D and 3D fields */
