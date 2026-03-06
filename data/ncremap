@@ -236,8 +236,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		module load PrgEnv-gnu
 		module load cray-hdf5/1.12.2.9
 		module load cray-netcdf/4.9.0.9
-		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
-		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
         if [ -d '/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco' ]; then
             E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu'
         else
@@ -256,8 +254,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    module load PrgEnv-gnu
 	    module load cray-hdf5/1.12.2.9
 	    module load cray-netcdf/4.9.0.9
-	    MOAB_ROOT=/project/projectdirs/e3sm/software/moab
-	    TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
         if [ -d '/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco' ]; then
             E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu'
         else
@@ -272,14 +268,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	* ) # Default fall-through
 	    hrd_pth_fnd='No' ; ;;
     esac # !HOSTNAME
-    if [ -n "${MOAB_ROOT}" ] && [ ${spt_nm} = 'ncremap' ]; then
-	export PATH="${PATH}:${MOAB_ROOT}/bin"
-	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${MOAB_ROOT}/lib"
-    fi # !MOAB_ROOT
-    if [ -n "${TEMPESTREMAP_ROOT}" ] && [ ${spt_nm} = 'ncremap' ]; then
-	export PATH="${PATH}:${TEMPESTREMAP_ROOT}/bin"
-	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${TEMPESTREMAP_ROOT}/lib"
-    fi # !TEMPESTREMAP_ROOT
     # 20210519: E3SM-U supplies many uncommon executables and libraries, e.g., libantlr, ESMF_RegridWeightGen
     # 20241220: Now that ncclimo also regularly uses ncap2 executable for global timeseries, must modify its path too
     # ncclimo only needs access to E3SM_U libraries (e.g., libgsl, libantlr), already implemented above

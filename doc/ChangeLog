@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha05: East Fork';git push
 	git tag -a 5.3.7-alpha05 -m 'all: ';git push --tags
 
+	* ncremap/ncclimo: Remove MOAB_ROOT and TEMPESTREMAP_ROOT blocks (rely on E3SM-U)
+
 	* ncremap When debug mode is off then pipe stderr to /dev/null (i.e., add 2>&1)
 
 	* ncclimo Change from srun to salloc for interactive login nodes (or bash ties up the node)
