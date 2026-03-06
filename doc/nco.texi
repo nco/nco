@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.7-alpha05
 @set copyright-years 1995--2026
 @set update-year 2025
-@set update-date 20 February 2026
-@set update-month December 2026
+@set update-date 4 March 2026
+@set update-month March 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -23963,7 +23963,7 @@ Projects that support @acronym{NCO-JSON} include @acronym{ERDDAP}
 (@url{https://coastwatch.pfeg.noaa.gov/erddap/index.html}, choose output
 filetype @code{.ncoJson} from this 
 @uref{https://coastwatch.pfeg.noaa.gov/erddap/griddap/documentation.html#fileType, table}) 
-and @acronym{CF-JSON} (@url{http://cf-json.org}).
+and @acronym{CF-JSON} (which may have become an inactive project).
 
 Behold @acronym{JSON} output in default mode:
 @example

@@ -590,7 +590,7 @@ mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indic
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpaso_var_zmid='timeMonthly_avg_zMid' # [sng] Name of MPAS-O 3D depth variable
 mpi_flg='No' # [sng] Parallelize over nodes
-mpi_nbr=1 # [sng] Number of tasks-per-node that MPI-enabled weight generators will request (should be factor of prt_nbr)
+mpi_nbr=1 # [sng] Number of tasks-per-node that MPI-enabled weight generators will request (should be >= prt_nbr)
 mpt_mss='No' # [flg] Set empty (sgs_frc==0.0) SGS cells to missing value
 msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
 msh_fl='' # [sng] Mesh-file (for Tempest)
@@ -612,7 +612,7 @@ prc_sgs='No' # [sng] SGS requested
 prc_typ='' # [sng] Procedure type
 prt_alg='zoltan' # [sng] MOAB-Tempest H5M partition algorithm
 prt_exe_mbt='mbpart' # [sng] MOAB-Tempest H5M partition executable
-prt_nbr=8 # [nbr] Partition number for mbpart (should be greater than one and a multiple of mpi_nbr)
+prt_nbr=8 # [nbr] Partition number for mbpart (should be > 1 and <= mpi_nbr)
 prs_stt='' # [sng] Preserved statistic ('integral' or 'mean')
 ps_nm='' # [sng] Name of variable containing surface pressure in input file
 ps_nm_dfl='PS' # [sng] Name of variable containing surface pressure in input file
@@ -1426,7 +1426,7 @@ if [ -n "${mpi_pfx}" ]; then
     fi # !prt_nbr
     let prt_nbr_rmd=${prt_nbr}%${mpi_nbr}
     if [ ${prt_nbr_rmd} -ne 0 ]; then
-	echo "${spt_nm}: ERROR Partition number prt_nbr=${prt_nbr} must be greater than one and be a multiple of the number of MPI tasks, mpi_nbr=${mpi_nbr}"
+	echo "${spt_nm}: ERROR Partition number prt_nbr=${prt_nbr} must be > 1 and <= mpi_nbr=${mpi_nbr}"
 	echo "${spt_nm}: HINT Set partition number with --prt_nbr=${mpi_nbr} unless otherwise warranted"
 	exit 1
     fi # !prt_nbr_rmd
@@ -2906,6 +2906,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    grd_dst_prt_tmp="${grd_dst/.h5m/_inferred.h5m}"
 	    if [ ${prt_alg} = 'zoltan' ]; then
 		# 20260302: Use Recursive Coordinate Bisection (RCB) repartitioning scheme
+		# mbpart runs in serial to create meshes for mbtempest to read in parallel
 		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --project_on_sphere 2 --scale_sphere --imbalance 1.002 --inferred \"${grd_dst}\" \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 	    fi # !HOSTNAME
 	    if [ ${dbg_lvl} -ge 1 ]; then
@@ -3139,6 +3140,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			grd_dst_prt_tmp="${grd_dst/.h5m/_inferred.h5m}"
 			if [ ${prt_alg} = 'zoltan' ]; then
 			    # 20260302: Use Recursive Coordinate Bisection (RCB) repartitioning scheme
+			    # mbpart runs in serial to create meshes for mbtempest to read in parallel
 			    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --project_on_sphere 2 --scale_sphere --imbalance 1.002 --inferred \"${grd_dst}\" \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
 			fi # !HOSTNAME
 			if [ ${dbg_lvl} -ge 1 ]; then
