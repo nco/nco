@@ -1598,6 +1598,7 @@ fi # !qnt_prc
 if [ "${dvn_flg}" = 'Yes' ]; then
 # 20210926 Omit 2>&1 since better for user to see error messages
 # 20210926 Add 2>&1 to quiet unruly non-error output from mbconvert
+    [[ ${dbg_lvl} -eq 0 ]] && devnull="${devnulll} 2>&1"
     devnull=' > /dev/null'
 else
     devnull=''
