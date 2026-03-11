@@ -712,8 +712,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_rvr}Interactive batch queues:${fnt_nrm}\n"
     printf "andes: salloc -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "bebop: qsub -I -A E3SM -l select=1:ncpus=128:mpiprocs=128,walltime=00:30:00\n" # No queue argument
-    printf "chrys: salloc -A e3sm --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo\n" # Login node
-    printf "chrys: salloc --nodes=1 --time=30 --job-name=ncclimo\n" # Compute node
+    printf "chrys: salloc -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "compy: salloc -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "derec: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
     printf "front: salloc -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo\n"

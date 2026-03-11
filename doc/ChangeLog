@@ -1,8 +1,12 @@
-2026-03-06  Charlie Zender  <zender@uci.edu>
+2026-03-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha05: East Fork';git push
-	git tag -a 5.3.7-alpha05 -m 'all: ';git push --tags
+	git tag -a 5.3.7-alpha05 -m 'all: cmip7 pck plc; ncclimo: salloc not srun xmp; ncremap: srun dfl;';git push --tags
+
+	* ncremap Shift default node manager from mpirun to srun (ncclimo shifted on 20250122)
+
+2026-03-06  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: Consolidate mbconvert hints into single command
 

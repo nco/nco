@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.7-alpha05
 @set copyright-years 1995--2026
 @set update-year 2025
-@set update-date 4 March 2026
+@set update-date 9 March 2026
 @set update-month March 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -26988,10 +26988,10 @@ mbconvert -B -o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE \
   -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS \
   "src.g" "src.h5m"
 mbpart 8 --zoltan RCB "src.h5m" "src_8p.h5m"
-mbpart 8 --zoltan RCB --recompute_rcb_box --scale_sphere \
-  --project_on_sphere 2 "dst.h5m" "dst_8p.h5m"
+mbpart 8 --zoltan RCB --recompute_rcb_box --project_on_sphere 2 \
+--scale_sphere --inferred "dst.h5m" "src.h5m" "src_p8.h5m"
 mpirun -n 8 mbtempest --type 5 --weights \
-  --load "src_8p.h5m" --load "dst_8p.h5m" \
+  --load "src_8p.h5m" --load "dst_inferred.h5m" \
   --method fv --order 1 --method fv --order 1 \
   --file "map.nc"
 ncatted -O --gaa <command lines> map.nc map.nc
@@ -31576,6 +31576,11 @@ Auxiliary coordinate support.
 @cindex Scott Capps
 @item Scott Capps
 Large work-load testing
+@cindex Ezequiel Cimadevilla
+@item Ezequiel Cimadevilla
+@cindex David Hassell
+@item David Hassell
+@acronym{CMIP7} packing policy
 @cindex Xylar Asay-Davis
 @cindex Sterling Baldwin 
 @cindex Andrew Barna
