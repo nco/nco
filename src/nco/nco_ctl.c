@@ -1065,7 +1065,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--cnk_dmn")) (void)fprintf(stdout,"    --cnk_dmn, chunk_dimension nm,sz_lmn\tChunksize of dimension nm (in elements not bytes)\n");
   if(strstr(opt_sng,"--cnk_map")) (void)fprintf(stdout,"    --cnk_map, chunk_map map\tChunking map [dmn,lfp,nc4,nco,prd,rd1,rew,scl,xpl,xst]\n");
   if(strstr(opt_sng,"--cnk_min")) (void)fprintf(stdout,"    --cnk_min, chunk_min sz_byt\tMinimum size [B] of variable to chunk\n");
-  if(strstr(opt_sng,"--cnk_plc")) (void)fprintf(stdout,"    --cnk_plc, chunk_policy plc\tChunking policy [all,g2d,g3d,xpl,xst,uck]\n");
+  if(strstr(opt_sng,"--cnk_plc")) (void)fprintf(stdout,"    --cnk_plc, chunk_policy plc\tChunking policy [all,g2d,g3d,nco,repack,xpl,xst,uck]\n");
   if(strstr(opt_sng,"--cnk_scl")) (void)fprintf(stdout,"    --cnk_scl, chunk_scalar sz_lmn\tChunksize scalar (in elements not bytes) (for all dimensions)\n");
   if(strstr(opt_sng,"[-D")) (void)fprintf(stdout,"-D, --dbg_lvl, debug-level lvl\tDebug-level is lvl\n");
   if(strstr(opt_sng,"[-d")){

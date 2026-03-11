@@ -90,6 +90,10 @@ nco_cnk_plc_sng_get /* [fnc] Convert chunking policy enum to string */
     return "g2d";
   case nco_cnk_plc_g3d: 
     return "g3d";
+  case nco_cnk_plc_nco:
+    return "nco";
+  case nco_cnk_plc_rpk:
+    return "repack";
   case nco_cnk_plc_r1d:
     return "r1d";
   case nco_cnk_plc_xpl: 
@@ -452,6 +456,9 @@ nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
   if(!strcmp(nco_cnk_plc_sng,"nco")) return nco_cnk_plc_nco;
   if(!strcmp(nco_cnk_plc_sng,"cnk_nco")) return nco_cnk_plc_nco;
   if(!strcmp(nco_cnk_plc_sng,"plc_nco")) return nco_cnk_plc_nco;
+  if(!strcmp(nco_cnk_plc_sng,"repack")) return nco_cnk_plc_rpk;
+  if(!strcmp(nco_cnk_plc_sng,"cnk_repack")) return nco_cnk_plc_rpk;
+  if(!strcmp(nco_cnk_plc_sng,"plc_repack")) return nco_cnk_plc_rpk;
   if(!strcmp(nco_cnk_plc_sng,"r1d")) return nco_cnk_plc_r1d;
   if(!strcmp(nco_cnk_plc_sng,"cnk_r1d")) return nco_cnk_plc_r1d;
   if(!strcmp(nco_cnk_plc_sng,"plc_r1d")) return nco_cnk_plc_r1d;
@@ -832,6 +839,27 @@ cnk_xpl_override: /* end goto */
 
     } /* end loop over dmn */
 
+    /* cnk_plc=repack special-case: For 1-D and 2-D variables, force a single
+       chunk spanning each dimension, independent of other chunking options. */
+    if(cnk_plc == nco_cnk_plc_rpk && dmn_nbr <= 2){
+      for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+        long dmn_sz_lcl;
+        (void)nco_inq_dim(nc_id,dmn_id[dmn_idx],dmn_nm,&dmn_sz_lcl);
+        if(dmn_id[dmn_idx] == rcd_dmn_id && rcd_dmn_id != NCO_REC_DMN_UNDEFINED && lmt_idx_rec != int_CEWI){
+          if(lmt_all_lst[lmt_idx_rec]->NON_HYP_DMN){
+            /* When not hyperslabbed, use input record dimension size */
+            cnk_sz[dmn_idx]=lmt_all_lst[lmt_idx_rec]->dmn_sz_org;
+          }else{
+            /* When hyperslabbed, use user-specified count */
+            cnk_sz[dmn_idx]=lmt_all_lst[lmt_idx_rec]->dmn_cnt;
+          } /* !NON_HYP_DMN */
+        }else{
+          /* Non-record dimensions: full dimension length */
+          cnk_sz[dmn_idx]=(size_t)dmn_sz_lcl;
+        } /* !record dimension */
+      } /* end loop over dmn for repack */
+    } /* end cnk_plc_rpk && dmn_nbr<=2 */
+
     if(nco_dbg_lvl_get() >= nco_dbg_scl){
       (void)fprintf(stderr,"idx nm\tdmn_sz\tcnk_sz for %s:\n",var_nm);
       for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
@@ -1186,6 +1214,24 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     } /* !record dimension */
 
   } /* !dmn_idx */
+
+  /* cnk_plc=repack special-case: For 1-D and 2-D variables, chunk as a single
+     chunk spanning each dimension. This avoids reshaping 1D/2D chunks into
+     multiple chunks by the size-targeting algorithms below (e.g., lfp/rew),
+     and takes precedence over all other chunking options. */
+  if(cnk_plc == nco_cnk_plc_rpk && dmn_nbr <= 2){
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      if(dmn_cmn[dmn_idx].NON_HYP_DMN){
+        /* Use full current dimension size; for new record dims size may be 0 pre-write */
+        cnk_sz[dmn_idx]=(dmn_cmn[dmn_idx].sz == 0L) ? 1UL : (size_t)dmn_cmn[dmn_idx].sz;
+      }else{
+        /* When hyperslabbed, use hyperslab count */
+        cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].dmn_cnt;
+      } /* !NON_HYP_DMN */
+    } /* !dmn_idx */
+    /* Skip uniform and per-dimension overrides, go straight to final safety check */
+    goto cnk_sft_chk;
+  } /* !cnk_plc_nco && dmn_nbr<=2 */
 
   if(cnk_map == nco_cnk_map_lfp ||
      (cnk_plc == nco_cnk_plc_nco && dmn_nbr != 3) ||
