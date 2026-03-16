@@ -1,5 +1,9 @@
 2026-03-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.7-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha06: ';git push
+	git tag -a 5.3.7-alpha06 -m '';git push --tags
+
 	* NCO 5.3.7-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha05: East Fork';git push
 	git tag -a 5.3.7-alpha05 -m 'all: l2d pck plc; ncclimo: salloc not srun xmp; ncremap: srun dfl';git push --tags
