@@ -40,7 +40,7 @@ enum nco_cnk_plc{ /* [enm] Chunking policy */
   nco_cnk_plc_uck, /* 6 [enm] Unchunk all chunked variables */
   nco_cnk_plc_r1d, /* 7 [enm] Chunk record coordinates == one dimension */
   nco_cnk_plc_nco, /* 8 [enm] Chunk variables according to current "best" NCO algorithm */
-  nco_cnk_plc_rpk  /* 9 [enm] Chunk variables for repacking (single chunk for 1D/2D) */
+  nco_cnk_plc_l2d  /* 9 [enm] Chunk variables with <= two dimensions (single chunk) */
 }; /* end nco_cnk_plc enum */
 
 /* Chunking type maps: */

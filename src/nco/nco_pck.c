@@ -553,7 +553,7 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
   case nco_pck_plc_xst_new_att:
     /* If variable is already packed then re-pack otherwise do nothing */
     if(var_in->pck_ram){
-      goto var_pck_try_to_rpk;
+      goto var_pck_try_to_l2d;
     }else{
       /* Variable is not packed so do nothing */
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s leaving variable %s of type %s as unpacked\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk));
@@ -565,7 +565,7 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
       if(nco_pck_map == nco_pck_map_dbl_flt || nco_pck_map == nco_pck_map_flt_dbl){
 	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s leaving variable %s of type %s as packed\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_pck));
       }else{
-	goto var_pck_try_to_rpk;
+	goto var_pck_try_to_l2d;
       } /* !dbl_flt && !flt_dbl */
     }else{
       goto var_upk_try_to_pck;
@@ -595,7 +595,7 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
   } /* !nco_pck_plc_alw */
   return;
   
- var_pck_try_to_rpk: /* end goto */
+ var_pck_try_to_l2d: /* end goto */
   /* Variable is already packed---try to re-pack it 
      Final packed variable type may differ from original */
   if(nco_pck_plc_typ_get(nco_pck_map,var_in->typ_upk,&nc_typ_pck_out)){
