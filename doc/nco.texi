@@ -9242,6 +9242,14 @@ Definition: Chunk all variables possible with at least three dimensions@*
 Alternate invocation: none@*
 @var{cnk_plc} key values: @samp{g3d}, @samp{cnk_g3d}, @samp{plc_g3d}@*
 Mnemonic: @emph{G}reater than or equal to @emph{3} @emph{D}imensions@*
+@item Chunk Variables with at most Two Dimensions
+Definition: Chunk all variables possible with at most two dimensions@*
+Alternate invocation: none@*
+It will force all variables with one or two dimensions into a single
+chunk. Inspired by chunking policy followed by @emph{cmip7repack}
+(@url{https://github.com/NCAS-CMS/cmip7_repack}).
+@var{cnk_plc} key values: @samp{l2d}, @samp{cnk_l2d}, @samp{plc_l2d}@*
+Mnemonic: @emph{L}ess than or equal to @emph{2} @emph{D}imensions@*
 @item Chunk One-Dimensional Record Variables
 Definition: Chunk all 1-D record variables@*
 Alternate invocation: none@*
