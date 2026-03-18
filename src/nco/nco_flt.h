@@ -42,7 +42,7 @@
 #endif /* !ENABLE_CCR */
 
 #if ENABLE_NEP
-# include <ncsqueeze.h> /* netCDF Expansion Pack prototypes */
+# include <nep.h> /* netCDF Expansion Pack prototypes */
 #endif /* !ENABLE_CCR */
 
 /* Quantization tokens introduced in netcdf.h 4.9.0 ~202206 */
