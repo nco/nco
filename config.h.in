@@ -241,7 +241,7 @@
 /* Define to 1 if compiler finds external `nearbyintf' function */
 #undef HAVE_NEARBYINTF
 
-/* Define to 1 if <ncsqueeze.h> is present */
+/* Define to 1 if <nep.h> is present */
 #undef HAVE_NEP_H
 
 /* Define to 1 if netcdf.h contains netCDF4 definitions */

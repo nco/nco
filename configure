@@ -21731,8 +21731,8 @@ if test "x$enable_nep" = xyes; then
     LIBS_backup="${LIBS}"
     LDFLAGS_backup="${LDFLAGS}"
     LDFLAGS="-L${HDF5_PLUGIN_PATH} ${LDFLAGS}"
-    ac_fn_c_check_header_compile "$LINENO" "ncsqueeze.h" "ac_cv_header_ncsqueeze_h" "$ac_includes_default"
-if test "x$ac_cv_header_ncsqueeze_h" = xyes
+    ac_fn_c_check_header_compile "$LINENO" "nep.h" "ac_cv_header_nep_h" "$ac_includes_default"
+if test "x$ac_cv_header_nep_h" = xyes
 then :
 
 printf "%s\n" "#define HAVE_NEP_H 1" >>confdefs.h
@@ -21770,7 +21770,7 @@ return nc_def_var_lz4 ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' ncsqueeze
+for ac_lib in '' nep
 do
   if test -z "$ac_lib"; then
     ac_res="none required"
