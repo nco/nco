@@ -352,7 +352,7 @@ scp nco.configure.foo nco.config.log.foo nco.libtool.foo nco.make.foo dust.ess.u
 # Personal recipe last borken: 20250905 Needed to update to g++ --std=c++17 for Antlr
 # Personal recipe last successful: 20250905
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
-export LINUX_CXX='g++ -std=c++11'
+export LINUX_CXX='g++ -std=c++17'
 export LINUX_FC='gfortran'
 export NETCDF_ROOT=/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/andes 
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/andes/lib
@@ -411,17 +411,16 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20241219 (change to Andes build method)
-# Personal recipe last borken: 20241218 "checking for netcdf.h... yes; checking for nc_open in -lnetcdf... no"
-# Personal recipe last successful: 20250915
+# Personal recipe last borken: 20260317 Needed to update to g++ --std=c++17 for Antlr
+# Personal recipe last successful: 20260317
 cd ~/nco;/bin/rm -f *.foo;make distclean
 # Default as of 20210924 is to build with personal Anaconda netCDF
 # Default as of 20230425 is to build with personal Anaconda gcc/g++
 # Default as of 20241219 is to build with System gcc/g++, personal Anaconda netCDF, and E3SM anaconda everything else
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -fopenmp'
-export LINUX_CXX='g++ -std=c++11 -fopenmp'
+export LINUX_CXX='g++ -std=c++17 -fopenmp'
 export LINUX_FC='gfortran'
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/chrysalis/lib
-export NETCDF_ROOT=/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/chrysalis
 export PATH=${PATH}:/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/chrysalis/bin
 cd ~/nco;git reset --hard origin/master
 cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
@@ -522,14 +521,13 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} ANTLR_LIB=${MY_LIB_DIR} NETCDF_ROOT='/ccs/p
 # Personal recipe last modified: 20240118 (remove gcc/11.2.0, update to cray-hdf5/1.12.2.9 cray-netcdf/4.9.0.9)
 # Personal recipe last borken: 20231103
 # Personal recipe last successful: 20240214
-# 20250317 NB: /usr/bin/insall dumps core on PM, must install and use Anaconda coreutils version of 'install' to install into /global/cfs/cdirs/e3sm/zender
+# 20250317 NB: /usr/bin/install dumps core on PM, must install and use Anaconda coreutils version of 'install' to install into /global/cfs/cdirs/e3sm/zender
 # 20250321 Build on PM in $DATA using entirely public directories
 cd ~/nco;/bin/rm -f *.foo;make distclean
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE'
-export LINUX_CXX='g++ -std=c++11'
+export LINUX_CXX='g++ -std=c++17'
 export LINUX_FC='gfortran'
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu/lib
-export NETCDF_ROOT=/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu
 export PATH=${PATH}:/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu/bin
 cd ~/nco;git reset --hard origin/master
 cd ~/nco;CC=${LINUX_CC} CXX=${LINUX_CXX} NETCDF_ROOT=${HOME}/anaconda ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1

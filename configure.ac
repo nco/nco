@@ -727,8 +727,8 @@ if test "x$enable_nep" = xyes; then
     LIBS_backup="${LIBS}"
     LDFLAGS_backup="${LDFLAGS}"
     LDFLAGS="-L${HDF5_PLUGIN_PATH} ${LDFLAGS}"
-    AC_CHECK_HEADER([ncsqueeze.h],AC_DEFINE([HAVE_NEP_H],1,[Define to 1 if <ncsqueeze.h> is present]),nco_have_nep=no)
-    AC_SEARCH_LIBS([nc_def_var_lz4], [ncsqueeze], [enable_nep=yes], [AC_MSG_NOTICE([Cannot find or link to the NEP library, set CPPFLAGS/LDFLAGS])])
+    AC_CHECK_HEADER([nep.h],AC_DEFINE([HAVE_NEP_H],1,[Define to 1 if <nep.h> is present]),nco_have_nep=no)
+    AC_SEARCH_LIBS([nc_def_var_lz4], [nep], [enable_nep=yes], [AC_MSG_NOTICE([Cannot find or link to the NEP library, set CPPFLAGS/LDFLAGS])])
     test "x$enable_nep" = xyes || enable_nep=no
     if test "x$enable_nep" = xno; then
 	AC_MSG_WARN([NEP support disabled (missing/unusable library or header file)])

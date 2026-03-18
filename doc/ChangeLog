@@ -1,8 +1,15 @@
-2026-03-17  Charlie Zender  <zender@uci.edu>
+2026-03-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha06: Spidey';git push
-	git tag -a 5.3.7-alpha06 -m '';git push --tags
+	git tag -a 5.3.7-alpha06 -m 'all: update NEP;ncremap rm PM modules;';git push --tags
+
+	* Update NEP support to look for nep.h/libnep.a rather than ncsqueeze.h/libncsqueeze.a
+
+2026-03-17  Charlie Zender  <zender@uci.edu>
+
+	* Update Chrysalis/Andes/Perlmutter compilers from C++11 to C++17 to find std::uncaught_exceptions()
+	in ANTLR now that std::uncaught_exception() is fully deprecated
 
 	* Test remove ncremap --npo modules on PM
 

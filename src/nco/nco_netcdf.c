@@ -1423,7 +1423,7 @@ nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
   return rcd;
 } /* !nco_inq_format_extended() */
 
-/* 20210311: nc_set_log_level() prototype always defined in netcdf.h since netCDF a.b.c, though definition could be disabled with --disable-logging (or must be enabled with --enable-logging? 
+/* 20210311: nc_set_log_level() prototype always defined in netcdf.h since netCDF a.b.c, though definition could be disabled with --disable-logging (or must be enabled with --enable-logging?) 
    Libraries libnetcdf.a <= 4.6.1 predate this PR https://github.com/Unidata/netcdf-c/pull/969/files and have strange implementation of nc_set_log_level() that requires additional ifdefs */
 #ifndef HAVE_NC_SET_LOG_LEVEL
 # ifndef ENABLE_SET_LOG_LEVEL
