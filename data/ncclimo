@@ -1245,7 +1245,8 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [
 fi # !clm_flg, !dly
 # One of these input file options must be true, or else...
 if [ ${inp_aut} = 'No' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
-    echo "${spt_nm}: ERROR Specify input file(s) by providing option \"-i \$drc_in\" with (for automatic filename construction) or without (for globbing entire directory) \"-c \$caseid\", or provide names via positional argument(s) or stdin"
+    echo "${spt_nm}: ERROR No input data files found"
+    echo "${spt_nm}: HINT Specify input file(s) by providing option \"-i \$drc_in\" with (for automatic filename construction) or without (for globbing entire directory) \"-c \$caseid\", or provide names via positional argument(s) or stdin"
     if [ ${bch_pbs} = 'Yes' ]; then
 	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
     else # !bch_pbs
