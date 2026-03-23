@@ -1874,9 +1874,11 @@ if [ "${tms_flg}" = 'Yes' ]; then
 
 else # !tms_flg
 
-    if [ "${mth_flg}" = 'Yes' ]; then
-	echo "${spt_nm}: ERROR Monthly climo-mode only supports climatologies that start in January (jfd-mode, the default) or December (djf) mode. Climo mode does not yest support arbitrary starting months (--mth_srt and --mth_end). If you would like ${spt_nm} to generate climos for arbitrary starting months, please talk to Charlie."
-	exit 1
+    if [ ${clm_md} = 'mth' ]; then
+
+	if [ "${mth_flg}" = 'Yes' ]; then
+	    echo "${spt_nm}: WARNING Monthly climo-mode support for arbitrary starting months (activated with --mth_srt and --mth_end) is nascent. Expect bugs as of 20260323."
+	fi # !mth_flg
 
 	# Duplicate a check from monthly timeseries mode
 	if [ ${mth_nbr} -ne ${fl_nbr} ]; then
@@ -1885,7 +1887,14 @@ else # !tms_flg
 	    exit 1
 	fi # !mth_nbr
 
-    fi # !mth_flg
+    else # !clm_md
+
+	if [ "${mth_flg}" = 'Yes' ]; then
+	    echo "${spt_nm}: ERROR Only monthly climo-mode supports arbitrary starting months (--mth_srt and --mth_end). This feature not available in high-frequency, daily, or annual climo-mode."
+	    exit 1
+	fi # !mth_flg
+
+    fi # !clm_md
 	
     if [ "${rgn_stt}" != 'No' ]; then 
 	echo "${spt_nm}: ERROR Regional/global statistical timeseries functionality is supported for time-series (splitting) mode only. If you would like ${spt_nm} to provide global and regional statistical output for other types of climatologies, please talk to Charlie."
