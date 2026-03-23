@@ -1547,8 +1547,8 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     fpy=12
     let fl_rmd=${fl_nbr}%${fpy}
     if [ ${fl_rmd} -ne 0 ]; then
-	printf "${spt_nm}: ERROR User requested climatology of monthly files and supplied ${fl_nbr} (not a multiple of 12) input files. Climatologies of monthly resolution data are only supported for whole years, not partial years (although the splitter works with partial years when the --mth_srt and --mth_end options are supplied).\n"
-	printf "${spt_nm}: HINT Provide input files in multiples of 12\n"
+	printf "${spt_nm}: ERROR User requested climatology of monthly files and supplied ${fl_nbr} (not a multiple of 12) input files.\n"
+	printf "${spt_nm}: HINT Climatologies of monthly resolution data are only supported for whole numbers of years, not partial years. Provide input files in multiples of 12 and use the --mth_srt (default 1) and --mth_end (default 12) options to indicate the starting and ending months when the first year does not start in January.\n"
 	exit 1
     fi # !fl_rmn
 fi # !clm_flg, !clm_md
@@ -1875,8 +1875,16 @@ if [ "${tms_flg}" = 'Yes' ]; then
 else # !tms_flg
 
     if [ "${mth_flg}" = 'Yes' ]; then
-	echo "${spt_nm}: ERROR Monthly climo-mode only supports climatologies that start in January (jfd-mode, the default) or December (djf) mode. Climo mode does not support arbitrary starting months (--mth_srt and --mth_end). If you would like ${spt_nm} to generate climos for arbitrary starting months, please talk to Charlie."
+	echo "${spt_nm}: ERROR Monthly climo-mode only supports climatologies that start in January (jfd-mode, the default) or December (djf) mode. Climo mode does not yest support arbitrary starting months (--mth_srt and --mth_end). If you would like ${spt_nm} to generate climos for arbitrary starting months, please talk to Charlie."
 	exit 1
+
+	# Duplicate a check from monthly timeseries mode
+	if [ ${mth_nbr} -ne ${fl_nbr} ]; then
+	    printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} differs from number of months = ${mth_nbr} computed from calendar inputs\n"
+	    printf "${spt_nm}: HINT In this mode (clm_md=${clm_md}) ${spt_nm} expects one monthly file per calendar month\n"
+	    exit 1
+	fi # !mth_nbr
+
     fi # !mth_flg
 	
     if [ "${rgn_stt}" != 'No' ]; then 

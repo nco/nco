@@ -1,8 +1,12 @@
-2026-03-22  Charlie Zender  <zender@uci.edu>
+2026-03-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha06: Spidey';git push
 	git tag -a 5.3.7-alpha06 -m 'all: update NEP;ncremap rm PM modules;';git push --tags
+
+	* ncclimo doublecheck that mth_nbr == fl_nbr in monthly climo mode
+
+2026-03-22  Charlie Zender  <zender@uci.edu>
 
 	* ncremap/ncclimo distinguish ERRORs from HINTs
 
