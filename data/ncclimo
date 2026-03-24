@@ -1124,12 +1124,14 @@ trim_leading_zeros ${yr_srt}
 yr_srt_rth=${sng_trm}
 yyyy_srt=`printf "%04d" ${yr_srt_rth}`
 let yr_srtm1=${yr_srt_rth}-1
+let yr_srtp1=${yr_srt_rth}+1
+yyyy_srtp1=`printf "%04d" ${yr_srtp1}`
 trim_leading_zeros ${yr_end}
 yr_end_rth=${sng_trm}
 yyyy_end=`printf "%04d" ${yr_end_rth}`
 let yr_endm1=${yr_end_rth}-1
 let yr_endp1=${yr_end_rth}+1
-let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
+yyyy_endm1=`printf "%04d" ${yr_endm1}`
 
 if [ ${mth_srt} -eq '0' ]; then
     echo "${spt_nm}: ERROR User-defined start month is ${mth_srt}. Please use 1-based (not 0-based) indexing for months, where [Jan..Dec] = [1..12]"
@@ -1142,7 +1144,11 @@ trim_leading_zeros ${mth_end}
 mth_end_rth=${sng_trm}
 mm_end=`printf "%02d" ${mth_end_rth}`
 let mth_nbr=${yr_end_rth}*12+${mth_end_rth}-${yr_srt_rth}*12-${mth_srt_rth}+1
-let mth_srtm1=${mth_srt_rth}-1
+# 20260323: Redefine yr_nbr as Duration in integer years of input dataset
+#let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1 # Old definition was actually the number of calendar-years
+let yr_nbr=${mth_nbr}/12
+let jan_fst=${mth_srt_rth}-1 # [nbr] Starting month offset in months from January
+let mth_srtm1=${mth_srt_rth}-1 # [idx] 1-based index of month preceding start month
 let mth_endp1=${mth_end_rth}+1
 if [ ${mth_srtm1} -eq 0 ]; then
     let mth_srtm1=12
@@ -1159,7 +1165,25 @@ fi # !mth_endp1
 if [ "${mm_srt}" != '01' ] || [ "${mm_end}" != '12' ]; then
     mth_flg='Yes'
 fi # !mm_srt
-    
+if [ ${mth_flg} = 'Yes' ]; then
+    let yr_cln=${yr_nbr}+1
+fi # !mth_flg
+
+# 20260323
+# Determine starting and ending year string for each month
+for ((mth_idx=1;mth_idx<=12;mth_idx++)); do
+    if [ ${mth_idx} -ge ${mth_srt_rth} ]; then
+	yyyy_srt_mth[${mth_idx}]=${yyyy_srt}
+    else # !mth_idx
+	yyyy_srt_mth[${mth_idx}]=${yyyy_srtp1}
+    fi # !mth_idx
+    if [ ${mth_idx} -le ${mth_end_rth} ]; then
+	yyyy_end_mth[${mth_idx}]=${yyyy_end}
+    else # !mth_idx
+	yyyy_end_mth[${mth_idx}]=${yyyy_endm1}
+    fi # !mth_idx
+done # !mth_idx
+
 # Define actions based on standard options
 if [ -n "${caseid}" ]; then
     out_nm=${caseid}
@@ -1288,7 +1312,7 @@ elif [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     fi # !csn_lst
 fi # !clm_md
 if [ -n "${gaa_sng_std}" ]; then
-    if [ "${yr_nbr}" -gt 1 ]; then
+    if [ "${yr_cln}" -gt 1 ]; then
 	yrs_avg_sng="${yr_srt}-${yr_end}"
     else
 	yrs_avg_sng="${yr_srt}"
@@ -1442,7 +1466,6 @@ mm_ann_srt='01' # [idx] First month used in annual climatology
 mm_ann_end='12' # [idx] Last  month used in annual climatology
 mm_djf_srt='01' # [idx] First month used in DJF climatology
 mm_djf_end='12' # [idx] Last  month used in DJF climatology
-yr_cln=${yr_nbr} # [nbr] Calendar years in climatology
 if [ ${wnt_md} = 'djf' ]; then 
     yyyy_clm_srt_dec=`printf "%04d" ${yr_srtm1}`
     yyyy_clm_end_dec=`printf "%04d" ${yr_endm1}`
@@ -1450,7 +1473,7 @@ if [ ${wnt_md} = 'djf' ]; then
     mm_ann_end='11'
     mm_djf_srt='12'
     mm_djf_end='02'
-    let yr_cln=${yr_cln}+1
+    let yr_cln=${yr_nbr}+1
 fi # !djf
 
 # 20231221: Automatically generate input filename list based on command-line options    
@@ -1548,7 +1571,7 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     let fl_rmd=${fl_nbr}%${fpy}
     if [ ${fl_rmd} -ne 0 ]; then
 	printf "${spt_nm}: ERROR User requested climatology of monthly files and supplied ${fl_nbr} (not a multiple of 12) input files.\n"
-	printf "${spt_nm}: HINT Climatologies of monthly resolution data are only supported for whole numbers of years, not partial years. Provide input files in multiples of 12 and use the --mth_srt (default 1) and --mth_end (default 12) options to indicate the starting and ending months when the first year does not start in January.\n"
+	printf "${spt_nm}: HINT Climatologies of monthly resolution data are only supported for whole numbers of years, not partial years. Provide monthly input files in multiples of 12. Use the --mth_srt (default 1) and --mth_end (default 12) options to indicate the starting and ending months if the first year does not start in January.\n"
 	exit 1
     fi # !fl_rmn
 fi # !clm_flg, !clm_md
@@ -1701,7 +1724,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
     fi # !xcl_flg
 
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
-    var_nbr=0 # [sng] Number of split (subset into timeseries) files
+    var_nbr=0 # [sng] Number of split (subset into timeseries) files. 'sbs' stands for 'subset'.
     for var in ${var_lst//,/ }; do
 	# NB:
 	var_sbs[${var_nbr}]=${var}
@@ -1764,7 +1787,9 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	fpy=12
     fi # !clm_md
     if [ "${clm_md}" = 'hfs' ]; then
-	let yr_sbs=${yr_nbr}
+	# 20260323
+	# let yr_sbs=${yr_nbr} # Old definition of yr_nbr was equivalent to yr_cln
+	let yr_sbs=${yr_cln}
     else
 	let yr_sbs=${fl_nbr}/${fpy}
 	let fl_rmd=${fl_nbr}%${fpy}
@@ -1876,16 +1901,16 @@ else # !tms_flg
 
     if [ ${clm_md} = 'mth' ]; then
 
-	if [ "${mth_flg}" = 'Yes' ]; then
-	    echo "${spt_nm}: WARNING Monthly climo-mode support for arbitrary starting months (activated with --mth_srt and --mth_end) is nascent. Expect bugs as of 20260323."
-	fi # !mth_flg
-
 	# Duplicate a check from monthly timeseries mode
 	if [ ${mth_nbr} -ne ${fl_nbr} ]; then
 	    printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} differs from number of months = ${mth_nbr} computed from calendar inputs\n"
 	    printf "${spt_nm}: HINT In this mode (clm_md=${clm_md}) ${spt_nm} expects one monthly file per calendar month\n"
 	    exit 1
 	fi # !mth_nbr
+
+	if [ "${mth_flg}" = 'Yes' ]; then
+	    echo "${spt_nm}: WARNING Monthly climo-mode support for arbitrary starting months (activated with --mth_srt and --mth_end) is nascent. Expect bugs!!!."
+	fi # !mth_flg
 
     else # !clm_md
 
@@ -1911,7 +1936,7 @@ else # !tms_flg
 	exit 1
     fi # out_nm
 
-    # 20211118 fxm: re-do these messages
+    # 20211118 fxm: re-do these messages?
     if [ ${inp_std} = 'Yes' ] && [ ${clm_md} = 'ann' ]; then
 	echo "${spt_nm}: ERROR Detected input on pipe to stdin in annual climatology generation mode"
 	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files or in daily, monthly, or high-frequency climatology mode"
@@ -2297,6 +2322,8 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: xcl_flg  = ${xcl_flg}\n"
     printf "dbg: xtn_flg  = ${xtn_flg}\n"
     printf "dbg: ypf_max  = ${ypf_max}\n"
+    printf "dbg: yr_cln   = ${yr_cln}\n"
+    printf "dbg: yr_nbr   = ${yr_nbr}\n"
     printf "dbg: yr_sbs   = ${yr_sbs}\n"
     printf "dbg: yyyy_end = ${yyyy_end}\n"
     printf "dbg: yyyy_srt = ${yyyy_srt}\n"
@@ -2460,11 +2487,11 @@ if [ "${clm_flg}" = 'Yes' ]; then
 	printf "Output files to directory ${drc_xtn}\n"
     fi # !ncr_flg
     if [ "${bnr_flg}" = 'No' ]; then
-	printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
+	printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_srt}${mm_srt} to ${yyyy_end}${mm_end}\n"
     fi # !bnr_flg
     if [ "${inp_aut}" = 'Yes' ]; then
 	if [ "${nm_typ}" = 'yyyymm' ]; then
-	    printf "Input ilenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
+	    printf "Input filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
 	elif [ "${nm_typ}" = 'yyyy-mm' ]; then
 	    printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM.${bs_sfx}\n"
 	elif [ "${nm_typ}" = 'yyyy-mm-01' ]; then
@@ -2531,6 +2558,13 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 			let fl_idx=$(((yr_idx - 1) * 12 + clm_idx))
 		    fi # !dec
 		fi # !wnt_md
+
+		# 20260323 Adjust fl_idx by January offset
+		let fl_idx=${fl_idx}+${jan_fst}
+		if [ ${fl_idx} -ge ${fl_nbr} ]; then
+		    let fl_idx=${fl_idx}-12
+		fi # !fl_idx
+
 		fl_all="${fl_all} ${fl_in[${fl_idx}]}"
 	    done # !yr_idx
 
@@ -2555,7 +2589,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    yyyy_clm_srt=${yyyy_clm_srt_dec}
 	    yyyy_clm_end=${yyyy_clm_end_dec}
 	fi # !djf
-	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
+	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_srt_mth[${clm_idx}]}${MM}_${yyyy_end_mth[${clm_idx}]}${MM}_climo.nc"
+	
 	
 	if [ ${clm_md} = 'hfc' ]; then 
 	    # Computing climos from high-freqency data requires many steps:
@@ -2621,7 +2656,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 
 		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_mth[${clm_idx}]}"
 
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},${tpd_out} -O ${nco_opt} ${gaa_sng} -d time,,,,${ssc2},${tpd_out} ${fl_mth[${clm_idx}]} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yyyy_srt_mth[${clm_idx}]},${yyyy_end_mth[${clm_idx}]},${clm_idx},${clm_idx},${tpd_out} -O ${nco_opt} ${gaa_sng} -d time,,,,${ssc2},${tpd_out} ${fl_mth[${clm_idx}]} ${fl_out[${clm_idx}]}"
 		    
 	    else # !fl_nbr
 		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
@@ -2633,13 +2668,13 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		cmd_tpd_tpl[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,TPDidx,,${tpd_out} ${fl_mth[${clm_idx}]} ${fl_tpd_tpl[${clm_idx}]}"
 
 		# Concatenate individual timestep means into full diurnal timeseries
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},${tpd_out} ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}_tpd* ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O --clm_bnd=${yyyy_srt_mth[${clm_idx}]},${yyyy_end_mth[${clm_idx}]},${clm_idx},${clm_idx},${tpd_out} ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}_tpd* ${fl_out[${clm_idx}]}"
 	    fi # !fl_nbr
 	    # Combine monthly into seasonal and annual means with nces (preserving diurnal timesteps)
 	    cmd_mth2csn='nces'
 	    cmd_csn2ann='nces'
 	elif [ ${clm_md} = 'mth' ]; then 
-	    clm_bnd[${clm_idx}]=${yyyy_clm_srt},${yyyy_clm_end},${clm_idx},${clm_idx},0
+	    clm_bnd[${clm_idx}]=${yyyy_srt_mth[${clm_idx}]},${yyyy_end_mth[${clm_idx}]},${clm_idx},${clm_idx},0
 	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${clm_bnd[${clm_idx}]} -O ${nco_opt} ${gaa_sng} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    #	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},0 -O ${nco_opt} ${gaa_sng} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    # Combine monthly into seasonal and annual means with ncra
@@ -2778,17 +2813,32 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	# Produces names like "${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
 	let clm_idx=1+12+${csn_idx}
-	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
-	clm_bnd[${clm_idx}]="--clm_bnd=${yr_srt},${yr_end},${csn_srt_idx[${map_r2d[${csn_idx}]}]},${csn_end_idx[${map_r2d[${csn_idx}]}]},${tpd_out}"
+	# 20260323 Start and end years now depend on start and end months
+	#	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
+	#	clm_bnd[${clm_idx}]="--clm_bnd=${yr_srt},${yr_end},${csn_srt_idx[${map_r2d[${csn_idx}]}]},${csn_end_idx[${map_r2d[${csn_idx}]}]},${tpd_out}"
+	csn_srt_idx_crr=${csn_srt_idx[${map_r2d[${csn_idx}]}]}
+	csn_end_idx_crr=${csn_end_idx[${map_r2d[${csn_idx}]}]}
+	# 20230623 Big fxm: Swap yyyy_srt_mth and yyyy_end_mth
+	# What should JJA name for yr_srt=2013, mth_srt=7, yr_end=2014, mth_end=6 be?
+	# Normal climos use 201306-201408 but there is no 201306 or 201408 in this dataset!
+	# Alternative 201406-201308 is non-chronological (though maybe OK)?
+	# Alternative 201307-201406 is chronological yet lacks an August indicator in date string
+	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_mth[${csn_srt_idx_crr}]}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end_mth[${csn_end_idx_crr}]}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
+	# 20260323 fxm change yr_srt to ${yyyy_srt_mth[${csn_srt_idx_crr}]} ...?
+	# clm_bnd[${clm_idx}]="--clm_bnd=${yr_srt},${yr_end},${csn_srt_idx[${map_r2d[${csn_idx}]}]},${csn_end_idx[${map_r2d[${csn_idx}]}]},${tpd_out}"
+	clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_srt_mth[${csn_srt_idx_crr}]},${yyyy_end_mth[${csn_end_idx_crr}]},${csn_srt_idx[${map_r2d[${csn_idx}]}]},${csn_end_idx[${map_r2d[${csn_idx}]}]},${tpd_out}"
 	if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
-	    clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_clm_srt_dec},${yyyy_clm_end_dec},${mm_djf_srt},${mm_djf_end},${tpd_out}"
+	    #clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_clm_srt_dec},${yyyy_clm_end_dec},${mm_djf_srt},${mm_djf_end},${tpd_out}"
+	    clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_srt_mth[${csn_srt_idx_crr}]},${yyyy_end_mth[${csn_end_idx_crr}]},${mm_djf_srt},${mm_djf_end},${tpd_out}"
 	fi # !DJF
+	# 20260323 fxm change ANN names and bounds
 	if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'ANN' ]; then
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
-	    clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_clm_srt_dec},${yyyy_end},${mm_ann_srt},${mm_ann_end},${tpd_out}"
+	    #clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_clm_srt_dec},${yyyy_end},${mm_ann_srt},${mm_ann_end},${tpd_out}"
+	    clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_srt},${yyyy_end},${mm_srt},${mm_end},${tpd_out}"
 	fi # !ANN
     done # !csn_idx
 #    fl_out[13]="${drc_out}/${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"

@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha06: Spidey';git push
 	git tag -a 5.3.7-alpha06 -m 'all: update NEP;ncremap rm PM modules;';git push --tags
 
+	* Add diagnostic output for yr_nbr, yr_cln
+
+	* Allow mth_srt, mth_end with monthly climos for development
+
 	* ncclimo doublecheck that mth_nbr == fl_nbr in monthly climo mode
 
 2026-03-22  Charlie Zender  <zender@uci.edu>
