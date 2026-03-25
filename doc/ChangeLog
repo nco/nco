@@ -1,5 +1,9 @@
 2026-03-24  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.7-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha07: AI not RI';git push
+	git tag -a 5.3.7-alpha07 -m '';git push --tags
+
 	* NCO 5.3.7-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha06: Spidey';git push
 	git tag -a 5.3.7-alpha06 -m 'all: update NEP;ncclimo: flx mth; ncremap rm PM modules;';git push --tags
