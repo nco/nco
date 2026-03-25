@@ -69,6 +69,10 @@ extern "C" {
   (const char *clm_nfo_sng, /* I [sng] Climatology information string */
    clm_bnd_sct *cb); /* I/O [sct] Climatology bounds structure */
   
+  char * /* O [sng] Requested date string */
+  nco_csn_nfo_get /* [fnc] Parse seasonal information string and compute date strings */
+  (const char *csn_nfo_sng); /* I [sng] Seasonal information string (7 comma-separated integers) */
+
   cnv_sct * /* O [sct] Convention structure */
   nco_cnv_ini /* [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
   (const int nc_id); /* I [id] netCDF file ID */

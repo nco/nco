@@ -1002,7 +1002,7 @@ main(int argc,char **argv)
     cb->tm_crd_id_in=NC_MIN_INT; /* [id] Time coordinate ID */
     cb->tm_crd_nm=NULL; /* [sng] Time coordinate name */
     cb->tm_val=NULL; /* [frc] Time (or climatology) bounds variable values */
-    cb->tpd=NC_MIN_INT; /* [nbr] Timesteps per day [0=none, 1, 2, 3, 4, 6, 8,  12, 24, ...]*/
+    cb->tpd=NC_MIN_INT; /* [nbr] Timesteps per day [0=none, 1, 2, 3, 4, 6, 8, 12, 24, ...] */
     cb->type=NC_NAT; /* [enm] Time coordinate type */
     cb->unt_val=NULL; /* [sng] Bounds units value */
     cb->yr_end=NC_MIN_INT; /* [yr] Year at climo start */

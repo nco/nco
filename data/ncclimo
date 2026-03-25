@@ -1144,8 +1144,6 @@ trim_leading_zeros ${mth_end}
 mth_end_rth=${sng_trm}
 mm_end=`printf "%02d" ${mth_end_rth}`
 let mth_nbr=${yr_end_rth}*12+${mth_end_rth}-${yr_srt_rth}*12-${mth_srt_rth}+1
-# 20260323: Redefine yr_nbr as Duration in integer years of input dataset
-#let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1 # Old definition was actually the number of calendar-years
 let yr_nbr=${mth_nbr}/12
 let jan_fst=${mth_srt_rth}-1 # [nbr] Starting month offset in months from January
 let mth_srtm1=${mth_srt_rth}-1 # [idx] 1-based index of month preceding start month
@@ -1787,8 +1785,6 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	fpy=12
     fi # !clm_md
     if [ "${clm_md}" = 'hfs' ]; then
-	# 20260323
-	# let yr_sbs=${yr_nbr} # Old definition of yr_nbr was equivalent to yr_cln
 	let yr_sbs=${yr_cln}
     else
 	let yr_sbs=${fl_nbr}/${fpy}
@@ -2814,18 +2810,15 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	# Produces names like "${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
 	let clm_idx=1+12+${csn_idx}
 	# 20260323 Start and end years now depend on start and end months
-	#	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
-	#	clm_bnd[${clm_idx}]="--clm_bnd=${yr_srt},${yr_end},${csn_srt_idx[${map_r2d[${csn_idx}]}]},${csn_end_idx[${map_r2d[${csn_idx}]}]},${tpd_out}"
 	csn_srt_idx_crr=${csn_srt_idx[${map_r2d[${csn_idx}]}]}
 	csn_end_idx_crr=${csn_end_idx[${map_r2d[${csn_idx}]}]}
 	# 20230623 Big fxm: Swap yyyy_srt_mth and yyyy_end_mth
 	# What should JJA name for yr_srt=2013, mth_srt=7, yr_end=2014, mth_end=6 be?
 	# Normal climos use 201306-201408 but there is no 201306 or 201408 in this dataset!
 	# Alternative 201406-201308 is non-chronological (though maybe OK)?
-	# Alternative 201307-201406 is chronological yet lacks an August indicator in date string
+	# Alternative 201307-201406 is chronological. No August indicator in date string.
+	# People prefer the chronological option alternative
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_mth[${csn_srt_idx_crr}]}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end_mth[${csn_end_idx_crr}]}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
-	# 20260323 fxm change yr_srt to ${yyyy_srt_mth[${csn_srt_idx_crr}]} ...?
-	# clm_bnd[${clm_idx}]="--clm_bnd=${yr_srt},${yr_end},${csn_srt_idx[${map_r2d[${csn_idx}]}]},${csn_end_idx[${map_r2d[${csn_idx}]}]},${tpd_out}"
 	clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_srt_mth[${csn_srt_idx_crr}]},${yyyy_end_mth[${csn_end_idx_crr}]},${csn_srt_idx[${map_r2d[${csn_idx}]}]},${csn_end_idx[${map_r2d[${csn_idx}]}]},${tpd_out}"
 	if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"

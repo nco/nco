@@ -1,8 +1,20 @@
-2026-03-23  Charlie Zender  <zender@uci.edu>
+2026-03-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha06: Spidey';git push
-	git tag -a 5.3.7-alpha06 -m 'all: update NEP;ncremap rm PM modules;';git push --tags
+	git tag -a 5.3.7-alpha06 -m 'all: update NEP;ncclimo: flx mth; ncremap rm PM modules;';git push --tags
+
+	* Math appears to be correct for flexible-month monthly, seasonal, annual climos
+
+	* Metadata appears to be correct for flexible-month monthly climos
+
+	* Metadata needs work for flexible-month seasonal, annual climos
+
+	* Fix minor bugs in nco_csn_nfo_get()
+
+	* Generate nco_clm_nfo_get() with CoPilot to parse new seasonal	climatology format metadata
+
+2026-03-23  Charlie Zender  <zender@uci.edu>
 
 	* Add diagnostic output for yr_nbr, yr_cln
 
