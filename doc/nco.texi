@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.7-alpha07
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 24 March 2026
+@set update-date 26 March 2026
 @set update-month March 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -19660,7 +19660,7 @@ ncchecker file:///Users/zender/in_zarr4#mode=nczarr,file # Check Zarr object(s)
 SYNTAX
 @example
 ncclimo [-3] [-4] [-5] [-6] [-7] 
-[-a @var{wnt_md}] [-C @var{clm_md}] [-c @var{caseid}] [--cmp @var{cmp_sng}]
+[-C @var{clm_md}] [-c @var{caseid}] [--cmp @var{cmp_sng}]
 [-d @var{dbg_lvl}] [--d2f] [--dpf=@var{dpf}] [--dpt_fl=@var{dpt_fl}] [-E @var{yr_prv}] [-e @var{yr_end}]
 [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [--glb_avg] [--glb_stt=@var{glb_stt}] 
 [-h @var{hst_nm}] [-i @var{drc_in}] [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}]
@@ -19796,29 +19796,16 @@ table of @command{ncremap} options.
 @cindex @code{--wnt_md}
 @cindex @code{--winter_mode}
 @cindex @var{dec_md}
-@item -a @var{dec_md} (@code{--dec_md}, @code{--dcm_md}, @code{--december_mode}, @code{--dec_mode})
-Winter mode aka December mode determines the start and end months of
-the climatology and the type of NH winter seasonal average.
-Two valid arguments are @code{jfd} (default, or synonyms @code{sdd}
-and @code{JFD}) and @code{djf} (or synonyms @code{scd} and
-@code{DJF}). 
-@acronym{DJF}-mode is the same as @acronym{SCD}-mode which
-stands for ``Seasonally Continuous December''. 
-The first month used is December of the year before the start year
-specified with @samp{-s}.
-The last month is November of the end year specified with @samp{-e}.
-In @acronym{DJF}-mode the Northern Hemisphere winter seasonal
-climatology will be computed with sets of the three consecutive
-months December, January, and February (DJF) where the calendar
-year of the December months is always one less than the calendar
-year of January and February.
-@acronym{JFD}-mode is the same as @acronym{SDD}-mode which stands for
-``Seasonally Discontinuous December''.
-The first month used is January of the specified start year. 
-The last month is December of the end year specified with @samp{-e}.
-In @acronym{JFD}-mode the Northern Hemisphere winter seasonal
-climatology will be computed with sets of the three non-consecutive
-months January, February, and December (JFD) from each calendar year. 
+@item -a @var{wnt_md} (@code{--dec_md}, @code{--dcm_md}, @code{--december_mode}, @code{--wnt_mode})
+Winter mode aka December mode was a feature that determined the start
+and end months of a climatology and the type of NH winter seasonal
+average. 
+Winter mode is no longer supported as of @acronym{NCO} version 5.3.7
+(April, 2026). 
+Invoking it acts as a no-op for backwards compatibility.
+Please alter your scripts to not invoke it.
+The same functionality is now accessed by providing datasets that
+start in December and invoking the @samp{--mth_srt=12} option.
 
 @html
 <a name="clm_md"></a> <!-- http://nco.sf.net/nco.html#clm_md -->
@@ -20705,7 +20692,9 @@ See below the discussion on regridding.
 @cindex @code{--end_month}
 @cindex @code{--month_end}
 @item --mth_end=@var{mth_end} (@code{--mth_end}, @code{--end_mth}, @code{--month_end}, @code{--end_month})
-Start month (example: 4), and end month (example: 11).
+Start month (example: 4), and end month (example: 11) of timeseries
+and climatologies.
+
 The starting month of monthly timeseries extracted by the splitter
 defaults to January of the specified start year, and the ending
 month defaults to December of the specified end year.
@@ -20718,10 +20707,18 @@ December is @w{is 12}.
 To extract 14-month timeseries from individual monthly input files one
 could use, e.g., 
 @example
-ncclimo --yr_srt=1 --yr_end=2 --mth_srt=4 --mth_end=5 ...
+ncclimo --split --yr_srt=1 --yr_end=2 --mth_srt=4 --mth_end=5 ...
 @end example
-Note that @code{mth_srt} and @code{mth_end} only affect the splitter,
-and that they play no role in climatology generation.
+
+As of @acronym{NCO} version 5.3.7 (April, 2026), climos can be
+instructed to start in any month by invoking the @samp{--mth_srt=12}
+option.  
+@example
+ncclimo -s 2013 -e 2014 --mth_srt=7 --mth_end=6 ...
+@end example
+Note that climatologies only work for an integral number of years.
+Thus @code{mth_end} must precede @code{mth_srt} by one month in the
+annual cycle (yes, December precedes January by one month).
 
 @html
 <a name="srt_yr"></a> <!-- http://nco.sf.net/nco.html#srt_yr -->
@@ -20735,10 +20732,11 @@ and that they play no role in climatology generation.
 @cindex @code{--start}
 @item -s @var{srt_yr} (@code{--srt_yr}, @code{--yr_srt}, @code{--start_year}, @code{--year_start}, @code{--start})
 Start year (example: 1980). 
-By default, the first month used is January of the specified start year. 
-If @samp{-a scd} is specified, the first month used will be December
-of the year before the start year (to allow for contiguous
-@acronym{DJF} climos).
+By default, the first month used is January of the specified start
+year.
+As of @acronym{NCO} version 5.3.7 (April, 2026), climos can be
+instructed to start in any month by invoking the @samp{--mth_srt=12}
+option.  
 
 @html
 <a name="csn_lst"></a> <!-- http://nco.sf.net/nco.html#csn_lst -->
