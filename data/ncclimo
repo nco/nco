@@ -533,6 +533,13 @@ fi # !TERM
 par_bck='background' # [sng] Parallelism: background
 par_mpi='mpi' # [sng] Parallelism: MPI
 par_srl='serial' # [sng] Parallelism: serial
+rtn_yyyy_frs=1 # [enm] Key for csn_nfo_get() to echo yyyy_frs
+rtn_yyyy_lst=2 # [enm] Key for csn_nfo_get() to echo yyyy_lst
+rtn_yyyymm_frs=3 # [enm] Key for csn_nfo_get() to echo yyyymm_frs
+rtn_yyyymm_lst=4 # [enm] Key for csn_nfo_get() to echo yyyymm_lst
+rtn_yyyymm_rng=5 # [enm] Key for csn_nfo_get() to echo yyyymm_rng
+rtn_clm_bnd_arg=6 # [enm] Key for csn_nfo_get() to echo clm_bnd_arg
+rtn_yyyy_rng=7 # [enm] Key for csn_nfo_get() to echo yyyy_rng
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
@@ -575,7 +582,9 @@ fl_fmt='' # [enm] Output file format
 fl_nbr=0 # [nbr] Number of files to split
 fl_rmd=0 # [nbr] Number of files/months beyond an integral number of years
 fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experiment')
-gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
+gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add to climos
+#gaa_sng_tms="--gaa climo_script=${spt_nm} --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add to timeseries
+gaa_sng_tms='' # [sng] Global attributes to add to timeseries
 hdr_pad='10000' # [B] Pad at end of header section
 hrz_dmn='ncol' # [sng] Name of horizontal dimension(s) (e.g., 'lndgrid' and comma-separated if 2-D, e.g. 'lat,lon')
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
@@ -754,6 +763,143 @@ function trim_leading_zeros {
 	sng_trm='0'
     fi # !sng_trm
 } # !trim_leading_zeros()
+
+csn_nfo_get()
+{
+    # Usage:
+    # csn_nfo_get 2013 7 2014 6 6 8 5 returns "201307_201406"
+    # csn_nfo_get 2013 7 2014 6 6 8 6 returns "2013,2014,07,06"
+    
+    # [fnc] Parse seasonal information and compute date strings
+    # [sng] Input: Seven positional integer arguments
+    # [sng] Output: Requested date string based on rtn_enm
+    
+    local fnc_nm="csn_nfo_get()" # [sng] Function name
+    
+    local yr_srt="${1}" # [yr] Starting year
+    local mth_srt="${2}" # [mth] Starting month
+    local yr_end="${3}" # [yr] Ending year
+    local mth_end="${4}" # [mth] Ending month
+    local csn_srt_idx="${5}" # [idx] Seasonal start index
+    local csn_end_idx="${6}" # [idx] Seasonal end index
+    local rtn_enm="${7}" # [enm] Enumerated return variable
+    
+    local yyyy_frs # [yr] First year in seasonal range
+    local yyyy_lst # [yr] Last year in seasonal range
+    local yyyymm_frs # [yyyymm] Earliest year-month in season
+    local yyyymm_lst # [yyyymm] Latest year-month in season
+    local mm_frs # [mth] First month in seasonal range
+    local mm_lst # [mth] Last month in seasonal range
+    
+    local yyyy_frs_sng # [sng] First year string (YYYY format)
+    local yyyy_lst_sng # [sng] Last year string (YYYY format)
+    local yyyymm_frs_sng # [sng] First year-month string (YYYYMM format)
+    local yyyymm_lst_sng # [sng] Last year-month string (YYYYMM format)
+    local yyyymm_rng_sng # [sng] Year-month range string (YYYYMM_YYYYMM format)
+    local clm_bnd_arg # [sng] Column boundary argument string (yyyy_frs,yyyy_lst,mm_frs,mm_lst)
+    local yyyy_rng # [sng] Year range string (YYYY or YYYY-YYYY format)
+    local rtn_sng # [sng] String to return
+    
+    local mth_crr # [mth] Current month in data range
+    local yr_crr # [yr] Current year in data range
+    local yyyymm_crr # [yyyymm] Current year-month
+    local yyyymm_srt # [yyyymm] Starting year-month of data range
+    local yyyymm_end # [yyyymm] Ending year-month of data range
+    
+    local mth_in_csn # [flg] Month is in seasonal range
+    
+    # Check syntax
+    if [[ -z "${yr_srt}" ]] || [[ -z "${mth_srt}" ]] || [[ -z "${yr_end}" ]] || [[ -z "${mth_end}" ]] || [[ -z "${csn_srt_idx}" ]] || [[ -z "${csn_end_idx}" ]] || [[ -z "${rtn_enm}" ]]; then
+        echo "${fnc_nm}: ERROR Missing required parameters" >&2
+        return 1
+    fi
+    
+    # Compute data range boundaries
+    yyyymm_srt=$((yr_srt*100+mth_srt))
+    yyyymm_end=$((yr_end*100+mth_end))
+    
+    # Find earliest and latest year-month in seasonal range
+    yyyymm_frs=-1
+    yyyymm_lst=-1
+    
+    # Iterate through months in data range
+    mth_crr=${mth_srt}
+    yr_crr=${yr_srt}
+    while true; do
+        yyyymm_crr=$((yr_crr*100+mth_crr))
+        
+        # Check if current month is in seasonal range
+        mth_in_csn=0
+        if [[ ${csn_srt_idx} -le ${csn_end_idx} ]]; then
+            # Non-wrapping case (e.g., 6 to 8)
+            if [[ ${mth_crr} -ge ${csn_srt_idx} ]] && [[ ${mth_crr} -le ${csn_end_idx} ]]; then
+                mth_in_csn=1
+            fi
+        else
+            # Wrapping case (e.g., 12 to 2)
+            if [[ ${mth_crr} -ge ${csn_srt_idx} ]] || [[ ${mth_crr} -le ${csn_end_idx} ]]; then
+                mth_in_csn=1
+            fi
+        fi
+        
+        if [[ ${mth_in_csn} -eq 1 ]]; then
+            if [[ ${yyyymm_frs} -lt 0 ]]; then
+                yyyymm_frs=${yyyymm_crr}
+            fi
+            yyyymm_lst=${yyyymm_crr}
+        fi
+        
+        # Check if we've reached the end
+        if [[ ${mth_crr} -eq ${mth_end} ]] && [[ ${yr_crr} -eq ${yr_end} ]]; then
+            break
+        fi
+        
+        # Advance to next month, wrapping 12->1
+        mth_crr=$((mth_crr+1))
+        if [[ ${mth_crr} -gt 12 ]]; then
+            mth_crr=1
+            yr_crr=$((yr_crr+1))
+        fi
+    done
+    
+    # Extract year components from computed yyyymm values
+    yyyy_frs=$((yyyymm_frs/100))
+    yyyy_lst=$((yyyymm_lst/100))
+    
+    # Extract month components from computed yyyymm values
+    mm_frs=$((yyyymm_frs%100))
+    mm_lst=$((yyyymm_lst%100))
+    
+    # Format output date strings
+    printf -v yyyy_frs_sng "%04d" ${yyyy_frs}
+    printf -v yyyy_lst_sng "%04d" ${yyyy_lst}
+    printf -v yyyymm_frs_sng "%06d" ${yyyymm_frs}
+    printf -v yyyymm_lst_sng "%06d" ${yyyymm_lst}
+    printf -v yyyymm_rng_sng "%06d_%06d" ${yyyymm_frs} ${yyyymm_lst}
+    printf -v clm_bnd_arg "%04d,%04d,%02d,%02d" ${yyyy_frs} ${yyyy_lst} ${mm_frs} ${mm_lst}
+    
+    # Format year range string
+    if [[ ${yyyy_frs} -eq ${yyyy_lst} ]]; then
+        printf -v yyyy_rng "%04d" ${yyyy_frs}
+    else
+        printf -v yyyy_rng "%04d-%04d" ${yyyy_frs} ${yyyy_lst}
+    fi
+    
+    # Select and return requested string
+    case ${rtn_enm} in
+        1) rtn_sng="${yyyy_frs_sng}" ;;
+        2) rtn_sng="${yyyy_lst_sng}" ;;
+        3) rtn_sng="${yyyymm_frs_sng}" ;;
+        4) rtn_sng="${yyyymm_lst_sng}" ;;
+        5) rtn_sng="${yyyymm_rng_sng}" ;;
+        6) rtn_sng="${clm_bnd_arg}" ;;
+        7) rtn_sng="${yyyy_rng}" ;;
+        *) echo "${fnc_nm}: ERROR Return enumeration must be 1, 2, 3, 4, 5, 6, or 7" >&2; return 1 ;;
+    esac
+    
+    echo "${rtn_sng}"
+    return 0
+} # !csn_nfo_get()
 
 # Check argument number and complain accordingly
 arg_nbr=$#
@@ -1163,9 +1309,7 @@ fi # !mth_endp1
 if [ "${mm_srt}" != '01' ] || [ "${mm_end}" != '12' ]; then
     mth_flg='Yes'
 fi # !mm_srt
-if [ ${mth_flg} = 'Yes' ]; then
-    let yr_cln=${yr_nbr}+1
-fi # !mth_flg
+[ ${mth_flg} = 'Yes' ] && let yr_cln=${yr_nbr}+1 || yr_cln=${yr_nbr}
 
 # 20260323
 # Determine starting and ending year string for each month
@@ -1309,19 +1453,11 @@ elif [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	csn_flg='No'
     fi # !csn_lst
 fi # !clm_md
-if [ -n "${gaa_sng_std}" ]; then
-    if [ "${yr_cln}" -gt 1 ]; then
-	yrs_avg_sng="${yr_srt}-${yr_end}"
-    else
-	yrs_avg_sng="${yr_srt}"
-    fi # !yr_nbr
-    # NB: E3SM diagnostics (e3sm_diagnostics) relies on this attribute
-    if [ "${tms_flg}" != 'Yes' ]; then
-	gaa_sng="${gaa_sng_std} --gaa yrs_averaged=${yrs_avg_sng}"
-    fi # !tms_flg
-else
-    echo "${spt_nm}: INFO User-defined global attributes string is empty. Diagnostics routines (such as E3SM Diagnostics) that depend on these attributes may not work."
-fi # !gaa_sng
+if [ -z "${gaa_sng_std}" ]; then
+    if [ "${clm_flg}" = 'Yes' ]; then
+	echo "${spt_nm}: INFO User-defined global attributes string is empty. Diagnostics routines (such as E3SM Diagnostics) that depend on these attributes may not work."
+    fi # !clm_flg
+fi # !gaa_sng_std
 if [ -n "${job_usr}" ]; then 
     job_nbr="${job_usr}"
 fi # !job_usr
@@ -2264,7 +2400,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: fl_nbr   = ${fl_nbr}\n"
     printf "dbg: flg_sum  = ${flg_sum}\n"
     printf "dbg: fml_nm   = ${fml_nm}\n"
-    printf "dbg: gaa_sng  = ${gaa_sng}\n"
+    printf "dbg: gaa_sng  = ${gaa_sng_std}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
     printf "dbg: hrd_pth  = ${hrd_pth}\n"
     printf "dbg: hrz_arg  = ${hrz_arg}\n"
@@ -2581,6 +2717,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	fi # !clm_md
 
 	# Common to both high-frequency and monthly-input climos
+	yyyy_rng=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${clm_idx} ${clm_idx} ${rtn_yyyy_rng})
+	if [ -n "${gaa_sng_std}" ]; then
+	    # NB: E3SM diagnostics (e3sm_diagnostics) relies on this attribute
+	    gaa_sng[${clm_idx}]="${gaa_sng_std} --gaa yrs_averaged=${yyyy_rng}"
+	fi # !gaa_sng
 	if [ ${wnt_md} = 'djf' ] && [ ${MM} = '12' ]; then 
 	    yyyy_clm_srt=${yyyy_clm_srt_dec}
 	    yyyy_clm_end=${yyyy_clm_end_dec}
@@ -2640,7 +2781,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    # Command to produce interleaved monthly climos
 	    if [ "${fl_nbr}" -eq 1 ]; then
 		# Compute interleaved mean of single-file input (e.g., CMIP timeseries format)
-		#cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]}"
+		#cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]}"
 		tm_nbr=`ncks --trd -M ${ppn_opt} ${fl_in} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
 		let ssc2=${tm_nbr}*${tpd_out}/${srd}
 		# Ensure result is positive integer
@@ -2650,29 +2791,29 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		    exit 1
 		fi # !ssc2_ntg
 
-		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_mth[${clm_idx}]}"
+		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_mth[${clm_idx}]}"
 
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yyyy_srt_mth[${clm_idx}]},${yyyy_end_mth[${clm_idx}]},${clm_idx},${clm_idx},${tpd_out} -O ${nco_opt} ${gaa_sng} -d time,,,,${ssc2},${tpd_out} ${fl_mth[${clm_idx}]} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yyyy_srt_mth[${clm_idx}]},${yyyy_end_mth[${clm_idx}]},${clm_idx},${clm_idx},${tpd_out} -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,,,,${ssc2},${tpd_out} ${fl_mth[${clm_idx}]} ${fl_out[${clm_idx}]}"
 		    
 	    else # !fl_nbr
 		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
 
-		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc} ${ppn_opt} ${fl_in[*]} ${fl_mth[${clm_idx}]}"
+		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${ssc} ${ppn_opt} ${fl_in[*]} ${fl_mth[${clm_idx}]}"
 
 		# Take mean value of each diurnal timestep across all instances of this month
 		fl_tpd_tpl[${clm_idx}]="${drc_out}/${out_nm}_${MM}_tpdTPDTT_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
-		cmd_tpd_tpl[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,TPDidx,,${tpd_out} ${fl_mth[${clm_idx}]} ${fl_tpd_tpl[${clm_idx}]}"
+		cmd_tpd_tpl[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,TPDidx,,${tpd_out} ${fl_mth[${clm_idx}]} ${fl_tpd_tpl[${clm_idx}]}"
 
 		# Concatenate individual timestep means into full diurnal timeseries
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O --clm_bnd=${yyyy_srt_mth[${clm_idx}]},${yyyy_end_mth[${clm_idx}]},${clm_idx},${clm_idx},${tpd_out} ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}_tpd* ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O --clm_bnd=${yyyy_srt_mth[${clm_idx}]},${yyyy_end_mth[${clm_idx}]},${clm_idx},${clm_idx},${tpd_out} ${nco_opt} ${gaa_sng[${clm_idx}]} ${drc_out}/${out_nm}_${MM}_tpd* ${fl_out[${clm_idx}]}"
 	    fi # !fl_nbr
 	    # Combine monthly into seasonal and annual means with nces (preserving diurnal timesteps)
 	    cmd_mth2csn='nces'
 	    cmd_csn2ann='nces'
 	elif [ ${clm_md} = 'mth' ]; then 
 	    clm_bnd[${clm_idx}]=${yyyy_srt_mth[${clm_idx}]},${yyyy_end_mth[${clm_idx}]},${clm_idx},${clm_idx},0
-	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${clm_bnd[${clm_idx}]} -O ${nco_opt} ${gaa_sng} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
-	    #	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},0 -O ${nco_opt} ${gaa_sng} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${clm_bnd[${clm_idx}]} -O ${nco_opt} ${gaa_sng[${clm_idx}]} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
+	    #	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},0 -O ${nco_opt} ${gaa_sng[${clm_idx}]} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    # Combine monthly into seasonal and annual means with ncra
 	    cmd_mth2csn='ncra'
 	    cmd_csn2ann='ncra'
@@ -2807,20 +2948,32 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     fi # !tpd_out	
     # Monthly output filenames constructed above; specify remaining (seasonal, annual) output names
     for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
-	# Produces names like "${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
+	# Produce names like "${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
 	let clm_idx=1+12+${csn_idx}
 	# 20260323 Start and end years now depend on start and end months
 	csn_srt_idx_crr=${csn_srt_idx[${map_r2d[${csn_idx}]}]}
 	csn_end_idx_crr=${csn_end_idx[${map_r2d[${csn_idx}]}]}
-	# 20230623 Big fxm: Swap yyyy_srt_mth and yyyy_end_mth
+	yyyymm_frs=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyymm_frs})
+	yyyymm_lst=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyymm_lst})
+	yyyymm_rng=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyymm_rng})
+	clm_bnd_arg=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_clm_bnd_arg})
+	yyyy_rng=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyy_rng})
+	if [ -n "${gaa_sng_std}" ]; then
+	    # NB: E3SM diagnostics (e3sm_diagnostics) relies on this attribute
+	    gaa_sng[${clm_idx}]="${gaa_sng_std} --gaa yrs_averaged=${yyyy_rng}"
+	fi # !gaa_sng
 	# What should JJA name for yr_srt=2013, mth_srt=7, yr_end=2014, mth_end=6 be?
 	# Normal climos use 201306-201408 but there is no 201306 or 201408 in this dataset!
 	# Alternative 201406-201308 is non-chronological (though maybe OK)?
 	# Alternative 201307-201406 is chronological. No August indicator in date string.
 	# People prefer the chronological option alternative
-	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_mth[${csn_srt_idx_crr}]}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end_mth[${csn_end_idx_crr}]}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
-	clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_srt_mth[${csn_srt_idx_crr}]},${yyyy_end_mth[${csn_end_idx_crr}]},${csn_srt_idx[${map_r2d[${csn_idx}]}]},${csn_end_idx[${map_r2d[${csn_idx}]}]},${tpd_out}"
-	if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
+	#fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_mth[${csn_srt_idx_crr}]}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end_mth[${csn_end_idx_crr}]}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"	
+	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyymm_rng}_climo.nc"
+	# 20260323
+	# clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_srt_mth[${csn_srt_idx_crr}]},${yyyy_end_mth[${csn_end_idx_crr}]},${csn_srt_idx[${map_r2d[${csn_idx}]}]},${csn_end_idx[${map_r2d[${csn_idx}]}]},${tpd_out}"
+	clm_bnd[${clm_idx}]="--clm_bnd=${clm_bnd_arg},${tpd_out}"
+	if false; then
+#	if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
 	    #clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_clm_srt_dec},${yyyy_clm_end_dec},${mm_djf_srt},${mm_djf_end},${tpd_out}"
@@ -3076,7 +3229,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 			tm_end="${yyyy_endp1_sgm[${sgm_idx}]}-01-01T00:00:00"
 		    fi # !mth_flg
 		    if [ ${tpd_out} -lt 3600 ]; then
-			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		    else
 			# Deprecated code to output in sub-average periods or different shapes
 			fl_rcat[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_ncrcat.nc"
@@ -3089,13 +3242,13 @@ if [ "${tms_flg}" = 'Yes' ]; then
 			    fl_tpd_all="${fl_tpd_all} ${fl_tpd[${tpd_idx}]}"
 			done # !tpd_idx
 			# 20200627: Average all timesteps into one climatological record as data(time,space)
-			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_out[${var_idx}]};done;/bin/rm -f ${fl_rcat[${var_idx}]}"
+			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_out[${var_idx}]};done;/bin/rm -f ${fl_rcat[${var_idx}]}"
 			# 20200628: Output one record per year as data(time,tpd,space), easier to regrid
-			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
+			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
 		    fi # !tpd_out
 		else
 		    # Normal splitting, non-high-frequency 
-		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		fi # !clm_md
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_sbs[${var_idx}]}
@@ -3303,7 +3456,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
 	drc_out="${drc_in}"
     fi # !bnr_flg
     fl_out[${clm_idx}]="${drc_out}/${out_nm}_ANN_${yyyy_srt}01_${yyyy_end}12_climo.nc"
-    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]} ${par_opt}"
+    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]} ${par_opt}"
 
     # Block 1 Loop 2: Climatological annual mean
     printf "Climatological annual mean...\n"
@@ -3366,10 +3519,10 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    tm_srt="${yyyy_srt}-${MM}-${DD}T00:00:00"
 	    tm_end="${yyyy_end}-${MM}-${DD}T23:59:59"
 	    if [ ${tpd_out} -eq 1 ]; then
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},1 ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},1 ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    else
 		# 20170619: Diurnal mode is really slow on MacOS (UDUnits parsing sluggishness?)
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${drn} ${ppn_opt} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${drn} ${ppn_opt} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
 	    fi # !tpd
 	    let clm_idx=${clm_idx}+1
 	done # !day
@@ -3638,16 +3791,16 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	    for ((mth_idx=${csn_srt_idx[${map_r2d[${csn_idx}]}]};mth_idx<=${csn_end_idx[${map_r2d[${csn_idx}]}]};mth_idx++)); do
 		fl_lst="${fl_lst} ${fl_out[${mth_idx}]}"
 	    done # !mth_idx
-	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ${cmd_mth2csn} ${clm_bnd[${clm_idx}]} -O -w ${csn_wgt[${map_r2d[${csn_idx}]}]} ${nco_opt} ${gaa_sng} ${fl_lst} ${fl_out[${clm_idx}]}"
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ${cmd_mth2csn} ${clm_bnd[${clm_idx}]} -O -w ${csn_wgt[${map_r2d[${csn_idx}]}]} ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_lst} ${fl_out[${clm_idx}]}"
 	    # DJF specified as exception since month-order is non-consecutive (12,1,2)
 	    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ${cmd_mth2csn} ${clm_bnd[${clm_idx}]} -O -w 31,31,28 ${nco_opt} ${gaa_sng} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ${cmd_mth2csn} ${clm_bnd[${clm_idx}]} -O -w 31,31,28 ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[${clm_idx}]}"
 	    fi # !DJF
 	done # !csn_idx
-	# cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${gaa_sng} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
-	# cmd_clm[14]="${cmd_mpi[14]} ncra --cb -O -w 30,31,31 ${nco_opt} ${gaa_sng} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
-	# cmd_clm[15]="${cmd_mpi[15]} ncra --cb -O -w 30,31,30 ${nco_opt} ${gaa_sng} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
-	# cmd_clm[16]="${cmd_mpi[16]} ncra --cb -O -w 31,31,28 ${nco_opt} ${gaa_sng} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
+	# cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
+	# cmd_clm[14]="${cmd_mpi[14]} ncra --cb -O -w 30,31,31 ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
+	# cmd_clm[15]="${cmd_mpi[15]} ncra --cb -O -w 30,31,30 ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
+	# cmd_clm[16]="${cmd_mpi[16]} ncra --cb -O -w 31,31,28 ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
 
 	# Block 2 Loop 2: Execute and/or echo seasonal climatology commands
 	let bch_nbr=$((csn_nbr / job_nbr))
@@ -3760,8 +3913,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	printf "Climatological annual mean...\n"
 	[[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
 	fl_lst="${fl_out[${clm_csn_mam_idx}]} ${fl_out[${clm_csn_jja_idx}]} ${fl_out[${clm_csn_son_idx}]} ${fl_out[${clm_csn_djf_idx}]}"
-	cmd_clm[${clm_nbr}]="${cmd_mpi[${clm_nbr}]} ${cmd_csn2ann} ${clm_bnd[${clm_nbr}]} -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_lst} ${fl_out[${clm_nbr}]}"
-	#    cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
+	cmd_clm[${clm_nbr}]="${cmd_mpi[${clm_nbr}]} ${cmd_csn2ann} ${clm_bnd[${clm_nbr}]} -O -w 92,92,91,90 ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_lst} ${fl_out[${clm_nbr}]}"
+	#    cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_clm[${clm_nbr}]}
 	fi # !dbg
@@ -4009,7 +4162,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	
 	printf "Weight input climos to produce extended climo...\n"
 	for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-	    cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} ${gaa_sng} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
+	    cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} ${gaa_sng[${clm_idx}]} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_xtn[${clm_idx}]}
 	    fi # !dbg

@@ -1,8 +1,16 @@
-2026-03-24  Charlie Zender  <zender@uci.edu>
+2026-03-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha07: AI not RI';git push
 	git tag -a 5.3.7-alpha07 -m '';git push --tags
+
+	* Implement csn_nfo_get() as Bash in ncclimo
+
+	* Shift gaa_sng to depend on clm_idx
+
+	* Metadata appears to be correct for all flexible-month climos
+
+2026-03-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha06: Spidey';git push
@@ -11,8 +19,6 @@
 	* Math appears to be correct for flexible-month monthly, seasonal, annual climos
 
 	* Metadata appears to be correct for flexible-month monthly climos
-
-	* Metadata needs work for flexible-month seasonal, annual climos
 
 	* Fix minor bugs in nco_csn_nfo_get()
 
