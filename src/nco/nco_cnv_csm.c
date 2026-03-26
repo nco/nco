@@ -96,207 +96,199 @@ nco_clm_nfo_get /* [fnc] Parse clm_nfo arguments and merge into structure */
 } /* !nco_clm_nfo_get() */
 
 char * /* O [sng] Requested date string */
-nco_csn_nfo_get /* [fnc] Parse seasonal information string and compute date strings */
-(const char *csn_nfo_sng) /* I [sng] Seasonal information string (7 comma-separated integers) */
+nco_csn_nfo_get /* [fnc] Parse seasonal information and compute date strings */
+(int yr_srt, /* I [yr] Starting year */
+ int mth_srt, /* I [mth] Starting month */
+ int yr_end, /* I [yr] Ending year */
+ int mth_end, /* I [mth] Ending month */
+ int csn_srt_idx, /* I [idx] Seasonal start index */
+ int csn_end_idx, /* I [idx] Seasonal end index */
+ int rtn_enm) /* I [enm] Enumerated return variable */
 {
+  /* Purpose: Parse seasonal information and compute date strings
+    [sng] Input: Seven positional integer arguments
+    [sng] Output: Requested date string based on rtn_enm
+
+    Usage:
+    csn_nfo_get 2013 7 2014 6 6 8 5 returns "201307_201406"
+    csn_nfo_get 2013 7 2014 6 6 8 6 returns "2013,2014,07,06" */
+    
   const char fnc_nm[]="nco_csn_nfo_get()"; /* [sng] Function name */
 
-  const char dlm_sng[]=",";
-
-  char **arg_lst;
+  int yyyy_frs; /* [yr] First year in seasonal range */
+  int yyyy_lst; /* [yr] Last year in seasonal range */
+  int yyyymm_frs; /* [yyyymm] Earliest year-month in season */
+  int yyyymm_lst; /* [yyyymm] Latest year-month in season */
+  int mm_frs; /* [mth] First month in seasonal range */
+  int mm_lst; /* [mth] Last month in seasonal range */
 
   char *yyyy_frs_sng=NULL_CEWI; /* [sng] First year string (YYYY format) */
   char *yyyy_lst_sng=NULL_CEWI; /* [sng] Last year string (YYYY format) */
   char *yyyymm_frs_sng=NULL_CEWI; /* [sng] First year-month string (YYYYMM format) */
   char *yyyymm_lst_sng=NULL_CEWI; /* [sng] Last year-month string (YYYYMM format) */
   char *yyyymm_rng_sng=NULL_CEWI; /* [sng] Year-month range string (YYYYMM_YYYYMM format) */
+  char *clm_bnd_arg=NULL_CEWI; /* [sng] Column boundary argument string (yyyy_frs,yyyy_lst,mm_frs,mm_lst) */
+  char *yyyy_rng=NULL_CEWI; /* [sng] Year range string (YYYY or YYYY-YYYY format) */
   char *rtn_sng=NULL_CEWI; /* [sng] String to return */
 
-  char *msg_sng=NULL_CEWI; /* [sng] Error message */
-  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol() return code */
-
-  int arg_nbr;
-  int csn_end_idx; /* [idx] Seasonal end index */
-  int csn_srt_idx; /* [idx] Seasonal start index */
   int mth_crr; /* [mth] Current month in data range */
-  int mth_end; /* [mth] Ending month */
-  int mth_srt; /* [mth] Starting month */
-  int rtn_enm; /* [enm] Enumerated return variable */
   int yr_crr; /* [yr] Current year in data range */
-  int yr_end; /* [yr] Ending year */
-  int yr_srt; /* [yr] Starting year */
-  int yyyy_frs; /* [yr] First year in seasonal range */
-  int yyyy_lst; /* [yr] Last year in seasonal range */
   int yyyymm_crr; /* [yyyymm] Current year-month */
-  int yyyymm_frs; /* [yyyymm] Earliest year-month in season */
-  int yyyymm_lst; /* [yyyymm] Latest year-month in season */
 
-  nco_bool NCO_SYNTAX_ERROR=False; /* [flg] Syntax error in input specification */
+  nco_bool mth_in_csn; /* [flg] Month is in seasonal range */
 
-  /* Purpose: Parse user-supplied seasonal information arguments from
-     csn_nfo_sng and return requested date string */
-  arg_lst=nco_lst_prs_2D(csn_nfo_sng,dlm_sng,&arg_nbr);
+  /* Purpose: Parse seasonal information and compute date strings */
 
-  /* Check syntax */
-  if(arg_nbr != 7){
-    msg_sng=strdup("Seasonal information must specify exactly seven comma-separated integers");
-    NCO_SYNTAX_ERROR=True;
-  }else if(arg_lst[0] == NULL){
-    msg_sng=strdup("Starting year not specified");
-    NCO_SYNTAX_ERROR=True;
-  }else if(arg_lst[1] == NULL){
-    msg_sng=strdup("Starting month not specified");
-    NCO_SYNTAX_ERROR=True;
-  }else if(arg_lst[2] == NULL){
-    msg_sng=strdup("Ending year not specified");
-    NCO_SYNTAX_ERROR=True;
-  }else if(arg_lst[3] == NULL){
-    msg_sng=strdup("Ending month not specified");
-    NCO_SYNTAX_ERROR=True;
-  }else if(arg_lst[4] == NULL){
-    msg_sng=strdup("Seasonal start index not specified");
-    NCO_SYNTAX_ERROR=True;
-  }else if(arg_lst[5] == NULL){
-    msg_sng=strdup("Seasonal end index not specified");
-    NCO_SYNTAX_ERROR=True;
-  }else if(arg_lst[6] == NULL){
-    msg_sng=strdup("Return enumeration not specified");
-    NCO_SYNTAX_ERROR=True;
-  } /* !arg_nbr */
+  /* Find earliest and latest year-month in seasonal range */
+  yyyymm_frs=-1;
+  yyyymm_lst=-1;
 
-  if(!NCO_SYNTAX_ERROR){
-    /* Parse integer values */
-    yr_srt=(int)strtol(arg_lst[0],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[0],"strtol",sng_cnv_rcd);
+  /* Iterate through months in data range */
+  mth_crr=mth_srt;
+  yr_crr=yr_srt;
+  while(True){
+    yyyymm_crr=yr_crr*100+mth_crr;
 
-    mth_srt=(int)strtol(arg_lst[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[1],"strtol",sng_cnv_rcd);
+    /* Check if current month is in seasonal range */
+    mth_in_csn=False;
+    if(csn_srt_idx <= csn_end_idx){
+      /* Non-wrapping case (e.g., 6 to 8) */
+      if(mth_crr >= csn_srt_idx && mth_crr <= csn_end_idx){
+        mth_in_csn=True;
+      }
+    }else{
+      /* Wrapping case (e.g., 12 to 2) */
+      if(mth_crr >= csn_srt_idx || mth_crr <= csn_end_idx){
+        mth_in_csn=True;
+      }
+    }
 
-    yr_end=(int)strtol(arg_lst[2],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[2],"strtol",sng_cnv_rcd);
+    if(mth_in_csn){
+      if(yyyymm_frs < 0){
+        yyyymm_frs=yyyymm_crr;
+      }
+      yyyymm_lst=yyyymm_crr;
+    }
 
-    mth_end=(int)strtol(arg_lst[3],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[3],"strtol",sng_cnv_rcd);
-
-    csn_srt_idx=(int)strtol(arg_lst[4],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[4],"strtol",sng_cnv_rcd);
-
-    csn_end_idx=(int)strtol(arg_lst[5],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[5],"strtol",sng_cnv_rcd);
-
-    rtn_enm=(int)strtol(arg_lst[6],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[6],"strtol",sng_cnv_rcd);
-
-    /* Find earliest and latest year-month in seasonal range that fall within data range */
-    yyyymm_frs=-1; /* [yyyymm] Initialize to invalid */
-    yyyymm_lst=-1; /* [yyyymm] Initialize to invalid */
-
-    /* Iterate through months in data range */
-    mth_crr=mth_srt;
-    yr_crr=yr_srt;
-    while(1){
-      yyyymm_crr=yr_crr*100+mth_crr;
-      
-      /* Check if current month is in seasonal range */
-      nco_bool mth_in_csn=False;
-      if(csn_srt_idx <= csn_end_idx){
-        /* Non-wrapping case (e.g., 6 to 8) */
-        if(mth_crr >= csn_srt_idx && mth_crr <= csn_end_idx) mth_in_csn=True;
-      }else{
-        /* Wrapping case (e.g., 12 to 2) */
-        if(mth_crr >= csn_srt_idx || mth_crr <= csn_end_idx) mth_in_csn=True;
-      } /* !csn_srt_idx */
-      
-      if(mth_in_csn){
-        if(yyyymm_frs < 0) yyyymm_frs=yyyymm_crr;
-        yyyymm_lst=yyyymm_crr;
-      } /* !mth_in_csn */
-      
-      if(mth_crr == mth_end && yr_crr == yr_end) break;
-      
-      /* Advance to next month, wrapping 12->1 */
-      mth_crr++;
-      if(mth_crr > 12){
-        mth_crr=1;
-        yr_crr++;
-      } /* !mth_crr */
-    } /* !1 */
-
-    /* Extract year components from computed yyyymm values */
-    yyyy_frs=yyyymm_frs/100;
-    yyyy_lst=yyyymm_lst/100;
-
-    /* Allocate and format output date strings */
-    yyyy_frs_sng=(char *)nco_malloc(5*sizeof(char)); /* YYYY\0 */
-    (void)sprintf(yyyy_frs_sng,"%04d",yyyy_frs);
-
-    yyyy_lst_sng=(char *)nco_malloc(5*sizeof(char)); /* YYYY\0 */
-    (void)sprintf(yyyy_lst_sng,"%04d",yyyy_lst);
-
-    yyyymm_frs_sng=(char *)nco_malloc(7*sizeof(char)); /* YYYYMM\0 */
-    (void)sprintf(yyyymm_frs_sng,"%06d",yyyymm_frs);
-
-    yyyymm_lst_sng=(char *)nco_malloc(7*sizeof(char)); /* YYYYMM\0 */
-    (void)sprintf(yyyymm_lst_sng,"%06d",yyyymm_lst);
-
-    yyyymm_rng_sng=(char *)nco_malloc(14*sizeof(char)); /* YYYYMM_YYYYMM\0 */
-    (void)sprintf(yyyymm_rng_sng,"%06d_%06d",yyyymm_frs,yyyymm_lst);
-
-    /* Select and return requested string */
-    switch(rtn_enm){
-    case 1:
-      rtn_sng=yyyy_frs_sng;
-      yyyy_lst_sng=(char *)nco_free(yyyy_lst_sng);
-      yyyymm_frs_sng=(char *)nco_free(yyyymm_frs_sng);
-      yyyymm_lst_sng=(char *)nco_free(yyyymm_lst_sng);
-      yyyymm_rng_sng=(char *)nco_free(yyyymm_rng_sng);
+    /* Check if we've reached the end */
+    if(mth_crr == mth_end && yr_crr == yr_end){
       break;
-    case 2:
-      rtn_sng=yyyy_lst_sng;
-      yyyy_frs_sng=(char *)nco_free(yyyy_frs_sng);
-      yyyymm_frs_sng=(char *)nco_free(yyyymm_frs_sng);
-      yyyymm_lst_sng=(char *)nco_free(yyyymm_lst_sng);
-      yyyymm_rng_sng=(char *)nco_free(yyyymm_rng_sng);
-      break;
-    case 3:
-      rtn_sng=yyyymm_frs_sng;
-      yyyy_frs_sng=(char *)nco_free(yyyy_frs_sng);
-      yyyy_lst_sng=(char *)nco_free(yyyy_lst_sng);
-      yyyymm_lst_sng=(char *)nco_free(yyyymm_lst_sng);
-      yyyymm_rng_sng=(char *)nco_free(yyyymm_rng_sng);
-      break;
-    case 4:
-      rtn_sng=yyyymm_lst_sng;
-      yyyy_frs_sng=(char *)nco_free(yyyy_frs_sng);
-      yyyy_lst_sng=(char *)nco_free(yyyy_lst_sng);
-      yyyymm_frs_sng=(char *)nco_free(yyyymm_frs_sng);
-      yyyymm_rng_sng=(char *)nco_free(yyyymm_rng_sng);
-      break;
-    case 5:
-      rtn_sng=yyyymm_rng_sng;
-      yyyy_frs_sng=(char *)nco_free(yyyy_frs_sng);
-      yyyy_lst_sng=(char *)nco_free(yyyy_lst_sng);
-      yyyymm_frs_sng=(char *)nco_free(yyyymm_frs_sng);
-      yyyymm_lst_sng=(char *)nco_free(yyyymm_lst_sng);
-      break;
-    default:
-      msg_sng=strdup("Return enumeration must be 1, 2, 3, 4, or 5");
-      NCO_SYNTAX_ERROR=True;
-      break;
-    } /* !rtn_enm */
+    }
+
+    /* Advance to next month, wrapping 12->1 */
+    mth_crr++;
+    if(mth_crr > 12){
+      mth_crr=1;
+      yr_crr++;
+    }
+  } /* end while */
+
+  /* Extract year components from computed yyyymm values */
+  yyyy_frs=yyyymm_frs/100;
+  yyyy_lst=yyyymm_lst/100;
+
+  /* Extract month components from computed yyyymm values */
+  mm_frs=yyyymm_frs%100;
+  mm_lst=yyyymm_lst%100;
+
+  /* Format output date strings */
+  yyyy_frs_sng=(char *)nco_malloc(5*sizeof(char)); /* YYYY\0 */
+  (void)sprintf(yyyy_frs_sng,"%04d",yyyy_frs);
+
+  yyyy_lst_sng=(char *)nco_malloc(5*sizeof(char)); /* YYYY\0 */
+  (void)sprintf(yyyy_lst_sng,"%04d",yyyy_lst);
+
+  yyyymm_frs_sng=(char *)nco_malloc(7*sizeof(char)); /* YYYYMM\0 */
+  (void)sprintf(yyyymm_frs_sng,"%06d",yyyymm_frs);
+
+  yyyymm_lst_sng=(char *)nco_malloc(7*sizeof(char)); /* YYYYMM\0 */
+  (void)sprintf(yyyymm_lst_sng,"%06d",yyyymm_lst);
+
+  yyyymm_rng_sng=(char *)nco_malloc(14*sizeof(char)); /* YYYYMM_YYYYMM\0 */
+  (void)sprintf(yyyymm_rng_sng,"%06d_%06d",yyyymm_frs,yyyymm_lst);
+
+  clm_bnd_arg=(char *)nco_malloc(19*sizeof(char)); /* YYYY,YYYY,MM,MM\0 */
+  (void)sprintf(clm_bnd_arg,"%04d,%04d,%02d,%02d",yyyy_frs,yyyy_lst,mm_frs,mm_lst);
+
+  /* Format year range string */
+  if(yyyy_frs == yyyy_lst){
+    yyyy_rng=(char *)nco_malloc(5*sizeof(char)); /* YYYY\0 */
+    (void)sprintf(yyyy_rng,"%04d",yyyy_frs);
+  }else{
+    yyyy_rng=(char *)nco_malloc(10*sizeof(char)); /* YYYY-YYYY\0 */
+    (void)sprintf(yyyy_rng,"%04d-%04d",yyyy_frs,yyyy_lst);
   }
 
-  if(NCO_SYNTAX_ERROR){
-    (void)fprintf(stderr,"%s: ERROR %s reports %s\n",nco_prg_nm_get(),fnc_nm,msg_sng);
-    msg_sng=(char *)nco_free(msg_sng);
-    rtn_sng=(char *)nco_free(rtn_sng);
+  /* Select and return requested string */
+  switch(rtn_enm){
+  case 1:
+    rtn_sng=yyyy_frs_sng;
+    yyyy_lst_sng=(char *)nco_free(yyyy_lst_sng);
+    yyyymm_frs_sng=(char *)nco_free(yyyymm_frs_sng);
+    yyyymm_lst_sng=(char *)nco_free(yyyymm_lst_sng);
+    yyyymm_rng_sng=(char *)nco_free(yyyymm_rng_sng);
+    clm_bnd_arg=(char *)nco_free(clm_bnd_arg);
+    yyyy_rng=(char *)nco_free(yyyy_rng);
+    break;
+  case 2:
+    rtn_sng=yyyy_lst_sng;
+    yyyy_frs_sng=(char *)nco_free(yyyy_frs_sng);
+    yyyymm_frs_sng=(char *)nco_free(yyyymm_frs_sng);
+    yyyymm_lst_sng=(char *)nco_free(yyyymm_lst_sng);
+    yyyymm_rng_sng=(char *)nco_free(yyyymm_rng_sng);
+    clm_bnd_arg=(char *)nco_free(clm_bnd_arg);
+    yyyy_rng=(char *)nco_free(yyyy_rng);
+    break;
+  case 3:
+    rtn_sng=yyyymm_frs_sng;
+    yyyy_frs_sng=(char *)nco_free(yyyy_frs_sng);
+    yyyy_lst_sng=(char *)nco_free(yyyy_lst_sng);
+    yyyymm_lst_sng=(char *)nco_free(yyyymm_lst_sng);
+    yyyymm_rng_sng=(char *)nco_free(yyyymm_rng_sng);
+    clm_bnd_arg=(char *)nco_free(clm_bnd_arg);
+    yyyy_rng=(char *)nco_free(yyyy_rng);
+    break;
+  case 4:
+    rtn_sng=yyyymm_lst_sng;
+    yyyy_frs_sng=(char *)nco_free(yyyy_frs_sng);
+    yyyy_lst_sng=(char *)nco_free(yyyy_lst_sng);
+    yyyymm_frs_sng=(char *)nco_free(yyyymm_frs_sng);
+    yyyymm_rng_sng=(char *)nco_free(yyyymm_rng_sng);
+    clm_bnd_arg=(char *)nco_free(clm_bnd_arg);
+    yyyy_rng=(char *)nco_free(yyyy_rng);
+    break;
+  case 5:
+    rtn_sng=yyyymm_rng_sng;
+    yyyy_frs_sng=(char *)nco_free(yyyy_frs_sng);
+    yyyy_lst_sng=(char *)nco_free(yyyy_lst_sng);
+    yyyymm_frs_sng=(char *)nco_free(yyyymm_frs_sng);
+    yyyymm_lst_sng=(char *)nco_free(yyyymm_lst_sng);
+    clm_bnd_arg=(char *)nco_free(clm_bnd_arg);
+    yyyy_rng=(char *)nco_free(yyyy_rng);
+    break;
+  case 6:
+    rtn_sng=clm_bnd_arg;
     yyyy_frs_sng=(char *)nco_free(yyyy_frs_sng);
     yyyy_lst_sng=(char *)nco_free(yyyy_lst_sng);
     yyyymm_frs_sng=(char *)nco_free(yyyymm_frs_sng);
     yyyymm_lst_sng=(char *)nco_free(yyyymm_lst_sng);
     yyyymm_rng_sng=(char *)nco_free(yyyymm_rng_sng);
+    yyyy_rng=(char *)nco_free(yyyy_rng);
+    break;
+  case 7:
+    rtn_sng=yyyy_rng;
+    yyyy_frs_sng=(char *)nco_free(yyyy_frs_sng);
+    yyyy_lst_sng=(char *)nco_free(yyyy_lst_sng);
+    yyyymm_frs_sng=(char *)nco_free(yyyymm_frs_sng);
+    yyyymm_lst_sng=(char *)nco_free(yyyymm_lst_sng);
+    yyyymm_rng_sng=(char *)nco_free(yyyymm_rng_sng);
+    clm_bnd_arg=(char *)nco_free(clm_bnd_arg);
+    break;
+  default:
+    (void)fprintf(stderr,"%s: ERROR Return enumeration must be 1, 2, 3, 4, 5, 6, or 7\n",fnc_nm);
     rtn_sng=NULL_CEWI;
-  } /* !NCO_SYNTAX_ERROR */
+    break;
+  } /* end switch */
 
   return rtn_sng;
 } /* !nco_csn_nfo_get() */

@@ -70,8 +70,14 @@ extern "C" {
    clm_bnd_sct *cb); /* I/O [sct] Climatology bounds structure */
   
   char * /* O [sng] Requested date string */
-  nco_csn_nfo_get /* [fnc] Parse seasonal information string and compute date strings */
-  (const char *csn_nfo_sng); /* I [sng] Seasonal information string (7 comma-separated integers) */
+  nco_csn_nfo_get /* [fnc] Parse seasonal information and compute date strings */
+  (int yr_srt, /* I [yr] Starting year */
+   int mth_srt, /* I [mth] Starting month */
+   int yr_end, /* I [yr] Ending year */
+   int mth_end, /* I [mth] Ending month */
+   int csn_srt_idx, /* I [idx] Seasonal start index */
+   int csn_end_idx, /* I [idx] Seasonal end index */
+   int rtn_enm); /* I [enm] Enumerated return variable */
 
   cnv_sct * /* O [sct] Convention structure */
   nco_cnv_ini /* [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
