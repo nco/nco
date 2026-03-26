@@ -1148,7 +1148,7 @@ if [ -n "${mdl_nm_usr}" ]; then
     mdl_nm="${mdl_nm_usr}"
 fi # !mdl_nm_usr
 if [ -n "${wnt_md_usr}" ]; then 
-    printf "${spt_nm}: WARNING Winter mode (-a or --wnt_md) is no longer supported as of 202603 (NCO 5.3.7), and invoking it acts as a no-op to provide back-compatibility to older scripts. Please alter your scripts to not invoke it. The same functionality is now accessed by providing datasets that start in December and invoking the --mth_srt=12 option.\n"
+    printf "${spt_nm}: WARNING Winter mode (-a or --wnt_md) is no longer supported as of 202603 (NCO 5.3.7), and invoking it acts as a no-op for backwards compatibility to older scripts. Please alter your scripts to not invoke it. The same functionality is now accessed by providing datasets that start in December and invoking the --mth_srt=12 option.\n"
 fi # !wnt_md_usr
 if [ -n "${clm_md_usr}" ]; then 
     # Climo mode must be explicitly selected with --clm_md when climo input files are from stdin or positional

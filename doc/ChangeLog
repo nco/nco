@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha07: AI not RI';git push
 	git tag -a 5.3.7-alpha07 -m '';git push --tags
 
+	* Remove wnt_md code. Option is now a no-op for back-compatibility. Print WARNING when invoked.
+
 	* Implement csn_nfo_get() as Bash in ncclimo
 
 	* Shift gaa_sng to depend on clm_idx
