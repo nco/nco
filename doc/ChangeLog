@@ -1,8 +1,16 @@
-2026-03-26  Charlie Zender  <zender@uci.edu>
+2026-03-27  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.3.7-alpha08 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha08: AI not RI';git push
+	git tag -a 5.3.7-alpha08 -m '';git push --tags
 
 	* NCO 5.3.7-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha07: AI not RI';git push
-	git tag -a 5.3.7-alpha07 -m '';git push --tags
+	git tag -a 5.3.7-alpha07 -m 'ncclimo: flx mth';git push --tags
+
+2026-03-26  Charlie Zender  <zender@uci.edu>
+
+	* Update documentation to remove winter mode, explain flexible month mode
 
 	* Remove wnt_md code. Option is now a no-op for back-compatibility. Print WARNING when invoked.
 
@@ -24,7 +32,7 @@
 
 	* Fix minor bugs in nco_csn_nfo_get()
 
-	* Generate nco_clm_nfo_get() with CoPilot to parse new seasonal	climatology format metadata
+	* Generate nco_clm_nfo_get() with Copilot to parse new seasonal	climatology format metadata
 
 2026-03-23  Charlie Zender  <zender@uci.edu>
 
@@ -55,7 +63,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha05: East Fork';git push
 	git tag -a 5.3.7-alpha05 -m 'all: l2d pck plc; ncclimo: salloc not srun xmp; ncremap: srun dfl';git push --tags
 
-	* l2d packing policy by Ezequiel Cimadevilla and David Hassell
+	* Merge l2d packing policy by Ezequiel Cimadevilla and David Hassell of NCAS
 
 2026-03-11  Charlie Zender  <zender@uci.edu>
 

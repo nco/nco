@@ -20716,7 +20716,8 @@ option.
 @example
 ncclimo -s 2013 -e 2014 --mth_srt=7 --mth_end=6 ...
 @end example
-Note that climatologies only work for an integral number of years.
+Note that climatologies (unlike timeseries) only work for an integral
+number of years. 
 Thus @code{mth_end} must precede @code{mth_srt} by one month in the
 annual cycle (yes, December precedes January by one month).
 
