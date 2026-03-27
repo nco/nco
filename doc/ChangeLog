@@ -1,7 +1,7 @@
 2026-03-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-alpha08 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha08: AI not RI';git push
+	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha08: Yo-yo and PacMan';git push
 	git tag -a 5.3.7-alpha08 -m '';git push --tags
 
 	* NCO 5.3.7-alpha07 release procedure:
