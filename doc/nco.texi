@@ -27041,11 +27041,10 @@ and boutique options passed to @command{GenerateOfflineMap} or to
 @end html
 @cartouche
 Caveat lector:
-As of September, 2021 @acronym{MOAB}-generated weights are only
-trustworthy for the @code{traave} algorithm (synonym for @code{fv2fv_flx}). 
-The options for all other algorithms are implemented as indicated
-though they should be invoked for testing purposes only.
-High order and spectral element maps are completely unsupported.
+As of April, 2026 @acronym{MOAB}-generated weights are trustworthy for
+finite volume, high order, and bilinear mappings, e.g., the
+@code{traave} and @code{trbilin} algorithms.
+However, spectral element weights are not yet supported.
 @acronym{MOAB} anticipates supporting more TempestRemap algorithms
 in the future.
 Always use the map-checker to test maps before use, e.g., with

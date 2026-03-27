@@ -1,21 +1,52 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.7 makes landfall
+netCDF Operators NCO version 5.3.7 stumps the chump
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.7 consists mainly of bugfixes:
-ncclimo automatic name generation fixes two corner case bugs,
-ncks fixes JSON-format output regressions,
+Version 5.3.7 contains significant new features and fixes.
+Most significantly, ncremap support for MOAB-TempestRemap (mbtempest)
+has been refactored to optimize parallel weight generation and support
+new algorithms.
+Other improvements include support for the l2d packing policy
+suggested for CMIP7, and for the NetCDF Expansion Pack v.1.5+ API,
+ncks fixes JSON-format output regressions, and ncclimo fixes automatic
+name generation fixes two corner case bugs. 
 
-fxm should upgrade. Others may skip this release.
+Users should consider upgrading to exploit these new features.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
+
+A. ncremap support for mbtempest is better optimized and more fully
+parallel. mbconvert runs in parallel for input grids of type True
+Exodus and netCDF3, and in serial for types netCDF4 and TR Exodus. 
+mbpart now infers
+fxm
+
+and mbpart). ncremap can now recognize and re-configure mbtempest
+
+A. ncremap in vertical interpolation mode for hybrid sigma-pressure
+coordinates now searches for the surface pressure in the input
+datafile before searching the vertical grid file. fxm
+
+A. ncclimo now supports climos that begin in any month, not just
+January! We call this "flexible month" support. fxm
+
+A. The l2d packing policy is available on all operators.
+l2d fxm
+Thanks to Ezequiel Cimadevilla and David Hassell of NCAS for
+contributing this.
+
+A. NCO now supports the NetCDF Expansion Pack v.1.5+ API.
+Support for the v.1.0 API has been dropped. Original NEP features 
+like the LZ4 codec are now supported. Newer NEP features such as
+reading GRIB2 and GeoTIFF files should also be supported. 
+https://github.com/Intelligent-Data-Design-Inc/NEP
 
 A. The ncremap tutorial on the E3SM Confluence page
 https://e3sm.atlassian.net/wiki/spaces/DOC/pages/edit-v2/754286611
@@ -57,8 +88,8 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.3.4 built/tested under
-MacOS 26.1 with netCDF 4.10-development on HDF5 1.14.6
+These problems occur with NCO 5.3.7 built/tested under
+MacOS 26.2 with netCDF 4.10.1-development on HDF5 2.1.1
 and with Linux FC42 with netCDF 4.9.2 on HDF5 1.14.4.
 
 A. NOT YET FIXED (NCO problem)
