@@ -2576,7 +2576,7 @@ fi # !dbg
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "************************************************************************\n"
     printf "IMPORTANT: This output shows a SIMULATION of a production run\n"
-    printf "The values shown are real, but the printed commands are NOT executed\n"
+    printf "The metadata values are real, but the printed commands are NOT executed\n"
     printf "This output is for debugging purpose only since dbg_lvl = ${dbg_lvl} >= 2\n"
     printf "The elapsed time should be near 0m0s since there is very little disk I/O\n"
     printf "Set dbg_lvl <= 1 for a PRODUCTION RUN that executes these commands\n"
@@ -3829,22 +3829,15 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
     if [ "${csn_flg}" = 'Yes' ]; then
 	# Block 2 Loop 1: Generate seasonal commands
 	[[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
-#	if [ ${clm_md} != 'hfc' ]; then
-#	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-#		clm_bnd[${clm_idx}]=''
-#	    done # !clm_idx
-#	fi # !clm_md
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	    let clm_idx=1+12+${csn_idx}
 	    fl_lst=''
-	    for ((mth_idx=${csn_srt_idx[${map_r2d[${csn_idx}]}]};mth_idx<=${csn_end_idx[${map_r2d[${csn_idx}]}]};mth_idx++)); do
+	    for (( mth_ctr=0;mth_ctr<${csn_nom[${map_r2d[${csn_idx}]}]};mth_ctr++ )); do
+		let mth_idx=${csn_srt_idx[${map_r2d[${csn_idx}]}]}+${mth_ctr}
+		[[ ${mth_idx} -gt 12 ]] && mth_idx=$((mth_idx % 12))
 		fl_lst="${fl_lst} ${fl_out[${mth_idx}]}"
 	    done # !mth_idx
 	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ${cmd_mth2csn} ${clm_bnd[${clm_idx}]} -O -w ${csn_wgt[${map_r2d[${csn_idx}]}]} ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_lst} ${fl_out[${clm_idx}]}"
-	    # DJF specified as exception since month-order is non-consecutive (12,1,2)
-	    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ${cmd_mth2csn} ${clm_bnd[${clm_idx}]} -O -w 31,31,28 ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[${clm_idx}]}"
-	    fi # !DJF
 	done # !csn_idx
 	# cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
 	# cmd_clm[14]="${cmd_mpi[14]} ncra --cb -O -w 30,31,31 ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"

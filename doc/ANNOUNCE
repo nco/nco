@@ -37,6 +37,12 @@ datafile before searching the vertical grid file. fxm
 A. ncclimo now supports climos that begin in any month, not just
 January! We call this "flexible month" support. fxm
 
+A. ncclimo has all consecutive two-month and three-month seasons
+defined internally, so users can select any. Two-month seasons
+are, e.g., Jan-Feb, Feb-Mar, ... Dec-Jan. Three-month seasons are,
+e.g., Jan-Feb-Mar, Feb-Mar-Apr, ... Dec-Jan-Feb.
+
+
 A. The l2d packing policy is available on all operators.
 l2d fxm
 Thanks to Ezequiel Cimadevilla and David Hassell of NCAS for
