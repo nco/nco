@@ -2190,16 +2190,16 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_end_idx[${csn_mjj}]=7
     csn_end_idx[${csn_aso}]=10
     csn_end_idx[${csn_ndj}]=1
-    csn_end_idx[${csn_jfj}]=2
-    csn_end_idx[${csn_maj}]=4
-    csn_end_idx[${csn_amj}]=5
-    csn_end_idx[${csn_mjj}]=6
-    csn_end_idx[${csn_jjj}]=7
-    csn_end_idx[${csn_jaj}]=8
-    csn_end_idx[${csn_asj}]=9
-    csn_end_idx[${csn_soj}]=10
-    csn_end_idx[${csn_ndj}]=12
-    csn_end_idx[${csn_djj}]=1
+    csn_end_idx[${csn_jf}]=2
+    csn_end_idx[${csn_ma}]=4
+    csn_end_idx[${csn_am}]=5
+    csn_end_idx[${csn_mj}]=6
+    csn_end_idx[${csn_jj}]=7
+    csn_end_idx[${csn_ja}]=8
+    csn_end_idx[${csn_as}]=9
+    csn_end_idx[${csn_so}]=10
+    csn_end_idx[${csn_nd}]=12
+    csn_end_idx[${csn_dj}]=1
     csn_end_idx[${csn_ann}]=12
 
     for ((csn_idx=0;csn_idx<${csn_nbr_max};csn_idx++)); do
@@ -2535,6 +2535,8 @@ if [ ${dbg_lvl} -ge 2 ]; then
     if [ "${csn_flg}" = 'Yes' ]; then
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	    printf "dbg: Requested season index ${csn_idx} (\"${csn_rqs[${csn_idx}]}\") is defined season index ${map_r2d[${csn_idx}]} (\"${csn_abb[${map_r2d[${csn_idx}]}]}\")\n"
+	    idx_dtb=${map_r2d[${csn_idx}]}
+	    printf "dbg: csn_idx = ${csn_idx}, idx_dtb = ${idx_dtb}, abb = ${csn_abb[${idx_dtb}]}, abb_lc = ${csn_abb_lc[${idx_dtb}]}, srt_idx = ${csn_srt_idx[${idx_dtb}]}, end_idx = ${csn_end_idx[${idx_dtb}]}, nom = ${csn_nom[${idx_dtb}]}, wgt = ${csn_wgt[${idx_dtb}]}\n"
 	done # !csn_idx
     fi # !csn
 fi # !dbg

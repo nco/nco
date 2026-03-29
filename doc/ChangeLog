@@ -8,7 +8,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha08: Yo-yo and PacMan';git push
 	git tag -a 5.3.7-alpha08 -m 'ncclimo: csn all';git push --tags
 
-	* Complete inclusion of remaining two-month and three-month seasons
+	* Define all two-month and three-month seasons
 
 2026-03-27  Charlie Zender  <zender@uci.edu>
 
