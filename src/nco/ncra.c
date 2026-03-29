@@ -1089,11 +1089,11 @@ main(int argc,char **argv)
       /* Monthly mean input */
       if(cb->mth_srt == 1 && cb->mth_end == 12){
 	/* Climatological monthly or seasonal means will be reduced to climatological annual means */
-	/* DJF seasonal climos in SCD mode present as Y1,Y2,12,2 where
-	   DJF seasonal climos in SDD mode present as Y1,Y2,1,12 which is the same as ANN
-	   Thus determining clm2clm not clm2bnd for SDD DJF presents special difficulty
+	/* DJF seasonal climos in SCD mode present as Y1,Y2,12,2
+	   NDJ, DJ, and DJF seasonal climos in SDD mode present as Y1,Y2,1,12---same as ANN
+	   Thus determining clm2clm not clm2bnd for SDD NDJ, DJ, DJF presents special difficulty
 	   Hardcode this case as DJF/clm2clm unless fl_nbr = 4 or 12 in which case ANN/clm2bnd */
-	if(fl_nbr == 3 && cb->clm_bnd_in) cb->clm2clm=True;
+	if(fl_nbr <= 3 && cb->clm_bnd_in) cb->clm2clm=True;
 	else if((fl_nbr == 4 || fl_nbr == 12) && cb->clm_bnd_in) cb->clm2bnd=True;
 	else{
 	  (void)fprintf(stderr,"%s: INFO Combination of months and clm_nfo lead to ambiguous determination of clm2bnd or clm2clm. Turning-off climatology bounds mode.\n",nco_prg_nm_get());

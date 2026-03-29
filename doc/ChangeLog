@@ -8,6 +8,10 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha08: Yo-yo and PacMan';git push
 	git tag -a 5.3.7-alpha08 -m 'ncclimo: csn all';git push --tags
 
+	* ncra treat <= 3 files as clm2clm not clm2bnd
+
+	* Fix seasonal climos input file lists and command formation
+
 	* Define all two-month and three-month seasons
 
 2026-03-27  Charlie Zender  <zender@uci.edu>
