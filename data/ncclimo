@@ -2021,12 +2021,6 @@ else # !tms_flg
 	    exit 1
 	fi # !mth_nbr
 
-    else # !clm_md
-
-	if [ "${mth_flg}" = 'Yes' ]; then
-	    echo "${spt_nm}: WARNING Monthly climo-mode support for arbitrary starting months (activated with --mth_srt and --mth_end) is not thoroughly tested"
-	fi # !mth_flg
-
     fi # !clm_md
 	
     if [ "${rgn_stt}" != 'No' ]; then 

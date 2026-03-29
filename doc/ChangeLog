@@ -1,7 +1,7 @@
 2026-03-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.7-beta01: Practicum';git push
+	cd ~/nco;git commit -a -m 'Version 5.3.7-beta01: Sleeping Dolphins';git push
 	git tag -a 5.3.7-beta01 -m 'all: update NEP API, l2d cnk, LZ4, bebop/improv; ncclimo: csn all, flx mth, salloc xmp; ncks json fix; ncremap: rm PM modules, srun dfl, ps srch fix, mbpart nfr, mbconvert;';git push --tags
 
 	* NCO 5.3.7-alpha08 release procedure:
