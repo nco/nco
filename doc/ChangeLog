@@ -1,4 +1,4 @@
-2026-03-27  Charlie Zender  <zender@uci.edu>
+2026-03-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-beta01: Practicum';git push
@@ -6,7 +6,13 @@
 
 	* NCO 5.3.7-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.7-alpha08: Yo-yo and PacMan';git push
-	git tag -a 5.3.7-alpha08 -m '';git push --tags
+	git tag -a 5.3.7-alpha08 -m 'ncclimo: csn all';git push --tags
+
+	* Complete inclusion of remaining two-month and three-month seasons
+
+2026-03-27  Charlie Zender  <zender@uci.edu>
+
+	* Allow flexible months for all climo modes
 
 2026-03-26  Charlie Zender  <zender@uci.edu>
 
