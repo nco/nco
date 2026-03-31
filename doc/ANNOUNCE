@@ -7,9 +7,11 @@ http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
 Version 5.3.7 contains significant new features and fixes.
-Most significantly, ncremap support for MOAB-TempestRemap (mbtempest)
-has been refactored to optimize parallel weight generation and support
-new algorithms.
+ncremap support for MOAB-TempestRemap (mbtempest) has been refactored
+to optimize parallel weight generation and support new algorithms.
+ncclimo now supports "flexible-months", so input datsets can begin in
+an month, not just January. Additionally, ncclimo understands all
+consectutive 2-month pairs and 3-month trios as valid seasons.
 Other improvements include support for the l2d packing policy
 suggested for CMIP7, and for the NetCDF Expansion Pack v.1.5+ API,
 ncks fixes JSON-format output regressions, and ncclimo fixes automatic
@@ -25,36 +27,85 @@ NEW FEATURES (full details always in ChangeLog):
 A. ncremap support for mbtempest is better optimized and more fully
 parallel. mbconvert runs in parallel for input grids of type True
 Exodus and netCDF3, and in serial for types netCDF4 and TR Exodus. 
-mbpart now infers
-fxm
+mbpart now uses --inferred to optimize partitioning of destination
+grid. 
 
-and mbpart). ncremap can now recognize and re-configure mbtempest
+ncremap --mpi_nbr=8 -a traave --src_grd=src.g --dst_grd=dst.nc -m map.nc
 
-A. ncremap in vertical interpolation mode for hybrid sigma-pressure
+http://nco.sf.net/nco.html#moab
+Thanks to Vijay Mahadevan of ANL for advice on MOAB's workflow.
+
+B. ncremap in vertical interpolation mode for hybrid sigma-pressure
 coordinates now searches for the surface pressure in the input
-datafile before searching the vertical grid file. fxm
+datafile before searching any input vertical grid file. When reading
+the hybrid coordinate grid from a separate file, ncremap previously
+expected the surface pressure to also be in that file. Now ps can
+be with the data itself, apart from the input coordinate grid.
 
-A. ncclimo now supports climos that begin in any month, not just
-January! We call this "flexible month" support. fxm
+ncremap -P eamxx --vrt_in=vrt_L128.nc --vrt_out=vrt_ncep.nc in.nc out.nc
 
-A. ncclimo has all consecutive two-month and three-month seasons
+http://nco.sf.net/nco.html#vrt
+Thanks to Jill Zhang of PNNL for reporting this issue.
+
+C. ncclimo now supports climos that begin in any month, not just
+January! We call this "flexible month" support. Previously all
+climatologies needed to begin with January (or December, with the
+--wnt_md=scd option), so no starting month argument was needed.
+Now input files can begin in any start month, and the --wnt_md option
+is replaced by simply supplying datasets that start with December.
+Use the --mth_srt and --mth_end options to specify the starting and
+ending months, otherwise January and December will be assumed.
+This feature works for High-Frequency-Climos (HFC) as well.
+(Note that at least 12 months of data must still be supplied).
+
+ncclimo -c caseid -s 2013 -e 2014 --mth_srt=7 --mth_end=6 -i drc_in -o drc_out
+
+http://nco.sf.net/nco.html#ncclimo
+(thanks to Copilot for assisting)
+
+D. ncclimo has all consecutive two-month and three-month seasons
 defined internally, so users can select any. Two-month seasons
 are, e.g., Jan-Feb, Feb-Mar, ... Dec-Jan. Three-month seasons are,
-e.g., Jan-Feb-Mar, Feb-Mar-Apr, ... Dec-Jan-Feb.
+e.g., Jan-Feb-Mar, Feb-Mar-Apr, ... Dec-Jan-Feb. The seasonal
+names are simply the two or three letter conjunctions formed by
+the first letters of the constituent months, e.g., jf, amj:
 
+ncclimo ... --csn=jas,ond,jfm,amj,nd,nj -i drc_in -o drc_out
 
-A. The l2d packing policy is available on all operators.
-l2d fxm
+http://nco.sf.net/nco.html#ncclimo
+
+E. The l2d chunking policy is available on all operators.
+This policy forces all variables with one or two dimensions into a
+single chunk. It is inspired by the chunking policy followed by
+the cmip7repack tool (https://github.com/NCAS-CMS/cmip7_repack).
+It is used like any other packing policy, and has the virtue of
+being recommended for CMIP7 datasets. NB: When NCO repacks a
+dataset, it automatically consolidates the internal metadata.
+
+ncks --cnk_plc l2d in.nc out.nc
+
+http://nco.sf.net/nco.html#chunking
+http://nco.sf.net/nco.html#cnk_l2d
+http://nco.sf.net/nco.html#ncpdq
 Thanks to Ezequiel Cimadevilla and David Hassell of NCAS for
 contributing this.
 
-A. NCO now supports the NetCDF Expansion Pack v.1.5+ API.
+F. NCO now supports the NetCDF Expansion Pack v.1.5+ API.
 Support for the v.1.0 API has been dropped. Original NEP features 
 like the LZ4 codec are now supported. Newer NEP features such as
 reading GRIB2 and GeoTIFF files should also be supported. 
-https://github.com/Intelligent-Data-Design-Inc/NEP
+If the host NEP package is installed correctly for NCO to build
+with and link to at runtime, then NCO will be able to read
+GeoTIFF and Grib2 and CDF files (depending on NEP configureation).
+Our goal is to make this occur automagically via Conda and Spack
+packaging. 
 
-A. The ncremap tutorial on the E3SM Confluence page
+ncks --cmp='gbr|shf|lz4' in.nc out.nc # LZ4 compression via NEP
+
+https://github.com/Intelligent-Data-Design-Inc/NEP
+Thanks to Ed Hartnett for creating NEP.
+
+G. The ncremap tutorial on the E3SM Confluence page
 https://e3sm.atlassian.net/wiki/spaces/DOC/pages/edit-v2/754286611
 contains still more documentation on how to exploit the three types
 of parallelism (node-, workflow-, and thread-level) supported by
@@ -71,14 +122,14 @@ of NCO. The solution is to upgrade.
 http://nco.sf.net/nco.html#json
 http://nco.sf.net/nco.html#jsn_fmt
 
-A. In all previous versions ncclimo failed to handle
+B. In all previous versions ncclimo failed to handle
 starting and ending years specified as 0, 00, or 000.
 Year zero had to be specified as 0000. That is now fixed.
 The workaround is to use 0000 for year 0. The solution is
 to upgrade.
 
-A. Since about 2024 the ncclimo automatic name generation
-feature has prepended "${caseid}." to the default MPAS model
+C. Since about 2024 the ncclimo automatic name generation
+feature has prepended "${caseid}." to the MPAS model default
 filenames. This inadvertently prepended just a period when
 the --caseid option was not specified. This period is an
 unwanted character, and broke the automatic feature from
@@ -95,7 +146,7 @@ KNOWN PROBLEMS DUE TO NCO:
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
 These problems occur with NCO 5.3.7 built/tested under
-MacOS 26.2 with netCDF 4.10.1-development on HDF5 2.1.1
+MacOS 26.3 with netCDF 4.10.1-development on HDF5 2.1.1
 and with Linux FC42 with netCDF 4.9.2 on HDF5 1.14.4.
 
 A. NOT YET FIXED (NCO problem)

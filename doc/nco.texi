@@ -128,11 +128,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.3.7-beta01
-@set doc-edition 5.3.7-beta01
+@set nco-edition 5.3.7
+@set doc-edition 5.3.7
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 27 March 2026
+@set update-date 30 March 2026
 @set update-month March 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9142,6 +9142,14 @@ time dimension will be much more rapid.
 @html
 <a name="blocksize"></a> <!-- http://nco.sf.net/nco.html#blocksize -->
 <a name="blk"></a> <!-- http://nco.sf.net/nco.html#blk -->
+<a name="cnk_plc"></a> <!-- http://nco.sf.net/nco.html#cnk_plc -->
+<a name="cnk_g2d"></a> <!-- http://nco.sf.net/nco.html#cnk_g2d -->
+<a name="cnk_all"></a> <!-- http://nco.sf.net/nco.html#cnk_all -->
+<a name="cnk_g3d"></a> <!-- http://nco.sf.net/nco.html#cnk_g3d -->
+<a name="cnk_l2d"></a> <!-- http://nco.sf.net/nco.html#cnk_l2d -->
+<a name="cnk_r1d"></a> <!-- http://nco.sf.net/nco.html#cnk_r1d -->
+<a name="cnk_xpl"></a> <!-- http://nco.sf.net/nco.html#cnk_xpl -->
+<a name="cnk_xst"></a> <!-- http://nco.sf.net/nco.html#cnk_xst -->
 @end html
 @cindex chunking policy
 @cindex chunking map
@@ -9210,18 +9218,21 @@ As of August, 2014, six chunking policies are implemented:@*
 @cindex @samp{all}
 @cindex @samp{g2d}
 @cindex @samp{g3d}
+@cindex @samp{l2d}
 @cindex @samp{r1d}
 @cindex @samp{xpl}
 @cindex @samp{xst}
 @cindex @samp{cnk_all}
 @cindex @samp{cnk_g2d}
 @cindex @samp{cnk_g3d}
+@cindex @samp{cnk_l2d}
 @cindex @samp{cnk_r1d}
 @cindex @samp{cnk_xpl}
 @cindex @samp{cnk_xst}
 @cindex @samp{plc_all}
 @cindex @samp{plc_g2d}
 @cindex @samp{plc_g3d}
+@cindex @samp{plc_l2d}
 @cindex @samp{plc_r1d}
 @cindex @samp{plc_xpl}
 @cindex @samp{plc_xst}
@@ -9245,7 +9256,7 @@ Mnemonic: @emph{G}reater than or equal to @emph{3} @emph{D}imensions@*
 @item Chunk Variables with at most Two Dimensions
 Definition: Chunk all variables possible with at most two dimensions@*
 Alternate invocation: none@*
-It will force all variables with one or two dimensions into a single
+This forces all variables with one or two dimensions into a single
 chunk. Inspired by chunking policy followed by @emph{cmip7repack}
 (@url{https://github.com/NCAS-CMS/cmip7_repack}).
 @var{cnk_plc} key values: @samp{l2d}, @samp{cnk_l2d}, @samp{plc_l2d}@*
@@ -20014,8 +20025,9 @@ this option.
 @item -e @var{end_yr} (@code{--end_yr}, @code{--yr_end}, @code{--end_year}, @code{--year_end}, @code{--end})
 End year (example: 2000). 
 By default, the last month is December of the specified end year.  
-If @samp{-a scd} is specified, the last month used is November of the
-specified end year.  
+As of @acronym{NCO} version 5.3.7 (April, 2026), climos can be
+instructed to an integral number of years after the starting month by
+invoking the @samp{--mth_end} option.  
 
 @html
 <a name="fml_nm"></a> <!-- http://nco.sf.net/nco.html#fml_nm -->
@@ -20717,7 +20729,7 @@ option.
 ncclimo -s 2013 -e 2014 --mth_srt=7 --mth_end=6 ...
 @end example
 Note that climatologies (unlike timeseries) only work for an integral
-number of years. 
+number of years (this restriction is planned for removal soon). 
 Thus @code{mth_end} must precede @code{mth_srt} by one month in the
 annual cycle (yes, December precedes January by one month).
 
@@ -20736,8 +20748,8 @@ Start year (example: 1980).
 By default, the first month used is January of the specified start
 year.
 As of @acronym{NCO} version 5.3.7 (April, 2026), climos can be
-instructed to start in any month by invoking the @samp{--mth_srt=12}
-option.  
+instructed to start in any month of the starting year by invoking the
+@samp{--mth_srt} option.  
 
 @html
 <a name="csn_lst"></a> <!-- http://nco.sf.net/nco.html#csn_lst -->
@@ -29886,8 +29898,12 @@ ncremap --vrt_out=vrt_hyb.nc in.nc out.nc
 ncremap --vrt_out=vrt_hyb_fat.nc in.nc out.nc
 # 3. PS for input data file in.nc is located in file.nc and will be
      used for output as well
-ncremap --vrt_in=vrt_hyb.nc --ps_nm=/external/file.nc/PS in.nc out.nc
-# 4. Input data file in.nc contains vertical grid but not input PS
+ncremap --vrt_in=vrt_hyb.nc --ps_nm=file.nc/PS --vrt_out=vrt.nc in.nc out.nc
+# 4. Input data file in.nc contains PS but not hybrid grid variables
+     Hybrid sigma-pressure grid coordinates are in vrt_in.nc
+     PS for output is in vertical grid file vrt_hyb_fat.nc:
+ncremap --vrt_in=vrt_hyb.nc --vrt_out=vrt.nc in.nc out.nc
+# 5. Input data file in.nc contains vertical grid but not input PS
      PS for input data file in.nc is located in file.nc
      PS for output is in vertical grid file vrt_hyb_fat.nc:
 ncremap --vrt_out=vrt_hyb_fat.nc --ps_nm=/external/file.nc/PS in.nc out.nc
@@ -31587,6 +31603,9 @@ Large work-load testing
 @cindex David Hassell
 @item David Hassell
 @acronym{CMIP7} packing policy
+@cindex Vijay Mahadevan
+@item Vijay Mahadevan
+@acronym{MOAB} workflow advice
 @cindex Xylar Asay-Davis
 @cindex Sterling Baldwin 
 @cindex Andrew Barna

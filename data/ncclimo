@@ -2278,7 +2278,7 @@ if [ "${csn_flg}" = 'Yes' ]; then
 	fi # !match
     done # !csn_lst
 
-    # Were all four seasons requested so annual mean can be computed from seasons?
+    # Were all four standard seasons requested so annual mean can be computed from seasons?
     ann_flg='No'
     ann_nbr=0
     if [[ ${csn_lst} =~ 'mam' ]] || [[ ${csn_lst} =~ 'MAM' ]]; then
