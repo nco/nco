@@ -1,3 +1,9 @@
+2026-04-01  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.3.8-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha01: Laguna Lahaina';git push
+	git tag -a 5.3.8-alpha01 -m 'Functionally identical to 5.3.7 except for fxm';git push --tags
+
 2026-03-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.7 release procedure:

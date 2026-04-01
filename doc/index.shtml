@@ -958,7 +958,7 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <h3><a href="http://www.apple.com/macosx/">MacOS&nbsp;Darwin</a></h3>
 <ul>
 <!-- 
-# MacOS 26.3 (Sequoia) systems (sastrugi, spectral):
+# MacOS 26.3 (Tahoe) systems (maluhia, spectral):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
 cd ~/bin;tar cvzf ${DATA}/nco-5.3.7.macos.26.3.tar.gz nc*;scp ${DATA}/nco-5.3.7.macos.26.3.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
