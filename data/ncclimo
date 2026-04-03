@@ -2753,16 +2753,17 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     for mth in {01..12}; do
 	let clm_idx=${clm_idx}+1
 	MM=`printf "%02d" ${clm_idx}`
-	# Monthly filenames are every twelfth file from input list (which is assumed to start with January)
+	# The same month-of-year appears every twelve filenames in input list
 	if [ ${clm_md} = 'mth' ]; then 
 	    fl_all=''
 	    for ((yr_idx=0;yr_idx<yr_nbr;yr_idx++)); do
-		let fl_idx=$((yr_idx * 12 + clm_idx - 1))
+		# Initialize fl_idx as if first supplied month was January
+		let fl_idx=$((clm_idx - 1))
 		# 20260323 Adjust fl_idx by January offset
-		let fl_idx=${fl_idx}+${jan_fst}
-		if [ ${fl_idx} -ge ${fl_nbr} ]; then
-		    let fl_idx=${fl_idx}-12
-		fi # !fl_idx
+		# Then use modulo twelve to point fl_idx to first occurence of MM in file list
+		let fl_idx=$(( (fl_idx+ jan_fst ) % 12))
+		# Adjust fl_idx by 12 per year to the current year
+		let fl_idx=$(( fl_idx + yr_idx * 12))
 
 		fl_all="${fl_all} ${fl_in[${fl_idx}]}"
 	    done # !yr_idx
