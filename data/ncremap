@@ -709,7 +709,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for file-level parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
     echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
     echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one map-file per input file) [${fnt_tlc}mlt_map, no_multimap${fnt_nrm}]"
-    echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
+    echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (horizontal regridding) (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
     echo " ${fnt_bld}--mbt_grd_nc4${fnt_nrm} Either grid for MOAB mbconvert to read is netCDF4 format (default ${fnt_bld}${mbt_grd_nc4}${fnt_nrm}) [${fnt_tlc}mbt_grd_nc4, mbt_grd_rd_srl, grd_fmt_nc4$, {fnt_nrm}]"
     echo " ${fnt_bld}--mpi_nbr${fnt_nrm}  Number of tasks-per-node that MPI-enabled weight generators will request (default ${fnt_bld}${mpi_nbr}${fnt_nrm}) [${fnt_tlc}mpi_nbr, mpi_number, tsk_nbr, task_number${fnt_nrm}]"
     echo " ${fnt_bld}--mpi_pfx${fnt_nrm}  Prefix for MPI-enabled weight generators (empty means weight generator is not MPI-enabled) (default ${fnt_bld}${mpi_pfx}${fnt_nrm}) [${fnt_tlc}mpi_pfx, mpi_prefix, srun_cmd, srun_command${fnt_nrm}]"
@@ -907,7 +907,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* | NCO_PATH_OVERRIDE=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
 	       in_fl=?* | in_file=?* | input_file=?* ) in_fl="${LONG_OPTARG}" ;; # -i # Input file
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
-	       map_fl=?* | map=?* | map_file=?* | rgr_map=?* | regrid_map=?* ) map_fl="${LONG_OPTARG}" ;; # -m # Map-file
+	       map_fl=?* | map=?* | map_file=?* | rgr_map=?* | regrid_map=?* ) map_fl="${LONG_OPTARG}" ;; # -m # Map-file (horizontal regridding)
 	       mbt_grd_nc4 | mbt_grd_rd_srl | grd_fmt_nc4 ) mbt_grd_nc4='Yes' ;; # # Either grid for MOAB mbconvert to read is netCDF4 format (so read it in serial)
 	       mbt_grd_nc4=?* | mbt_grd_rd_srl=?* | grd_fmt_nc4=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Either grid for MOAB mbconvert to read is netCDF4 format (so read it in serial)
 	       mem_mb=?* ) mem_mb="${LONG_OPTARG}" ;; # # Megabytes of RAM per srun job in Cori SLURM in MPI mode
