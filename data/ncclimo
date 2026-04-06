@@ -2757,11 +2757,10 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	if [ ${clm_md} = 'mth' ]; then 
 	    fl_all=''
 	    for ((yr_idx=0;yr_idx<yr_nbr;yr_idx++)); do
-		# Initialize fl_idx as if first supplied month was January
+		# Initialize fl_idx as if first supplied month were January
 		let fl_idx=$((clm_idx - 1))
-		# 20260323 Adjust fl_idx by January offset
-		# Then use modulo twelve to point fl_idx to first occurence of MM in file list
-		let fl_idx=$(( (fl_idx+ jan_fst ) % 12))
+		# 20260323 Adjust fl_idx by January offset, then use modulo twelve to point fl_idx to first occurence of MM in file list
+		let fl_idx=$(( (fl_idx + jan_fst) % 12))
 		# Adjust fl_idx by 12 per year to the current year
 		let fl_idx=$(( fl_idx + yr_idx * 12))
 
