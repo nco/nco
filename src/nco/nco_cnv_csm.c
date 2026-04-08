@@ -681,8 +681,9 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     if(cb->tpd > 1) cll_mth_clm=strdup("time: mean within days time: mean within years time: mean over years");
     else if(cb->bnd2clm || cb->clm2clm) cll_mth_clm=strdup("time: mean within years time: mean over years");
     else if(cb->clm2bnd) cll_mth_clm=strdup("time: mean");
+    else if(cb->bnd_mk) cll_mth_clm=strdup("time: point");
     else{
-      (void)fprintf(stdout,"%s: ERROR %s reports climatology bounds error with variable %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm);
+      (void)fprintf(stdout,"%s: ERROR %s reports climatology bounds error with variable %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm); /* 20260407: var_trv is undefined here */
       nco_exit(EXIT_FAILURE);
     } /* !cb->tpd */
   } /* !cb */

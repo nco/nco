@@ -11556,7 +11556,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double lon_dff; /* [dgr] Current longitude difference between adjacent cells */
   double lon_dff_max; /* [dgr] Maximum longitude difference between adjacent cells */
   double lon_dff_max_thr; /* [dgr] Threshold maximum longitude difference between adjacent cells for branch cut */
-  nco_bool flg_2D_brnch_cut=False; /* [flg] Domain of 2D grid crosses longitude branch cut */
+  //  nco_bool flg_2D_brnch_cut=False; /* [flg] Domain of 2D grid crosses longitude branch cut */
   idx_ctr=0;
   if(has_mss_val_ctr){
     /* Find first non-missing value center and thus corners */
@@ -11617,7 +11617,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if((float)lon_dff_max > lon_dff_max_thr){
       (void)fprintf(stderr,"%s: INFO %s Greatest angle between adjacent longitudes in 2D grid exceeds lon_dff_max_thr = %g degrees (lon_dff_max = %g) which implies that this grid crosses the longitudinal branch cut\n",nco_prg_nm_get(),fnc_nm,lon_dff_max_thr,lon_dff_max);
       (void)fprintf(stderr,"%s: INFO %s Recomputing longitude span by placing all longitudes on same branch cut\n",nco_prg_nm_get(),fnc_nm);
-      flg_2D_brnch_cut=True;
+      //flg_2D_brnch_cut=True;
     } /* lon_dff_max */
   } /* !flg_grd_2D */
   /* Use strict rules for rectangular grids, looser for spans that are inferred, or center-to-center not corner-to-corner */

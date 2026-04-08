@@ -1,8 +1,18 @@
-2026-04-06  Charlie Zender  <zender@uci.edu>
+2026-04-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha02: 29 Palms';git push
-	git tag -a 5.3.8-alpha02 -m '';git push --tags
+	git tag -a 5.3.8-alpha02 -m 'ncra: cb->bnd_mk';git push --tags
+
+	* Create time_bnds when cb->bnd_mk is true
+
+2026-04-07  Charlie Zender  <zender@uci.edu>
+
+	* nco_cnv_cf_cll_mth_add() add cell_method="time: point"
+
+2026-04-06  Charlie Zender  <zender@uci.edu>
+
+	* ncra add cb->bnd_mk stubs
 
 	* NCO 5.3.8-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha01: Laguna Lahaina';git push

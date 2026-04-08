@@ -34,7 +34,7 @@ extern "C" {
 
   /* Climatology bounds structure (20160503: Used only in ncra.c for climos) */
   typedef struct{ /* clm_bnd_sct */
-    char *bnd_dmn_nm; /* [sng] Bounds dimension name name */
+    char *bnd_dmn_nm; /* [sng] Bounds dimension name */
     char *clm_bnd_nm; /* [sng] Climatology bounds variable name (to create) */
     char *tm_bnd_nm; /* [sng] Time bounds variable name (to delete) */
     char *tm_crd_nm; /* [sng] Name of time coordinate variable */
@@ -57,6 +57,7 @@ extern "C" {
     long dmn_srt_srt[2]; /* [idx] Start indices for retrieving start bounds */
     long dmn_srt_end[2]; /* [idx] Start indices for retrieving end bounds */
     nc_type type; /* [enm] Type of (time and) climatology bounds variable(s) */
+    nco_bool bnd_mk; /* [flg] Create time bounds from clm_nfo_sng */
     nco_bool bnd2clm; /* [flg] Convert time bounds to climatology bounds */
     nco_bool clm2bnd; /* [flg] Convert climatology bounds to time bounds */
     nco_bool clm2clm; /* [flg] Convert climatology bounds to climatology bounds */

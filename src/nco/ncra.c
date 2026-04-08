@@ -983,6 +983,7 @@ main(int argc,char **argv)
     nc_type att_typ;
 
     cb=(clm_bnd_sct *)nco_malloc(sizeof(clm_bnd_sct));
+    cb->bnd_mk=False; /* [flg] Create time bounds */
     cb->bnd2clm=False; /* [flg] Convert time-bounds to climatology bounds */
     cb->bnd_val=NULL; /* [frc] Time coordinate variable values */
     cb->clm2bnd=False; /* [flg] Convert climatology bounds to time-bounds */
@@ -1044,9 +1045,15 @@ main(int argc,char **argv)
 	goto skp_cb;
       } /* !(cb->tm_bnd_in && cb->clm_bnd_in) */
       if(!cb->tm_bnd_in && !cb->clm_bnd_in){
-	(void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on time coordinate with neither time bounds attribute \"%s\" nor climatology bounds attribute \"%s\". No way to obtain bounding time values. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
-	flg_cb=False;
-	goto skp_cb;
+	(void)fprintf(stderr,"%s: INFO Climatology bounds invoked on time coordinate with neither time bounds attribute \"%s\" nor climatology bounds attribute \"%s\". Will add bounds attribute to time coordinate, then create the bounds variable with values from clm_nfo_sng argument.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
+
+	/* 20260406: Point data with no time_bounds variables end up here
+	   Create time_bounds variable in output file based on clm_nfo_sng arguments
+	   Set special flag here and do variable creation after main loop to protect traversal table */
+
+	/* Make this contingent on method=point? */
+	cb->bnd_mk=True;
+	//	goto skp_cb;
       } /* !cb->tm_bnd_in && !cb->clm_bnd_in */
 
     }else{ /* !tm_crd_id_in */
@@ -1060,7 +1067,7 @@ main(int argc,char **argv)
       rcd=nco_inq_varid_flg(in_id,cb->tm_bnd_nm,&cb->tm_bnd_id_in); 
       if(cb->tm_bnd_id_in == NC_MIN_INT){
 	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on dataset with missing time bounds variable \"%s\". Turning-off climatology bounds mode.\n",nco_prg_nm_get(),cb->tm_bnd_nm);
-	flg_cb=False;
+	flg_cb=False; /* 20260406: It should be OK to be missing time_bounds */
 	rcd=NC_NOERR;
 	goto skp_cb; 
       } /* !tm_bnd_id_in */
@@ -1076,12 +1083,15 @@ main(int argc,char **argv)
       } /* !tm_bnd_id_in */
     } /* !clm_bnd_in */
 
-    rcd=nco_inq_varid_flg(out_id,cb->tm_crd_nm,&cb->tm_crd_id_out); 
-    if(rcd != NC_NOERR){
-      if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: ERROR Climatology bounds did not find time coordinate in output file\n",nco_prg_nm_get());
-      nco_exit(EXIT_FAILURE);
-    } /* !tm_crd_id_out */
-
+    /* Bounds DNE yet and will be created later iff cb->bnd_mk */
+    if(!cb->bnd_mk){
+      rcd=nco_inq_varid_flg(out_id,cb->tm_crd_nm,&cb->tm_crd_id_out); 
+      if(rcd != NC_NOERR){
+	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: ERROR Climatology bounds did not find time coordinate in output file\n",nco_prg_nm_get());
+	nco_exit(EXIT_FAILURE);
+      } /* !tm_crd_id_out */
+    } /* !cb->bnd_mk */
+    
     /* Populate cb structure with information from clm_nfo_sng */
     if(clm_nfo_sng) rcd=nco_clm_nfo_get(clm_nfo_sng,cb);
 
@@ -1142,6 +1152,22 @@ main(int argc,char **argv)
     char *att_nm;
     char *att_val;
 
+    if(cb->bnd_mk){
+      /* Add new bounds attribute */
+      att_nm=strdup(bnd_sng);
+      att_val=strdup(cb->tm_bnd_nm);
+      aed_mtd.att_nm=att_nm;
+      aed_mtd.var_nm=cb->tm_crd_nm;
+      aed_mtd.id=cb->tm_crd_id_out;
+      aed_mtd.sz=strlen(att_val);
+      aed_mtd.type=NC_CHAR;
+      aed_mtd.val.cp=att_val;
+      aed_mtd.mode=aed_create;
+      (void)nco_aed_prc(out_id,cb->tm_crd_id_out,aed_mtd);
+      if(att_nm) att_nm=(char *)nco_free(att_nm);
+      if(att_val) att_val=(char *)nco_free(att_val);
+    } /* !bnd_mk */
+      
     if(cb->bnd2clm || cb->clm2bnd){
       /* Add new bounds attribute */
       att_nm = (cb->bnd2clm) ? strdup(clm_sng) : strdup(bnd_sng);
@@ -1167,6 +1193,8 @@ main(int argc,char **argv)
       if(att_nm) att_nm=(char *)nco_free(att_nm);
     } /* !bnd2clm !clm2bnd */
 
+    /* fxm: got to here with bnd_mk */
+    
     /* Obtain units string */
     rcd=nco_inq_att_flg(out_id,cb->tm_crd_id_out,unt_sng,&att_typ,&att_sz);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){
@@ -2103,7 +2131,7 @@ main(int argc,char **argv)
       }else if(nco_prg_id == ncfe){
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
-      } /* end else */
+      } /* !ncge, !ncfe */
 
       /* Obtain output group ID */
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
@@ -2117,11 +2145,11 @@ main(int argc,char **argv)
       if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
       if(var_trv->ppc != NC_MAX_INT){
 	if(var_trv->flg_nsd) (void)nco_ppc_bitmask(grp_out_id,var_prc_out[idx]->id,var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val); else (void)nco_ppc_around(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
-      } /* endif ppc */
+      } /* !ppc */
       if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 
-    } /* end loop over idx */
-  } /* end if ncfe and ncge */
+    } /* !idx */
+  } /* !FLG_BFR_NRM ncfe and ncge */
 
   /* Free averaging, tally, and weight buffers */
   if(nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge){
@@ -2129,9 +2157,36 @@ main(int argc,char **argv)
       if((wgt_arr || wgt_nm) && var_prc[idx]->has_mss_val) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_free(var_prc[idx]->wgt_sum);
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_free(var_prc[idx]->tally);
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
-    } /* end loop over idx */
-  } /* endif ncra || nces */
+    } /* !idx */
+  } /* !ncra || nces */
 
+  if(flg_cb && cb->bnd_mk){
+    /* 20260407: Create time_bounds variable based on clm_nfo_sng */
+    char dim2_nm[]="dim2"; /* CF-standard time-bounds attribute name */
+    const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
+    int *clm_bnd_dmn_id; /* [ID] Climatology bounds dimension IDs */
+    int dim2_id; /* [ID] Size-2 dimension ID */
+    int tm_crd_dmn_id; /* [ID] Dimension ID of time coordinate */
+
+    rcd+=nco_redef(out_id);
+
+    rcd=nco_inq_dimid_flg(out_id,dim2_nm,&dim2_id);
+    rcd=nco_inq_dimid(out_id,cb->tm_crd_nm,&tm_crd_dmn_id);
+    /* Define dimension of size 2 for bounds arrays */
+    rcd=nco_inq_dimid_flg(out_id,dim2_nm,&dim2_id);
+    if(rcd != NC_NOERR) rcd=nco_def_dim(out_id,dim2_nm,dmn_nbr_2D,&dim2_id);
+    clm_bnd_dmn_id=(int *)nco_malloc(dmn_nbr_2D*sizeof(int));
+    clm_bnd_dmn_id[0]=tm_crd_dmn_id;
+    clm_bnd_dmn_id[1]=dim2_id;
+    rcd=nco_def_var(out_id,cb->tm_bnd_nm,(nc_type)NC_DOUBLE,dmn_nbr_2D,clm_bnd_dmn_id,&cb->clm_bnd_id_out);
+
+    rcd+=nco_enddef(out_id);
+
+    rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->bnd_val,(nc_type)NC_DOUBLE);
+    if(clm_bnd_dmn_id) clm_bnd_dmn_id=(int *)nco_free(clm_bnd_dmn_id);
+
+  } /* !flg_cb */
+  
   if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat || nco_prg_id == ncfe)){
     rcd=nco_put_var(out_id,cb->tm_crd_id_out,cb->tm_val,(nc_type)NC_DOUBLE);
     rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->bnd_val,(nc_type)NC_DOUBLE);
