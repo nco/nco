@@ -776,7 +776,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"fpe") || !strcmp(opt_crr,"floating_point_exceptions")){
 	flg_fpe=True;
 	/* https://www.tutorialspoint.com/c_standard_library/c_function_fesetexceptflag.htm */
-	fexcept_t flg_xcp;
+	fexcept_t flg_xcp=0;
 	// Clear all exceptions
 	feclearexcept(FE_ALL_EXCEPT);
 	if(fesetexceptflag(&flg_xcp,FE_INVALID|FE_DIVBYZERO|FE_OVERFLOW) != 0){

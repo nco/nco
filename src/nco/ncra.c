@@ -1258,7 +1258,9 @@ main(int argc,char **argv)
     } /* !rcd */
     
     /* Combine calendar and units strings with clm_nfo_sng to create climatological time and bounds arrays */
-    if(clm_nfo_sng) rcd=nco_clm_nfo_to_tm_bnds(cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->unt_val,cb->cln_val,cb->bnd_val,cb->tm_val);
+    nco_lcn_typ lcn_typ=nco_lcn_typ_err;
+    if(cb->bnd_mk) lcn_typ=nco_lcn_typ_rhs; else lcn_typ=nco_lcn_typ_ctr;
+    if(clm_nfo_sng) rcd=nco_clm_nfo_to_tm_bnds(cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->bnd_mk,cb->unt_val,cb->cln_val,cb->bnd_val,cb->tm_val);
     //assert(rcd != NCO_NOERR);
 
   } /* !flg_cb */

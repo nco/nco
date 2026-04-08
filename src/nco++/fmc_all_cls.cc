@@ -6084,8 +6084,10 @@ var_sct *udunits_cls::clbtime_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
     (void) fprintf(stderr,"unt_sng=%s cln_sng=%s\n", str_vtr[0].c_str(), str_vtr[1].c_str());
   }
   {
+    nco_lcn_typ lcn_typ=nco_lcn_typ_ctr;
     iret = nco_clm_nfo_to_tm_bnds( var_md[0]->val.ip[0], var_md[1]->val.ip[0], var_md[2]->val.ip[0],
                                    var_md[3]->val.ip[0], var_md[4]->val.ip[0],
+				   lcn_typ,
                                    str_vtr[0].c_str(), str_vtr[1].c_str(),
                                   (var_md[7]->nbr_dim==2 ? var_md[7]->val.dp: NULL ), (var_md[7]->nbr_dim==1 ? var_md[7]->val.dp: NULL )
                                   );

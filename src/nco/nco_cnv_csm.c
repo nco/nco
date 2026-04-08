@@ -604,7 +604,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* Purpose: Add/modify CF cell_methods attribute
-     http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#cell-methods
+     https://cf-convention.github.io/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#cell-methods
      
      cell_methods values and description:
      point	: Data values are representative of points in space or time (instantaneous)
@@ -761,7 +761,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     case nco_op_max: strcpy(att_op_sng,"maximum"); break;
     case nco_op_ttl: strcpy(att_op_sng,"sum"); break;
     case nco_op_avgsqr: strcpy(att_op_sng,"variance"); break; /* Mean of sum of squares */
-      /* Remaining operations are supported by NCO yet are not in CF Conventions */
+      /* Remaining operations are supported by NCO yet were not originally in CF Conventions */
     case nco_op_mabs: strcpy(att_op_sng,"maximum_absolute_value"); break; /* Maximum absolute value */
     case nco_op_mebs: strcpy(att_op_sng,"mean_absolute_value"); break; /* Mean absolute value */
     case nco_op_mibs: strcpy(att_op_sng,"minimum_absolute_value"); break; /* Minimum absolute value */
@@ -836,7 +836,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 	 Four-step methods (e.g., climatological ANN) with one timestep should have time-bounds attribute
 	 cell_methods = "time: mean"
 	 20200809:
-	 http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#climatological-statistics Example 7.13
+	 https://cf-convention.github.io/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#climatological-statistics Example 7.13
 	 Two-step methods with multiple timesteps (e.g., climatological diurnal cycle for March) should have climatology-bounds attribute
 	 cell_methods = "time: cell_methods="time: mean within days time: mean over days time: mean over years";
 	 Three-step methods with multiple timesteps (e.g., climatological diurnal cycle for MAM) should have climatology-bounds attribute

@@ -731,6 +731,8 @@ extern "C" {
     nco_op_mebs, /* [enm] Mean absolute value */
     nco_op_mibs, /* [enm] Minimum absolute value */
     nco_op_tabs, /* [enm] Total absolute value */
+    // 20260406 Do not add nco_op_pnt yet as it requires further thought
+    //    nco_op_pnt, /* [enm] Point value */
     nco_op_nil /* [enm] Nil or undefined operation type */
   }; /* !nco_op_typ enum */
 
@@ -749,6 +751,13 @@ extern "C" {
     nco_obj_typ_var,    /*  1, Variable of atomic type */
     nco_obj_typ_nonatomic_var /*  2, Variable of non-atomic type (vlen, opaque, enum, compound, user-defined) */
   } nco_obj_typ;
+  
+  typedef enum nco_lcn_typ_enm{ /* [enm] Location of value within interval: lhs, ctr, rhs */
+    nco_lcn_typ_err=-1, /* -1 Invalid type for initialization */
+    nco_lcn_typ_lhs,    /*  0, Value is at LHS of cell interval */
+    nco_lcn_typ_ctr,    /*  1, Value is centered in cell interval */
+    nco_lcn_typ_rhs     /*  2, Value is at RHS of cell interval */
+  } nco_lcn_typ;
   
   enum nco_fmt_xtn{ /* [enm] Extended or underlying filetype */
     /* 20131222: Tokens defined as of netCDF 4.3.1-rc7 */

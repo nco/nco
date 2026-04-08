@@ -469,6 +469,7 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
  int mth_srt, /* I [mth] Month at climo start [1..12] format */
  int mth_end, /* I [mth] Month at climo end [1..12] format */
  int tpd, /* I [nbr] Timesteps per day [0=monthly, 1=daily, 2, 3, 4, 6, 8, 12, 24=hourly, ...] */
+ nco_lcn_typ lcn_typ, /* I [enm] Time-value location within time interval */
  const char *unt_sng, /* I [sng] Units of time coordinate (UDUnits format) */
  const char *cln_sng, /* I [sng] Calendar string of time coordinate (UDUnits format, NULL=none) */
  double *bnd_val, /* O [frc] Climatology bounds variable values */
@@ -539,9 +540,18 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
 
   if(tm_val){
      var_tmp->sz=tpd;
-     for(idx=0;idx<tpd;idx++)
-       tm_val[idx]=(step/2 + step*idx)*3600;
 
+     /* 20260408: Normal (cell_methods = mean) time coordinate values are midpoints of time interval
+	Use lcn_typ to place time coordinate values at beginning or end of time interval
+	This is a kludge that causes time values to match EAMxx instantaneous timeseries that tend
+	to be output regularly at hours, e.g., 6, 12, 18, 24 in each day.
+	If values are instead output at hours 0, 6, 12, 18 in each day then use enumerated flag */
+     for(idx=0;idx<tpd;idx++){
+       if(lcn_typ == nco_lcn_typ_ctr) tm_val[idx]=(step/2 + step*idx)*3600;
+       else if(lcn_typ == nco_lcn_typ_rhs) tm_val[idx]=step*(idx+1)*3600;
+       else if(lcn_typ == nco_lcn_typ_lhs) tm_val[idx]=step*idx*3600;
+     } /* !idx */
+     
      cast_void_nctype(NC_DOUBLE,&var_tmp->val);
      var_tmp->val.dp=tm_val;
      cast_nctype_void(NC_DOUBLE,&var_tmp->val);
@@ -565,8 +575,28 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
     var_tmp->sz=tpd*2;
 
     for(idx=0;idx<tpd;idx++){
-      bnd_val[2*idx]=(step*idx)*3600;
-      bnd_val[2*idx+1]=bnd_val[2*idx]+srt_end_dff;
+      switch(lcn_typ){
+      case nco_lcn_typ_ctr:
+	// tm_val[idx]=(step/2 + step*idx)*3600;
+	bnd_val[2*idx]=(step*idx)*3600;
+	bnd_val[2*idx+1]=bnd_val[2*idx]+srt_end_dff;
+	break;
+      case nco_lcn_typ_rhs:
+	// For instantaneous data: Place 
+	// tm_val[idx]=step*(idx+1)*3600;
+	bnd_val[2*idx]=step*(idx+1)*3600;
+	bnd_val[2*idx+1]=step*(idx+1)*3600;
+	break;
+      case nco_lcn_typ_lhs:
+	// tm_val[idx]=step*idx*3600;
+	bnd_val[2*idx]=step*idx*3600;
+	bnd_val[2*idx+1]=step*idx*3600;
+	break;
+      default:
+	(void)fprintf(stderr,"%s: ERROR %s reports unknown interval location type\n",nco_prg_nm_get(),fnc_nm);
+	nco_dfl_case_generic_err((int)lcn_typ);
+	break;
+      } /* !lcn_typ */
     } /* !idx */
 
     cast_void_nctype(NC_DOUBLE,&var_tmp->val);

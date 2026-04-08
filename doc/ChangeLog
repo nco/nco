@@ -2,9 +2,19 @@
 
 	* NCO 5.3.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha02: 29 Palms';git push
-	git tag -a 5.3.8-alpha02 -m 'ncra: cb->bnd_mk';git push --tags
+	git tag -a 5.3.8-alpha02 -m 'all: CF cnv url chg; ncra: cb->bnd_mk';git push --tags
 
-	* Create time_bnds when cb->bnd_mk is true
+	* ncks: CEWI Initialize fexcept_t flg_xcp to 0
+
+	* ncra: Create nco_lcn_typ branches for time and boundary values in nco_clm_nfo_to_tm_bnds()
+
+	* ncra: Add interval-location type enumeration argument to nco_cln_utl.c:nco_clm_nfo_to_tm_bnds()
+
+	* Update CF Conventions homepage from http://cfconventions.org to https://cf-convention.github.io
+
+	* Put bnd_mk fields into cb structure for potential use by nco_cnv_cf_cll_mth_add()
+
+	* Create dim2 dimension (if needed) and time_bnds variable when cb->bnd_mk is true
 
 2026-04-07  Charlie Zender  <zender@uci.edu>
 

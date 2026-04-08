@@ -228,7 +228,7 @@ nco_op_typ_cf_sng /* [fnc] Convert arithmetic operation type enum to string */
 (const int nco_op_typ) /* I [enm] Arithmetic operation type */
 {
   /* Purpose: Convert arithmetic operation type enum to string for use in CF Cell Methods 
-     http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#cell-methods */
+     https://cf-convention.github.io/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#cell-methods */
   switch(nco_op_typ){
   case nco_op_avg: return "mean"; break; /* [enm] Average */
   case nco_op_min: return "minimum"; break; /* [enm] Minimum value */
