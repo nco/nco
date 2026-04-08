@@ -515,11 +515,11 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
 
     if(tm_val){
       tm_val[0]=0.0;
-      /* find day in middle of month - see day_mid  */
+      /* Find day in middle of month - see day_mid */
       sprintf(md_sng,"seconds since %d-%d-%d",yr_srt,mth_srt,day_mid);
       if(nco_cln_clc_dbl_var_dff(md_sng,unt_sng,cln_typ,&tm_val[0],(var_sct *)NULL) != NCO_NOERR)
         return NCO_ERR;
-    }
+    } /* !tm_val */
 
     if(bnd_val){
       bnd_val[0]=0.0;
@@ -574,6 +574,8 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
 
     var_tmp->sz=tpd*2;
 
+    /* Most relevant CF example is at
+       https://cf-convention.github.io/Data/cf-conventions/cf-conventions-1.13/cf-conventions.html#temperature-each-hour-of-climatological-day-ex */
     for(idx=0;idx<tpd;idx++){
       switch(lcn_typ){
       case nco_lcn_typ_ctr:
@@ -582,15 +584,15 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
 	bnd_val[2*idx+1]=bnd_val[2*idx]+srt_end_dff;
 	break;
       case nco_lcn_typ_rhs:
-	// For instantaneous data: Place 
+	// For instantaneous data: Place same hour of day at end of month
 	// tm_val[idx]=step*(idx+1)*3600;
 	bnd_val[2*idx]=step*(idx+1)*3600;
-	bnd_val[2*idx+1]=step*(idx+1)*3600;
+	bnd_val[2*idx+1]=bnd_val[2*idx]+srt_end_dff-step*3600;
 	break;
       case nco_lcn_typ_lhs:
 	// tm_val[idx]=step*idx*3600;
 	bnd_val[2*idx]=step*idx*3600;
-	bnd_val[2*idx+1]=step*idx*3600;
+	bnd_val[2*idx+1]=bnd_val[2*idx]+srt_end_dff-step*3600;
 	break;
       default:
 	(void)fprintf(stderr,"%s: ERROR %s reports unknown interval location type\n",nco_prg_nm_get(),fnc_nm);
@@ -933,7 +935,7 @@ var_sct *var) /* I/O [var_sct] var values modified - can be NULL */
     rcd=NCO_NOERR;
     
   return rcd;
-} /* end UDUnits2 nco_cln_clc_dbl_var_dff() */
+} /* ! UDUnits2 nco_cln_clc_dbl_var_dff() */
 
 /* This should be your first port of call to replicate the UDUnits2 command line application functionality
  * val_unt_sng takes the form  "value  units" where val is interpreted as a double

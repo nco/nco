@@ -981,6 +981,7 @@ main(int argc,char **argv)
     char unt_sng[]="units"; /* NUG-standard units attribute name */
     long att_sz;
     nc_type att_typ;
+    nco_lcn_typ lcn_typ=nco_lcn_typ_ctr; /* [enm] Time-value location within time interval */
 
     cb=(clm_bnd_sct *)nco_malloc(sizeof(clm_bnd_sct));
     cb->bnd_mk=False; /* [flg] Create time bounds */
@@ -1045,15 +1046,15 @@ main(int argc,char **argv)
 	goto skp_cb;
       } /* !(cb->tm_bnd_in && cb->clm_bnd_in) */
       if(!cb->tm_bnd_in && !cb->clm_bnd_in){
-	(void)fprintf(stderr,"%s: INFO Climatology bounds invoked on time coordinate with neither time bounds attribute \"%s\" nor climatology bounds attribute \"%s\". Will add bounds attribute to time coordinate, then create the bounds variable with values from clm_nfo_sng argument.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
+	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Climatology bounds invoked on time coordinate with neither time bounds attribute \"%s\" nor climatology bounds attribute \"%s\". Will add bounds attribute to time coordinate, then create the bounds variable with values from clm_nfo_sng argument. Assumption is that the time-varying geophysical fields are instanteous/point data at the RHS of the regular time interval.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
 
 	/* 20260406: Point data with no time_bounds variables end up here
 	   Create time_bounds variable in output file based on clm_nfo_sng arguments
 	   Set special flag here and do variable creation after main loop to protect traversal table */
 
-	/* Make this contingent on method=point? */
+	/* fxm: Make this contingent on method=point? */
 	cb->bnd_mk=True;
-	//	goto skp_cb;
+	if(cb->bnd_mk) lcn_typ=nco_lcn_typ_rhs;
       } /* !cb->tm_bnd_in && !cb->clm_bnd_in */
 
     }else{ /* !tm_crd_id_in */
@@ -1153,7 +1154,8 @@ main(int argc,char **argv)
     char *att_val;
 
     if(cb->bnd_mk){
-      /* Add new bounds attribute */
+      /* Add new bounds attribute to existing time coordinate
+	 New bounds variable will be created after main loop */
       att_nm=strdup(bnd_sng);
       att_val=strdup(cb->tm_bnd_nm);
       aed_mtd.att_nm=att_nm;
@@ -1193,8 +1195,6 @@ main(int argc,char **argv)
       if(att_nm) att_nm=(char *)nco_free(att_nm);
     } /* !bnd2clm !clm2bnd */
 
-    /* fxm: got to here with bnd_mk */
-    
     /* Obtain units string */
     rcd=nco_inq_att_flg(out_id,cb->tm_crd_id_out,unt_sng,&att_typ,&att_sz);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){
@@ -1258,9 +1258,7 @@ main(int argc,char **argv)
     } /* !rcd */
     
     /* Combine calendar and units strings with clm_nfo_sng to create climatological time and bounds arrays */
-    nco_lcn_typ lcn_typ=nco_lcn_typ_err;
-    if(cb->bnd_mk) lcn_typ=nco_lcn_typ_rhs; else lcn_typ=nco_lcn_typ_ctr;
-    if(clm_nfo_sng) rcd=nco_clm_nfo_to_tm_bnds(cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->bnd_mk,cb->unt_val,cb->cln_val,cb->bnd_val,cb->tm_val);
+    if(clm_nfo_sng) rcd=nco_clm_nfo_to_tm_bnds(cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,lcn_typ,cb->unt_val,cb->cln_val,cb->bnd_val,cb->tm_val);
     //assert(rcd != NCO_NOERR);
 
   } /* !flg_cb */
@@ -2181,12 +2179,10 @@ main(int argc,char **argv)
     clm_bnd_dmn_id[0]=tm_crd_dmn_id;
     clm_bnd_dmn_id[1]=dim2_id;
     rcd=nco_def_var(out_id,cb->tm_bnd_nm,(nc_type)NC_DOUBLE,dmn_nbr_2D,clm_bnd_dmn_id,&cb->clm_bnd_id_out);
-
-    rcd+=nco_enddef(out_id);
-
-    rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->bnd_val,(nc_type)NC_DOUBLE);
     if(clm_bnd_dmn_id) clm_bnd_dmn_id=(int *)nco_free(clm_bnd_dmn_id);
 
+    /* fxm Copy coordinate attributes to new bounds variable */
+    rcd+=nco_enddef(out_id);
   } /* !flg_cb */
   
   if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat || nco_prg_id == ncfe)){
