@@ -1084,7 +1084,7 @@ main(int argc,char **argv)
 
       if(!strcmp(cb->cll_mth_val,cll_mth_pnt_sng)) cb->cll_mth_pnt=True;
  
-      if(nco_dbg_lvl >= nco_dbg_quiet) (void)fprintf(stderr,"%s: INFO Climatology bounds detects that input dataset time and bounds assume geophysical variables have cell_methods=\"time: point\". Derived dataset will adhere to this assumption.\n",nco_prg_nm_get());
+      if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Climatology bounds detects that input dataset time and bounds assume geophysical variables have cell_methods=\"time: point\". Derived dataset will adhere to this assumption.\n",nco_prg_nm_get());
     } /* !rcd */
     
     if(cb->tm_bnd_in){

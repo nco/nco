@@ -2,9 +2,13 @@
 
 	* NCO 5.3.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha02: 29 Palms';git push
-	git tag -a 5.3.8-alpha02 -m 'all: CF cnv url chg; ncra:	cb->bnd_mk, lcn_typ';git push --tags
+	git tag -a 5.3.8-alpha02 -m 'all: CF cnv url chg; ncra:	cb->bnd_mk, cb->lcn_typ, climo_time_cell_method';git push --tags
 
-	* Fix bounds for instant files to accord with CF in first pass
+	* ncra: Detect climo_time_cell_method in input to cue instantaneous treatment
+
+	* ncra: Add global climo_time_cell_method attribute to instantaneous files
+
+	* ncra: Fix bounds for instant files to accord with CF in all monthly and seasonal climos
 
 	* ncks: CEWI Initialize fexcept_t flg_xcp to 0
 

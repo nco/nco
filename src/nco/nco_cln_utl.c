@@ -511,7 +511,7 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
 
   sprintf(end_sng,"seconds since %d-%d-01",yr_end,mth_end);
   
-  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG %s reports yr_srt = %d, yr_end = %d, mth_srt = %d, mth_end = %d, tpd = %d, lcn_typ = %d, unt_sng = %s, cln_sng = %s\n",nco_prg_nm_get(),fnc_nm,yr_srt,yr_end,mth_srt,mth_end,tpd,(int)lcn_typ,unt_sng,cln_sng);
+  if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stderr,"%s: DEBUG %s reports yr_srt = %d, yr_end = %d, mth_srt = %d, mth_end = %d, tpd = %d, lcn_typ = %d, unt_sng = %s, cln_sng = %s\n",nco_prg_nm_get(),fnc_nm,yr_srt,yr_end,mth_srt,mth_end,tpd,(int)lcn_typ,unt_sng,cln_sng);
   
   if(tpd == 0){
 
