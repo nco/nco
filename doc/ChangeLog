@@ -1,5 +1,9 @@
 2026-04-08  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.8-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha03: Practicum';git push
+	git tag -a 5.3.8-alpha03 -m '';git push --tags
+
 	* NCO 5.3.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha02: 29 Palms';git push
 	git tag -a 5.3.8-alpha02 -m 'all: CF cnv url chg; ncra:	cb->bnd_mk, cb->lcn_typ, climo_time_cell_method';git push --tags
