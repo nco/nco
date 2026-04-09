@@ -979,14 +979,16 @@ main(int argc,char **argv)
     char clm_sng[]="climatology"; /* CF-standard climatology bounds attribute name */
     char cln_sng[]="calendar"; /* CF-standard calendar attribute name */
     char unt_sng[]="units"; /* NUG-standard units attribute name */
+    char cll_mth_pnt_sng[]="point"; /* CF value for instantaneous/point intervals within cells */
     long att_sz;
     nc_type att_typ;
-    nco_lcn_typ lcn_typ=nco_lcn_typ_ctr; /* [enm] Time-value location within time interval */
 
     cb=(clm_bnd_sct *)nco_malloc(sizeof(clm_bnd_sct));
     cb->bnd_mk=False; /* [flg] Create time bounds */
     cb->bnd2clm=False; /* [flg] Convert time-bounds to climatology bounds */
     cb->bnd_val=NULL; /* [frc] Time coordinate variable values */
+    cb->cll_mth_pnt=False; /* [flg] Assume values cell_method is "time: point" */
+    cb->cll_mth_val=NULL; /* [sng] Cell methods value */
     cb->clm2bnd=False; /* [flg] Convert climatology bounds to time-bounds */
     cb->clm2clm=False; /* [flg] Convert climatology bounds to climatology bounds */
     cb->clm_bnd_id_in=NC_MIN_INT; /* [id] Climatology bounds ID */
@@ -996,6 +998,7 @@ main(int argc,char **argv)
     cb->cln_val=NULL; /* [sng] Bounds calendar value */
     cb->dmn_srt_end[0]=0L;cb->dmn_srt_end[1]=1L;
     cb->dmn_srt_srt[0]=0L;cb->dmn_srt_srt[1]=0L;
+    cb->lcn_typ=nco_lcn_typ_ctr; /* [enm] Time-value location within time interval */
     cb->mth_end=NC_MIN_INT; /* [mth] Month at climo end [1..12] format */
     cb->mth_srt=NC_MIN_INT; /* [mth] Month at climo start [1..12] format */
     cb->tm_bnd_id_in=NC_MIN_INT; /* [id] Time-bounds ID */
@@ -1052,9 +1055,15 @@ main(int argc,char **argv)
 	   Create time_bounds variable in output file based on clm_nfo_sng arguments
 	   Set special flag here and do variable creation after main loop to protect traversal table */
 
-	/* fxm: Make this contingent on method=point? */
+	/* fxm: How to make this contingent on method=point when input variables' cell_methods can differ? */
 	cb->bnd_mk=True;
-	if(cb->bnd_mk) lcn_typ=nco_lcn_typ_rhs;
+	cb->cll_mth_pnt=True;
+
+	/* Add Global attribute */
+	char gaa_pnt[]="climo_time_cell_method=point";
+        gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
+        gaa_arg[gaa_nbr++]=(char *)strdup(gaa_pnt);
+	(void)nco_glb_att_add(out_id,gaa_arg+gaa_nbr-1,1);
       } /* !cb->tm_bnd_in && !cb->clm_bnd_in */
 
     }else{ /* !tm_crd_id_in */
@@ -1064,6 +1073,20 @@ main(int argc,char **argv)
       goto skp_cb; 
     } /* !tm_crd_in */
 
+    /* Was input file derived from instantaneous/point data? */
+    char tm_cll_mth_att[]="climo_time_cell_method";
+    rcd=nco_inq_att_flg(in_id,NC_GLOBAL,tm_cll_mth_att,&att_typ,&att_sz);
+    if(rcd == NC_NOERR && att_typ == NC_CHAR){
+      cb->cll_mth_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+      rcd+=nco_get_att(in_id,NC_GLOBAL,tm_cll_mth_att,cb->cll_mth_val,att_typ);
+      /* NUL-terminate attribute before using strstr() */
+      cb->cll_mth_val[att_sz]='\0';
+
+      if(!strcmp(cb->cll_mth_val,cll_mth_pnt_sng)) cb->cll_mth_pnt=True;
+ 
+      if(nco_dbg_lvl >= nco_dbg_quiet) (void)fprintf(stderr,"%s: INFO Climatology bounds detects that input dataset time and bounds assume geophysical variables have cell_methods=\"time: point\". Derived dataset will adhere to this assumption.\n",nco_prg_nm_get());
+    } /* !rcd */
+    
     if(cb->tm_bnd_in){
       rcd=nco_inq_varid_flg(in_id,cb->tm_bnd_nm,&cb->tm_bnd_id_in); 
       if(cb->tm_bnd_id_in == NC_MIN_INT){
@@ -1258,7 +1281,8 @@ main(int argc,char **argv)
     } /* !rcd */
     
     /* Combine calendar and units strings with clm_nfo_sng to create climatological time and bounds arrays */
-    if(clm_nfo_sng) rcd=nco_clm_nfo_to_tm_bnds(cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,lcn_typ,cb->unt_val,cb->cln_val,cb->bnd_val,cb->tm_val);
+    if(cb->cll_mth_pnt) cb->lcn_typ=nco_lcn_typ_rhs;
+    if(clm_nfo_sng) rcd=nco_clm_nfo_to_tm_bnds(cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->lcn_typ,cb->unt_val,cb->cln_val,cb->bnd_val,cb->tm_val);
     //assert(rcd != NCO_NOERR);
 
   } /* !flg_cb */
@@ -1269,7 +1293,9 @@ main(int argc,char **argv)
   if(!flg_cb)
     if(cb) cb=(clm_bnd_sct *)nco_free(cb);
 
-  /* Add cell_methods attributes (before exiting define mode) */
+  /* Add cell_methods attributes (before exiting define mode)
+     20260408: fxm Also call this for nces/ncfe as used in ncclimo clm_md=hfc?
+     Is not calling this why bounds metadata are simple? */
   if(nco_prg_id == ncra){
     dmn_sct **dmn=NULL_CEWI;
     int nbr_dmn=nbr_rec;
@@ -1844,32 +1870,14 @@ main(int argc,char **argv)
           if(rec_usd_cml[idx_rec] <= 0){
             (void)fprintf(fp_stdout,"%s: ERROR No records lay within specified hyperslab\n",nco_prg_nm_get());
             nco_exit(EXIT_FAILURE);
-          } /* end if */
-        } /* end if */
+          } /* !rec_usd_cml */
+        } /* !fl_idx */
 
         if(fl_udu_sng) fl_udu_sng=(char*)nco_free(fl_udu_sng);
 
         nco_rgd_arr_lst_free(rgd_arr_bnds_lst,rgd_arr_bnds_nbr);
         nco_rgd_arr_lst_free(rgd_arr_climo_lst,rgd_arr_climo_nbr);
-      } /* end idx_rec loop over different record variables to process */
-
-      if(!clm_nfo_sng && flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)){
-	/* Obtain climatology bounds from input file
-	   20200822: Deprecate this original method to obtain bounds
-	   20160824: Currently dmn_srt_srt and dmn_srt_end indices are 0 and 1, respectively
-	   This means values are always/only taken for first record in input file
-	   Thus climatology_bounds are only correct for input files with single timestep
-	   To fix this requires updating dmn_srt_srt and dmn_srt_end with correct indices
-	   Correct indices must account for multiple input records per file and hyperslabbing (e.g., -d time,3,5) */
-	int var_id_in;
-	double val_dbl;
-	var_id_in= cb->tm_bnd_in ? cb->tm_bnd_id_in : cb->clm_bnd_id_in;
-	rcd=nco_get_var1(in_id,var_id_in,cb->dmn_srt_srt,&val_dbl,(nc_type)NC_DOUBLE);
-	if(fl_idx == 0) cb->tm_val[0]=val_dbl;
-	if(val_dbl < cb->bnd_val[0]) cb->bnd_val[0]=val_dbl;
-	rcd=nco_get_var1(in_id,var_id_in,cb->dmn_srt_end,&val_dbl,(nc_type)NC_DOUBLE);
-	if(val_dbl > cb->bnd_val[1]) cb->bnd_val[1]=val_dbl;
-      } /* !flg_cb */
+      } /* !idx_rec loop over different record variables to process */
 
       /* End ncra, ncrcat section */
     }else if(nco_prg_id == ncfe){ /* ncfe */
@@ -1941,7 +1949,7 @@ main(int argc,char **argv)
 
         /* Free current input buffer */
         var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-      } /* end (OpenMP parallel for) loop over idx */
+      } /* !idx (OpenMP parallel for) */
       /* End ncfe section */
     }else if(nco_prg_id == ncge){ /* ncge */
 

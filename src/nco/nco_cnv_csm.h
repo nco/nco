@@ -38,6 +38,7 @@ extern "C" {
     char *clm_bnd_nm; /* [sng] Climatology bounds variable name (to create) */
     char *tm_bnd_nm; /* [sng] Time bounds variable name (to delete) */
     char *tm_crd_nm; /* [sng] Name of time coordinate variable */
+    char *cll_mth_val; /* [sng] Cell methods value */
     char *cln_val; /* [sng] Bounds calendar value */
     char *unt_val; /* [sng] Bounds units value */
     double *tm_val; /* [frc] Time coordinate variable values */
@@ -62,7 +63,9 @@ extern "C" {
     nco_bool clm2bnd; /* [flg] Convert climatology bounds to time bounds */
     nco_bool clm2clm; /* [flg] Convert climatology bounds to climatology bounds */
     nco_bool clm_bnd_in; /* [flg] Climatology bounds appear in input */
+    nco_bool cll_mth_pnt; /* [flg] Assume values cell_method is "time: point" */
     nco_bool tm_bnd_in; /* [flg] Time bounds appear in input */
+    nco_lcn_typ lcn_typ; /* [enm] Time-value location within time interval */
   } clm_bnd_sct; /* end climatology bounds structure */
 
   int /* O [rcd] Return code */
