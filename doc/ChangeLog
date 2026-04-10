@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha03: Practicum';git push
 	git tag -a 5.3.8-alpha03 -m 'ncclimo: fix csn/ann yr_rng octal bug';git push --tags
 
+	* Fix nco_clm_nfo_to_tm_bnds() prototype
+
 	* ncclimo call csn_nfo_get() with trimmed (i.e., _rth) values to prevent octal interpretation
 
 	* Add explicit base-10 conversion for all input parameters after syntax check (Copilot)
