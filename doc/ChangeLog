@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha03: Practicum';git push
 	git tag -a 5.3.8-alpha03 -m 'ncclimo: fix csn/ann yr_rng octal bug';git push --tags
 
+	* ncclimo use numeric comparison in inp_aut filename generation	(fixes fl_nbr miscount)
+
 	* Fix nco_clm_nfo_to_tm_bnds() prototype
 
 	* ncclimo call csn_nfo_get() with trimmed (i.e., _rth) values to prevent octal interpretation
