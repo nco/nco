@@ -816,6 +816,152 @@ csn_nfo_get()
         return 1
     fi
     
+    # Validate and convert to base-10 to avoid octal interpretation
+    yr_srt=$((10#${yr_srt}))
+    mth_srt=$((10#${mth_srt}))
+    yr_end=$((10#${yr_end}))
+    mth_end=$((10#${mth_end}))
+    csn_srt_idx=$((10#${csn_srt_idx}))
+    csn_end_idx=$((10#${csn_end_idx}))
+    rtn_enm=$((10#${rtn_enm}))
+    
+    # Compute data range boundaries
+    yyyymm_srt=$((yr_srt*100+mth_srt))
+    yyyymm_end=$((yr_end*100+mth_end))
+    
+    # Find earliest and latest year-month in seasonal range
+    yyyymm_frs=-1
+    yyyymm_lst=-1
+    
+    # Iterate through months in data range
+    mth_crr=${mth_srt}
+    yr_crr=${yr_srt}
+    while true; do
+        yyyymm_crr=$((yr_crr*100+mth_crr))
+        
+        # Check if current month is in seasonal range
+        mth_in_csn=0
+        if [[ ${csn_srt_idx} -le ${csn_end_idx} ]]; then
+            # Non-wrapping case (e.g., 6 to 8)
+            if [[ ${mth_crr} -ge ${csn_srt_idx} ]] && [[ ${mth_crr} -le ${csn_end_idx} ]]; then
+                mth_in_csn=1
+            fi
+        else
+            # Wrapping case (e.g., 12 to 2)
+            if [[ ${mth_crr} -ge ${csn_srt_idx} ]] || [[ ${mth_crr} -le ${csn_end_idx} ]]; then
+                mth_in_csn=1
+            fi
+        fi
+        
+        if [[ ${mth_in_csn} -eq 1 ]]; then
+            if [[ ${yyyymm_frs} -lt 0 ]]; then
+                yyyymm_frs=${yyyymm_crr}
+            fi
+            yyyymm_lst=${yyyymm_crr}
+        fi
+        
+        # Check if we've reached the end
+        if [[ ${mth_crr} -eq ${mth_end} ]] && [[ ${yr_crr} -eq ${yr_end} ]]; then
+            break
+        fi
+        
+        # Advance to next month, wrapping 12->1
+        mth_crr=$((mth_crr+1))
+        if [[ ${mth_crr} -gt 12 ]]; then
+            mth_crr=1
+            yr_crr=$((yr_crr+1))
+        fi
+    done
+    
+    # Extract year components from computed yyyymm values
+    yyyy_frs=$((yyyymm_frs/100))
+    yyyy_lst=$((yyyymm_lst/100))
+    
+    # Extract month components from computed yyyymm values
+    mm_frs=$((yyyymm_frs%100))
+    mm_lst=$((yyyymm_lst%100))
+    
+    # Format output date strings
+    printf -v yyyy_frs_sng "%04d" ${yyyy_frs}
+    printf -v yyyy_lst_sng "%04d" ${yyyy_lst}
+    printf -v yyyymm_frs_sng "%06d" ${yyyymm_frs}
+    printf -v yyyymm_lst_sng "%06d" ${yyyymm_lst}
+    printf -v yyyymm_rng_sng "%06d_%06d" ${yyyymm_frs} ${yyyymm_lst}
+    printf -v clm_bnd_arg "%04d,%04d,%02d,%02d" ${yyyy_frs} ${yyyy_lst} ${mm_frs} ${mm_lst}
+    
+    # Format year range string
+    if [[ ${yyyy_frs} -eq ${yyyy_lst} ]]; then
+        printf -v yyyy_rng "%04d" ${yyyy_frs}
+    else
+        printf -v yyyy_rng "%04d-%04d" ${yyyy_frs} ${yyyy_lst}
+    fi
+    
+    # Select and return requested string
+    case ${rtn_enm} in
+        1) rtn_sng="${yyyy_frs_sng}" ;;
+        2) rtn_sng="${yyyy_lst_sng}" ;;
+        3) rtn_sng="${yyyymm_frs_sng}" ;;
+        4) rtn_sng="${yyyymm_lst_sng}" ;;
+        5) rtn_sng="${yyyymm_rng_sng}" ;;
+        6) rtn_sng="${clm_bnd_arg}" ;;
+        7) rtn_sng="${yyyy_rng}" ;;
+        *) echo "${fnc_nm}: ERROR Return enumeration must be 1, 2, 3, 4, 5, 6, or 7" >&2; return 1 ;;
+    esac
+    
+    echo "${rtn_sng}"
+    return 0
+} # !csn_nfo_get()
+
+csn_nfo_get()
+{
+    # Usage:
+    # csn_nfo_get 2013 7 2014 6 6 8 5 returns "201307_201406"
+    # csn_nfo_get 2013 7 2014 6 6 8 6 returns "2013,2014,07,06"
+    
+    # [fnc] Parse seasonal information and compute date strings
+    # [sng] Input: Seven positional integer arguments
+    # [sng] Output: Requested date string based on rtn_enm
+    
+    local fnc_nm="csn_nfo_get()" # [sng] Function name
+    
+    local yr_srt="${1}" # [yr] Starting year
+    local mth_srt="${2}" # [mth] Starting month
+    local yr_end="${3}" # [yr] Ending year
+    local mth_end="${4}" # [mth] Ending month
+    local csn_srt_idx="${5}" # [idx] Seasonal start index
+    local csn_end_idx="${6}" # [idx] Seasonal end index
+    local rtn_enm="${7}" # [enm] Enumerated return variable
+    
+    local yyyy_frs # [yr] First year in seasonal range
+    local yyyy_lst # [yr] Last year in seasonal range
+    local yyyymm_frs # [yyyymm] Earliest year-month in season
+    local yyyymm_lst # [yyyymm] Latest year-month in season
+    local mm_frs # [mth] First month in seasonal range
+    local mm_lst # [mth] Last month in seasonal range
+    
+    local yyyy_frs_sng # [sng] First year string (YYYY format)
+    local yyyy_lst_sng # [sng] Last year string (YYYY format)
+    local yyyymm_frs_sng # [sng] First year-month string (YYYYMM format)
+    local yyyymm_lst_sng # [sng] Last year-month string (YYYYMM format)
+    local yyyymm_rng_sng # [sng] Year-month range string (YYYYMM_YYYYMM format)
+    local clm_bnd_arg # [sng] Column boundary argument string (yyyy_frs,yyyy_lst,mm_frs,mm_lst)
+    local yyyy_rng # [sng] Year range string (YYYY or YYYY-YYYY format)
+    local rtn_sng # [sng] String to return
+    
+    local mth_crr # [mth] Current month in data range
+    local yr_crr # [yr] Current year in data range
+    local yyyymm_crr # [yyyymm] Current year-month
+    local yyyymm_srt # [yyyymm] Starting year-month of data range
+    local yyyymm_end # [yyyymm] Ending year-month of data range
+    
+    local mth_in_csn # [flg] Month is in seasonal range
+    
+    # Check syntax
+    if [[ -z "${yr_srt}" ]] || [[ -z "${mth_srt}" ]] || [[ -z "${yr_end}" ]] || [[ -z "${mth_end}" ]] || [[ -z "${csn_srt_idx}" ]] || [[ -z "${csn_end_idx}" ]] || [[ -z "${rtn_enm}" ]]; then
+        echo "${fnc_nm}: ERROR Missing required parameters" >&2
+        return 1
+    fi
+    
     # Compute data range boundaries
     yyyymm_srt=$((yr_srt*100+mth_srt))
     yyyymm_end=$((yr_end*100+mth_end))
@@ -2489,9 +2635,11 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: mdl_typ  = ${mdl_typ}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
     printf "dbg: mpi_nbr  = ${mpi_nbr}\n"
-    printf "dbg: mth_end  = ${mth_end}\n"
-    printf "dbg: mth_nbr  = ${mth_nbr}\n"
     printf "dbg: mth_srt  = ${mth_srt}\n"
+    printf "dbg: mth_end  = ${mth_end}\n"
+    printf "dbg: mth_srt_rth = ${mth_srt_rth}\n"
+    printf "dbg: mth_end_rth = ${mth_end_rth}\n"
+    printf "dbg: mth_nbr  = ${mth_nbr}\n"
     printf "dbg: nco_opt  = ${nco_opt}\n"
     printf "dbg: ncr_flg  = ${ncr_flg}\n"
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
@@ -2531,6 +2679,11 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: yr_sbs   = ${yr_sbs}\n"
     printf "dbg: yyyy_end = ${yyyy_end}\n"
     printf "dbg: yyyy_srt = ${yyyy_srt}\n"
+    printf "dbg: yyyy_srt   = ${yyyy_srt}\n"
+    printf "dbg: yr_srt_rth = ${yr_srt_rth}\n"
+    printf "dbg: yr_end_rth = ${yr_end_rth}\n"
+    printf "dbg: yr_srtm1   = ${yr_srtm1}\n"
+    printf "dbg: yr_endm1   = ${yr_endm1}\n"
     if [ "${csn_flg}" = 'Yes' ]; then
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	    printf "dbg: Requested season index ${csn_idx} (\"${csn_rqs[${csn_idx}]}\") is defined season index ${map_r2d[${csn_idx}]} (\"${csn_abb[${map_r2d[${csn_idx}]}]}\")\n"
@@ -2540,10 +2693,6 @@ if [ ${dbg_lvl} -ge 2 ]; then
     fi # !csn
 fi # !dbg
 if [ ${dbg_lvl} -ge 2 ]; then
-    printf "dbg: yyyy_srt   = ${yyyy_srt}\n"
-    printf "dbg: yr_srt_rth = ${yr_srt_rth}\n"
-    printf "dbg: yr_srtm1   = ${yr_srtm1}\n"
-    printf "dbg: yr_endm1   = ${yr_endm1}\n"
     if [ ${mpi_flg} = 'Yes' ]; then
 	for ((nd_idx=0;nd_idx<${nd_nbr};nd_idx++)); do
 	    printf "dbg: nd_nm[${nd_idx}] = ${nd_nm[${nd_idx}]}\n"
@@ -2791,7 +2940,6 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	fi # !gaa_sng
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_srt_mth[${clm_idx}]}${MM}_${yyyy_end_mth[${clm_idx}]}${MM}_climo.nc"
 	
-	
 	if [ ${clm_md} = 'hfc' ]; then 
 	    # Computing climos from high-freqency data requires many steps:
 	    # A primary goal is to re-use not re-write code, especially existing monthly frequency climo code
@@ -3017,11 +3165,12 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	# 20260323 Start and end years now depend on start and end months
 	csn_srt_idx_crr=${csn_srt_idx[${map_r2d[${csn_idx}]}]}
 	csn_end_idx_crr=${csn_end_idx[${map_r2d[${csn_idx}]}]}
-	yyyymm_frs=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyymm_frs})
-	yyyymm_lst=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyymm_lst})
-	yyyymm_rng=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyymm_rng})
-	yyyy_rng=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyy_rng})
-	clm_bnd_arg=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_clm_bnd_arg})
+	yyyymm_frs=$(csn_nfo_get ${yr_srt_rth} ${mth_srt_rth} ${yr_end_rth} ${mth_end_rth} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyymm_frs})
+	yyyymm_lst=$(csn_nfo_get ${yr_srt_rth} ${mth_srt_rth} ${yr_end_rth} ${mth_end_rth} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyymm_lst})
+	yyyymm_rng=$(csn_nfo_get ${yr_srt_rth} ${mth_srt_rth} ${yr_end_rth} ${mth_end_rth} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyymm_rng})
+	yyyy_rng=$(csn_nfo_get ${yr_srt_rth} ${mth_srt_rth} ${yr_end_rth} ${mth_end_rth} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyy_rng})
+	printf "quark2: 20260410 yyyymm_rng=${yyyymm_rng}\n"
+	clm_bnd_arg=$(csn_nfo_get ${yr_srt_rth} ${mth_srt_rth} ${yr_end_rth} ${mth_end_rth} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_clm_bnd_arg})
 	clm_bnd[${clm_idx}]="--clm_bnd=${clm_bnd_arg},${tpd_out}"
 	if [ -n "${gaa_sng_std}" ]; then
 	    # NB: E3SM diagnostics (e3sm_diagnostics) relies on this attribute
@@ -3034,7 +3183,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 #    fl_out[15]="${drc_out}/${out_nm}_SON_${yyyy_srt}09_${yyyy_end}11_climo.nc"
 #    fl_out[16]="${drc_out}/${out_nm}_DJF_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
     if [ "${ann_flg}" = 'Yes' ]; then
-	yyyy_rng=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} 1 12 ${rtn_yyyy_rng})
+	yyyy_rng=$(csn_nfo_get ${yr_srt_rth} ${mth_srt_rth} ${yr_end_rth} ${mth_end_rth} 1 12 ${rtn_yyyy_rng})
 	if [ -n "${gaa_sng_std}" ]; then
 	    # NB: E3SM diagnostics (e3sm_diagnostics) relies on this attribute
 	    gaa_sng[${clm_nbr}]="${gaa_sng_std} --gaa yrs_averaged=${yyyy_rng}"

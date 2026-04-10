@@ -1,8 +1,14 @@
-2026-04-08  Charlie Zender  <zender@uci.edu>
+2026-04-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha03: Practicum';git push
-	git tag -a 5.3.8-alpha03 -m '';git push --tags
+	git tag -a 5.3.8-alpha03 -m 'ncclimo: fix csn/ann yr_rng octal bug';git push --tags
+
+	* ncclimo call csn_nfo_get() with trimmed (i.e., _rth) values to prevent octal interpretation
+
+	* Add explicit base-10 conversion for all input parameters after syntax check (Copilot)
+
+2026-04-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha02: 29 Palms';git push
@@ -22,9 +28,9 @@
 
 	* Update CF Conventions homepage from http://cfconventions.org to https://cf-convention.github.io
 
-	* Put bnd_mk fields into cb structure for potential use by nco_cnv_cf_cll_mth_add()
+	* ncra: Put bnd_mk fields into cb structure for potential use by nco_cnv_cf_cll_mth_add()
 
-	* Create dim2 dimension (if needed) and time_bnds variable when cb->bnd_mk is true
+	* ncra: Create dim2 dimension (if needed) and time_bnds variable when cb->bnd_mk is true
 
 2026-04-07  Charlie Zender  <zender@uci.edu>
 
