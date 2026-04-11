@@ -495,7 +495,7 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
   if(!cln_sng){
     (void)fprintf(stdout,"%s: WARNING %s called with empty calendar string, will adopt default calendar \"noleap\"\n",nco_prg_nm_get(),fnc_nm);
     /* Default to noleap (365-day) calendar used by most ESMs */
-    if(!cln_sng) cln_sng=(char *)strdup("noleap");
+    cln_sng=(char *)strdup("noleap");
   } /* !cln_sng */
   cln_typ=nco_cln_get_cln_typ(cln_sng);
   
@@ -506,7 +506,7 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
   /* Move end forward one month */
   if(++mth_end == 13){
     mth_end=1;
-   yr_end++;
+    yr_end++;
   } /* !mth_end */
 
   sprintf(end_sng,"seconds since %d-%d-01",yr_end,mth_end);

@@ -314,26 +314,26 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # Split pipe:
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *piControl*000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
 # Split redirection:
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc > ~/foo;ncclimo --split --dbg=1 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm < ~/foo
+# cd ${DATA}/ne30/raw;ls *piControl*000[12]-??*.nc > ~/foo;ncclimo --split --dbg=1 -s 1 -e 2 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm < ~/foo
 # Split stdin switch:
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 --stdin -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *piControl*000[12]-??*.nc | ncclimo --split --dbg=1 --stdin -s 1 -e 2 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
 # Split positional arguments:
-# ncclimo --split --dbg=1 -s 1 -e 1 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-??.nc
+# ncclimo --split --dbg=1 -s 1 -e 1 --var=FSNT,AODVIS,T --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-??.nc
 # Split directory:
-# ncclimo --dbg=1 --ypf=50 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
+# ncclimo --dbg=1 --ypf=50 -s 1 -e 2 --var=FSNT,AODVIS --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split global mean
 # cd ${DATA}/ne30/raw;ls 2018*000[12]-??*.nc | ncclimo --split --dbg=1 --rgn_avg -s 1 -e 2 --var=FSNT,AODVIS,TREFHT --drc_out=${DATA}/ne30/clm
 # Split global sum
 # ncclimo -P elm --split --rgn_stt=sum --sum_scl=1.0e6*3600*24*365/1.0e12 -v GPP -c v3.LR.piControl -s 460 -e 461 --var=GPP --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split all:
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *piControl*000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --drc_out=${DATA}/ne30/clm
 # Split ELM:
 # ncclimo --split --dbg=1 -s 2000 -e 2000 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc
 # Split vertical:
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=T --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc --drc_out=${DATA}/ne30/clm
-# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=T --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc --vrt_xtr=mss_val --drc_out=${DATA}/ne30/clm # Missing value interpolation
+# cd ${DATA}/ne30/raw;ls *piControl*000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=T --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *piControl*000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=T --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc --vrt_xtr=mss_val --drc_out=${DATA}/ne30/clm # Missing value interpolation
 # Split production:
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --split --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --split --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
@@ -1631,7 +1631,6 @@ if [ ${inp_aut} = 'Yes' ] && [ ${clm_md} = 'mth' ] || [ ${clm_md} = 'ann' ]; the
 	    # 20260410 this statements should be triggered during climos!
 	    if [ ${mth_flg} = 'Yes' ] && [ ${yr} -eq ${yr_srt_all} ] && [ ${MM} -lt ${mth_srt_rth} ]; then continue; fi
 	    if [ ${mth_flg} = 'Yes' ] && [ ${yr} -eq ${yr_end_all} ] && [ ${MM} -gt ${mth_end_rth} ]; then continue; fi
-	    printf "quark2: fl_nbr=${fl_nbr}, mth_flg=${mth_flg}, yr_srt_all=${yr_srt_all}, yr_end_all=${yr_end_all}, mth_srt_rth=${mth_srt_rth}, mth_end_rth=${mth_end_rth}, yr=${yr}, mth=${mth}, MM=${MM}\n"
 	    if [ ${nm_typ} = 'cesm' ]; then
 		fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 	    elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions

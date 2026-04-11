@@ -1,5 +1,11 @@
 2026-04-10  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.8-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.8-beta01: Practicum';git push
+	git tag -a 5.3.8-beta01 -m '';git push --tags
+
+	* Failed to understand why old EAMxx HFC data generates out-of-range errors in nco_put_var()
+
 	* NCO 5.3.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.8-alpha03: Practicum';git push
 	git tag -a 5.3.8-alpha03 -m 'ncclimo: fix csn/ann yr_rng octal bug';git push --tags
