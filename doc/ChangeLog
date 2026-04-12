@@ -1,3 +1,9 @@
+2026-04-12  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.3.9-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha01: Brothers Comatose';git push
+	git tag -a 5.3.9-alpha01 -m 'Functionally identical to 5.3.8 except for ...';git push --tags
+
 2026-04-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.8 release procedure:

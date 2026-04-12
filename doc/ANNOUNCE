@@ -1,19 +1,19 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.8 mends fences
+netCDF Operators NCO version 5.3.9 mends fences
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.8 contains fixes to ncclimo problems introduced with 5.3.7.  
+Version 5.3.9 contains fixes to ncclimo problems introduced with 5.3.7.  
 The ncclimo "flexible-months" feature suffered from incorrect behavior
 for some inputs, and introduced a regression in seasonal filenames.
 The only new feature is that ncclimo now supports generating climos
 from high-frequency input data that are instantaneous (not mean)
 values. Documentation now reflects the new CF Convention Homepage URL.
 
-Users who upgraded to 5.3.7 should upgrade to 5.3.8, and 5.3.7 should
+Users who upgraded to 5.3.7 should upgrade to 5.3.9, and 5.3.7 should
 not be used anymore.
 
 Enjoy,
@@ -51,7 +51,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.3.8 built/tested under
+These problems occur with NCO 5.3.9 built/tested under
 MacOS 26.3 with netCDF 4.10.1-development on HDF5 2.1.1
 and with Linux FC42 with netCDF 4.9.2 on HDF5 1.14.4.
 
