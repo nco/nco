@@ -526,6 +526,11 @@ main(int argc,char **argv)
     case 'D': /* The debugging level. Default is 0. */
       nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      if(nco_dbg_lvl > 10 || nco_dbg_lvl < 0){
+	(void)fprintf(stderr,"%s: ERROR dbg_lvl=%u but valid values are 0 <= dbg_lvl <= 10\n",nco_prg_nm_get(),nco_dbg_lvl);
+	(void)fprintf(stderr,"%s: HINT Set dbg_lvl to a valid value. Be sure it is not inadvertently swallowing the value of the output filetype switch, e.g., \"-D -5 ...\"\n",nco_prg_nm_get());
+	nco_exit(EXIT_FAILURE);
+      } /* !nco_dbg_lvl */
       break;
     case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);

@@ -1,8 +1,14 @@
 2026-04-12  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.3.9-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha02: ';git push
+	git tag -a 5.3.9-alpha02 -m 'fxm';git push --tags
+
 	* NCO 5.3.9-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha01: Brothers Comatose';git push
-	git tag -a 5.3.9-alpha01 -m 'Functionally identical to 5.3.8 except for ...';git push --tags
+	git tag -a 5.3.9-alpha01 -m 'Functionally identical to 5.3.8 except for nco_dbg_lvl guards';git push --tags
+
+	* all: exit() with HINT when dbg_lvl < 0 or > 10
 
 2026-04-10  Charlie Zender  <zender@uci.edu>
 
