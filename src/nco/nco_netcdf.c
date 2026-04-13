@@ -624,6 +624,30 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
   return (char *)NULL;
 } /* !nco_fmt_sng() */
 
+const char * /* O [sng] String describing file format */
+nco_fmt_sng_xtn /* [fnc] Convert netCDF file format enum to extended, user-friendly string */
+(const int fl_fmt) /* I [enm] netCDF file format */
+{
+  /* Purpose: Convert netCDF file format enum to extended, user-friendly string
+     The output string always begins with the value that ncdump -k would return */
+  switch(fl_fmt){
+  case NC_FORMAT_CLASSIC:
+    return "classic = NC_FORMAT_CLASSIC = CDF1. This is the earliest flavor of Unidata's Classic Data Model: https://docs.unidata.ucar.edu/netcdf-c/current/netcdf_data_model.html";
+  case NC_FORMAT_64BIT_OFFSET:
+    return "64-bit offset = NC_FORMAT_64BIT_OFFSET = CDF2. This is a more capable flavor of Unidata's Classic Data Model: https://docs.unidata.ucar.edu/netcdf-c/current/netcdf_data_model.html";
+  case NC_FORMAT_NETCDF4:
+    return "netCDF-4 = NC_FORMAT_NETCDF4. This embodies all the features of Unidata's Enhanced Data Model: https://docs.unidata.ucar.edu/netcdf-c/current/netcdf_data_model.html";
+  case NC_FORMAT_NETCDF4_CLASSIC:
+    return "netCDF-4 classic model = NC_FORMAT_NETCDF4_CLASSIC. This is a hybrid of Unidata's Enhanced Data Model that implements the netCDF4 storage format yet only allows data types from the Unidata's Classic Model: https://docs.unidata.ucar.edu/netcdf-c/current/netcdf_data_model.html";
+  case NC_FORMAT_CDF5:
+    return "cdf5 = NC_FORMAT_CDF5 = CDF5 = PIO (a flavor of Unidata's Classic Data Model, https://docs.unidata.ucar.edu/netcdf-c/current/netcdf_data_model.html)";
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* !fl_fmt */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* !nco_fmt_sng_xtn() */
+
 const char * /* O [sng] String describing extended file format */
 nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
 (const int fl_fmt_xtn) /* I [enm] netCDF extended file format */

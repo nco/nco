@@ -28,6 +28,19 @@ nco_att_nbr        /* [fnc] Return number of attributes in variable or group att
 } /* !nco_att_nbr() */
 
 void 
+nco_prn_fl_fmt /* [fnc] Print file format then exit */
+(const int in_id) /* I [id] netCDF input file ID */
+{
+  /* Purpose: Print file format (and synonyms) of input file */
+  int fl_in_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Input file format */
+
+  (void)nco_inq_format(in_id,&fl_in_fmt);
+  (void)fprintf(stderr,"%s\n",nco_fmt_sng_xtn(fl_in_fmt));
+
+  nco_exit(EXIT_SUCCESS);
+} /* !nco_prn_fl_fmt() */
+  
+void 
 nco_prn_att /* [fnc] Print all attributes of single variable or group */
 (const int grp_id, /* I [id] netCDF group ID */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */

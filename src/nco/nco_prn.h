@@ -60,6 +60,10 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const int var_id); /* I [id] netCDF input variable ID */
 
+void 
+nco_prn_fl_fmt /* [fnc] Print file format */
+(const int in_id); /* I [id] netCDF input file ID */
+
 const char * /* O [sng] sprintf() format string for type typ */
 nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 (const nc_type typ); /* I [enm] netCDF type to provide format string for */

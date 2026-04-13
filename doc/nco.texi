@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.9-alpha01
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 10 April 2026
+@set update-date 13 April 2026
 @set update-month April 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -24316,11 +24316,12 @@ This set of switches is useful for exploring file contents.
 
 @html
 <a name="fl_prn"></a> <!-- http://nco.sf.net/nco.html#fl_prn -->
-<a name="prn_fl"></a> <!-- http://nco.sf.net/nco.html#prn_fl -->
+<a name="print_file"></a> <!-- http://nco.sf.net/nco.html#print_file -->
+<a name="file_print"></a> <!-- http://nco.sf.net/nco.html#file_print -->
 @end html
 @cindex print file
 @cindex @code{--fl_prn}
-@cindex @code{--prn_fl}
+@cindex @code{--print_file}
 @item --prn_fl @file{print-file}
 Activate printing formatted output to file @file{print-file}.
 Also @samp{--print_file}, @samp{--fl_prn}, and @samp{--file_print}.
@@ -24329,6 +24330,26 @@ However, it is slightly faster to print formatted output directly to a
 file than to stdout:
 @example
 ncks --fl_prn=foo.txt --jsn in.nc
+@end example
+
+@html
+<a name="prn_fl_fmt"></a> <!-- http://nco.sf.net/nco.html#prn_fl_fmt -->
+<a name="-k"></a> <!-- http://nco.sf.net/nco.html#-k -->
+<a name="prn_fmt"></a> <!-- http://nco.sf.net/nco.html#prn_fmt -->
+<a name="print_format"></a> <!-- http://nco.sf.net/nco.html#print_format -->
+@end html
+@cindex print file
+@cindex @code{--prn_fl_fmt}
+@cindex @code{--prn_fmt}
+@cindex @command{ncdump}
+@item --prn_fmt
+Prints the input file format, similar to @samp{ncdump -k}. 
+Also @samp{-k}, @samp{--prn_fmt}, @samp{--prn_fl_fmt}, and @samp{--print_format}.
+Unlike @command{ncdump}, this option prints multiple descriptors of
+the output file format, since netCDF terminology is confusing:
+@example
+% ncks --prn_fmt in.nc
+NC_FORMAT_CLASSIC
 @end example
 
 @html

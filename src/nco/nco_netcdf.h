@@ -401,6 +401,10 @@ const char * /* O [sng] String describing file format */
 nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
 (const int fl_fmt); /* I [enm] netCDF file format */
 
+const char * /* O [sng] String describing file format */
+nco_fmt_sng_xtn /* [fnc] Convert netCDF file format enum to extended, user-friendly string */
+(const int fl_fmt); /* I [enm] netCDF file format */
+
 const char * /* O [sng] String describing file format for hidden attributes */
 nco_fmt_hdn_sng /* [fnc] Convert netCDF file format enum to string for hidden attributes */
 (const int fl_fmt); /* I [enm] netCDF file format */

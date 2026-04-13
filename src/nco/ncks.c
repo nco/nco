@@ -179,7 +179,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:t:uVv:X:xz-:";
+  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhkL:l:MmOo:Pp:qQrRs:t:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -292,6 +292,7 @@ main(int argc,char **argv)
   nco_bool PRN_DMN_UNITS=True; /* [flg] Print dimensional units Option u */
   nco_bool PRN_DMN_VAR_NM=True; /* [flg] Print dimension/variable names */
   nco_bool PRN_DMN_UNITS_TGL=False; /* [flg] Toggle print dimensional units Option u */
+  nco_bool PRN_FL_FMT=False; /* [flg] Print file format then exit */
   nco_bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
   nco_bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
   nco_bool PRN_MSS_VAL_BLANK=True; /* [flg] Print missing values as blanks */
@@ -624,6 +625,9 @@ main(int argc,char **argv)
     {"out_fl",required_argument,0,'o'},
     {"print",required_argument,0,'P'},
     {"prn",required_argument,0,'P'},
+    {"prn_fl_fmt",no_argument,0,'k'}, /* Print file format then exit */
+    {"prn_fmt",no_argument,0,'k'}, /* Print file format then exit */
+    {"print_format",no_argument,0,'k'}, /* Print file format then exit */
     {"path",required_argument,0,'p'},
     {"quench",no_argument,0,'q'},
     {"quiet",no_argument,0,'Q'},
@@ -787,7 +791,7 @@ main(int argc,char **argv)
       } /* !fpe */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"cmp_sng") || !strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec") || !strcmp(opt_crr,"compress")) cmp_sng=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
-      if(!strcmp(opt_crr,"fl_prn") || !strcmp(opt_crr,"file_print") || !strcmp(opt_crr,"prn_fl") || !strcmp(opt_crr,"print_file")) fl_prn=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"fl_prn") || !strcmp(opt_crr,"file_print") || !strcmp(opt_crr,"print_file")) fl_prn=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"flt") || !strcmp(opt_crr,"filter")){
 	flt_sng=(char *)strdup(optarg);
 	/* [fnc] Parse filter string and exit */
@@ -1054,6 +1058,9 @@ main(int argc,char **argv)
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=False;
       break;
+    case 'k': /* Print file format then exit */
+      PRN_FL_FMT=True;
+      break;
     case 'L': /* [enm] Deflate level. Default is 0. */
       dfl_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
@@ -1224,6 +1231,9 @@ main(int argc,char **argv)
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
   in_id=in_id_arr[0];
   
+  /* Print filetype then exit */
+  if(PRN_FL_FMT) nco_prn_fl_fmt(in_id);
+
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list */
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,EXTRACT_CLL_MSR,EXTRACT_FRM_TRM,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
