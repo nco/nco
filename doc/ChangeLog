@@ -1,7 +1,7 @@
 2026-04-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.9-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha02: ';git push
+	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha02: Shade Blind';git push
 	git tag -a 5.3.9-alpha02 -m 'fxm';git push --tags
 
 	* NCO 5.3.9-alpha01 release procedure:
