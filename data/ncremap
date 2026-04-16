@@ -2304,7 +2304,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
 	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	    case "${HOSTNAME}" in 
-		andes* | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | compy* | constance* | frontier* | login[0123456789][0123456789] | nid* | node* | perlmutter* )
+		andes* | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | compy* | constance* | frontier* | login[0123456789][0123456789] | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | perlmutter* )
 		    # 20220518: Non-interactive batch jobs at NERSC/Perlmutter return HOSTNAME as login??, and nodes as nid??????
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*

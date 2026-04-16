@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha03: NFL QBs';git push
 	git tag -a 5.3.9-alpha03 -m 'ncclimo/ncremap: hrm mch, add bfr_sz opt, cnv_opt_prl_n2m fix';git push --tags
 
+	* ncremap/ncclimo: Add n[0123456789][0123456789][0123456789][0123456789] synonyms for Compy
+
 	* ncremap fix typo and use cnv_opt_prl_n2m not cnv_opt_par_n2m
 
 	* ncremap/ncclimo: fix stderr-redirects caught by shellcheck then revert because shellcheck was wrong
