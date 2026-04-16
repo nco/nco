@@ -1,8 +1,13 @@
-2026-04-13  Charlie Zender  <zender@uci.edu>
+2026-04-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.9-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha02: Shade Blind';git push
 	git tag -a 5.3.9-alpha02 -m 'fxm';git push --tags
+
+	* ncremap: change mpi_idx_zro to fl_idx in "other machines branch" of MPI prefix definition
+	This fixes bug discovered in E3SM-Unified test on all machines not explicitly supported
+
+2026-04-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.9-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha01: Brothers Comatose';git push

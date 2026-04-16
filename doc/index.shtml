@@ -1003,6 +1003,15 @@ To build NCO from source yourself using MSVC with CMake, please see example in <
 <li><a href="src/nco-4.9.5.windows.mvs.exe">nco-4.9.5.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.5.windows.mvs.exe"-->): Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.5.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
 
+<a name="openbsd"></a> <!-- http://nco.sf.net#openbsd -->
+<h3><a href="http://openbsd.org">OpenBSD</a></h3>
+<ul>
+<li><a href="https://ports.to/path/geo/nco.html">nco-5.3.6</a> OpenBSD port</li>
+</ul>
+In February, 2026 NCO became an officially supported OpenBSD package.
+It can now be installed via the OpenBSD port system with <tt>doas pkg_add nco</tt>.
+Thanks to Marco van Hulten for managing the OpenBSD ports.
+
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
 <h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> (running <a href="http://www.cygwin.org">Cygwin</a> environment, compiled with GNU-toolchain)</h3>
 <ul>
@@ -1018,8 +1027,7 @@ Thanks to Cygnus Solutions and RedHat Inc. for developing and supporting Cygwin.
 <a name="pynco"></a> <!-- http://nco.sf.net#pynco -->
 <a name="PyNCO"></a> <!-- http://nco.sf.net#PyNCO -->
 <h3><a href="http://www.python.org">Python</a> Bindings <a href="https://github.com/nco/pynco">Source</a> and <a href="http://pynco.readthedocs.org">Documentation</a>
-
-<hr></p>
+  <hr></p>
 <!-- End http://nco.sf.net#bnr -->
 
 <!-- http://nco.sf.net#RTFM -->

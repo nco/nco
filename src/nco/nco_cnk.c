@@ -210,9 +210,10 @@ nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
 
                          Blocksize Buffer
      Linux default            4096 8192
+     Perlmutter               4096 8192
      Yellowstone /home       32768 524288
-     Yellowstong /glade     131072 524288
-     Yellowstong /tmp         4096 524288 <-- probably hardcoded default not actual blocksize reported */
+     Yellowstone /glade     131072 524288
+     Yellowstone /tmp         4096 524288 <-- probably hardcoded default not actual blocksize reported */
 
   /* Discover blocksize if possible
      netCDF ID in_id points to input file, while fl_out to output file name (not ID)

@@ -763,6 +763,8 @@ ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CPPFLAG
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CPPFLAGS='-I/opt/netcdf/include -I/opt/homebrew/include' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' LDFLAGS='-L/opt/netcdf/lib -L/opt/homebrew/lib' NETCDF_ROOT=/opt/netcdf ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Spectral/Maluhia 20220624 with netCDF-dev and CCR
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CPPFLAGS='-I/opt/netcdf/include -I/opt/homebrew/include' CXX=${LINUX_CXX} CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' LDFLAGS='-L/opt/netcdf/lib -L/opt/homebrew/lib' NETCDF_ROOT=/opt/netcdf ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
+# Maluhia 20260413 with netCDF-dev and NEP
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' CPPFLAGS='-I/opt/netcdf/include -I/opt/homebrew/include' CXX=${LINUX_CXX} CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -UNCO_ABORT_ON_ERROR' LDFLAGS='-L/opt/netcdf/lib -L/opt/homebrew/lib' NETCDF_ROOT=/opt/netcdf ./configure --enable-nep --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Rigb 20190912 (fxm)
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='' CXX=${LINUX_CXX} CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.foo 2>&1
 # Imua 20250419
