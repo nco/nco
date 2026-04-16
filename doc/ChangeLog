@@ -6,7 +6,7 @@
 
 	* ncremap fix typo and use cnv_opt_prl_n2m not cnv_opt_par_n2m
 
-	* ncremap/ncclimo: fix stderr-redirects caught by shellcheck
+	* ncremap/ncclimo: fix stderr-redirects caught by shellcheck then revert because shellcheck was wrong
 
 	* ncremap/ncclimo: Harmonize machine-dependent blocks
 

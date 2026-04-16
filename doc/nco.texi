@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.3.9-alpha03
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 13 April 2026
+@set update-date 16 April 2026
 @set update-month April 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -11444,7 +11444,7 @@ Long options: @samp{--bfr_sz_hnt}, @samp{--buffer_size_hint}@*
 
 As of @acronym{NCO} version 4.2.0 (May, 2012), @acronym{NCO} 
 allows the user to request specific buffer sizes to allocate for reading 
-and writing files.
+and writing of netCDF-classic files.
 This buffer size determines how many system calls the netCDF layer must
 invoke to read and write files.
 By default, netCDF uses the preferred I/O block size returned as the
@@ -11467,6 +11467,10 @@ ncks: INFO nc__open() will request file buffer size = 2097152 bytes
 ncks: INFO nc__open() opened file with buffer size = 2097152 bytes
 ...
 @end example
+Note that this option is ignored yet harmless for netCDF4 files
+(because the @acronym{HDF5}-layer handles this automatically).
+This option was added to @command{ncremap} and @command{ncclimo} in
+@acronym{NCO} version 5.3.9 (April, 2026).
 
 @html
 <a name="ram_all"></a> <!-- http://nco.sf.net/nco.html#ram_all -->
@@ -19671,7 +19675,7 @@ ncchecker file:///Users/zender/in_zarr4#mode=nczarr,file # Check Zarr object(s)
 SYNTAX
 @example
 ncclimo [-3] [-4] [-5] [-6] [-7] 
-[-C @var{clm_md}] [-c @var{caseid}] [--cmp @var{cmp_sng}]
+[--bfr_sz=@var{sz}] [-C @var{clm_md}] [-c @var{caseid}] [--cmp @var{cmp_sng}]
 [-d @var{dbg_lvl}] [--d2f] [--dpf=@var{dpf}] [--dpt_fl=@var{dpt_fl}] [-E @var{yr_prv}] [-e @var{yr_end}]
 [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [--glb_avg] [--glb_stt=@var{glb_stt}] 
 [-h @var{hst_nm}] [-i @var{drc_in}] [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}]
@@ -26454,9 +26458,9 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 SYNTAX
 @example
 ncremap [-3] [-4] [-5] [-6] [-7]
-[-a @var{alg_typ}] [--a2o] [--add_fll] [--alg_lst] [--area_dgn] [--cmp @var{cmp_sng}]
-[-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f] [--dpt] [--dpt_fl=@var{dpt_fl}]
-[--dt_sng=@var{dt_sng}] [--esmf_typ=@var{esmf_typ}] 
+[-a @var{alg_typ}] [--a2o] [--add_fll] [--alg_lst] [--area_dgn] [--bfr_sz=@var{sz}]
+[--cmp @var{cmp_sng}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f]
+[--dpt] [--dpt_fl=@var{dpt_fl}] [--dt_sng=@var{dt_sng}] [--esmf_typ=@var{esmf_typ}] 
 [--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}] [--gad=@var{gad_lst}[,@dots{}]] 
 [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}] [-L @var{dfl_lvl}]
 [-M] [-m @var{map_fl}] [--mpi_nbr=@var{mpi_nbr}] [--mpi_pfx=@var{mpi_pfx}] [--mpt_mss]

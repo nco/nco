@@ -485,7 +485,7 @@ while [ -h "${nco_exe}" ]; do
   [[ ${nco_exe} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
-nco_vrs=$(ncks --version > /dev/null 2>&1 | grep NCO | awk '{print $5}')
+nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
 # 20190218: Die quickly when NCO is found yet cannot run, e.g., due to linker errors
 if [ -z "${nco_vrs}" ]; then
     echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
@@ -501,8 +501,8 @@ if [ -z "${nco_vrs}" ]; then
     fi # !NCO_PATH_OVERRIDE
     exit 1
 fi # !nco_vrs
-nco_sng=$(ncks --version > /dev/null 2>&1 | grep NCO | awk -F '"' '{print $2}')
-lbr_vrs=$(ncks --library > /dev/null 2>&1 | awk '{print $6}')
+nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk -F '"' '{print $2}')
+lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 
 # Detect and warn about mixed modules (for Qi Tang 20170531)
 if [ "${drc_spt}" != "${drc_nco}" ]; then
