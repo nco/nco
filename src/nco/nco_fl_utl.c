@@ -1860,7 +1860,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   flg_rqs_vrb_xpl = ((bfr_sz_hnt != NULL && *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_var && FIRST_INFO) ? True : False;
 
   /* Print implicit or explicit buffer request depending on debugging level */
-  if(flg_rqs_vrb_mpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() will request file buffer of default size\n",nco_prg_nm_get(),fnc_nm); 
+  if(flg_rqs_vrb_mpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() will use NC_SIZEHINT_DEFAULT = %lu when opening file. This lets the filesystem choose the preferred blocksize (via st_blksize from stat()).\n",nco_prg_nm_get(),fnc_nm,(unsigned long)NC_SIZEHINT_DEFAULT); 
   if(flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() will request file buffer size = %lu bytes\n",nco_prg_nm_get(),fnc_nm,*bfr_sz_hnt); 
 
   /* Pass local copy of size hint otherwise user-specified value is overwritten on first call */
@@ -1920,7 +1920,7 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem that will or does contain
   struct stat stat_sct;
 
   /* 20220821: Use fl_out to determine directory and thus blocksize for output
-     Do not use nc_id here, since that refers to input file!!!*/
+     Do not use nc_id here, since that refers to input file!!! */
   if(nco_fl_nm_vld_ncz_syn(fl_nm)){
     (void)nco_fl_ncz2psx(fl_nm,NULL,&drc_out,NULL);
   }else{
