@@ -37,7 +37,6 @@
 # E3SM Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs
 
 # Insta-install:
-# scp ~/nco/data/ncclimo zender1@acme1.llnl.gov:bin
 # scp ~/nco/data/ncclimo andes.olcf.ornl.gov:bin_andes
 # scp ~/nco/data/ncclimo ac.zender@bebop.lcrc.anl.gov:bin
 # scp ~/nco/data/ncclimo ac.zender@chrysalis.lcrc.anl.gov:bin_chrysalis
@@ -101,7 +100,6 @@ fi # HOSTNAME
 # Default input and output directory is ${DATA}
 if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
-	acme1* ) DATA="/home/${USER}" ; ;; # LLNL acme1 
 	andes* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	bebop* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC bebop compute nodes named bNNN, 36|64 cores|GB/node 
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
@@ -131,6 +129,7 @@ OMP_PROC_BIND=false
 # 20190421 Change override default from opt-out to opt-in
 # 20221108 Implement hrd_pth in block above prior to getopt()
 # 20250903 Simplify code: Always define then re-use E3SMU_ROOT, then add E3SMU_ROOT/bin to path only for ncremap
+# 20260416 Andes does not include personal Anaconda because I never installed one there
 # Leave NCO_PATH_OVERRIDE unset or set to 'No' to prevent NCO from executing next block that overrides PATH
 # Set NCO_PATH_OVERRIDE to 'Yes' in environment to cause NCO to execute next block and to override PATH:
 # export NCO_PATH_OVERRIDE='Yes'
@@ -138,34 +137,30 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
     case "${HOSTNAME}" in 
-	acme1* )
-	    E3SMU_ROOT='/p/user_pub/e3sm_unified/envs/base/envs/e3sm_unified_latest'
-	    export PATH='/home/zender1/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/home/zender1/lib'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
 	andes* )
 	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
-        if [ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]; then
-            E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/andes'
-        else
-            E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
-        fi
-        export PATH='/ccs/home/zender/bin_andes'\:${PATH}
+            if [ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]; then
+		E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/andes'
+            else
+		E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
+            fi
+            export PATH='/ccs/home/zender/bin_andes'\:${PATH}
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
 	bebop* | blogin* | b[0123456789][0123456789][0123456789] )
-        if [ -d '/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco' ]; then
-            E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/anvil'
-        else
-            E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
-        fi
+            if [ -d '/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco' ]; then
+		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/anvil'
+            else
+		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
+            fi
 	    export PATH='/home/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | ilogin* | i[0123456789][0123456789][0123456789] )
-        if [ -d '/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco' ]; then
-            E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/chrysalis'
-        else
-            E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
-        fi
+            if [ -d '/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco' ]; then
+		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/chrysalis'
+            else
+		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
+            fi
 	    export PATH='/home/ac.zender/bin_chrysalis'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis:/home/ac.zender/anaconda/lib'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
 	compy* | n[0123456789][0123456789][0123456789][0123456789] )
@@ -174,11 +169,11 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    # 20210519: This script takes significant time (5-10 seconds) to load
 	    # 20230914: Deprecate special MOAB paths, rely on E3SMU
 	    # source /compyfs/software/mbtempest.envs.sh
-        if [ -d '/share/apps/E3SM/conda_envs/e3smu_latest_for_nco' ]; then
-            E3SMU_ROOT='/share/apps/E3SM/conda_envs/e3smu_latest_for_nco/compy'
-        else
-            E3SMU_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest'
-        fi
+            if [ -d '/share/apps/E3SM/conda_envs/e3smu_latest_for_nco' ]; then
+		E3SMU_ROOT='/share/apps/E3SM/conda_envs/e3smu_latest_for_nco/compy'
+            else
+		E3SMU_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest'
+            fi
 	    export PATH='/qfs/people/zender/bin:/qfs/people/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib:/qfs/people/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	derecho* )
@@ -197,21 +192,21 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	frontier* )
 	    if [ ${spt_nm} = 'ncremap' ]; then
-            if [ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]; then
-                E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/frontier'
-            else
-                E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
-            fi
+		if [ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]; then
+                    E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/frontier'
+		else
+                    E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
+		fi
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
 	    if [ "${LMOD_SYSTEM_NAME}" = 'frontier' ]; then
-            if [ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]; then
-                E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/frontier'
-            else
-                E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
-            fi
+		if [ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]; then
+                    E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/frontier'
+		else
+                    E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
+		fi
 		export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
 		export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH}
 	    elif [ "${LMOD_SYSTEM_NAME}" = 'perlmutter' ]; then
@@ -490,7 +485,7 @@ while [ -h "${nco_exe}" ]; do
   [[ ${nco_exe} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
-nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
+nco_vrs=$(ncks --version > /dev/null 2>&1 | grep NCO | awk '{print $5}')
 # 20190218: Die quickly when NCO is found yet cannot run, e.g., due to linker errors
 if [ -z "${nco_vrs}" ]; then
     echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
@@ -506,8 +501,8 @@ if [ -z "${nco_vrs}" ]; then
     fi # !NCO_PATH_OVERRIDE
     exit 1
 fi # !nco_vrs
-nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk -F '"' '{print $2}')
-lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
+nco_sng=$(ncks --version > /dev/null 2>&1 | grep NCO | awk -F '"' '{print $2}')
+lbr_vrs=$(ncks --library > /dev/null 2>&1 | awk '{print $6}')
 
 # Detect and warn about mixed modules (for Qi Tang 20170531)
 if [ "${drc_spt}" != "${drc_nco}" ]; then
@@ -550,6 +545,7 @@ ann_sfx='01-01-00000' # [sng] Annual file suffix (MPAS, e.g., uses '01-01-00000'
 area_nm='area' # [sng] Name of variable containing gridcell area
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
+bfr_sz='' # [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4)
 bnr_flg='No' # [sng] Binary method
 caseid='' # [sng] Case ID
 #caseid_xmp='20180129.DECKv1b_piControl.ne30_oEC.edison' # [sng] Case ID for v1 examples
@@ -657,6 +653,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
 #    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}wnt_md${fnt_nrm}   Winter mode (default ${fnt_bld}${wnt_md}${fnt_nrm}) [${fnt_tlc}wnt_md, dcm_md, dec_md, december_mode, winter_mode${fnt_nrm}] [${fnt_tlc}scd,djf | sdd,jfd${fnt_nrm}]" # wnt_md discontinued in 202603
     echo " ${fnt_bld}--amwg_lnk${fnt_nrm} Link E3SM-climo to AMWG-climo filenames [${fnt_tlc}amwg_links, AMWG_link${fnt_nrm}]"
     echo " ${fnt_bld}--area_nm${fnt_nrm}  Area-variable name (default ${fnt_bld}${area_nm}${fnt_nrm}) [${fnt_tlc}area_nm, area_name, area${fnt_nrm}]"
+    echo " ${fnt_bld}--bfr_sz${fnt_nrm}   Buffer size for netCDF-classic I/O (default ${fnt_bld}determined by system/library${fnt_nrm}) [${fnt_tlc}bfr_sz, buffer_size_hint${fnt_nrm}]"
     echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}] [${fnt_tlc}ann | dly | hfc | hfs | mth${fnt_nrm}]"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string to generate input names or to name HFC output (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
     echo " ${fnt_bld}--cmp_sng${fnt_nrm}  Compression string (empty means none) (default ${fnt_bld}${cmp_sng}${fnt_nrm}) [${fnt_tlc}cmp, cmp_sng, compress, compression, cpr, cdc, codec ${fnt_nrm}]"
@@ -965,6 +962,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       # Long options with argument, no short option counterpart
 	       # Long options with short counterparts, ordered by short option key
 	       area_nm=?* | area_name=?* | area=?* ) area_nm="${LONG_OPTARG}" ;; # # Area-variable name
+	       bfr_sz=?* | bfr=?* | buffer_size_hint=?* ) bfr_sz="${LONG_OPTARG}" ;; # # Buffer size for netCDF-classic I/O
 	       clm_md=?* | climatology_mode=?* | climo_mode=?* ) clm_md_usr="${LONG_OPTARG}" ;; # -C # Climatology mode
 	       caseid=?* | case_id=?* | case=?* ) caseid="${LONG_OPTARG}" ;; # -c # CASEID
 	       cmp=?* | cmp_sng=?* | compress=? | compression=?* | cpr=?* | cdc=?* | codec=?* ) cmp_sng="${LONG_OPTARG}" ;; # # Compression string
@@ -1498,6 +1496,9 @@ if [ -n "${var_lst}" ] && [ "${tms_flg}" != 'Yes' ]; then
     fi # !xcl_flg                                                                                     
     nco_opt="${nco_opt} -v ${var_lst}"
 fi # !var_lst                                                                                         
+if [ -n "${bfr_sz}" ]; then
+    nco_opt="${nco_opt} --bfr_sz=${bfr_sz}"
+fi # !bfr_sz
 if [ -n "${cmp_sng}" ]; then
     # 20230623: Insert backslashes to protect pipe characters from shell
     nco_opt="${nco_opt} --cmp=${cmp_sng//\|/\\|}"
@@ -2456,6 +2457,7 @@ fi # !clm_md !bnr_flg
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: area_nm  = ${area_nm}\n"
     printf "dbg: area_wgt = ${area_wgt}\n"
+    printf "dbg: bfr_sz   = ${bfr_sz}\n"
     printf "dbg: bnr_flg  = ${bnr_flg}\n"
     printf "dbg: bs_nm    = ${bs_nm}\n"
     printf "dbg: bs_sfx   = ${bs_sfx}\n"

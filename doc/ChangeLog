@@ -1,8 +1,16 @@
-2026-04-15  Charlie Zender  <zender@uci.edu>
+2026-04-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha03: NFL QBs';git push
-	git tag -a 5.3.9-alpha03 -m 'ncremap: mpi fix';git push --tags
+	git tag -a 5.3.9-alpha03 -m 'ncclimo/ncremap: hrm mch, add bfr_sz opt, cnv_opt_prl_n2m fix';git push --tags
+
+	* ncremap fix typo and use cnv_opt_prl_n2m not cnv_opt_par_n2m
+
+	* ncremap/ncclimo: fix stderr-redirects caught by shellcheck
+
+	* ncremap/ncclimo: Harmonize machine-dependent blocks
+
+2026-04-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.9-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha02: Shade Blind';git push
