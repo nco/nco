@@ -965,7 +965,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool SHARE_OPEN=rgr->flg_uio; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
 
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining output vertical grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_vrt_out);
 
@@ -4188,7 +4188,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   nco_mpf_sct mpf; /* Map-file structure */
   nco_mpf_sct nlmpf; /* Map-file structure for nonlinear map */
 
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining mapping weights from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_map);
 
@@ -8887,7 +8887,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
   nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
 
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
 
   grd_typ=rgr->grd_typ; /* [enm] Grid type */
   fl_out=rgr->fl_grd;
@@ -9873,7 +9873,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   ptr_unn msk_unn;
 
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
 
   /* Algorithm:
      Read grid information from input data file (aka *_in)

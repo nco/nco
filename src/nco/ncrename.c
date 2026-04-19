@@ -161,7 +161,7 @@ main(int argc,char **argv)
   rnm_sct *grp_rnm_lst=NULL_CEWI;
   rnm_sct *att_rnm_lst=NULL_CEWI;
 
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
@@ -193,8 +193,8 @@ main(int argc,char **argv)
     {"version",no_argument,0,0},
     {"vrs",no_argument,0,0},
     /* Long options with argument, no short option counterpart */
-    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
-    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
     {"fl_fmt",required_argument,0,0},
     {"file_format",required_argument,0,0},
     {"gaa",required_argument,0,0}, /* [sng] Global attribute add */

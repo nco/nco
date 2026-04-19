@@ -13,8 +13,7 @@ The only new feature is that ncclimo now supports generating climos
 from high-frequency input data that are instantaneous (not mean)
 values. Documentation now reflects the new CF Convention Homepage URL.
 
-Users who upgraded to 5.3.7 should upgrade to 5.3.9, and 5.3.7 should
-not be used anymore.
+Users of ncremap and ncclimo should upgrade to 5.3.9. 
 
 Enjoy,
 Charlie

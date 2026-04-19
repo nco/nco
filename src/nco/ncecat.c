@@ -212,7 +212,7 @@ main(int argc,char **argv)
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
   size_t cnk_csh_byt=NCO_CNK_CSH_BYT_DFL; /* [B] Chunk cache size */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
@@ -284,8 +284,8 @@ main(int argc,char **argv)
     {"version",no_argument,0,0},
     {"vrs",no_argument,0,0},
     /* Long options with argument, no short option counterpart */
-    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
-    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
     {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"cnk_csh",required_argument,0,0}, /* [B] Chunk cache size in bytes */

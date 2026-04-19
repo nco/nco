@@ -321,7 +321,7 @@ main(int argc,char **argv)
 
   nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
   size_t cnk_csh_byt=NCO_CNK_CSH_BYT_DFL; /* [B] Chunk cache size */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
@@ -466,8 +466,8 @@ main(int argc,char **argv)
     /* Long options with argument, no short option counterpart */
     {"baa",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
     {"bit_alg",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
-    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
-    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
     {"bsa",required_argument,0,0}, /* [enm] Binary byte-swap algorithm */
     {"byte_swap",required_argument,0,0}, /* [enm] Binary byte-swap algorithm */
     {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */

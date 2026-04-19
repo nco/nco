@@ -182,7 +182,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  nco_bool * const FORCE_APPEND, /* I/O [flg] Append to existing file, if any */
  const nco_bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  const int fl_out_fmt, /* I [enm] Output file format */
- const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
+ const size_t * const bfr_sz_hnt, /* I [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
  const nco_bool RAM_CREATE, /* I [flg] Create file in RAM */
  const nco_bool RAM_OPEN, /* I [flg] Open (netCDF3) file(s) in RAM */
  const nco_bool SHARE_CREATE, /* I [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
@@ -204,7 +204,7 @@ int /* O [rcd] Return code */
 nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity */
 (const char * const fl_nm, /* I [sng] Name of file to open */
  const int md_open, /* I [enm] Mode flag for nc_open() call */
- const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
+ const size_t * const bfr_sz_hnt, /* I [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
  int * const nc_id); /* O [id] File ID */
 
 nco_bool /* O [flg] Filename is valid NCZarr specification */

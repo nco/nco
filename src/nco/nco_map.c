@@ -99,7 +99,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   nco_mpf_sct mpf;
 
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
   size_t idx; /* [idx] Counting index for unrolled grids */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
@@ -1263,7 +1263,7 @@ nco_msh_wrt
 
   const nc_type crd_typ=NC_DOUBLE;
 
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
 
   char *fl_out_tmp=NULL_CEWI;
 
@@ -1600,7 +1600,7 @@ int fl_out_fmt)
 
   const nc_type crd_typ=NC_DOUBLE;
 
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
 
   char *fl_out_tmp=NULL_CEWI;
 
@@ -2163,7 +2163,7 @@ nco_map_chk /* Map-file evaluation */
   nco_bool has_mask_a=False;
   nco_bool has_mask_b=False;
 
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT;
+  size_t bfr_sz_hnt=33554432;
   size_t idx;
   size_t idx_min;
   size_t idx_max;

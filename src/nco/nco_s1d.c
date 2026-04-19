@@ -295,7 +295,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D ELM/CLM variables into full file */
     nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
     nco_bool SHARE_OPEN=rgr->flg_uio; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
 
-    size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+    size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
   
     /* Duplicate (because nco_fl_mk_lcl() free()'s its fl_in) */
     fl_tpl=(char *)strdup(rgr->fl_hrz);
