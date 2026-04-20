@@ -128,8 +128,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.3.9-alpha03
-@set doc-edition 5.3.9-alpha03
+@set nco-edition 5.3.9
+@set doc-edition 5.3.9
 @set copyright-years 1995--2026
 @set update-year 2026
 @set update-date 16 April 2026
@@ -11469,8 +11469,25 @@ ncks: INFO nc__open() opened file with buffer size = 2097152 bytes
 @end example
 Note that this option is ignored yet harmless for netCDF4 files
 (because the @acronym{HDF5}-layer handles this automatically).
-This option was added to @command{ncremap} and @command{ncclimo} in
-@acronym{NCO} version 5.3.9 (April, 2026).
+
+This option was added to @command{ncremap} and @command{ncclimo},
+and the default buffer size for all operators was increased to
+@w{32 MiB}, in @acronym{NCO} version 5.3.9 (April, 2026).
+Formerly NCO used the netCDF default which was @w{8 KiB} unless the
+filesystem explicitly set a blocksize in the stat->st_blksize
+element. In that case, netCDF would set the buffersize to twice
+the filesystem blocksize.
+Experience has shown that too many filesystems do not set the
+blocksize element and thus the buffersize remained 8 KiB, which 
+is much too small for efficient I/O on most ESM datasets.
+Hence we increased it to 32 MiB, the same buffersize as netCDF4.
+To return to the netCDF default buffer size, use @samp{--bfr_sz=0}.
+To change the buffer size set it to your favorite number.
+This buffer size affect classic files only, it is ignored and harmless
+when set for netCDF4 files.
+Performance can significantly improve with sizes up to @w{1 GiB},
+though it is dependent on the filesystem, @acronym{RAM}, and the sizes
+of the variables being processed.
 
 @html
 <a name="ram_all"></a> <!-- http://nco.sf.net/nco.html#ram_all -->
@@ -24350,10 +24367,17 @@ ncks --fl_prn=foo.txt --jsn in.nc
 Prints the input file format, similar to @samp{ncdump -k}. 
 Also @samp{-k}, @samp{--prn_fmt}, @samp{--prn_fl_fmt}, and @samp{--print_format}.
 Unlike @command{ncdump}, this option prints multiple descriptors of
-the output file format, since netCDF terminology is confusing:
+the output file format, since netCDF terminology is confusing.
+The first word ncks prints in response is identical to the
+@command{ncdump -k} response. 
+In addition, ncks also prints all the synonyms for that file type
+(since clear naming is not a quality of netCDF filetypes), and the
+capacity of that filetype to hold variables and types.
 @example
-% ncks --prn_fmt in.nc
-NC_FORMAT_CLASSIC
+% ncdump -k in.nc
+classic
+% ncks -k in.nc
+classic = NC_FORMAT_CLASSIC = CDF1. This is the earliest ...
 @end example
 
 @html
@@ -31628,6 +31652,9 @@ Large work-load testing
 @cindex David Hassell
 @item David Hassell
 @acronym{CMIP7} packing policy
+@cindex Noel Keen
+@item Noel Keen
+Investigating speed issues at NERSC
 @cindex Vijay Mahadevan
 @item Vijay Mahadevan
 @acronym{MOAB} workflow advice

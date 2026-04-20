@@ -1,48 +1,64 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.3.9 mends fences
+netCDF Operators NCO version 5.3.9 sets sail
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.3.9 contains fixes to ncclimo problems introduced with 5.3.7.  
-The ncclimo "flexible-months" feature suffered from incorrect behavior
-for some inputs, and introduced a regression in seasonal filenames.
-The only new feature is that ncclimo now supports generating climos
-from high-frequency input data that are instantaneous (not mean)
-values. Documentation now reflects the new CF Convention Homepage URL.
+Version 5.3.9 contains one major improvement and one bugfix.
+The default buffer size for all operators on classic files is 32 MiB.
+This will increase I/O speed in most cases. ncremap had a syntax
+error in a rarely used branch of code that caused Bash to emit scary
+messages even when the branch was not executed.
 
-Users of ncremap and ncclimo should upgrade to 5.3.9. 
+Users who want more speed without have to change any commands should
+upgrade to 5.3.9. 
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo now supports generating climos from high-frequency input
-data that are instantaneous (not mean) values. This mainly means that
-that the time bounds and climatology bounds variables now use the
-instantaneous time from the original time coordinate input, rather
-than the average value of the time coordinate input.
-Thanks to Jill Zhang (LLNL) for feature testing and feedback.
-http://nco.sf.net/nco.html#ncclimo
+A. The default buffer size for operating on classic files is 32 MiB.
+Formerly NCO used the netCDF default which was 8 KiB unless the
+filesystem explicitly set a blocksize in the stat->st_blksize element,
+in which case netCDF would set the buffersize to twice the blocksize.
+Experience shows that too many filesystems do not set the blocksize
+element and thus the blocksize remained (often) 8 KiB, which 
+is much too small for efficient I/O on most ESM datasets. Hence we
+changed it to 32 MiB, the same buffer size that netCDF4 starts with.
+To return to the netCDF default buffer size, use --bfr_sz=0.
+To change the buffer size set it to your favorite number. This buffer
+size affects classic files only, it is ignored and harmless when set
+for netCDF4 files. Performance can significantly improve with sizes up
+to 1 GiB, though it is dependent on the filesystem, RAM, and the
+sizes of the variables being processed. Thanks to Mark Taylor (ANL)
+and Noel Keen (LBNL/NERSC) for help identifying this issue.
 
-B. All links to documentation now point to the newish CF Homepage
-at https://cf-convention.github.io/cf-conventions.
+ncks in.nc out.nc # NCO default 32 MiB buffer size
+ncks --bfr_sz=0 in.nc out.nc # Use netCDF default size
+ncclimo --bfr_sz=1073741824 in.nc out.nc # Request 1 GiB buffer size
+
+B. ncks -k (or --prn_fmt, --prn_fl_fmt) now prints the file format.
+This is similar (by intention) to the ncdump -k command. The first
+word ncks prints in response is identical to the ncdump -k response.
+In addition, ncks also prints all the synonyms for that file type
+(since clear naming is not a quality of netCDF filetypes), and the
+capacity of that filetype to hold variables and types:
+
+% ncks -k in.nc
+classic = NC_FORMAT_CLASSIC = CDF1. This is the earliest ...
+
+http://nco.sf.net/nco.html#prn_fmt
 
 BUG FIXES:
 
-A. ncclimo flexible months mode introduced in 5.3.7 sometimes
-generated read datasets in the wrong order.
-Thanks to Jill Zhang (LLNL) for identifying this issue.
-http://nco.sf.net/nco.html#ncclimo
-
-B. ncclimo flexible months mode introduced in 5.3.7 sometimes
-caused input years with leading zeros to be interpreted as octal
-numbers and therefore generate inaccurate filenames.
-Thanks to Xylar Asay-Davis (ANL) for reporting this issue.
-http://nco.sf.net/nco.html#ncclimo
+A. ncremap had a syntax error in a rarely used branch of code that
+caused Bash to emit scary messages even when the branch was not
+executed. The branch could only be encountered when running in MPI
+mode on machines that were not in ncremap's internal database.
+There is no workaround, the fix is to upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
@@ -51,7 +67,7 @@ KNOWN PROBLEMS DUE TO NCO:
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
 These problems occur with NCO 5.3.9 built/tested under
-MacOS 26.3 with netCDF 4.10.1-development on HDF5 2.1.1
+MacOS 26.3.1 with netCDF 4.10.1-development on HDF5 2.1.1
 and with Linux FC42 with netCDF 4.9.2 on HDF5 1.14.4.
 
 A. NOT YET FIXED (NCO problem)

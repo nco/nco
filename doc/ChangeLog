@@ -1,8 +1,8 @@
 2026-04-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.3.9-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha03: NFL QBs';git push
-	git tag -a 5.3.9-alpha03 -m 'ncclimo/ncremap: hrm mch, add bfr_sz opt, cnv_opt_prl_n2m fix';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.3.9-alpha03: Koa Kai';git push
+	git tag -a 5.3.9-alpha03 -m 'all: bfr sz dfl 32 MiB; ncclimo/ncremap: hrm mch, add bfr_sz opt, cnv_opt_prl_n2m fix; ncks -k';git push --tags
 
 	* all: Set default chunk size to 32 MiB = 33554432 B
 
