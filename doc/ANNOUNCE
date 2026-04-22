@@ -52,6 +52,23 @@ classic = NC_FORMAT_CLASSIC = CDF1. This is the earliest ...
 
 http://nco.sf.net/nco.html#prn_fmt
 
+C. ncclimo --mth_end now defaults to 11 months after --mth_srt.
+Formerly, users specifying a non-January start month (--mth_srt)
+were required to also explicitly provide --mth_end, even though in
+climatology mode the end month must always be 11 months after the
+start month.  Now --mth_end is automatically set to mth_srt+11 (mod
+12) when it is not specified by the user.  For example, specifying
+--mth_srt=5 now automatically sets --mth_end=4 (May through April
+annual cycle).  Explicitly-specified --mth_end values are still
+accepted and take precedence.  In timeseries mode, --mth_end may
+still be explicitly specified when the range of months spans a
+non-integral number of years.
+
+ncclimo -s 2013 -e 2014 --mth_srt=5 ... # mth_end automatically set to 4
+ncclimo -s 2013 -e 2014 --mth_srt=5 --mth_end=4 ... # same, explicit
+
+http://nco.sf.net/nco.html#mth_end
+
 BUG FIXES:
 
 A. ncremap had a syntax error in a rarely used branch of code that
