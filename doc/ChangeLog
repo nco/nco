@@ -1,5 +1,9 @@
 2026-04-22  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.4.0-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha02: Laguna Beaches';git push
+	git tag -a 5.4.0-alpha02 -m '';git push --tags
+
 	* NCO 5.4.0-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha01: Boiled Peanuts';git push
 	git tag -a 5.4.0-alpha01 -m 'Functionally identical to 5.3.9 except mth_end is optional';git push --tags
