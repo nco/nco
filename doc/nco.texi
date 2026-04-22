@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.4.0-alpha01
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 19 April 2026
+@set update-date 22 April 2026
 @set update-month April 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -20744,9 +20744,9 @@ ncclimo --split --yr_srt=1 --yr_end=2 --mth_srt=4 --mth_end=5 ...
 @end example
 
 As of @acronym{NCO} version 5.3.7 (April, 2026), climos can be
-instructed to start in any month by invoking the @samp{--mth_srt=12}
-option.  
-As of @acronym{NCO} version 5.4.1 (April, 2026), @samp{--mth_end}
+instructed to start in any month by explicitly setting the start
+month option, e.g., @samp{--mth_srt=12}.
+As of @acronym{NCO} version 5.4.0 (April, 2026), @samp{--mth_end}
 defaults to 11 months after @samp{--mth_srt} when not explicitly
 specified, so specifying @samp{--mth_end} is no longer necessary in
 climatology mode.
@@ -20755,7 +20755,7 @@ ncclimo -s 2013 -e 2014 --mth_srt=7 ...           # mth_end automatically set to
 ncclimo -s 2013 -e 2014 --mth_srt=7 --mth_end=6 ... # same, explicit
 @end example
 Note that climatologies (unlike timeseries) only work for an integral
-number of years (this restriction is planned for removal soon). 
+number of years (this restriction is planned for removal). 
 Thus @code{mth_end} must precede @code{mth_srt} by one month in the
 annual cycle (yes, December precedes January by one month).
 In timeseries mode, @samp{--mth_end} may still be explicitly specified

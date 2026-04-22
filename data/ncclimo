@@ -281,6 +281,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # cd ${drc_in};ls ${caseid}*.nc | ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc # Multi-file input
 # ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ~/PRECT_200101_200212.nc # Single file input
 
+# Flexible months:
+# ncclimo -v FSNT -c v2.LR.historical_0101 -s 2013 -e 2014 --mth_srt=10 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
+
 # Debugging and Benchmarking:
 # E3SM v3:
 # ncclimo -7 --cmp='gbr|shf|zst' -P eam -v FSNT,AODVIS,TREFHT -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc # Compression!
@@ -601,10 +604,10 @@ mdl_nm_usr='' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indicates unlimited RAM)
 mpi_flg='No' # [sng] Parallelize over nodes
-mth_end='12' # [yr] End month
-mth_end_usr='' # [mth] User-specified end month (empty means auto-compute as mth_srt+11)
+mth_end='12' # [mth] End month
+mth_end_usr='' # [mth] User-specified end month
 mth_flg='No' # [flg] Timeseries is not from Jan->Dec
-mth_srt='1' # [yr] Start month
+mth_srt='1' # [mth] Start month
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
 ncr_flg='No' # [sng] Incremental method
 nd_nbr=1 # [nbr] Number of nodes
@@ -673,7 +676,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
     echo "${fnt_rvr}-l${fnt_nrm} ${fnt_bld}lnk_flg${fnt_nrm}  Link E3SM-climo to AMWG-climo filenames (default ${fnt_bld}${lnk_flg}${fnt_nrm}) [${fnt_tlc}lnk_flg, link_flag${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}mdl_nm${fnt_nrm}   Model name string in output filenames (default ${fnt_bld}${mdl_nm}${fnt_nrm}) [${fnt_tlc}mdl_nm, mdl, model_name, model${fnt_nrm}]"
-    echo " ${fnt_bld}--mth_end${fnt_nrm}  End month (default ${fnt_bld}mth_srt+11${fnt_nrm}, i.e., 11 months after mth_srt; explicit value overrides) [${fnt_tlc}mth_end, end_mth, month_end, end_month${fnt_nrm}]"
+    echo " ${fnt_bld}--mth_end${fnt_nrm}  End month (default ${fnt_bld}mth_srt+11${fnt_nrm}, explicit value overrides) [${fnt_tlc}mth_end, end_mth, month_end, end_month${fnt_nrm}]"
     echo " ${fnt_bld}--mth_srt${fnt_nrm}  Start month (default ${fnt_bld}${mth_srt}${fnt_nrm}) [${fnt_tlc}mth_srt, start_mth, month_start, start_month${fnt_nrm}]"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco, nco_options${fnt_nrm}]"
     echo " ${fnt_bld}--no_lnk${fnt_nrm}   Do not link E3SM-climo to AMWG-climo filenames [${fnt_tlc}no_links, no_amwg_links, no_amwg, no_AMWG_link${fnt_nrm}]"

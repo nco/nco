@@ -20,39 +20,7 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. The default buffer size for operating on classic files is 32 MiB.
-Formerly NCO used the netCDF default which was 8 KiB unless the
-filesystem explicitly set a blocksize in the stat->st_blksize element,
-in which case netCDF would set the buffersize to twice the blocksize.
-Experience shows that too many filesystems do not set the blocksize
-element and thus the blocksize remained (often) 8 KiB, which 
-is much too small for efficient I/O on most ESM datasets. Hence we
-changed it to 32 MiB, the same buffer size that netCDF4 starts with.
-To return to the netCDF default buffer size, use --bfr_sz=0.
-To change the buffer size set it to your favorite number. This buffer
-size affects classic files only, it is ignored and harmless when set
-for netCDF4 files. Performance can significantly improve with sizes up
-to 1 GiB, though it is dependent on the filesystem, RAM, and the
-sizes of the variables being processed. Thanks to Mark Taylor (ANL)
-and Noel Keen (LBNL/NERSC) for help identifying this issue.
-
-ncks in.nc out.nc # NCO default 32 MiB buffer size
-ncks --bfr_sz=0 in.nc out.nc # Use netCDF default size
-ncclimo --bfr_sz=1073741824 in.nc out.nc # Request 1 GiB buffer size
-
-B. ncks -k (or --prn_fmt, --prn_fl_fmt) now prints the file format.
-This is similar (by intention) to the ncdump -k command. The first
-word ncks prints in response is identical to the ncdump -k response.
-In addition, ncks also prints all the synonyms for that file type
-(since clear naming is not a quality of netCDF filetypes), and the
-capacity of that filetype to hold variables and types:
-
-% ncks -k in.nc
-classic = NC_FORMAT_CLASSIC = CDF1. This is the earliest ...
-
-http://nco.sf.net/nco.html#prn_fmt
-
-C. ncclimo --mth_end now defaults to 11 months after --mth_srt.
+A. ncclimo --mth_end now defaults to 11 months after --mth_srt.
 Formerly, users specifying a non-January start month (--mth_srt)
 were required to also explicitly provide --mth_end, even though in
 climatology mode the end month must always be 11 months after the
@@ -71,11 +39,7 @@ http://nco.sf.net/nco.html#mth_end
 
 BUG FIXES:
 
-A. ncremap had a syntax error in a rarely used branch of code that
-caused Bash to emit scary messages even when the branch was not
-executed. The branch could only be encountered when running in MPI
-mode on machines that were not in ncremap's internal database.
-There is no workaround, the fix is to upgrade.
+A.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
