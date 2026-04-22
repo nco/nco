@@ -6,14 +6,24 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
+<<<<<<< HEAD
 Version 5.4.0 contains one major improvement and one bugfix.
+=======
+Version 5.3.9 contains two major improvements and one bugfix.
+>>>>>>> fc66ba39786f0fd64321cbd45d03791070f119c1
 The default buffer size for all operators on classic files is 32 MiB.
-This will increase I/O speed in most cases. ncremap had a syntax
-error in a rarely used branch of code that caused Bash to emit scary
-messages even when the branch was not executed.
+This will increase I/O speed in most cases. ncclimo no longer requires
+--mth_end to be explicitly supplied when generating climatologies.
+ncremap had a syntax error in a rarely used branch of code that caused
+Bash to emit scary messages even when the branch was not executed.
 
+<<<<<<< HEAD
 Users who want more speed without have to change any commands should
 upgrade to 5.4.0. 
+=======
+Users who want more speed without having to change any commands should
+upgrade to 5.3.9.
+>>>>>>> fc66ba39786f0fd64321cbd45d03791070f119c1
 
 Enjoy,
 Charlie
@@ -51,6 +61,23 @@ capacity of that filetype to hold variables and types:
 classic = NC_FORMAT_CLASSIC = CDF1. This is the earliest ...
 
 http://nco.sf.net/nco.html#prn_fmt
+
+C. ncclimo no longer requires --mth_end to be explicitly supplied when
+generating climatologies. Previously users had to specify both
+--mth_srt and --mth_end even though the end month is always exactly
+11 months after the start month for a 12-month climatology. Now,
+when --mth_end is omitted in climatology mode, ncclimo automatically
+sets it to 11 months after --mth_srt (wrapping around the year end
+as needed). For example:
+
+ncclimo -s 2013 -e 2014 --mth_srt=7           # mth_end defaults to 6
+ncclimo -s 2013 -e 2014 --mth_srt=7 --mth_end=6  # identical, explicit
+
+Existing scripts that supply --mth_end continue to work unchanged.
+In timeseries (splitter) mode --mth_end must still be given whenever
+the desired output spans a non-integral number of years.
+
+http://nco.sf.net/nco.html#mth_end
 
 BUG FIXES:
 
