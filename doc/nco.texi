@@ -20046,10 +20046,9 @@ this option.
 @item -e @var{end_yr} (@code{--end_yr}, @code{--yr_end}, @code{--end_year}, @code{--year_end}, @code{--end})
 End year (example: 2000). 
 By default, the last month is December of the specified end year.  
-As of @acronym{NCO} version 5.3.9 (April, 2026), @code{mth_end}
-defaults to 11 months after @code{mth_srt} when not explicitly
-provided, so the ending month is determined automatically in
-climatology mode.
+As of @acronym{NCO} version 5.3.7 (April, 2026), climos can be
+instructed to an integral number of years after the starting month by
+invoking the @samp{--mth_end} option.  
 
 @html
 <a name="fml_nm"></a> <!-- http://nco.sf.net/nco.html#fml_nm -->
@@ -20754,22 +20753,6 @@ Note that climatologies (unlike timeseries) only work for an integral
 number of years (this restriction is planned for removal soon). 
 Thus @code{mth_end} must precede @code{mth_srt} by one month in the
 annual cycle (yes, December precedes January by one month).
-
-As of @acronym{NCO} version 5.3.9 (April, 2026), @code{mth_end} is
-optional in climatology mode.
-When @code{mth_end} is not explicitly supplied, it defaults
-automatically to 11 months after @code{mth_srt}, wrapping around the
-end of the year as necessary (e.g., @code{--mth_srt=5} implies
-@code{mth_end=4}, and @code{--mth_srt=1} implies @code{mth_end=12}).
-Therefore the climatology example above can be shortened to:
-@example
-ncclimo -s 2013 -e 2014 --mth_srt=7 ...
-@end example
-Explicitly specifying @code{--mth_end} in climo mode is still accepted
-and takes precedence over the automatic default, so existing scripts
-that supply both options continue to work unchanged.
-In timeseries (splitter) mode @code{mth_end} must still be given
-whenever the desired output spans a non-integral number of years.
 
 @html
 <a name="srt_yr"></a> <!-- http://nco.sf.net/nco.html#srt_yr -->
