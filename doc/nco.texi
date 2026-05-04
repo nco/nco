@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.4.0-alpha02
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 22 April 2026
-@set update-month April 2026
+@set update-date 2 May 2026
+@set update-month May 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -9921,11 +9921,20 @@ does not accept a parameter argument, and @acronym{NCO} ignores
 any parameters provided to this filter.
 @example
 @verbatim
-% ncks --cmp="fletcher32|shuffle|granularbr|deflate|zstandard" ...
-% ncks --cmp="f32|shf|gbr|dfl|zst" ... # Shorthand, default parameters
-% ncks --cmp="f32|shf,4|gbr,3|dfl,1|zst,3" ... # Explicit parameters
+% ncks --cmp="shuffle|granularbr|deflate|zstandard|fletcher32" ...
+% ncks --cmp="shf|gbr|dfl|zst|f32" ... # Shorthand, default parameters
+% ncks --cmp="shf,4|gbr,3|dfl,1|zst,3|f32" ... # Explicit parameters
 @end verbatim
 @end example
+Also note that Fletcher32 should always be invoked as the last
+in a chain of filters during the write process.
+This assures that the filter validates the data as it is stored on
+disk.
+This also ensures that Fletcher32 will be invoked first during the
+read operation.
+It is unclear whether the netCDF library enforces this ordering
+requirement under-the-hood.
+Thus it is best to be aware of and not violate this ordering.
 
 The @code{cmd_sng} option supports an arbitrary number of filters.
 An example that compressess then reads a file with most
@@ -18459,7 +18468,7 @@ The @command{ncap2} custom function 'make_bounds()' takes any monotonic 1D coord
 The name of the input coordinate variable.
 @item 2nd Argument
 The second dimension of the output variable, referenced as a dimension
-(i.e., the name preceded by a dollarsign) not as a string name.
+(i.e., the name preceded by a dollar-sign) not as a string name.
 The size of this dimension should always @w{be 2}.
 If the dimension does not yet exist create it first using @code{defdim()}. 
 @item 3rd Argument
