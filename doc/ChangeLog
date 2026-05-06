@@ -1,8 +1,12 @@
-2026-05-04  Charlie Zender  <zender@uci.edu>
+2026-05-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha02: Laguna Beaches';git push
 	git tag -a 5.4.0-alpha02 -m '';git push --tags
+
+	* ncremap: Only add cell measures attributes to variables if also outputting area variable
+
+2026-05-04  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: Recognize MOD10CM dimension names
 

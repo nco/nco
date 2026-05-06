@@ -5952,7 +5952,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   aed_sct aed_mtd_cll_msr;
   char *att_nm_cll_msr=NULL;
   char *att_val_cll_msr=NULL;
-  if(flg_cll_msr){
+  /* 20260506: The value of the cell_measures attribute includes the name of the area variable
+     No point in adding the cell_measures attribute unless also writing the area variable */
+  if(flg_cll_msr && flg_area_out){
     att_nm_cll_msr=strdup("cell_measures");
     aed_mtd_cll_msr.att_nm=att_nm_cll_msr;
     aed_mtd_cll_msr.mode=aed_overwrite;
@@ -6337,7 +6339,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  aed_mtd_crd.var_nm=var_nm;
 	  aed_mtd_crd.id=var_id_out;
 	  (void)nco_aed_prc(out_id,var_id_out,aed_mtd_crd);
-	  if(flg_cll_msr){
+	  if(flg_cll_msr && flg_area_out){
 	    aed_mtd_cll_msr.var_nm=var_nm;
 	    aed_mtd_cll_msr.id=var_id_out;
 	    (void)nco_aed_prc(out_id,var_id_out,aed_mtd_cll_msr);
