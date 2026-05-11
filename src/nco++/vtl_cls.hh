@@ -24,7 +24,6 @@ public:
 
   std::vector<fmc_cls> fmc_vtr;
 
-  int size(void) { return fmc_vtr.size(); }
   std::vector<fmc_cls> *lst_vtr(void){ return &fmc_vtr;}
   virtual var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker)=0;
   static vtl_typ expr_typ(RefAST expr){
