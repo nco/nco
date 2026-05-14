@@ -1054,7 +1054,7 @@ main(int argc,char **argv)
 	goto skp_cb;
       } /* !(cb->tm_bnd_in && cb->clm_bnd_in) */
       if(!cb->tm_bnd_in && !cb->clm_bnd_in){
-	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Climatology bounds invoked on time coordinate with neither time bounds attribute \"%s\" nor climatology bounds attribute \"%s\". Will add bounds attribute to time coordinate, then create the bounds variable with values from clm_nfo_sng argument. Assumption is that the time-varying geophysical fields are instanteous/point data at the RHS of the regular time interval.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
+	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Climatology bounds invoked on time coordinate with neither time bounds attribute \"%s\" nor climatology bounds attribute \"%s\". Will add bounds attribute to time coordinate, then create the bounds variable with values from clm_nfo_sng argument. Assumption is that the time-varying geophysical fields are instantaneous/point data at the RHS of the regular time interval.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
 
 	/* 20260406: Point data with no time_bounds variables end up here
 	   Create time_bounds variable in output file based on clm_nfo_sng arguments

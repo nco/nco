@@ -1278,30 +1278,69 @@ if [ -n "${drc_rgr}" ] && [ ! -d "${drc_rgr}" ]; then
 fi # !drc_rgr
 
 # Define calendar
-# Determine first full year
-trim_leading_zeros ${yr_srt}
-yr_srt_rth=${sng_trm}
-yyyy_srt=`printf "%04d" ${yr_srt_rth}`
+# Parse input years and months
+arg_lng=${#yr_srt}
+if [ ${arg_lng} -eq 6 ]; then
+    # Test parsing with: ncclimo --dbg=2 --yr_srt=201304 --yr_end=201412 --caseid=foo --drc_in=${DATA}/ne30/raw
+    # Input is in YYYYMM format
+    yyyymm_srt=${yr_srt}
+    yyyymm_end=${yr_end}
+    
+    yr_srt_rth=$((10#${yyyymm_srt}/100))
+    yr_srt=`printf "%d" ${yr_srt_rth}`
+    yyyy_srt=`printf "%04d" ${yr_srt_rth}`
+    mth_srt_rth=$((10#${yyyymm_srt}%100))
+    mth_srt=`printf ${mth_srt_rth}`
+    mm_srt=`printf "%02d" ${mth_srt_rth}`
+    
+    yr_end_rth=$((10#${yyyymm_end}/100))
+    yr_end=`printf "%d" ${yr_end_rth}`
+    yyyy_end=`printf "%04d" ${yr_end_rth}`
+    mth_end_rth=$((10#${yyyymm_end}%100))
+    mth_end=`printf ${mth_end_rth}`
+    mm_end=`printf "%02d" ${mth_end_rth}`
+else # !arg_lng
+    # Input is in traditional format of one to four digit integers
+    trim_leading_zeros ${yr_srt}
+    yr_srt_rth=${sng_trm}
+    yyyy_srt=`printf "%04d" ${yr_srt_rth}`
+    trim_leading_zeros ${yr_end}
+    yr_end_rth=${sng_trm}
+    yyyy_end=`printf "%04d" ${yr_end_rth}`
+    
+    trim_leading_zeros ${mth_srt}
+    mth_srt_rth=${sng_trm}
+    mm_srt=`printf "%02d" ${mth_srt_rth}`
+    trim_leading_zeros ${mth_end}
+    mth_end_rth=${sng_trm}
+    mm_end=`printf "%02d" ${mth_end_rth}`
+fi # !arg_lng
+
+if true; then
+    printf "yr_srt = ${yr_srt}, yr_srt_rth = ${yr_srt_rth}, yyyy_srt = ${yyyy_srt}\n"
+    printf "mth_srt = ${mth_srt}, mth_srt_rth = ${mth_srt_rth}, mm_srt = ${mm_srt}\n"
+    printf "yr_end = ${yr_end}, yr_end_rth = ${yr_end_rth}, yyyy_end = ${yyyy_end}\n"
+    printf "mth_end = ${mth_end}, mth_end_rth = ${mth_end_rth}, mm_end = ${mm_end}\n"
+fi # !false
+
 let yr_srtm1=${yr_srt_rth}-1
 let yr_srtp1=${yr_srt_rth}+1
 yyyy_srtp1=`printf "%04d" ${yr_srtp1}`
-trim_leading_zeros ${yr_end}
-yr_end_rth=${sng_trm}
-yyyy_end=`printf "%04d" ${yr_end_rth}`
+
 let yr_endm1=${yr_end_rth}-1
 let yr_endp1=${yr_end_rth}+1
 yyyy_endm1=`printf "%04d" ${yr_endm1}`
 
-if [ ${mth_srt} -eq '0' ]; then
+if [ ${mth_srt_rth} -eq 0 ]; then
     echo "${spt_nm}: ERROR User-defined start month is ${mth_srt}. Please use 1-based (not 0-based) indexing for months, where [Jan..Dec] = [1..12]"
     exit 1
 fi # !mth_srt
-trim_leading_zeros ${mth_srt}
-mth_srt_rth=${sng_trm}
-mm_srt=`printf "%02d" ${mth_srt_rth}`
-trim_leading_zeros ${mth_end}
-mth_end_rth=${sng_trm}
-mm_end=`printf "%02d" ${mth_end_rth}`
+if [ ${mth_end_rth} -gt 12 ]; then
+    echo "${spt_nm}: ERROR User-defined end month is ${mth_end_rth}. Ending month must be <= 12."
+    exit 1
+fi # !mth_srt_rth
+
+# Determine first full year
 let mth_nbr=${yr_end_rth}*12+${mth_end_rth}-${yr_srt_rth}*12-${mth_srt_rth}+1
 let yr_nbr=${mth_nbr}/12
 # How many files/months from first month to first January?

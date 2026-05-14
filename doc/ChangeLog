@@ -1,8 +1,18 @@
-2026-05-06  Charlie Zender  <zender@uci.edu>
+2026-05-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha02: Laguna Beaches';git push
-	git tag -a 5.4.0-alpha02 -m '';git push --tags
+	git tag -a 5.4.0-alpha02 -m 'ncap2: --std=c++23; ncclimo: yr_srt/end YYYYMM; ncremap: MOD10CM';git push --tags
+
+	* ncclimo allow --yr_srt/--yr_end arguments in YYYYMM format
+
+2026-05-11  Charlie Zender  <zender@uci.edu>
+
+	* Merge Henry's patch to fix support for clang++ --std=c++23 in	Clang v. 22.1
+
+2026-05-06  Charlie Zender  <zender@uci.edu>
+
+	* Me ka haʻahaʻa translates to "with humility" or "humbly"
 
 	* ncremap: Only add cell measures attributes to variables if also outputting area variable
 
