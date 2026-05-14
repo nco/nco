@@ -1316,7 +1316,7 @@ else # !arg_lng
     mm_end=`printf "%02d" ${mth_end_rth}`
 fi # !arg_lng
 
-if true; then
+if false; then
     printf "yr_srt = ${yr_srt}, yr_srt_rth = ${yr_srt_rth}, yyyy_srt = ${yyyy_srt}\n"
     printf "mth_srt = ${mth_srt}, mth_srt_rth = ${mth_srt_rth}, mm_srt = ${mm_srt}\n"
     printf "yr_end = ${yr_end}, yr_end_rth = ${yr_end_rth}, yyyy_end = ${yyyy_end}\n"
