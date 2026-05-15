@@ -285,21 +285,18 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
     cmp_sng_std=(char *)nco_malloc(NCO_FLT_SNG_LNG_MAX*sizeof(char)); /* [sng] Compression specification in NCO-standard format */
     /* NUL-terminate string */
     cmp_sng_std[0]='\0';
+    size_t sng_off=0; /* [nbr] Current offset into cmp_sng_std */
     for(flt_idx=0;flt_idx<flt_nbr;flt_idx++){
       if(flt_alg[flt_idx] != nco_flt_unk){
-	(void)strcat(cmp_sng_std,nco_flt_enm2nmid(flt_alg[flt_idx],NULL));
+	sng_off+=(size_t)snprintf(cmp_sng_std+sng_off,NCO_FLT_SNG_LNG_MAX-sng_off,"%s",nco_flt_enm2nmid(flt_alg[flt_idx],NULL));
       }else{
-        flt_nm_id[0]='\0';
-	(void)sprintf(flt_nm_id,"%u",flt_id[flt_idx]);
-	(void)strcat(cmp_sng_std,flt_nm_id);
+	sng_off+=(size_t)snprintf(cmp_sng_std+sng_off,NCO_FLT_SNG_LNG_MAX-sng_off,"%u",flt_id[flt_idx]);
       } /* !flt_alg */
-      if(flt_prm_nbr[flt_idx] > 0) (void)strcat(cmp_sng_std,",");
-      int_sng[0]='\0';
+      if(flt_prm_nbr[flt_idx] > 0) sng_off+=(size_t)snprintf(cmp_sng_std+sng_off,NCO_FLT_SNG_LNG_MAX-sng_off,",");
       for(prm_idx=0;prm_idx<flt_prm_nbr[flt_idx];prm_idx++){
-	(void)sprintf(int_sng,"%d%s",flt_prm[flt_idx][prm_idx], prm_idx < flt_prm_nbr[flt_idx]-1 ? "," : "");
+	sng_off+=(size_t)snprintf(cmp_sng_std+sng_off,NCO_FLT_SNG_LNG_MAX-sng_off,"%d%s",flt_prm[flt_idx][prm_idx], prm_idx < flt_prm_nbr[flt_idx]-1 ? "," : "");
       } /* !prm_idx */
-      (void)strcat(cmp_sng_std,int_sng);
-      if(flt_idx < flt_nbr-1) (void)strcat(cmp_sng_std,spr_sng);
+      if(flt_idx < flt_nbr-1) sng_off+=(size_t)snprintf(cmp_sng_std+sng_off,NCO_FLT_SNG_LNG_MAX-sng_off,"%s",spr_sng);
     } /* !flt_idx */
   } /* !flt_nbr */
 
@@ -1004,14 +1001,11 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
 	} /* !prm_nbr */
 	/* 20200624: prm_lst is NULL iff prm_nbr == 0, e.g., for Fletcher32
 	   Only append zero if parameters exist */
-	(void)sprintf(sng_foo,"%u%s",flt_lst[flt_idx],(prm_nbr > 0) ? "," : "");
-	strcat(flt_sng,sng_foo);
+	(void)snprintf(flt_sng+strlen(flt_sng),NCO_FLT_SNG_LNG_MAX-strlen(flt_sng),"%u%s",flt_lst[flt_idx],(prm_nbr > 0) ? "," : "");
 	for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
-	  (void)sprintf(sng_foo,"%u",prm_lst[prm_idx]);
-	  strcat(flt_sng,sng_foo);
-	  if(prm_idx < prm_nbr-1) strcat(flt_sng,",");
+	  (void)snprintf(flt_sng+strlen(flt_sng),NCO_FLT_SNG_LNG_MAX-strlen(flt_sng),"%u%s",prm_lst[prm_idx],prm_idx < prm_nbr-1 ? "," : "");
 	} /* !prm_idx */
-	if(flt_idx < flt_nbr-1) (void)strcat(flt_sng,spr_sng);
+	if(flt_idx < flt_nbr-1) (void)snprintf(flt_sng+strlen(flt_sng),NCO_FLT_SNG_LNG_MAX-strlen(flt_sng),"%s",spr_sng);
 	//(void)fprintf(stdout,"%s: DEBUG quark1 flt_sng=%s, flt_nbr=%d, flt_idx=%d, flt_id=%d, prm_nbr=%d\n",nco_prg_nm_get(),flt_sng,(int)flt_nbr,(int)flt_idx,(int)flt_lst[flt_idx],(int)prm_nbr);
 	if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst);
       } /* !flt_idx */
@@ -1362,13 +1356,13 @@ nco_cdc_lst_bld
     nco_cdc_lst_glb=(char *)nco_malloc(NCO_FLT_SNG_LNG_MAX*sizeof(char));
     nco_cdc_lst_glb[0]='\0';
 
-    strcat(nco_cdc_lst_glb,"DEFLATE, Shuffle, Fletcher32");
+    (void)snprintf(nco_cdc_lst_glb+strlen(nco_cdc_lst_glb),NCO_FLT_SNG_LNG_MAX-strlen(nco_cdc_lst_glb),"%s","DEFLATE, Shuffle, Fletcher32");
 
     /* netCDF define tokens NC_HAS_ZSTD are in netcdf_meta.h */
 #if NC_HAS_QUANTIZE
-    strcat(nco_cdc_lst_glb,", BitGroom");
-    strcat(nco_cdc_lst_glb,", BitRound");
-    strcat(nco_cdc_lst_glb,", GranularBR");
+    (void)snprintf(nco_cdc_lst_glb+strlen(nco_cdc_lst_glb),NCO_FLT_SNG_LNG_MAX-strlen(nco_cdc_lst_glb),"%s",", BitGroom");
+    (void)snprintf(nco_cdc_lst_glb+strlen(nco_cdc_lst_glb),NCO_FLT_SNG_LNG_MAX-strlen(nco_cdc_lst_glb),"%s",", BitRound");
+    (void)snprintf(nco_cdc_lst_glb+strlen(nco_cdc_lst_glb),NCO_FLT_SNG_LNG_MAX-strlen(nco_cdc_lst_glb),"%s",", GranularBR");
 #endif /* !NC_HAS_QUANTIZE */
 
 #if (NC_LIB_VERSION >= 490)
@@ -1380,39 +1374,39 @@ nco_cdc_lst_bld
 #if ENABLE_NEP || (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_BZIP2;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
-    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Bzip2"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
+    if(rcd == NC_NOERR) (void)snprintf(nco_cdc_lst_glb+strlen(nco_cdc_lst_glb),NCO_FLT_SNG_LNG_MAX-strlen(nco_cdc_lst_glb),"%s",", Bzip2"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 #endif /* !BZIP2 */
     
 #if (NC_LIB_VERSION >= 490)
     /* 20250808: NB: ZFP is completely untested */
     flt_id=H5Z_FILTER_ZFP;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
-    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", ZFP"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
+    if(rcd == NC_NOERR) (void)snprintf(nco_cdc_lst_glb+strlen(nco_cdc_lst_glb),NCO_FLT_SNG_LNG_MAX-strlen(nco_cdc_lst_glb),"%s",", ZFP"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 #endif /* !ZFP */
 
 #if (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_ZSTD;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
-    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Zstandard"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
+    if(rcd == NC_NOERR) (void)snprintf(nco_cdc_lst_glb+strlen(nco_cdc_lst_glb),NCO_FLT_SNG_LNG_MAX-strlen(nco_cdc_lst_glb),"%s",", Zstandard"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 #endif /* !ZSTD */
 
 #if (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_BLOSC;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
-    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", Blosc (LZ = default, LZ4, LZ4 HC, DEFLATE, Snappy, Zstandard)"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
+    if(rcd == NC_NOERR) (void)snprintf(nco_cdc_lst_glb+strlen(nco_cdc_lst_glb),NCO_FLT_SNG_LNG_MAX-strlen(nco_cdc_lst_glb),"%s",", Blosc (LZ = default, LZ4, LZ4 HC, DEFLATE, Snappy, Zstandard)"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 #endif /* !BLOSC */
 
     /* Filters likely implemented with netCDF Expansion Pack (NEP) */
 #if defined(LZ4_ID) || (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_LZ4;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
-    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", LZ4"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
+    if(rcd == NC_NOERR) (void)snprintf(nco_cdc_lst_glb+strlen(nco_cdc_lst_glb),NCO_FLT_SNG_LNG_MAX-strlen(nco_cdc_lst_glb),"%s",", LZ4"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 #endif /* !LZ4 */
 
 #if defined(LZF_ID) || (NC_LIB_VERSION >= 490)
     flt_id=H5Z_FILTER_LZF;
     rcd=nco_inq_filter_avail_flg(nc_out_id,flt_id);
-    if(rcd == NC_NOERR) strcat(nco_cdc_lst_glb,", LZF"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
+    if(rcd == NC_NOERR) (void)snprintf(nco_cdc_lst_glb+strlen(nco_cdc_lst_glb),NCO_FLT_SNG_LNG_MAX-strlen(nco_cdc_lst_glb),"%s",", LZF"); else (void)fprintf(stdout,"%s: WARNING %s reports nco_inq_filter_avail() did not find %s filter (with HDF5 filter ID = %u) as an HDF5 shared library filter. %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_id2nm(flt_id),flt_id,hlp_txt);
 #endif /* !LZF */
     
     /* Reset return code */
