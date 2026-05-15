@@ -1,8 +1,12 @@
-2026-05-13  Charlie Zender  <zender@uci.edu>
+2026-05-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha03: Nine Muses';git push
 	git tag -a 5.4.0-alpha03 -m '';git push --tags
+
+	* nco_flt.c: Eliminate buffer overrun potential in filter string construction loop in nco_flt()
+
+2026-05-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha02: Laguna Beaches';git push
