@@ -1007,6 +1007,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int plev_id=NC_MIN_INT; /* [id] Air pressure ID */
   nco_bool flg_dpt_in_pst_dwn=False; /* [flg] Input depth/height coordinate increases downwards */
   nco_bool flg_dpt_out_pst_dwn=False; /* [flg] Output depth/height coordinate increases downwards */
+  nco_bool flg_grd_hyb_no_p0=False; /* [flg] Hybrid coordinate vertical grid lacks p0/P0 variable */
   nco_bool flg_grd_hyb_cameam=False; /* [flg] Hybrid coordinate vertical grid uses CAM/EAM conventions */
   nco_bool flg_grd_hyb_ecmwf=False; /* [flg] Hybrid coordinate vertical grid uses ECMWF conventions */
   nco_bool flg_grd_in_dpt=False; /* [flg] Input depth coordinate vertical grid */
@@ -1036,6 +1037,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_xtr_typ_enm xtr_mth=rgr->xtr_mth; /* [enm] Extrapolation method */
 
   const char *ps_nm_ecmwf=(char *)strdup("lnsp"); /* [sng] Name of log-pressure variable in ECMWF/IFS/CAMS-format hybrid sigma-pressure grid datasets */
+  const double p0_dfl=100000.0; /* [Pa] Default reference pressure on input grid */
     
   char *dpt_nm_in; /* [sng] Depth field name in input file */
   char *dpt_nm_out; /* [sng] Depth field name in output file */
@@ -1786,7 +1788,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
        ECMWF uses hya? instead of reference pressure whereas CAM/EAM provides "P0" in hPa */
 
     if(flg_grd_hyb_cameam){
-      rcd=nco_inq_varid(vrt_in_id,"P0",&p0_id);
+      rcd=nco_inq_varid_flg(vrt_in_id,"P0",&p0_id);
+      /* Be flexible and allow CAM/EAM vertical grids to omit p0/P0
+	 EAMxx did not output p0/P0 until 20260601 */
+      if(rcd != NC_NOERR){
+	rcd=nco_inq_varid_flg(vrt_in_id,"p0",&p0_id);
+	if(rcd != NC_NOERR){
+	  flg_grd_hyb_no_p0=True;
+	} /* !rcd */
+      } /* !rcd */
       ilev_id=NC_MIN_INT;
       lev_id=NC_MIN_INT;
       if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(vrt_in_id,"ilev",&ilev_id);
@@ -2337,11 +2347,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_get_var(vrt_in_id,hyam_id,hyam_in,crd_typ_out);
     rcd=nco_get_var(vrt_in_id,hybi_id,hybi_in,crd_typ_out);
     rcd=nco_get_var(vrt_in_id,hybm_id,hybm_in,crd_typ_out);
-    if(flg_grd_hyb_cameam) rcd=nco_get_var(vrt_in_id,p0_id,&p0_in,crd_typ_out);
+    if(flg_grd_hyb_cameam){
+      if(flg_grd_hyb_no_p0) p0_in=p0_dfl; else rcd=nco_get_var(vrt_in_id,p0_id,&p0_in,crd_typ_out);
+    } /* !flg_grd_hyb_cameam */
     /* ECMWF distributes IFS forecasts with lnsp = log(surface pressure) */
     if(flg_grd_hyb_ecmwf){
       /* Decompose ECMWF hya? convention into CAM/EAM-like product of P0 and hya? */
-      p0_in=100000.0;
+      p0_in=p0_dfl;
       for(size_t idx=0;idx<lev_nbr_in;idx++){
 	hyai_in[idx]/=p0_in;
 	hyam_in[idx]/=p0_in;
@@ -2745,16 +2757,17 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Exception list source:
      ARGO: PRESSURE
      CAM/EAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
+     EAMxx: hyai, hyam, hybi, hybm, ilev, lev, p0, ps
      ECMWF: hyai, hyam, hybi, hybm, lev, lnsp
      ERA5: level
      MPAS-O: layerThickness, maxLevelCell, timeMonthly_avg_layerThickness, timeMonthly_avg_zMid, zMid
      MPAS-O: refBottomDepth, vertCoordMovementWeights (derived 1D-profiles, no horizontal dimensions) 
      NCEP: plev
-     SCREAM: hyai, hyam, hybi, hybm, ilev, lev, P0, ps
+     SCREAM: hyai, hyam, hybi, hybm, ilev, lev, P0, ps (NB: SCREAM never output P0)
      SOSE: z
      WOA: depth, depth_bnds, volume, zBroadcast
      Run-time: dpt_nm_in, dpt_nm_out, plev_nm_in, plev_nm_out, ps_nm_in, ps_nm_tpl */
-  const char *var_xcl_lst_fix[]={"/depth","/depth_bnds","/hyai","/hyam","/hybi","/hybm","/ilev","/layerThickness","/lev","/level","/lnsp","/maxLevelCell","/P0","/plev","/PRESSURE","/refBottomDepth","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/vertCoordMovementWeights","/volume","/z","/zBroadcast","/zMid"};
+  const char *var_xcl_lst_fix[]={"/depth","/depth_bnds","/hyai","/hyam","/hybi","/hybm","/ilev","/layerThickness","/lev","/level","/lnsp","/maxLevelCell","/P0","/p0","/plev","/PRESSURE","/refBottomDepth","/timeMonthly_avg_layerThickness","/timeMonthly_avg_zMid","/vertCoordMovementWeights","/volume","/z","/zBroadcast","/zMid"};
   int var_xcl_fix_nbr=sizeof(var_xcl_lst_fix)/sizeof(char *); /* [nbr] Number of variables in fixed (compile-time) exclusion list */
   /* Create list to hold both compile- and run-time exclusion variables */
   char **var_xcl_lst=NULL; /* [sng] List of variables to exclude */
