@@ -79,7 +79,6 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   char **prm_lst; /* [sng] List of user-supplied filter parameters as strings */
   char **flt_lst; /* [sng] List of user-supplied filters as pipe-separated lists of comma-separated strings */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-  char flt_nm_id[12]; /* [sng] Filter ID converted to name string */
   char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
 
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level [0..9] */
@@ -280,7 +279,6 @@ nco_cmp_prs /* [fnc] Parse user-provided compression specification */
   /* Global user-specified specification has been merged with dfl_lvl 
      Generate final global compression specification in NCO standard format */
   char *cmp_sng_std=NULL; /* [sng] Compression specification in NCO-standard format */
-  char int_sng[100]; /* [sng] Buffer to hold printed integer parameters for a single filter */
   if(flt_nbr > 0){
     cmp_sng_std=(char *)nco_malloc(NCO_FLT_SNG_LNG_MAX*sizeof(char)); /* [sng] Compression specification in NCO-standard format */
     /* NUL-terminate string */
@@ -977,7 +975,6 @@ nco_flt_def_wrp /* [fnc] Call filters immediately after variable definition */
     } /* !dfl_lvl_in */
 #endif /* !474, !4.7.4 */
 
-    char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */
     char spr_sng[]="|"; /* [sng] Separator string between information for different filters */
 
     size_t flt_idx; /* [idx] Filter index */
@@ -1553,6 +1550,7 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
   if(nco_flt_hdf_enm != nco_flt_nil) flg_hdf=True; else flg_baa=True;
   
   /* Add maximum relative error (MRE) statistic attribute to BitRound and HalfShave algorithms */
+  /* 20260519: Fix new warning: nco_flt.c:1553:83: warning: comparison of different enumeration types ('nco_flt_typ_enm' (aka 'enum nco_flt_typ_enm') and 'enum nco_baa_cnv') [-Wenum-compare] */
   if((flg_hdf && nco_flt_hdf_enm == nco_flt_btr) || (flg_baa && ((nco_flt_baa_enm == nco_baa_btr) || (nco_flt_baa_enm == nco_baa_sh2)))) flg_mre=True;
 
   rcd=nco_inq_varname(nc_id,var_id,var_nm);
