@@ -1795,6 +1795,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	rcd=nco_inq_varid_flg(vrt_in_id,"p0",&p0_id);
 	if(rcd != NC_NOERR){
 	  flg_grd_hyb_no_p0=True;
+	  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports that input vertical grid lacks reference pressure variable named \"p0\" or \"P0\". Vertical interpolation will continue with an assumed p0/P0 value = %g Pa. Please encourage the dataset creator to place p0 or P0 alongside variables based on a hybrid sigma-pressure vertical coordinate.\n",nco_prg_nm_get(),fnc_nm,p0_dfl);
 	} /* !rcd */
       } /* !rcd */
       ilev_id=NC_MIN_INT;

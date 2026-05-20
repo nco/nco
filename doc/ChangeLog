@@ -1,10 +1,14 @@
-2026-05-19  Charlie Zender  <zender@uci.edu>
-
-	* nco_flt.c: Eliminate obsolete cruft leftover from recent sprintf() security patch
+2026-05-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha03: Nine Muses';git push
 	git tag -a 5.4.0-alpha03 -m 'all: nco_flt sng safety; ncremap: tolerate missing p0/P0';git push --tags
+
+	* nco_rgr.c: Add INFO message for missing p0/P0
+
+2026-05-19  Charlie Zender  <zender@uci.edu>
+
+	* nco_flt.c: Eliminate obsolete cruft leftover from recent sprintf() security patch
 
 	* nco_rgr.c: Tolerate missing p0/P0 for EAMxx compatibility
 
