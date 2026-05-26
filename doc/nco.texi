@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.4.0-alpha03
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 13 May 2026
+@set update-date 20 May 2026
 @set update-month May 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13732,10 +13732,10 @@ lev:standard_name = "atmosphere_hybrid_sigma_pressure_coordinate"
 lev:formula_terms = "a: hyam b: hybm p0: P0 ps: PS"
 @end example
 where @code{standard_name} contains the standardized name of the
-formula variable and @code{formula_terms} contains a list of the
-variables used, called formula variables.
-Above the formula variables are @code{hyam}, @code{hybm}, @code{P0}, and
-@code{PS}. 
+vertical coordinate type and @code{formula_terms} contains a list of
+the variables used, called formula variables.
+The formula variables above (@code{hyam}, @code{hybm}, @code{P0},
+and @code{PS}) define a hybrid sigma-pressure vertical grid. 
 Unless the default behavior is overridden, @acronym{NCO} attaches any 
 formula variables to the extraction list along with the primary
 variable and other associated variables. 

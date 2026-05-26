@@ -1302,13 +1302,13 @@ nco_flt_def_out /* [fnc]  */
       rcd=NC_NOERR;
     } /* !rcd */
       
-    /* 20240122 Add draft CF-Compliant lossy compression metadata */
+    /* 20240122 Add CF-Compliant lossy compression metadata */
     switch(flt_alg[flt_idx]){
     case nco_flt_btg: /* BitGroom */
     case nco_flt_btr: /* BitRound */
     case nco_flt_gbr: /* Granular BitRound */
       if(lsy_flt_ok && cdc_has_flt){
-	(void)nco_qnt_mtd(nc_out_id,var_out_id,(nco_flt_typ_enm)0,flt_alg[flt_idx],flt_lvl[flt_idx]);
+	(void)nco_qnt_mtd(nc_out_id,var_out_id,(enum nco_baa_cnv)0,flt_alg[flt_idx],flt_lvl[flt_idx]);
       } /* !lsy_flt_ok */
       break;
     default:
@@ -1490,8 +1490,9 @@ int /* O [enm] Return code */
 nco_qnt_mtd /* [fnc] Define output filters based on input filters */
 (const int nc_id, /* I [id] netCDF file/group ID */
  const int var_id, /* I [id] Variable ID */
- const nco_flt_typ_enm nco_flt_baa_enm, /* [nbr] NCO BAA filter enum */
- const nco_flt_typ_enm nco_flt_hdf_enm, /* [nbr] NCO HDF5 filter enum */
+ // const enum nco_baa_cnv nco_flt_baa_enm, /* [nbr] NCO BAA filter enum */
+ const enum nco_baa_cnv nco_flt_baa_enm, /* [nbr] NCO BAA filter enum */
+ const nco_flt_typ_enm nco_flt_h5f_enm, /* [nbr] NCO HDF5 filter enum */
  const int qnt_lvl) /* I [enm] NSD/NSB level */
 {
   /* Purpose: */
@@ -1541,23 +1542,23 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
   int var_cnt_id; /* [id] Container variable ID */
 
   nco_bool flg_baa=False; /* [flg] Write metadata for internal NCO-generated bit adjustment */
-  nco_bool flg_hdf=False; /* [flg] Write metadata for external libnetCDF-generated quantization */
+  nco_bool flg_h5f=False; /* [flg] Write metadata for external libnetCDF-generated quantization */
   nco_bool flg_mre=False; /* [flg] Add maximum relative error (MRE) statistic attribute */
 
   nc_type var_typ; /* [enm] netCDF type of quantized variable */
 
   /* Determine whether filter is applied by NCO or by libnetCDF */
-  if(nco_flt_hdf_enm != nco_flt_nil) flg_hdf=True; else flg_baa=True;
+  if(nco_flt_h5f_enm != nco_flt_nil) flg_h5f=True; else flg_baa=True;
   
   /* Add maximum relative error (MRE) statistic attribute to BitRound and HalfShave algorithms */
   /* 20260519: Fix new warning: nco_flt.c:1553:83: warning: comparison of different enumeration types ('nco_flt_typ_enm' (aka 'enum nco_flt_typ_enm') and 'enum nco_baa_cnv') [-Wenum-compare] */
-  if((flg_hdf && nco_flt_hdf_enm == nco_flt_btr) || (flg_baa && ((nco_flt_baa_enm == nco_baa_btr) || (nco_flt_baa_enm == nco_baa_sh2)))) flg_mre=True;
+  if((flg_h5f && nco_flt_h5f_enm == nco_flt_btr) || (flg_baa && ((nco_flt_baa_enm == nco_baa_btr) || (nco_flt_baa_enm == nco_baa_sh2)))) flg_mre=True;
 
   rcd=nco_inq_varname(nc_id,var_id,var_nm);
   rcd=nco_inq_vartype(nc_id,var_id,&var_typ);
 
-  if(flg_hdf){
-    switch(nco_flt_hdf_enm){
+  if(flg_h5f){
+    switch(nco_flt_h5f_enm){
     case nco_flt_btg: aed_ppc_alg.att_nm=alg_nm_btg; break; /* 8 [enm] BitGroom */
     case nco_flt_dgr: aed_ppc_alg.att_nm=alg_nm_dgr; break; /* 9 [enm] DigitRound */
     case nco_flt_gbr: aed_ppc_alg.att_nm=alg_nm_gbr; break; /* 10 [enm] Granular BitRound */
@@ -1566,8 +1567,8 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
       (void)fprintf(stdout,"%s: ERROR %s reports unknown libnetCDF quantization algorithm\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
       break;
-    } /* !nco_flt_hdf_enm */
-    switch(nco_flt_hdf_enm){
+    } /* !nco_flt_h5f_enm */
+    switch(nco_flt_h5f_enm){
     case nco_flt_btg: 
     case nco_flt_dgr: 
     case nco_flt_gbr: 
@@ -1578,8 +1579,8 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
       (void)fprintf(stdout,"%s: ERROR %s reports unknown libnetCDF quantization algorithm\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
       break;
-    } /* !nco_flt_hdf_enm */
-  } /* !flg_hdf */
+    } /* !nco_flt_h5f_enm */
+  } /* !flg_h5f */
       
   if(flg_baa){
     switch(nco_flt_baa_enm){
@@ -1643,7 +1644,7 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
      However, this adds an undesirable extra pair of quotes to the output, e.g.,
      quantization_info:implementation = "libnetcdf version \"4.9.3-development\"" ; */
   if(flg_baa) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_MPL_SNG,"%s version %s",mpl_val_nco,vrs_nco_sng);
-  if(flg_hdf) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_MPL_SNG,"%s version %s",mpl_val_libnetcdf,vrs_nc_sng);
+  if(flg_h5f) (void)snprintf(mpl_val_sng,NCO_MAX_LEN_MPL_SNG,"%s version %s",mpl_val_libnetcdf,vrs_nc_sng);
 
   qnt_lvl_dpl=qnt_lvl;
   aed_ppc_lvl.val.ip=&qnt_lvl_dpl;

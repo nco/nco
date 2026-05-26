@@ -1,8 +1,12 @@
-2026-05-20  Charlie Zender  <zender@uci.edu>
+2026-05-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha03: Nine Muses';git push
 	git tag -a 5.4.0-alpha03 -m 'all: nco_flt sng safety; ncremap: tolerate missing p0/P0';git push --tags
+
+	* nco_flt.c: Fix nco_baa_enm casting issues to remove new Clang warning message
+
+2026-05-20  Charlie Zender  <zender@uci.edu>
 
 	* nco_rgr.c: Add INFO message for missing p0/P0
 

@@ -676,7 +676,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 
   long idx;
 
-  int nco_baa_cnv_typ; /* [enm] Bit adjustment algorithm type */
+  unsigned short nco_baa_cnv_typ; /* [enm] Bit adjustment algorithm type */
   
   unsigned int *u32_ptr;
   unsigned int msk_f32_u32_zro=NC_MAX_UINT; /* CEWI */
@@ -1288,7 +1288,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   switch(type){
   case NC_FLOAT: 
   case NC_DOUBLE: 
-    (void)nco_qnt_mtd(nc_out_id,var_out_id,(nco_flt_typ_enm)nco_baa_cnv_typ,(nco_flt_typ_enm)0,nsd);
+    (void)nco_qnt_mtd(nc_out_id,var_out_id,nco_baa_cnv_typ,(nco_flt_typ_enm)0,nsd);
   break;
   case NC_INT: /* Do nothing for non-floating point types ...*/
   case NC_SHORT:

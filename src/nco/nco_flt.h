@@ -254,8 +254,8 @@ int /* O [enm] Return code */
 nco_qnt_mtd /* [fnc] Define output filters based on input filters */
 (const int nc_id, /* I [id] netCDF file/group ID */
  const int var_id, /* I [id] Variable ID */
- const nco_flt_typ_enm nco_flt_baa_enm, /* [nbr] NCO BAA filter enum */
- const nco_flt_typ_enm nco_flt_hdf_enm, /* [nbr] NCO HDF5 filter enum */
+ const enum nco_baa_cnv nco_flt_baa_enm, /* [nbr] NCO BAA filter enum */
+ const nco_flt_typ_enm nco_flt_h5f_enm, /* [nbr] NCO HDF5 filter enum */
  const int qnt_lvl); /* I [enm] NSD/NSB level */
 
 int /* O [enm] BAA enumerate */
