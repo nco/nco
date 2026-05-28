@@ -1288,7 +1288,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   switch(type){
   case NC_FLOAT: 
   case NC_DOUBLE: 
-    (void)nco_qnt_mtd(nc_out_id,var_out_id,nco_baa_cnv_typ,(nco_flt_typ_enm)0,nsd);
+    (void)nco_qnt_mtd(nc_out_id,var_out_id,(const enum nco_baa_cnv)nco_baa_cnv_typ,(nco_flt_typ_enm)0,nsd);
   break;
   case NC_INT: /* Do nothing for non-floating point types ...*/
   case NC_SHORT:

@@ -1400,7 +1400,7 @@ nco_var_is_hrz /* [fnc] Print "Yes"/"No" if variable is horizontal (i.e., has di
   nc_id=trv_tbl->in_id_arr[0];
 
   /* 20170414: csz add new definitions is_crd_lk_var and is_rec_lk_var, avoid PVN definitions for sanity */
-  for(idx_var=0;(int)idx_var<trv_tbl->nbr;idx_var++){
+  for(idx_var=0;(int)(idx_var<trv_tbl->nbr);idx_var++){
     var_trv=trv_tbl->lst[idx_var];
     if(var_trv.nco_typ == nco_obj_typ_var && !strcmp(var_nm,var_trv.nm)){
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
