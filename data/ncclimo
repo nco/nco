@@ -1737,7 +1737,7 @@ if [ ${fl_nbr} -eq 0 ] || [ -z ${fl_in[0]} ]; then
     printf "${spt_nm}: ERROR No input files were found: \$fl_nbr=${fl_nbr}, \${fl_in[0]}=\"${fl_in[0]}\". At least one input file is required. Please re-examine your input file specification.\n"
     printf "The input method employed is the one whose value is \"Yes\": inp_aut = ${inp_aut}, inp_glb = ${inp_glb}, inp_psn = ${inp_psn}, inp_std = ${inp_std}.\n"
     if [ ${inp_std} = 'Yes' ]; then
-	printf "${spt_nm}: HINT Expecting input from stdin. If you did not intend to provide input files on stdin, then perhaps ${spt_nm} a parent process (e.g., batch queue system or parent script) is controlling stdin. This can lead ${spt_nm} to expect input filenames on stdin. To prevent this from occurring, trying invoking with the --no_stdin switch, i.e., \'${spt_nm} --no_stdin ...\'.\n"
+	printf "${spt_nm}: HINT Expecting input from stdin. If you did not intend to provide input files on stdin, then perhaps an ${spt_nm} parent process (e.g., batch queue system or parent script) is controlling stdin. This can lead ${spt_nm} to expect input filenames on stdin. To prevent this from occurring, trying invoking with the --no_stdin switch, i.e., \'${spt_nm} --no_stdin ...\'.\n"
     fi # inp_std
     exit 1
 fi # !fl_nbr

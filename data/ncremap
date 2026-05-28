@@ -518,8 +518,9 @@ cnv_exe_mbt='mbconvert' # [sng] MOAB-Tempest SCRIP/Exodus conversion to H5M exec
 cnv_exe_hnt="${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) SCRIP and standard Exodus grid-files are read in parallel, but only if they are in netCDF3 file format. The parallel reader will fail with netCDF4 input grids. This can be worked-around in two ways. First, you could rename the grid file to end with a .g suffix, spoofing a TempestRemap Exodus file. Then ncremap will invoke the serial (not parallel) grid reader. Second, you could convert the input grid from netCDF4 to netCDF3 using, e.g., ncks -5 in.nc out.nc. 2) ncremap invokes mbconvert in parallel (i.e., with srun or mpirun) unless the grid name ends in \".g\". Be sure you are on a node with access to working srun or mpi_run commands. 3) mbconvert must support the -B option for TempestRemap Exodus grids. Older versions of mbconvert do not. 4) mbconvert must support the PARALLEL option. Serial versions of mbconvert do not.\n${spt_nm}: HINT a simple way to install a MOAB compatible with ncremap is install them both into their own environment, e.g., \n\tconda create -n moab_nco -c conda-forge moab=5.6.0=*mpich_tempest* nco\n"
 #cnv_exe_tps='ConvertSCRIPToExodus' # Command was deprecated in 2022
 cnv_exe_tps='ConvertMeshToExodus' # [sng] TempestRemap SCRIP and Mesh-to-Exodus conversion executable
+cnv_opt_prl_e2m='-o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS' # [sng] Recommended options to mbconvert for parallel conversion of (high-resolution) SCRIP to MOAB grids https://acme-climate.atlassian.net/wiki/spaces/ED/pages/932380820/Offline+remapping+workflow+with+mbtempest
 cnv_opt_srl_e2m='-B' # [sng] Recommended options to serial mbconvert for (high-resolution, Tempest-compatible *.g files) Exodus to MOAB grids
-cnv_opt_prl_n2m='-o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS' # [sng] Recommended options to mbconvert for parallel conversion of (high-resolution) SCRIP to MOAB grids https://acme-climate.atlassian.net/wiki/spaces/ED/pages/932380820/Offline+remapping+workflow+with+mbtempest
+cnv_opt_prl_n2m='-o PARALLEL=WRITE_PART' # [sng] Recommended options to mbconvert for parallel conversion of (high-resolution) SCRIP to MOAB grids from VJ on Slack DM 20260528
 col_dmn='' # [sng] Name of unstructured (column) dimension (for coupler files)
 d2f_flg='No' # [flg] Convert double-precision fields to single-precision
 d2f_opt='-M dbl_flt' # [sng] Option string to convert double-precision fields to single-precision
@@ -2820,7 +2821,7 @@ if [ "${map_mk}" = 'Yes' ]; then
 	    # mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
 	    # "g2m" stands for "grid-to-MOAB", meaning command converts any grid-type to MOAB
 	    [[ ${grd_dst} == *.g ]] || [[ ${mbt_grd_nc4} = 'Yes' ]] && mbt_grd_rd_srl='Yes' || mbt_grd_rd_srl='No'
-	    [[ ${mbt_grd_rd_srl} = 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
+	    [[ ${mbt_grd_rd_srl} = 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || [[ ${grd_dst} == *.exo ]] && cnv_opt_g2m=${cnv_opt_prl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
 	    cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_g2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
 	    [[ ${mbt_grd_rd_srl} = 'No' ]] && cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
@@ -2878,7 +2879,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	    # 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
 	    # mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
 	    [[ ${grd_src} == *.g ]] || [[ ${mbt_grd_nc4} = 'Yes' ]] && mbt_grd_rd_srl='Yes' || mbt_grd_rd_srl='No'
-	    [[ ${mbt_grd_rd_srl} = 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
+	    [[ ${mbt_grd_rd_srl} = 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || [[ ${grd_dst} == *.exo ]] && cnv_opt_g2m=${cnv_opt_prl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
 	    cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_g2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
 	    [[ ${mbt_grd_rd_srl} = 'No' ]] && cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
@@ -3112,7 +3113,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			# 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
 			# mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
 			[[ ${grd_src} == *.g ]] || [[ ${mbt_grd_nc4} = 'Yes' ]] && mbt_grd_rd_srl='Yes' || mbt_grd_rd_srl='No'
-			[[ ${mbt_grd_rd_srl} = 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
+			[[ ${mbt_grd_rd_srl} = 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || [[ ${grd_dst} == *.exo ]] && cnv_opt_g2m=${cnv_opt_prl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
 			cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_g2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
 			[[ ${mbt_grd_rd_srl} = 'No' ]] && cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"
 			if [ ${dbg_lvl} -ge 1 ]; then
