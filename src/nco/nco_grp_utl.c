@@ -1400,7 +1400,7 @@ nco_var_is_hrz /* [fnc] Print "Yes"/"No" if variable is horizontal (i.e., has di
   nc_id=trv_tbl->in_id_arr[0];
 
   /* 20170414: csz add new definitions is_crd_lk_var and is_rec_lk_var, avoid PVN definitions for sanity */
-  for(idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+  for(idx_var=0;(int)idx_var<trv_tbl->nbr;idx_var++){
     var_trv=trv_tbl->lst[idx_var];
     if(var_trv.nco_typ == nco_obj_typ_var && !strcmp(var_nm,var_trv.nm)){
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
@@ -2330,7 +2330,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 	 https://github.com/cf-convention/cf-conventions/issues/403
 	 20240130 fxm nco_qnt_mtd() does not yet write metadata for DSD algorithm (rounding) */
       if(var_trv.ppc != NC_MAX_INT && var_trv.flg_nsd){
-	(void)nco_qnt_mtd(grp_out_id,var_out_id,nco_baa_cnv_get(),(nco_flt_typ_enm)nco_flt_nil,var_trv.ppc);
+	(void)nco_qnt_mtd(grp_out_id,var_out_id,(const enum nco_baa_cnv)nco_baa_cnv_get(),(nco_flt_typ_enm)nco_flt_nil,var_trv.ppc);
       } /* !var_trv.ppc */
 
       /* Memory management after current extracted variable */
