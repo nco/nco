@@ -1334,7 +1334,7 @@ elif [ ${alg_typ} = 'trfv2' ] || [ ${alg_typ} = 'trfvnp2' ]; then # alg_sng='trf
     # 2nd order FV reconstruction, cell integrated on target grid (conservative, though not monotone unless used with FV2+CAAS method)
     # https://acme-climate.atlassian.net/wiki/spaces/DOC/pages/178848194/Recommended+Mapping+Procedures+for+E3SM+Atmosphere+Grids
     # https://acme-climate.atlassian.net/wiki/spaces/COM/pages/3771301899/Coupler+High-order+property-preserving+maps
-    wgt_opt_mbt='--method fv --order 2 --method fv --order 1 --fvmethod normalize'
+    wgt_opt_mbt='--method fv --order 2 --method fv --order 1'
     wgt_opt_tps='--in_type fv --in_np 2 --out_type fv --out_np 1 --method normalize'
     alg_opt='trfv2'
     wgt_typ='tempest'
