@@ -1,8 +1,12 @@
-2026-05-29  Charlie Zender  <zender@uci.edu>
+2026-06-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha04: Broadway Musicals';git push
 	git tag -a 5.4.0-alpha04 -m 'ncremap: fix mbtr trfv2;';git push --tags
+
+	* ncclimo/ncremap: srun --exclusive option added per Mike K. to resolve timing with 100-year climos
+
+2026-05-29  Charlie Zender  <zender@uci.edu>
 
 	* ncremap remove --fvmethod normalize from mbtempest trfv2
 

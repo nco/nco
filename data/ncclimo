@@ -2433,10 +2433,11 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
 		    # 20210310: srun option<->long option equivalences are -N = --nodes, -n = --ntasks, -c = --cpus-per-task
+		    # 20260601: srun --exclusive option added per Mike K. to resolve timing with 100-year climos
 		    # NB: NERSC staff say srun automatically assigns to unique nodes even without "-L $node" argument?
- 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
-		    # cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
-		    # cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=1" ; ;; # SLURM
+ 		    cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
+		    # cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
+		    # cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=1" ; ;; # SLURM
 		bebop* | blogin* | b[0123456789][0123456789][0123456789] | derecho* | ilogin* | i[0123456789][0123456789][0123456789] )
 		    # 20180120: Non-interactive batch jobs at NCAR return HOSTNAME as derecho?
 		    # Derecho prefers 'mpiexec_mpt dplace -s 1 ncclimo ...'
@@ -2449,7 +2450,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    cmd_mpi[${mpi_idx}]="mpirun ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
 		* )
 		    # 20250122: Shift default node manager from mpirun to srun
- 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
+ 		    cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
 #		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # Other (PBS)
 #		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
