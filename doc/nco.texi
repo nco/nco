@@ -28055,6 +28055,8 @@ invoked by @command{ncremap}.
 @html
 <a name="mpi_pfx"></a> <!-- http://nco.sf.net/nco.html#mpi_pfx -->
 <a name="mpi_prefix"></a> <!-- http://nco.sf.net/nco.html#mpi_prefix -->
+<a name="srun"></a> <!-- http://nco.sf.net/nco.html#srun -->
+<a name="exclusive"></a> <!-- http://nco.sf.net/nco.html#exclusive -->
 <a name="srun_cmd"></a> <!-- http://nco.sf.net/nco.html#srun_cmd -->
 <a name="srun_command"></a> <!-- http://nco.sf.net/nco.html#srun_command -->
 <a name="mpi_nbr"></a> <!-- http://nco.sf.net/nco.html#mpi_nbr -->
@@ -28062,6 +28064,8 @@ invoked by @command{ncremap}.
 <a name="tsk_nbr"></a> <!-- http://nco.sf.net/nco.html#tsk_nbr -->
 <a name="task_number"></a> <!-- http://nco.sf.net/nco.html#task_number -->
 @end html
+@cindex @code{--exclusive}
+@cindex @command{srun}
 @cindex @code{--mpi_pfx=@var{mpi_pfx}}
 @cindex @var{mpi_pfx}
 @cindex @code{--mpi_pfx}
@@ -28086,15 +28090,21 @@ are unaffected by this option since they are not
 @var{mpi_pfx} defaults to @code{mpirun -n $@{@var{mpi_nbr}@}} on all
 machines except those whose @code{$HOSTNAME} matches an internal
 database of @acronym{DOE}-operated supercomputers where 
-@var{mpi_pfx} usually defaults to @code{srun -n $@{@var{mpi_nbr}@}}
+@var{mpi_pfx} usually defaults to
+@code{srun --exclusive -n $@{@var{mpi_nbr}@}}
 When invoking @samp{--mpi_pfx}, be sure to explicitly define the
 number of @acronym{MPI} tasks-per-node, e.g.,
 @example
 @verbatim
-ncremap --mpi_pfx='srun -n 16' ...
+ncremap --mpi_pfx='srun --exclusive -n 16' ...
 ncremap --mpi_pfx='srun --mpi=pmi2 -n 4' ...
 @end verbatim
 @end example
+As of June 2026 and @acronym{NCO} @w{version 5.4}, @acronym{NCO} by
+default gives the @code{--exclusive} option to @command{srun}.
+You can disable this behavior by using the @code{--mpi_pfx} option
+as above and omitting @code{--exclusive} in the argument.
+
 The separate @samp{--mpi_nbr=@var{mpi_nbr}} option specifies the
 number of tasks-per-node that @acronym{MPI}-enabled weight generators
 will request.

@@ -2,7 +2,7 @@
 
 	* NCO 5.4.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha04: Broadway Musicals';git push
-	git tag -a 5.4.0-alpha04 -m 'ncremap: fix mbtr trfv2;';git push --tags
+	git tag -a 5.4.0-alpha04 -m 'ncclimo: srun --exclusive; ncremap: fix mbtr trfv2;';git push --tags
 
 	* ncclimo/ncremap: srun --exclusive option added per Mike K. to resolve timing with 100-year climos
 
