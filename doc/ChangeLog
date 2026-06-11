@@ -1,8 +1,17 @@
-2026-06-01  Charlie Zender  <zender@uci.edu>
+2026-06-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha04: Broadway Musicals';git push
 	git tag -a 5.4.0-alpha04 -m 'ncclimo: srun --exclusive; ncremap: fix mbtr trfv2;';git push --tags
+
+	* nco_ppc.c: Limit single-precision NSD to 6 not 7 (which can produce NaN) for BitGroom
+	Fixed in netcdf-c by Ed Hartnett https://github.com/Unidata/netcdf-c/issues/3389
+
+2026-06-02  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo/ncremap: Clarify batch wording
+
+2026-06-01  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo/ncremap: srun --exclusive option added per Mike K. to resolve timing with 100-year climos
 

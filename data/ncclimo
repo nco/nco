@@ -1783,6 +1783,17 @@ if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
 	# However this presumes file has multiple timesteps---fails with monthly data
 	# 20210902: Use first time index if file has only one timestep
 	tm_nbr=`ncks --trd -M ${ppn_opt} ${fl_in[0]} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
+
+	# 20260602: HFCs can slow to a crawl for, e.g., a decade of daily files with tpd=8
+	# HFC works well when input 3-hourly data are in monthly files with tpd=8 and tpf=240
+	# EAMxx changed this EAMv3-style formatting and outputs daily files with tpd=8 and tpf=8
+	# HFC times-out with EAMxx-style format (on PM, not MacOS)
+
+	# Implement option to concatenate daily input into monthly files before HFC?
+	if [ ${clm_md} = 'hfc' ] && [ "${tm_nbr}" -lt 100 ] && [ "${fl_nbr}" -gt 12 ]; then
+	    printf "INFO: HFC climo detects that each of the fl_nbr = ${fl_nbr} input files may have only tm_nbr=${tm_nbr} timesteps.\nLarge numbers of small-timestep files may cause excessive slow-down in HFC due to file-access contention on slow filesystems (e.g., Perlmutter).\nConsider concatenating input files into longer (typically monthly) files prior to HFC.\n"
+	fi # !tm_nbr
+
 	if [ "${tm_bnd_flg}" = 'Yes' ]; then
 	    [ "${tm_nbr}" -gt 1 ] 2>/dev/null && tm_idx='1' || tm_idx='0'
 	    tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_bnd} -d ${tm_var},${tm_idx} -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
@@ -2741,7 +2752,7 @@ if [ "${clm_flg}" = 'Yes' ]; then
 	if [ "${par_typ}" = ${par_bck} ]; then
 	    printf "Background parallelism processing monthly climos in 12/job_nbr = 12/${job_nbr} = $((12 / job_nbr)) sequential batches each handling job_nbr = ${job_nbr} months concurrently\n"
 	elif [ "${par_typ}" = ${par_mpi} ]; then
-	    printf "MPI parallelism processing monthly climos in 12/job_nbr = 12/${job_nbr} = $((12 / job_nbr)) sequential batches. Each batch is distributed to ${nd_nbr} nodes via round-robin scheduling and handles job_nbr = ${job_nbr} months concurrently. Load-balancing occurs with unused nodes, if any.\n"
+	    printf "MPI parallelism processing monthly climos in 12/job_nbr = 12/${job_nbr} = $((12 / job_nbr)) sequential batches. Batches are distributed among the available ${nd_nbr} nodes via round-robin scheduling and each batch handles job_nbr = ${job_nbr} months concurrently. Load-balancing occurs with unused nodes, if any.\n"
 	fi # !par_typ
     fi # !clm_md
     if [ "${xtn_flg}" = 'No' ]; then
