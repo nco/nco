@@ -14848,7 +14848,7 @@ Refer to attributes with @emph{var_nm@@att_nm}.
 The following are all valid statements:
 @example
 @verbatim
-global@text="Test Attributes"; /* Assign a global variable attribute */
+global@text="Test Attributes"; /* Assign a global attribute */
 a1[$time]=time*20;
 a1@long_name="Kelvin";
 a1@min=a1.min();

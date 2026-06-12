@@ -2,7 +2,9 @@
 
 	* NCO 5.4.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha04: Broadway Musicals';git push
-	git tag -a 5.4.0-alpha04 -m 'ncclimo: srun --exclusive; ncremap: fix mbtr trfv2;';git push --tags
+	git tag -a 5.4.0-alpha04 -m 'all: BitGroom SP NSD <=6; ncclimo: srun --exclusive, fix glb tms ELM comment att; ncremap: fix mbtr trfv2;';git push --tags
+
+	* ncclimo: Change inherited comment global attribute for global statistics to say variables ARE weighted by land fraction
 
 	* nco_ppc.c: Limit single-precision NSD to 6 not 7 (which can produce NaN) for BitGroom
 	Fixed in netcdf-c by Ed Hartnett https://github.com/Unidata/netcdf-c/issues/3389
