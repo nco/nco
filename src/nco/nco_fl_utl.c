@@ -117,7 +117,7 @@ nco_fl_dmm_mk /* Create dummy file */
   nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
 
-  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
 
   /* Open dummy file */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
@@ -1831,7 +1831,7 @@ int /* [rcd] Return code */
 nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity */
 (const char * const fl_nm, /* I [sng] Name of file to open */
  const int md_open, /* I [enm] Mode flag for nc_open() call */
- const size_t * const bfr_sz_hnt, /* I [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+ const size_t * const bfr_sz_hnt, /* I [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
  int * const nc_id) /* O [id] File ID */
 {
   /* Purpose: Open file using appropriate buffer size hints and verbosity
@@ -1846,12 +1846,12 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   nco_bool flg_rqs_vrb_mpl; /* [flg] Sufficiently verbose implicit request */
   nco_bool flg_rqs_vrb_xpl; /* [flg] Sufficiently verbose explicit request */
 
-  size_t bfr_sz_hnt_lcl; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+  size_t bfr_sz_hnt_lcl; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
 
   static nco_bool FIRST_INFO=True;
 
   /* Initialize local buffer size hint with user-input value */
-  bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+  bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
 
   /* Is request implicit and sufficiently verbose? */
   flg_rqs_vrb_mpl = ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_var && FIRST_INFO) ? True : False;
@@ -1970,7 +1970,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  nco_bool * const FORCE_APPEND, /* I/O [flg] Append to existing file, if any */
  const nco_bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  const int fl_out_fmt, /* I [enm] Output file format */
- const size_t * const bfr_sz_hnt, /* I [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+ const size_t * const bfr_sz_hnt, /* I [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
  const nco_bool RAM_CREATE, /* I [flg] Create file in RAM */
  const nco_bool RAM_OPEN, /* I [flg] Open (netCDF3) file(s) in RAM */
  const nco_bool SHARE_CREATE, /* I [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
@@ -2005,7 +2005,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
   pid_t pid; /* Process ID */
 
-  size_t bfr_sz_hnt_lcl; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+  size_t bfr_sz_hnt_lcl; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
   
   struct stat stat_sct;
 
@@ -2137,7 +2137,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   if(fl_out_dpl) fl_out_dpl=(char *)nco_free(fl_out_dpl);
 
   /* Initialize local buffer size hint with user-input value */
-  bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+  bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
 
   if(FORCE_OVERWRITE){
 #ifdef ENABLE_MPI

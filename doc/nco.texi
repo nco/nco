@@ -11492,7 +11492,7 @@ is much too small for efficient I/O on most ESM datasets.
 Hence we increased it to 32 MiB, the same buffersize as netCDF4.
 To return to the netCDF default buffer size, use @samp{--bfr_sz=0}.
 To change the buffer size set it to your favorite number.
-This buffer size affect classic files only, it is ignored and harmless
+This buffer size affect classic files only, it is ignored/harmless
 when set for netCDF4 files.
 Performance can significantly improve with sizes up to @w{1 GiB},
 though it is dependent on the filesystem, @acronym{RAM}, and the sizes

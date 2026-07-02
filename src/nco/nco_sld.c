@@ -271,7 +271,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
 
-  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
 
   nco_trr_ntl_typ_enm ntl_typ_in; /* [enm] Interleave-type of raw data */
   nco_trr_ntl_typ_enm ntl_typ_out; /* [enm] Interleave-type of output data */

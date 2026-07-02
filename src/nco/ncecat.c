@@ -212,7 +212,8 @@ main(int argc,char **argv)
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
-  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
+  size_t blk_sz_mtd=2048; /* [B] Block size for netCDF4 metadata (ignored/harmless for netCDF3) */
   size_t cnk_csh_byt=NCO_CNK_CSH_BYT_DFL; /* [B] Chunk cache size */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
@@ -284,8 +285,10 @@ main(int argc,char **argv)
     {"version",no_argument,0,0},
     {"vrs",no_argument,0,0},
     /* Long options with argument, no short option counterpart */
-    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
-    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
+    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
+    {"blk_sz_mtd",required_argument,0,0}, /* [B] Block size for netCDF4 metadata (ignored/harmless for netCDF3) */
+    {"metadata_block_size",required_argument,0,0}, /* [B] Block size for netCDF4 metadata (ignored/harmless for netCDF3) */
     {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"cnk_csh",required_argument,0,0}, /* [B] Chunk cache size in bytes */
@@ -411,38 +414,46 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk */
+      } /* !cnk */
+      if(!strcmp(opt_crr,"blk_sz_mtd") || !strcmp(opt_crr,"block_size_metadata") || !strcmp(opt_crr,"metadata_block_size")){
+        blk_sz_mtd=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+	/* 20260702: Default metadata block size is 2048 B (zero resets value to default)
+	   1 MiB is good size for large, chunked, netCDF4 files (disallow too small block sizes)
+	   Any file created after this statement will have new block size */
+	if((blk_sz_mtd == 0) || (blk_sz_mtd >= 2048)) rcd=nco_set_meta_block_size(blk_sz_mtd);
+      } /* !blk_sz_mtd */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
         cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk_byt */
+      } /* !cnk_byt */
       if(!strcmp(opt_crr,"cnk_csh") || !strcmp(opt_crr,"chunk_cache")){
         cnk_csh_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk_csh_byt */
+      } /* !cnk_csh_byt */
       if(!strcmp(opt_crr,"cnk_min") || !strcmp(opt_crr,"chunk_min")){
         cnk_min_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk_min */
+      } /* !cnk_min */
       if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
         /* Copy limit argument for later processing */
         cnk_arg[cnk_nbr]=(char *)strdup(optarg);
         cnk_nbr++;
-      } /* endif cnk */
+      } /* !cnk */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
         cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk */
+      } /* !cnk */
       if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
         /* Chunking map */
         cnk_map_sng=(char *)strdup(optarg);
         cnk_map=nco_cnk_map_get(cnk_map_sng);
-      } /* endif cnk */
+      } /* !cnk */
       if(!strcmp(opt_crr,"cnk_plc") || !strcmp(opt_crr,"chunk_policy")){
         /* Chunking policy */
         cnk_plc_sng=(char *)strdup(optarg);
         cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
-      } /* endif cnk */
+      } /* !cnk */
       if(!strcmp(opt_crr,"cll_msr") || !strcmp(opt_crr,"cell_measures")) EXTRACT_CLL_MSR=True; /* [flg] Extract cell_measures variables */
       if(!strcmp(opt_crr,"no_cll_msr") || !strcmp(opt_crr,"no_cell_measures")) EXTRACT_CLL_MSR=False; /* [flg] Do not extract cell_measures variables */
       if(!strcmp(opt_crr,"frm_trm") || !strcmp(opt_crr,"formula_terms")) EXTRACT_FRM_TRM=True; /* [flg] Extract formula_terms variables */
@@ -465,11 +476,11 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif "hdr_pad" */
+      } /* !"hdr_pad" */
       if(!strcmp(opt_crr,"help") || !strcmp(opt_crr,"hlp")){
 	(void)nco_usg_prn();
 	nco_exit(EXIT_SUCCESS);
-      } /* endif "help" */
+      } /* !"help" */
       if(!strcmp(opt_crr,"hpss_try")) HPSS_TRY=True; /* [flg] Search HPSS for unfound files */
       if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){
 	log_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
@@ -480,7 +491,7 @@ main(int argc,char **argv)
         if(!md5) md5=nco_md5_ini();
 	md5->dgs=True;
         if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",nco_prg_nm_get());
-      } /* endif "md5_dgs" */
+      } /* !"md5_dgs" */
       if(!strcmp(opt_crr,"mrd") || !strcmp(opt_crr,"multiple_record_dimension")) nco_mrd_cnv=nco_mrd_allow; /* [enm] Multiple Record Dimension convention */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"qnt") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"quantize")) ppc_arg[ppc_nbr++]=(char *)strdup(optarg);
@@ -494,7 +505,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
         (void)nco_vrs_prn(CVS_Id,CVS_Revision);
         nco_exit(EXIT_SUCCESS);
-      } /* endif "vrs" */
+      } /* !"vrs" */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
     } /* opt != 0 */
@@ -797,7 +808,7 @@ main(int argc,char **argv)
     if(fl_out_fmt != NC_FORMAT_NETCDF4){
       (void)fprintf(stderr,"%s: ERROR Group Aggregation requires netCDF4 output format but user explicitly requested format = %s\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
       nco_exit(EXIT_FAILURE);
-    } /* endif err */
+    } /* !err */
   } /* !GROUP_AGGREGATE */
 
   /* Loop over input files */

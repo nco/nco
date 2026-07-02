@@ -205,7 +205,7 @@ main(int argc,char **argv)
   nco_bool flg_mmr_cln=False; /* [flg] Clean memory prior to exit */
   nco_bool flg_typ_mch=False; /* [flg] Type-match attribute edits */
 
-  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
@@ -239,8 +239,8 @@ main(int argc,char **argv)
     {"version",no_argument,0,0},
     {"vrs",no_argument,0,0},
     /* Long options with argument, no short option counterpart */
-    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
-    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
+    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
     {"fl_fmt",required_argument,0,0},
     {"file_format",required_argument,0,0},
     {"gaa",required_argument,0,0}, /* [sng] Global attribute add */

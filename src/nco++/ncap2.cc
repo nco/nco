@@ -225,7 +225,8 @@ main(int argc,char **argv)
   nm_id_sct *xtr_lst=NULL_CEWI; /* Non-processed variables to copy to OUTPUT */
   nm_id_sct *xtr_lst_a=NULL_CEWI; /* Initialize to ALL variables in OUTPUT file */
   
-  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+  size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
+  size_t blk_sz_mtd=2048; /* [B] Block size for netCDF4 metadata (ignored/harmless for netCDF3) */
   size_t cnk_csh_byt=NCO_CNK_CSH_BYT_DFL; /* [B] Chunk cache size */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
@@ -275,8 +276,10 @@ main(int argc,char **argv)
     {"version",no_argument,0,0},
     {"vrs",no_argument,0,0},
     /* Long options with argument, no short option counterpart */
-    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
-    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
+    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
+    {"blk_sz_mtd",required_argument,0,0}, /* [B] Block size for netCDF4 metadata (ignored/harmless for netCDF3) */
+    {"metadata_block_size",required_argument,0,0}, /* [B] Block size for netCDF4 metadata (ignored/harmless for netCDF3) */
     {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"cnk_csh",required_argument,0,0}, /* [B] Chunk cache size in bytes */
@@ -388,38 +391,46 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
 	bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk */
+      } /* !bfr_sz */
+      if(!strcmp(opt_crr,"blk_sz_mtd") || !strcmp(opt_crr,"block_size_metadata") || !strcmp(opt_crr,"metadata_block_size")){
+        blk_sz_mtd=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+	/* 20260702: Default metadata block size is 2048 B (zero resets value to default)
+	   1 MiB is good size for large, chunked, netCDF4 files (disallow too small block sizes)
+	   Any file created after this statement will have new block size */
+	if((blk_sz_mtd == 0) || (blk_sz_mtd >= 2048)) rcd=nco_set_meta_block_size(blk_sz_mtd);
+      } /* !blk_sz_mtd */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
         cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk_byt */
+      } /* !cnk_byt */
       if(!strcmp(opt_crr,"cnk_csh") || !strcmp(opt_crr,"chunk_cache")){
         cnk_csh_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk_csh_byt */
+      } /* !cnk_csh_byt */
       if(!strcmp(opt_crr,"cnk_min") || !strcmp(opt_crr,"chunk_min")){
         cnk_min_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk_min */
+      } /* !cnk_min */
       if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
 	/* Copy limit argument for later processing */
 	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
 	cnk_nbr++;
-      } /* endif cnk_dmn */
+      } /* !cnk_dmn */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
 	cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk */
+      } /* !cnk */
       if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
 	/* Chunking map */
 	cnk_map_sng=(char *)strdup(optarg);
 	cnk_map=nco_cnk_map_get(cnk_map_sng);
-      } /* endif cnk */
+      } /* !cnk */
       if(!strcmp(opt_crr,"cnk_plc") || !strcmp(opt_crr,"chunk_policy")){
 	/* Chunking policy */
 	cnk_plc_sng=(char *)strdup(optarg);
 	cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
-      } /* endif cnk */
+      } /* !cnk */
       if(!strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_mmr_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"cmp_sng") || !strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec") || !strcmp(opt_crr,"compress")) cmp_sng=(char *)strdup(optarg);
@@ -442,12 +453,12 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif "hdr_pad" */
+      } /* !"hdr_pad" */
       if(!strcmp(opt_crr,"hdf_upk") || !strcmp(opt_crr,"hdf_unpack")) nco_upk_cnv=nco_upk_HDF_MOD10; /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
       if(!strcmp(opt_crr,"help") || !strcmp(opt_crr,"hlp")){
 	(void)nco_usg_prn();
 	nco_exit(EXIT_SUCCESS);
-      } /* endif "help" */
+      } /* !"help" */
       if(!strcmp(opt_crr,"hpss_try")) HPSS_TRY=True; /* [flg] Search HPSS for unfound files */
       if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){
 	log_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
@@ -457,7 +468,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"lbr") || !strcmp(opt_crr,"library")){
         (void)nco_lbr_vrs_prn();
         nco_exit(EXIT_SUCCESS);
-      } /* endif "lbr" */
+      } /* !"lbr" */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Create (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"unbuffered_io") || !strcmp(opt_crr,"uio") || !strcmp(opt_crr,"create_share")) SHARE_CREATE=True; /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
@@ -465,7 +476,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
 	nco_exit(EXIT_SUCCESS);
-      } /* endif "vrs" */
+      } /* !"vrs" */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
       if(!strcmp(opt_crr,"cll_mth") || !strcmp(opt_crr,"cell_methods")) flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
@@ -928,7 +939,7 @@ main(int argc,char **argv)
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       for(idx=0;idx<nbr_spt;idx++) 
         (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
-    } /* endif debug */
+    } /* !debug */
      /* Invoke ANTLR parser */
     antlr_ret=parse_antlr(prs_vtr,fl_cmd_usr,spt_arg_cat);
   } /* !nbr_spt */
@@ -1109,7 +1120,7 @@ main(int argc,char **argv)
       att_item.type=var_vtr[idx]->var->type;
       att_item.val=var_vtr[idx]->var->val;
       att_item.mode=aed_overwrite;
-    } /* endif ncap_att */
+    } /* !ncap_att */
 
     if(!strcmp(att_item.var_nm,"global")){
       var_id=NC_GLOBAL;
