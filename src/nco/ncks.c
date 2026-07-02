@@ -322,6 +322,7 @@ main(int argc,char **argv)
   nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+  size_t blk_sz_mtd=0; /* [B] Block size netCDF4 metadata (ignored and harmless for netCDF3) */
   size_t cnk_csh_byt=NCO_CNK_CSH_BYT_DFL; /* [B] Chunk cache size */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
@@ -468,6 +469,8 @@ main(int argc,char **argv)
     {"bit_alg",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4) */
+    {"blk_sz_mtd",required_argument,0,0}, /* [B] Block size for netCDF4 metadata (ignored and harmless for netCDF3) */
+    {"metadata_block_size",required_argument,0,0}, /* [B] Block size for netCDF4 metadata (ignored and harmless for netCDF3) */
     {"bsa",required_argument,0,0}, /* [enm] Binary byte-swap algorithm */
     {"byte_swap",required_argument,0,0}, /* [enm] Binary byte-swap algorithm */
     {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
@@ -702,6 +705,14 @@ main(int argc,char **argv)
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* !bfr_sz */
+      if(!strcmp(opt_crr,"blk_sz_mtd") || !strcmp(opt_crr,"block_size_metadata") || !strcmp(opt_crr,"metadata_block_size")){
+        blk_sz_mtd=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+	/* 20260702: Default metadata block size is 2048 B (zero resets value to default)
+	   1 MiB is good size for large, chunked, netCDF4 files (disallow too small block sizes)
+	   Any file created after this statement will have new block size */
+	if((blk_sz_mtd == 0) || (blk_sz_mtd >= 2048)) rcd=nco_set_meta_block_size(blk_sz_mtd);
+      } /* !blk_sz_mtd */
       if(!strcmp(opt_crr,"bsa") || !strcmp(opt_crr,"byte_swap")){
 	nco_bnr_cnv=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);

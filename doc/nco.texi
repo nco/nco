@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.4.0-alpha04
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 29 May 2026
-@set update-month May 2026
+@set update-date 2 July 2026
+@set update-month July 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -19199,7 +19199,7 @@ pre-processing using other tools such as Awk, Perl, or Python.
 @noindent
 SYNTAX
 @example 
-ncbo [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
+ncbo [-3] [-4] [-5] [-6] [-7] [-A] [--bfr_sz=@var{sz}] [--blk_sz=@var{sz}] [--blk_sz=@var{sz}] [-C] [-c] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
@@ -19701,7 +19701,7 @@ ncchecker file:///Users/zender/in_zarr4#mode=nczarr,file # Check Zarr object(s)
 SYNTAX
 @example
 ncclimo [-3] [-4] [-5] [-6] [-7] 
-[--bfr_sz=@var{sz}] [-C @var{clm_md}] [-c @var{caseid}] [--cmp @var{cmp_sng}]
+[--bfr_sz=@var{sz}] [--blk_sz=@var{sz}] [-C @var{clm_md}] [-c @var{caseid}] [--cmp @var{cmp_sng}]
 [-d @var{dbg_lvl}] [--d2f] [--dpf=@var{dpf}] [--dpt_fl=@var{dpt_fl}] [-E @var{yr_prv}] [-e @var{yr_end}]
 [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [--glb_avg] [--glb_stt=@var{glb_stt}] 
 [-h @var{hst_nm}] [-i @var{drc_in}] [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}]
@@ -22021,7 +22021,8 @@ Moreover, the climatologies can be generated in parallel.
 @noindent
 SYNTAX
 @example
-ncecat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
+ncecat [-3] [-4] [-5] [-6] [-7]
+[-A] [--bfr_sz=@var{sz}] [--blk_sz=@var{sz}] [-C] [-c] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
@@ -22291,7 +22292,8 @@ of changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-nces [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb @var{y1},@var{y2},@var{m1},@var{m2},@var{tpd}]
+nces [-3] [-4] [-5] [-6] [-7] [-A]
+[--bfr_sz=@var{sz}] [--blk_sz=@var{sz}] [-C] [-c] [--cb @var{y1},@var{y2},@var{m1},@var{m2},@var{tpd}]
 [--cmp @var{cmp_sng}] [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
@@ -22561,7 +22563,8 @@ ncks ~/out.nc
 @noindent
 SYNTAX
 @example
-ncflint [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]  [--cmp @var{cmp_sng}]
+ncflint [-3] [-4] [-5] [-6] [-7] [-A]
+[--bfr_sz=@var{sz}] [--blk_sz=@var{sz}] [-C] [-c]  [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--fl_fmt @var{fl_fmt}]
@@ -26039,7 +26042,8 @@ changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
+ncra [-3] [-4] [-5] [-6] [-7] [-A]
+[--bfr_sz=@var{sz}] [--blk_sz=@var{sz}] [-C] [-c]
 [--cb @var{y1},@var{y2},@var{m1},@var{m2},@var{tpd}] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
@@ -26400,7 +26404,8 @@ weighted mean statistics.
 @noindent
 SYNTAX
 @example
-ncrcat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cmp @var{cmp_sng}]
+ncrcat [-3] [-4] [-5] [-6] [-7] [-A]
+[--bfr_sz=@var{sz}] [--blk_sz=@var{sz}] [-C] [-c] [--cmp @var{cmp_sng}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]
@@ -26540,8 +26545,8 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 SYNTAX
 @example
 ncremap [-3] [-4] [-5] [-6] [-7]
-[-a @var{alg_typ}] [--a2o] [--add_fll] [--alg_lst] [--area_dgn] [--bfr_sz=@var{sz}]
-[--cmp @var{cmp_sng}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f]
+[-a @var{alg_typ}] [--a2o] [--add_fll] [--alg_lst] [--area_dgn]
+[--bfr_sz=@var{sz}] [--blk_sz=@var{sz}] [--cmp @var{cmp_sng}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f]
 [--dpt] [--dpt_fl=@var{dpt_fl}] [--dt_sng=@var{dt_sng}] [--esmf_typ=@var{esmf_typ}] 
 [--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}] [--gad=@var{gad_lst}[,@dots{}]] 
 [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}] [-L @var{dfl_lvl}]

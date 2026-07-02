@@ -1463,17 +1463,19 @@ int nc_set_log_level(const int log_lvl)
 
 /* 20260701: nc_set_meta_block_size() prototype always defined in netcdf.h since netCDF 4.10.1-devel */
 #ifndef HAVE_NC_SET_META_BLOCK_SIZE
-int nc_set_meta_block_size(const size_t mta_blk_sz)
+int nc_set_meta_block_size(const size_t blk_sz_mtd)
 {
   /* Purpose: Stub for nc_set_meta_block_size() */
-  return NC_NOERR+0*mta_blk_sz; /* CEWI */
+  return NC_NOERR+0*blk_sz_mtd; /* CEWI */
 } /* !nc_set_meta_block_size() */
 #endif /* !HAVE_NC_SET_META_BLOCK_SIZE */
-int nco_set_meta_block_size(const size_t mta_blk_sz)
+int nco_set_meta_block_size(const size_t blk_sz_mtd)
 {
-  /* Purpose: Wrapper for  */
+  /* Purpose: Wrapper for nc_set_meta_block_size()
+     Default netCDF metadata block size has always been 2 kb
+     https://github.com/Unidata/netcdf-c/issues/3386 */
   int rcd;
-  rcd=nc_set_meta_block_size(mta_blk_sz);
+  rcd=nc_set_meta_block_size(blk_sz_mtd);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_set_meta_block_size()");
   return rcd;
 } /* !nco_set_meta_block_size() */
