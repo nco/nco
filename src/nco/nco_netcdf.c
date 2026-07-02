@@ -1461,6 +1461,23 @@ int nc_set_log_level(const int log_lvl)
 } /* !nc_set_log_level() */
 #endif /* !HAVE_NC_SET_LOG_LEVEL */
 
+/* 20260701: nc_set_meta_block_size() prototype always defined in netcdf.h since netCDF 4.10.1-devel */
+#ifndef HAVE_NC_SET_META_BLOCK_SIZE
+int nc_set_meta_block_size(const size_t mta_blk_sz)
+{
+  /* Purpose: Stub for nc_set_meta_block_size() */
+  return NC_NOERR+0*mta_blk_sz; /* CEWI */
+} /* !nc_set_meta_block_size() */
+#endif /* !HAVE_NC_SET_META_BLOCK_SIZE */
+int nco_set_meta_block_size(const size_t mta_blk_sz)
+{
+  /* Purpose: Wrapper for  */
+  int rcd;
+  rcd=nc_set_meta_block_size(mta_blk_sz);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_set_meta_block_size()");
+  return rcd;
+} /* !nco_set_meta_block_size() */
+
 #ifdef HAVE_NETCDF4_H
 int
 nco_inq_ncid(const int nc_id,const char * const grp_nm,int * const grp_id)

@@ -497,6 +497,11 @@ int nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id);
 int nco_inq_unlimdim_flg(const int nc_id,int * const rec_dmn_id);
 int nco_get_chunk_cache(size_t * const sz_byt,size_t * const cnk_nbr_hsh,float * const pmp_fvr_frc);
 int nco_set_chunk_cache(const size_t sz_byt,const size_t cnk_nbr_hsh,const float pmp_fvr_frc);
+#ifndef HAVE_NC_SET_META_BLOCK_SIZE
+  /* 20260701: Stub for nc_set_meta_block_size(), introduced in netCDF 4.10.1-devel */
+  int nc_set_meta_block_size(const size_t mta_blk_sz);
+#endif /* !HAVE_NC_SET_META_BLOCK_SIZE */
+int nco_set_meta_block_size(const size_t mta_blk_sz);
 /* End File routines */
 
 /* Begin Group routines (_grp) */
