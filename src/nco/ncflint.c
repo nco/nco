@@ -420,10 +420,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"blk_sz_mtd") || !strcmp(opt_crr,"block_size_metadata") || !strcmp(opt_crr,"metadata_block_size")){
         blk_sz_mtd=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-	/* 20260702: Default metadata block size is 2048 B (zero resets value to default)
-	   1 MiB is good size for large, chunked, netCDF4 files (disallow too small block sizes)
-	   Any file created after this statement will have new block size */
-	if((blk_sz_mtd == 0) || (blk_sz_mtd >= 2048)) rcd=nco_set_meta_block_size(blk_sz_mtd);
+	assert(blk_sz_mtd >= 0);
       } /* !blk_sz_mtd */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
         cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
@@ -670,6 +667,11 @@ main(int argc,char **argv)
   /* Parse compression options */
   if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,&dfl_lvl,(int *)NULL,(nco_flt_typ_enm **)NULL,(unsigned int **)NULL,(int **)NULL,(int **)NULL,(int ***)NULL);
 
+  /* 20260702: Default metadata block size is 2048 B (zero resets value to netCDF4 default)
+     1 MiB is good size for large, chunked, netCDF4 files (disallow too small block sizes)
+     Any file created after this statement will have new block size */
+  if((blk_sz_mtd == 0) || (blk_sz_mtd > NCO_BLK_SZ_MTD_DFL)) rcd=nco_set_meta_block_size(blk_sz_mtd);
+  
   /* Set/report global chunk cache */
   rcd+=nco_cnk_csh_ini(cnk_csh_byt);
 

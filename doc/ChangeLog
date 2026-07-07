@@ -1,8 +1,14 @@
-2026-07-02  Charlie Zender  <zender@uci.edu>
+2026-07-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha04: Broadway Musicals';git push
 	git tag -a 5.4.0-alpha04 -m 'all: BitGroom SP NSD <=6; ncclimo: srun --exclusive, fix glb tms ELM comment att; ncremap: fix mbtr trfv2;';git push --tags
+
+	* Add --blk_sz to ncremap/ncclimo
+
+	* Globalize NCO_BLK_SZ_MTD_DFL
+
+2026-07-02  Charlie Zender  <zender@uci.edu>
 
 	* Implement and successfully test --blk_sz_mtd in all binary operators
 

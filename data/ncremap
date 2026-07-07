@@ -510,6 +510,7 @@ att_flg='No' # [flg] Add/alter attributes (e.g., _FillValue) before regridding
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
 bfr_sz=33554432 # [B] Buffer size for netCDF-classic I/O (ignored and harmless for netCDF4)
+blk_sz=2048 # [B] Block size for netCDF4 metadata (ignored/harmless for netCDF3)
 chk_map='Yes' # [flg] Check map-file quality
 cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
 clm_flg='No' # [flg] Assume MPAS attributes have already been fiddled with (e.g., ncremap was invoked by ncclimo in climo mode)
@@ -686,6 +687,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--alg_lst${fnt_nrm}  Algorithms to generate maps with in MWF mode (default ${fnt_bld}${alg_lst}${fnt_nrm}) [${fnt_tlc}alg_lst, algorithm_list${fnt_nrm}]"
     echo " ${fnt_bld}--area_dgn${fnt_nrm} Diagnose (rather than copy) grid_area to inferred grid-file (default ${fnt_bld}No${fnt_nrm}) [${fnt_tlc}area_diagnose, dgn_area, diagnose_area${fnt_nrm}]"
     echo " ${fnt_bld}--bfr_sz${fnt_nrm}   Buffer size for netCDF-classic I/O (default ${fnt_bld}determined by system/library${fnt_nrm}) [${fnt_tlc}bfr_sz, buffer_size_hint${fnt_nrm}]"
+    echo " ${fnt_bld}--blk_sz${fnt_nrm}   Block size for netCDF4 metadata (ignored/harmless for netCDF3) (default ${fnt_bld}${blk_sz}${fnt_nrm}) [${fnt_tlc}blk_sz_mtd, metadata_block_size${fnt_nrm}]"
     echo " ${fnt_bld}--cmp_sng${fnt_nrm}  Compression string (empty means none) (default ${fnt_bld}${cmp_sng}${fnt_nrm}) [${fnt_tlc}cmp, cmp_sng, compress, compression, cpr, cdc, codec ${fnt_nrm}]"
     echo " ${fnt_bld}--col_dmn${fnt_nrm}  Column (unstructured) dimension name for coupler files (empty means none) (default ${fnt_bld}${col_dmn}${fnt_nrm}) [${fnt_tlc}col_dmn, col_nm, column_dimension, unstructured_dimension${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
@@ -881,6 +883,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       area_dgn | dgn_area | area_diagnose | diagnose_area ) area_dgn='Yes' ;; # # Diagnose (rather than copy) grid_area to inferred grid-file
 	       area_dgn=?* | dgn_area=?* | area_diagnose=?* | diagnose_area=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Diagnose (rather than copy) grid_area in inferred grids
 	       bfr_sz=?* | bfr=?* | buffer_size_hint=?* ) bfr_sz="${LONG_OPTARG}" ;; # # Buffer size for netCDF-classic I/O
+	       blk_sz=?* | blk=?* | metadata_block_size=?* ) blk_sz="${LONG_OPTARG}" ;; # # Block size for netCDF4 metadata (ignored/harmless for netCDF3)
 	       clm_flg | climatology_flag ) clm_flg='Yes' ;; # -C # Climo flag (undocumented)
 	       clm_flg=?* | climatology_flag=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # clm_flg
 	       cmp=?* | cmp_sng=?* | compress=? | compression=?* | cpr=?* | cdc=?* | codec=?* ) cmp_sng="${LONG_OPTARG}" ;; # # Compression string
@@ -1578,6 +1581,9 @@ fi # !cmp_sng
 if [ -n "${bfr_sz}" ]; then
     nco_opt="${nco_opt} --bfr_sz=${bfr_sz}"
 fi # !bfr_sz
+if [ -n "${blk_sz}" ]; then
+    nco_opt="${nco_opt} --blk_sz=${blk_sz}"
+fi # !blk_sz
 if [ -n "${col_dmn}" ]; then
     rgr_opt="${rgr_opt} --rgr col_nm=${col_dmn}"
 fi # !col_dmn
@@ -2369,6 +2375,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: alg_typ  = ${alg_typ}\n"
     printf "dbg: att_flg  = ${att_flg}\n"
     printf "dbg: bfr_sz   = ${bfr_sz}\n"
+    printf "dbg: blk_sz   = ${blk_sz}\n"
     printf "dbg: cln_flg  = ${cln_flg}\n"
     printf "dbg: cmd_cdo  = ${cmd_wgt_cdo}\n"
     printf "dbg: cmd_esm  = ${cmd_wgt_esmf}\n"

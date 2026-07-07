@@ -322,7 +322,7 @@ main(int argc,char **argv)
   nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   size_t bfr_sz_hnt=33554432; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
-  size_t blk_sz_mtd=2048; /* [B] Block size for netCDF4 metadata (ignored/harmless for netCDF3) */
+  size_t blk_sz_mtd=NCO_BLK_SZ_MTD_DFL; /* [B] Block size for netCDF4 metadata (ignored/harmless for netCDF3) */
   size_t cnk_csh_byt=NCO_CNK_CSH_BYT_DFL; /* [B] Chunk cache size */
   size_t cnk_min_byt=NCO_CNK_SZ_MIN_BYT_DFL; /* [B] Minimize size of variable to chunk */
   size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
@@ -708,10 +708,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"blk_sz_mtd") || !strcmp(opt_crr,"block_size_metadata") || !strcmp(opt_crr,"metadata_block_size")){
         blk_sz_mtd=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-	/* 20260702: Default metadata block size is 2048 B (zero resets value to default)
-	   1 MiB is good size for large, chunked, netCDF4 files (disallow too small block sizes)
-	   Any file created after this statement will have new block size */
-	if((blk_sz_mtd == 0) || (blk_sz_mtd >= 2048)) rcd=nco_set_meta_block_size(blk_sz_mtd);
+	assert(blk_sz_mtd >= 0);
       } /* !blk_sz_mtd */
       if(!strcmp(opt_crr,"bsa") || !strcmp(opt_crr,"byte_swap")){
 	nco_bnr_cnv=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
@@ -1176,6 +1173,11 @@ main(int argc,char **argv)
 
   /* Parse compression options */
   if(cmp_sng || dfl_lvl >= 0) (void)nco_cmp_prs(cmp_sng,&dfl_lvl,(int *)NULL,(nco_flt_typ_enm **)NULL,(unsigned int **)NULL,(int **)NULL,(int **)NULL,(int ***)NULL);
+
+  /* 20260702: Default metadata block size is 2048 B (zero resets value to netCDF4 default)
+     1 MiB is good size for large, chunked, netCDF4 files (disallow too small block sizes)
+     Any file created after this statement will have new block size */
+  if((blk_sz_mtd == 0) || (blk_sz_mtd > NCO_BLK_SZ_MTD_DFL)) rcd=nco_set_meta_block_size(blk_sz_mtd);
 
   /* 20170107: Unlike all other operators, ncks may benefit from setting chunk cache when input file (not output file) is netCDF4 because there is anecdotal evidence that ncdump netCDF4 print speed may be improved by cache adjustments. We cannot verify whether input, output, or both file formats are netCDF4 because nco_set_chunk_cache() must be called before opening file(s). Setting this for netCDF3 library is harmless and calls a no-op stub function */
   /* Set/report global chunk cache */

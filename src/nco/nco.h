@@ -193,6 +193,12 @@ extern "C" {
   /* Argument to strtol() and strtoul() indicating base-10 conversions */
 #define NCO_SNG_CNV_BASE10 10
 
+  /* 20260707 netCDF metadata block size default
+     netCDF 4.10.1-devel exposes this HDF5 parameter to access via nc_set_meta_block_size()
+     Default metadata block size is 2048 B (zero resets value to default)
+     1 MiB is good size for large, chunked, netCDF4 files (disallow too small block sizes) */
+#define NCO_BLK_SZ_MTD_DFL 2048
+
   /* 20161121 Chunk cache size default
      http://www.unidata.ucar.edu/software/netcdf/docs/netcdf_perf_chunking.html
      netCDF cache size default settable at netCDF build time with --with-chunk-cache-size option
