@@ -1,8 +1,12 @@
 2026-07-07  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.4.0-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha05: Keala O Keawe';git push
+	git tag -a 5.4.0-alpha05 -m 'fxm';git push --tags
+
 	* NCO 5.4.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha04: Broadway Musicals';git push
-	git tag -a 5.4.0-alpha04 -m 'all: BitGroom SP NSD <=6; ncclimo: srun --exclusive, fix glb tms ELM comment att; ncremap: fix mbtr trfv2;';git push --tags
+	git tag -a 5.4.0-alpha04 -m 'all: BitGroom SP NSD <=6,nc_meta_block_size(), --blk_sz_mtd; ncclimo: srun --exclusive, fix glb tms ELM comment att; ncremap: fix mbtr trfv2;';git push --tags
 
 	* Add --blk_sz to ncremap/ncclimo
 
