@@ -1,8 +1,18 @@
-2026-07-07  Charlie Zender  <zender@uci.edu>
+2026-07-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha05: Keala O Keawe';git push
 	git tag -a 5.4.0-alpha05 -m 'fxm';git push --tags
+
+	* ncclimo: verify that blk_sz and bfr_sz propagate to output
+
+	* New netCDF, OS, and/or compilers cause address sanitizer errors in ncap2/antlr. Aargh.
+
+	* Update to netCDF 4.10.2-devel
+
+	* NEP ~/.ncrc misdirects NCO library searches to NEP build directory. Delete ~/.ncrc to fix.
+
+2026-07-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha04: Broadway Musicals';git push

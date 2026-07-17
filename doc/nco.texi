@@ -7264,6 +7264,10 @@ ncremap -G ttl='T42 Gaussian grid'#latlon=64,128#lat_typ=gss#lon_typ=grn_ctr \
 ncremap -G ttl='NCEP2 T62 Gaussian grid'#latlon=94,192#lat_typ=gss#lon_typ=grn_ctr#lat_drc=n2s \
         -g ${DATA}/grids/ncep2_t62_SCRIP.20191001.nc
 
+# TL319 Gaussian grid, first longitude centered at Greenwich, JRA55 TL319 Gaussian grid 
+ncremap -G ttl='JRA55 TL319 Gaussian grid'#latlon=320,640#lat_typ=gss#lon_typ=grn_ctr \
+        -g ${DATA}/grids/jra55_tl319_SCRIP.20260701.nc
+
 # F256 Full Gaussian grid, first longitude centered at Greenwich
 ncremap -7 -L 1 \
         -G ttl='ECMWF IFS F256 Full Gaussian grid 512x1024'#latlon=512,1024#lat_typ=gss#lon_typ=grn_ctr#lat_drc=n2s \
