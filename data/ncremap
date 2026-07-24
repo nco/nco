@@ -677,7 +677,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-5${fnt_nrm}          Output file format ${fmt_sng_nc5} [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
     echo "${fnt_rvr}-6${fnt_nrm}          Output file format ${fmt_sng_nc6} [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format ${fmt_sng_nc7} [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
-    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
+    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, alg, algorithm, regrid_algorithm${fnt_nrm}]"
     echo "            CDO algorithms: cdo_bilinear|cdo_conservative (same as ESMF)"
     echo "            ESMF algorithms: esmfbilin,bilinear|esmfaave,aave,conserve|conserve2nd|nearestdtos|neareststod|patch"
     echo "            NCO algorithms: ncoaave,nco,nco_con|ncoidw,nco_dwe (inverse-distance-weighted interpolation/extrapolation)"
@@ -879,7 +879,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       no_add_fll | no_add_fill_value | no_fll_mpt | no_fill_empty ) add_fll_usr='No' ;; # # Do not add _FillValue to fields with empty destination cells
 	       no_add_fll=?* | no_add_fill_value=?* | no_fll_mpt=?* | fill_empty=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Do not add _FillValue to fields with empty destination cells
 	       alg_lst=?* | algorithm_list=?* ) alg_lst="${LONG_OPTARG}" ;; # # Algorithm list for MWF mode
-	       alg_typ=?* | algorithm=?* | regrid_algorithm=?* ) alg_typ="${LONG_OPTARG}" ;; # -a # Algorithm
+	       alg_typ=?* | alg=* | algorithm=?* | regrid_algorithm=?* ) alg_typ="${LONG_OPTARG}" ;; # -a # Algorithm
 	       area_dgn | dgn_area | area_diagnose | diagnose_area ) area_dgn='Yes' ;; # # Diagnose (rather than copy) grid_area to inferred grid-file
 	       area_dgn=?* | dgn_area=?* | area_diagnose=?* | diagnose_area=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Diagnose (rather than copy) grid_area in inferred grids
 	       bfr_sz=?* | bfr=?* | buffer_size_hint=?* ) bfr_sz="${LONG_OPTARG}" ;; # # Buffer size for netCDF-classic I/O

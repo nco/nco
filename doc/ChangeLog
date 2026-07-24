@@ -1,8 +1,12 @@
-2026-07-16  Charlie Zender  <zender@uci.edu>
+2026-07-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha05: Keala O Keawe';git push
 	git tag -a 5.4.0-alpha05 -m 'fxm';git push --tags
+
+	* ncremap: Make --alg synonym for --alg_typ
+
+2026-07-16  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo: verify that blk_sz and bfr_sz propagate to output
 

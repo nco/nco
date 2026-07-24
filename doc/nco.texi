@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.4.0-alpha05
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 2 July 2026
+@set update-date 24 July 2026
 @set update-month July 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -26855,6 +26855,7 @@ Features common to many operators are described in
 @html
 <a name="tr_alg"></a> <!-- http://nco.sf.net/nco.html#tr_alg -->
 <a name="alg_typ"></a> <!-- http://nco.sf.net/nco.html#alg_typ -->
+<a name="alg"></a> <!-- http://nco.sf.net/nco.html#alg -->
 <a name="neareststod"></a> <!-- http://nco.sf.net/nco.html#neareststod -->
 <a name="nstod"></a> <!-- http://nco.sf.net/nco.html#nstod -->
 <a name="stod"></a> <!-- http://nco.sf.net/nco.html#stod -->
@@ -26895,6 +26896,7 @@ Features common to many operators are described in
 @end html
 @cindex @code{-a @var{alg_typ}}
 @cindex @var{alg_typ}
+@cindex @code{--alg}
 @cindex @code{--alg_typ}
 @cindex @code{--algorithm}
 @cindex @code{--regrid_algorithm}
@@ -26919,7 +26921,7 @@ Features common to many operators are described in
 @cindex @code{esmfaave}
 @cindex @code{conserve}
 @cindex @code{conserve2nd}
-@item -a @var{alg_typ} (@code{--alg_typ}, @code{--algorithm}, @code{--regrid_algorithm})
+@item -a @var{alg_typ} (@code{--alg_typ}, @code{--alg}, @code{--algorithm}, @code{--regrid_algorithm})
 Specifies the interpolation algorithm for weight-generation for use by
 @command{ESMF_RegridWeightGen} (@acronym{ERWG}), @acronym{MOAB},
 @acronym{NCO}, and/or TempestRemap. 
