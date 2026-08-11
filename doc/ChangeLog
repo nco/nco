@@ -1,8 +1,12 @@
-2026-07-24  Charlie Zender  <zender@uci.edu>
+2026-08-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha05: Keala O Keawe';git push
 	git tag -a 5.4.0-alpha05 -m 'fxm';git push --tags
+
+	* ncremap: Clarify logic for assuming ECMWF vs CESM hybrid sigma-pressure coordinate convention
+
+2026-07-24  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: Make --alg synonym for --alg_typ
 
@@ -12,7 +16,7 @@
 
 	* New netCDF, OS, and/or compilers cause address sanitizer errors in ncap2/antlr. Aargh.
 
-	* Update to netCDF 4.10.2-devel
+	* Update to netCDF 4.10.2-development
 
 	* NEP ~/.ncrc misdirects NCO library searches to NEP build directory. Delete ~/.ncrc to fix.
 

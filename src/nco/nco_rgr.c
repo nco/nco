@@ -1771,7 +1771,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	(void)fprintf(stdout,"%s: HINT %s input dataset contains \"lnsp\" variable and thus may be stored on hybrid sigma-pressure grid in ECMWF/IFS/CAMS-format. However, the user must invoke the regridder with either \"ncremap --ps_nm=lnsp ...\" or \"ncks --rgr ps_nm_in=lnsp ...\" in order to vertically interpolate data stored in ECMWF/IFS/CAMS-format. Otherwise, expect to receive an INFO message stating that no interpolable variables were found. See http://nco.sf.net/nco.html#cams for more information.\n",nco_prg_nm_get(),fnc_nm);
       } /* !rcd */
     } /* !ps_nm_in */
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s input dataset %s \"lnsp\" variable and is assumed to use %s-format (not %s-format) hybrid sigma-pressure vertical grid\n",nco_prg_nm_get(),fnc_nm,flg_grd_hyb_ecmwf ? "contains" : "omits",flg_grd_hyb_ecmwf ? "ECMWF/IFS" : "CAM/EAM",flg_grd_hyb_ecmwf ? "CAM/EAM" : "ECMWF/IFS");
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s input dataset %s \"lnsp\" variable and so is presumed to use %s-format (not %s-format) hybrid sigma-pressure vertical grid\n",nco_prg_nm_get(),fnc_nm,flg_grd_hyb_ecmwf ? "contains" : "has no",flg_grd_hyb_ecmwf ? "ECMWF/IFS" : "CAM/EAM",flg_grd_hyb_ecmwf ? "CAM/EAM" : "ECMWF/IFS");
     if(flg_grd_hyb_ecmwf && ps_id_tpl == NC_MIN_INT){
       /* If output surface pressure comes from input lnsp variable (not PS in vertical grid template file)... */
       if(!strcmp(ps_nm_out,ps_nm_ecmwf)){
