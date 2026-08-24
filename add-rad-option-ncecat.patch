@@ -1,0 +1,39 @@
+diff --git a/src/nco/ncecat.c b/src/nco/ncecat.c
+index 75b3f1d..xxxxx 100644
+--- a/src/nco/ncecat.c
++++ b/src/nco/ncecat.c
+@@ -155,6 +155,7 @@ main(int argc,char **argv)
+   nco_bool SHARE_CREATE=False; /* [flg] Create file in RAM */
+   nco_bool SHARE_OPEN=False; /* [flg] Open files with unbuffered I/O */
+   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True;
++  nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
+   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
+   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
+   nco_bool flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
+@@ -276,6 +277,10 @@ main(int argc,char **argv)
+     {\"version\",no_argument,0,0},
+     {\"vrs\",no_argument,0,0},
+     {\"unn\",no_argument,0,0},
++    {\"rad\",no_argument,0,0}, /* [flg] Retain all dimensions */
++    {\"retain_all_dimensions\",no_argument,0,0}, /* [flg] Retain all dimensions */
++    {\"orphan_dimensions\",no_argument,0,0}, /* [flg] Retain all dimensions */
++    {\"rph_dmn\",no_argument,0,0}, /* [flg] Retain all dimensions */
+     {\"bfr_sz_hnt\",required_argument,0,0},
+     {\"buffer_size_hint\",required_argument,0,0},
+     {\"cnk_byt\",required_argument,0,0},
+@@ -484,6 +489,7 @@ main(int argc,char **argv)
+         if(!strcmp(opt_crr,\"wrt_tmp_fl\") || !strcmp(opt_crr,\"write_tmp_fl\")) WRT_TMP_FL=True;
+         if(!strcmp(opt_crr,\"no_tmp_fl\")) WRT_TMP_FL=False;
+         if(!strcmp(opt_crr,\"unn\")) EXTRACT_ALL_COORDINATES=True;
++        if(!strcmp(opt_crr,\"rad\") || !strcmp(opt_crr,\"retain_all_dimensions\") || !strcmp(opt_crr,\"orphan_dimensions\") || !strcmp(opt_crr,\"rph_dmn\")) RETAIN_ALL_DIMS=True;
+       } /* opt != 0 */
+       /* Process short options */
+       switch(opt){
+@@ -633,7 +639,7 @@ main(int argc,char **argv)
+   /* Define dimensions, extracted groups, variables, and attributes in output file */
+   
+-  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,!FORCE_APPEND,True,False,nco_pck_plc,(char *)NULL,trv_tbl);
++  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,!FORCE_APPEND,True,RETAIN_ALL_DIMS,nco_pck_plc,(char *)NULL,trv_tbl);
+   
+   /* Catenate time-stamped command line to "history" global attribute */
+   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
