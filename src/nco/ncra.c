@@ -275,7 +275,7 @@ main(int argc,char **argv)
   nco_bool REC_FRS_GRP=False; /* [flg] Record is first in current group */
   nco_bool REC_LST_GRP=False; /* [flg] Record is last in current group */
   nco_bool REC_SRD_LST=False; /* [flg] Record belongs to last stride of current file */
-    nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
+  nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */

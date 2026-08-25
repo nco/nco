@@ -111,7 +111,7 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
-    nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
+  nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
@@ -920,7 +920,7 @@ main(int argc,char **argv)
       /* We now have final list of variables to extract. Phew. */
 
       /* Define extracted groups, variables, and attributes in output file */
-      (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,CPY_GLB_METADATA,(nco_bool)True,(nco_bool)RETAIN_ALL_DIMS,nco_pck_plc_nil,rec_dmn_nm,trv_tbl_gpr);
+      (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,CPY_GLB_METADATA,(nco_bool)True,RETAIN_ALL_DIMS,nco_pck_plc_nil,rec_dmn_nm,trv_tbl_gpr);
 
       /* Turn-off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
