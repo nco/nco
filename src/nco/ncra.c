@@ -275,7 +275,6 @@ main(int argc,char **argv)
   nco_bool REC_FRS_GRP=False; /* [flg] Record is first in current group */
   nco_bool REC_LST_GRP=False; /* [flg] Record is last in current group */
   nco_bool REC_SRD_LST=False; /* [flg] Record belongs to last stride of current file */
-  nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
@@ -370,10 +369,6 @@ main(int argc,char **argv)
     {"nsm_fl",no_argument,0,0},
     {"nsm_grp",no_argument,0,0},
     {"ram_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
-    {"rad",no_argument,0,0}, /* [flg] Retain all dimensions */
-    {"retain_all_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
-    {"orphan_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
-    {"rph_dmn",no_argument,0,0}, /* [flg] Retain all dimensions */
     {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
     {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
     {"diskless_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
@@ -661,7 +656,6 @@ main(int argc,char **argv)
       } /* !prm_int */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Create (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Open (netCDF3) file(s) in RAM */
-      if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True; /* [flg] Retain all dimensions */
       if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"unbuffered_io") || !strcmp(opt_crr,"uio") || !strcmp(opt_crr,"create_share")) SHARE_CREATE=True; /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
       if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"unbuffered_io") || !strcmp(opt_crr,"uio") || !strcmp(opt_crr,"open_share")) SHARE_OPEN=True; /* [flg] Open (netCDF3) file(s) with unbuffered I/O */
       if(!strcmp(opt_crr,"rec_apn") || !strcmp(opt_crr,"record_append")){
@@ -980,7 +974,7 @@ main(int argc,char **argv)
   if(nco_prg_id_get() == ncra) (void)nco_set_prm_typ_out(PROMOTE_INTS,xtr_nbr,var,trv_tbl);
   
   /* Define dimensions, extracted groups, variables, and attributes in output file */
-  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,!FORCE_APPEND,!REC_APN,RETAIN_ALL_DIMS,nco_pck_plc_nil,(char *)NULL,trv_tbl);
+  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,!FORCE_APPEND,!REC_APN,False,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Define ensemble fixed variables (True parameter) */
   if(nco_prg_id_get() == ncge) (void)nco_nsm_dfn_wrt(in_id,out_id,&cnk,dfl_lvl,gpe,True,trv_tbl); 

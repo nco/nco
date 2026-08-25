@@ -37,18 +37,6 @@ ncclimo -s 2013 -e 2014 --mth_srt=5 --mth_end=4 ... # same, explicit
 
 http://nco.sf.net/nco.html#mth_end
 
-B. The --rad (retain_all_dimensions) option is now supported by all
-remaining data operators: ncap2, ncbo, ncecat, nces, ncfe, ncflint,
-ncge, ncpdq, ncra, ncrcat, and ncwa.  Previously only ncks supported
---rad.  When --rad is specified, dimensions that are not referenced by
-any extracted variable (orphaned dimensions) are retained in the output
-file rather than silently dropped.  Synonyms --retain_all_dimensions,
---orphan_dimensions, and --rph_dmn are also accepted.
-
-ncra --rad -O -v T in.nc out.nc   # retain all dimensions even if not used by T
-
-http://nco.sf.net/nco.html#rad
-
 BUG FIXES:
 
 A.
