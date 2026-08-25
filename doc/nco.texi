@@ -2741,6 +2741,7 @@ feature is automatic and cannot be controlled by the user.
 * Subsetting Files::
 * Subsetting Coordinate Variables::
 * Group Path Editing::
+* Retaining Orphaned Dimensions::
 * C and Fortran Index Conventions::
 * Hyperslabs::
 * Stride::
@@ -5164,7 +5165,7 @@ for ``extract associated variables'', is synonymous with @samp{-c}.
 @html
 <a name="gpe"></a> <!-- http://nco.sf.net/nco.html#gpe -->
 @end html
-@node Group Path Editing, C and Fortran Index Conventions, Subsetting Coordinate Variables, Shared features
+@node Group Path Editing, Retaining Orphaned Dimensions, Subsetting Coordinate Variables, Shared features
 @section Group Path Editing
 @cindex @code{-G @var{gpe_dsc}}
 @cindex @code{--gpe @var{gpe_dsc}}
@@ -5746,7 +5747,41 @@ A @acronym{PDF} version of these instructions is available
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
 <a name="-F"></a> <!-- http://nco.sf.net/nco.html#-F -->
 @end html
-@node C and Fortran Index Conventions, Hyperslabs, Group Path Editing, Shared features
+
+@html
+<a name="rad"></a> <!-- http://nco.sf.net/nco.html#rad -->
+<a name="orphan"></a> <!-- http://nco.sf.net/nco.html#orphan -->
+<a name="rph_dmn"></a> <!-- http://nco.sf.net/nco.html#rph_dmn -->
+@end html
+@node Retaining Orphaned Dimensions, C and Fortran Index Conventions, Group Path Editing, Shared features
+@section Retaining Orphaned Dimensions
+@cindex @code{--rad}
+@cindex orphan dimensions
+@cindex @code{--retain_all_dimensions}
+@cindex @code{--orphan_dimensions}
+@cindex @code{--rph_dmn}
+@cindex Retaining Orphaned Dimensions
+@cartouche
+Availability: @command{ncap2}, @command{ncbo}, @command{ncecat},
+@command{nces}, @command{ncfe}, @command{ncflint}, @command{ncge},
+@command{ncks}, @command{ncpdq}, @command{ncra}, @command{ncrcat},
+@command{ncwa}@*
+Long options: @samp{--rad}, @samp{--retain_all_dimensions},
+@samp{--orphan_dimensions}, @samp{--rph_dmn}@*
+@end cartouche
+
+When invoked with @code{--rad} (Retain All Dimensions), @acronym{NCO}
+copies each dimension in the input file to the output file, regardless
+of whether the dimension is utilized by any variables.
+Normally @acronym{NCO} discards ``orphan dimensions'', i.e., dimensions
+not referenced by any variables.
+This switch allows users to keep non-referenced dimensions in the workflow.
+When @command{ncks} is invoked in printing mode, @code{--rad} also causes
+orphaned dimensions to be printed (they are not printed by default).
+Also @samp{--retain_all_dimensions}, @samp{--orphan_dimensions}, and
+@samp{--rph_dmn}.
+
+@node C and Fortran Index Conventions, Hyperslabs, Retaining Orphaned Dimensions, Shared features
 @section C and Fortran Index conventions
 @cindex index convention
 @cindex Fortran index convention
@@ -14024,7 +14059,7 @@ ncap2 [-3] [-4] [-5] [-6] [-7] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [
 [-D @var{dbg}] [-F] [-f] [--gaa ...] [--gad @var{att}[,@dots{}]]
 [-H] [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] [-O] [-o @var{output-file}]
-[-p @var{path}] [-R] [-r] [--ram_all]
+[-p @var{path}] [-R] [-r] [--rad] [--ram_all]
 [-s @var{algebra}] [-S @var{fl.nco}] [-t @var{thr_nbr}] [-v]
 [@var{input-file}] [@var{output-file}]  
 @end example
@@ -19211,7 +19246,7 @@ ncbo [-3] [-4] [-5] [-6] [-7] [-A] [--bfr_sz=@var{sz}] [--blk_sz=@var{sz}] [--bl
 [-H] [-h] [--hdr_pad @var{nbr}] [--hpss]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{file_3}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
-[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]]
+[-R] [-r] [--rad] [--ram_all] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]]
 [-X ...] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
@@ -22035,7 +22070,7 @@ ncecat [-3] [-4] [-5] [-6] [-7]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [--mrd] [-n @var{loop}]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
-[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-u @var{ulm_nm}] [--unn]
+[-R] [-r] [--rad] [--ram_all] [-t @var{thr_nbr}] [-u @var{ulm_nm}] [--unn]
 [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -22306,7 +22341,7 @@ nces [-3] [-4] [-5] [-6] [-7] [-A]
 [-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] [--nsm_fl|grp] [--nsm_sfx sfx]
 [-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
-[-R] [-r] [--ram_all] [--rth_dbl|flt] [-t @var{thr_nbr}] [--unn]
+[-R] [-r] [--rad] [--ram_all] [--rth_dbl|flt] [-t @var{thr_nbr}] [--unn]
 [-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -22577,7 +22612,7 @@ ncflint [-3] [-4] [-5] [-6] [-7] [-A]
 [-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [-N]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{file_3}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}] 
-[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]]
+[-R] [-r] [--rad] [--ram_all] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]]
 [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
@@ -24498,16 +24533,7 @@ Also @samp{--quench}.
 @cindex @code{--rph_dmn}
 @item --rad
 Retain all dimensions.
-When invoked with @code{--rad} (Retain All Dimensions),
-@command{ncks} copies each dimension in the input file to the output
-file, regardless of whether the dimension is utilized by any variables. 
-Normally @command{ncks} discards ``orphan dimensions'', i.e., dimensions
-not referenced by any variables.
-This switch allows users to keep non-referenced dimensions in the workflow.
-When invoked in printing mode, causes orphaned dimensions to be printed
-(they are not printed by default).
-Also @samp{--retain_all_dimensions}, @samp{--orphan_dimensions}, and
-@samp{--rph_dmn}. 
+@xref{Retaining Orphaned Dimensions}. 
 
 @html
 <a name="s"></a> <!-- http://nco.sf.net/nco.html#s -->
@@ -25403,7 +25429,7 @@ ncpdq [-3] [-4] [-5] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--mrd]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}]
-[--qnt ...] [--qnt_alg @var{alg_nm}] [-R] [-r] [--ram_all] [-t @var{thr_nbr}]
+[--qnt ...] [--qnt_alg @var{alg_nm}] [-R] [-r] [--rad] [--ram_all] [-t @var{thr_nbr}]
 [-U] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x]
 @var{input-file} [@var{output-file}]
 @end example
@@ -26059,7 +26085,7 @@ ncra [-3] [-4] [-5] [-6] [-7] [-A]
 [-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-N] [-n @var{loop}] 
 [--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
-[--prm_int] [--prw wgt_arr] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
+[--prm_int] [--prw wgt_arr] [-R] [-r] [--rad] [--ram_all] [--rec_apn] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x]
 [-Y @var{prg_nm}] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
@@ -26420,7 +26446,7 @@ ncrcat [-3] [-4] [-5] [-6] [-7] [-A]
 [-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}]
 [--no_tmp_fl] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
-[-R] [-r] [--ram_all] [--rec_apn] [-t @var{thr_nbr}]
+[-R] [-r] [--rad] [--ram_all] [--rec_apn] [-t @var{thr_nbr}]
 [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -31077,7 +31103,7 @@ ncwa [-3] [-4] [-5] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] 
 [--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [--qnt ...] [--qnt_alg @var{alg_nm}]
-[-R] [-r] [--ram_all] [--rth_dbl|flt] [-T @var{mask_comp}] [-t @var{thr_nbr}]
+[-R] [-r] [--rad] [--ram_all] [--rth_dbl|flt] [-T @var{mask_comp}] [-t @var{thr_nbr}]
 [--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-X ...] [-x] [-y @var{op_typ}]
 @var{input-file} [@var{output-file}]
 @end example
