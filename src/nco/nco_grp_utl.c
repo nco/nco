@@ -10272,6 +10272,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool RETAIN_ALL_DIMS,       /* I [flg] Retain all dimensions */
  const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False for write variables ) */
 {
   /* Purpose: Group broadcasting OR variable matching (ncbo only) */
@@ -10443,6 +10444,12 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
     /* Process relative common objects (define or write) */
     (void)nco_prc_rel_cmn_nm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);
   } /* There are NOT ensembles anywhere, but there are relative matches */
+
+  /* If retaining all dimensions, define any dimensions from both input files not yet in output */
+  if(RETAIN_ALL_DIMS && flg_dfn){
+    (void)nco_rad(nc_out_id,(int)0,(dmn_cmn_sct *)NULL,trv_tbl_1);
+    (void)nco_rad(nc_out_id,(int)0,(dmn_cmn_sct *)NULL,trv_tbl_2);
+  } /* !RETAIN_ALL_DIMS */
 
   /* Memory management for common names list */
   for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
@@ -11318,10 +11325,12 @@ nco_rad                                /* [fnc] Retain all dimensions */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id))
         nco_def_grp_full(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id);
 
-      /* Define dimension and obtain dimension ID */
-      (void)nco_def_dim(grp_dmn_out_id,dmn_trv.nm,dmn_trv.sz,&dmn_id_out);
-
-      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_trv.nm,dmn_id_out);
+      /* Only define dimension if it does not already exist in output group */
+      if(nco_inq_dimid_flg(grp_dmn_out_id,dmn_trv.nm,&dmn_id_out) == NC_EBADDIM){
+        /* Define dimension and obtain dimension ID */
+        (void)nco_def_dim(grp_dmn_out_id,dmn_trv.nm,dmn_trv.sz,&dmn_id_out);
+        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_trv.nm,dmn_id_out);
+      } /* endif dimension does not exist */
 
       /* Memory management after defining current output dimension */
       if(grp_dmn_out_fll) grp_dmn_out_fll=(char *)nco_free(grp_dmn_out_fll);

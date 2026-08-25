@@ -871,6 +871,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool RETAIN_ALL_DIMS,       /* I [flg] Retain all dimensions */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False for write variables ) */
 
 void                          

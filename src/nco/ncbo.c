@@ -741,7 +741,7 @@ main(int argc,char **argv)
   cnv=nco_cnv_ini(in_id_1);
 
   /* Group broadcating (DEFINE mode, True as flg_dfn parameter) */
-  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)True);
+  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,RETAIN_ALL_DIMS,(nco_bool)True);
 
   /* Copy global attributes from file 1 */
   (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -765,7 +765,7 @@ main(int argc,char **argv)
   } /* hdr_pad */
 
   /* Group broadcating (WRITE mode, False as flg_dfn parameter) */
-  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)False);
+  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,RETAIN_ALL_DIMS,(nco_bool)False);
 
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
