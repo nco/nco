@@ -216,6 +216,7 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_mmr_cln=True;  /* [flg] Clean memory prior to exit */
@@ -262,6 +263,10 @@ main(int argc,char **argv)
     {"lbr",no_argument,0,0},
     {"library",no_argument,0,0},
     {"ram_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
+    {"rad",no_argument,0,0}, /* [flg] Retain all dimensions */
+    {"retain_all_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
+    {"orphan_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
+    {"rph_dmn",no_argument,0,0}, /* [flg] Retain all dimensions */
     {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
     {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
     {"diskless_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
@@ -468,6 +473,7 @@ main(int argc,char **argv)
       } /* !"lbr" */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Create (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Open (netCDF3) file(s) in RAM */
+      if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True; /* [flg] Retain all dimensions */
       if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"unbuffered_io") || !strcmp(opt_crr,"uio") || !strcmp(opt_crr,"create_share")) SHARE_CREATE=True; /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
       if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"unbuffered_io") || !strcmp(opt_crr,"uio") || !strcmp(opt_crr,"open_share")) SHARE_OPEN=True; /* [flg] Open (netCDF3) file(s) with unbuffered I/O */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
@@ -995,6 +1001,16 @@ main(int argc,char **argv)
   
   /* Free current list of all dimensions in input file */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_ass);
+
+  /* If retaining all dimensions, add any input dimensions not yet in output */
+  if(RETAIN_ALL_DIMS){
+    for(jdx=0;jdx<(int)dmn_in_vtr.size();jdx++){
+      if(dmn_in_vtr[jdx]->xrf) continue; /* Already in output */
+      (void)dmn_out_vtr.push_back(nco_dmn_dpl(dmn_in_vtr[jdx]));
+      (void)nco_dmn_dfn(fl_out,out_id,&dmn_out_vtr.back(),1);
+      (void)nco_dmn_xrf(dmn_out_vtr.back(),dmn_in_vtr[jdx]);
+    } /* end loop */
+  } /* !RETAIN_ALL_DIMS */
   
   /* Dimensions for manually specified extracted variables are now defined in output file
      Add coordinate variables to extraction list
