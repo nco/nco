@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.4.0-alpha05
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 11 August 2026
+@set update-date 24 August 2026
 @set update-month August 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -24520,6 +24520,17 @@ This allows @command{ncks} to retrieve remote files without
 automatically trying to print them.
 Also @samp{--quench}.
 
+@html
+<a name="rad"></a> <!-- http://nco.sf.net/nco.html#rad -->
+<a name="orphan"></a> <!-- http://nco.sf.net/nco.html#orphan -->
+<a name="rph_dmn"></a> <!-- http://nco.sf.net/nco.html#rph_dmn -->
+<a name="retain_all_dimensions"></a> <!-- http://nco.sf.net/nco.html#retain_all_dimensions -->
+@end html
+@cindex @code{--rad}
+@cindex orphan dimensions
+@cindex @code{--retain_all_dimensions}
+@cindex @code{--orphan_dimensions}
+@cindex @code{--rph_dmn}
 @item --rad
 Retain all dimensions.
 @xref{Retaining Orphaned Dimensions}. 
