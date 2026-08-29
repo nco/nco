@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha05: Keala O Keawe';git push
 	git tag -a 5.4.0-alpha05 -m 'ncclimo: flg_dct; ncremap: alg;';git push --tags
 
+	* ncclimo: Do not prepend absolute file paths with drc_in when checking current file existence
+
 	* ncclimo: Move flg_dct to global level to support ensembles
 
 2026-08-11  Charlie Zender  <zender@uci.edu>

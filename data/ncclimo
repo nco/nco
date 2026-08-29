@@ -1765,11 +1765,13 @@ fi # !clm_flg, !clm_md
 # Prepend drc_in to fl_in in MFOs (ncra, ncrcat)
 # 20240401 Also prepend drc_in to fl_in in SFOs (ncks, ncap2) used in hfc/hfs modes and in rgn_stt
 # Otherwise operators will fail to find input files when cwd != drc_in
+ppn_sng="${drc_in}/"
 ppn_opt="-p ${drc_in}"
 # 20220111 If input files include absolute path, then use fl_in as-is later on
 if [ "${fl_in[0]}" ]; then
     if [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ] || [ "${fl_in[0]:0:1}" = '/' ]; then
 	ppn_opt=''
+	ppn_sng=''
     fi # !basename
 fi # !fl_in[0]
 	
@@ -2851,9 +2853,9 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    # Check for existence of raw input only when file will be used
 	    if [ "${bnr_flg}" = 'No' ]; then
 		for fl_crr in ${fl_all} ; do
-		    if [ ! -f "${drc_in}/${fl_crr}" ] && [ ! -L "${drc_in}/${fl_crr}" ]; then
-			echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
-			echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
+		    if [ ! -f "${ppn_sng}${fl_crr}" ] && [ ! -L "${ppn_sng}${fl_crr}" ]; then
+			echo "${spt_nm}: ERROR Unable to find required input file ${ppn_sng}${fl_crr}"
+			echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must exist before ${spt_nm} will proceed"
 			exit 1
 		    fi # ! -f
 		done # !fl_crr
