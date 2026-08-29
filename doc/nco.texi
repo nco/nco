@@ -128,11 +128,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.4.0-alpha05
-@set doc-edition 5.4.0-alpha05
+@set nco-edition 5.4.0-alpha06
+@set doc-edition 5.4.0-alpha06
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 24 August 2026
+@set update-date 29 August 2026
 @set update-month August 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -20092,17 +20092,22 @@ ncclimo -s 2013 -e 2014 --mth_srt=10 ... # 12-months are assumed
 @cindex @code{--fml}
 @cindex @code{--family}
 @cindex @code{--family_name}
+@cindex ensemble
 @item -f @var{fml_nm} (@code{--fml_nm}, @code{--fml}, @code{--family}, @code{--family_name})
-Family name (nickname) of output files.
+Family name, nickname, or ensemble name of output files.
 In climate generation mode, output climo file names are constructed by
 default with the same @var{caseid} as the input files.
 The @var{fml_nm}, if supplied, replaces @var{caseid} in output climo
 names, which are of the form
 @code{@var{fml_nm}_XX_YYYYMM_YYYYMM.nc} where @var{XX} is the month or
 seasonal abbreviation.
-Use @samp{-f @var{fml_nm}} to simplify long names, avoid overlap, etc.
-Example values of @var{fml_nm} are @samp{control}, @samp{experiment},
-and (for a single-variable climo) @samp{FSNT}.
+Use @samp{-f @var{fml_nm}} to simplify long names or avoid overlap.
+It makes little sense to name the output of ensemble climatologies
+(i.e., climatologies of multiple simulations) with the name of only
+one of the ensemble members, e.g., @samp{historical_ensemble}.
+So also use @var{fml_nm} to describe the ensemble contents, e.g.,
+Other example values of @var{fml_nm} are @samp{control},
+@samp{experiment}, and (for a single-variable climo) @samp{FSNT}.  
 In timeseries reshaping mode, @var{fml_nm} will be used, if supplied,
 as an additional string in the output filename.
 For example, specifying @samp{-f control} would cause

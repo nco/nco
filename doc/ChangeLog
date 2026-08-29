@@ -1,8 +1,12 @@
 2026-08-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.4.0-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha06: Stevens Creek';git push
+	git tag -a 5.4.0-alpha06 -m 'fxm;';git push --tags
+
 	* NCO 5.4.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha05: Keala O Keawe';git push
-	git tag -a 5.4.0-alpha05 -m 'ncclimo: flg_dct, nsm; ncremap: alg;';git push --tags
+	git tag -a 5.4.0-alpha05 -m 'ncclimo: flg_dct, nsm_sz; ncremap:	alg syn;';git push --tags
 
 	* ncclimo: Allow ensemble climatologies when input files are an	integer multiple of the number of months
 
