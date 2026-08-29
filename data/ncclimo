@@ -615,6 +615,7 @@ ncr_flg='No' # [sng] Incremental method
 nd_nbr=1 # [nbr] Number of nodes
 nm_typ='cesm' # [sng] Name type ('cesm', 'mpas', 'yyyymm', 'yyyy-mm', 'yyyy-mm-01', 'yyyy-mm-01-00000') (for filenames)
 no_ntv_tms='No' # [flg] Omit native-grid split timeseries
+nsm_sz=1 # [nbr] Ensemble size
 par_opt='' # [sng] Parallel options to shell
 par_typ="${par_bck}" # [sng] Parallelism type for files
 prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'cpl', 'eam', 'eamxx', 'elm', 'mali', 'mosart', 'mpas', 'mpasa', 'mpasatmosphere', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi')
@@ -2097,11 +2098,16 @@ else # !tms_flg
 
     if [ ${clm_md} = 'mth' ] && [ ${flg_dct} = 'Yes' ]; then
 
-	# Duplicate a check from monthly timeseries mode
+	# Modify the check from monthly timeseries mode to allow integer-multiples of the expected number of files
+	# An integer multiple usually means that an ensemble of simulations is being input
 	if [ ${mth_nbr} -ne ${fl_nbr} ]; then
-	    printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} differs from number of months = ${mth_nbr} computed from calendar inputs\n"
-	    printf "${spt_nm}: HINT In this mode (clm_md=${clm_md}) ${spt_nm} expects one monthly file per calendar month\n"
-	    exit 1
+	    let nsm_sz=${fl_nbr}/${mth_nbr}
+	    let mth_rmd=${fl_nbr}%${mth_nbr}
+	    if [ ${mth_rmd} -ne 0 ]; then
+		printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} unequal to and not evenly divisible by number of months = ${mth_nbr} computed from calendar inputs\n"
+		printf "${spt_nm}: HINT In this mode (clm_md=${clm_md}) ${spt_nm} expects one monthly file per calendar month for single datasets, or an integer number input files per calendar month for ensemble climatologies\n"
+		exit 1
+	    fi # !mth_rmd
 	fi # !mth_nbr
 
     fi # !clm_md
@@ -2796,13 +2802,16 @@ if [ "${clm_flg}" = 'Yes' ]; then
 	printf "Input filenames will be read (not constructed) from globbing, positional arguments, or stdin\n"
     fi # !inp_aut
     if [ ${clm_md} = 'ann' ]; then 
-	printf "Each input file assumed to contain statistic for one year\n"
+	printf "Each input file assumed to contain statistics for one year\n"
     elif [ ${clm_md} = 'dly' ]; then 
 	printf "Each input file assumed to contain statistics for one or more daily or sub-daily (e.g., 3-hourly) means\n"
     elif [ ${clm_md} = 'hfc' ]; then 
 	printf "Each input file assumed to contain statistics for an integer number of days each comprising ${tpd_out} timesteps\n"
     elif [ ${clm_md} = 'mth' ]; then 
-	printf "Each input file assumed to contain statistic for one month\n"
+	if [ ${nsm_sz} -gt 1 ]; then 
+	    printf "Received ${fl_nbr} input files for only ${mth_nbr} months. Treating this as an ensemble climatology of ${nsm_sz} simulations.\n"
+	fi # !nsm_sz
+	printf "Each input file assumed to contain statistics for one month\n"
     fi # !mth
     if [ "${clm_hfc_or_mth}" = 'Yes' ]; then 
 	if [ ${csn_flg} = 'No' ]; then 

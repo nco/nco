@@ -1,8 +1,12 @@
-2026-08-28  Charlie Zender  <zender@uci.edu>
+2026-08-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha05: Keala O Keawe';git push
-	git tag -a 5.4.0-alpha05 -m 'ncclimo: flg_dct; ncremap: alg;';git push --tags
+	git tag -a 5.4.0-alpha05 -m 'ncclimo: flg_dct, nsm; ncremap: alg;';git push --tags
+
+	* ncclimo: Allow ensemble climatologies when input files are an	integer multiple of the number of months
+
+2026-08-28  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo: Do not prepend absolute file paths with drc_in when checking current file existence
 
