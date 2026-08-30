@@ -55,6 +55,24 @@
 drc_pwd=${PWD}
 # Security: Explicitly unset IFS before wordsplitting, so Bash uses default IFS=<space><tab><newline>
 unset IFS
+# Safety: Exit immediately when any command returns non-zero exit status, uninitialized variables are used, or pipes fail
+set -e # err_hnd Exit on command failure
+set -u # err_hnd Exit on unbound variable reference
+set -o pipefail # err_hnd Exit on pipe failure
+# Define error handler function
+function err_hnd {
+    local exit_code=$?
+    local line_number=${BASH_LINENO[0]}
+    local failed_command="$BASH_COMMAND"
+    
+    echo "❌ CRASH DETECTED!" >&2
+    echo "Failed Command: '$failed_command'" >&2
+    echo "Line Number   : $line_number" >&2
+    echo "Exit Status   : $exit_code" >&2
+} # !err_hnd()
+# Register error handler
+trap err_hnd ERR # err_hnd
+
 # Set these before 'module' command which can overwrite ${BASH_SOURCE[0]}
 # NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
@@ -71,9 +89,11 @@ spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} 
 spt_pid=$$ # [nbr] Script PID (process ID)
 
 # 20200110 Qi Tang reports his batch scripts on Cori that use netCDF4 map-files fail unless he sets this
+set +u # err_hnd Continue on unbound variable reference
 if [ -z "${HDF5_USE_FILE_LOCKING}" ]; then
     export HDF5_USE_FILE_LOCKING='FALSE'
 fi # HDF5_USE_FILE_LOCKING
+set -u # err_hnd Exit on unbound variable reference
 
 # 20221108: Passing environment variable NCO_PATH_OVERRIDE (NPO) to ncremap in batch queues fails on Cori
 # Approaches that fail include: 1. export NPO='Yes';ncremap ... 2. export NPO='Yes' ncremap ...
@@ -471,9 +491,11 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # 20220131 ncclimo/ncremap commands within scripts that open E3SMU environment
 # (e.g., zppy-generated scripts) must be told where to find NCO binaries.
 # Only necessary on login nodes since Spack handles this fine on compute nodes
+set +u # err_hnd Continue on unbound variable reference
 if [ "${E3SMU_MPI}" = 'NOMPI' ] && [ -n "${E3SMU_SCRIPT}" ] && [ -n "${CONDA_PREFIX}" ]; then
    export PATH="${CONDA_PREFIX}/bin"\:${PATH}
 fi # !E3SMU_MPI
+set -u # err_hnd Exit on unbound variable reference
 # Set NCO version and directory
 nco_exe=`which ncks`
 if [ -z "${nco_exe}" ]; then
@@ -1092,6 +1114,7 @@ fi # !vrs_prn
 # This is because PBS uses stdin to set the job name
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
 # Check stdin if user has not explicitly disallowed it with --no_stdin
+set +u # err_hnd Continue on unbound variable reference
 if [ "${std_chk}" = 'Yes' ]; then
     if [ -n "${PBS_ENVIRONMENT}" ]; then
 	if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
@@ -1136,6 +1159,7 @@ if [ "${std_chk}" = 'Yes' ]; then
 	exit 1
     fi # !inp_std
 fi # !std_chk
+#set -u # err_hnd Exit on unbound variable reference
 
 # Determine mode first (this helps determine other defaults)
 if [ -n "${yr_srt_prv}" ]; then
@@ -1354,7 +1378,7 @@ if [ ${mth_srt_rth} -eq 1 ]; then
 else
     jan_fst=$(( 12 - ${mth_srt_rth} + 1 ))
 fi # mth_srt_rth
-let mth_srtm1=${mth_srt_rth}-1 # [idx] 1-based index of month preceding start month
+mth_srtm1=$((${mth_srt_rth}-1)) # [idx] 1-based index of month preceding start month
 let mth_endp1=${mth_end_rth}+1
 if [ ${mth_srtm1} -eq 0 ]; then
     let mth_srtm1=12
@@ -1755,7 +1779,8 @@ fi # !fl_nbr
 # 20250509: Provision of filenames via other methods never checked this until NCO 5.3.4
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then 
     fpy=12
-    let fl_rmd=${fl_nbr}%${fpy}
+#    printf "quark1 fl_nbr = ${fl_nbr}, fpy = ${fpy}\n" # 20260830 Computing as let fl_rmd=${fl_nbr} % ${fpy} causes error
+    fl_rmd=$((${fl_nbr} % ${fpy}))
     if [ ${fl_rmd} -ne 0 ]; then
 	printf "${spt_nm}: ERROR User requested climatology of monthly files and supplied ${fl_nbr} (not a multiple of 12) input files.\n"
 	printf "${spt_nm}: HINT Climatologies of monthly resolution data are only supported for whole numbers of years, not partial years. Provide monthly input files in multiples of 12. Use the --mth_srt (default 1) and --mth_end (default 12) options to indicate the starting and ending months if the first year does not start in January.\n"
