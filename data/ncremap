@@ -68,6 +68,24 @@
 drc_pwd=${PWD}
 # Security: Explicitly unset IFS before wordsplitting, so Bash uses default IFS=<space><tab><newline>
 unset IFS
+# Safety: Exit immediately when any command returns non-zero exit status, uninitialized variables are used, or pipes fail
+set -e # err_hnd Exit on command failure
+set -u # err_hnd Exit on unbound variable reference
+set -o pipefail # err_hnd Exit on pipe failure
+# Define error handler function
+function err_hnd {
+    local exit_code=$?
+    local line_number=${BASH_LINENO[0]}
+    local failed_command="$BASH_COMMAND"
+    
+    echo "❌ CRASH DETECTED!" >&2
+    echo "Failed Command: '$failed_command'" >&2
+    echo "Line Number   : $line_number" >&2
+    echo "Exit Status   : $exit_code" >&2
+} # !err_hnd()
+# Register error handler
+trap err_hnd ERR # err_hnd
+
 # Set these before 'module' command which can overwrite ${BASH_SOURCE[0]}
 # NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
@@ -87,9 +105,11 @@ spt_pid=$$ # [nbr] Script PID (process ID)
 # "The file locking calls used in HDF5 1.10.0 (including patch1) will fail when the underlying file system does not support file locking or where locks have been disabled. To disable all file locking operations, an environment variable named HDF5_USE_FILE_LOCKING can be set to the five-character string 'FALSE'."
 # 20200110 Qi Tang reports Cori batch scripts to generate map-files fail unless he sets this
 # 20200131 Necessary whenever using OpenMP and netCDF4-linked library on any non-locking filesystem?
+set +u # err_hnd Continue on unbound variable reference
 if [ -z "${HDF5_USE_FILE_LOCKING}" ]; then
     export HDF5_USE_FILE_LOCKING='FALSE'
 fi # HDF5_USE_FILE_LOCKING
+set -u # err_hnd Exit on unbound variable reference
 
 # 20221108: Passing environment variable NCO_PATH_OVERRIDE (NPO) to ncremap in batch queues fails on Cori
 # Approaches that fail include: 1. export NPO='Yes';ncremap ... 2. export NPO='Yes' ncremap ...
@@ -427,9 +447,11 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # 20220131 ncclimo/ncremap commands within scripts that open E3SMU environment
 # (e.g., zppy-generated scripts) must be told where to find NCO binaries.
 # Only necessary on login nodes since Spack handles this fine on compute nodes
+set +u # err_hnd Continue on unbound variable reference
 if [ "${E3SMU_MPI}" = 'NOMPI' ] && [ -n "${E3SMU_SCRIPT}" ] && [ -n "${CONDA_PREFIX}" ]; then
    export PATH="${CONDA_PREFIX}/bin"\:${PATH}
 fi # !E3SMU_MPI
+set -u # err_hnd Exit on unbound variable reference
 # Set NCO version and directory
 nco_exe=`which ncks`
 if [ -z "${nco_exe}" ]; then
@@ -536,6 +558,9 @@ drc_in='' # [sng] Input file directory
 drc_in_xmp='~/drc_in' # [sng] Input file directory for examples
 drc_out="${drc_pwd}" # [sng] Output file directory
 drc_out_xmp="~/rgr" # [sng] Output file directory for examples
+mpi_pfx='' # [sng] Prefix for MPI-enabled weight generators
+mpi_pfx_usr='' # [sng] Prefix for MPI-enabled weight generators (user-specified)
+drc_usr='' # [sng] Output directory (user-specified)
 dst_fl='' # [sng] Destination file
 dst_xmp='dst.nc' # [sng] Destination file for examples
 dt_sng=`date +%Y%m%d` # [sng] Date string for MWF map names
@@ -580,7 +605,8 @@ mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indic
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpaso_var_zmid='timeMonthly_avg_zMid' # [sng] Name of MPAS-O 3D depth variable
 mpi_flg='No' # [sng] Parallelize over nodes
-mpi_nbr=1 # [sng] Number of tasks-per-node that MPI-enabled weight generators will request (should be >= prt_nbr)
+mpi_nbr=1 # [nbr] Number of tasks-per-node that MPI-enabled weight generators will request (should be >= prt_nbr)
+mpi_nbr_usr='' # [nbr] Number of tasks-per-node that MPI-enabled weight generators will request (user_specified)
 mpt_mss='No' # [flg] Set empty (sgs_frc==0.0) SGS cells to missing value
 msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
 msh_fl='' # [sng] Mesh-file (for Tempest)
@@ -622,9 +648,11 @@ std_chk='Yes' # [sng] Check stdin for input file list
 std_flg='No' # [sng] Input available from pipe to stdin
 stg_grd='No' # [flg] Include staggered grid variables
 thr_nbr=2 # [nbr] Thread number for regridder
+tmp_usr='' # [sng] Temporary directory (user-specified)
 trn_map='No' # [flg] Tempest transpose map (i.e., fv2se_flx == monotr)
 ugrid_fl='' # [sng] UGRID file
 unq_sfx=".pid${spt_pid}" # [sng] Unique suffix
+unq_usr='' # [sng] Unique suffix (user-specified)
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
 var_rgr='' # [sng] CF template variable
@@ -1023,16 +1051,18 @@ if [ "${d2f_flg}" != 'Yes' ]; then
 fi # !d2f_flg
 
 # https://stackoverflow.com/questions/37056192/which-vs-command-v-in-bash
-cmd_wgt_esmf=`command -v ${wgt_exe_esmf} --no_log 2> /dev/null`
-cmd_cnv_mbt=`command -v ${cnv_exe_mbt} 2> /dev/null`
-cmd_cnv_tps=`command -v ${cnv_exe_tps} 2> /dev/null`
-cmd_dpt_mpas=`command -v ${dpt_exe_mpas} --no_log 2> /dev/null`
-cmd_prt_mbt=`command -v ${prt_exe_mbt} 2> /dev/null`
-cmd_wgt_cdo=`command -v ${wgt_exe_cdo} 2> /dev/null`
-cmd_wgt_mbt=`command -v ${wgt_exe_mbt} 2> /dev/null`
-cmd_wgt_nco=`command -v ${wgt_exe_nco} 2> /dev/null`
-cmd_wgt_tps=`command -v ${wgt_exe_tps} 2> /dev/null`
-cmd_msh_tps=`command -v ${msh_exe_tps} 2> /dev/null`
+# 20260830 Appending || true ensures built-in command() returns success code when argument is not found
+# This prevents command() from triggering the error handler in set -e mode
+cmd_wgt_esmf=$(command -v "${wgt_exe_esmf}" --no_log 2>/dev/null) || true
+cmd_cnv_mbt=$(command -v "${cnv_exe_mbt}" 2>/dev/null) || true
+cmd_cnv_tps=$(command -v "${cnv_exe_tps}" 2>/dev/null) || true
+cmd_dpt_mpas=$(command -v "${dpt_exe_mpas}" --no_log 2> /dev/null) || true
+cmd_prt_mbt=$(command -v "${prt_exe_mbt}" 2>/dev/null) || true
+cmd_wgt_cdo=$(command -v "${wgt_exe_cdo}" 2>/dev/null) || true
+cmd_wgt_mbt=$(command -v "${wgt_exe_mbt}" 2>/dev/null) || true
+cmd_wgt_nco=$(command -v "${wgt_exe_nco}" 2>/dev/null) || true
+cmd_wgt_tps=$(command -v "${wgt_exe_tps}" 2>/dev/null) || true
+cmd_msh_tps=$(command -v "${msh_exe_tps}" 2>/dev/null) || true
 if [ ${vrs_prn} = 'Yes' ]; then
     printf "${spt_nm}, the NCO regridder and grid, map, and weight-generator, version ${nco_vrs} \"${nco_sng}\"\n"
     printf "Copyright (C) 2016--present Charlie Zender\n"
@@ -1114,6 +1144,7 @@ fi # !vrs_prn
 # This is because PBS uses stdin to set the job name
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
 # Check stdin if user has not explicitly disallowed it with --no_stdin
+set +u # err_hnd Continue on unbound variable reference
 if [ "${std_chk}" = 'Yes' ]; then
     if [ -n "${PBS_ENVIRONMENT}" ]; then
 	if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
@@ -1158,6 +1189,7 @@ if [ "${std_chk}" = 'Yes' ]; then
 	exit 1
     fi # !inp_std
 fi # !std_chk
+#set -u # err_hnd Exit on unbound variable reference
 
 # Derived variables
 if [ -n "${drc_usr}" ]; then
@@ -3005,21 +3037,22 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 fi # !grd_src_usr_flg
 
 # Begin loop over input files
-let bch_nbr=$((fl_nbr / job_nbr))
-let bch_flg=$((fl_nbr % job_nbr))
+# printf "quark1 fl_nbr = ${fl_nbr}, job_nbr = ${job_nbr}\n" # 20260830 This command causes an error when let is used with (())
+bch_nbr=$((fl_nbr / job_nbr))
+bch_flg=$((fl_nbr % job_nbr))
 if [ ${fl_nbr} -gt 0 ] && [ ${bch_nbr} -eq 0 ]; then
-    let bch_nbr=$((bch_nbr+1))
+    bch_nbr=$((bch_nbr+1))
 elif [ ${bch_flg} -ne 0 ]; then
-    let bch_nbr=$((bch_nbr+1))
+    bch_nbr=$((bch_nbr+1))
 fi # !bch_flg
-let bch_nbrm1=$((bch_nbr-1))
+bch_nbrm1=$((bch_nbr-1))
 for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
     # fl_idx is 0-based, bch_idx is 0-based
-    let fl_idx_srt=$((bch_idx * job_nbr))
-    let fl_idx_end=$((fl_idx_srt + job_nbr - 1))
+    fl_idx_srt=$((bch_idx * job_nbr))
+    fl_idx_end=$((fl_idx_srt + job_nbr - 1))
     if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ]; then
-	let fl_idx_srt=$((bch_idx * job_nbr))
-	let fl_idx_end=$((fl_nbr - 1))
+	fl_idx_srt=$((bch_idx * job_nbr))
+	fl_idx_end=$((fl_nbr - 1))
     fi # !bch_flg
     for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	in_fl=${fl_in[${fl_idx}]}

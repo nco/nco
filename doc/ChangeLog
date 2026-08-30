@@ -1,8 +1,12 @@
-2026-08-29  Charlie Zender  <zender@uci.edu>
+2026-08-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha06: Stevens Creek';git push
-	git tag -a 5.4.0-alpha06 -m 'fxm;';git push --tags
+	git tag -a 5.4.0-alpha06 -m 'ncremap: err_hnd(), prune redundant let, set -euo;';git push --tags
+
+	* ncremap/ncclimo: add error handler err_hnd(), set -euo to exit on failure and referencing undeclared variables
+
+2026-08-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha05: Keala O Keawe';git push
