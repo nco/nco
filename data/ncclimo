@@ -646,6 +646,8 @@ rgn_avg='No' # [sng] Regional/global average timeseries
 rgn_stt='No' # [sng] Regional/global statistics
 rgr_map='' # [sng] Regridding (horizontal) map
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
+sgm_nbr=0 # [nbr] Segment number (often in months)
+sgm_rmd=0 # [nbr] Segment remainder (usually in months)
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
 spl_rgr_opt='--no_stagger' # [sng] Splitter regridding options
 sgs_frc='' # [sng] Sub-grid fraction variable
@@ -1376,9 +1378,9 @@ let yr_nbr=${mth_nbr}/12
 if [ ${mth_srt_rth} -eq 1 ]; then
     jan_fst=0 # [nbr] Offset of January from starting month
 else
-    jan_fst=$(( 12 - ${mth_srt_rth} + 1 ))
+    jan_fst=$(( 12 - mth_srt_rth + 1 ))
 fi # mth_srt_rth
-mth_srtm1=$((${mth_srt_rth}-1)) # [idx] 1-based index of month preceding start month
+mth_srtm1=$(( mth_srt_rth - 1 )) # [idx] 1-based index of month preceding start month
 let mth_endp1=${mth_end_rth}+1
 if [ ${mth_srtm1} -eq 0 ]; then
     let mth_srtm1=12
@@ -1780,7 +1782,7 @@ fi # !fl_nbr
 if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then 
     fpy=12
 #    printf "quark1 fl_nbr = ${fl_nbr}, fpy = ${fpy}\n" # 20260830 Computing as let fl_rmd=${fl_nbr} % ${fpy} causes error
-    fl_rmd=$((${fl_nbr} % ${fpy}))
+    fl_rmd=$(( fl_nbr % fpy ))
     if [ ${fl_rmd} -ne 0 ]; then
 	printf "${spt_nm}: ERROR User requested climatology of monthly files and supplied ${fl_nbr} (not a multiple of 12) input files.\n"
 	printf "${spt_nm}: HINT Climatologies of monthly resolution data are only supported for whole numbers of years, not partial years. Provide monthly input files in multiples of 12. Use the --mth_srt (default 1) and --mth_end (default 12) options to indicate the starting and ending months if the first year does not start in January.\n"
@@ -2014,7 +2016,8 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	let yr_sbs=${yr_cln}
     else
 	let yr_sbs=${fl_nbr}/${fpy}
-	let fl_rmd=${fl_nbr}%${fpy}
+#	let fl_rmd=${fl_nbr}%${fpy}
+	fl_rmd=$(( fl_nbr % fpy ))
     fi # !clm_md
     if [ "${flg_dct}" = 'Yes' ]; then
 	if [ "${mth_flg}" = 'Yes' ]; then
@@ -2043,7 +2046,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	# NB: When start/end months are not Jan/Dec, sgm_rmd measured in months
 	let mpf_max=${fpy}*${ypf_max}
 	let sgm_nbr=${mth_nbr}/${mpf_max}
-	let sgm_rmd=${mth_nbr}%${mpf_max}
+	sgm_rmd=$((mth_nbr % mpf_max))
 	if [ ${sgm_rmd} -ne 0 ]; then
 	    let sgm_nbr=${sgm_nbr}+1
 	    rmd_flg='Yes'
@@ -2052,8 +2055,8 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	fi # !sgm_rmd  
     else  # !mth_flg
 	# NB: When start/end months are Jan/Dec, sgm_rmd measured in years
-	let sgm_nbr=${yr_sbs}/${ypf_max}
-	let sgm_rmd=${yr_sbs}%${ypf_max}
+	sgm_nbr=$((yr_sbs / ypf_max))
+	sgm_rmd=$((yr_sbs % ypf_max))
 	if [ ${sgm_rmd} -ne 0 ]; then
 	    let sgm_nbr=${sgm_nbr}+1
 	    rmd_flg='Yes'
@@ -2061,7 +2064,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    rmd_flg='No'
 	fi # !sgm_rmd  
     fi  # !mth_flg
-    let sgm_nbrm1=${sgm_nbr}-1
+    sgm_nbrm1=$((sgm_nbr-1))
 
     if [ "${rgn_stt}" != 'No' ]; then 
 	# Export timeseries of regional/global statistics
@@ -2127,7 +2130,7 @@ else # !tms_flg
 	# An integer multiple usually means that an ensemble of simulations is being input
 	if [ ${mth_nbr} -ne ${fl_nbr} ]; then
 	    let nsm_sz=${fl_nbr}/${mth_nbr}
-	    let mth_rmd=${fl_nbr}%${mth_nbr}
+	    mth_rmd=$(( fl_nbr % mth_nbr ))
 	    if [ ${mth_rmd} -ne 0 ]; then
 		printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} unequal to and not evenly divisible by number of months = ${mth_nbr} computed from calendar inputs\n"
 		printf "${spt_nm}: HINT In this mode (clm_md=${clm_md}) ${spt_nm} expects one monthly file per calendar month for single datasets, or an integer number input files per calendar month for ensemble climatologies\n"
@@ -3205,7 +3208,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 		    let yr_end_sgm=${yr_end_rth}
 		fi # !sgm_nbrm1
 	    else # !mth_flg
-		let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy} # NB: 0-based
+		fl_idx_srt=$((sgm_idx*ypf_max*fpy)) # NB: 0-based
 		let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpy} # NB: 1-based
 		let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
 		let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
