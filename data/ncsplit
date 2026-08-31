@@ -518,12 +518,12 @@ fi # !drc_rgr_xtn
 trim_leading_zeros ${yr_srt}
 yr_srt_rth=${sng_trm}
 yyyy_srt=`printf "%04d" ${yr_srt_rth}`
-let yr_srtm1=${yr_srt_rth}-1
+yr_srtm1=$((${yr_srt_rth}-1))
 trim_leading_zeros ${yr_end}
 yr_end_rth=${sng_trm}
 yyyy_end=`printf "%04d" ${yr_end_rth}`
-let yr_endm1=${yr_end_rth}-1
-let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
+yr_endm1=$((${yr_end_rth}-1))
+yr_nbr=$((${yr_end_rth}-${yr_srt_rth}+1))
 
 if [ -n "${yr_srt_prv}" ]; then
     # Specifying only yr_srt_prv implies incremental method
@@ -615,7 +615,7 @@ if [ ${clm_md} = 'scd' ]; then
     mm_ann_end='11'
     mm_djf_srt='12'
     mm_djf_end='02'
-    let yr_cln=${yr_cln}+1
+    yr_cln=$((${yr_cln}+1))
 fi # !scd
 
 if [ "${mpi_flg}" = 'Yes' ]; then
@@ -640,7 +640,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	nd_idx=0
 	for nd in `cat ${nd_fl} | uniq` ; do
 	    nd_nm[${nd_idx}]=${nd}
-	    let nd_idx=${nd_idx}+1
+	    nd_idx=$((${nd_idx}+1))
 	done # !nd
 	nd_nbr=${#nd_nm[@]}
 	for ((clm_idx=1;clm_idx<=17;clm_idx++)); do
@@ -779,7 +779,7 @@ fi # !rgr
 # Block 1 Loop 1: Generate, check, and store (but do not yet execute) monthly commands
 clm_idx=0
 for mth in {01..12}; do
-    let clm_idx=${clm_idx}+1
+    clm_idx=$((${clm_idx}+1))
     MM=`printf "%02d" ${clm_idx}`
     yr_fl=''
     for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
@@ -903,9 +903,9 @@ if [ "${bnr_flg}" = 'No' ]; then
 	printf "Regrid monthly data...\n"
 	for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
 	    # NB: Months, seasons, files are 1-based ([1..12], [13..16], [1..17]), nodes are 0-based ([0..11])
-	    let nd_idx=$(((clm_idx-1+4) % nd_nbr))
+	    nd_idx=$(((clm_idx-1+4) % nd_nbr))
 	    if [ ${nd_idx} -lt 4 ]; then
-		let nd_idx=${nd_idx}+4
+		nd_idx=$((${nd_idx}+4))
 	    fi # !nd
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
@@ -984,9 +984,9 @@ if [ "${bnr_flg}" = 'No' ]; then
     if [ -n "${rgr_map}" ]; then 
 	printf "Regrid seasonal data...\n"
 	for ((clm_idx=13;clm_idx<=16;clm_idx++)); do
-	    let nd_idx=$(((clm_idx-1+4) % nd_nbr))
+	    nd_idx=$(((clm_idx-1+4) % nd_nbr))
 	    if [ ${nd_idx} -lt 4 ]; then
-		let nd_idx=${nd_idx}+4
+		nd_idx=$((${nd_idx}+4))
 	    fi # !nd
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
@@ -1107,16 +1107,16 @@ if [ "${xtn_flg}" = 'Yes' ]; then
     yr_srt_rth_prv=${sng_trm}
     yyyy_srt_prv=`printf "%04d" ${yr_srt_rth_prv}`
     yyyy_clm_srt_dec_prv=${yyyy_srt_prv}
-    let yr_srtm1_prv=${yr_srt_rth_prv}-1
+    yr_srtm1_prv=$((${yr_srt_rth_prv}-1))
     if [ "${ncr_flg}" = 'Yes' ]; then
-	let yr_end_prv=${yr_srt_rth}-1
+	yr_end_prv=$((${yr_srt_rth}-1))
     fi # !ncr_flg
     trim_leading_zeros ${yr_end_prv}
     yr_end_rth_prv=${sng_trm}
     yyyy_end_prv=`printf "%04d" ${yr_end_rth_prv}`
-    let yr_endm1_prv=${yr_end_rth_prv}-1
-    let yr_nbr_prv=${yr_end_rth_prv}-${yr_srt_rth_prv}+1
-    let yr_nbr_xtn=${yr_nbr_prv}+${yr_nbr}
+    yr_endm1_prv=$((${yr_end_rth_prv}-1))
+    yr_nbr_prv=$((${yr_end_rth_prv}-${yr_srt_rth_prv}+1))
+    yr_nbr_xtn=$((${yr_nbr_prv}+${yr_nbr}))
 
     wgt_prv=$(echo "${yr_nbr_prv}/${yr_nbr_xtn}" | bc -l)
     wgt_crr=$(echo "${yr_nbr}/${yr_nbr_xtn}" | bc -l)
@@ -1134,7 +1134,7 @@ if [ "${xtn_flg}" = 'Yes' ]; then
     
     clm_idx=0
     for mth in {01..12}; do
-	let clm_idx=${clm_idx}+1
+	clm_idx=$((${clm_idx}+1))
 	MM=`printf "%02d" ${clm_idx}`
 	fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end_prv}${MM}_climo.nc"
 	fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end}${MM}_climo.nc"
