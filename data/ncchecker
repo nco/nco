@@ -347,7 +347,7 @@ if [ "${tst_flg}" = 'Yes' ]; then
 		# map_d2r[3]=0 means fourth defined test is first requested
 		map_r2d[${tst_nbr}]=${tst_dfn_idx}
 		map_d2r[${tst_dfn_idx}]=${tst_nbr}
-		tst_nbr=$((${tst_nbr}+1))
+		tst_nbr=$((tst_nbr+1))
 		break
 	    fi # !match
 	done # !tst_dfn_idx
@@ -381,7 +381,7 @@ if [ ${inp_glb} = 'Yes' ]; then
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [ -f "${fl}" ]; then
 	    fl_in[${fl_nbr}]=${fl}
-	    fl_nbr=$((${fl_nbr}+1))
+	    fl_nbr=$((fl_nbr+1))
 	fi # !file
     done
 fi # !inp_glb
@@ -396,7 +396,7 @@ if [ ${inp_std} = 'Yes' ]; then
     # Input awaits on unit 0, i.e., on stdin
     while read -r line; do # NeR05 p. 179
 	fl_in[${fl_nbr}]=${line}
-	fl_nbr=$((${fl_nbr}+1))
+	fl_nbr=$((fl_nbr+1))
     done < /dev/stdin
 fi # !inp_std
 
@@ -480,7 +480,7 @@ for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
     
     for ((tst_idx=0;tst_idx<tst_nbr;tst_idx++)); do
 
-	tst_idxp1=$((${tst_idx}+1))
+	tst_idxp1=$((tst_idx+1))
 	# Index of test in definition table
 	idx_dfn=${map_r2d[${tst_idx}]}
 	

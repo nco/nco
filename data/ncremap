@@ -1448,7 +1448,7 @@ if [ -n "${mpi_pfx}" ]; then
 	[[ ${dbg_lvl} -ge 1 ]] && echo "${spt_nm}: INFO Increasing partition number from ${prt_nbr} to ${mpi_nbr}"
 	prt_nbr=${mpi_nbr}
     fi # !prt_nbr
-    prt_nbr_rmd=$((${prt_nbr}%${mpi_nbr}))
+    prt_nbr_rmd=$((prt_nbr%mpi_nbr))
     if [ ${prt_nbr_rmd} -ne 0 ]; then
 	echo "${spt_nm}: ERROR Partition number prt_nbr=${prt_nbr} must be > 1 and <= mpi_nbr=${mpi_nbr}"
 	echo "${spt_nm}: HINT Set partition number with --prt_nbr=${mpi_nbr} unless otherwise warranted"
@@ -2241,7 +2241,7 @@ if [ ${inp_glb} = 'Yes' ]; then
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [ -f "${fl}" ] || [ -L "${fl}" ]; then
 	    fl_in[${fl_nbr}]=${fl} # NB: ncremap does not use basename($fl) like ncclimo
-	    fl_nbr=$((${fl_nbr}+1))
+	    fl_nbr=$((fl_nbr+1))
 	fi # !file
     done
 fi # !inp_glb
@@ -2271,7 +2271,7 @@ if [ ${inp_std} = 'Yes' ]; then
     # Input awaits on unit 0, i.e., on stdin
     while read -r line; do # NeR05 p. 179
 	fl_in[${fl_nbr}]=${line}
-	fl_nbr=$((${fl_nbr}+1))
+	fl_nbr=$((fl_nbr+1))
     done < /dev/stdin
 fi # !inp_std
 
@@ -2325,7 +2325,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	nd_idx=0
 	for nd in `cat ${nd_fl} | uniq` ; do
 	    nd_nm[${nd_idx}]=${nd}
-	    nd_idx=$((${nd_idx}+1))
+	    nd_idx=$((nd_idx+1))
 	done # !nd
 	nd_nbr=${#nd_nm[@]}
 	if [ "${nd_nbr}" -eq 0 ]; then
@@ -2756,10 +2756,10 @@ if [ "${prc_typ}" = 'rrg' ]; then
 		lon1=${BASH_REMATCH[1]%?}
 		lon2=${BASH_REMATCH[2]%?}
 		if [ "${BASH_REMATCH[1]: -1}" = 'w' ]; then
-		    lon1=$((360-${lon1}))
+		    lon1=$((360-lon1))
 		fi # !w
 		if [ "${BASH_REMATCH[2]: -1}" = 'w' ]; then
-		    lon2=$((360-${lon2}))
+		    lon2=$((360-lon2))
 		fi # !w
 		if [ ${lon1} -lt ${lon2} ]; then
 		    lon_min=${lon1}
@@ -2773,10 +2773,10 @@ if [ "${prc_typ}" = 'rrg' ]; then
 		lat1=${BASH_REMATCH[3]%?}
 		lat2=${BASH_REMATCH[4]%?}
 		if [ "${BASH_REMATCH[3]: -1}" = 's' ]; then
-		    lat1=$((-${lat1}))
+		    lat1=$((-lat1))
 		fi # !w
 		if [ "${BASH_REMATCH[4]: -1}" = 's' ]; then
-		    lat2=$((-${lat2}))
+		    lat2=$((-lat2))
 		fi # !w
 		if [ ${lat1} -lt ${lat2} ]; then
 		    lat_min=${lat1}
