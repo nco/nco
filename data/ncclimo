@@ -1116,9 +1116,9 @@ fi # !vrs_prn
 # This is because PBS uses stdin to set the job name
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
 # Check stdin if user has not explicitly disallowed it with --no_stdin
-set +u # err_hnd Continue on unbound variable reference
+#set +u # err_hnd Continue on unbound variable reference
 if [ "${std_chk}" = 'Yes' ]; then
-    if [ -n "${PBS_ENVIRONMENT}" ]; then
+    if [ -n "${PBS_ENVIRONMENT:-}" ]; then
 	if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
 	    # PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
 	    bch_pbs='Yes'
