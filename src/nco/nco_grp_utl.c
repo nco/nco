@@ -11345,7 +11345,7 @@ nco_rad                                /* [fnc] Retain all dimensions */
       dmn_out_id_grp=(int *)nco_free(dmn_out_id_grp);
       if(!dmn_dfn){
         /* Define dimension and obtain dimension ID */
-        (void)nco_def_dim(grp_dmn_out_id,dmn_trv.nm,dmn_trv.sz,&dmn_id_out);
+        (void)nco_def_dim(grp_dmn_out_id,dmn_trv.nm,dmn_trv.is_rec_dmn ? NC_UNLIMITED : dmn_trv.sz,&dmn_id_out);
         if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_trv.nm,dmn_id_out);
       } /* endif dimension does not exist */
 
