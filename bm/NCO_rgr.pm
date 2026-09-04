@@ -569,7 +569,20 @@ if($USER eq 'zender'){
    $tst_cmd[3]="SS_OK";
    NCO_bm::tst_run(\@tst_cmd);
    $#tst_cmd=0; # Reset array
-    
+
+# ncap2 #21
+    $dsc_sng="Retain orphan dimensions only with --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -v one %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --trd %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="0";
+    $tst_cmd[4]="ncks --rad -h -O $fl_fmt $nco_D_flg -v one %tmp_fl_00% %tmp_fl_02%";
+    $tst_cmd[5]="ncks -m --trd %tmp_fl_02% | grep orphan | wc -l";
+    $tst_cmd[6]="1";
+    $tst_cmd[7]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
     if($dodap eq "FALSE"){
 ####################
 #### ncatted tests #
@@ -1458,6 +1471,19 @@ if($USER eq 'zender'){
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
+
+#ncecat #3a
+    $dsc_sng="(Groups) Retain orphan dimensions in aggregate group only with --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncecat -h -O $fl_fmt $nco_D_flg -G ensemble -v one %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --trd %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="0";
+    $tst_cmd[4]="ncecat --rad -h -O $fl_fmt $nco_D_flg -G ensemble -v one %tmp_fl_00% %tmp_fl_00% %tmp_fl_02%";
+    $tst_cmd[5]="ncks -m --trd %tmp_fl_02% | grep orphan | grep ensemble | wc -l";
+    $tst_cmd[6]="1";
+    $tst_cmd[7]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
 #    
 # NCO 4.3.1 - ncecat for groups 
 #
