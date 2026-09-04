@@ -769,7 +769,7 @@ function bsh_mjr_vrs_lt_4 {
     # Usage: if bsh_mjr_vrs_lt_4 ; then ...; fi
     local vrs
     if [ -n ${BASH_VERSION} ]; then
-	let vrs=${BASH_VERSION%%.*} # NeR98 p. 100
+	vrs=$((${BASH_VERSION%%.*})) # NeR98 p. 100
 	if [ ${vrs} -lt 4 ] ; then # NeR98 p. 153
 	    return 0; # 0 is true in shell-ese
 	fi # !vrs
@@ -1116,9 +1116,9 @@ fi # !vrs_prn
 # This is because PBS uses stdin to set the job name
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
 # Check stdin if user has not explicitly disallowed it with --no_stdin
-set +u # err_hnd Continue on unbound variable reference
+#set +u # err_hnd Continue on unbound variable reference
 if [ "${std_chk}" = 'Yes' ]; then
-    if [ -n "${PBS_ENVIRONMENT}" ]; then
+    if [ -n "${PBS_ENVIRONMENT:-}" ]; then
 	if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
 	    # PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
 	    bch_pbs='Yes'
@@ -1354,12 +1354,12 @@ if false; then
     printf "mth_end = ${mth_end}, mth_end_rth = ${mth_end_rth}, mm_end = ${mm_end}\n"
 fi # !false
 
-let yr_srtm1=${yr_srt_rth}-1
-let yr_srtp1=${yr_srt_rth}+1
+yr_srtm1=$((yr_srt_rth-1))
+yr_srtp1=$((yr_srt_rth+1))
 yyyy_srtp1=`printf "%04d" ${yr_srtp1}`
 
-let yr_endm1=${yr_end_rth}-1
-let yr_endp1=${yr_end_rth}+1
+yr_endm1=$((yr_end_rth-1))
+yr_endp1=$((yr_end_rth+1))
 yyyy_endm1=`printf "%04d" ${yr_endm1}`
 
 if [ ${mth_srt_rth} -eq 0 ]; then
@@ -1372,8 +1372,8 @@ if [ ${mth_end_rth} -gt 12 ]; then
 fi # !mth_srt_rth
 
 # Determine first full year
-let mth_nbr=${yr_end_rth}*12+${mth_end_rth}-${yr_srt_rth}*12-${mth_srt_rth}+1
-let yr_nbr=${mth_nbr}/12
+mth_nbr=$((yr_end_rth*12+mth_end_rth-yr_srt_rth*12-mth_srt_rth+1))
+yr_nbr=$((mth_nbr/12))
 # How many files/months from first month to first January?
 if [ ${mth_srt_rth} -eq 1 ]; then
     jan_fst=0 # [nbr] Offset of January from starting month
@@ -1381,15 +1381,15 @@ else
     jan_fst=$(( 12 - mth_srt_rth + 1 ))
 fi # mth_srt_rth
 mth_srtm1=$(( mth_srt_rth - 1 )) # [idx] 1-based index of month preceding start month
-let mth_endp1=${mth_end_rth}+1
+mth_endp1=$((mth_end_rth+1))
 if [ ${mth_srtm1} -eq 0 ]; then
-    let mth_srtm1=12
+    mth_srtm1=$((12))
     mm_srtm1='12'
 else # !mth_srtm1
     mm_srtm1=`printf "%02d" ${mth_srtm1}`
 fi # !mth_srtm1
 if [ ${mth_endp1} -eq 13 ]; then
-    let mth_endp1=1
+    mth_endp1=$((1))
     mm_endp1='01'
 else # !mth_endp1
     mm_endp1=`printf "%02d" ${mth_endp1}`
@@ -1397,7 +1397,7 @@ fi # !mth_endp1
 if [ "${mm_srt}" != '01' ] || [ "${mm_end}" != '12' ]; then
     mth_flg='Yes'
 fi # !mm_srt
-[ ${mth_flg} = 'Yes' ] && let yr_cln=${yr_nbr}+1 || yr_cln=${yr_nbr}
+[ ${mth_flg} = 'Yes' ] && yr_cln=$((yr_nbr+1)) || yr_cln=${yr_nbr}
 
 # 20260323
 # Determine starting and ending year string for each month
@@ -1703,11 +1703,11 @@ if [ ${inp_aut} = 'Yes' ] && [ ${clm_md} = 'mth' ] || [ ${clm_md} = 'ann' ]; the
 	clm_idx=0
 	if [ "${clm_md}" = 'ann' ]; then
 	    fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${ann_sfx}.nc"
-	    let fl_nbr=${fl_nbr}+1;
+	    fl_nbr=$((fl_nbr+1));
 	    continue;
 	fi # !ann
 	for mth in {01..12}; do
-	    let clm_idx=${clm_idx}+1
+	    clm_idx=$((clm_idx+1))
 	    MM=`printf "%02d" ${clm_idx}`
 	    # Only construct filenames for months that are used
 	    # 20260410 this statements should be triggered during climos!
@@ -1739,7 +1739,7 @@ if [ ${inp_aut} = 'Yes' ] && [ ${clm_md} = 'mth' ] || [ ${clm_md} = 'ann' ]; the
 		#		    fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 		fl_in[${fl_nbr}]="${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 	    fi # !cesm
-	    let fl_nbr=${fl_nbr}+1
+	    fl_nbr=$((fl_nbr+1))
 	done # !mth
     done # !yr
 fi # !inp_aut
@@ -1747,7 +1747,7 @@ if [ ${inp_glb} = 'Yes' ]; then
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [ -f "${fl}" ] || [ -L "${fl}" ]; then
 	    fl_in[${fl_nbr}]=$(basename ${fl}) # NB: ncclimo uses basename($fl) here, and ppn_opt later, unlike ncremap
-	    let fl_nbr=${fl_nbr}+1
+	    fl_nbr=$((fl_nbr+1))
 	fi # !file
     done
 fi # !inp_glb
@@ -1762,7 +1762,7 @@ if [ ${inp_std} = 'Yes' ]; then
     # Input awaits on unit 0, i.e., on stdin
     while read -r line; do # NeR05 p. 179
 	fl_in[${fl_nbr}]=${line}
-	let fl_nbr=${fl_nbr}+1
+	fl_nbr=$((fl_nbr+1))
     done < /dev/stdin
 fi # !inp_std
 
@@ -1943,7 +1943,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	var_lst='' # [sng] Variables to process
 	for var in "${!var_lst_xtr[@]}"; do
 	    var_lst="${var_lst},${var}"
-	    let var_nbr=${var_nbr}+1
+	    var_nbr=$((var_nbr+1))
 	done # !var_lst_xtr
 	# Remove leading comma from list
 	var_lst="${var_lst:1}"
@@ -1955,7 +1955,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
     for var in ${var_lst//,/ }; do
 	# NB:
 	var_sbs[${var_nbr}]=${var}
-	let var_nbr=${var_nbr}+1
+	var_nbr=$((var_nbr+1))
     done # !var_lst
 
     if [ -z "${job_usr}" ]; then 
@@ -1967,7 +1967,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	fpy=1
     elif [ "${clm_md}" = 'dly' ]; then
 	dpf=1
-	let fpy=${dpy}/${dpf}
+	fpy=$((dpy/dpf))
     elif [ "${clm_md}" = 'hfc' ]; then
 	fpy=12
 	flg_dct='No'
@@ -2005,7 +2005,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    fi # !dpf_ntg
 	fi # !dpf
 	# 20220818
-	let fpy=${dpy}/${dpf}
+	fpy=$((dpy/dpf))
 	#fpy=$(echo "${dpy}/${dpf}" | bc -l) # NB: dpy/dpf more accurate than fpy
 	flg_dct='No'
 	# !clm_md=hfs
@@ -2013,9 +2013,9 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	fpy=12
     fi # !clm_md
     if [ "${clm_md}" = 'hfs' ]; then
-	let yr_sbs=${yr_cln}
+	yr_sbs=$((yr_cln))
     else
-	let yr_sbs=${fl_nbr}/${fpy}
+	yr_sbs=$((fl_nbr/fpy))
 #	let fl_rmd=${fl_nbr}%${fpy}
 	fl_rmd=$(( fl_nbr % fpy ))
     fi # !clm_md
@@ -2044,11 +2044,11 @@ if [ "${tms_flg}" = 'Yes' ]; then
     # How many segments of output?
     if [ "${mth_flg}" = 'Yes' ]; then
 	# NB: When start/end months are not Jan/Dec, sgm_rmd measured in months
-	let mpf_max=${fpy}*${ypf_max}
-	let sgm_nbr=${mth_nbr}/${mpf_max}
+	mpf_max=$((fpy*ypf_max))
+	sgm_nbr=$((mth_nbr/mpf_max))
 	sgm_rmd=$((mth_nbr % mpf_max))
 	if [ ${sgm_rmd} -ne 0 ]; then
-	    let sgm_nbr=${sgm_nbr}+1
+	    sgm_nbr=$((sgm_nbr+1))
 	    rmd_flg='Yes'
 	else # !sgm_rmd
 	    rmd_flg='No'
@@ -2058,7 +2058,7 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	sgm_nbr=$((yr_sbs / ypf_max))
 	sgm_rmd=$((yr_sbs % ypf_max))
 	if [ ${sgm_rmd} -ne 0 ]; then
-	    let sgm_nbr=${sgm_nbr}+1
+	    sgm_nbr=$((sgm_nbr+1))
 	    rmd_flg='Yes'
 	else # !sgm_rmd
 	    rmd_flg='No'
@@ -2129,7 +2129,7 @@ else # !tms_flg
 	# Modify the check from monthly timeseries mode to allow integer-multiples of the expected number of files
 	# An integer multiple usually means that an ensemble of simulations is being input
 	if [ ${mth_nbr} -ne ${fl_nbr} ]; then
-	    let nsm_sz=${fl_nbr}/${mth_nbr}
+	    nsm_sz=$((fl_nbr/mth_nbr))
 	    mth_rmd=$(( fl_nbr % mth_nbr ))
 	    if [ ${mth_rmd} -ne 0 ]; then
 		printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} unequal to and not evenly divisible by number of months = ${mth_nbr} computed from calendar inputs\n"
@@ -2385,7 +2385,7 @@ if [ "${csn_flg}" = 'Yes' ]; then
 		# map_d2r[3]=0 means fourth defined season is first requested
 		map_r2d[${csn_nbr}]=${csn_dfn_idx}
 		map_d2r[${csn_dfn_idx}]=${csn_nbr}
-		let csn_nbr=${csn_nbr}+1
+		csn_nbr=$((csn_nbr+1))
 		break
 	    fi # !match
 	done # !csn_dfn_idx
@@ -2399,13 +2399,13 @@ if [ "${csn_flg}" = 'Yes' ]; then
     ann_flg='No'
     ann_nbr=0
     if [[ ${csn_lst} =~ 'mam' ]] || [[ ${csn_lst} =~ 'MAM' ]]; then
-	let clm_csn_mam_idx=${map_d2r[${csn_mam}]}+12+1
+	clm_csn_mam_idx=$((map_d2r[csn_mam]+12+1))
 	if [[ ${csn_lst} =~ 'jja' ]] || [[ ${csn_lst} =~ 'JJA' ]]; then
-	    let clm_csn_jja_idx=${map_d2r[${csn_jja}]}+12+1
+	    clm_csn_jja_idx=$((map_d2r[csn_jja]+12+1))
 	    if [[ ${csn_lst} =~ 'son' ]] || [[ ${csn_lst} =~ 'SON' ]]; then
-		let clm_csn_son_idx=${map_d2r[${csn_son}]}+12+1
+		clm_csn_son_idx=$((map_d2r[csn_son]+12+1))
 		if [[ ${csn_lst} =~ 'djf' ]] || [[ ${csn_lst} =~ 'DJF' ]]; then
-		    let clm_csn_djf_idx=${map_d2r[${csn_djf}]}+12+1
+		    clm_csn_djf_idx=$((map_d2r[csn_djf]+12+1))
 		    ann_flg='Yes'
 		    ann_nbr=1
 		fi # !djf
@@ -2414,9 +2414,9 @@ if [ "${csn_flg}" = 'Yes' ]; then
     fi # !mam
 
     # Account for season number in climatology command number and parallelism
-    let clm_csn_srt_idx=12+1
-    let clm_csn_end_idx=12+${csn_nbr}
-    let clm_nbr=12+${csn_nbr}+${ann_nbr}
+    clm_csn_srt_idx=$((12+1))
+    clm_csn_end_idx=$((12+csn_nbr))
+    clm_nbr=$((12+csn_nbr+ann_nbr))
     
 fi # !csn_flg
     
@@ -2458,7 +2458,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	nd_idx=0
 	for nd in `cat ${nd_fl} | uniq` ; do
 	    nd_nm[${nd_idx}]=${nd}
-	    let nd_idx=${nd_idx}+1
+	    nd_idx=$((nd_idx+1))
 	done # !nd
 	nd_nbr=${#nd_nm[@]}
 	if [ "${nd_nbr}" -eq 0 ]; then
@@ -2478,7 +2478,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    mpi_idx=${mpi_idx_zro}
 	    if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then 
 		# Offset MPI index from 0- to 1-based for traditional monthly-based climo generation
-		let mpi_idx=${mpi_idx_zro}+1
+		mpi_idx=$((mpi_idx_zro+1))
 	    fi # !tms_flg
 	    case "${HOSTNAME}" in 
 		andes* | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | compy* | constance* | frontier* | login[0123456789][0123456789] | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | perlmutter* )
@@ -2871,7 +2871,7 @@ fi # !clm_flg
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     clm_idx=0
     for mth in {01..12}; do
-	let clm_idx=${clm_idx}+1
+	clm_idx=$((clm_idx+1))
 	MM=`printf "%02d" ${clm_idx}`
 	# The same month-of-year appears every twelve filenames in input list
 	if [ ${clm_md} = 'mth' ]; then 
@@ -2951,8 +2951,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		yyyy_clm_endp1=`printf "%04d" ${yr_endp1}`
 		tm_end="${yyyy_clm_endp1}-01-01T00:00:00"
 	    fi # !December
-	    let srd=${dpy}*${tpd_out}
-	    let ssc=${dpm[${clm_idx}]}*${tpd_out}
+	    srd=$((dpy*tpd_out))
+	    ssc=$((dpm[clm_idx]*tpd_out))
 	    
 	    # Cull this month from interannual climatology into interannual diurnal file
 	    fl_mth[${clm_idx}]="${drc_out}/${out_nm}_${MM}_tms_foo_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
@@ -2962,7 +2962,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		# Compute interleaved mean of single-file input (e.g., CMIP timeseries format)
 		#cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]}"
 		tm_nbr=`ncks --trd -M ${ppn_opt} ${fl_in} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
-		let ssc2=${tm_nbr}*${tpd_out}/${srd}
+		ssc2=$((tm_nbr*tpd_out/srd))
 		# Ensure result is positive integer
 		[ "${ssc2}" -ge 0 ] 2>/dev/null && ssc2_ntg='Yes' || ssc2_ntg='No'
 		if [ "${ssc2_ntg}" != 'Yes' ]; then
@@ -3132,7 +3132,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	# Alternative 201406-201308 is non-chronological (though maybe OK)?
 	# Alternative 201307-201406 is chronological. No August indicator in date string.
 	# People prefer the chronological option alternative, which we call yyyymm_rng
-	let clm_idx=1+12+${csn_idx}
+	clm_idx=$((1+12+csn_idx))
 	# 20260323 Start and end years now depend on start and end months
 	csn_srt_idx_crr=${csn_srt_idx[${map_r2d[${csn_idx}]}]}
 	csn_end_idx_crr=${csn_end_idx[${map_r2d[${csn_idx}]}]}
@@ -3199,22 +3199,22 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	if [ "${clm_md}" != 'hfs' ]; then
 	    # Non-high-frequency timeseries receive exact file-lists to hyperslab by index (not by time-coordinate)
 	    if [ "${mth_flg}" = 'Yes' ]; then
-		let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy} # NB: 0-based
-		let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpy} # NB: 1-based
-		let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
-		let yr_end_sgm=${yr_srt_sgm}+${ypf_max}
+		fl_idx_srt=$((sgm_idx*ypf_max*fpy)) # NB: 0-based
+		fl_idx_end=$((fl_idx_srt+ypf_max*fpy)) # NB: 1-based
+		yr_srt_sgm=$((yr_srt_rth+sgm_idx*ypf_max))
+		yr_end_sgm=$((yr_srt_sgm+ypf_max))
 		if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
-		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd} # NB: 1-based
-		    let yr_end_sgm=${yr_end_rth}
+		    fl_idx_end=$((fl_idx_srt+sgm_rmd)) # NB: 1-based
+		    yr_end_sgm=$((yr_end_rth))
 		fi # !sgm_nbrm1
 	    else # !mth_flg
 		fl_idx_srt=$((sgm_idx*ypf_max*fpy)) # NB: 0-based
-		let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpy} # NB: 1-based
-		let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
-		let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
+		fl_idx_end=$((fl_idx_srt+ypf_max*fpy)) # NB: 1-based
+		yr_srt_sgm=$((yr_srt_rth+sgm_idx*ypf_max))
+		yr_end_sgm=$((yr_srt_sgm+ypf_max-1))
 		if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
-		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpy} # NB: 1-based
-		    let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
+		    fl_idx_end=$((fl_idx_srt+sgm_rmd*fpy)) # NB: 1-based
+		    yr_end_sgm=$((yr_srt_sgm+sgm_rmd-1))
 		fi # !sgm_nbrm1
 	    fi # !mth_flg
 	else # !clm_md
@@ -3227,35 +3227,35 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	    # 20210329: Current formulation assumes manual minimal file list is specified
 	    # Extraneous (more than one non-overlapping) files at beginning of list will cause failure
 	    # fxm: Omit extraneous files at start of list (extraneous at end are OK now)
-	    let fpyp1=${fpy}+1
+	    fpyp1=$((fpy+1))
 	    # 20220818: User Jinbo Xie has hfs files with dpf=36.5. Bash chokes on FP arithmetic
-	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${dpy}/${dpf} # NB: dpy/dpf more accurate than fpy
+	    fl_idx_srt=$((sgm_idx*ypf_max*dpy/dpf)) # NB: dpy/dpf more accurate than fpy
 	    #fl_idx_srt=$(echo "${sgm_idx}*${ypf_max}*${dpy}/${dpf}" | bc -l) # NB: dpy/dpf more accurate than fpy
 	    #echo "dbg: fl_idx_srt = ${fl_idx_srt}"
-	    let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: use fpyp1 to overestimate fl_idx_end
+	    fl_idx_end=$((fl_idx_srt+ypf_max*fpyp1)) # NB: use fpyp1 to overestimate fl_idx_end
 	    #echo "dbg: fl_idx_end = ${fl_idx_end}"
-	    let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
-	    let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
+	    yr_srt_sgm=$((yr_srt_rth+sgm_idx*ypf_max))
+	    yr_end_sgm=$((yr_srt_sgm+ypf_max-1))
 	    if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
 		if [ "${mth_flg}" = 'Yes' ]; then
 		    # 20210331 Peings
-		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}
-		    let yr_end_sgm=${yr_end_rth}
+		    fl_idx_end=$((fl_idx_srt+sgm_rmd))
+		    yr_end_sgm=$((yr_end_rth))
 		else # !mth_flg
-		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpyp1} # NB: use fpyp1 to overestimate fl_idx_end
-		    let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
+		    fl_idx_end=$((fl_idx_srt+sgm_rmd*fpyp1)) # NB: use fpyp1 to overestimate fl_idx_end
+		    yr_end_sgm=$((yr_srt_sgm+sgm_rmd-1))
 		fi # !mth_flg
 	    fi # !sgm_rmd || !sgm_nbrm1
 	    # Fuzzify list by including files nominally before and after first and last expected files
 	    if [ ${fl_idx_srt} -ne 0 ]; then
-		let fl_idx_srt=${fl_idx_srt}-1
+		fl_idx_srt=$((fl_idx_srt-1))
 	    fi # !fl_idx_srt
 	    # Fuzziness may generate indices that are too large
 	    if [ ${fl_idx_end} -gt ${fl_nbr} ]; then
-		let fl_idx_end=${fl_nbr}
+		fl_idx_end=$((fl_nbr))
 	    fi # !fl_idx_end
 	    if [ ${fl_idx_end} -lt ${fl_nbr} ]; then
-		let fl_idx_end=${fl_idx_end}+1
+		fl_idx_end=$((fl_idx_end+1))
 	    fi # !fl_idx_end
 	fi # !clm_md
 	
@@ -3266,21 +3266,21 @@ if [ "${tms_flg}" = 'Yes' ]; then
 	yyyy_srt_sgm[${sgm_idx}]=`printf "%04d" ${yr_srt_sgm}`
 	yyyy_end_sgm[${sgm_idx}]=`printf "%04d" ${yr_end_sgm}`
 	# 202401001: fxm: presumably could cause value too great for base error?
-	let yr_endp1_sgm=${yr_end_sgm}+1
+	yr_endp1_sgm=$((yr_end_sgm+1))
 	yyyy_endp1_sgm[${sgm_idx}]=`printf "%04d" ${yr_endp1_sgm}`
 
 	mm_srt_sgm[${sgm_idx}]='01'
 	mm_end_sgm[${sgm_idx}]='12'
 	mm_srt_sgm[${sgm_idx}]=${mm_srt}
 	if [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
-	    let mth_end_sgm=${mth_end_rth}
+	    mth_end_sgm=$((mth_end_rth))
 	    mm_end_sgm[${sgm_idx}]=${mm_end}
 	else # !sgm_idx
-	    let mth_end_sgm=${mth_srtm1}
+	    mth_end_sgm=$((mth_srtm1))
 	    mm_end_sgm[${sgm_idx}]=${mm_srtm1}
 	fi # !sgm_idx
 	# 202401001: fxm: Causes error "value too great for base (error token is "08")"
-	let mm_endp1_sgm=${mth_end_sgm}+1
+	mm_endp1_sgm=$((mth_end_sgm+1))
 	mm_endp1_sgm[${sgm_idx}]=`printf "%02d" ${mm_endp1_sgm}`
 
 	# Sanity check that all files exist before wasting time and space on concatenation
@@ -3666,7 +3666,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	fl_all="${fl_all} ${fl_in[${fl_idx}]}"
     done # !fl
 
-    let srd=${dpy}*${tpd_out}
+    srd=$((dpy*tpd_out))
     drn=${tpd_out}
     
     yyyy_srt=`printf "%04d" ${yr_srt}`
@@ -3690,7 +3690,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 		# 20170619: Diurnal mode is really slow on MacOS (UDUnits parsing sluggishness?)
 		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${drn} ${ppn_opt} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
 	    fi # !tpd
-	    let clm_idx=${clm_idx}+1
+	    clm_idx=$((clm_idx+1))
 	done # !day
     done # !mth
 
@@ -3915,7 +3915,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	    # NB: Months, seasons, files are 1-based ([1..12], [13..16], [1..17]), nodes are 0-based ([0..11])
 	    nd_idx=$(((clm_idx-1+csn_nbr) % nd_nbr))
 	    if [ ${nd_idx} -lt ${csn_nbr} ]; then
-		let nd_idx=${nd_idx}+${csn_nbr}
+		nd_idx=$((nd_idx+csn_nbr))
 		# 20190315: Not necessary to modulo final result by nd_nbr to handle csn_nbr > nd_nbr
 		# because (1-based) cmd_mpi array is always at least 13 elements long and each element is
 		# already round-robin'ed onto existing nodes
@@ -3950,10 +3950,10 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	# Block 2 Loop 1: Generate seasonal commands
 	[[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
-	    let clm_idx=1+12+${csn_idx}
+	    clm_idx=$((1+12+csn_idx))
 	    fl_lst=''
 	    for (( mth_ctr=0;mth_ctr<${csn_nom[${map_r2d[${csn_idx}]}]};mth_ctr++ )); do
-		let mth_idx=${csn_srt_idx[${map_r2d[${csn_idx}]}]}+${mth_ctr}
+		mth_idx=$((csn_srt_idx[map_r2d[csn_idx]]+mth_ctr))
 		[[ ${mth_idx} -gt 12 ]] && mth_idx=$((mth_idx % 12))
 		fl_lst="${fl_lst} ${fl_out[${mth_idx}]}"
 	    done # !mth_idx
@@ -3979,7 +3979,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	    clm_idx_end=$((clm_idx_srt + job_nbr - 1))
 	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ]; then
 		clm_idx_srt=$((12 + (bch_idx * job_nbr) + 1))
-		let clm_idx_end=${clm_csn_end_idx}
+		clm_idx_end=$((clm_csn_end_idx))
 	    fi # !bch_flg
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		csn_idx=$((clm_idx - 12 - 1))
@@ -4043,7 +4043,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	    for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
 		nd_idx=$(((clm_idx-1+csn_nbr) % nd_nbr))
 		if [ ${nd_idx} -lt ${csn_nbr} ]; then
-		    let nd_idx=${nd_idx}+${csn_nbr}
+		    nd_idx=$((nd_idx+csn_nbr))
 		fi # !nd
 		#cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -u .pid${spt_pid}.climo.${clm_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${prc_opt} ${rmp_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
@@ -4207,16 +4207,16 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
     yr_srt_rth_prv=${sng_trm}
     yyyy_srt_prv=`printf "%04d" ${yr_srt_rth_prv}`
     yyyy_clm_srt_dec_prv=${yyyy_srt_prv}
-    let yr_srtm1_prv=${yr_srt_rth_prv}-1
+    yr_srtm1_prv=$((yr_srt_rth_prv-1))
     if [ "${ncr_flg}" = 'Yes' ]; then
-	let yr_end_prv=${yr_srt_rth}-1
+	yr_end_prv=$((yr_srt_rth-1))
     fi # !ncr_flg
     trim_leading_zeros ${yr_end_prv}
     yr_end_rth_prv=${sng_trm}
     yyyy_end_prv=`printf "%04d" ${yr_end_rth_prv}`
-    let yr_endm1_prv=${yr_end_rth_prv}-1
-    let yr_nbr_prv=${yr_end_rth_prv}-${yr_srt_rth_prv}+1
-    let yr_nbr_xtn=${yr_nbr_prv}+${yr_nbr}
+    yr_endm1_prv=$((yr_end_rth_prv-1))
+    yr_nbr_prv=$((yr_end_rth_prv-yr_srt_rth_prv+1))
+    yr_nbr_xtn=$((yr_nbr_prv+yr_nbr))
 
     wgt_prv=$(echo "${yr_nbr_prv}/${yr_nbr_xtn}" | bc -l)
     wgt_crr=$(echo "${yr_nbr}/${yr_nbr_xtn}" | bc -l)
@@ -4243,7 +4243,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
     
 	clm_idx=0
 	for mth in {01..12}; do
-	    let clm_idx=${clm_idx}+1
+	    clm_idx=$((clm_idx+1))
 	    MM=`printf "%02d" ${clm_idx}`
 	    fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end_prv}${MM}_climo.nc"
 	    fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end}${MM}_climo.nc"
@@ -4251,7 +4251,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	    # Produce names like "${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end_prv}05_climo.nc"
-	    let clm_idx=1+12+${csn_idx}
+	    clm_idx=$((1+12+csn_idx))
 	    fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_prv}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end_prv}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
 	    fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_prv}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
 	    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
@@ -4389,10 +4389,10 @@ fi # !xtn_flg extended climos
 if [ "${clm_flg}" = 'Yes' ]; then
     if [ "${clm_md}" = 'dly' ]; then
 	echo "Quick plots of last climatological daily mean:"
-	let idx_lst=${clm_nbr}-1
+	idx_lst=$((clm_nbr-1))
     else
 	echo "Quick plots of last computed climatology:"
-	let idx_lst=${clm_nbr}
+	idx_lst=$((clm_nbr))
     fi # !dly
     
     if [ -n "${yr_srt_prv}" ]; then
@@ -4411,7 +4411,7 @@ if [ "${clm_flg}" = 'Yes' ]; then
 fi # !clm_flg
 if [ "${tms_flg}" = 'Yes' ]; then
     echo "Quick plots of last timeseries segment of last variable split:"
-    let idx_lst=${var_nbr}-1
+    idx_lst=$((var_nbr-1))
     if [ -n "${rgr_opt}" ] && [ ${no_ntv_tms} = 'No' ]; then 
 	echo "ncvis ${fl_rgr[${idx_lst}]} &"
     else

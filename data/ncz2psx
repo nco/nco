@@ -519,7 +519,7 @@ if [ ${inp_glb} = 'Yes' ]; then
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [ -f "${fl}" ]; then
 	    fl_in[${fl_nbr}]=${fl}
-	    let fl_nbr=${fl_nbr}+1
+	    fl_nbr=$((fl_nbr+1))
 	fi # !file
     done
 fi # !inp_glb
@@ -534,7 +534,7 @@ if [ ${inp_std} = 'Yes' ]; then
     # Input awaits on unit 0, i.e., on stdin
     while read -r line; do # NeR05 p. 179
 	fl_in[${fl_nbr}]=${line}
-	let fl_nbr=${fl_nbr}+1
+	fl_nbr=$((fl_nbr+1))
     done < /dev/stdin
 fi # !inp_std
 
