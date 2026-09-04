@@ -2339,7 +2339,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   } /* !idx_tbl */
 
   /* Retain all dimensions */
-  if(RETAIN_ALL_DIMS) (void)nco_rad(nc_out_id,nbr_dmn_cmn_out,dmn_cmn_out,trv_tbl);
+  if(RETAIN_ALL_DIMS) (void)nco_rad(nc_out_id,gpe,nbr_dmn_cmn_out,dmn_cmn_out,trv_tbl);
 
   /* Memory management for GPE names */
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
@@ -10447,8 +10447,8 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
 
   /* If retaining all dimensions, define any dimensions from both input files not yet in output */
   if(RETAIN_ALL_DIMS && flg_dfn){
-    (void)nco_rad(nc_out_id,(int)0,(dmn_cmn_sct *)NULL,trv_tbl_1);
-    (void)nco_rad(nc_out_id,(int)0,(dmn_cmn_sct *)NULL,trv_tbl_2);
+    (void)nco_rad(nc_out_id,gpe,(int)0,(dmn_cmn_sct *)NULL,trv_tbl_1);
+    (void)nco_rad(nc_out_id,gpe,(int)0,(dmn_cmn_sct *)NULL,trv_tbl_2);
   } /* !RETAIN_ALL_DIMS */
 
   /* Memory management for common names list */
@@ -11286,6 +11286,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 void                      
 nco_rad                                /* [fnc] Retain all dimensions */
 (const int nc_out_id,                  /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
  const int nbr_dmn_var_out,            /* I [nbr] Number of dimensions for variable on output  */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure in output file */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
@@ -11319,14 +11320,30 @@ nco_rad                                /* [fnc] Retain all dimensions */
     if(!has_dmn){
 
       if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s making <%s> to output\n",nco_prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
-      grp_dmn_out_fll=(char *)strdup(dmn_trv.grp_nm_fll);
+      if(gpe) grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv.grp_nm_fll); else grp_dmn_out_fll=(char *)strdup(dmn_trv.grp_nm_fll);
 
       /* Test existence of group and create if not existent */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id))
         nco_def_grp_full(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id);
 
       /* Only define dimension if it does not already exist in output group */
-      if(nco_inq_dimid_flg(grp_dmn_out_id,dmn_trv.nm,&dmn_id_out) == NC_EBADDIM){
+      int nbr_dmn_out_grp;
+      int *dmn_out_id_grp=(int *)nco_malloc(1UL);
+      (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,(int *)NULL,0);
+      dmn_out_id_grp=(int *)nco_realloc(dmn_out_id_grp,nbr_dmn_out_grp*sizeof(int));
+      (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
+      nco_bool dmn_dfn=False;
+      for(int idx_dmn_grp=0;idx_dmn_grp<nbr_dmn_out_grp;idx_dmn_grp++){
+        char dmn_nm_grp[NC_MAX_NAME+1];
+        (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[idx_dmn_grp],dmn_nm_grp,(long *)NULL);
+        if(!strcmp(dmn_nm_grp,dmn_trv.nm)){
+          dmn_id_out=dmn_out_id_grp[idx_dmn_grp];
+          dmn_dfn=True;
+          break;
+        }
+      }
+      dmn_out_id_grp=(int *)nco_free(dmn_out_id_grp);
+      if(!dmn_dfn){
         /* Define dimension and obtain dimension ID */
         (void)nco_def_dim(grp_dmn_out_id,dmn_trv.nm,dmn_trv.sz,&dmn_id_out);
         if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_trv.nm,dmn_id_out);

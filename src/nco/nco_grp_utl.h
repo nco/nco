@@ -972,6 +972,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 void                      
 nco_rad                                /* [fnc] Retain all dimensions */
 (const int nc_out_id,                  /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
  const int nbr_dmn_var_out,            /* I [nbr] Number of dimensions for variable on output  */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure in output file */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
