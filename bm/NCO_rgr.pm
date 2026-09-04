@@ -770,6 +770,20 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array - ok
 
 # ncbo #2
+    $dsc_sng="Retain orphan dimensions from both operands only with --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan_1\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan_2\",3)' $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg -v no_mss_val %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -m --trd %tmp_fl_02% | grep orphan | wc -l";
+    $tst_cmd[4]="0";
+    $tst_cmd[5]="ncbo --rad $omp_flg -h -O $fl_fmt $nco_D_flg -v no_mss_val %tmp_fl_00% %tmp_fl_01% %tmp_fl_03%";
+    $tst_cmd[6]="ncks -m --trd %tmp_fl_03% | grep orphan | wc -l";
+    $tst_cmd[7]="2";
+    $tst_cmd[8]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+# ncbo #3
     $dsc_sng="Whole file difference with broadcasting (OK to fail here fxm TODO nco757. Works with --mmr_drt, triggers segfault on OSs like FC Linux which have C-library armor. Harmless Failure caused by free'ing dangling pointer during memory cleanup.)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time $in_pth_arg in.nc %tmp_fl_03%";;
     $tst_cmd[1]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth/in.nc %tmp_fl_03% %tmp_fl_00%";;
