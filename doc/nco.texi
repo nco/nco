@@ -5743,16 +5743,11 @@ A @acronym{PDF} version of these instructions is available
 @uref{http://dust.ess.uci.edu/diwg/ncdismember.pdf, here}.
 
 @html
-<a name="fortran"></a> <!-- http://nco.sf.net/nco.html#fortran -->
-<a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
-<a name="-F"></a> <!-- http://nco.sf.net/nco.html#-F -->
-@end html
-
-@html
 <a name="rad"></a> <!-- http://nco.sf.net/nco.html#rad -->
 <a name="orphan"></a> <!-- http://nco.sf.net/nco.html#orphan -->
 <a name="rph_dmn"></a> <!-- http://nco.sf.net/nco.html#rph_dmn -->
 @end html
+
 @node Retaining Orphaned Dimensions, C and Fortran Index Conventions, Group Path Editing, Shared features
 @section Retaining Orphaned Dimensions
 @cindex @code{--rad}
@@ -5780,6 +5775,12 @@ When @command{ncks} is invoked in printing mode, @code{--rad} also causes
 orphaned dimensions to be printed (they are not printed by default).
 Also @samp{--retain_all_dimensions}, @samp{--orphan_dimensions}, and
 @samp{--rph_dmn}.
+
+@html
+<a name="fortran"></a> <!-- http://nco.sf.net/nco.html#fortran -->
+<a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
+<a name="-F"></a> <!-- http://nco.sf.net/nco.html#-F -->
+@end html
 
 @node C and Fortran Index Conventions, Hyperslabs, Retaining Orphaned Dimensions, Shared features
 @section C and Fortran Index conventions
