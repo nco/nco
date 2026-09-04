@@ -1002,16 +1002,6 @@ main(int argc,char **argv)
   /* Free current list of all dimensions in input file */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_ass);
 
-  /* If retaining all dimensions, add any input dimensions not yet in output */
-  if(RETAIN_ALL_DIMS){
-    for(jdx=0;jdx<(int)dmn_in_vtr.size();jdx++){
-      if(dmn_in_vtr[jdx]->xrf) continue; /* Already in output */
-      (void)dmn_out_vtr.push_back(nco_dmn_dpl(dmn_in_vtr[jdx]));
-      (void)nco_dmn_dfn(fl_out,out_id,&dmn_out_vtr.back(),1);
-      (void)nco_dmn_xrf(dmn_out_vtr.back(),dmn_in_vtr[jdx]);
-    } /* end loop */
-  } /* !RETAIN_ALL_DIMS */
-  
   /* Dimensions for manually specified extracted variables are now defined in output file
      Add coordinate variables to extraction list
      If EXTRACT_ALL_COORDINATES then write associated dimension to output */
@@ -1045,6 +1035,16 @@ main(int argc,char **argv)
       } /* endif */
     } /* end loop over idx */	      
   } /* end if */ 
+
+  /* If retaining all dimensions, add any input dimensions not yet in output */
+  if(RETAIN_ALL_DIMS){
+    for(jdx=0;jdx<(int)dmn_in_vtr.size();jdx++){
+      if(dmn_in_vtr[jdx]->xrf) continue; /* Already in output */
+      (void)dmn_out_vtr.push_back(nco_dmn_dpl(dmn_in_vtr[jdx]));
+      (void)nco_dmn_dfn(fl_out,out_id,&dmn_out_vtr.back(),1);
+      (void)nco_dmn_xrf(dmn_out_vtr.back(),dmn_in_vtr[jdx]);
+    } /* end loop */
+  } /* !RETAIN_ALL_DIMS */
 
   /* Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
   cnv=nco_cnv_ini(in_id);
