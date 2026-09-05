@@ -2339,7 +2339,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   } /* !idx_tbl */
 
   /* Retain all dimensions */
-  if(RETAIN_ALL_DIMS) (void)nco_rad(nc_out_id,nbr_dmn_cmn_out,dmn_cmn_out,trv_tbl);
+  if(RETAIN_ALL_DIMS) (void)nco_rad(nc_out_id,gpe,nbr_dmn_cmn_out,dmn_cmn_out,trv_tbl);
 
   /* Memory management for GPE names */
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
@@ -10272,6 +10272,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool RETAIN_ALL_DIMS,       /* I [flg] Retain all dimensions */
  const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False for write variables ) */
 {
   /* Purpose: Group broadcasting OR variable matching (ncbo only) */
@@ -10443,6 +10444,12 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
     /* Process relative common objects (define or write) */
     (void)nco_prc_rel_cmn_nm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);
   } /* There are NOT ensembles anywhere, but there are relative matches */
+
+  /* If retaining all dimensions, define any dimensions from both input files not yet in output */
+  if(RETAIN_ALL_DIMS && flg_dfn){
+    (void)nco_rad(nc_out_id,gpe,(int)0,(dmn_cmn_sct *)NULL,trv_tbl_1);
+    (void)nco_rad(nc_out_id,gpe,(int)0,(dmn_cmn_sct *)NULL,trv_tbl_2);
+  } /* !RETAIN_ALL_DIMS */
 
   /* Memory management for common names list */
   for(int idx_cmn=0;idx_cmn<nbr_cmn_nm;idx_cmn++) cmn_lst[idx_cmn].nm=(char *)nco_free(cmn_lst[idx_cmn].nm);
@@ -11279,6 +11286,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 void                      
 nco_rad                                /* [fnc] Retain all dimensions */
 (const int nc_out_id,                  /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
  const int nbr_dmn_var_out,            /* I [nbr] Number of dimensions for variable on output  */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure in output file */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
@@ -11312,16 +11320,63 @@ nco_rad                                /* [fnc] Retain all dimensions */
     if(!has_dmn){
 
       if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s making <%s> to output\n",nco_prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
-      grp_dmn_out_fll=(char *)strdup(dmn_trv.grp_nm_fll);
+      if(nco_prg_id_get() == ncge && trv_tbl->nsm_nbr){
+        const char *grp_nm_fll_prn=NULL;
+        for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+          const char *nsm_grp_nm_fll_prn=trv_tbl->nsm[idx_nsm].grp_nm_fll_prn;
+          size_t nsm_grp_nm_lng=strlen(nsm_grp_nm_fll_prn);
+          if(!strncmp(dmn_trv.grp_nm_fll,nsm_grp_nm_fll_prn,nsm_grp_nm_lng) && (dmn_trv.grp_nm_fll[nsm_grp_nm_lng] == '\0' || dmn_trv.grp_nm_fll[nsm_grp_nm_lng] == '/')){
+            grp_nm_fll_prn=nsm_grp_nm_fll_prn;
+            break;
+          }
+        }
+        if(grp_nm_fll_prn){
+          if(trv_tbl->nsm_sfx){
+            char *nm_fll_sfx=nco_bld_nsm_sfx(grp_nm_fll_prn,trv_tbl);
+            if(gpe) grp_dmn_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_dmn_out_fll=(char *)strdup(nm_fll_sfx);
+            nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
+          }else if(gpe){
+            grp_dmn_out_fll=nco_gpe_evl(gpe,grp_nm_fll_prn);
+          }else{
+            grp_dmn_out_fll=(char *)strdup(grp_nm_fll_prn);
+          }
+        }else if(gpe){
+          grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv.grp_nm_fll);
+        }else{
+          grp_dmn_out_fll=(char *)strdup(dmn_trv.grp_nm_fll);
+        }
+      }else if(gpe){
+        grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv.grp_nm_fll);
+      }else{
+        grp_dmn_out_fll=(char *)strdup(dmn_trv.grp_nm_fll);
+      }
 
       /* Test existence of group and create if not existent */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id))
         nco_def_grp_full(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id);
 
-      /* Define dimension and obtain dimension ID */
-      (void)nco_def_dim(grp_dmn_out_id,dmn_trv.nm,dmn_trv.sz,&dmn_id_out);
-
-      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_trv.nm,dmn_id_out);
+      /* Only define dimension if it does not already exist in output group */
+      int nbr_dmn_out_grp;
+      int *dmn_out_id_grp=(int *)nco_malloc(1UL);
+      (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,(int *)NULL,0);
+      dmn_out_id_grp=(int *)nco_realloc(dmn_out_id_grp,nbr_dmn_out_grp*sizeof(int));
+      (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
+      nco_bool dmn_dfn=False;
+      for(int idx_dmn_grp=0;idx_dmn_grp<nbr_dmn_out_grp;idx_dmn_grp++){
+        char dmn_nm_grp[NC_MAX_NAME+1];
+        (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[idx_dmn_grp],dmn_nm_grp,(long *)NULL);
+        if(!strcmp(dmn_nm_grp,dmn_trv.nm)){
+          dmn_id_out=dmn_out_id_grp[idx_dmn_grp];
+          dmn_dfn=True;
+          break;
+        }
+      }
+      dmn_out_id_grp=(int *)nco_free(dmn_out_id_grp);
+      if(!dmn_dfn){
+        /* Define dimension and obtain dimension ID */
+        (void)nco_def_dim(grp_dmn_out_id,dmn_trv.nm,dmn_trv.is_rec_dmn ? NC_UNLIMITED : dmn_trv.sz,&dmn_id_out);
+        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Defined dimension <%s><%s>#%d\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_trv.nm,dmn_id_out);
+      } /* endif dimension does not exist */
 
       /* Memory management after defining current output dimension */
       if(grp_dmn_out_fll) grp_dmn_out_fll=(char *)nco_free(grp_dmn_out_fll);

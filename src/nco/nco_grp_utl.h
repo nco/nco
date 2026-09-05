@@ -871,6 +871,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool RETAIN_ALL_DIMS,       /* I [flg] Retain all dimensions */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False for write variables ) */
 
 void                          
@@ -971,6 +972,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
 void                      
 nco_rad                                /* [fnc] Retain all dimensions */
 (const int nc_out_id,                  /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
  const int nbr_dmn_var_out,            /* I [nbr] Number of dimensions for variable on output  */
  const dmn_cmn_sct * const dmn_cmn,    /* I [sct] Dimension structure in output file */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
