@@ -11320,7 +11320,36 @@ nco_rad                                /* [fnc] Retain all dimensions */
     if(!has_dmn){
 
       if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s making <%s> to output\n",nco_prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
-      if(gpe) grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv.grp_nm_fll); else grp_dmn_out_fll=(char *)strdup(dmn_trv.grp_nm_fll);
+      if(nco_prg_id_get() == ncge && trv_tbl->nsm_nbr){
+        const char *grp_nm_fll_prn=NULL;
+        for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+          const char *nsm_grp_nm_fll_prn=trv_tbl->nsm[idx_nsm].grp_nm_fll_prn;
+          size_t nsm_grp_nm_lng=strlen(nsm_grp_nm_fll_prn);
+          if(!strncmp(dmn_trv.grp_nm_fll,nsm_grp_nm_fll_prn,nsm_grp_nm_lng) && (dmn_trv.grp_nm_fll[nsm_grp_nm_lng] == '\0' || dmn_trv.grp_nm_fll[nsm_grp_nm_lng] == '/')){
+            grp_nm_fll_prn=nsm_grp_nm_fll_prn;
+            break;
+          }
+        }
+        if(grp_nm_fll_prn){
+          if(trv_tbl->nsm_sfx){
+            char *nm_fll_sfx=nco_bld_nsm_sfx(grp_nm_fll_prn,trv_tbl);
+            if(gpe) grp_dmn_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_dmn_out_fll=(char *)strdup(nm_fll_sfx);
+            nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
+          }else if(gpe){
+            grp_dmn_out_fll=nco_gpe_evl(gpe,grp_nm_fll_prn);
+          }else{
+            grp_dmn_out_fll=(char *)strdup(grp_nm_fll_prn);
+          }
+        }else if(gpe){
+          grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv.grp_nm_fll);
+        }else{
+          grp_dmn_out_fll=(char *)strdup(dmn_trv.grp_nm_fll);
+        }
+      }else if(gpe){
+        grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv.grp_nm_fll);
+      }else{
+        grp_dmn_out_fll=(char *)strdup(dmn_trv.grp_nm_fll);
+      }
 
       /* Test existence of group and create if not existent */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id))
