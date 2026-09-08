@@ -581,6 +581,9 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array
 
 # ncap2 #22
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncap2 -O --rad -v -s 'one=2' ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
     $dsc_sng="Retain orphan dimensions with --rad";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 --rad -h -O $fl_fmt $nco_D_flg -v %tmp_fl_00% %tmp_fl_01%";
