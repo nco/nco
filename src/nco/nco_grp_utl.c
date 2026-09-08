@@ -11357,21 +11357,38 @@ nco_rad                                /* [fnc] Retain all dimensions */
 
       /* Only define dimension if it does not already exist in output group */
       int nbr_dmn_out_grp;
+      int nbr_udm_out_grp;
       int *dmn_out_id_grp=(int *)nco_malloc(1UL);
+      int *udm_out_id_grp=(int *)nco_malloc(1UL);
       (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,(int *)NULL,0);
       dmn_out_id_grp=(int *)nco_realloc(dmn_out_id_grp,nbr_dmn_out_grp*sizeof(int));
       (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
+      (void)nco_inq_unlimdims(grp_dmn_out_id,&nbr_udm_out_grp,(int *)NULL);
+      udm_out_id_grp=(int *)nco_realloc(udm_out_id_grp,nbr_udm_out_grp*sizeof(int));
+      (void)nco_inq_unlimdims(grp_dmn_out_id,&nbr_udm_out_grp,udm_out_id_grp);
       nco_bool dmn_dfn=False;
       for(int idx_dmn_grp=0;idx_dmn_grp<nbr_dmn_out_grp;idx_dmn_grp++){
         char dmn_nm_grp[NC_MAX_NAME+1];
-        (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[idx_dmn_grp],dmn_nm_grp,(long *)NULL);
+        long dmn_sz_grp;
+        nco_bool is_rec_dmn_grp=False;
+        (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[idx_dmn_grp],dmn_nm_grp,&dmn_sz_grp);
         if(!strcmp(dmn_nm_grp,dmn_trv.nm)){
+          for(int idx_udm_grp=0;idx_udm_grp<nbr_udm_out_grp;idx_udm_grp++)
+            if(dmn_out_id_grp[idx_dmn_grp] == udm_out_id_grp[idx_udm_grp]){
+              is_rec_dmn_grp=True;
+              break;
+            }
+          if(is_rec_dmn_grp != dmn_trv.is_rec_dmn || dmn_sz_grp != (long)dmn_trv.sz){
+            (void)fprintf(stdout,"%s: ERROR %s cannot retain all dimensions because output group <%s> already defines dimension <%s> with different schema (existing size=%ld, record=%d; requested size=%ld, record=%d)\n",nco_prg_nm_get(),fnc_nm,grp_dmn_out_fll,dmn_trv.nm,dmn_sz_grp,is_rec_dmn_grp,(long)dmn_trv.sz,dmn_trv.is_rec_dmn);
+            nco_exit(EXIT_FAILURE);
+          }
           dmn_id_out=dmn_out_id_grp[idx_dmn_grp];
           dmn_dfn=True;
           break;
         }
       }
       dmn_out_id_grp=(int *)nco_free(dmn_out_id_grp);
+      udm_out_id_grp=(int *)nco_free(udm_out_id_grp);
       if(!dmn_dfn){
         /* Define dimension and obtain dimension ID */
         (void)nco_def_dim(grp_dmn_out_id,dmn_trv.nm,dmn_trv.is_rec_dmn ? NC_UNLIMITED : dmn_trv.sz,&dmn_id_out);
