@@ -1,5 +1,9 @@
 2026-09-09  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.4.0-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha07: Tropical Heatwave';git push
+	git tag -a 5.4.0-alpha07 -m '';git push --tags
+
 	* NCO 5.4.0-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha06: Stevens Creek';git push
 	git tag -a 5.4.0-alpha06 -m 'all: --rad; ncremap: err_hnd(), prune redundant let, set -euo;';git push --tags
