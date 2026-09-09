@@ -361,7 +361,7 @@ if($USER eq 'zender'){
 # 20150617: ncap2.in has failed for years because time1 attribute bounds is passed with att_item.val=NULL
 # This is fixable (at least by Henry). But for now, omit this known-to-fail test.
     if(0){
-    $dsc_sng="running ncap2.in script in nco_bm.pl (failure expected)";
+    $dsc_sng="running ncap2.in script in nco_bm.pl";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S ncap2.in $in_pth_arg in.nc %tmp_fl_00% %stdouterr%";
     $tst_cmd[1]="ncks -C -H --trd -v b2 --no_blank -s '%d' %tmp_fl_00%";
     $tst_cmd[2]="999";
@@ -569,7 +569,30 @@ if($USER eq 'zender'){
    $tst_cmd[3]="SS_OK";
    NCO_bm::tst_run(\@tst_cmd);
    $#tst_cmd=0; # Reset array
-    
+
+# ncap2 #21
+    $dsc_sng="Retain orphan dimensions without --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="0";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+# ncap2 #22
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncap2 -O --rad -v -s 'one=2' ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="Retain orphan dimensions with --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncap2 --rad -h -O $fl_fmt $nco_D_flg -v -s 'one=2' %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="1";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
     if($dodap eq "FALSE"){
 ####################
 #### ncatted tests #
@@ -756,7 +779,7 @@ if($USER eq 'zender'){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array - ok
 
-# ncbo #2
+# ncbo #3
     $dsc_sng="Whole file difference with broadcasting (OK to fail here fxm TODO nco757. Works with --mmr_drt, triggers segfault on OSs like FC Linux which have C-library armor. Harmless Failure caused by free'ing dangling pointer during memory cleanup.)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time $in_pth_arg in.nc %tmp_fl_03%";;
     $tst_cmd[1]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth/in.nc %tmp_fl_03% %tmp_fl_00%";;
@@ -1109,8 +1132,38 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array     		    			    			    	 			    	   
 	    			    	   
    } # end RUN_NETCDF4_TESTS
-   
-   
+
+# ncbo #30
+# ncap2 -O -s 'defdim("orphan_1",3)' ~/nco/data/in.nc ~/foo.nc
+# ncap2 -O -s 'defdim("orphan_2",3)' ~/nco/data/in.nc ~/foo1.nc
+# ncbo -O -v time ~/foo.nc ~/foo1.nc ~/foo2.nc
+# ncks -m --rad ~/foo2.nc | grep orphan | wc -l
+   $dsc_sng="Retain orphan dimensions from both operands without --rad";
+   $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan_1\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan_2\",3)' $in_pth_arg in.nc %tmp_fl_01%";
+   $tst_cmd[2]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg -v no_mss_val %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+   $tst_cmd[3]="ncks -m --rad %tmp_fl_02% | grep orphan | wc -l";
+   $tst_cmd[4]="0";
+   $tst_cmd[5]="SS_OK";
+   NCO_bm::tst_run(\@tst_cmd);
+   $#tst_cmd=0; # Reset array
+
+# ncbo #31
+# ncap2 -O -s 'defdim("orphan_1",3)' ~/nco/data/in.nc ~/foo.nc
+# ncap2 -O -s 'defdim("orphan_2",3)' ~/nco/data/in.nc ~/foo1.nc
+# ncbo -O --rad -v time ~/foo.nc ~/foo1.nc ~/foo2.nc
+# ncks -m --rad ~/foo2.nc | grep orphan | wc -l
+# ncbo: ERROR nco_rad() cannot retain all dimensions because output group </> already defines dimension <time> with different schema (existing size=0, record=1; requested size=10, record=1)
+   $dsc_sng="Retain orphan dimensions from both operands with --rad (expect ERROR due to --rad)";
+   $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan_1\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan_2\",3)' $in_pth_arg in.nc %tmp_fl_01%";
+   $tst_cmd[2]="ncbo --rad $omp_flg -h -O $fl_fmt $nco_D_flg -v time %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+   $tst_cmd[3]="ncks -m --rad %tmp_fl_02% | grep orphan | wc -l";
+   $tst_cmd[4]="2";
+   $tst_cmd[5]="SS_OK";
+   NCO_bm::tst_run(\@tst_cmd);
+   $#tst_cmd=0; # Reset array
+    
 ####################
 #### nces tests #### - OK !
 ####################
@@ -1408,6 +1461,32 @@ if($USER eq 'zender'){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
+#nces #26
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncra -Y ncfe -O -v one ~/foo.nc ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="Retain orphan dimensions without --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v one %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="0";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+#nces #27
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncra -Y ncfe --rad -O -v one ~/foo.nc ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="Retain orphan dimensions with --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra -Y ncfe --rad $omp_flg -h -O $fl_fmt $nco_D_flg -v one %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="1";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
 # print "paused - hit return to continue"; my $wait=<STDIN>;
     
 ####################
@@ -1458,7 +1537,7 @@ if($USER eq 'zender'){
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
-#    
+
 # NCO 4.3.1 - ncecat for groups 
 #
 
@@ -1594,6 +1673,32 @@ if($USER eq 'zender'){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
     
+#ncecat #15
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncecat -O -G ensemble -v one ~/foo.nc ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="(Groups) Retain orphan dimensions in aggregate group without --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncecat -h -O $fl_fmt $nco_D_flg -G ensemble -v one %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="0";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+#ncecat #16
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncecat -O --rad -G ensemble -v one ~/foo.nc ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="(Groups) Retain orphan dimensions in aggregate group with --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncecat --rad -h -O $fl_fmt $nco_D_flg -G ensemble -v one %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="2";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+    
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
 #####################
@@ -1713,6 +1818,32 @@ if($USER eq 'zender'){
 
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			   
+
+#ncflint #9
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncflint -O -v one ~/foo.nc ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="Retain orphan dimensions without --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 0.5,0.5 -v one %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="0";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+#ncflint #10
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncflint -O --rad -v one ~/foo.nc ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="Retain orphan dimensions with --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncflint --rad $omp_flg -h -O $fl_fmt $nco_D_flg -w 0.5,0.5 -v one %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="1";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
 
     }  	#### Group tests
     
@@ -3168,6 +3299,24 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+# ncks #128
+    $dsc_sng="Retain orphan dimensions without --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -C -v one %tmp_fl_00% | grep orphan | wc -l";
+    $tst_cmd[2]="0";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+# ncks #129
+    $dsc_sng="Retain orphan dimensions with --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m --rad -C -v one %tmp_fl_00% | grep orphan | wc -l";
+    $tst_cmd[2]="1";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
 #####################
 #### ncpdq tests #### -OK !
 #####################
@@ -3831,6 +3980,32 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array	
 
+#ncpdq #52
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncpdq -O -v one ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="Retain orphan dimensions without --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -v one %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="0";
+    $tst_cmd[4]="SS_OK";
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    $#tst_cmd=0; # Reset array
+
+#ncpdq #53
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncpdq -O --rad -v one ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="Retain orphan dimensions with --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncpdq --rad $omp_flg -h -O $fl_fmt $nco_D_flg -v one %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="1";
+    $tst_cmd[4]="SS_OK";
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    $#tst_cmd=0; # Reset array
+
 ####################
 #### ncrcat tests ## OK !
 ####################
@@ -4294,8 +4469,32 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 		
 	} #### End Group tests
 
-#    } else { print "NB: Current mpncrcat test skipped because it hangs fxm TODO nco593.\n";}
-    
+#ncrcat #36
+#ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+#ncrcat -O -C -v one_dmn_rec_var ~/foo.nc ~/foo.nc ~/foo1.nc
+#ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="Retain orphan dimensions without --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -C -v one_dmn_rec_var %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="0";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+#ncrcat #37
+#ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+#ncrcat -O --rad -C -v one_dmn_rec_var ~/foo.nc ~/foo.nc ~/foo1.nc
+#ncks -m --rad ~/foo1.nc | grep orphan | wc -l    
+    $dsc_sng="Retain orphan dimensions with --rad (expect ERROR due to --rad)";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrcat --rad $omp_flg -h -O $fl_fmt $nco_D_flg -C -v one_dmn_rec_var %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="1";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
 ####################
 #### ncra tests #### OK!
 ####################
@@ -4785,6 +4984,32 @@ if(0){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
     
+#ncra #41
+#ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+#ncra -O -C -v one_dmn_rec_var ~/foo.nc ~/foo.nc ~/foo1.nc
+#ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="Retain orphan dimensions without --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -C -v one_dmn_rec_var %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="0";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+#ncra #42
+#ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+#ncra -O --rad -C -v one_dmn_rec_var ~/foo.nc ~/foo.nc ~/foo1.nc
+#ncks -m --rad ~/foo1.nc | grep orphan | wc -l    
+    $dsc_sng="Retain orphan dimensions with --rad (expect ERROR due to --rad)";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra --rad $omp_flg -h -O $fl_fmt $nco_D_flg -C -v one_dmn_rec_var %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="1";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
 ####################
 #### ncwa tests #### OK!
 ####################
@@ -5642,6 +5867,30 @@ if(0){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
+#ncwa #52
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncwa -O -v one ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="Retain orphan dimensions without --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v one %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="0";
+    $tst_cmd[4]="SS_OK";
+    $#tst_cmd=0; # Reset array
+
+#ncwa #53
+# ncap2 -O -s 'defdim("orphan",3)' ~/nco/data/in.nc ~/foo.nc
+# ncwa -O --rad -v one ~/foo.nc ~/foo1.nc
+# ncks -m --rad ~/foo1.nc | grep orphan | wc -l
+    $dsc_sng="Retain orphan dimensions with --rad";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'defdim(\"orphan\",3)' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncwa --rad $omp_flg -h -O $fl_fmt $nco_D_flg -v one %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -m --rad %tmp_fl_01% | grep orphan | wc -l";
+    $tst_cmd[3]="1";
+    $tst_cmd[4]="SS_OK";
+    $#tst_cmd=0; # Reset array
+
 ####################
 #### ncrename tests #### OK!
 ####################

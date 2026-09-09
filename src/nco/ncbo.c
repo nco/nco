@@ -120,6 +120,7 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
@@ -277,6 +278,10 @@ main(int argc,char **argv)
     {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */	  
     {"msa_user_order",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     {"ram_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
+    {"rad",no_argument,0,0}, /* [flg] Retain all dimensions */
+    {"retain_all_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
+    {"orphan_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
+    {"rph_dmn",no_argument,0,0}, /* [flg] Retain all dimensions */
     {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
     {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
     {"diskless_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
@@ -496,6 +501,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"qnt_alg") || !strcmp(opt_crr,"quantize_algorithm")) nco_baa_cnv=(unsigned short int)nco_qnt2baa(optarg);
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Create (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Open (netCDF3) file(s) in RAM */
+      if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True; /* [flg] Retain all dimensions */
       if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"unbuffered_io") || !strcmp(opt_crr,"uio") || !strcmp(opt_crr,"create_share")) SHARE_CREATE=True; /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
       if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"unbuffered_io") || !strcmp(opt_crr,"uio") || !strcmp(opt_crr,"open_share")) SHARE_OPEN=True; /* [flg] Open (netCDF3) file(s) with unbuffered I/O */
       if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;
@@ -735,7 +741,7 @@ main(int argc,char **argv)
   cnv=nco_cnv_ini(in_id_1);
 
   /* Group broadcating (DEFINE mode, True as flg_dfn parameter) */
-  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)True);
+  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,RETAIN_ALL_DIMS,(nco_bool)True);
 
   /* Copy global attributes from file 1 */
   (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -759,7 +765,7 @@ main(int argc,char **argv)
   } /* hdr_pad */
 
   /* Group broadcating (WRITE mode, False as flg_dfn parameter) */
-  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)False);
+  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,RETAIN_ALL_DIMS,(nco_bool)False);
 
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
