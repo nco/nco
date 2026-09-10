@@ -1,8 +1,12 @@
-2026-09-09  Charlie Zender  <zender@uci.edu>
+2026-09-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha07: Tropical Heatwave';git push
-	git tag -a 5.4.0-alpha07 -m '';git push --tags
+	git tag -a 5.4.0-alpha07 -m 'all: nco_usg_prn(); ncclimo: set +u';git push --tags
+
+	* Fix nco_usg_prn(), wordsmithing, fix set +u so ncclimo can run
+
+2026-09-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha06: Stevens Creek';git push

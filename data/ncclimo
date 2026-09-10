@@ -1116,7 +1116,7 @@ fi # !vrs_prn
 # This is because PBS uses stdin to set the job name
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
 # Check stdin if user has not explicitly disallowed it with --no_stdin
-#set +u # err_hnd Continue on unbound variable reference
+set +u # err_hnd Continue on unbound variable reference
 if [ "${std_chk}" = 'Yes' ]; then
     if [ -n "${PBS_ENVIRONMENT:-}" ]; then
 	if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
@@ -2126,8 +2126,8 @@ else # !tms_flg
 
     if [ ${clm_md} = 'mth' ] && [ ${flg_dct} = 'Yes' ]; then
 
-	# Modify the check from monthly timeseries mode to allow integer-multiples of the expected number of files
-	# An integer multiple usually means that an ensemble of simulations is being input
+	# Modify the check from monthly timeseries mode to allow integer-multiples of expected number of files
+	# Integer multiples presumably occurs when input receives a simulation ensemble
 	if [ ${mth_nbr} -ne ${fl_nbr} ]; then
 	    nsm_sz=$((fl_nbr/mth_nbr))
 	    mth_rmd=$(( fl_nbr % mth_nbr ))
@@ -2837,7 +2837,7 @@ if [ "${clm_flg}" = 'Yes' ]; then
 	printf "Each input file assumed to contain statistics for an integer number of days each comprising ${tpd_out} timesteps\n"
     elif [ ${clm_md} = 'mth' ]; then 
 	if [ ${nsm_sz} -gt 1 ]; then 
-	    printf "Received ${fl_nbr} input files for only ${mth_nbr} months. Treating this as an ensemble climatology of ${nsm_sz} simulations.\n"
+	    printf "Received ${fl_nbr} input files for only ${mth_nbr} months. Presuming this is an ensemble of ${nsm_sz} simulations.\n"
 	fi # !nsm_sz
 	printf "Each input file assumed to contain statistics for one month\n"
     fi # !mth
