@@ -699,8 +699,9 @@ if ! [[ ${dbg_lvl} =~ ^[0-9]+$ ]]; then
     exit 1
 fi # !dbg_lvl
 
-# Initialize optional variables so fnc_usg_prn() is safe under "set -u"
+# Initialize potentially undefined variables to be safe under "set -u"
 bb_wesn='' # [deg] Regional regridding bounding-box string in WESN order
+cmd_mpi=() # [sng] MPI prefix for parallel commands
 dat_glb='' # [sng] Global data-file for regional extraction mode
 gad_lst='' # [sng] Global attributes-to-delete list
 grd_glb='' # [sng] Global grid-file for regional extraction mode
@@ -2404,8 +2405,8 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 		    # 20210319: --zonesort=off tested by me does eliminate zonesort messages like these:
 		    # slurmstepd: error: Detected zonesort setup failure: zonesort interface write failure (40558186.7)
 		    # However, using zonesort option appears to slow-down throughput considerably
-		    cmd_mpi[${fl_idx}]="${cmd_mpi[${fl_idx}]} --mem=${mem_mb}" ; ;; # SLURM    
-		    # cmd_mpi[${fl_idx}]="${cmd_mpi[${fl_idx}]} --nodes=1 --gres=craynetwork:0 --mem=${mem_mb} --zonesort=off" ; ;; # SLURM
+		    cmd_mpi[${fl_idx}]="${cmd_mpi[${fl_idx}]:-} --mem=${mem_mb}" ; ;; # SLURM    
+		    # cmd_mpi[${fl_idx}]="${cmd_mpi[${fl_idx}]:-} --nodes=1 --gres=craynetwork:0 --mem=${mem_mb} --zonesort=off" ; ;; # SLURM
 	    esac # !HOSTNAME
 	done # !fl_idx
 	if [[ ${SLURM_NODELIST:-} ]]; then 
@@ -3129,7 +3130,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    if [[ ${prc_typ:-} == 'hirdls' ]] || [[ ${prc_typ:-} == 'mls' ]]; then
 		# Pre-process zonal input files so grid inferral works
 		# 20160214: fix record variable to work around ncpdq problem
-		cmd_znl[${fl_idx}]="ncecat -O -u lon ${nco_opt} ${nco_var_lst} \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${znl_fl/znl/znl1}\";ncap2 -O ${nco_opt} -s 'lon[\$lon]={0.0,90.0,180.0,270.0}' \"${znl_fl/znl/znl1}\" \"${znl_fl/znl/znl2}\""
+		cmd_znl[${fl_idx}]="ncecat -O -u lon ${nco_opt} ${nco_var_lst:-} \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${znl_fl/znl/znl1}\";ncap2 -O ${nco_opt} -s 'lon[\$lon]={0.0,90.0,180.0,270.0}' \"${znl_fl/znl/znl1}\" \"${znl_fl/znl/znl2}\""
 		in_fl="${znl_fl/znl/znl2}"
 		if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		    echo ${cmd_znl[${fl_idx}]}
@@ -3333,7 +3334,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		printf "DPT(in)  : ${fl_in[${fl_idx}]}\n"
 		printf "DPT(out) : ${dpt_tmp_fl[${fl_idx}]}\n"
 	    fi # !vrb_lvl
-	    cmd_dpt[${fl_idx}]="${cmd_mpi[${fl_idx}]} ${cmd_dpt_mpas} ${cmd_dpt_opt} -i \"${fl_in[${fl_idx}]}\" -o \"${dpt_tmp_fl[${fl_idx}]}\""
+	    cmd_dpt[${fl_idx}]="${cmd_mpi[${fl_idx}]:-} ${cmd_dpt_mpas} ${cmd_dpt_opt} -i \"${fl_in[${fl_idx}]}\" -o \"${dpt_tmp_fl[${fl_idx}]}\""
 	    ${fl_in[${fl_idx}]}=${dpt_tmp_fl[${fl_idx}]}
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		echo ${cmd_dpt[${fl_idx}]}
@@ -3374,7 +3375,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		printf "PDQ(in)  : ${fl_in[${fl_idx}]}\n"
 		printf "PDQ(out) : ${pdq_fl[${fl_idx}]}\n"
 	    fi # !vrb_lvl
-	    cmd_pdq[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncpdq -O ${nco_opt} ${nco_var_lst} ${pdq_opt} \"${fl_in[${fl_idx}]}\" \"${pdq_fl[${fl_idx}]}\""
+	    cmd_pdq[${fl_idx}]="${cmd_mpi[${fl_idx}]:-} ncpdq -O ${nco_opt} ${nco_var_lst:-} ${pdq_opt} \"${fl_in[${fl_idx}]}\" \"${pdq_fl[${fl_idx}]}\""
 	    fl_in[${fl_idx}]=${pdq_fl[${fl_idx}]}
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		echo ${cmd_pdq[${fl_idx}]}
@@ -3411,7 +3412,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		printf "D2F(in)  : ${fl_in[${fl_idx}]}\n"
 		printf "D2F(out) : ${d2f_fl[${fl_idx}]}\n"
 	    fi # !vrb_lvl
-	    cmd_d2f[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncpdq -O ${nco_opt} ${nco_var_lst} ${d2f_opt} \"${fl_in[${fl_idx}]}\" \"${d2f_fl[${fl_idx}]}\""
+	    cmd_d2f[${fl_idx}]="${cmd_mpi[${fl_idx}]:-} ncpdq -O ${nco_opt} ${nco_var_lst:-} ${d2f_opt} \"${fl_in[${fl_idx}]}\" \"${d2f_fl[${fl_idx}]}\""
 	    fl_in[${fl_idx}]=${d2f_fl[${fl_idx}]}
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		echo ${cmd_d2f[${fl_idx}]}
@@ -3448,7 +3449,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		printf "att(in)  : ${fl_in[${fl_idx}]}\n"
 		printf "att(out) : ${att_fl[${fl_idx}]}\n"
 	    fi # !vrb_lvl
-	    cmd_att[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncatted -O --type_match -a _FillValue,,o,d,${mss_val} -a _FillValue,,o,f,${mss_val} \"${fl_in[${fl_idx}]}\" \"${att_fl[${fl_idx}]}\""
+	    cmd_att[${fl_idx}]="${cmd_mpi[${fl_idx}]:-} ncatted -O --type_match -a _FillValue,,o,d,${mss_val} -a _FillValue,,o,f,${mss_val} \"${fl_in[${fl_idx}]}\" \"${att_fl[${fl_idx}]}\""
 	    fl_in[${fl_idx}]="${att_fl[${fl_idx}]}"
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		echo ${cmd_att[${fl_idx}]}
@@ -3507,7 +3508,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    if [[ ${vrb_lvl:-} -ge ${vrb_3:-} ]]; then
 		printf "RRG: Remove \"${rnm_sng}\" from dimension and variable names...\n"
 	    fi # !vrb_lvl
-	    cmd_rnm[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncrename -O ${dmn_sng} ${var_sng} \"${fl_in[${fl_idx}]}\" \"${rnm_fl[${fl_idx}]}\""
+	    cmd_rnm[${fl_idx}]="${cmd_mpi[${fl_idx}]:-} ncrename -O ${dmn_sng} ${var_sng} \"${fl_in[${fl_idx}]}\" \"${rnm_fl[${fl_idx}]}\""
 	    fl_in[${fl_idx}]=${rnm_fl[${fl_idx}]}
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		echo ${cmd_rnm[${fl_idx}]}
@@ -3540,7 +3541,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    if [[ ${vrb_lvl:-} -ge ${vrb_3:-} ]]; then
 		printf "RRG: Append regional coordinates and vertices to renamed, annotated regional input data...\n"
 	    fi # !vrb_lvl
-	    cmd_apn[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -A \"${rgn_fl}\" \"${rnm_fl[${fl_idx}]}\""
+	    cmd_apn[${fl_idx}]="${cmd_mpi[${fl_idx}]:-} ncks -A \"${rgn_fl}\" \"${rnm_fl[${fl_idx}]}\""
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		echo ${cmd_apn[${fl_idx}]}
 	    fi # !dbg
@@ -3580,7 +3581,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    if [[ ${flg_hrz:-} == 'Yes' ]]; then
 		out_fl="${drc_tmp}/ncremap_tmp_out_vrt.${fl_idx}.nc"
 	    fi # !flg_hrz
-	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${vrt_opt} --vrt_out=\"${vrt_out}\" \"${fl_in[${fl_idx}]}\" \"${out_fl}\""
+	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]:-} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst:-} ${vrt_opt} --vrt_out=\"${vrt_out}\" \"${fl_in[${fl_idx}]}\" \"${out_fl}\""
 	    fl_in[${fl_idx}]=${out_fl}
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		echo ${cmd_rgr[${fl_idx}]}
@@ -3708,7 +3709,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	if [[ ${prc_typ:-} == 'hirdls' ]] || [[ ${prc_typ:-} == 'mls' ]]; then
 	    # NB: Move file to avert problem with --no_tmp_fl causing self-overwrite
 	    # fxm: ncwa_fl is not parallel-safe, needs fl_idx suffix
-	    cmd_ppp[${fl_idx}]="/bin/mv \"${fl_out[${fl_idx}]}\" \"${ncwa_fl}\";ncwa -O -a lon ${nco_opt} ${nco_var_lst} \"${ncwa_fl}\" \"${fl_out[${fl_idx}]}\""
+	    cmd_ppp[${fl_idx}]="/bin/mv \"${fl_out[${fl_idx}]}\" \"${ncwa_fl}\";ncwa -O -a lon ${nco_opt} ${nco_var_lst:-} \"${ncwa_fl}\" \"${fl_out[${fl_idx}]}\""
 	    # Block 7 Loop 2: Execute and/or echo commands
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		echo ${cmd_ppp[${fl_idx}]}

@@ -674,14 +674,14 @@ yr_end_prv='' # [yr] End year previous
 yr_srt_prv='' # [yr] Start year previous
 
 # Initialize potentially undefined variables to be safe under "set -u"
-wnt_md='' # [sng] Deprecated winter mode selector retained for usage text
-yr_end_prv='' # [yr] End year of previous climatology extension interval
-yr_srt_prv='' # [yr] Start year of previous climatology extension interval
+clm_idx='' # [idx] Climatology index
 cmd_clm=() # [sng] Climatology command
 cmd_mpi=() # [sng] MPI prefix for parallel commands
 rgr_pid=() # [sng] Regrid PID
-clm_idx='' # [idx] Climatology index
 var_idx='' # [idx] Variable index
+wnt_md='' # [sng] Deprecated winter mode selector retained for usage text
+yr_end_prv='' # [yr] End year of previous climatology extension interval
+yr_srt_prv='' # [yr] Start year of previous climatology extension interval
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
