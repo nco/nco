@@ -693,6 +693,12 @@ else
     drc_tmp=${PWD}
 fi # !gpfs
 
+if ! [[ ${dbg_lvl} =~ ^[0-9]+$ ]]; then
+    echo "${spt_nm}: ERROR dbg_lvl='${dbg_lvl}' is not an integer"
+    echo "${spt_nm}: HINT Set --dbg to a non-negative integer, e.g., --dbg=2"
+    exit 1
+fi # !dbg_lvl
+
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
     printf "${fnt_rvr}Basic usage:\n"
