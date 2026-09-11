@@ -3432,7 +3432,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 		    fi # !tpd_out
 		else
 		    # Normal splitting, non-high-frequency 
-		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]:-} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		fi # !clm_md
 		if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		    echo ${cmd_sbs[${var_idx}]}
@@ -3493,13 +3493,13 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 		    # However, this prevented output of --var_xtr fields. We omit '-v' as of NCO 5.3.0.
 		    # Pros: More flexible, allows users to request e.g., --var_xtr=area,landfrac for scaling
 		    # Cons: Larger files, and users might pollute --var_xtr with timeseries other timeseries
-		    cmd_stt[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncap2 -h -O -s '${cmd_rgn}' ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
+		    cmd_stt[${var_idx}]="${cmd_mpi[${var_idx}]:-} OMP_PROC_BIND=false ncap2 -h -O -s '${cmd_rgn}' ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
 		    # 20220817: Prior to today, --glb_avg used ncwa for global average
 		    # As of NCO 5.1.1, --glb_avg is a deprecated synonym for --rgn_avg
 		    # As of NCO 5.2.8, --rgn_avg is a synonym for --rgn_stt=avg
 		    # Both produce (currently three) regional timeseries
 		    # The original --glb_avg implementation was:
-		    # cmd_stt[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
+		    # cmd_stt[${var_idx}]="${cmd_mpi[${var_idx}]:-} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
 		    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 			echo ${cmd_stt[${var_idx}]}
 		    fi # !dbg
@@ -3560,12 +3560,12 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 		fi # !bch_flg
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 		    fl_rgr[${var_idx}]="${fl_rgr_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
-		    #cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${spl_opt} ${spl_rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
-		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${spl_opt} ${spl_rgr_opt} ${prc_opt} ${rmp_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
+		    #cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]:-} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${spl_opt} ${spl_rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
+		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]:-} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${spl_opt} ${spl_rgr_opt} ${prc_opt} ${rmp_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
 		    if [[ ${mdl_typ:-} == 'mpas' ]]; then
 			# 20181114: Remove '-C' argument from ncremap invocation for MPAS splitter only
 			# This ensures CMIP6 MPAS timeseries will have _FillValue
-			cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" ${spl_opt} ${spl_rgr_opt} -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
+			cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]:-} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" ${spl_opt} ${spl_rgr_opt} -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
 		    fi # !mdl_typ
 		    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 			echo ${cmd_rgr[${var_idx}]}
@@ -3640,7 +3640,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'ann' ]]; then
 	drc_out="${drc_in}"
     fi # !bnr_flg
     fl_out[${clm_idx}]="${drc_out}/${out_nm}_ANN_${yyyy_srt}01_${yyyy_end}12_climo.nc"
-    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]} ${par_opt}"
+    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]} ${par_opt}"
 
     # Block 1 Loop 2: Climatological annual mean
     printf "Climatological annual mean...\n"
@@ -3659,7 +3659,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'ann' ]]; then
     # Block 2: Regrid climatological annual mean
     if [[ ${rgr_opt:-} ]]; then 
 	printf "Regrid annual data...\n"
-	cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]/.nc/.rgr.nc}"
+	cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]/.nc/.rgr.nc}"
 	if [[ ${dbg_lvl:-} -ge 1 ]]; then
 	    echo ${cmd_rgr[${clm_idx}]} ${par_opt}
 	fi # !dbg
@@ -3703,10 +3703,10 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 	    tm_srt="${yyyy_srt}-${MM}-${DD}T00:00:00"
 	    tm_end="${yyyy_end}-${MM}-${DD}T23:59:59"
 	    if [[ ${tpd_out:-} -eq 1 ]]; then
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},1 ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},1 ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    else
 		# 20170619: Diurnal mode is really slow on MacOS (UDUnits parsing sluggishness?)
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${drn} ${ppn_opt} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${drn} ${ppn_opt} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
 	    fi # !tpd
 	    clm_idx=$((clm_idx+1))
 	done # !day
@@ -3808,9 +3808,9 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 		clm_idx_end=$((clm_nbr - 1))
 	    fi # !bch_flg
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		if [[ ${mdl_typ:-} == 'mpas' ]]; then
-		    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.daily.${clm_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} ncremap -C -u .pid${spt_pid}.daily.${clm_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		fi # !mdl_typ
 		if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		    echo ${cmd_rgr[${clm_idx}]}
@@ -3939,10 +3939,10 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		# already round-robin'ed onto existing nodes
 	    fi # !nd
 	    # printf "dbg: clm_idx = ${clm_idx}, nd_idx = ${nd_idx}, csn_nbr = ${csn_nbr}, nd_nbr = ${nd_nbr}\n"
-	    #cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    #cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]:-} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]:-} ncremap -u .pid${spt_pid}.climo.${clm_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${prc_opt} ${rmp_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [[ ${mdl_typ:-} == 'mpas' ]]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]:-} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		echo ${cmd_rgr[${clm_idx}]}
@@ -4150,10 +4150,10 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 	if [[ ${rgr_opt:-} ]]; then 
 	    printf "Regrid annual data...\n"
 	    [[ ${dbg_lvl:-} -ge 1 ]] && date_rgr=$(date +"%s")
-	    #cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    #cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} ncremap -u .pid${spt_pid}.climo.${clm_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${prc_opt} ${rmp_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [[ ${mdl_typ:-} == 'mpas' ]]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		echo ${cmd_rgr[${clm_idx}]}
@@ -4312,7 +4312,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 	
 	printf "Weight input climos to produce extended climo...\n"
 	for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-	    cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} ${gaa_sng[${clm_idx}]} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
+	    cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} ncflint -O ${nco_opt} ${gaa_sng[${clm_idx}]} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		echo ${cmd_xtn[${clm_idx}]}
 	    fi # !dbg
@@ -4343,7 +4343,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 	if [[ ${rgr_opt:-} ]]; then 
 	    printf "Weight input climos to produce extended regridded climo...\n"
 	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-		cmd_rgr_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
+		cmd_rgr_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
 		if [[ ${dbg_lvl:-} -ge 1 ]]; then
 		    echo ${cmd_rgr_xtn[${clm_idx}]}
 		fi # !dbg
