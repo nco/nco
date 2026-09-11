@@ -1564,6 +1564,11 @@ if [[ ${fl_fmt} ]]; then
     fi # !fl_fmt
     nco_opt="${nco_fl_fmt} ${nco_opt}"
 fi # !fl_fmt
+if ! [[ ${dbg_lvl} =~ ^[0-9]+$ ]]; then
+    echo "${spt_nm}: ERROR dbg_lvl='${dbg_lvl}' is not an integer"
+    echo "${spt_nm}: HINT Set --dbg to a non-negative integer, e.g., --dbg=2"
+    exit 1
+fi # !dbg_lvl
 if [[ ${dbg_lvl} -ge 2 ]]; then
     nco_opt="--dbg_lvl=${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
@@ -3168,7 +3173,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_out}\//}" # Delete prepended path to ease symlinking
 	if [[ ${rgr_opt} ]]; then
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
-	    if [[ ${drc_out} == ${drc_rgr} ]]; then 
+	    if [[ ${drc_out} == "${drc_rgr}" ]]; then 
 		# Append geometry suffix to regridded files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
 		dfl_sfx='rgr'
@@ -3343,7 +3348,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	fi # !fml_nm_usr
 	if [[ ${rgr_opt} ]]; then
 	    fl_rgr_tpl[${sgm_idx}]="${fl_out_tpl[${sgm_idx}]/${drc_out}/${drc_rgr}}"
-	    if [[ ${drc_out} == ${drc_rgr} ]]; then 
+	    if [[ ${drc_out} == "${drc_rgr}" ]]; then 
 		# Append geometry suffix to regridded files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
 		dfl_sfx='rgr'
@@ -3697,7 +3702,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]]; then
     if [[ ${rgr_opt} ]]; then
 	for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
-	    if [[ ${drc_out} == ${drc_rgr} ]]; then 
+	    if [[ ${drc_out} == "${drc_rgr}" ]]; then 
 		# Append geometry suffix to regridded files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
 		dfl_sfx='rgr'
