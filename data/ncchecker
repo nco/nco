@@ -91,7 +91,7 @@ fi # !nco_vrs
 lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 
 # When running in a terminal window (not in an non-interactive batch queue)...
-if [[ -n ${TERM} ]]; then
+if [[ ${TERM} ]]; then
     # Set fonts for legibility
     if [[ -x /usr/bin/tput ]] && tput setaf 1 &> /dev/null; then
 	fnt_bld=`tput bold` # Bold
@@ -227,12 +227,12 @@ if [[ ${psn_nbr} -ge 1 ]]; then
     std_chk='No'
 fi # !psn_nbr
 
-if [[ ${vrs_prn} = 'Yes' ]]; then
+if [[ ${vrs_prn} == 'Yes' ]]; then
     printf "${spt_nm}, runs DIWG recommendation compliance checks, version ${nco_vrs} \"${nco_sng}\"\n"
     printf "Authors: \n"
     printf "Config: ${spt_nm} script located in directory ${drc_spt}\n"
     printf "Config: NCO binaries located in directory ${drc_nco}, linked to netCDF library version ${lbr_vrs}\n"
-    if [[ ${hrd_pth_fnd} = 'Yes' ]]; then
+    if [[ ${hrd_pth_fnd} == 'Yes' ]]; then
 	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
     else
 	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
@@ -241,7 +241,7 @@ if [[ ${vrs_prn} = 'Yes' ]]; then
 fi # !vrs_prn
 
 # Determine mode first (this helps determine other defaults)
-if [[ ${tst_lst} = 'none' ]]; then
+if [[ ${tst_lst} == 'none' ]]; then
     tst_nbr=0
     tst_flg='No'
 fi # !tst_lst
@@ -257,7 +257,7 @@ else # !drc_in
 fi # !drc_in
 
 # 20170807 Custom tests (code borrowed from ncremap seasons (csn) treatment)
-if [[ ${tst_flg} = 'Yes' ]]; then
+if [[ ${tst_flg} == 'Yes' ]]; then
 
     # Standard test enumeration
     # Index into test definition table
@@ -366,9 +366,9 @@ fi # !tst_flg
 #printf "dbg: inp_std  = ${inp_std}\n"
 
 # Derived variables
-if [[ -n ${drc_out_usr} ]]; then
+if [[ ${drc_out_usr} ]]; then
     chr_fst=${drc_out_usr:0:1}
-    if [[ ${chr_fst} = '-' ]]; then
+    if [[ ${chr_fst} == '-' ]]; then
 	printf "${spt_nm}: WARNING first character of user-specified output directory drc_out is \"${chr_fst}\", which looks like an option itself. Be sure the ${spt_nm} '-O' option is followed by an argument that specifies the output directory for processed files. The '-O' option requires a pathname argument, and should not be confused with the '-O' flag (which takes no argument) used in the rest of NCO to force overwriting files (${spt_nm} automatically overwrites existing output files).\n"
     fi # !chr_fst
     # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
@@ -377,7 +377,7 @@ fi # !drc_out_usr
 
 # Doubly-derived variables
 
-if [[ ${inp_glb} = 'Yes' ]]; then 
+if [[ ${inp_glb} == 'Yes' ]]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [[ -f ${fl} ]]; then
 	    fl_in[${fl_nbr}]=${fl}
@@ -385,14 +385,14 @@ if [[ ${inp_glb} = 'Yes' ]]; then
 	fi # !file
     done
 fi # !inp_glb
-if [[ ${inp_psn} = 'Yes' ]]; then
+if [[ ${inp_psn} == 'Yes' ]]; then
     # Read any positional arguments
     for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
 	fl_in[(${psn_idx}-1)]=${!psn_idx}
 	fl_nbr=${psn_nbr}
     done # !psn_idx
 fi # !inp_psn
-if [[ ${inp_std} = 'Yes' ]]; then
+if [[ ${inp_std} == 'Yes' ]]; then
     # Input awaits on unit 0, i.e., on stdin
     while read -r line; do # NeR05 p. 179
 	fl_in[${fl_nbr}]=${line}
@@ -401,9 +401,9 @@ if [[ ${inp_std} = 'Yes' ]]; then
 fi # !inp_std
 
 # Create output directory
-if [[ -n ${drc_out} ]] && [[ ! -d ${drc_out} ]]; then 
+if [[ ${drc_out} ]] && [[ ! -d ${drc_out} ]]; then 
     chr_fst=${drc_out:0:1}
-    if [[ ${chr_fst} = '-' ]]; then
+    if [[ ${chr_fst} == '-' ]]; then
 	echo "${spt_nm}: ERROR Attempting to mkdir user-specified output directory \"${drc_out}\" will fail because directory name begins with '-' which is an option indicator"
 	echo "${spt_nm}: HINT Specify an output directory name that does not begin with '-'"
 	exit 1

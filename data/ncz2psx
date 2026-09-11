@@ -82,8 +82,8 @@ spt_pid=$$ # [nbr] Script PID (process ID)
 # ncremap/ncclimo implement NPO (though not getopt) logic prior to invoking NCO
 # This switch is a no-op in main getopt() block below (since it has already been parsed here)
 hrd_pth='No' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
-if [[ -n ${1} ]]; then
-    if [[ ${1} = '--hrd_pth' ]] || [[ ${1} = '--npo' ]] || [[ ${1} = '--nco_path_override' ]] || [[ ${1} = '--NCO_PATH_OVERRIDE' ]]; then
+if [[ ${1} ]]; then
+    if [[ ${1} == '--hrd_pth' ]] || [[ ${1} == '--npo' ]] || [[ ${1} == '--nco_path_override' ]] || [[ ${1} == '--NCO_PATH_OVERRIDE' ]]; then
 	hrd_pth='Yes'
 	NCO_PATH_OVERRIDE='Yes'
     fi # !hrd_pth
@@ -105,7 +105,7 @@ fi # HOSTNAME
 # Leave NCO_PATH_OVERRIDE unset or set to 'No' to prevent NCO from executing next block that overrides PATH
 # Set NCO_PATH_OVERRIDE to 'Yes' in environment to cause NCO to execute next block and to override PATH:
 # export NCO_PATH_OVERRIDE='Yes'
-if [[ ${hrd_pth} = 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} = 'Yes' ]]; then
+if [[ ${hrd_pth} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} == 'Yes' ]]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
     case "${HOSTNAME}" in 
@@ -115,7 +115,7 @@ if [[ ${hrd_pth} = 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} = 'Yes' ]]; then
 	andes* )
 	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
-	    if [[ ${spt_nm} = 'ncremap' ]]; then
+	    if [[ ${spt_nm} == 'ncremap' ]]; then
 		module load esmf
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_andes'\:${PATH}
@@ -127,18 +127,18 @@ if [[ ${hrd_pth} = 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} = 'Yes' ]]; then
 	    # 20221006 Add build environment modules
 	    module load gcc/9.2.0-ugetvbp
 	    module load openmpi/4.0.4-hpcx-hghvhj5
-	    if [[ ${spt_nm} = 'ncremap' ]]; then
+	    if [[ ${spt_nm} == 'ncremap' ]]; then
 		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
 	    export PATH='/home/ac.zender/bin_chrysalis:/home/ac.zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis:/home/ac.zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	*cheyenne* )
 	    # 20180112: Cheyenne support not yet tested in batch mode
-	    if [[ ${spt_nm} = 'ncremap' ]]; then
+	    if [[ ${spt_nm} == 'ncremap' ]]; then
 		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
 		module load ncl
 	    fi # !ncremap
-	    if [[ -n ${NCARG_ROOT} ]]; then
+	    if [[ ${NCARG_ROOT} ]]; then
 		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.6.2/gnu/8.3.0/bin"
 	    fi # !NCARG_ROOT
             export PATH='/glade/u/home/zender/bin'\:${PATH}
@@ -146,7 +146,7 @@ if [[ ${hrd_pth} = 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} = 'Yes' ]]; then
 	compy* | n[0123456789][0123456789][0123456789][0123456789] )
 	    module purge
 	    module load gcc/10.2.0
-	    if [[ ${spt_nm} = 'ncremap' ]]; then
+	    if [[ ${spt_nm} == 'ncremap' ]]; then
 		# 20210519: This script takes significant time (5-10 seconds) to load
 		source /compyfs/software/mbtempest.envs.sh
 		E3SMU_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest'
@@ -168,12 +168,12 @@ if [[ ${hrd_pth} = 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} = 'Yes' ]]; then
 	    module load gsl/2.7
 	    module load antlr/2.7.7-intel
 	    module load udunits
-	    if [[ ${spt_nm} = 'ncremap' ]]; then
+	    if [[ ${spt_nm} == 'ncremap' ]]; then
 		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
 		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
 		E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
-	    if [[ -n ${NCARG_ROOT} ]]; then
+	    if [[ ${NCARG_ROOT} ]]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 	    fi # !NCARG_ROOT
 	    export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
@@ -187,12 +187,12 @@ if [[ ${hrd_pth} = 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} = 'Yes' ]]; then
 	    module load gcc/11.2.0
 	    module load cray-hdf5/1.12.2.1
 	    module load cray-netcdf/4.9.0.1
-	    if [[ ${spt_nm} = 'ncremap' ]]; then
+	    if [[ ${spt_nm} == 'ncremap' ]]; then
 		MOAB_ROOT=/project/projectdirs/e3sm/software/moab
 		TEMPESTREMAP_ROOT=/project/projectdirs/e3sm/software/tempestremap
 		E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
 	    fi # !ncremap
-	    if [[ -n ${NCARG_ROOT} ]]; then
+	    if [[ ${NCARG_ROOT} ]]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 	    fi # !NCARG_ROOT
@@ -204,11 +204,11 @@ if [[ ${hrd_pth} = 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} = 'Yes' ]]; then
 	titan* )
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
 	    module load gcc
-	    if [[ ${spt_nm} = 'ncremap' ]]; then
+	    if [[ ${spt_nm} == 'ncremap' ]]; then
 		# 20170831: Use module load ncl (6.3.0 lacks ERWG)
 		module load ncl # 20170916 OK
 	    fi # !ncremap
-	    if [[ -n ${NCARG_ROOT} ]]; then
+	    if [[ ${NCARG_ROOT} ]]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 	    fi # !NCARG_ROOT
             export PATH='/ccs/home/zender/bin_titan'\:${PATH}
@@ -218,7 +218,7 @@ if [[ ${hrd_pth} = 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} = 'Yes' ]]; then
     esac # !HOSTNAME
     # 20210519: E3SM-U supplies many uncommon executables, e.g., ESMF_RegridWeightGen
     # Append E3SM-U to end of PATH so NCO binaries not redirected, e.g., from CSZ's development directory to E3SM-U
-    if [[ -n ${E3SMU_ROOT} ]]; then
+    if [[ ${E3SMU_ROOT} ]]; then
 	export PATH="${PATH}:${E3SMU_ROOT}/bin"
     fi # !MOAB_ROOT
 fi # !hrd_pth && !NCO_PATH_OVERRIDE
@@ -226,7 +226,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # 20220131 ncclimo/ncremap commands within scripts that open E3SMU environment
 # (e.g., zppy-generated scripts) must be told where to find NCO binaries.
 # Only necessary on login nodes since Spack handles this fine on compute nodes
-if [[ ${E3SMU_MPI} = 'NOMPI' ]] && [[ -n ${E3SMU_SCRIPT} ]] && [[ -n ${CONDA_PREFIX} ]]; then
+if [[ ${E3SMU_MPI} == 'NOMPI' ]] && [[ ${E3SMU_SCRIPT} ]] && [[ ${CONDA_PREFIX} ]]; then
    export PATH="${CONDA_PREFIX}/bin"\:${PATH}
 fi # !E3SMU_MPI
 # Set NCO version and directory
@@ -262,7 +262,7 @@ if [[ ${drc_spt} != ${drc_nco} ]]; then
 fi # drc_spt
 
 # When running in a terminal window (not in an non-interactive batch queue)...
-if [[ -n ${TERM} ]]; then
+if [[ ${TERM} ]]; then
     # Set fonts for legibility
     if [[ -x /usr/bin/tput ]] && tput setaf 1 &> /dev/null; then
 	fnt_bld=`tput bold` # Bold
@@ -370,7 +370,7 @@ if [[ ${psn_nbr} -ge 1 ]]; then
     std_chk='No'
 fi # !psn_nbr
 
-if [[ ${vrs_prn} = 'Yes' ]]; then
+if [[ ${vrs_prn} == 'Yes' ]]; then
     printf "${spt_nm}, the NCO POSIX<->NCZarr filename filter, version ${nco_vrs} \"${nco_sng}\"\n"
     printf "Copyright (C) 2022--present Charlie Zender\n"
     printf "This program is part of NCO, the netCDF Operators\n"
@@ -381,7 +381,7 @@ if [[ ${vrs_prn} = 'Yes' ]]; then
     printf "LICENSE: https://github.com/nco/nco/tree/master/LICENSE\n"
     printf "Config: ${spt_nm} script located in directory ${drc_spt}\n"
     printf "Config: NCO binaries located in directory ${drc_nco}, linked to netCDF library version ${lbr_vrs}\n"
-    if [[ ${hrd_pth_fnd} = 'Yes' ]]; then
+    if [[ ${hrd_pth_fnd} == 'Yes' ]]; then
 	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
     else
 	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
@@ -400,20 +400,20 @@ fi # !vrs_prn
 # This is because PBS uses stdin to set the job name
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
 # Check stdin if user has not explicitly disallowed it with --no_stdin
-if [[ ${std_chk} = 'Yes' ]]; then
-    if [[ -n ${PBS_ENVIRONMENT} ]]; then
-	if [[ ${PBS_ENVIRONMENT} = 'PBS_BATCH' ]]; then
+if [[ ${std_chk} == 'Yes' ]]; then
+    if [[ ${PBS_ENVIRONMENT} ]]; then
+	if [[ ${PBS_ENVIRONMENT} == 'PBS_BATCH' ]]; then
 	    # PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
 	    bch_pbs='Yes'
 	fi # !PBS_ENVIRONMENT
     fi # !PBS
-    if [[ -n ${SLURM_JOBID} ]] && [[ -z ${SLURM_PTY_PORT} ]]; then
+    if [[ ${SLURM_JOBID} ]] && [[ -z ${SLURM_PTY_PORT} ]]; then
 	# SLURM batch detection suggested by NERSC ticket INC0096873 on 20170127
 	bch_slr='Yes'
     fi # !SLURM
-    if [[ ${bch_pbs} = 'Yes' ]] || [[ ${bch_slr} = 'Yes' ]]; then
+    if [[ ${bch_pbs} == 'Yes' ]] || [[ ${bch_slr} == 'Yes' ]]; then
 	# Batch environment
-	if [[ ${bch_pbs} = 'Yes' ]]; then
+	if [[ ${bch_pbs} == 'Yes' ]]; then
 	    if [[ ! -p /dev/stdin ]]; then
 		# PBS batch jobs cause -p to return true except for stdin redirection 
 		# When -p returns true we do not know whether stdin pipe contains any input
@@ -422,7 +422,7 @@ if [[ ${std_chk} = 'Yes' ]]; then
 		inp_std='Yes'
 	    fi # !stdin
 	fi # !bch_slr
-	if [[ ${bch_slr} = 'Yes' ]]; then
+	if [[ ${bch_slr} == 'Yes' ]]; then
 	    if [[ -p /dev/stdin ]]; then
 		# SLURM batch jobs cause -p to return true for stdin pipes
 		# When -p returns false we do not know whether output was redirectd
@@ -439,7 +439,7 @@ if [[ ${std_chk} = 'Yes' ]]; then
 	    inp_std='Yes'
 	fi # !stdin
     fi # !bch
-    if [[ ${inp_std} = 'Yes' ]] && [[ ${inp_psn} = 'Yes' ]]; then
+    if [[ ${inp_std} == 'Yes' ]] && [[ ${inp_psn} == 'Yes' ]]; then
 	echo "${spt_nm}: ERROR expecting input from both stdin and positional command-line arguments"
 	exit 1
     fi # !inp_std
@@ -460,32 +460,32 @@ if [[ ${inp_std} != 'Yes' ]]; then
     fi # !arg_nbr
 fi # !inp_std
 
-if [[ -n ${frg_sng_usr} ]]; then
+if [[ ${frg_sng_usr} ]]; then
     frg_typ='user-defined'
     frg_sng="${frg_sng_usr}"
 fi # !frg_sng_usr    
-if [[ -n ${scm_sng_usr} ]]; then
+if [[ ${scm_sng_usr} ]]; then
     sng_typ='user-defined'
     scm_sng="${scm_sng_usr}"
 fi # !scm_sng_usr    
 
 if [[ -z ${frg_sng_usr} ]]; then
-    if [[ ${frg_typ} = ${frg_dfl} ]] || [[ ${frg_typ} =~ dfl ]] || [[ ${frg_typ} =~ default ]]; then 
+    if [[ ${frg_typ} == ${frg_dfl} ]] || [[ ${frg_typ} =~ dfl ]] || [[ ${frg_typ} =~ default ]]; then 
 	frg_typ=${frg_ncz}
     fi # !frg_dfl
-    if [[ ${frg_typ} = ${frg_ncz} ]] || [[ ${frg_typ} =~ (ncz|[nN][cC][zZ]arr) ]]; then 
+    if [[ ${frg_typ} == ${frg_ncz} ]] || [[ ${frg_typ} =~ (ncz|[nN][cC][zZ]arr) ]]; then 
 	frg_typ=${frg_ncz}
 	frg_sng='#mode=nczarr,file'
-    elif [[ ${frg_typ} = ${frg_s3} ]] || [[ ${frg_typ} = 's3' ]] || [[ ${frg_typ} =~ [sS]3 ]] || [[ ${frg_typ} =~ (aws|AWS) ]] || [[ ${frg_typ} =~ [aA]mazon ]]; then 
+    elif [[ ${frg_typ} == ${frg_s3} ]] || [[ ${frg_typ} == 's3' ]] || [[ ${frg_typ} =~ [sS]3 ]] || [[ ${frg_typ} =~ (aws|AWS) ]] || [[ ${frg_typ} =~ [aA]mazon ]]; then 
 	frg_typ=${frg_s3}
 	frg_sng='#mode=nczarr,s3'
-    elif [[ ${frg_typ} = ${frg_xry} ]] || [[ ${frg_typ} =~ (xry|xarray) ]]; then 
+    elif [[ ${frg_typ} == ${frg_xry} ]] || [[ ${frg_typ} =~ (xry|xarray) ]]; then 
 	frg_typ=${frg_xry}
 	frg_sng='#mode=xarray,file'
-    elif [[ ${frg_typ} = ${frg_zip} ]] || [[ ${frg_typ} =~ [zZ]ip ]]; then 
+    elif [[ ${frg_typ} == ${frg_zip} ]] || [[ ${frg_typ} =~ [zZ]ip ]]; then 
 	frg_typ=${frg_zip}
 	frg_sng='#mode=nczarr,zip'
-    elif [[ ${frg_typ} = ${frg_zrr} ]] || [[ ${frg_typ} =~ (zrr|ZRR|Zarr|zarr) ]]; then 
+    elif [[ ${frg_typ} == ${frg_zrr} ]] || [[ ${frg_typ} =~ (zrr|ZRR|Zarr|zarr) ]]; then 
 	frg_typ=${frg_zrr}
 	frg_sng='#mode=zarr,file'
     else 
@@ -496,16 +496,16 @@ if [[ -z ${frg_sng_usr} ]]; then
 fi # !frg_sng_usr
 
 if [[ -z ${scm_sng_usr} ]]; then
-    if [[ ${scm_typ} = ${scm_dfl} ]] || [[ ${scm_typ} =~ dfl ]] || [[ ${scm_typ} =~ default ]]; then 
+    if [[ ${scm_typ} == ${scm_dfl} ]] || [[ ${scm_typ} =~ dfl ]] || [[ ${scm_typ} =~ default ]]; then 
 	scm_typ=${scm_file}
     fi # !scm_dfl
-    if [[ ${scm_typ} = ${scm_file} ]] || [[ ${scm_typ} =~ [fF]ile ]] || [[ ${scm_typ} =~ [fF]l ]]; then 
+    if [[ ${scm_typ} == ${scm_file} ]] || [[ ${scm_typ} =~ [fF]ile ]] || [[ ${scm_typ} =~ [fF]l ]]; then 
 	scm_typ=${scm_file}
 	scm_sng='file://'
-    elif [[ ${scm_typ} = ${scm_http} ]] || [[ ${scm_typ} =~ (http|HTTP) ]]; then 
+    elif [[ ${scm_typ} == ${scm_http} ]] || [[ ${scm_typ} =~ (http|HTTP) ]]; then 
 	scm_typ=${scm_http}
 	scm_sng='https://'
-    elif [[ ${scm_typ} = ${scm_s3} ]] || [[ ${scm_typ} = 's3' ]] || [[ ${scm_typ} =~ [sS]3 ]] || [[ ${scm_typ} =~ (aws|AWS) ]] || [[ ${scm_typ} =~ [aA]mazon ]]; then 
+    elif [[ ${scm_typ} == ${scm_s3} ]] || [[ ${scm_typ} == 's3' ]] || [[ ${scm_typ} =~ [sS]3 ]] || [[ ${scm_typ} =~ (aws|AWS) ]] || [[ ${scm_typ} =~ [aA]mazon ]]; then 
 	scm_typ=${scm_s3}
 	scm_sng='s3://'
     else 
@@ -515,7 +515,7 @@ if [[ -z ${scm_sng_usr} ]]; then
     fi # !scm_typ
 fi # !scm_sng_usr
 
-if [[ ${inp_glb} = 'Yes' ]]; then 
+if [[ ${inp_glb} == 'Yes' ]]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [[ -f ${fl} ]]; then
 	    fl_in[${fl_nbr}]=${fl}
@@ -523,14 +523,14 @@ if [[ ${inp_glb} = 'Yes' ]]; then
 	fi # !file
     done
 fi # !inp_glb
-if [[ ${inp_psn} = 'Yes' ]]; then
+if [[ ${inp_psn} == 'Yes' ]]; then
     # Read any positional arguments
     for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
 	fl_in[(${psn_idx}-1)]=${!psn_idx}
 	fl_nbr=${psn_nbr}
     done # !psn_idx
 fi # !inp_psn
-if [[ ${inp_std} = 'Yes' ]]; then
+if [[ ${inp_std} == 'Yes' ]]; then
     # Input awaits on unit 0, i.e., on stdin
     while read -r line; do # NeR05 p. 179
 	fl_in[${fl_nbr}]=${line}
