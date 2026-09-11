@@ -77,11 +77,11 @@ trap err_hnd ERR # err_hnd
 # NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
 spt_src="${BASH_SOURCE[0]}"
-[[ -z ${spt_src} ]] && spt_src="${0}" # Use ${0} when BASH_SOURCE is unavailable (e.g., dash)
-while [[ -h ${spt_src} ]]; do # Recursively resolve ${spt_src} until file is no longer a symlink
+[[ -z ${spt_src-} ]] && spt_src="${0}" # Use ${0} when BASH_SOURCE is unavailable (e.g., dash)
+while [[ -h ${spt_src-} ]]; do # Recursively resolve ${spt_src} until file is no longer a symlink
   drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
   spt_src="$(readlink "${spt_src}")"
-  [[ ${spt_src} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
+  [[ ${spt_src-} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
 done
 cmd_ln="${spt_src} ${@}"
 drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
@@ -90,7 +90,7 @@ spt_pid=$$ # [nbr] Script PID (process ID)
 
 # 20200110 Qi Tang reports his batch scripts on Cori that use netCDF4 map-files fail unless he sets this
 set +u # err_hnd Continue on unbound variable reference
-if [[ -z ${HDF5_USE_FILE_LOCKING} ]]; then
+if [[ -z ${HDF5_USE_FILE_LOCKING-} ]]; then
     export HDF5_USE_FILE_LOCKING='FALSE'
 fi # HDF5_USE_FILE_LOCKING
 set -u # err_hnd Exit on unbound variable reference
@@ -110,7 +110,7 @@ if [[ ${1-} ]]; then
 fi # !$1
 
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
-if [[ -z ${HOSTNAME} ]]; then
+if [[ -z ${HOSTNAME-} ]]; then
     if [[ -f /bin/hostname ]] && [[ -x /bin/hostname ]]; then
 	export HOSTNAME=`/bin/hostname`
     elif [[ -f /usr/bin/hostname ]] && [[ -x /usr/bin/hostname ]]; then
@@ -129,9 +129,9 @@ if [[ -z ${DATA-} ]]; then
 	frontier* ) DATA="/lustre/orion/cli115/world-shared/${USER}" ; ;; # OLCF frontier compute nodes named frontier01276 64|512 cores|GB/node
 	ilogin* | i[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC improv compute nodes named iNNN, 128|256 cores|GB/node 
 	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
-	    if [[ ${LMOD_SYSTEM_NAME} == 'frontier' ]]; then
+	    if [[ ${LMOD_SYSTEM_NAME-} == 'frontier' ]]; then
 		DATA="/lustre/orion/cli115/world-shared/${USER}"
-	    elif [[ ${LMOD_SYSTEM_NAME} == 'perlmutter' ]]; then
+	    elif [[ ${LMOD_SYSTEM_NAME-} == 'perlmutter' ]]; then
 		DATA="${SCRATCH}"
 	    fi # !LMOD_SYSTEM_NAME
 	    ;; # !login	
@@ -153,7 +153,7 @@ OMP_PROC_BIND=false
 # Leave NCO_PATH_OVERRIDE unset or set to 'No' to prevent NCO from executing next block that overrides PATH
 # Set NCO_PATH_OVERRIDE to 'Yes' in environment to cause NCO to execute next block and to override PATH:
 # export NCO_PATH_OVERRIDE='Yes'
-if [[ ${hrd_pth} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} == 'Yes' ]]; then
+if [[ ${hrd_pth-} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE-} == 'Yes' ]]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
     case "${HOSTNAME}" in 
@@ -198,11 +198,11 @@ if [[ ${hrd_pth} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} == 'Yes' ]]; then
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib:/qfs/people/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	derecho* )
 	    # 20240107: Derecho support not yet tested in batch mode
-	    if [[ ${spt_nm} == 'ncremap' ]]; then
+	    if [[ ${spt_nm-} == 'ncremap' ]]; then
 		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
 		module load ncl
 	    fi # !ncremap
-	    if [[ ${NCARG_ROOT} ]]; then
+	    if [[ ${NCARG_ROOT-} ]]; then
 		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.6.2/gnu/8.3.0/bin"
 	    fi # !NCARG_ROOT
             export PATH='/glade/u/home/zender/bin'\:${PATH}
@@ -211,7 +211,7 @@ if [[ ${hrd_pth} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} == 'Yes' ]]; then
 	    export PATH='/home/zender/bin:/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	frontier* )
-	    if [[ ${spt_nm} == 'ncremap' ]]; then
+	    if [[ ${spt_nm-} == 'ncremap' ]]; then
 		if [[ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]]; then
                     E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/frontier'
 		else
@@ -221,7 +221,7 @@ if [[ ${hrd_pth} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} == 'Yes' ]]; then
             export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
-	    if [[ ${LMOD_SYSTEM_NAME} == 'frontier' ]]; then
+	    if [[ ${LMOD_SYSTEM_NAME-} == 'frontier' ]]; then
 		if [[ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]]; then
                     E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/frontier'
 		else
@@ -229,7 +229,7 @@ if [[ ${hrd_pth} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} == 'Yes' ]]; then
 		fi
 		export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
 		export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH}
-	    elif [[ ${LMOD_SYSTEM_NAME} == 'perlmutter' ]]; then
+	    elif [[ ${LMOD_SYSTEM_NAME-} == 'perlmutter' ]]; then
 		# 20221103 Add build environment modules
 		# 20260317 Test removing these modules
 		#module load PrgEnv-gnu
@@ -240,7 +240,7 @@ if [[ ${hrd_pth} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} == 'Yes' ]]; then
 		else
 		    E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
 		fi # !E3SMU-NCO
-		if [[ ${NCARG_ROOT} ]]; then
+		if [[ ${NCARG_ROOT-} ]]; then
 		    export PATH="${PATH}:${NCARG_ROOT}/bin"
 		    export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 		fi # !NCARG_ROOT
@@ -259,7 +259,7 @@ if [[ ${hrd_pth} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} == 'Yes' ]]; then
             else
 		E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
 	    fi # !E3SMU-NCO
-	    if [[ ${NCARG_ROOT} ]]; then
+	    if [[ ${NCARG_ROOT-} ]]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 	    fi # !NCARG_ROOT
@@ -273,7 +273,7 @@ if [[ ${hrd_pth} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} == 'Yes' ]]; then
     # ncclimo only needs access to E3SM_U libraries (e.g., libgsl, libantlr), already implemented above
     # ncremap needs access to E3SM_U binaries (ESMF_RegridWeightGen, ...) _and_ libraries
     # Append E3SM-U binaries to _end_ of PATH so NCO binaries not redirected, e.g., from CSZ's development directory to E3SM-U
-    if [[ ${E3SMU_ROOT} ]] && [[ ${spt_nm} == 'ncremap' ]]; then
+    if [[ ${E3SMU_ROOT-} ]] && [[ ${spt_nm-} == 'ncremap' ]]; then
 	export PATH="${PATH}:${E3SMU_ROOT}/bin"
 	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${E3SMU_ROOT}/lib"
     fi # !E3SMU_ROOT
@@ -492,31 +492,31 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # (e.g., zppy-generated scripts) must be told where to find NCO binaries.
 # Only necessary on login nodes since Spack handles this fine on compute nodes
 set +u # err_hnd Continue on unbound variable reference
-if [[ ${E3SMU_MPI} == 'NOMPI' ]] && [[ ${E3SMU_SCRIPT} ]] && [[ ${CONDA_PREFIX} ]]; then
+if [[ ${E3SMU_MPI-} == 'NOMPI' ]] && [[ ${E3SMU_SCRIPT-} ]] && [[ ${CONDA_PREFIX-} ]]; then
    export PATH="${CONDA_PREFIX}/bin"\:${PATH}
 fi # !E3SMU_MPI
 set -u # err_hnd Exit on unbound variable reference
 # Set NCO version and directory
 nco_exe=`which ncks`
-if [[ -z ${nco_exe} ]]; then
+if [[ -z ${nco_exe-} ]]; then
     echo "${spt_nm}: ERROR Unable to find NCO, \${nco_exe} = ${nco_exe}"
     echo "${spt_nm}: HINT Carefully examine your environment setup (e.g., .bashrc) to avoid inadvertently overriding (with, e.g., conda-initialization) paths intended to be provided by an analysis-package environment (e.g., E3SM-Unified)"
     exit 1
 fi # !nco_exe
 # StackOverflow method finds NCO directory
-while [[ -h ${nco_exe} ]]; do
+while [[ -h ${nco_exe-} ]]; do
   drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
   nco_exe="$(readlink "${nco_exe}")"
-  [[ ${nco_exe} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
+  [[ ${nco_exe-} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
 nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
 # 20190218: Die quickly when NCO is found yet cannot run, e.g., due to linker errors
-if [[ -z ${nco_vrs} ]]; then
+if [[ -z ${nco_vrs-} ]]; then
     echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
     $(ncks --version)
     # 20250905: Additional information for debugging link issues
-    if [[ ${NCO_PATH_OVERRIDE} == 'Yes' ]]; then
+    if [[ ${NCO_PATH_OVERRIDE-} == 'Yes' ]]; then
 	echo "${spt_nm}: DEBUG Next line shows contents of \$LD_LIBRARY_PATH:"
 	echo "${LD_LIBRARY_PATH}"
 	echo "${spt_nm}: DEBUG Next line shows contents of \$PATH:"
@@ -530,14 +530,14 @@ nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk -F '"' '{print $2}')
 lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 
 # Detect and warn about mixed modules (for Qi Tang 20170531)
-if [[ ${drc_spt} != ${drc_nco} ]]; then
+if [[ ${drc_spt-} != ${drc_nco-} ]]; then
     echo "INFO: Mixture of NCO scripts and binaries from different locations. Script ${spt_nm} is from directory ${drc_spt} while NCO binaries are from directory ${drc_nco}. Normally this script and the binaries are from the same executables directory. This INFO may be safely ignored for customized scripts and/or binaries that the user has intentionally split into different directories."
     echo "HINT (All-users): Conflicting script and binary directories may result from 1) Hardcoding an NCO script and/or binary pathnames, 2) Incomplete NCO installations in one or more directories in the \$PATH environment variable, 3) (Re-)Installing or (re-)building NCO without issuing a \"hash -r\" command afterward to update the executable pathnames that the shell remembers from before."
     echo "HINT (E3SM-only): In a Conda-based NCO environment, such as E3SM-Unified (which uses NCO in MPAS Analysis and E3SM-Diags), it is possible that some features may be unavailable because the upstream packages (e.g., UDUnits) were not properly linked by Conda. The ncclimo and ncremap scripts contain a mechanism to access the (presumably correctly linked) NCO binary executable and library paths in C. Zender's home directories on the major E3SM machines. Users may turn-on the machine-dependent, hard-coded path by invoking ncclimo and/or ncremap after altering their environment with: \"export NCO_PATH_OVERRIDE=Yes\"."
 fi # drc_spt
 
 # When running in a terminal window (not in an non-interactive batch queue)...
-if [[ ${TERM} ]]; then
+if [[ ${TERM-} ]]; then
     # Set fonts for legibility
     if [[ -x /usr/bin/tput ]] && tput setaf 1 &> /dev/null; then
 	fnt_bld=`tput bold` # Bold
@@ -775,9 +775,9 @@ function bsh_mjr_vrs_lt_4 {
     # Purpose: Return true if major version of Bash shell is < 4
     # Usage: if bsh_mjr_vrs_lt_4 ; then ...; fi
     local vrs
-    if [[ ${BASH_VERSION} ]]; then
+    if [[ ${BASH_VERSION-} ]]; then
 	vrs=$((${BASH_VERSION%%.*})) # NeR98 p. 100
-	if [[ ${vrs} -lt 4 ]] ; then # NeR98 p. 153
+	if [[ ${vrs-} -lt 4 ]] ; then # NeR98 p. 153
 	    return 0; # 0 is true in shell-ese
 	fi # !vrs
     fi # !BASH_VERSION
@@ -797,7 +797,7 @@ function trim_leading_zeros {
     sng_trm=${sng_trm##0}
     sng_trm=${sng_trm##0}
     # If all zeros removed, replace with single zero
-    if [[ ${sng_trm} == '' ]]; then 
+    if [[ ${sng_trm-} == '' ]]; then 
 	sng_trm='0'
     fi # !sng_trm
 } # !trim_leading_zeros()
@@ -847,7 +847,7 @@ csn_nfo_get()
     local mth_in_csn # [flg] Month is in seasonal range
     
     # Check syntax
-    if [[ -z ${yr_srt} ]] || [[ -z ${mth_srt} ]] || [[ -z ${yr_end} ]] || [[ -z ${mth_end} ]] || [[ -z ${csn_srt_idx} ]] || [[ -z ${csn_end_idx} ]] || [[ -z ${rtn_enm} ]]; then
+    if [[ -z ${yr_srt-} ]] || [[ -z ${mth_srt-} ]] || [[ -z ${yr_end-} ]] || [[ -z ${mth_end-} ]] || [[ -z ${csn_srt_idx-} ]] || [[ -z ${csn_end_idx-} ]] || [[ -z ${rtn_enm-} ]]; then
         echo "${fnc_nm}: ERROR Missing required parameters" >&2
         return 1
     fi
@@ -877,33 +877,33 @@ csn_nfo_get()
         
         # Check if current month is in seasonal range
         mth_in_csn=0
-        if [[ ${csn_srt_idx} -le ${csn_end_idx} ]]; then
+        if [[ ${csn_srt_idx-} -le ${csn_end_idx-} ]]; then
             # Non-wrapping case (e.g., 6 to 8)
-            if [[ ${mth_crr} -ge ${csn_srt_idx} ]] && [[ ${mth_crr} -le ${csn_end_idx} ]]; then
+            if [[ ${mth_crr-} -ge ${csn_srt_idx-} ]] && [[ ${mth_crr-} -le ${csn_end_idx-} ]]; then
                 mth_in_csn=1
             fi
         else
             # Wrapping case (e.g., 12 to 2)
-            if [[ ${mth_crr} -ge ${csn_srt_idx} ]] || [[ ${mth_crr} -le ${csn_end_idx} ]]; then
+            if [[ ${mth_crr-} -ge ${csn_srt_idx-} ]] || [[ ${mth_crr-} -le ${csn_end_idx-} ]]; then
                 mth_in_csn=1
             fi
         fi
         
-        if [[ ${mth_in_csn} -eq 1 ]]; then
-            if [[ ${yyyymm_frs} -lt 0 ]]; then
+        if [[ ${mth_in_csn-} -eq 1 ]]; then
+            if [[ ${yyyymm_frs-} -lt 0 ]]; then
                 yyyymm_frs=${yyyymm_crr}
             fi
             yyyymm_lst=${yyyymm_crr}
         fi
         
         # Check if we've reached the end
-        if [[ ${mth_crr} -eq ${mth_end} ]] && [[ ${yr_crr} -eq ${yr_end} ]]; then
+        if [[ ${mth_crr-} -eq ${mth_end-} ]] && [[ ${yr_crr-} -eq ${yr_end-} ]]; then
             break
         fi
         
         # Advance to next month, wrapping 12->1
         mth_crr=$((mth_crr+1))
-        if [[ ${mth_crr} -gt 12 ]]; then
+        if [[ ${mth_crr-} -gt 12 ]]; then
             mth_crr=1
             yr_crr=$((yr_crr+1))
         fi
@@ -926,7 +926,7 @@ csn_nfo_get()
     printf -v clm_bnd_arg "%04d,%04d,%02d,%02d" ${yyyy_frs} ${yyyy_lst} ${mm_frs} ${mm_lst}
     
     # Format year range string
-    if [[ ${yyyy_frs} -eq ${yyyy_lst} ]]; then
+    if [[ ${yyyy_frs-} -eq ${yyyy_lst-} ]]; then
         printf -v yyyy_rng "%04d" ${yyyy_frs}
     else
         printf -v yyyy_rng "%04d-%04d" ${yyyy_frs} ${yyyy_lst}
@@ -951,7 +951,7 @@ csn_nfo_get()
 # Check argument number and complain accordingly
 arg_nbr=$#
 #printf "\ndbg: Number of arguments: ${arg_nbr}"
-if [[ ${arg_nbr} -eq 0 ]]; then
+if [[ ${arg_nbr-} -eq 0 ]]; then
   fnc_usg_prn
 fi # !arg_nbr
 
@@ -1087,13 +1087,13 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 done # !getopts
 shift $((OPTIND-1)) # Advance one argument
 psn_nbr=$#
-if [[ ${psn_nbr} -ge 1 ]]; then
+if [[ ${psn_nbr-} -ge 1 ]]; then
     inp_psn='Yes'
     # 20200430 Input files on command-line mean we need not check standard-input
     std_chk='No'
 fi # !psn_nbr
 
-if [[ ${vrs_prn} == 'Yes' ]]; then
+if [[ ${vrs_prn-} == 'Yes' ]]; then
     printf "${spt_nm}, the NCO climatology operator, version ${nco_vrs} \"${nco_sng}\"\n"
     printf "Copyright (C) 2016--present Charlie Zender\n"
     printf "This program is part of NCO, the netCDF Operators\n"
@@ -1104,7 +1104,7 @@ if [[ ${vrs_prn} == 'Yes' ]]; then
     printf "LICENSE: https://github.com/nco/nco/tree/master/LICENSE\n"
     printf "Config: ${spt_nm} script located in directory ${drc_spt}\n"
     printf "Config: NCO binaries located in directory ${drc_nco}, linked to netCDF library version ${lbr_vrs}\n"
-    if [[ ${hrd_pth_fnd} == 'Yes' ]]; then
+    if [[ ${hrd_pth_fnd-} == 'Yes' ]]; then
 	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
     else
 	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
@@ -1124,20 +1124,20 @@ fi # !vrs_prn
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
 # Check stdin if user has not explicitly disallowed it with --no_stdin
 set +u # err_hnd Continue on unbound variable reference
-if [[ ${std_chk} == 'Yes' ]]; then
+if [[ ${std_chk-} == 'Yes' ]]; then
     if [[ ${PBS_ENVIRONMENT:-} ]]; then
-	if [[ ${PBS_ENVIRONMENT} == 'PBS_BATCH' ]]; then
+	if [[ ${PBS_ENVIRONMENT-} == 'PBS_BATCH' ]]; then
 	    # PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
 	    bch_pbs='Yes'
 	fi # !PBS_ENVIRONMENT
     fi # !PBS
-    if [[ ${SLURM_JOBID} ]] && [[ -z ${SLURM_PTY_PORT} ]]; then
+    if [[ ${SLURM_JOBID-} ]] && [[ -z ${SLURM_PTY_PORT-} ]]; then
 	# SLURM batch detection suggested by NERSC ticket INC0096873 on 20170127
 	bch_slr='Yes'
     fi # !SLURM
-    if [[ ${bch_pbs} == 'Yes' ]] || [[ ${bch_slr} == 'Yes' ]]; then
+    if [[ ${bch_pbs-} == 'Yes' ]] || [[ ${bch_slr-} == 'Yes' ]]; then
 	# Batch environment
-	if [[ ${bch_pbs} == 'Yes' ]]; then
+	if [[ ${bch_pbs-} == 'Yes' ]]; then
 	    if [[ ! -p /dev/stdin ]]; then
 		# PBS batch jobs cause -p to return true except for stdin redirection 
 		# When -p returns true we do not know whether stdin pipe contains any input
@@ -1146,7 +1146,7 @@ if [[ ${std_chk} == 'Yes' ]]; then
 		inp_std='Yes'
 	    fi # !stdin
 	fi # !bch_slr
-	if [[ ${bch_slr} == 'Yes' ]]; then
+	if [[ ${bch_slr-} == 'Yes' ]]; then
 	    if [[ -p /dev/stdin ]]; then
 		# SLURM batch jobs cause -p to return true for stdin pipes
 		# When -p returns false we do not know whether output was redirected
@@ -1163,7 +1163,7 @@ if [[ ${std_chk} == 'Yes' ]]; then
 	    inp_std='Yes'
 	fi # !stdin
     fi # !bch
-    if [[ ${inp_std} == 'Yes' ]] && [[ ${inp_psn} == 'Yes' ]]; then
+    if [[ ${inp_std-} == 'Yes' ]] && [[ ${inp_psn-} == 'Yes' ]]; then
 	echo "${spt_nm}: ERROR expecting input from both stdin and positional command-line arguments"
 	exit 1
     fi # !inp_std
@@ -1171,18 +1171,18 @@ fi # !std_chk
 set -u # err_hnd Exit on unbound variable reference
 
 # Determine mode first (this helps determine other defaults)
-if [[ ${yr_srt_prv} ]]; then
+if [[ ${yr_srt_prv-} ]]; then
     # Specifying only yr_srt_prv implies incremental method
     # Specifying both yr_srt_prv and yr_end_prv implies binary method
     xtn_flg='Yes'
-    if [[ ${yr_end_prv} ]]; then
+    if [[ ${yr_end_prv-} ]]; then
 	bnr_flg='Yes'
     else # !yr_end_prv binary method
 	ncr_flg='Yes'
     fi # !yr_end_prv binary method
 fi # !yr_srt_prv extended climo
 # Utilize user-specified model name, if any
-if [[ ${prc_typ} ]]; then
+if [[ ${prc_typ-} ]]; then
     # 20201016: Supercede mdl_nm with prc_typ so both need not be explicitly invoked?
     # EAM/ELM are difficult since history file name can be *cam*/*clm2* or *eam*/*elm*
     # Instinct is to change mdl_nm so it only refers to name string in history file
@@ -1190,50 +1190,50 @@ if [[ ${prc_typ} ]]; then
     prc_opt="-P ${prc_typ}"
     mdl_nm="${prc_typ}"
     # Exceptions to rule that mdl_nm == prc_typ
-    [[ ${prc_typ} == 'clm' ]] && mdl_nm='clm2'
-    [[ ${prc_typ} == 'sgs' ]] && mdl_nm='elm'
+    [[ ${prc_typ-} == 'clm' ]] && mdl_nm='clm2'
+    [[ ${prc_typ-} == 'sgs' ]] && mdl_nm='elm'
 fi # !prc_typ
-if [[ ${mdl_nm_usr} ]]; then 
+if [[ ${mdl_nm_usr-} ]]; then 
     mdl_nm="${mdl_nm_usr}"
 fi # !mdl_nm_usr
-if [[ -z ${mth_end_usr} ]]; then
+if [[ -z ${mth_end_usr-} ]]; then
     # Auto-compute mth_end as 11 months after mth_srt, wrapping around year boundary
     mth_end=$(( (mth_srt - 1 + 11) % 12 + 1 ))
 fi # !mth_end_usr
-if [[ ${wnt_md_usr} ]]; then 
+if [[ ${wnt_md_usr-} ]]; then 
     printf "${spt_nm}: WARNING Winter mode (-a or --wnt_md) is no longer supported as of 202603 (NCO 5.3.7), and invoking it acts as a no-op for backwards compatibility to older scripts. Please alter your scripts to not invoke it. The same functionality is now accessed by providing datasets that start in December and invoking the --mth_srt=12 option.\n"
 fi # !wnt_md_usr
-if [[ ${clm_md_usr} ]]; then 
+if [[ ${clm_md_usr-} ]]; then 
     # Climo mode must be explicitly selected with --clm_md when climo input files are from stdin or positional
-    if [[ ${clm_md_usr} == 'ann' ]] || [[ ${clm_md_usr} == 'annual' ]] || [[ ${clm_md_usr} == 'yearly' ]] || [[ ${clm_md_usr} == 'year' ]]; then
+    if [[ ${clm_md_usr-} == 'ann' ]] || [[ ${clm_md_usr-} == 'annual' ]] || [[ ${clm_md_usr-} == 'yearly' ]] || [[ ${clm_md_usr-} == 'year' ]]; then
 	clm_md_usr='ann'
     fi # !clm_md_usr
-    if [[ ${clm_md_usr} == 'dly' ]] || [[ ${clm_md_usr} == 'daily' ]] || [[ ${clm_md_usr} == 'doy' ]] || [[ ${clm_md_usr} == 'day' ]]; then
+    if [[ ${clm_md_usr-} == 'dly' ]] || [[ ${clm_md_usr-} == 'daily' ]] || [[ ${clm_md_usr-} == 'doy' ]] || [[ ${clm_md_usr-} == 'day' ]]; then
 	clm_md_usr='dly'
     fi # !clm_md_usr
-    if [[ ${clm_md_usr} == 'hfc' ]] || [[ ${clm_md_usr} == 'high_frequency_climo' ]] || [[ ${clm_md_usr} == 'hgh_frq_clm' ]]; then
+    if [[ ${clm_md_usr-} == 'hfc' ]] || [[ ${clm_md_usr-} == 'high_frequency_climo' ]] || [[ ${clm_md_usr-} == 'hgh_frq_clm' ]]; then
 	clm_md_usr='hfc'
     fi # !clm_md_usr
-    if [[ ${clm_md_usr} == 'hfs' ]] || [[ ${clm_md_usr} == 'high_frequency_splitter' ]] || [[ ${clm_md_usr} == 'hgh_frq_spl' ]]; then
+    if [[ ${clm_md_usr-} == 'hfs' ]] || [[ ${clm_md_usr-} == 'high_frequency_splitter' ]] || [[ ${clm_md_usr-} == 'hgh_frq_spl' ]]; then
 	clm_md_usr='hfs'
     fi # !clm_md_usr
-    if [[ ${clm_md_usr} == 'mth' ]] || [[ ${clm_md_usr} == 'month' ]] || [[ ${clm_md_usr} == 'monthly' ]]; then
+    if [[ ${clm_md_usr-} == 'mth' ]] || [[ ${clm_md_usr-} == 'month' ]] || [[ ${clm_md_usr-} == 'monthly' ]]; then
 	clm_md_usr='mth'
     fi # !clm_md_usr
     clm_md="${clm_md_usr}"
 fi # !clm_md_usr
-if [[ ${clm_md} == 'hfc' ]] || [[ ${clm_md} == 'mth' ]]; then
+if [[ ${clm_md-} == 'hfc' ]] || [[ ${clm_md-} == 'mth' ]]; then
     clm_hfc_or_mth='Yes'
 fi # !clm_md
-if [[ ${clm_md} == 'dly' ]] || [[ ${clm_md} == 'hfc' ]]; then
+if [[ ${clm_md-} == 'dly' ]] || [[ ${clm_md-} == 'hfc' ]]; then
     unset dpm # Days per month
     declare -a dpm
     dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # noleap 365-day calendar, 1-based indexing
 fi # !clm_md
-if [[ -z ${drc_in} ]]; then
+if [[ -z ${drc_in-} ]]; then
     drc_in="${drc_pwd}"
 else # !drc_in
-    if [[ ! -d ${drc_in} ]]; then
+    if [[ ! -d ${drc_in-} ]]; then
 	echo "${spt_nm}: ERROR specified input directory \"${drc_in}\" does not exist"
 	exit 1
     fi # !drc_in
@@ -1241,12 +1241,12 @@ else # !drc_in
 fi # !drc_in
 
 # Derived variables
-if [[ ${drc_out_usr} ]]; then
+if [[ ${drc_out_usr-} ]]; then
     # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
     drc_out="${drc_out_usr%/}"
 fi # !drc_out_usr
-if [[ ${drc_rgr_usr} ]]; then 
-    if [[ -z ${rgr_map} ]]; then
+if [[ ${drc_rgr_usr-} ]]; then 
+    if [[ -z ${rgr_map-} ]]; then
 	printf "${spt_nm}: ERROR specified directory for regridded files without supplying map-file name for regridding\n"
 	printf "${spt_nm}: HINT Provide a map-file name with -m map.nc or --map=map.nc or remove the option (-O or --drc_rgr) that sets the directory for regridded files\n"
 	exit 1
@@ -1255,38 +1255,38 @@ if [[ ${drc_rgr_usr} ]]; then
 else 
     drc_rgr="${drc_out%/}"
 fi # !drc_rgr_usr
-if [[ ${drc_prv} ]]; then
+if [[ ${drc_prv-} ]]; then
     drc_prv="${drc_prv%/}"
 else
-    if [[ ${bnr_flg} == 'Yes' ]]; then
+    if [[ ${bnr_flg-} == 'Yes' ]]; then
 	drc_prv="${drc_in}"
     fi # !bnr_flg
-    if [[ ${ncr_flg} == 'Yes' ]]; then
+    if [[ ${ncr_flg-} == 'Yes' ]]; then
 	drc_prv="${drc_out}"
     fi # !ncr_flg
 fi # !drc_prv
-if [[ ${drc_xtn} ]]; then
+if [[ ${drc_xtn-} ]]; then
     drc_xtn="${drc_xtn%/}"
 else
     drc_xtn="${drc_prv}"
 fi # !drc_xtn
 
 # Doubly-derived variables
-if [[ ${drc_rgr_prv} ]]; then
+if [[ ${drc_rgr_prv-} ]]; then
     drc_rgr_prv="${drc_rgr_prv%/}"
 else
     drc_rgr_prv="${drc_prv%/}"
 fi # !drc_rgr_prv
-if [[ ${drc_rgr_xtn} ]]; then
+if [[ ${drc_rgr_xtn-} ]]; then
     drc_rgr_xtn="${drc_rgr_xtn%/}"
 else
     drc_rgr_xtn="${drc_xtn%/}"
 fi # !drc_rgr_xtn
 
 # Create output directories
-if [[ ${drc_out} ]] && [[ ! -d ${drc_out} ]]; then 
+if [[ ${drc_out-} ]] && [[ ! -d ${drc_out-} ]]; then 
     chr_fst=${drc_out:0:1}
-    if [[ ${chr_fst} == '-' ]]; then
+    if [[ ${chr_fst-} == '-' ]]; then
 	echo "${spt_nm}: ERROR Attempting to mkdir user-specified output directory \"${drc_out}\" will fail because directory name begins with '-' which is an option indicator"
 	echo "${spt_nm}: HINT Specify output directory name that does not begin with '-'"
 	exit 1
@@ -1299,9 +1299,9 @@ if [[ ${drc_out} ]] && [[ ! -d ${drc_out} ]]; then
 	exit 1
     fi # !err
 fi # !drc_out
-if [[ ${drc_rgr} ]] && [[ ! -d ${drc_rgr} ]]; then 
+if [[ ${drc_rgr-} ]] && [[ ! -d ${drc_rgr-} ]]; then 
     chr_fst=${drc_rgr:0:1}
-    if [[ ${chr_fst} == '-' ]]; then
+    if [[ ${chr_fst-} == '-' ]]; then
 	echo "${spt_nm}: ERROR Attempting to mkdir user-specified regrid directory \"${drc_rgr}\" will fail because directory name begins with '-' which is an option indicator"
 	echo "${spt_nm}: HINT Specify regrid directory name that does not begin with '-'"
 	exit 1
@@ -1318,7 +1318,7 @@ fi # !drc_rgr
 # Define calendar
 # Parse input years and months
 arg_lng=${#yr_srt}
-if [[ ${arg_lng} -eq 6 ]]; then
+if [[ ${arg_lng-} -eq 6 ]]; then
     # Test parsing with: ncclimo --dbg=2 --yr_srt=201304 --yr_end=201412 --caseid=foo --drc_in=${DATA}/ne30/raw
     # Input is in YYYYMM format
     yyyymm_srt=${yr_srt}
@@ -1369,11 +1369,11 @@ yr_endm1=$((yr_end_rth-1))
 yr_endp1=$((yr_end_rth+1))
 yyyy_endm1=`printf "%04d" ${yr_endm1}`
 
-if [[ ${mth_srt_rth} -eq 0 ]]; then
+if [[ ${mth_srt_rth-} -eq 0 ]]; then
     echo "${spt_nm}: ERROR User-defined start month is ${mth_srt}. Please use 1-based (not 0-based) indexing for months, where [Jan..Dec] = [1..12]"
     exit 1
 fi # !mth_srt
-if [[ ${mth_end_rth} -gt 12 ]]; then
+if [[ ${mth_end_rth-} -gt 12 ]]; then
     echo "${spt_nm}: ERROR User-defined end month is ${mth_end_rth}. Ending month must be <= 12."
     exit 1
 fi # !mth_srt_rth
@@ -1382,39 +1382,39 @@ fi # !mth_srt_rth
 mth_nbr=$((yr_end_rth*12+mth_end_rth-yr_srt_rth*12-mth_srt_rth+1))
 yr_nbr=$((mth_nbr/12))
 # How many files/months from first month to first January?
-if [[ ${mth_srt_rth} -eq 1 ]]; then
+if [[ ${mth_srt_rth-} -eq 1 ]]; then
     jan_fst=0 # [nbr] Offset of January from starting month
 else
     jan_fst=$(( 12 - mth_srt_rth + 1 ))
 fi # mth_srt_rth
 mth_srtm1=$(( mth_srt_rth - 1 )) # [idx] 1-based index of month preceding start month
 mth_endp1=$((mth_end_rth+1))
-if [[ ${mth_srtm1} -eq 0 ]]; then
+if [[ ${mth_srtm1-} -eq 0 ]]; then
     mth_srtm1=$((12))
     mm_srtm1='12'
 else # !mth_srtm1
     mm_srtm1=`printf "%02d" ${mth_srtm1}`
 fi # !mth_srtm1
-if [[ ${mth_endp1} -eq 13 ]]; then
+if [[ ${mth_endp1-} -eq 13 ]]; then
     mth_endp1=$((1))
     mm_endp1='01'
 else # !mth_endp1
     mm_endp1=`printf "%02d" ${mth_endp1}`
 fi # !mth_endp1
-if [[ ${mm_srt} != '01' ]] || [[ ${mm_end} != '12' ]]; then
+if [[ ${mm_srt-} != '01' ]] || [[ ${mm_end-} != '12' ]]; then
     mth_flg='Yes'
 fi # !mm_srt
-[[ ${mth_flg} == 'Yes' ]] && yr_cln=$((yr_nbr+1)) || yr_cln=${yr_nbr}
+[[ ${mth_flg-} == 'Yes' ]] && yr_cln=$((yr_nbr+1)) || yr_cln=${yr_nbr}
 
 # 20260323
 # Determine starting and ending year string for each month
 for ((mth_idx=1;mth_idx<=12;mth_idx++)); do
-    if [[ ${mth_idx} -ge ${mth_srt_rth} ]]; then
+    if [[ ${mth_idx-} -ge ${mth_srt_rth-} ]]; then
 	yyyy_srt_mth[${mth_idx}]=${yyyy_srt}
     else # !mth_idx
 	yyyy_srt_mth[${mth_idx}]=${yyyy_srtp1}
     fi # !mth_idx
-    if [[ ${mth_idx} -le ${mth_end_rth} ]]; then
+    if [[ ${mth_idx-} -le ${mth_end_rth-} ]]; then
 	yyyy_end_mth[${mth_idx}]=${yyyy_end}
     else # !mth_idx
 	yyyy_end_mth[${mth_idx}]=${yyyy_endm1}
@@ -1422,20 +1422,20 @@ for ((mth_idx=1;mth_idx<=12;mth_idx++)); do
 done # !mth_idx
 
 # Define actions based on standard options
-if [[ ${caseid} ]]; then
+if [[ ${caseid-} ]]; then
     out_nm=${caseid}
 fi # !caseid
-if [[ ${caseid} == 'hist' ]] || [[ ${mdl_nm} == 'mali' ]] || [[ ${mdl_nm} == 'mpas' ]] || [[ ${mdl_nm} == 'mpaso' ]] || [[ ${mdl_nm} == 'mpas-ocean' ]] || [[ ${mdl_nm} == 'mpascice' ]] || [[ ${mdl_nm} == 'mpasseaice' ]] || [[ ${mdl_nm} == 'mpas-seaice' ]] || [[ ${mdl_nm} == 'mpassi' ]] || [[ ${prc_typ} == 'mali' ]] || [[ ${prc_typ} == 'mpas' ]] || [[ ${prc_typ} == 'mpasa' ]] || [[ ${prc_typ} == 'mpasatmosphere' ]] || [[ ${prc_typ} == 'mpaso' ]] || [[ ${prc_typ} == 'mpas-ocean' ]] || [[ ${prc_typ} == 'mpascice' ]] || [[ ${prc_typ} == 'mpasseaice' ]] || [[ ${prc_typ} == 'mpas-seaice' ]] || [[ ${prc_typ} == 'mpassi' ]]; then
+if [[ ${caseid-} == 'hist' ]] || [[ ${mdl_nm-} == 'mali' ]] || [[ ${mdl_nm-} == 'mpas' ]] || [[ ${mdl_nm-} == 'mpaso' ]] || [[ ${mdl_nm-} == 'mpas-ocean' ]] || [[ ${mdl_nm-} == 'mpascice' ]] || [[ ${mdl_nm-} == 'mpasseaice' ]] || [[ ${mdl_nm-} == 'mpas-seaice' ]] || [[ ${mdl_nm-} == 'mpassi' ]] || [[ ${prc_typ-} == 'mali' ]] || [[ ${prc_typ-} == 'mpas' ]] || [[ ${prc_typ-} == 'mpasa' ]] || [[ ${prc_typ-} == 'mpasatmosphere' ]] || [[ ${prc_typ-} == 'mpaso' ]] || [[ ${prc_typ-} == 'mpas-ocean' ]] || [[ ${prc_typ-} == 'mpascice' ]] || [[ ${prc_typ-} == 'mpasseaice' ]] || [[ ${prc_typ-} == 'mpas-seaice' ]] || [[ ${prc_typ-} == 'mpassi' ]]; then
     mdl_typ='mpas'
     nm_typ='mpas'
     out_nm="${mdl_nm}"
     hst_nm='hist'
 fi # !caseid
-if [[ ${prc_typ} == 'mpascice' ]] || [[ ${prc_typ} == 'mpasseaice' ]] || [[ ${prc_typ} == 'mpassi' ]]; then 
+if [[ ${prc_typ-} == 'mpascice' ]] || [[ ${prc_typ-} == 'mpasseaice' ]] || [[ ${prc_typ-} == 'mpassi' ]]; then 
     prc_mpas='Yes'
     prc_mpasseaice='Yes'
 fi # !prc_typ
-if [[ ${mdl_typ} == 'mpas' ]] && [[ -z ${prc_opt} ]]; then
+if [[ ${mdl_typ-} == 'mpas' ]] && [[ -z ${prc_opt-} ]]; then
     prc_typ='mpas'
     prc_opt='-P mpas'
 fi # !mdl_typ && prc_opt
@@ -1451,16 +1451,16 @@ elif [[ ${caseid} =~ ^(.*)([0-9][0-9][0-9][0-9]-[01][0-9]-01-00000.nc.?)$ ]]; th
 elif [[ ${caseid} =~ ^(.*)([0-9][0-9][0-9][0-9]-[01][0-9].nc.?)$ ]]; then
     nm_typ='yyyy-mm'
 fi # !caseid
-if [[ ${nm_typ} == 'yyyymm' ]]  || [[ ${nm_typ} == 'yyyy-mm' ]] || [[ ${nm_typ} == 'yyyy-mm-01' ]] || [[ ${nm_typ} == 'yyyy-mm-01-00000' ]]; then
+if [[ ${nm_typ-} == 'yyyymm' ]]  || [[ ${nm_typ-} == 'yyyy-mm' ]] || [[ ${nm_typ-} == 'yyyy-mm-01' ]] || [[ ${nm_typ-} == 'yyyy-mm-01-00000' ]]; then
     bs_nm="${BASH_REMATCH[1]}"
     bs_nm="$(basename ${bs_nm})"
     bs_nm="${bs_nm%.*}"
-    [[ ${prc_typ} != 'eamxx' ]] && bs_nm="${bs_nm%_*}"
+    [[ ${prc_typ-} != 'eamxx' ]] && bs_nm="${bs_nm%_*}"
     out_nm=${bs_nm}
     # https://stackoverflow.com/questions/12426659/how-extract-last-part-of-string-in-bash
     bs_sfx="${caseid##*.}"
 fi # !nm_typ
-if [[ ${fml_nm_usr} ]]; then 
+if [[ ${fml_nm_usr-} ]]; then 
     fml_nm="${fml_nm_usr}"
     out_nm="${fml_nm}"
 fi # !fml_nm
@@ -1475,48 +1475,48 @@ fi # !fml_nm
 # NB: clm_md='mth' indicates only the averaging period of a single input file
 # clm_md='mth' is true for both monthly splitter and monthly climo :(
 # Rest of code relies on (mutually exclusive) clm_flg to compute climo and tms_flg to invoke splitter
-if [[ ${tms_flg} == 'Yes' ]] || [[ ${clm_md} == 'hfs' ]] || [[ ${ypf_max_usr} ]]; then
+if [[ ${tms_flg-} == 'Yes' ]] || [[ ${clm_md-} == 'hfs' ]] || [[ ${ypf_max_usr-} ]]; then
     tms_flg='Yes'
     clm_flg='No'
-    if [[ ${ypf_max_usr} ]]; then 
+    if [[ ${ypf_max_usr-} ]]; then 
 	ypf_max=${ypf_max_usr}
     fi # !ypf_max_usr
 fi # !tms_flg
 
 # Determine input method, if not already known
-if [[ ${inp_psn} == 'No' ]] && [[ ${inp_std} == 'No' ]] && [[ ${drc_in_usr_flg} == 'Yes' ]]; then
+if [[ ${inp_psn-} == 'No' ]] && [[ ${inp_std-} == 'No' ]] && [[ ${drc_in_usr_flg-} == 'Yes' ]]; then
     # 20220129 Determine whether to construct (use inp_aut) or glob files
     # Daily (or finer) resolution filenames are never constructible
     # Monthly input filenames are constructable with caseid 
     # Assume user wishes to glob unless both are provided caseid for monthly files
     # 20211207 Specifying mpas name type (like MPAS-Analysis does) also implies inp_aut
-    if [[ ( ${clm_md} == 'mth' && -n ${caseid} ) || ${nm_typ} == 'mpas' ]]; then
+    if [[ ( ${clm_md-} == 'mth' && -n ${caseid-} ) || ${nm_typ-} == 'mpas' ]]; then
 	inp_aut='Yes'
     else # !mth
 	inp_glb='Yes'
     fi # !caseid
 fi # !inp_*
-if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'ann' ]]; then
+if [[ ${clm_flg-} == 'Yes' ]] && [[ ${clm_md-} == 'ann' ]]; then
     inp_aut='Yes'
     inp_glb='No'
     inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
 fi # !clm_flg
-if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]] && [[ ${inp_psn} == 'No' ]] && [[ ${inp_std} == 'No' ]] && [[ ${drc_in_usr_flg} == 'Yes' ]]; then
+if [[ ${clm_flg-} == 'Yes' ]] && [[ ${clm_md-} == 'dly' ]] && [[ ${inp_psn-} == 'No' ]] && [[ ${inp_std-} == 'No' ]] && [[ ${drc_in_usr_flg-} == 'Yes' ]]; then
     inp_aut='No'
     inp_glb='Yes'
 fi # !clm_flg, !dly
 # One of these input file options must be true, or else...
-if [[ ${inp_aut} == 'No' ]] && [[ ${inp_glb} == 'No' ]] && [[ ${inp_psn} == 'No' ]] && [[ ${inp_std} == 'No' ]]; then
+if [[ ${inp_aut-} == 'No' ]] && [[ ${inp_glb-} == 'No' ]] && [[ ${inp_psn-} == 'No' ]] && [[ ${inp_std-} == 'No' ]]; then
     echo "${spt_nm}: ERROR No input data files found"
     echo "${spt_nm}: HINT Specify input file(s) by providing option \"-i \$drc_in\" with (for automatic filename construction) or without (for globbing entire directory) \"-c \$caseid\", or provide names via positional argument(s) or stdin"
-    if [[ ${bch_pbs} == 'Yes' ]]; then
+    if [[ ${bch_pbs-} == 'Yes' ]]; then
 	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
     else # !bch_pbs
 	echo "${spt_nm}: HINT Provide a list of lengthy or complex filenames as a pipe to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
     fi # !bch_pbs
     exit 1
 fi # !tms_flg
-if [[ ${inp_aut} != 'Yes' ]] && [[ -z ${mdl_nm_usr} ]]; then 
+if [[ ${inp_aut-} != 'Yes' ]] && [[ -z ${mdl_nm_usr-} ]]; then 
     mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
 fi # !inp_aut !mdl_nm_usr
 # clm_flg and tms_flg and all input file pre-requisite parameters are now set. Ready to gather input filenames.
@@ -1525,44 +1525,44 @@ fi # !inp_aut !mdl_nm_usr
 #printf "dbg: inp_aut = ${inp_aut}, inp_glb = ${inp_glb}, inp_psn = ${inp_psn}, inp_std = ${inp_std}\n"
 # End input mode determination block
 
-if [[ ${clm_flg} == 'Yes' ]] && [[ -z ${out_nm} ]] && [[ -z ${fml_nm} ]]; then 
+if [[ ${clm_flg-} == 'Yes' ]] && [[ -z ${out_nm-} ]] && [[ -z ${fml_nm-} ]]; then 
     printf "${spt_nm}: ERROR ${spt_nm} User requested climatology generation yet invoked neither \$caseid nor \$fml_nm options nor specified a supported automatic name-generation option (e.g., --mdl=mpaso for MPAS) so ${spt_nm} does not know what to name the output files\n"
     printf "${spt_nm}: HINT Use \"--caseid=name\" or \"--fml_nm=name\" to provide a name for the output files. If the input files are provided via stdin, positional arguments, or globbing then the name string will only be used for output names and need not be present in any of the input filenames\n"
 fi # !out_nm
-if [[ ${clm_md} != 'ann' ]] && [[ ${clm_md} != 'dly' ]] && [[ ${clm_md} != 'hfc' ]] && [[ ${clm_md} != 'hfs' ]] && [[ ${clm_md} != 'mth' ]]; then 
+if [[ ${clm_md-} != 'ann' ]] && [[ ${clm_md-} != 'dly' ]] && [[ ${clm_md-} != 'hfc' ]] && [[ ${clm_md-} != 'hfs' ]] && [[ ${clm_md-} != 'mth' ]]; then 
     echo "${spt_nm}: ERROR User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', hfc', 'hfs', and 'mth' (default)"
     exit 1
 fi # !clm_md
-if [[ ${clm_md} == 'ann' ]]; then 
+if [[ ${clm_md-} == 'ann' ]]; then 
     clm_nbr=1
-elif [[ ${clm_md} == 'dly' ]]; then 
+elif [[ ${clm_md-} == 'dly' ]]; then 
     clm_nbr=${dpy}
-elif [[ ${clm_hfc_or_mth} == 'Yes' ]]; then 
+elif [[ ${clm_hfc_or_mth-} == 'Yes' ]]; then 
     clm_nbr=12
     csn_flg='Yes'
-    if [[ ${csn_lst} == 'none' ]]; then
+    if [[ ${csn_lst-} == 'none' ]]; then
 	csn_nbr=0
 	csn_flg='No'
     fi # !csn_lst
 fi # !clm_md
-if [[ -z ${gaa_sng_std} ]]; then
-    if [[ ${clm_flg} == 'Yes' ]]; then
+if [[ -z ${gaa_sng_std-} ]]; then
+    if [[ ${clm_flg-} == 'Yes' ]]; then
 	echo "${spt_nm}: INFO User-defined global attributes string is empty. Diagnostics routines (such as E3SM Diagnostics) that depend on these attributes may not work."
     fi # !clm_flg
 fi # !gaa_sng_std
-if [[ ${job_usr} ]]; then 
+if [[ ${job_usr-} ]]; then 
     job_nbr="${job_usr}"
 fi # !job_usr
-if [[ ${fl_fmt} ]]; then
-    if [[ ${fl_fmt} == '3' ]] || [[ ${fl_fmt} == 'classic' ]] || [[ ${fl_fmt} == 'netcdf3' ]]; then
+if [[ ${fl_fmt-} ]]; then
+    if [[ ${fl_fmt-} == '3' ]] || [[ ${fl_fmt-} == 'classic' ]] || [[ ${fl_fmt-} == 'netcdf3' ]]; then
 	nco_fl_fmt='--fl_fmt=classic'
-    elif [[ ${fl_fmt} == '4' ]] || [[ ${fl_fmt} == 'netcdf4' ]] || [[ ${fl_fmt} == 'hdf5' ]]; then
+    elif [[ ${fl_fmt-} == '4' ]] || [[ ${fl_fmt-} == 'netcdf4' ]] || [[ ${fl_fmt-} == 'hdf5' ]]; then
 	nco_fl_fmt='--fl_fmt=netcdf4'
-    elif [[ ${fl_fmt} == '5' ]] || [[ ${fl_fmt} == '64bit_data' ]] || [[ ${fl_fmt} == 'cdf5' ]]; then
+    elif [[ ${fl_fmt-} == '5' ]] || [[ ${fl_fmt-} == '64bit_data' ]] || [[ ${fl_fmt-} == 'cdf5' ]]; then
 	nco_fl_fmt='--fl_fmt=64bit_data'
-    elif [[ ${fl_fmt} == '6' ]] || [[ ${fl_fmt} == '64bit_offset' ]] || [[ ${fl_fmt} == '64' ]]; then
+    elif [[ ${fl_fmt-} == '6' ]] || [[ ${fl_fmt-} == '64bit_offset' ]] || [[ ${fl_fmt-} == '64' ]]; then
 	nco_fl_fmt='--fl_fmt=64bit_offset'
-    elif [[ ${fl_fmt} == '7' ]] || [[ ${fl_fmt} == 'netcdf4_classic' ]]; then
+    elif [[ ${fl_fmt-} == '7' ]] || [[ ${fl_fmt-} == 'netcdf4_classic' ]]; then
 	nco_fl_fmt='--fl_fmt=netcdf4_classic'
     else
 	echo "${spt_nm}: ERROR User-supplied file-format specifier fl_fmt='${fl_fmt}' is invalid"
@@ -1576,72 +1576,72 @@ if ! [[ ${dbg_lvl} =~ ^[0-9]+$ ]]; then
     echo "${spt_nm}: HINT Set --dbg to a non-negative integer, e.g., --dbg=2"
     exit 1
 fi # !dbg_lvl
-if [[ ${dbg_lvl} -ge 2 ]]; then
+if [[ ${dbg_lvl-} -ge 2 ]]; then
     nco_opt="--dbg_lvl=${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
 # 20240617 var_lst for timeseries mode must be and is processed separately in timeseries block
-if [[ ${var_lst} ]] && [[ ${tms_flg} != 'Yes' ]]; then
-    if [[ ${xcl_flg} == 'Yes' ]]; then
+if [[ ${var_lst-} ]] && [[ ${tms_flg-} != 'Yes' ]]; then
+    if [[ ${xcl_flg-} == 'Yes' ]]; then
 	nco_opt="${nco_opt} -x"
     fi # !xcl_flg                                                                                     
     nco_opt="${nco_opt} -v ${var_lst}"
 fi # !var_lst                                                                                         
-if [[ ${bfr_sz} ]]; then
+if [[ ${bfr_sz-} ]]; then
     nco_opt="${nco_opt} --bfr_sz=${bfr_sz}"
 fi # !bfr_sz
-if [[ ${blk_sz} ]]; then
+if [[ ${blk_sz-} ]]; then
     nco_opt="${nco_opt} --blk_sz=${blk_sz}"
 fi # !blk_sz
-if [[ ${cmp_sng} ]]; then
+if [[ ${cmp_sng-} ]]; then
     # 20230623: Insert backslashes to protect pipe characters from shell
     nco_opt="${nco_opt} --cmp=${cmp_sng//\|/\\|}"
 fi # !cmp_sng
-if [[ ${dfl_lvl} ]]; then
+if [[ ${dfl_lvl-} ]]; then
     nco_opt="${nco_opt} --dfl_lvl=${dfl_lvl}"
 fi # !dfl_lvl
-if [[ ${qnt_prc} ]]; then
+if [[ ${qnt_prc-} ]]; then
     nco_opt="${nco_opt} --qnt default=${qnt_prc}"
 fi # !qnt_prc
-if [[ ${hdr_pad} ]]; then
+if [[ ${hdr_pad-} ]]; then
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
 fi # !hdr_pad
-if [[ ${uio_flg} ]]; then
+if [[ ${uio_flg-} ]]; then
     nco_opt="${nco_opt} --unbuffered_io"
 fi # !uio_flg
-if [[ ${no_cll_msr} == 'Yes' ]]; then 
+if [[ ${no_cll_msr-} == 'Yes' ]]; then 
     spl_opt="${spl_opt} --no_cll_msr"
 fi # !no_cll_msr
-if [[ ${no_frm_trm} == 'Yes' ]]; then 
+if [[ ${no_frm_trm-} == 'Yes' ]]; then 
     spl_opt="${spl_opt} --no_frm_trm"
 fi # !no_frm_trm
-if [[ ${no_stg_grd} == 'Yes' ]]; then 
+if [[ ${no_stg_grd-} == 'Yes' ]]; then 
     spl_rgr_opt=''
 fi # !no_stg_grd
-if [[ ${par_typ} == ${par_bck} ]] || [[ ${par_typ} =~ [bB]ck ]] || [[ ${par_typ} =~ [bB]ackground ]]; then 
+if [[ ${par_typ-} == ${par_bck-} ]] || [[ ${par_typ} =~ [bB]ck ]] || [[ ${par_typ} =~ [bB]ackground ]]; then 
     par_typ=${par_bck}
     par_opt=' &'
-elif [[ ${par_typ} == ${par_mpi} ]] || [[ ${par_typ} =~ (mpi|MPI) ]]; then 
+elif [[ ${par_typ-} == ${par_mpi-} ]] || [[ ${par_typ-} =~ (mpi|MPI) ]]; then 
     par_typ=${par_mpi}
     par_opt=' &'
     mpi_flg='Yes'
-elif [[ ${par_typ} == ${par_srl} ]] || [[ ${par_typ} == 'srl' ]] || [[ ${par_typ} =~ [sS]erial ]] || [[ ${par_typ} =~ [nN]il ]] || [[ ${par_typ} =~ [nN]one ]]; then 
+elif [[ ${par_typ-} == ${par_srl-} ]] || [[ ${par_typ-} == 'srl' ]] || [[ ${par_typ} =~ [sS]erial ]] || [[ ${par_typ} =~ [nN]il ]] || [[ ${par_typ} =~ [nN]one ]]; then 
     par_typ=${par_srl}
 else 
     echo "ERROR: Invalid -p par_typ option = ${par_typ}"
     echo "HINT: Valid par_typ arguments for file-level parallelism include '${par_bck}' (or 'bck'), '${par_mpi}' (or 'MPI'), and '${par_srl}' (or 'srl' or 'nil' or 'none'). For background parallelism, select '${par_bck}' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select '${par_mpi}' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism (aka serial mode), select '${par_srl}', which causes ${spt_nm} to spawn all processes serially on a single compute node."
     exit 1
 fi # !par_typ
-if [[ ${rgr_opt_usr} ]]; then
+if [[ ${rgr_opt_usr-} ]]; then
     rgr_opt="${rgr_opt_usr}"
     rmp_opt="-R \'${rgr_opt_usr}\'"
 fi # !rgr_opt_usr
-if [[ ${rgr_map} ]]; then 
-    if [[ ! -f ${rgr_map} ]] && [[ ! -L ${rgr_map} ]]; then
+if [[ ${rgr_map-} ]]; then 
+    if [[ ! -f ${rgr_map-} ]] && [[ ! -L ${rgr_map-} ]]; then
 	echo "${spt_nm}: ERROR Unable to find specified regrid map ${rgr_map}"
 	echo "${spt_nm}: HINT Supply the full path-name for the regridding map"
 	exit 1
     fi # ! -f
-    if [[ ${mdl_nm} == 'clm2' ]] || [[ ${mdl_nm} == 'elm' ]] && [[ -z ${sgs_frc} ]]; then
+    if [[ ${mdl_nm-} == 'clm2' ]] || [[ ${mdl_nm-} == 'elm' ]] && [[ -z ${sgs_frc-} ]]; then
 	printf "${spt_nm}: WARNING ${spt_nm} CLM/ELM output typically uses sub-gridscale (SGS) fractions that can only be properly renormalized if the SGS variable option to ncclimo is invoked, but that option was not invoked\n"
 	printf "${spt_nm}: HINT Provide ${spt_nm} with the SGS fraction variable using the \"--sgs_frc=\${sgs_frc_nm}\" option, otherwise the regridded data will likely not be properly or conservatively regridded\n"
     fi # !mdl_nm
@@ -1649,42 +1649,42 @@ if [[ ${rgr_map} ]]; then
     rgr_opt="${rgr_opt} ${map_opt}"
     rmp_opt="${rmp_opt} ${map_opt}"
 else # !rgr_map
-    if [[ ${dpt_opt} ]]; then
+    if [[ ${dpt_opt-} ]]; then
 	echo "${spt_nm}: ERROR Cannot add depth coordinate unless horizontal regridding is invoked"
 	echo "${spt_nm}: HINT Specify a regridding map or run add_depth.py on these files yourself. To request that add_depth.py work directly in ncclimo, contact Charlie."
 	exit 1
     fi # !dpt_opt
 fi # !rgr_map
-if [[ ${tms_flg} == 'Yes' ]]; then
+if [[ ${tms_flg-} == 'Yes' ]]; then
     # 20190419: Splitter typically writes 1--3 multi-dimensional fields into each output file
     # OpenMP incurs significant RAM overhead that may not be worthwhile
     # New default is 1 regridding thread for splitter 
     # Users can override this splitter-only default by explicitly requesting multiple threads
     thr_nbr=1 # [nbr] Thread number for regridder
 fi # !tms_flg
-if [[ ${sgs_frc} ]]; then
+if [[ ${sgs_frc-} ]]; then
     sgs_opt="--rgr sgs_frc_nm=${sgs_frc}"
     rgr_opt="${rgr_opt} ${sgs_opt}"
     rmp_opt="--sgs_frc=${sgs_frc} ${rmp_opt}"
 fi # !sgs_frc
-if [[ ${thr_usr} ]]; then
+if [[ ${thr_usr-} ]]; then
     thr_nbr="${thr_usr}"
 fi # !thr_usr
-if [[ ${tpd_usr} ]]; then 
+if [[ ${tpd_usr-} ]]; then 
     tpd_out="${tpd_usr}"
 fi # !tpd_usr
-if [[ ${vrt_out} ]]; then
-    if [[ ! -f ${vrt_out} ]] && [[ ! -L ${vrt_out} ]]; then
+if [[ ${vrt_out-} ]]; then
+    if [[ ! -f ${vrt_out-} ]] && [[ ! -L ${vrt_out-} ]]; then
 	echo "ERROR: Unable to find specified vertical coordinate file ${vrt_out}"
 	exit 1
     fi # ! -f
     vrt_opt="--vrt_out=${vrt_out}"
     rmp_opt="--vrt_out=${vrt_out} ${rmp_opt}"
-    if [[ ${vrt_xtr} ]]; then
-	if [[ ${vrt_xtr} == 'mss_val' ]] || [[ ${vrt_xtr} == 'missing_value' ]] || [[ ${vrt_xtr} == 'msv' ]]; then 
+    if [[ ${vrt_xtr-} ]]; then
+	if [[ ${vrt_xtr-} == 'mss_val' ]] || [[ ${vrt_xtr-} == 'missing_value' ]] || [[ ${vrt_xtr-} == 'msv' ]]; then 
 	    vrt_opt="--rgr xtr_mth=mss_val ${vrt_opt}"
 	    rmp_opt="--xtr_mth=mss_val ${rmp_opt}"
-	elif [[ ${vrt_xtr} == 'nrs_ngh' ]] || [[ ${vrt_xtr} == 'nearest_neighbor' ]] || [[ ${vrt_xtr} == 'nn' ]]; then 
+	elif [[ ${vrt_xtr-} == 'nrs_ngh' ]] || [[ ${vrt_xtr-} == 'nearest_neighbor' ]] || [[ ${vrt_xtr-} == 'nn' ]]; then 
 	    vrt_opt="--rgr xtr_mth=nrs_ngh ${vrt_opt}"
 	    rmp_opt="--xtr_mth=nrs_ngh ${rmp_opt}"
 	else 
@@ -1705,7 +1705,7 @@ mm_djf_srt='01' # [idx] First month used in DJF climatology
 mm_djf_end='12' # [idx] Last  month used in DJF climatology
 
 # 20231221: Automatically generate input filename list based on command-line options    
-if [[ ${inp_aut} == 'Yes' ]] && [[ ${clm_md} == 'mth' ]] || [[ ${clm_md} == 'ann' ]]; then 
+if [[ ${inp_aut-} == 'Yes' ]] && [[ ${clm_md-} == 'mth' ]] || [[ ${clm_md-} == 'ann' ]]; then 
     fl_nbr=0
     yr_srt_all=${yyyy_srt}
     yr_end_all=${yyyy_end}
@@ -1713,7 +1713,7 @@ if [[ ${inp_aut} == 'Yes' ]] && [[ ${clm_md} == 'mth' ]] || [[ ${clm_md} == 'ann
     for yr in `seq ${yr_srt_all} ${yr_end_all}`; do
 	YYYY=`printf "%04d" ${yr}`
 	clm_idx=0
-	if [[ ${clm_md} == 'ann' ]]; then
+	if [[ ${clm_md-} == 'ann' ]]; then
 	    fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${ann_sfx}.nc"
 	    fl_nbr=$((fl_nbr+1));
 	    continue;
@@ -1723,12 +1723,12 @@ if [[ ${inp_aut} == 'Yes' ]] && [[ ${clm_md} == 'mth' ]] || [[ ${clm_md} == 'ann
 	    MM=`printf "%02d" ${clm_idx}`
 	    # Only construct filenames for months that are used
 	    # 20260410 this statements should be triggered during climos!
-	    if [[ ${mth_flg} == 'Yes' ]] && [[ ${yr} -eq ${yr_srt_all} ]] && [[ ${MM} -lt ${mth_srt_rth} ]]; then continue; fi
-	    if [[ ${mth_flg} == 'Yes' ]] && [[ ${yr} -eq ${yr_end_all} ]] && [[ ${MM} -gt ${mth_end_rth} ]]; then continue; fi
-	    if [[ ${nm_typ} == 'cesm' ]]; then
+	    if [[ ${mth_flg-} == 'Yes' ]] && [[ ${yr-} -eq ${yr_srt_all-} ]] && [[ ${MM-} -lt ${mth_srt_rth-} ]]; then continue; fi
+	    if [[ ${mth_flg-} == 'Yes' ]] && [[ ${yr-} -eq ${yr_end_all-} ]] && [[ ${MM-} -gt ${mth_end_rth-} ]]; then continue; fi
+	    if [[ ${nm_typ-} == 'cesm' ]]; then
 		fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
-	    elif [[ ${nm_typ} == 'mpas' ]]; then # Use MPAS not CESM conventions
-		if [[ ${mdl_nm} == 'mali' ]]; then 
+	    elif [[ ${nm_typ-} == 'mpas' ]]; then # Use MPAS not CESM conventions
+		if [[ ${mdl_nm-} == 'mali' ]]; then 
 		    fl_in[${fl_nbr}]="${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01_00000.nc"
 		else # !mdl_nm
 		    # 20161130: Really old MPAS rule until today (for pre-v1 data)
@@ -1737,17 +1737,17 @@ if [[ ${inp_aut} == 'Yes' ]] && [[ ${clm_md} == 'mth' ]] || [[ ${clm_md} == 'ann
 		    # Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
  		    fl_in[${fl_nbr}]="${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
 		    # 20240619: Latest MPAS rule (for v2+ data) prepends caseid
-		    if [[ ${caseid} != '' ]]; then 
+		    if [[ ${caseid-} != '' ]]; then 
  			fl_in[${fl_nbr}]="${caseid}.${fl_in[${fl_nbr}]}"
 		    fi # !caseid
 		fi # !mdl_nm
-	    elif [[ ${nm_typ} == 'yyyymm' ]]; then # Generate from caseid + YYYYMM
+	    elif [[ ${nm_typ-} == 'yyyymm' ]]; then # Generate from caseid + YYYYMM
 		fl_in[${fl_nbr}]="${bs_nm}_${YYYY}${MM}.${bs_sfx}"
-	    elif [[ ${nm_typ} == 'yyyy-mm' ]]; then # Generate from caseid + YYYY-MM
+	    elif [[ ${nm_typ-} == 'yyyy-mm' ]]; then # Generate from caseid + YYYY-MM
 		fl_in[${fl_nbr}]="${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
-	    elif [[ ${nm_typ} == 'yyyy-mm-01' ]]; then # Generate from caseid + YYYY-MM-01
+	    elif [[ ${nm_typ-} == 'yyyy-mm-01' ]]; then # Generate from caseid + YYYY-MM-01
 		fl_in[${fl_nbr}]="${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
-	    elif [[ ${nm_typ} == 'yyyy-mm-01-00000' ]]; then # Generate from caseid + YYYY-MM-01-00000
+	    elif [[ ${nm_typ-} == 'yyyy-mm-01-00000' ]]; then # Generate from caseid + YYYY-MM-01-00000
 		#		    fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 		fl_in[${fl_nbr}]="${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 	    fi # !cesm
@@ -1755,22 +1755,22 @@ if [[ ${inp_aut} == 'Yes' ]] && [[ ${clm_md} == 'mth' ]] || [[ ${clm_md} == 'ann
 	done # !mth
     done # !yr
 fi # !inp_aut
-if [[ ${inp_glb} == 'Yes' ]]; then 
+if [[ ${inp_glb-} == 'Yes' ]]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-	if [[ -f ${fl} ]] || [[ -L ${fl} ]]; then
+	if [[ -f ${fl-} ]] || [[ -L ${fl-} ]]; then
 	    fl_in[${fl_nbr}]=$(basename ${fl}) # NB: ncclimo uses basename($fl) here, and ppn_opt later, unlike ncremap
 	    fl_nbr=$((fl_nbr+1))
 	fi # !file
     done
 fi # !inp_glb
-if [[ ${inp_psn} == 'Yes' ]]; then
+if [[ ${inp_psn-} == 'Yes' ]]; then
     # Read any positional arguments
     for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
 	fl_in[(${psn_idx}-1)]=${!psn_idx}
 	fl_nbr=${psn_nbr}
     done # !psn_idx
 fi # !inp_psn
-if [[ ${inp_std} == 'Yes' ]]; then
+if [[ ${inp_std-} == 'Yes' ]]; then
     # Input awaits on unit 0, i.e., on stdin
     while read -r line; do # NeR05 p. 179
 	fl_in[${fl_nbr}]=${line}
@@ -1779,10 +1779,10 @@ if [[ ${inp_std} == 'Yes' ]]; then
 fi # !inp_std
 
 # Sanity check that input files were found
-if [[ ${fl_nbr} -eq 0 ]] || [[ -z ${fl_in[0]} ]]; then
+if [[ ${fl_nbr-} -eq 0 ]] || [[ -z ${fl_in[0]} ]]; then
     printf "${spt_nm}: ERROR No input files were found: \$fl_nbr=${fl_nbr}, \${fl_in[0]}=\"${fl_in[0]}\". At least one input file is required. Please re-examine your input file specification.\n"
     printf "The input method employed is the one whose value is \"Yes\": inp_aut = ${inp_aut}, inp_glb = ${inp_glb}, inp_psn = ${inp_psn}, inp_std = ${inp_std}.\n"
-    if [[ ${inp_std} == 'Yes' ]]; then
+    if [[ ${inp_std-} == 'Yes' ]]; then
 	printf "${spt_nm}: HINT Expecting input from stdin. If you did not intend to provide input files on stdin, then perhaps an ${spt_nm} parent process (e.g., batch queue system or parent script) is controlling stdin. This can lead ${spt_nm} to expect input filenames on stdin. To prevent this from occurring, trying invoking with the --no_stdin switch, i.e., \'${spt_nm} --no_stdin ...\'.\n"
     fi # inp_std
     exit 1
@@ -1791,11 +1791,11 @@ fi # !fl_nbr
 # Sanity check that monthly climatologies received a multiple of twelve files
 # Automatically generated filenames have always adhered to this requirement
 # 20250509: Provision of filenames via other methods never checked this until NCO 5.3.4
-if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'mth' ]]; then 
+if [[ ${clm_flg-} == 'Yes' ]] && [[ ${clm_md-} == 'mth' ]]; then 
     fpy=12
 #    printf "quark1 fl_nbr = ${fl_nbr}, fpy = ${fpy}\n" # 20260830 Computing as let fl_rmd=${fl_nbr} % ${fpy} causes error
     fl_rmd=$(( fl_nbr % fpy ))
-    if [[ ${fl_rmd} -ne 0 ]]; then
+    if [[ ${fl_rmd-} -ne 0 ]]; then
 	printf "${spt_nm}: ERROR User requested climatology of monthly files and supplied ${fl_nbr} (not a multiple of 12) input files.\n"
 	printf "${spt_nm}: HINT Climatologies of monthly resolution data are only supported for whole numbers of years, not partial years. Provide monthly input files in multiples of 12. Use the --mth_srt (default 1) and --mth_end (default 12) options to indicate the starting and ending months if the first year does not start in January.\n"
 	exit 1
@@ -1815,13 +1815,13 @@ if [[ ${fl_in[0]} ]]; then
     fi # !basename
 fi # !fl_in[0]
 	
-if [[ ${clm_md} == 'hfc' ]] || [[ ${clm_md} == 'hfs' ]]; then
-    if [[ -z ${tpd_usr} ]]; then 
+if [[ ${clm_md-} == 'hfc' ]] || [[ ${clm_md-} == 'hfs' ]]; then
+    if [[ -z ${tpd_usr-} ]]; then 
 	# User requested high-frequency mode and did not specify tpd so (try to) infer it
 	# Examine bounds of second timestep in case first timestep is instantaneous (e.g., restart values)
 	tm_var='time'
 	tm_bnd=`ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
-	if [[ -z ${tm_bnd} ]]; then
+	if [[ -z ${tm_bnd-} ]]; then
 	    # 20250509 Use time-coordinate values when time bounds DNE
 	    tm_bnd_flg='No'
 	    #printf "${spt_nm}: ERROR High-frequency mode needs but failed to find bounds variable for record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\". CF requires bounds variable name to be specified as value of \"bounds\" attribute of coordinate used for time-mean output. Typically record bounds variable is named \"time_bnds\" or \"time_bounds\".\nHINT: A workaround, that also works for temporally instantaneous data (e.g., cell_methods=\"time: point\") that lacks a time bounds variable, is to explicitly specify the number of timesteps-per-day in every input file with the --tpd=\$tpd option.\n"
@@ -1839,23 +1839,23 @@ if [[ ${clm_md} == 'hfc' ]] || [[ ${clm_md} == 'hfs' ]]; then
 	# HFC times-out with EAMxx-style format (on PM, not MacOS)
 
 	# Implement option to concatenate daily input into monthly files before HFC?
-	if [[ ${clm_md} == 'hfc' ]] && [[ ${tm_nbr} -lt 100 ]] && [[ ${fl_nbr} -gt 12 ]]; then
+	if [[ ${clm_md-} == 'hfc' ]] && [[ ${tm_nbr-} -lt 100 ]] && [[ ${fl_nbr-} -gt 12 ]]; then
 	    printf "INFO: HFC climo detects that each of the fl_nbr = ${fl_nbr} input files may have only tm_nbr=${tm_nbr} timesteps.\nLarge numbers of small-timestep files may cause excessive slow-down in HFC due to file-access contention on slow filesystems (e.g., Perlmutter).\nConsider concatenating input files into longer (typically monthly) files prior to HFC.\n"
 	fi # !tm_nbr
 
-	if [[ ${tm_bnd_flg} == 'Yes' ]]; then
-	    [[ ${tm_nbr} -gt 1 ]] 2>/dev/null && tm_idx='1' || tm_idx='0'
+	if [[ ${tm_bnd_flg-} == 'Yes' ]]; then
+	    [[ ${tm_nbr-} -gt 1 ]] 2>/dev/null && tm_idx='1' || tm_idx='0'
 	    tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_bnd} -d ${tm_var},${tm_idx} -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
 	else # !tm_bnd_flg
-	    if [[ ${tm_nbr} -le 1 ]]; then
+	    if [[ ${tm_nbr-} -le 1 ]]; then
 		printf "${spt_nm}: ERROR High-frequency mode needs to know temporal resolution in timesteps-per-day and user did not did not explicitly specify the number of timesteps-per-day with the --tpd=\$tpd option. Therefore ${spt_nm} attempted to infer it. No time bounds variable was found for the record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\", therefore ${spt_nm} attempted to infer tpd from the interval between the first two values of \"${tm_var}\". However the time coordinate has only one value in the first input file so no time interval could be computed.\nHINT: Put multiple timesteps in the first input file and/or add a time bounds variable to it.\n"
 		exit 1
 	    fi # !tm_nbr
 	    tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_var} -d ${tm_var},0,1 -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
 	fi # !tm_bnd_flg
 	# Ensure result is positive integer
-	[[ ${tpd_out} -ge 0 ]] 2>/dev/null && tpd_ntg='Yes' || tpd_ntg='No'
-	if [[ ${tpd_ntg} != 'Yes' ]]; then
+	[[ ${tpd_out-} -ge 0 ]] 2>/dev/null && tpd_ntg='Yes' || tpd_ntg='No'
+	if [[ ${tpd_ntg-} != 'Yes' ]]; then
 	    printf "${spt_nm}: ERROR Inferred value of tpd=${tpd_out} is not a positive integer. User requested high-frequency climatology or splitter operations without specifying the number of timesteps per day (tpd) in the input files, so ${spt_nm} tried to infer tpd from the first input file. This operation resulted in a nonsense value. This is not surprising since a number of assumptions must hold true for the inferral to work correctly.\nHINT: Explicitly specify the number of timesteps-per-day in every input file with the --tpd=\$tpd option.\n"
 	    exit 1
 	fi # !tpd_ntg
@@ -1863,9 +1863,9 @@ if [[ ${clm_md} == 'hfc' ]] || [[ ${clm_md} == 'hfs' ]]; then
 fi # !hfc && !hfs
 
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
-if [[ ${tms_flg} == 'Yes' ]]; then
+if [[ ${tms_flg-} == 'Yes' ]]; then
 
-    if [[ ${var_lst} ]]; then
+    if [[ ${var_lst-} ]]; then
 	# 20210823: Pre-process extraction list if it contains a regular expression character
 	# Match var_lst against first file contents to create real extraction list
 	# Only necessary in subset mode to extract distinct timeseries
@@ -1875,22 +1875,22 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	fi # !rx
 
 	# Turn var_lst into array of excluded variables if so requested
-	if [[ ${xcl_flg} == 'Yes' ]]; then
+	if [[ ${xcl_flg-} == 'Yes' ]]; then
 	    var_lst_xcl=( ${var_lst//,/ } )
 	fi # !xcl_flg
     fi # !var_lst
 
     # Create list of all variables when none specified, and array of all variables to construct exclusion list
-    if [[ -z ${var_lst} ]] && [[ ${xcl_flg} == 'Yes' ]]; then
+    if [[ -z ${var_lst-} ]] && [[ ${xcl_flg-} == 'Yes' ]]; then
 	echo "${spt_nm}: ERROR Exclude option (--xcl_var | --xcl | --exclude | --exclude_variables) only works in conjunction with explicitly specified variable extraction list"
 	echo "${spt_nm}: HINT Re-run with explicitly specified variable list (-v var_lst)"
 	exit 1
     fi # !var_lst
-    if [[ -z ${var_lst} ]] || [[ ${xcl_flg} == 'Yes' ]]; then
-	if [[ -z ${var_lst} ]]; then
+    if [[ -z ${var_lst-} ]] || [[ ${xcl_flg-} == 'Yes' ]]; then
+	if [[ -z ${var_lst-} ]]; then
 	    echo "${spt_nm}: WARNING Splitter mode without explicitly specified variable list (i.e., -v var_lst) splits all variables of rank >= 2 into separate files, thus doubling the on-disk data amount"
 	fi # !var_lst
-	if [[ ${rgn_stt} != 'No' ]]; then 
+	if [[ ${rgn_stt-} != 'No' ]]; then 
 	    # 20250327 Restrict regional statistics to horizontal-only (lat, lon, ncol) timeseries
 	    # ncap2 regional timeseries will break when extra (e.g., vertical) dimensions are present
 	    var_lst_flg_opt='--lst_hrz'
@@ -1899,13 +1899,13 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    var_lst_flg_opt='--lst_rnk_ge2'
 	fi # !rgn_stt
 	var_lst=`ncks ${var_lst_flg_opt} ${ppn_opt} ${fl_in[0]}`
-	if [[ ${xcl_flg} == 'Yes' ]]; then
+	if [[ ${xcl_flg-} == 'Yes' ]]; then
 	    var_lst_all=( ${var_lst//,/ } )
 	fi # !xcl_flg
     fi # !var_lst
 
     # 20240617 Handle --xcl_flg for timeseries mode
-    if [[ ${xcl_flg} == 'Yes' ]]; then
+    if [[ ${xcl_flg-} == 'Yes' ]]; then
 
 	if bsh_mjr_vrs_lt_4; then
 	    echo "${spt_nm}: ERROR Exclude flag (--xcl_var | --xcl | --exclude | --exclude_variables) in timeseries mode only works with Bash v. 4.0+ and this Bash is version ${BASH_VERSION}"
@@ -1913,7 +1913,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    exit 1
         fi # !bsh_mjr_vrs_lt_4()
 	    
-	if [[ ${dbg_lvl} -ge 2 ]]; then
+	if [[ ${dbg_lvl-} -ge 2 ]]; then
 	    printf "var_lst_all="
 	    for var in ${var_lst_all[@]}; do
 		printf "${var},"
@@ -1921,7 +1921,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    printf "\n"
 	fi # !dbg
 
-	if [[ ${dbg_lvl} -ge 2 ]]; then
+	if [[ ${dbg_lvl-} -ge 2 ]]; then
 	    printf "var_lst_xcl="
 	    for var in ${var_lst_xcl[@]}; do
 		printf "${var},"
@@ -1941,7 +1941,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    unset "var_lst_xtr[${var}]"
 	done # !var_lst_xcl
 	
-	if [[ ${dbg_lvl} -ge 2 ]]; then
+	if [[ ${dbg_lvl-} -ge 2 ]]; then
 	    printf "var_lst_xtr="
 	    # Extraction list is the keys (not values) of this array
 	    for var in ${!var_lst_xtr[@]}; do
@@ -1970,22 +1970,22 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	var_nbr=$((var_nbr+1))
     done # !var_lst
 
-    if [[ -z ${job_usr} ]]; then 
+    if [[ -z ${job_usr-} ]]; then 
 	job_nbr=${var_nbr}
     fi # !job_usr
 
 # Input files per year
-    if [[ ${clm_md} == 'ann' ]]; then
+    if [[ ${clm_md-} == 'ann' ]]; then
 	fpy=1
-    elif [[ ${clm_md} == 'dly' ]]; then
+    elif [[ ${clm_md-} == 'dly' ]]; then
 	dpf=1
 	fpy=$((dpy/dpf))
-    elif [[ ${clm_md} == 'hfc' ]]; then
+    elif [[ ${clm_md-} == 'hfc' ]]; then
 	fpy=12
 	flg_dct='No'
-    elif [[ ${clm_md} == 'hfs' ]]; then
+    elif [[ ${clm_md-} == 'hfs' ]]; then
 	# CESM/E3SM high-frequency output often employs noleap calendar and 30 days per file (no matter how many timesteps per day)
-	if [[ -z ${dpf} ]]; then
+	if [[ -z ${dpf-} ]]; then
 	    # 20210329 Automatically infer dpf from first input file
 	    # E3SM/CESM high-frequency timeseries (e.g., h4 files) are all equal # timesteps, not duration
 	    # First timestep in first file (often? always?) is of zero duration and contains the IC
@@ -1995,11 +1995,11 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    fl_idx=$((fl_nbr > 1 ? 1 : 0))
 	    tm_var='time'
 	    tm_bnd=`ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[${fl_idx}]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
-	    if [[ -z ${tm_bnd} ]]; then
+	    if [[ -z ${tm_bnd-} ]]; then
 		# 20250509 Use time-coordinate values when time bounds DNE
 		tm_bnd_flg='No'
 	    fi # !tm_bnd
-	    if [[ ${tm_bnd_flg} == 'Yes' ]]; then
+	    if [[ ${tm_bnd_flg-} == 'Yes' ]]; then
 		dpf=`ncks --trd -H -s '%25.15f ' -v ${tm_bnd} -d ${tm_var},0 -d ${tm_var},-1 -C ${ppn_opt} ${fl_in[${fl_idx}]} | awk '{ print $4-$1; exit }'`
 	    else # !tm_bnd_flg
 		dpf=`ncks --trd -H -s '%25.15f ' -v ${tm_var} -d ${tm_var},0 -d ${tm_var},-1 -C ${ppn_opt} ${fl_in[${fl_idx}]} | awk '{ printf "%.0f\n",$2-$1; exit }'`
@@ -2010,8 +2010,8 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    fi # !tm_bnd_flg
 		
 	    # Ensure result is positive integer
-	    [[ ${dpf} -ge 0 ]] 2>/dev/null && dpf_ntg='Yes' || dpf_ntg='No'
-	    if [[ ${dpf_ntg} != 'Yes' ]]; then
+	    [[ ${dpf-} -ge 0 ]] 2>/dev/null && dpf_ntg='Yes' || dpf_ntg='No'
+	    if [[ ${dpf_ntg-} != 'Yes' ]]; then
 		printf "${spt_nm}: ERROR Inferred value of dpf=${dpf} is not a positive integer. User requested high-frequency splitter operations without specifying the number of days-per-file (dpf) in the input files, so ${spt_nm} tried to infer dpf from the first input file. This operation resulted in a nonsense value. This is not surprising since a number of assumptions must hold true for the inferral to work correctly.\nHINT: Explicitly specify the number of days-per-file in every input file with the --dpf option.\n"
 		exit 1
 	    fi # !dpf_ntg
@@ -2021,30 +2021,30 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	#fpy=$(echo "${dpy}/${dpf}" | bc -l) # NB: dpy/dpf more accurate than fpy
 	flg_dct='No'
 	# !clm_md=hfs
-    elif [[ ${clm_md} == 'mth' ]]; then
+    elif [[ ${clm_md-} == 'mth' ]]; then
 	fpy=12
     fi # !clm_md
-    if [[ ${clm_md} == 'hfs' ]]; then
+    if [[ ${clm_md-} == 'hfs' ]]; then
 	yr_sbs=$((yr_cln))
     else
 	yr_sbs=$((fl_nbr/fpy))
 #	let fl_rmd=${fl_nbr}%${fpy}
 	fl_rmd=$(( fl_nbr % fpy ))
     fi # !clm_md
-    if [[ ${flg_dct} == 'Yes' ]]; then
-	if [[ ${mth_flg} == 'Yes' ]]; then
-	    if [[ ${mth_nbr} -ne ${fl_nbr} ]]; then
+    if [[ ${flg_dct-} == 'Yes' ]]; then
+	if [[ ${mth_flg-} == 'Yes' ]]; then
+	    if [[ ${mth_nbr-} -ne ${fl_nbr-} ]]; then
 		printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} differs from number of months = ${mth_nbr} computed from calendar inputs\n"
 		printf "${spt_nm}: HINT In this mode (clm_md=${clm_md}) splitter expects one monthly file per calendar month\n"
 		exit 1
 	    fi # !mth_nbr
 	else # !mth_flg
-	    if [[ ${fl_rmd} -ne 0 ]]; then
+	    if [[ ${fl_rmd-} -ne 0 ]]; then
 		printf "${spt_nm}: ERROR ${fl_nbr} files of clm_md=${clm_md} input contain non-integral number of years, ${fl_rmd} files leftover in final year\n"
 		printf "${spt_nm}: HINT Provide input filenames in multiples of ${fpy}\n"
 		exit 1
 	    fi # !fl_rmd
-	    if [[ ${yr_sbs} -ne ${yr_nbr} ]]; then
+	    if [[ ${yr_sbs-} -ne ${yr_nbr-} ]]; then
 		# Sanity check that number of files specified matches number expected from date switches
 		printf "${spt_nm}: ERROR The ${fl_nbr} files specified (via stdin pipe, positional, or input directory) are expected to contain ${yr_sbs} years of data whereas the date options specify ${yr_nbr} years of data\n"
 		printf "${spt_nm}: HINT Number of files at ${fpy} files-per-year must match number of years implied by arguments to start- and end-year switches (--yr_srt=${yr_srt} and --yr_end=${yr_end}, respectively). Check that the stdin pipe, positional arguments, or globbed input directory contain the intended number of filenames.\n"
@@ -2054,12 +2054,12 @@ if [[ ${tms_flg} == 'Yes' ]]; then
     fi # !flg_dct
 
     # How many segments of output?
-    if [[ ${mth_flg} == 'Yes' ]]; then
+    if [[ ${mth_flg-} == 'Yes' ]]; then
 	# NB: When start/end months are not Jan/Dec, sgm_rmd measured in months
 	mpf_max=$((fpy*ypf_max))
 	sgm_nbr=$((mth_nbr/mpf_max))
 	sgm_rmd=$((mth_nbr % mpf_max))
-	if [[ ${sgm_rmd} -ne 0 ]]; then
+	if [[ ${sgm_rmd-} -ne 0 ]]; then
 	    sgm_nbr=$((sgm_nbr+1))
 	    rmd_flg='Yes'
 	else # !sgm_rmd
@@ -2069,7 +2069,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	# NB: When start/end months are Jan/Dec, sgm_rmd measured in years
 	sgm_nbr=$((yr_sbs / ypf_max))
 	sgm_rmd=$((yr_sbs % ypf_max))
-	if [[ ${sgm_rmd} -ne 0 ]]; then
+	if [[ ${sgm_rmd-} -ne 0 ]]; then
 	    sgm_nbr=$((sgm_nbr+1))
 	    rmd_flg='Yes'
 	else # !sgm_rmd
@@ -2078,14 +2078,14 @@ if [[ ${tms_flg} == 'Yes' ]]; then
     fi  # !mth_flg
     sgm_nbrm1=$((sgm_nbr-1))
 
-    if [[ ${rgn_stt} != 'No' ]]; then 
+    if [[ ${rgn_stt-} != 'No' ]]; then 
 	# Export timeseries of regional/global statistics
 
 	# MUST pass rgn_stt to cmd_rgn script as an enum/flag (i.e., flg_sum) not a string. Sigh...
-	if [[ ${rgn_stt} == 'sum' ]] || [[ ${rgn_stt} == 'ttl' ]] || [[ ${rgn_stt} == 'total' ]] || [[ ${rgn_stt} == 'integral' ]]; then 
+	if [[ ${rgn_stt-} == 'sum' ]] || [[ ${rgn_stt-} == 'ttl' ]] || [[ ${rgn_stt-} == 'total' ]] || [[ ${rgn_stt-} == 'integral' ]]; then 
 	    rgn_stt='sum'
 	    flg_sum=1
-	elif [[ ${rgn_stt} == 'avg' ]] || [[ ${rgn_stt} == 'average' ]] || [[ ${rgn_stt} == 'mean' ]]; then 
+	elif [[ ${rgn_stt-} == 'avg' ]] || [[ ${rgn_stt-} == 'average' ]] || [[ ${rgn_stt-} == 'mean' ]]; then 
 	    rgn_stt='avg'
 	    flg_sum=0
 	else
@@ -2094,7 +2094,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    exit 1
 	fi # !rgn_stt
 
-	if [[ ${prc_mpas} == 'Yes' ]]; then
+	if [[ ${prc_mpas-} == 'Yes' ]]; then
 	    # 20240619
 	    # MPAS-LI, MPAS-O, MPAS-SI v2+ datasets omit latitude variable
 	    lat_nm='latCell' # Generic MPAS latitude variable
@@ -2102,7 +2102,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    # NB: areaCell is full gridcell area on MPAS mesh, and does not account for landfrac/ocnfrac
 	    # Hence, area_wgt variable diagnosed below will be inaccurate for MPAS-O unless 'ocnfrac' is given and applied as sgs_frc
 	    area_nm='areaCell' # Generic MPAS fixed grid area variable
-	    if [[ ${prc_mpasseaice} == 'Yes' ]]; then
+	    if [[ ${prc_mpasseaice-} == 'Yes' ]]; then
 		# MPAS-SI v2+ datasets omit latitude though include (time-varying) area variable
 		sgs_frc='timeMonthly_avg_iceAreaCell'
 	    fi # !prc_mpasseaice
@@ -2113,10 +2113,10 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	# 20191217 Regional average timeseries require area and latitude variables
 	var_xtr="${var_xtr},${area_nm},${lat_nm}"
 
-	if [[ ${prc_typ} == 'clm' ]] || [[ ${prc_typ} == 'elm' ]]; then 
+	if [[ ${prc_typ-} == 'clm' ]] || [[ ${prc_typ-} == 'elm' ]]; then 
 	    sgs_frc='landfrac'
 	fi # !prc_typ
-	if [[ ${sgs_frc} ]]; then
+	if [[ ${sgs_frc-} ]]; then
 	    area_wgt="${area_nm}*${sgs_frc}"
 	    var_xtr="${var_xtr},${sgs_frc}"
 	else
@@ -2128,7 +2128,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	# https://unix.stackexchange.com/questions/108250/print-the-string-between-two-parentheses
 	#hrz_dmn=`ncks -C -m -v ${area_nm} ${ppn_opt} ${fl_in[0]} | grep "${area_nm}\(" | sed 's/^.*(//;s/) ;$//'` # Works at prompt, not in script
 	hrz_dmn=`ncks -C -m -v ${area_nm} ${ppn_opt} ${fl_in[0]} | grep -E "float.*${area_nm}|double.*${area_nm}" | sed 's/^.*(//;s/) ;$//'`
-	if [[ ${hrz_dmn} ]]; then
+	if [[ ${hrz_dmn-} ]]; then
 	    # 20240329 Prepend string literal '$' to each horizontal dimension for use in argument to ncap2 avg() function  (e.g., 'lat,lon' -> '$lat,$lon')
 	    hrz_arg="\$${hrz_dmn/,/,\$}"
 	fi # !hrz_dmn
@@ -2136,14 +2136,14 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 
 else # !tms_flg
 
-    if [[ ${clm_md} == 'mth' ]] && [[ ${flg_dct} == 'Yes' ]]; then
+    if [[ ${clm_md-} == 'mth' ]] && [[ ${flg_dct-} == 'Yes' ]]; then
 
 	# Modify the check from monthly timeseries mode to allow integer-multiples of expected number of files
 	# Integer multiples presumably occurs when input receives a simulation ensemble
-	if [[ ${mth_nbr} -ne ${fl_nbr} ]]; then
+	if [[ ${mth_nbr-} -ne ${fl_nbr-} ]]; then
 	    nsm_sz=$((fl_nbr/mth_nbr))
 	    mth_rmd=$(( fl_nbr % mth_nbr ))
-	    if [[ ${mth_rmd} -ne 0 ]]; then
+	    if [[ ${mth_rmd-} -ne 0 ]]; then
 		printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} unequal to and not evenly divisible by number of months = ${mth_nbr} computed from calendar inputs\n"
 		printf "${spt_nm}: HINT In this mode (clm_md=${clm_md}) ${spt_nm} expects one monthly file per calendar month for single datasets, or an integer number input files per calendar month for ensemble climatologies\n"
 		exit 1
@@ -2152,14 +2152,14 @@ else # !tms_flg
 
     fi # !clm_md
 	
-    if [[ ${rgn_stt} != 'No' ]]; then 
+    if [[ ${rgn_stt-} != 'No' ]]; then 
 	echo "${spt_nm}: ERROR Regional/global statistical timeseries functionality is supported for time-series (splitting) mode only. If you would like ${spt_nm} to provide global and regional statistical output for other types of climatologies, please talk to Charlie."
 	echo "${spt_nm}: HINT Create global statistics of climos with, e.g., \"ncwa -w ${area_nm} in.nc out.nc\""
 	echo "${spt_nm}: HINT See averaging documentation at http://nco.sf.net/nco.html#ncwa"
 	exit 1
     fi # !rgn_stt
 
-    if [[ -z ${out_nm} ]]; then
+    if [[ -z ${out_nm-} ]]; then
 	echo "${spt_nm}: ERROR Missing information needed to generate output filenames"
 	echo "${spt_nm}: HINT Generating input filenames for climos requires that users specify a case ID with -c \$caseid or specify with -m \$mdl_nm a recognized MPAS model name (like \"mpaso\"). Output filenames for climos are based on these inputs as well, or on the family name if specified with --fml_nm=\$fml_nm. When input filenames are not internally generated, but instead provided via stdin, positional arguments, or globbing, then the output filenames will be based on the family name or caseid, or model name, in that order of precedence."
 	echo "${spt_nm}: HINT ${spt_nm} needs this information to generate output filenames"
@@ -2168,7 +2168,7 @@ else # !tms_flg
     fi # out_nm
 
     # 20211118 fxm: re-do these messages?
-    if [[ ${inp_std} == 'Yes' ]] && [[ ${clm_md} == 'ann' ]]; then
+    if [[ ${inp_std-} == 'Yes' ]] && [[ ${clm_md-} == 'ann' ]]; then
 	echo "${spt_nm}: ERROR Detected input on pipe to stdin in annual climatology generation mode"
 	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files or in daily, monthly, or high-frequency climatology mode"
 	echo "${spt_nm}: HINT In annual climo generation mode, one must specify the year/month boundaries and ${caseid}, and from these ${spt_nm} will automatically generate the correct input file names"
@@ -2179,9 +2179,9 @@ else # !tms_flg
 fi # !tms_flg
 
 # 20170807 Custom seasons
-if [[ ${csn_flg} == 'Yes' ]]; then
+if [[ ${csn_flg-} == 'Yes' ]]; then
 
-    if [[ ${clm_md} != 'hfc' ]] && [[ ${clm_md} != 'mth' ]]; then
+    if [[ ${clm_md-} != 'hfc' ]] && [[ ${clm_md-} != 'mth' ]]; then
 	echo "${spt_nm}: ERROR Custom seasons available only in high-frequency or monthly climatology mode"
 	echo "${spt_nm}: HINT Re-run with --clm_md=hfc or --clm_md=mth or without --csn_lst/--seasons"
 	exit 1
@@ -2401,7 +2401,7 @@ if [[ ${csn_flg} == 'Yes' ]]; then
 		break
 	    fi # !match
 	done # !csn_dfn_idx
-	if [[ ${csn_dfn_idx} -eq ${csn_nbr_max} ]]; then
+	if [[ ${csn_dfn_idx-} -eq ${csn_nbr_max-} ]]; then
 	    printf "${spt_nm}: ERROR Requested season ${csn} not defined\n"
 	    exit 1
 	fi # !match
@@ -2410,13 +2410,13 @@ if [[ ${csn_flg} == 'Yes' ]]; then
     # Were all four standard seasons requested so annual mean can be computed from seasons?
     ann_flg='No'
     ann_nbr=0
-    if [[ ${csn_lst} =~ 'mam' ]] || [[ ${csn_lst} =~ 'MAM' ]]; then
+    if [[ ${csn_lst-} =~ 'mam' ]] || [[ ${csn_lst-} =~ 'MAM' ]]; then
 	clm_csn_mam_idx=$((map_d2r[csn_mam]+12+1))
-	if [[ ${csn_lst} =~ 'jja' ]] || [[ ${csn_lst} =~ 'JJA' ]]; then
+	if [[ ${csn_lst-} =~ 'jja' ]] || [[ ${csn_lst-} =~ 'JJA' ]]; then
 	    clm_csn_jja_idx=$((map_d2r[csn_jja]+12+1))
-	    if [[ ${csn_lst} =~ 'son' ]] || [[ ${csn_lst} =~ 'SON' ]]; then
+	    if [[ ${csn_lst-} =~ 'son' ]] || [[ ${csn_lst-} =~ 'SON' ]]; then
 		clm_csn_son_idx=$((map_d2r[csn_son]+12+1))
-		if [[ ${csn_lst} =~ 'djf' ]] || [[ ${csn_lst} =~ 'DJF' ]]; then
+		if [[ ${csn_lst-} =~ 'djf' ]] || [[ ${csn_lst-} =~ 'DJF' ]]; then
 		    clm_csn_djf_idx=$((map_d2r[csn_djf]+12+1))
 		    ann_flg='Yes'
 		    ann_nbr=1
@@ -2432,10 +2432,10 @@ if [[ ${csn_flg} == 'Yes' ]]; then
     
 fi # !csn_flg
     
-if [[ ${mpi_flg} == 'Yes' ]]; then
-    if [[ ${PBS_NODEFILE} ]]; then 
+if [[ ${mpi_flg-} == 'Yes' ]]; then
+    if [[ ${PBS_NODEFILE-} ]]; then 
 	nd_fl="${PBS_NODEFILE}"
-    elif [[ ${SLURM_NODELIST} ]]; then 
+    elif [[ ${SLURM_NODELIST-} ]]; then 
 	# SLURM returns compressed lists (e.g., "nid00[076-078,559-567]")
 	# Convert this to file with uncompressed list (like PBS)
 	# http://www.ceci-hpc.be/slurm_faq.html#Q12
@@ -2450,20 +2450,20 @@ if [[ ${mpi_flg} == 'Yes' ]]; then
 	echo "${spt_nm}: HINT: Requesting MPI-parallelism (i.e., invoking ${spt_nm} with \"-p mpi\") in a non-MPI environment will trigger this error. Use \"-p mpi\" only when one of the preceding schedulers has allocated (for interactive use) or will allocate (for non-interactive use) the compute nodes. Otherwise use the default background parallelism (use \"-p bck\" or omit the option completely) or use serial mode (use \"-p serial\"). See http://nco.sf.net/nco.html#par_typ for more information on parallelism."
 	exit 1
     fi # !PBS
-    if [[ ${tms_flg} == 'Yes' ]]; then 
+    if [[ ${tms_flg-} == 'Yes' ]]; then 
 	mpi_nbr=${var_nbr}
     else
 	mpi_nbr=${clm_nbr}
     fi # !tms_flg
     # 20210310 MPI run command may need/use thr_nbr so set it first
-    if [[ -z ${thr_usr} ]]; then 
-	if [[ ${PBS_NUM_PPN} ]]; then
+    if [[ -z ${thr_usr-} ]]; then 
+	if [[ ${PBS_NUM_PPN-} ]]; then
 #	NB: use export OMP_NUM_THREADS when thr_nbr > 8
 #	thr_nbr=${PBS_NUM_PPN}
 	    thr_nbr=$((PBS_NUM_PPN > 8 ? 8 : PBS_NUM_PPN))
 	fi # !pbs
     fi # !thr_usr
-    if [[ ${nd_fl} ]]; then 
+    if [[ ${nd_fl-} ]]; then 
 	# NB: nodes are always 0-based, e.g., [0..11]
 	# For climo generation MPI index loops over months    and is 1-based, e.g., [1..17] (December is 12 and ANN is 17)
 	# For climo subsetting MPI index loops over variables and is 0-based, e.g., [0..5], as are input files
@@ -2473,7 +2473,7 @@ if [[ ${mpi_flg} == 'Yes' ]]; then
 	    nd_idx=$((nd_idx+1))
 	done # !nd
 	nd_nbr=${#nd_nm[@]}
-	if [[ ${nd_nbr} -eq 0 ]]; then
+	if [[ ${nd_nbr-} -eq 0 ]]; then
 	    echo "${spt_nm}: ERROR MPI-mode node number nd_nbr = ${nd_nbr}"
 	    echo "${spt_nm}: HINT Parsing the node-list for distributing MPI jobs failed"
 	    exit 1
@@ -2488,7 +2488,7 @@ if [[ ${mpi_flg} == 'Yes' ]]; then
 	# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
 	for ((mpi_idx_zro=0;mpi_idx_zro<mpi_nbr;mpi_idx_zro++)); do
 	    mpi_idx=${mpi_idx_zro}
-	    if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then 
+	    if [[ ${clm_flg-} == 'Yes' ]] && [[ ${clm_hfc_or_mth-} == 'Yes' ]]; then 
 		# Offset MPI index from 0- to 1-based for traditional monthly-based climo generation
 		mpi_idx=$((mpi_idx_zro+1))
 	    fi # !tms_flg
@@ -2535,7 +2535,7 @@ if [[ ${mpi_flg} == 'Yes' ]]; then
 		    # cmd_mpi[${mpi_idx}]="${cmd_mpi[${mpi_idx}]} --nodes=1 --gres=craynetwork:0 --mem=${mem_mb} --zonesort=off" ; ;; # SLURM
 	    esac # !HOSTNAME
 	done # !mpi_idx_zro
-	if [[ ${SLURM_NODELIST} ]]; then 
+	if [[ ${SLURM_NODELIST-} ]]; then 
 	    /bin/rm -f ${nd_fl}
 	fi # !SLURM
     else # !nd_fl
@@ -2544,22 +2544,22 @@ if [[ ${mpi_flg} == 'Yes' ]]; then
 	    cmd_mpi[${mpi_idx}]=''
 	done # !mpi_idx
     fi # !nd_fl
-    if [[ -z ${job_usr} ]]; then 
+    if [[ -z ${job_usr-} ]]; then 
 	job_nbr=${nd_nbr}
     fi # !job_usr
 fi # !mpi_flg
 
-if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg} == 'No' ]]; then
+if [[ ${clm_flg-} == 'Yes' ]] && [[ ${clm_hfc_or_mth-} == 'Yes' ]] && [[ ${bnr_flg-} == 'No' ]]; then
     # For regular monthly climos, override default job_nbr (2) with months-per-year
     # If user does not explicitly set job number then, for monthly climos, base it on parallelism type
-    if [[ -z ${job_usr} ]]; then 
-	if [[ ${par_typ} == ${par_bck} ]]; then 
+    if [[ -z ${job_usr-} ]]; then 
+	if [[ ${par_typ-} == ${par_bck-} ]]; then 
 	    # Background mode will run one batch with all twelve months
 	    job_nbr=12
-	elif [[ ${par_typ} == ${par_mpi} ]]; then 
+	elif [[ ${par_typ-} == ${par_mpi-} ]]; then 
 	    # MPI mode is conservative and will only use one job-per-node unless told otherwise
 	    job_nbr=${nd_nbr}
-	elif [[ ${par_typ} == 'nil' ]] || [[ -z ${par_typ} ]]; then 
+	elif [[ ${par_typ-} == 'nil' ]] || [[ -z ${par_typ-} ]]; then 
 	    # Serial mode equates to job_nbr=1, full serial
 	    job_nbr=1
 	fi # !job_usr
@@ -2567,7 +2567,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 fi # !clm_md !bnr_flg
 
 # Print initial state
-if [[ ${dbg_lvl} -ge 2 ]]; then
+if [[ ${dbg_lvl-} -ge 2 ]]; then
     printf "dbg: area_nm  = ${area_nm}\n"
     printf "dbg: area_wgt = ${area_wgt}\n"
     printf "dbg: bfr_sz   = ${bfr_sz}\n"
@@ -2664,7 +2664,7 @@ if [[ ${dbg_lvl} -ge 2 ]]; then
     printf "dbg: yr_end_rth = ${yr_end_rth}\n"
     printf "dbg: yr_srtm1   = ${yr_srtm1}\n"
     printf "dbg: yr_endm1   = ${yr_endm1}\n"
-    if [[ ${csn_flg} == 'Yes' ]]; then
+    if [[ ${csn_flg-} == 'Yes' ]]; then
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	    printf "dbg: Requested season index ${csn_idx} (\"${csn_rqs[${csn_idx}]}\") is defined season index ${map_r2d[${csn_idx}]} (\"${csn_abb[${map_r2d[${csn_idx}]}]}\")\n"
 	    idx_dtb=${map_r2d[${csn_idx}]}
@@ -2672,22 +2672,22 @@ if [[ ${dbg_lvl} -ge 2 ]]; then
 	done # !csn_idx
     fi # !csn
 fi # !dbg
-if [[ ${dbg_lvl} -ge 2 ]]; then
-    if [[ ${mpi_flg} == 'Yes' ]]; then
+if [[ ${dbg_lvl-} -ge 2 ]]; then
+    if [[ ${mpi_flg-} == 'Yes' ]]; then
 	for ((nd_idx=0;nd_idx<${nd_nbr};nd_idx++)); do
 	    printf "dbg: nd_nm[${nd_idx}] = ${nd_nm[${nd_idx}]}\n"
 	done # !nd
     fi # !mpi
 fi # !dbg
-if [[ ${dbg_lvl} -ge 2 ]]; then
+if [[ ${dbg_lvl-} -ge 2 ]]; then
     psn_nbr=$#
     printf "dbg: Found ${psn_nbr} positional parameters (besides \$0):\n"
     for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
 	printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
     done # !psn_idx
 fi # !dbg
-if [[ ${dbg_lvl} -ge 2 ]]; then
-    if [[ ${inp_aut} == 'Yes' ]] || [[ ${inp_glb} == 'Yes' ]] || [[ ${inp_std} == 'Yes' ]]; then
+if [[ ${dbg_lvl-} -ge 2 ]]; then
+    if [[ ${inp_aut-} == 'Yes' ]] || [[ ${inp_glb-} == 'Yes' ]] || [[ ${inp_std-} == 'Yes' ]]; then
 	printf "dbg: Obtained or generated ${fl_nbr} input files:\n"
 	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	    printf "dbg: fl_in[${fl_idx}] = ${fl_in[${fl_idx}]}\n"
@@ -2697,11 +2697,11 @@ fi # !dbg
 
 # Human-readable summary
 date_srt=$(date +"%s")
-if [[ ${dbg_lvl} -ge 0 ]]; then
+if [[ ${dbg_lvl-} -ge 0 ]]; then
     printf "Climatology operations invoked with command:\n"
     echo "${cmd_ln}"
 fi # !dbg
-if [[ ${dbg_lvl} -ge 2 ]]; then
+if [[ ${dbg_lvl-} -ge 2 ]]; then
     printf "************************************************************************\n"
     printf "IMPORTANT: This output shows a SIMULATION of a production run\n"
     printf "The metadata values are real, but the printed commands are NOT executed\n"
@@ -2710,7 +2710,7 @@ if [[ ${dbg_lvl} -ge 2 ]]; then
     printf "Set dbg_lvl <= 1 for a PRODUCTION RUN that executes these commands\n"
     printf "************************************************************************\n"
 fi # !dbg
-if [[ ${tms_flg} == 'Yes' ]]; then
+if [[ ${tms_flg-} == 'Yes' ]]; then
     printf "Started climatology splitting at `date`\n"
 else
     printf "Started climatology generation at `date`\n"
@@ -2718,16 +2718,16 @@ fi # !tms_flg
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
 printf "Parallelism mode for files = ${par_typ}\n"
-if [[ ${tms_flg} == 'Yes' ]]; then
-    if [[ ${var_nbr} -gt 1 ]]; then
+if [[ ${tms_flg-} == 'Yes' ]]; then
+    if [[ ${var_nbr-} -gt 1 ]]; then
 	printf "Timeseries will be created for each of ${var_nbr} variables\n"
-	if [[ ${par_typ} == ${par_bck} ]]; then
+	if [[ ${par_typ-} == ${par_bck-} ]]; then
 	    printf "Background parallelism processing variables in var_nbr/job_nbr = ${var_nbr}/${job_nbr} = $((var_nbr / job_nbr)) sequential batches each concurrently processing job_nbr = ${job_nbr} jobs (1 per variable), then remaining $((var_nbr % job_nbr)) jobs/variables simultaneously\n"
-	elif [[ ${par_typ} == ${par_mpi} ]]; then
+	elif [[ ${par_typ-} == ${par_mpi-} ]]; then
 	    printf "MPI parallelism dividing processing of ${var_nbr} variables onto nd_nbr = ${nd_nbr} nodes simultaneously\n"
 	fi # !par_typ
-	if [[ ${par_typ} == ${par_bck} ]] || [[ ${par_typ} == ${par_mpi} ]]; then
-	    if [[ ${job_nbr} -gt ${job_nbr_wrn} ]] && [[ ${var_nbr} -gt ${job_nbr_wrn} ]]; then
+	if [[ ${par_typ-} == ${par_bck-} ]] || [[ ${par_typ-} == ${par_mpi-} ]]; then
+	    if [[ ${job_nbr-} -gt ${job_nbr_wrn-} ]] && [[ ${var_nbr-} -gt ${job_nbr_wrn-} ]]; then
 		printf "WARNING: Requested number of simultaneous jobs = job_nbr = ${job_nbr} exceeds threshold number = job_nbr_wrn = ${job_nbr_wrn}. This command will start an unusually (and possibly inadvertently) large number of splitter tasks for most computers. Consequences may include insufficient RAM that leads to swapping, slow performance due to I/O contention when reading/writing data.\n"
 		printf "HINT: If undesirable performance occurs, use the --job_nbr option to reduce the number of simultaneous jobs, e.g., ${spt_nm} --job_nbr=100 ...\n"
 	    fi # !job_nbr
@@ -2736,28 +2736,28 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	printf "Timeseries will be created for only one variable\n"
     fi # !var_nbr
     rmd_units='year'
-    if [[ ${mth_flg} == 'Yes' ]]; then
+    if [[ ${mth_flg-} == 'Yes' ]]; then
 	rmd_units='month'
     fi # !mth_flg
     sgm_sng='0'
-    if [[ ${sgm_rmd} -ne 0 ]]; then
+    if [[ ${sgm_rmd-} -ne 0 ]]; then
 	sgm_sng='1'
     fi # !sgm_rmd
-    if [[ ${sgm_nbr} -gt 1 ]]; then
+    if [[ ${sgm_nbr-} -gt 1 ]]; then
 	printf "All this occurs within an outer loop of (yr_sbs/ypf_max) + (remainder, if any) = ${yr_sbs}/${ypf_max} + ${sgm_sng} = ${sgm_nbr} time segments\n"
-	if [[ ${rmd_flg} == 'Yes' ]]; then 
+	if [[ ${rmd_flg-} == 'Yes' ]]; then 
 	    printf "Will split data for each variable into ${sgm_nbrm1} timeseries segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} ${rmd_units}(s)\n"
 	else # !rmd_flg
 	    printf "Will split data for each variable into ${sgm_nbr} timeseries segment(s) of length ${ypf_max} years\n"
 	fi # !rmd_flg
     else # !sgm_nbr
-	if [[ ${mth_nbr} -eq 12 ]]; then
+	if [[ ${mth_nbr-} -eq 12 ]]; then
 	    printf "Will split data for each variable into one timeseries of length ${yr_sbs} years\n"
 	else
-	    if [[ ${clm_md} == 'hfs' ]]; then 
+	    if [[ ${clm_md-} == 'hfs' ]]; then 
 		printf "Will split data for each variable into one timeseries of length ${yr_sbs} years\n"
 	    else
-		if [[ ${mth_flg} == 'Yes' ]]; then
+		if [[ ${mth_flg-} == 'Yes' ]]; then
 		    printf "Will split data for each variable into one timeseries of length ${yr_sbs} years and ${sgm_rmd} months\n"
 		else
 		    printf "Will split data for each variable into one timeseries of length ${yr_sbs} years and ${fl_rmd} months\n"
@@ -2765,8 +2765,8 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    fi # !clm_md
 	fi # !mth_nbr
     fi # !sgm_nbr
-    if [[ ${inp_std} == 'No' ]]; then 
-	if [[ ${drc_in_usr_flg} == 'Yes' ]]; then
+    if [[ ${inp_std-} == 'No' ]]; then 
+	if [[ ${drc_in_usr_flg-} == 'Yes' ]]; then
 	    printf "Splitting climatology from ${fl_nbr} raw input files in directory ${drc_in}\n"
 	else # !drc_in
 	    printf "Splitting climatology from ${fl_nbr} raw input files specified as positional arguments\n"
@@ -2774,66 +2774,66 @@ if [[ ${tms_flg} == 'Yes' ]]; then
     else
 	printf "Splitting climatology from list of ${fl_nbr} raw input files piped to stdin\n"
     fi # !stdin
-    if [[ ${clm_md} == 'ann' ]]; then 
+    if [[ ${clm_md-} == 'ann' ]]; then 
 	printf "Each input file assumed to contain statistics for one year\n"
-    elif [[ ${clm_md} == 'dly' ]]; then 
+    elif [[ ${clm_md-} == 'dly' ]]; then 
 	printf "Each input file assumed to contain statistics for one day\n"
-    elif [[ ${clm_md} == 'hfs' ]]; then 
+    elif [[ ${clm_md-} == 'hfs' ]]; then 
 	printf "Each input file assumed to contain statistics for ${dpf} days each comprising ${tpd_out} timesteps\n"
-    elif [[ ${clm_md} == 'mth' ]]; then 
+    elif [[ ${clm_md-} == 'mth' ]]; then 
 	printf "Each input file assumed to contain statistics for one month\n"
     fi # !mth
-    if [[ ${rgn_stt} != 'No' ]]; then 
-	if [[ ${rgn_stt} == 'avg' ]]; then
+    if [[ ${rgn_stt-} != 'No' ]]; then 
+	if [[ ${rgn_stt-} == 'avg' ]]; then
 	    printf "Hemispherically and globally averaged timeseries files to be saved to directory ${drc_out}\n"
-	elif [[ ${rgn_stt} == 'sum' ]]; then
+	elif [[ ${rgn_stt-} == 'sum' ]]; then
 	    printf "Hemispherically and globally integrated (summed) timeseries files to be saved to directory ${drc_out}\n"
 	fi # !rgn_stt
     else
 	printf "Native-grid timeseries files to be saved to directory ${drc_out}\n"
     fi # !rgn_stt
-    if [[ ${rgr_opt} ]]; then 
+    if [[ ${rgr_opt-} ]]; then 
 	printf "Regridded split files to directory ${drc_rgr}\n"
-	if [[ ${thr_nbr} -ne 1 ]]; then 
+	if [[ ${thr_nbr-} -ne 1 ]]; then 
 	    printf "Regridder will request ${thr_nbr} OpenMP threads to parallelize weight application across variables\n"
 	fi # !thr_nbr
     else
 	printf "Split files will not be regridded\n"
     fi # !rgr
 fi # !tms_flg
-if [[ ${clm_flg} == 'Yes' ]]; then
-    if [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg} == 'No' ]]; then
-	if [[ ${par_typ} == ${par_bck} ]]; then
+if [[ ${clm_flg-} == 'Yes' ]]; then
+    if [[ ${clm_hfc_or_mth-} == 'Yes' ]] && [[ ${bnr_flg-} == 'No' ]]; then
+	if [[ ${par_typ-} == ${par_bck-} ]]; then
 	    printf "Background parallelism processing monthly climos in 12/job_nbr = 12/${job_nbr} = $((12 / job_nbr)) sequential batches each handling job_nbr = ${job_nbr} months concurrently\n"
-	elif [[ ${par_typ} == ${par_mpi} ]]; then
+	elif [[ ${par_typ-} == ${par_mpi-} ]]; then
 	    printf "MPI parallelism processing monthly climos in 12/job_nbr = 12/${job_nbr} = $((12 / job_nbr)) sequential batches. Batches are distributed among the available ${nd_nbr} nodes via round-robin scheduling and each batch handles job_nbr = ${job_nbr} months concurrently. Load-balancing occurs with unused nodes, if any.\n"
 	fi # !par_typ
     fi # !clm_md
-    if [[ ${xtn_flg} == 'No' ]]; then
+    if [[ ${xtn_flg-} == 'No' ]]; then
 	printf "Producing standard climatology from raw input files in directory ${drc_in}\n"
 	printf "Output files to directory ${drc_out}\n"
     fi # !xtn_flg
-    if [[ ${bnr_flg} == 'Yes' ]]; then
+    if [[ ${bnr_flg-} == 'Yes' ]]; then
 	printf "Producing extended climatology in binary mode: Will combine pre-computed climatology in directory ${drc_prv} with pre-computed climatology in directory ${drc_in}\n"
 	printf "Output files to directory ${drc_xtn}\n"
     fi # !bnr_flg
-    if [[ ${ncr_flg} == 'Yes' ]]; then
+    if [[ ${ncr_flg-} == 'Yes' ]]; then
 	printf "Producing extended climatology in incremental mode: Pre-computed climatology in directory ${drc_prv} will be incremented by raw input files in directory ${drc_in}\n"
 	printf "Output files to directory ${drc_xtn}\n"
     fi # !ncr_flg
-    if [[ ${bnr_flg} == 'No' ]]; then
+    if [[ ${bnr_flg-} == 'No' ]]; then
 	printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_srt}${mm_srt} to ${yyyy_end}${mm_end}\n"
     fi # !bnr_flg
-    if [[ ${inp_aut} == 'Yes' ]]; then
-	if [[ ${nm_typ} == 'yyyymm' ]]; then
+    if [[ ${inp_aut-} == 'Yes' ]]; then
+	if [[ ${nm_typ-} == 'yyyymm' ]]; then
 	    printf "Input filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
-	elif [[ ${nm_typ} == 'yyyy-mm' ]]; then
+	elif [[ ${nm_typ-} == 'yyyy-mm' ]]; then
 	    printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM.${bs_sfx}\n"
-	elif [[ ${nm_typ} == 'yyyy-mm-01' ]]; then
+	elif [[ ${nm_typ-} == 'yyyy-mm-01' ]]; then
 	    printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01.${bs_sfx}\n"
-	elif [[ ${nm_typ} == 'yyyy-mm-01-00000' ]]; then
+	elif [[ ${nm_typ-} == 'yyyy-mm-01-00000' ]]; then
 	    printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01-00000.${bs_sfx}\n"
-	elif [[ ${nm_typ} == 'mpas' ]]; then
+	elif [[ ${nm_typ-} == 'mpas' ]]; then
 	    printf "Input filenames will be constructed with MPAS conventions\n"
 	else
 	    printf "Input filenames will be constructed with CESM'ish or E3SM'ish conventions\n"
@@ -2841,35 +2841,35 @@ if [[ ${clm_flg} == 'Yes' ]]; then
     else
 	printf "Input filenames will be read (not constructed) from globbing, positional arguments, or stdin\n"
     fi # !inp_aut
-    if [[ ${clm_md} == 'ann' ]]; then 
+    if [[ ${clm_md-} == 'ann' ]]; then 
 	printf "Each input file assumed to contain statistics for one year\n"
-    elif [[ ${clm_md} == 'dly' ]]; then 
+    elif [[ ${clm_md-} == 'dly' ]]; then 
 	printf "Each input file assumed to contain statistics for one or more daily or sub-daily (e.g., 3-hourly) means\n"
-    elif [[ ${clm_md} == 'hfc' ]]; then 
+    elif [[ ${clm_md-} == 'hfc' ]]; then 
 	printf "Each input file assumed to contain statistics for an integer number of days each comprising ${tpd_out} timesteps\n"
-    elif [[ ${clm_md} == 'mth' ]]; then 
-	if [[ ${nsm_sz} -gt 1 ]]; then 
+    elif [[ ${clm_md-} == 'mth' ]]; then 
+	if [[ ${nsm_sz-} -gt 1 ]]; then 
 	    printf "Received ${fl_nbr} input files for only ${mth_nbr} months. Presuming this is an ensemble of ${nsm_sz} simulations.\n"
 	fi # !nsm_sz
 	printf "Each input file assumed to contain statistics for one month\n"
     fi # !mth
-    if [[ ${clm_hfc_or_mth} == 'Yes' ]]; then 
-	if [[ ${csn_flg} == 'No' ]]; then 
+    if [[ ${clm_hfc_or_mth-} == 'Yes' ]]; then 
+	if [[ ${csn_flg-} == 'No' ]]; then 
 	    printf "Seasons and therefore annual means derived from seasonal means have been turned-off and will not be computed\n"
-	elif [[ ${mth_srt_rth} == '12' ]]; then 
+	elif [[ ${mth_srt_rth-} == '12' ]]; then 
 	    printf "Winter statistics based on seasonally contiguous December (djf-mode): DJF-means formed from consecutive DJF months that cross calendar-year boundaries\n"
-	elif [[ ${mth_srt_rth} == '1' ]]; then 
+	elif [[ ${mth_srt_rth-} == '1' ]]; then 
 	    printf "Winter statistics based on seasonally discontiguous December (jfd-mode): Means labeled as \"DJF\" are formed from JFD months from the same calendar year\n"
-	elif [[ ${mth_srt_rth} == '2' ]]; then 
+	elif [[ ${mth_srt_rth-} == '2' ]]; then 
 	    printf "Winter statistics based on seasonally discontiguous December (fdj-mode): Means labeled as \"DJF\" are formed from FDJ that cross calendar-year boundaries\n"
 	fi # !csn_flg
     fi # !mth
-    if [[ ${cf_flg} == 'Yes' ]]; then 
+    if [[ ${cf_flg-} == 'Yes' ]]; then 
 	printf "Annotation for CF climatology attribute and climatology_bounds variable will be performed\n"
     else
 	printf "Annotation for CF climatology attribute and climatology_bounds variable will not be performed\n"
     fi # !cf
-    if [[ ${rgr_opt} ]]; then 
+    if [[ ${rgr_opt-} ]]; then 
 	printf "This climatology will also be regridded\n"
 	printf "Regridder will request ${thr_nbr} OpenMP threads to parallelize weight application across variables\n"
     else
@@ -2880,13 +2880,13 @@ fi # !clm_flg
 # Block 1: Generate, check, and store (but do not yet execute) commands
 
 # Block 1 Loop 1: Produce monthly-mean climatology output
-if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
+if [[ ${clm_flg-} == 'Yes' ]] && [[ ${clm_hfc_or_mth-} == 'Yes' ]]; then
     clm_idx=0
     for mth in {01..12}; do
 	clm_idx=$((clm_idx+1))
 	MM=`printf "%02d" ${clm_idx}`
 	# The same month-of-year appears every twelve filenames in input list
-	if [[ ${clm_md} == 'mth' ]]; then 
+	if [[ ${clm_md-} == 'mth' ]]; then 
 	    fl_all=''
 	    for ((yr_idx=0;yr_idx<yr_nbr;yr_idx++)); do
 		# Initialize fl_idx as if first supplied month were January
@@ -2900,9 +2900,9 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 	    done # !yr_idx
 
 	    # Check for existence of raw input only when file will be used
-	    if [[ ${bnr_flg} == 'No' ]]; then
+	    if [[ ${bnr_flg-} == 'No' ]]; then
 		for fl_crr in ${fl_all} ; do
-		    if [[ ! -f ${ppn_sng}${fl_crr} ]] && [[ ! -L ${ppn_sng}${fl_crr} ]]; then
+		    if [[ ! -f ${ppn_sng-}${fl_crr-} ]] && [[ ! -L ${ppn_sng-}${fl_crr-} ]]; then
 			echo "${spt_nm}: ERROR Unable to find required input file ${ppn_sng}${fl_crr}"
 			echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must exist before ${spt_nm} will proceed"
 			exit 1
@@ -2917,13 +2917,13 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 
 	# Common to both high-frequency and monthly-input climos
 	yyyy_rng=$(csn_nfo_get ${yr_srt} ${mth_srt} ${yr_end} ${mth_end} ${clm_idx} ${clm_idx} ${rtn_yyyy_rng})
-	if [[ ${gaa_sng_std} ]]; then
+	if [[ ${gaa_sng_std-} ]]; then
 	    # NB: E3SM diagnostics (e3sm_diagnostics) relies on this attribute
 	    gaa_sng[${clm_idx}]="${gaa_sng_std} --gaa yrs_averaged=${yyyy_rng}"
 	fi # !gaa_sng
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_srt_mth[${clm_idx}]}${MM}_${yyyy_end_mth[${clm_idx}]}${MM}_climo.nc"
 	
-	if [[ ${clm_md} == 'hfc' ]]; then 
+	if [[ ${clm_md-} == 'hfc' ]]; then 
 	    # Computing climos from high-freqency data requires many steps:
 	    # A primary goal is to re-use not re-write code, especially existing monthly frequency climo code
 	    # Otherwise code maintainability significantly suffers
@@ -2958,7 +2958,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 	    MMp1=`printf "%02d" ${mthp1}`
 	    tm_end="${yyyy_clm_end}-${MMp1}-01T00:00:00"
 	    yyyy_clm_endp1=`printf "%04d" ${yr_endp1}`
-	    if [[ ${clm_idx} -eq 12 ]]; then
+	    if [[ ${clm_idx-} -eq 12 ]]; then
 		tm_srt="${yyyy_clm_srt_dec}-${MM}-01T00:00:01"
 		yyyy_clm_endp1=`printf "%04d" ${yr_endp1}`
 		tm_end="${yyyy_clm_endp1}-01-01T00:00:00"
@@ -2970,14 +2970,14 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 	    fl_mth[${clm_idx}]="${drc_out}/${out_nm}_${MM}_tms_foo_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
 
 	    # Command to produce interleaved monthly climos
-	    if [[ ${fl_nbr} -eq 1 ]]; then
+	    if [[ ${fl_nbr-} -eq 1 ]]; then
 		# Compute interleaved mean of single-file input (e.g., CMIP timeseries format)
 		#cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]}"
 		tm_nbr=`ncks --trd -M ${ppn_opt} ${fl_in} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
 		ssc2=$((tm_nbr*tpd_out/srd))
 		# Ensure result is positive integer
-		[[ ${ssc2} -ge 0 ]] 2>/dev/null && ssc2_ntg='Yes' || ssc2_ntg='No'
-		if [[ ${ssc2_ntg} != 'Yes' ]]; then
+		[[ ${ssc2-} -ge 0 ]] 2>/dev/null && ssc2_ntg='Yes' || ssc2_ntg='No'
+		if [[ ${ssc2_ntg-} != 'Yes' ]]; then
 		    printf "${spt_nm}: ERROR Inferred value of ssc2=${ssc2} is not a positive integer. User requested high-frequency climatology with one input file. ${spt_nm} attempted to divine the sub-cycle length based on the assumption that the file contains and integral number of years (at any temporal resolution) of input data. The divination resulted in a non-integral sub-cycle length. This is not surprising since a number of assumptions must hold true for the inferral to work correctly.\nHINT: Clip the input timeseries to an integral number of years.\n"
 		    exit 1
 		fi # !ssc2_ntg
@@ -3001,7 +3001,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 	    # Combine monthly into seasonal and annual means with nces (preserving diurnal timesteps)
 	    cmd_mth2csn='nces'
 	    cmd_csn2ann='nces'
-	elif [[ ${clm_md} == 'mth' ]]; then 
+	elif [[ ${clm_md-} == 'mth' ]]; then 
 	    clm_bnd[${clm_idx}]=${yyyy_srt_mth[${clm_idx}]},${yyyy_end_mth[${clm_idx}]},${clm_idx},${clm_idx},0
 	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${clm_bnd[${clm_idx}]} -O ${nco_opt} ${gaa_sng[${clm_idx}]} ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    # Combine monthly into seasonal and annual means with ncra
@@ -3010,16 +3010,16 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 	fi # !clm_md
     done # !mth
 		    
-    if [[ ${clm_md} == 'hfc' ]]; then
+    if [[ ${clm_md-} == 'hfc' ]]; then
 
-	if [[ ${fl_nbr} -gt 1 ]]; then
+	if [[ ${fl_nbr-} -gt 1 ]]; then
 	    printf "Cull each month from interannual climatology into interannual diurnal file...\n"
 	else
 	    printf "Create interannual timeseries of monthly diurnal timestep means from single file...\n"
 	fi # !fl_nbr
-	[[ ${dbg_lvl} -ge 1 ]] && date_cll=$(date +"%s")
+	[[ ${dbg_lvl-} -ge 1 ]] && date_cll=$(date +"%s")
 
-	if [[ ${job_nbr} -eq 1 ]] || [[ ${job_nbr} -eq 2 ]] || [[ ${job_nbr} -eq 3 ]] || [[ ${job_nbr} -eq 4 ]] || [[ ${job_nbr} -eq 6 ]] || [[ ${job_nbr} -eq 12 ]]; then
+	if [[ ${job_nbr-} -eq 1 ]] || [[ ${job_nbr-} -eq 2 ]] || [[ ${job_nbr-} -eq 3 ]] || [[ ${job_nbr-} -eq 4 ]] || [[ ${job_nbr-} -eq 6 ]] || [[ ${job_nbr-} -eq 12 ]]; then
 	    echo "Successful match of job_nbr to list of permissible values" > /dev/null
 	else
 	    echo "${spt_nm}: ERROR Job number job_nbr=${job_nbr} is invalid in monthly climo mode. Must be a factor of 12. Valid values are 1, 2, 3, 4, 6, and 12. Please re-submit with valid job_nbr."
@@ -3034,11 +3034,11 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 	    clm_idx_end=$((clm_idx_srt + job_nbr - 1))
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		printf "Cull climatological monthly timeseries for month ${clm_idx} ...\n"
-		if [[ ${dbg_lvl} -ge 1 ]]; then
+		if [[ ${dbg_lvl-} -ge 1 ]]; then
 		    echo ${cmd_cll[${clm_idx}]}
 		fi # !dbg
-		if [[ ${dbg_lvl} -le 1 ]]; then
-		    if [[ -z ${par_opt} ]]; then
+		if [[ ${dbg_lvl-} -le 1 ]]; then
+		    if [[ -z ${par_opt-} ]]; then
 			eval ${cmd_cll[${clm_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR monthly cull cmd_cll[${clm_idx}] failed. Debug this:\n${cmd_cll[${clm_idx}]}\n"
@@ -3050,7 +3050,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 		    fi # !par_opt
 		fi # !dbg
 	    done # !clm_idx
-	    if [[ ${par_opt} ]]; then
+	    if [[ ${par_opt-} ]]; then
 		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		    wait ${cll_pid[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
@@ -3064,16 +3064,16 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 		done # !clm_idx
 	    fi # !par_opt
 	done # !bch_idx
-	if [[ ${dbg_lvl} -ge 1 ]]; then
+	if [[ ${dbg_lvl-} -ge 1 ]]; then
 	    date_crr=$(date +"%s")
 	    date_dff=$((date_crr-date_cll))
 	    echo "Elapsed time to cull monthly timeseries $((date_dff/60))m$((date_dff % 60))s"
 	fi # !dbg
 
-	if [[ ${fl_nbr} -gt 1 ]]; then
+	if [[ ${fl_nbr-} -gt 1 ]]; then
 
 	    printf "Take mean value of each diurnal timestep across all instances of every month...\n"
-	    [[ ${dbg_lvl} -ge 1 ]] && date_tpd=$(date +"%s")
+	    [[ ${dbg_lvl-} -ge 1 ]] && date_tpd=$(date +"%s")
 
 	    for ((tpd_idx=0;tpd_idx<tpd_out;tpd_idx++)); do
 		TT=`printf "%02d" ${tpd_idx}`
@@ -3087,11 +3087,11 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 			printf "De-interleave and average diurnal timestep ${tpd_idx} for month ${clm_idx} ...\n"
 			cmd_tpd[${clm_idx}]=${cmd_tpd_tpl[${clm_idx}]/TPDTT/${TT}}
 			cmd_tpd[${clm_idx}]=${cmd_tpd[${clm_idx}]/TPDidx/${tpd_idx}}
-			if [[ ${dbg_lvl} -ge 1 ]]; then
+			if [[ ${dbg_lvl-} -ge 1 ]]; then
 			    echo ${cmd_tpd[${clm_idx}]}
 			fi # !dbg
-			if [[ ${dbg_lvl} -le 1 ]]; then
-			    if [[ -z ${par_opt} ]]; then
+			if [[ ${dbg_lvl-} -le 1 ]]; then
+			    if [[ -z ${par_opt-} ]]; then
 				eval ${cmd_tpd[${clm_idx}]}
 				if [[ "$?" -ne 0 ]]; then
 				    printf "${spt_nm}: ERROR monthly de-interleave and average command cmd_tpd[${clm_idx}] failed. Debug this:\n${cmd_tpd[${clm_idx}]}\n"
@@ -3103,7 +3103,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 			    fi # !par_opt
 			fi # !dbg
 		    done # !clm_idx
-		    if [[ ${par_opt} ]]; then
+		    if [[ ${par_opt-} ]]; then
 			for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 			    wait ${tpd_pid[${clm_idx}]}
 			    if [[ "$?" -ne 0 ]]; then
@@ -3118,7 +3118,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 		    fi # !par_opt
 		done # !bch_idx
 	    done # !tpd_idx
-	    if [[ ${dbg_lvl} -ge 1 ]]; then
+	    if [[ ${dbg_lvl-} -ge 1 ]]; then
 		date_crr=$(date +"%s")
 		date_dff=$((date_crr-date_tpd))
 		echo "Elapsed time to de-interleave and average all timesteps $((date_dff/60))m$((date_dff % 60))s"
@@ -3133,7 +3133,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 
     fi # !clm_md
     
-    if [[ ${clm_md} == 'mth' ]]; then
+    if [[ ${clm_md-} == 'mth' ]]; then
 	tpd_out=0
     fi # !tpd_out	
     # Monthly output filenames constructed above; specify remaining (seasonal, annual) output names
@@ -3154,7 +3154,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 	yyyy_rng=$(csn_nfo_get ${yr_srt_rth} ${mth_srt_rth} ${yr_end_rth} ${mth_end_rth} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_yyyy_rng})
 	clm_bnd_arg=$(csn_nfo_get ${yr_srt_rth} ${mth_srt_rth} ${yr_end_rth} ${mth_end_rth} ${csn_srt_idx_crr} ${csn_end_idx_crr} ${rtn_clm_bnd_arg})
 	clm_bnd[${clm_idx}]="--clm_bnd=${clm_bnd_arg},${tpd_out}"
-	if [[ ${gaa_sng_std} ]]; then
+	if [[ ${gaa_sng_std-} ]]; then
 	    # NB: E3SM diagnostics (e3sm_diagnostics) relies on this attribute
 	    gaa_sng[${clm_idx}]="${gaa_sng_std} --gaa yrs_averaged=${yyyy_rng}"
 	fi # !gaa_sng
@@ -3164,9 +3164,9 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 #    fl_out[14]="${drc_out}/${out_nm}_JJA_${yyyy_srt}06_${yyyy_end}08_climo.nc"
 #    fl_out[15]="${drc_out}/${out_nm}_SON_${yyyy_srt}09_${yyyy_end}11_climo.nc"
 #    fl_out[16]="${drc_out}/${out_nm}_DJF_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
-    if [[ ${ann_flg} == 'Yes' ]]; then
+    if [[ ${ann_flg-} == 'Yes' ]]; then
 	yyyy_rng=$(csn_nfo_get ${yr_srt_rth} ${mth_srt_rth} ${yr_end_rth} ${mth_end_rth} 1 12 ${rtn_yyyy_rng})
-	if [[ ${gaa_sng_std} ]]; then
+	if [[ ${gaa_sng_std-} ]]; then
 	    # NB: E3SM diagnostics (e3sm_diagnostics) relies on this attribute
 	    gaa_sng[${clm_nbr}]="${gaa_sng_std} --gaa yrs_averaged=${yyyy_rng}"
 	fi # !gaa_sng
@@ -3178,9 +3178,9 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 	fl_amwg[${clm_idx}]=`expr match "${fl_out[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
 	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
 	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_out}\//}" # Delete prepended path to ease symlinking
-	if [[ ${rgr_opt} ]]; then
+	if [[ ${rgr_opt-} ]]; then
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
-	    if [[ ${drc_out} == "${drc_rgr}" ]]; then 
+	    if [[ ${drc_out-} == "${drc_rgr-}" ]]; then 
 		# Append geometry suffix to regridded files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
 		dfl_sfx='rgr'
@@ -3202,20 +3202,20 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]]; then
 fi # !clm_md
 
 # Block 1 Loop N: Split
-if [[ ${tms_flg} == 'Yes' ]]; then
+if [[ ${tms_flg-} == 'Yes' ]]; then
 
     # Populate input file arguments fl_sgm with all files necessary to bracket each segment
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
 	fl_sgm[${sgm_idx}]=''
 
-	if [[ ${clm_md} != 'hfs' ]]; then
+	if [[ ${clm_md-} != 'hfs' ]]; then
 	    # Non-high-frequency timeseries receive exact file-lists to hyperslab by index (not by time-coordinate)
-	    if [[ ${mth_flg} == 'Yes' ]]; then
+	    if [[ ${mth_flg-} == 'Yes' ]]; then
 		fl_idx_srt=$((sgm_idx*ypf_max*fpy)) # NB: 0-based
 		fl_idx_end=$((fl_idx_srt+ypf_max*fpy)) # NB: 1-based
 		yr_srt_sgm=$((yr_srt_rth+sgm_idx*ypf_max))
 		yr_end_sgm=$((yr_srt_sgm+ypf_max))
-		if [[ ${sgm_rmd} -ne 0 ]] && [[ ${sgm_idx} -eq ${sgm_nbrm1} ]]; then
+		if [[ ${sgm_rmd-} -ne 0 ]] && [[ ${sgm_idx-} -eq ${sgm_nbrm1-} ]]; then
 		    fl_idx_end=$((fl_idx_srt+sgm_rmd)) # NB: 1-based
 		    yr_end_sgm=$((yr_end_rth))
 		fi # !sgm_nbrm1
@@ -3224,7 +3224,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 		fl_idx_end=$((fl_idx_srt+ypf_max*fpy)) # NB: 1-based
 		yr_srt_sgm=$((yr_srt_rth+sgm_idx*ypf_max))
 		yr_end_sgm=$((yr_srt_sgm+ypf_max-1))
-		if [[ ${sgm_rmd} -ne 0 ]] && [[ ${sgm_idx} -eq ${sgm_nbrm1} ]]; then
+		if [[ ${sgm_rmd-} -ne 0 ]] && [[ ${sgm_idx-} -eq ${sgm_nbrm1-} ]]; then
 		    fl_idx_end=$((fl_idx_srt+sgm_rmd*fpy)) # NB: 1-based
 		    yr_end_sgm=$((yr_srt_sgm+sgm_rmd-1))
 		fi # !sgm_nbrm1
@@ -3248,8 +3248,8 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    #echo "dbg: fl_idx_end = ${fl_idx_end}"
 	    yr_srt_sgm=$((yr_srt_rth+sgm_idx*ypf_max))
 	    yr_end_sgm=$((yr_srt_sgm+ypf_max-1))
-	    if [[ ${sgm_rmd} -ne 0 ]] && [[ ${sgm_idx} -eq ${sgm_nbrm1} ]]; then
-		if [[ ${mth_flg} == 'Yes' ]]; then
+	    if [[ ${sgm_rmd-} -ne 0 ]] && [[ ${sgm_idx-} -eq ${sgm_nbrm1-} ]]; then
+		if [[ ${mth_flg-} == 'Yes' ]]; then
 		    # 20210331 Peings
 		    fl_idx_end=$((fl_idx_srt+sgm_rmd))
 		    yr_end_sgm=$((yr_end_rth))
@@ -3259,14 +3259,14 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 		fi # !mth_flg
 	    fi # !sgm_rmd || !sgm_nbrm1
 	    # Fuzzify list by including files nominally before and after first and last expected files
-	    if [[ ${fl_idx_srt} -ne 0 ]]; then
+	    if [[ ${fl_idx_srt-} -ne 0 ]]; then
 		fl_idx_srt=$((fl_idx_srt-1))
 	    fi # !fl_idx_srt
 	    # Fuzziness may generate indices that are too large
-	    if [[ ${fl_idx_end} -gt ${fl_nbr} ]]; then
+	    if [[ ${fl_idx_end-} -gt ${fl_nbr-} ]]; then
 		fl_idx_end=$((fl_nbr))
 	    fi # !fl_idx_end
-	    if [[ ${fl_idx_end} -lt ${fl_nbr} ]]; then
+	    if [[ ${fl_idx_end-} -lt ${fl_nbr-} ]]; then
 		fl_idx_end=$((fl_idx_end+1))
 	    fi # !fl_idx_end
 	fi # !clm_md
@@ -3284,7 +3284,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	mm_srt_sgm[${sgm_idx}]='01'
 	mm_end_sgm[${sgm_idx}]='12'
 	mm_srt_sgm[${sgm_idx}]=${mm_srt}
-	if [[ ${sgm_idx} -eq ${sgm_nbrm1} ]]; then
+	if [[ ${sgm_idx-} -eq ${sgm_nbrm1-} ]]; then
 	    mth_end_sgm=$((mth_end_rth))
 	    mm_end_sgm[${sgm_idx}]=${mm_end}
 	else # !sgm_idx
@@ -3297,7 +3297,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 
 	# Sanity check that all files exist before wasting time and space on concatenation
 	for fl_crr in ${fl_sgm[${sgm_idx}]} ; do
-	    if [[ ! -f ${drc_in}/${fl_crr} ]] && [[ ! -L ${drc_in}/${fl_crr} ]]; then
+	    if [[ ! -f ${drc_in-}/${fl_crr-} ]] && [[ ! -L ${drc_in-}/${fl_crr-} ]]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
@@ -3306,9 +3306,9 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 
     done # !sgm_idx
 
-    if [[ ${clm_md} == 'hfs' ]]; then
+    if [[ ${clm_md-} == 'hfs' ]]; then
 
-	if [[ ${dbg_lvl} -ge 1 ]]; then
+	if [[ ${dbg_lvl-} -ge 1 ]]; then
 	    printf "dbg: HFS variable(s):\n"
 	    printf "dpf = ${dpf}\n"
 	    printf "dpy = ${dpy}\n"
@@ -3331,7 +3331,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 
     fi # !clm_md
 
-    if [[ ${dbg_lvl} -ge 2 ]]; then
+    if [[ ${dbg_lvl-} -ge 2 ]]; then
 	printf "dbg: Will split into files for ${var_nbr} variable(s):\n"
 	for ((var_idx=0;var_idx<${var_nbr};var_idx++)); do
 	    printf "${var_sbs[${var_idx}]}\n"
@@ -3348,14 +3348,14 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 
     # Create template output filenames (to avoid Bash 2D string arrays)
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
-	if [[ -z ${fml_nm_usr} ]]; then 
+	if [[ -z ${fml_nm_usr-} ]]; then 
 	    fl_out_tpl[${sgm_idx}]="${drc_out}/var_nm_tpl_${yyyy_srt_sgm[${sgm_idx}]}${mm_srt_sgm[${sgm_idx}]}_${yyyy_end_sgm[${sgm_idx}]}${mm_end_sgm[${sgm_idx}]}.nc"
 	else # !fml_nm_usr
 	    fl_out_tpl[${sgm_idx}]="${drc_out}/var_nm_tpl_${fml_nm}_${yyyy_srt_sgm[${sgm_idx}]}${mm_srt_sgm[${sgm_idx}]}_${yyyy_end_sgm[${sgm_idx}]}${mm_end_sgm[${sgm_idx}]}.nc"
 	fi # !fml_nm_usr
-	if [[ ${rgr_opt} ]]; then
+	if [[ ${rgr_opt-} ]]; then
 	    fl_rgr_tpl[${sgm_idx}]="${fl_out_tpl[${sgm_idx}]/${drc_out}/${drc_rgr}}"
-	    if [[ ${drc_out} == "${drc_rgr}" ]]; then 
+	    if [[ ${drc_out-} == "${drc_rgr-}" ]]; then 
 		# Append geometry suffix to regridded files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
 		dfl_sfx='rgr'
@@ -3381,9 +3381,9 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	# Begin loop over variables to split
 	bch_nbr=$((var_nbr / job_nbr))
 	bch_flg=$((var_nbr % job_nbr))
-	if [[ ${bch_nbr} -eq 0 ]]; then
+	if [[ ${bch_nbr-} -eq 0 ]]; then
 	    bch_nbr=$((bch_nbr+1))
-	elif [[ ${bch_flg} -ne 0 ]]; then
+	elif [[ ${bch_flg-} -ne 0 ]]; then
 	    bch_nbr=$((bch_nbr+1))
 	fi # !bch_flg
 	bch_nbrm1=$((bch_nbr-1))
@@ -3391,22 +3391,22 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    # var_idx is 0-based, bch_idx is 0-based
 	    var_idx_srt=$((bch_idx * job_nbr))
 	    var_idx_end=$((var_idx_srt + job_nbr - 1))
-	    if [[ ${bch_idx} -eq ${bch_nbrm1} ]] && [[ ${bch_flg} -ne 0 ]]; then
+	    if [[ ${bch_idx-} -eq ${bch_nbrm1-} ]] && [[ ${bch_flg-} -ne 0 ]]; then
 		var_idx_srt=$((bch_idx * job_nbr))
 		var_idx_end=$((var_nbr - 1))
 	    fi # !bch_flg
 	    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 		fl_out[${var_idx}]="${fl_out_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
-		if [[ ${clm_md} == 'hfs' ]]; then
+		if [[ ${clm_md-} == 'hfs' ]]; then
 		    # 20200619 High-frequency output requires time-coordinate hyperslabs
-		    if [[ ${mth_flg} == 'Yes' ]]; then
+		    if [[ ${mth_flg-} == 'Yes' ]]; then
 			tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-${mm_srt_sgm[${sgm_idx}]}-01T00:00:01"
 			tm_end="${yyyy_end_sgm[${sgm_idx}]}-${mm_endp1_sgm[${sgm_idx}]}-01T00:00:00"
 		    else # !mth_flg
 			tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-01-01T00:00:01"
 			tm_end="${yyyy_endp1_sgm[${sgm_idx}]}-01-01T00:00:00"
 		    fi # !mth_flg
-		    if [[ ${tpd_out} -lt 3600 ]]; then
+		    if [[ ${tpd_out-} -lt 3600 ]]; then
 			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		    else
 			# Deprecated code to output in sub-average periods or different shapes
@@ -3428,11 +3428,11 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 		    # Normal splitting, non-high-frequency 
 		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		fi # !clm_md
-		if [[ ${dbg_lvl} -ge 1 ]]; then
+		if [[ ${dbg_lvl-} -ge 1 ]]; then
 		    echo ${cmd_sbs[${var_idx}]}
 		fi # !dbg
-		if [[ ${dbg_lvl} -le 1 ]]; then
-		    if [[ -z ${par_opt} ]]; then
+		if [[ ${dbg_lvl-} -le 1 ]]; then
+		    if [[ -z ${par_opt-} ]]; then
 			eval ${cmd_sbs[${var_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR subset cmd_sbs[${var_idx}] failed. Debug this:\n${cmd_sbs[${var_idx}]}\n"
@@ -3448,7 +3448,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	    # Block NNN: Wait
 	    # Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-	    if [[ ${par_opt} ]]; then
+	    if [[ ${par_opt-} ]]; then
 		#printf "${spt_nm}: DEBUG var_idx = ${var_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 		    wait ${sbs_pid[${var_idx}]}
@@ -3465,7 +3465,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 		done # !var_idx
 	    fi # !par_opt
 	    
-	    if [[ ${rgn_stt} != 'No' ]]; then 
+	    if [[ ${rgn_stt-} != 'No' ]]; then 
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 		    # 20250610: Until today we always computed regional statistics of all variables in splitter list
 		    # However, regional statistics are fragile and break on non-horozontal variables
@@ -3494,11 +3494,11 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 		    # Both produce (currently three) regional timeseries
 		    # The original --glb_avg implementation was:
 		    # cmd_stt[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
-		    if [[ ${dbg_lvl} -ge 1 ]]; then
+		    if [[ ${dbg_lvl-} -ge 1 ]]; then
 			echo ${cmd_stt[${var_idx}]}
 		    fi # !dbg
-		    if [[ ${dbg_lvl} -le 1 ]]; then
-			if [[ -z ${par_opt} ]]; then
+		    if [[ ${dbg_lvl-} -le 1 ]]; then
+			if [[ -z ${par_opt-} ]]; then
 			    eval ${cmd_stt[${var_idx}]}
 			    if [[ "$?" -ne 0 ]]; then
 				printf "${spt_nm}: ERROR global and regional statistics cmd_stt[${var_idx}] failed. Debug this:\n${cmd_stt[${var_idx}]}\n"
@@ -3512,7 +3512,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 		done # !var_idx
 
 		# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-		if [[ ${par_opt} ]]; then
+		if [[ ${par_opt-} ]]; then
 		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 			if [[ ${is_hrz[${var_idx}]} == 'Yes' ]]; then
 			    wait ${avg_pid[${var_idx}]}
@@ -3535,12 +3535,12 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 	done # !bch_idx
 	
 	# Begin loop over variables to regrid
-	if [[ ${rgr_opt} ]]; then 
+	if [[ ${rgr_opt-} ]]; then 
 	    bch_nbr=$((var_nbr / job_nbr))
 	    bch_flg=$((var_nbr % job_nbr))
-	    if [[ ${bch_nbr} -eq 0 ]]; then
+	    if [[ ${bch_nbr-} -eq 0 ]]; then
 		bch_nbr=$((bch_nbr+1))
-	    elif [[ ${bch_flg} -ne 0 ]]; then
+	    elif [[ ${bch_flg-} -ne 0 ]]; then
 		bch_nbr=$((bch_nbr+1))
 	    fi # !bch_flg
 	    bch_nbrm1=$((bch_nbr-1))
@@ -3548,7 +3548,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 		# var_idx is 0-based, bch_idx is 0-based
 		var_idx_srt=$((bch_idx * job_nbr))
 		var_idx_end=$((var_idx_srt + job_nbr - 1))
-		if [[ ${bch_idx} -eq ${bch_nbrm1} ]] && [[ ${bch_flg} -ne 0 ]]; then
+		if [[ ${bch_idx-} -eq ${bch_nbrm1-} ]] && [[ ${bch_flg-} -ne 0 ]]; then
 		    var_idx_srt=$((bch_idx * job_nbr))
 		    var_idx_end=$((var_nbr - 1))
 		fi # !bch_flg
@@ -3556,16 +3556,16 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 		    fl_rgr[${var_idx}]="${fl_rgr_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
 		    #cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${spl_opt} ${spl_rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
 		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${spl_opt} ${spl_rgr_opt} ${prc_opt} ${rmp_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
-		    if [[ ${mdl_typ} == 'mpas' ]]; then
+		    if [[ ${mdl_typ-} == 'mpas' ]]; then
 			# 20181114: Remove '-C' argument from ncremap invocation for MPAS splitter only
 			# This ensures CMIP6 MPAS timeseries will have _FillValue
 			cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" ${spl_opt} ${spl_rgr_opt} -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
 		    fi # !mdl_typ
-		    if [[ ${dbg_lvl} -ge 1 ]]; then
+		    if [[ ${dbg_lvl-} -ge 1 ]]; then
 			echo ${cmd_rgr[${var_idx}]}
 		    fi # !dbg
-		    if [[ ${dbg_lvl} -le 1 ]]; then
-			if [[ -z ${par_opt} ]]; then
+		    if [[ ${dbg_lvl-} -le 1 ]]; then
+			if [[ -z ${par_opt-} ]]; then
 			    eval ${cmd_rgr[${var_idx}]}
 			    if [[ "$?" -ne 0 ]]; then
 				printf "${spt_nm}: ERROR regrid cmd_rgr[${var_idx}] failed. Debug this:\n${cmd_rgr[${var_idx}]}\n"
@@ -3581,7 +3581,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 		# Block NNN: Wait
 		# Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 		# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-		if [[ ${par_opt} ]]; then
+		if [[ ${par_opt-} ]]; then
 		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 			wait ${rgr_pid[${var_idx}]}
 			if [[ "$?" -eq 0 ]]; then
@@ -3599,7 +3599,7 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 
 	    done # !bch_idx
 	    
-	    if [[ ${no_ntv_tms} == 'Yes' ]]; then
+	    if [[ ${no_ntv_tms-} == 'Yes' ]]; then
 		# Omit native-grid split timeseries by overwriting fl_out with fl_rgr
 		for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
 		    /bin/mv -f ${fl_rgr[${var_idx}]} ${fl_out[${var_idx}]}
@@ -3614,16 +3614,16 @@ if [[ ${tms_flg} == 'Yes' ]]; then
 fi # !tms_flg
 
 # Block 1 Loop 2: Climatologies based on annual means
-if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'ann' ]]; then
+if [[ ${clm_flg-} == 'Yes' ]] && [[ ${clm_md-} == 'ann' ]]; then
     clm_idx=1
     fl_all=''
     for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	fl_all="${fl_all} ${fl_in[${fl_idx}]}"
     done # !fl
     # Check for existence of raw input only when file will be used (NB: next ~12 lines duplicate monthly code)
-    if [[ ${bnr_flg} == 'No' ]]; then
+    if [[ ${bnr_flg-} == 'No' ]]; then
 	for fl_crr in ${fl_all} ; do
-	    if [[ ! -f ${drc_in}/${fl_crr} ]] && [[ ! -L ${drc_in}/${fl_crr} ]]; then
+	    if [[ ! -f ${drc_in-}/${fl_crr-} ]] && [[ ! -L ${drc_in-}/${fl_crr-} ]]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
@@ -3638,10 +3638,10 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'ann' ]]; then
 
     # Block 1 Loop 2: Climatological annual mean
     printf "Climatological annual mean...\n"
-    if [[ ${dbg_lvl} -ge 1 ]]; then
+    if [[ ${dbg_lvl-} -ge 1 ]]; then
 	echo ${cmd_clm[${clm_idx}]}
     fi # !dbg
-    if [[ ${dbg_lvl} -le 1 ]]; then
+    if [[ ${dbg_lvl-} -le 1 ]]; then
 	eval ${cmd_clm[${clm_idx}]}
 	if [[ "$?" -ne 0 ]]; then
 	    printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_idx}] failed\n"
@@ -3651,13 +3651,13 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'ann' ]]; then
     wait
     
     # Block 2: Regrid climatological annual mean
-    if [[ ${rgr_opt} ]]; then 
+    if [[ ${rgr_opt-} ]]; then 
 	printf "Regrid annual data...\n"
 	cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]/.nc/.rgr.nc}"
-	if [[ ${dbg_lvl} -ge 1 ]]; then
+	if [[ ${dbg_lvl-} -ge 1 ]]; then
 	    echo ${cmd_rgr[${clm_idx}]} ${par_opt}
 	fi # !dbg
-	if [[ ${dbg_lvl} -le 1 ]]; then
+	if [[ ${dbg_lvl-} -le 1 ]]; then
 	    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
 	    if [[ "$?" -ne 0 ]]; then
 		printf "${spt_nm}: ERROR annual regrid cmd_rgr[${clm_idx}] failed\n"
@@ -3671,7 +3671,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'ann' ]]; then
 fi # !ann
 
 # Block 1 Loop 2: Climatologies based on daily means
-if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]]; then
+if [[ ${clm_flg-} == 'Yes' ]] && [[ ${clm_md-} == 'dly' ]]; then
 
     fl_all=''
     for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
@@ -3696,7 +3696,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]]; then
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
 	    tm_srt="${yyyy_srt}-${MM}-${DD}T00:00:00"
 	    tm_end="${yyyy_end}-${MM}-${DD}T23:59:59"
-	    if [[ ${tpd_out} -eq 1 ]]; then
+	    if [[ ${tpd_out-} -eq 1 ]]; then
 		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},1 ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    else
 		# 20170619: Diurnal mode is really slow on MacOS (UDUnits parsing sluggishness?)
@@ -3706,10 +3706,10 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]]; then
 	done # !day
     done # !mth
 
-    if [[ ${rgr_opt} ]]; then
+    if [[ ${rgr_opt-} ]]; then
 	for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
-	    if [[ ${drc_out} == "${drc_rgr}" ]]; then 
+	    if [[ ${drc_out-} == "${drc_rgr-}" ]]; then 
 		# Append geometry suffix to regridded files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
 		dfl_sfx='rgr'
@@ -3733,9 +3733,9 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]]; then
     printf "Climatological daily mean...\n"
     bch_nbr=$((clm_nbr / job_nbr))
     bch_flg=$((clm_nbr % job_nbr))
-    if [[ ${bch_nbr} -eq 0 ]]; then
+    if [[ ${bch_nbr-} -eq 0 ]]; then
 	bch_nbr=$((bch_nbr+1))
-    elif [[ ${bch_flg} -ne 0 ]]; then
+    elif [[ ${bch_flg-} -ne 0 ]]; then
 	bch_nbr=$((bch_nbr+1))
     fi # !bch_flg
     bch_nbrm1=$((bch_nbr-1))
@@ -3743,16 +3743,16 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]]; then
 	# clm_idx is 0-based, bch_idx is 0-based
 	clm_idx_srt=$((bch_idx * job_nbr))
 	clm_idx_end=$((clm_idx_srt + job_nbr - 1))
-	if [[ ${bch_idx} -eq ${bch_nbrm1} ]] && [[ ${bch_flg} -ne 0 ]]; then
+	if [[ ${bch_idx-} -eq ${bch_nbrm1-} ]] && [[ ${bch_flg-} -ne 0 ]]; then
 	    clm_idx_srt=$((bch_idx * job_nbr))
 	    clm_idx_end=$((clm_nbr - 1))
 	fi # !bch_flg
 	for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
-	    if [[ ${dbg_lvl} -ge 1 ]]; then
+	    if [[ ${dbg_lvl-} -ge 1 ]]; then
 		echo ${cmd_clm[${clm_idx}]}
 	    fi # !dbg
-	    if [[ ${dbg_lvl} -le 1 ]]; then
-		if [[ -z ${par_opt} ]]; then
+	    if [[ ${dbg_lvl-} -le 1 ]]; then
+		if [[ -z ${par_opt-} ]]; then
 		    eval ${cmd_clm[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR daily cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
@@ -3768,8 +3768,8 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]]; then
 	# Block NNN: Wait
 	# Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-	if [[ ${par_opt} ]]; then
-	    if [[ ${dbg_lvl} -ge 1 ]] && [[ ${clm_idx_srt} -le ${clm_idx_end} ]]; then
+	if [[ ${par_opt-} ]]; then
+	    if [[ ${dbg_lvl-} -ge 1 ]] && [[ ${clm_idx_srt-} -le ${clm_idx_end-} ]]; then
 		printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at clm_idx = ${clm_idx}...\n"
 	    fi # !dbg
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
@@ -3784,12 +3784,12 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]]; then
     done # !bch_idx
     
     # Begin loop over days to regrid
-    if [[ ${rgr_opt} ]]; then 
+    if [[ ${rgr_opt-} ]]; then 
 	bch_nbr=$((clm_nbr / job_nbr))
 	bch_flg=$((clm_nbr % job_nbr))
-	if [[ ${bch_nbr} -eq 0 ]]; then
+	if [[ ${bch_nbr-} -eq 0 ]]; then
 	    bch_nbr=$((bch_nbr+1))
-	elif [[ ${bch_flg} -ne 0 ]]; then
+	elif [[ ${bch_flg-} -ne 0 ]]; then
 	    bch_nbr=$((bch_nbr+1))
 	fi # !bch_flg
 	bch_nbrm1=$((bch_nbr-1))
@@ -3797,20 +3797,20 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]]; then
 	    # clm_idx is 0-based, bch_idx is 0-based
 	    clm_idx_srt=$((bch_idx * job_nbr))
 	    clm_idx_end=$((clm_idx_srt + job_nbr - 1))
-	    if [[ ${bch_idx} -eq ${bch_nbrm1} ]] && [[ ${bch_flg} -ne 0 ]]; then
+	    if [[ ${bch_idx-} -eq ${bch_nbrm1-} ]] && [[ ${bch_flg-} -ne 0 ]]; then
 		clm_idx_srt=$((bch_idx * job_nbr))
 		clm_idx_end=$((clm_nbr - 1))
 	    fi # !bch_flg
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
-		if [[ ${mdl_typ} == 'mpas' ]]; then
+		if [[ ${mdl_typ-} == 'mpas' ]]; then
 		    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.daily.${clm_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		fi # !mdl_typ
-		if [[ ${dbg_lvl} -ge 1 ]]; then
+		if [[ ${dbg_lvl-} -ge 1 ]]; then
 		    echo ${cmd_rgr[${clm_idx}]}
 		fi # !dbg
-		if [[ ${dbg_lvl} -le 1 ]]; then
-		    if [[ -z ${par_opt} ]]; then
+		if [[ ${dbg_lvl-} -le 1 ]]; then
+		    if [[ -z ${par_opt-} ]]; then
 			eval ${cmd_rgr[${clm_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
@@ -3826,7 +3826,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]]; then
 	    # Block NNN: Wait
 	    # Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-	    if [[ ${par_opt} ]]; then
+	    if [[ ${par_opt-} ]]; then
 		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		    wait ${rgr_pid[${clm_idx}]}
 		    if [[ "$?" -eq 0 ]]; then
@@ -3847,13 +3847,13 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_md} == 'dly' ]]; then
 fi # !dly
 				      
 # Many subsequent blocks only execute for normal and incremental monthly climos, not for binary climos, or non-monthly climos
-if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg} == 'No' ]]; then
+if [[ ${clm_flg-} == 'Yes' ]] && [[ ${clm_hfc_or_mth-} == 'Yes' ]] && [[ ${bnr_flg-} == 'No' ]]; then
     
     # Block 1 Loop 2: Execute and/or echo monthly climatology commands
     printf "Generating climatology...\n"
-    [[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
+    [[ ${dbg_lvl-} -ge 1 ]] && date_clm=$(date +"%s")
 
-    if [[ ${job_nbr} -eq 1 ]] || [[ ${job_nbr} -eq 2 ]] || [[ ${job_nbr} -eq 3 ]] || [[ ${job_nbr} -eq 4 ]] || [[ ${job_nbr} -eq 6 ]] || [[ ${job_nbr} -eq 12 ]]; then
+    if [[ ${job_nbr-} -eq 1 ]] || [[ ${job_nbr-} -eq 2 ]] || [[ ${job_nbr-} -eq 3 ]] || [[ ${job_nbr-} -eq 4 ]] || [[ ${job_nbr-} -eq 6 ]] || [[ ${job_nbr-} -eq 12 ]]; then
 	echo "Successful match of job_nbr to list of permissible values" > /dev/null
     else
 	echo "${spt_nm}: ERROR Job number job_nbr=${job_nbr} is invalid in monthly climo mode. Must be a factor of 12. Valid values are 1, 2, 3, 4, 6, and 12. Please re-submit with valid job_nbr."
@@ -3869,11 +3869,11 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 	#printf "${spt_nm}: DEBUG job_nbr = ${job_nbr}, bch_nbr = ${bch_nbr}, bch_idx = ${bch_idx}, clm_idx_srt = ${clm_idx_end}, clm_idx_end = ${clm_idx_end}\n"
 	for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 	    printf "Climatological monthly mean for month ${clm_idx} ...\n"
-	    if [[ ${dbg_lvl} -ge 1 ]]; then
+	    if [[ ${dbg_lvl-} -ge 1 ]]; then
 		echo ${cmd_clm[${clm_idx}]}
 	    fi # !dbg
-	    if [[ ${dbg_lvl} -le 1 ]]; then
-		if [[ -z ${par_opt} ]]; then
+	    if [[ ${dbg_lvl-} -le 1 ]]; then
+		if [[ -z ${par_opt-} ]]; then
 		    eval ${cmd_clm[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR monthly climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
@@ -3892,7 +3892,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 		fi # !par_opt
 	    fi # !dbg
 	done # !clm_idx
-	if [[ ${par_opt} ]]; then
+	if [[ ${par_opt-} ]]; then
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		wait ${clm_pid[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -3902,16 +3902,16 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 	    done # !clm_idx
 	fi # !par_opt
     done # !bch_idx
-    if [[ ${dbg_lvl} -ge 1 ]]; then
+    if [[ ${dbg_lvl-} -ge 1 ]]; then
 	date_crr=$(date +"%s")
 	date_dff=$((date_crr-date_clm))
 	echo "Elapsed time to generate monthly climos $((date_dff/60))m$((date_dff % 60))s"
     fi # !dbg
     # Clean-up monthly inputs (important since these file can be huge)
-    if [[ ${clm_md} == 'hfc' ]]; then
+    if [[ ${clm_md-} == 'hfc' ]]; then
 #	printf "quark1: Temporarily not deleting HFC output files!!!!!!!!!!\n"
 #	if false; then
-	if [[ ${fl_nbr} -eq 1 ]]; then
+	if [[ ${fl_nbr-} -eq 1 ]]; then
 	    /bin/rm -f ${drc_out}/${out_nm}_[01][0-9]_tms_foo_${yyyy_clm_srt}_${yyyy_clm_end}.nc
 	else    
 	    /bin/rm -f ${drc_out}/${out_nm}_[01][0-9]_tpd[0-9][0-9]_*.nc
@@ -3920,13 +3920,13 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
     fi # !clm_md
 	
     # Block 1: Loop 4: Regrid first twelve files. Load-balance by using idle nodes (nodes not used for seasonal climatologies).
-    if [[ ${rgr_opt} ]]; then 
+    if [[ ${rgr_opt-} ]]; then 
 	printf "Regrid monthly data...\n"
-	[[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
+	[[ ${dbg_lvl-} -ge 1 ]] && date_rgr=$(date +"%s")
 	for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
 	    # NB: Months, seasons, files are 1-based ([1..12], [13..16], [1..17]), nodes are 0-based ([0..11])
 	    nd_idx=$(((clm_idx-1+csn_nbr) % nd_nbr))
-	    if [[ ${nd_idx} -lt ${csn_nbr} ]]; then
+	    if [[ ${nd_idx-} -lt ${csn_nbr-} ]]; then
 		nd_idx=$((nd_idx+csn_nbr))
 		# 20190315: Not necessary to modulo final result by nd_nbr to handle csn_nbr > nd_nbr
 		# because (1-based) cmd_mpi array is always at least 13 elements long and each element is
@@ -3935,14 +3935,14 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 	    # printf "dbg: clm_idx = ${clm_idx}, nd_idx = ${nd_idx}, csn_nbr = ${csn_nbr}, nd_nbr = ${nd_nbr}\n"
 	    #cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -u .pid${spt_pid}.climo.${clm_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${prc_opt} ${rmp_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
-	    if [[ ${mdl_typ} == 'mpas' ]]; then
+	    if [[ ${mdl_typ-} == 'mpas' ]]; then
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
-	    if [[ ${dbg_lvl} -ge 1 ]]; then
+	    if [[ ${dbg_lvl-} -ge 1 ]]; then
 		echo ${cmd_rgr[${clm_idx}]}
 	    fi # !dbg
-	    if [[ ${dbg_lvl} -le 1 ]]; then
-		if [[ -z ${par_opt} ]]; then
+	    if [[ ${dbg_lvl-} -le 1 ]]; then
+		if [[ -z ${par_opt-} ]]; then
 		    eval ${cmd_rgr[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR monthly regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
@@ -3958,15 +3958,15 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
     fi # !rgr_opt
     
     # Block 2: Climatological seasonal means
-    if [[ ${csn_flg} == 'Yes' ]]; then
+    if [[ ${csn_flg-} == 'Yes' ]]; then
 	# Block 2 Loop 1: Generate seasonal commands
-	[[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
+	[[ ${dbg_lvl-} -ge 1 ]] && date_clm=$(date +"%s")
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	    clm_idx=$((1+12+csn_idx))
 	    fl_lst=''
 	    for (( mth_ctr=0;mth_ctr<${csn_nom[${map_r2d[${csn_idx}]}]};mth_ctr++ )); do
 		mth_idx=$((csn_srt_idx[map_r2d[csn_idx]]+mth_ctr))
-		[[ ${mth_idx} -gt 12 ]] && mth_idx=$((mth_idx % 12))
+		[[ ${mth_idx-} -gt 12 ]] && mth_idx=$((mth_idx % 12))
 		fl_lst="${fl_lst} ${fl_out[${mth_idx}]}"
 	    done # !mth_idx
 	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ${cmd_mth2csn} ${clm_bnd[${clm_idx}]} -O -w ${csn_wgt[${map_r2d[${csn_idx}]}]} ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_lst} ${fl_out[${clm_idx}]}"
@@ -3979,9 +3979,9 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 	# Block 2 Loop 2: Execute and/or echo seasonal climatology commands
 	bch_nbr=$((csn_nbr / job_nbr))
 	bch_flg=$((csn_nbr % job_nbr))
-	if [[ ${bch_nbr} -eq 0 ]]; then
+	if [[ ${bch_nbr-} -eq 0 ]]; then
 	    bch_nbr=$((bch_nbr+1))
-	elif [[ ${bch_flg} -ne 0 ]]; then
+	elif [[ ${bch_flg-} -ne 0 ]]; then
 	    bch_nbr=$((bch_nbr+1))
 	fi # !bch_flg
 	bch_nbrm1=$((bch_nbr-1))
@@ -3989,18 +3989,18 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 	    # clm_idx is 1-based, bch_idx is 0-based
 	    clm_idx_srt=$((12 + (bch_idx * job_nbr) + 1))
 	    clm_idx_end=$((clm_idx_srt + job_nbr - 1))
-	    if [[ ${bch_idx} -eq ${bch_nbrm1} ]] && [[ ${bch_flg} -ne 0 ]]; then
+	    if [[ ${bch_idx-} -eq ${bch_nbrm1-} ]] && [[ ${bch_flg-} -ne 0 ]]; then
 		clm_idx_srt=$((12 + (bch_idx * job_nbr) + 1))
 		clm_idx_end=$((clm_csn_end_idx))
 	    fi # !bch_flg
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		csn_idx=$((clm_idx - 12 - 1))
 		printf "Climatological seasonal mean for ${csn_abb[${map_r2d[${csn_idx}]}]} ...\n"
-		if [[ ${dbg_lvl} -ge 1 ]]; then
+		if [[ ${dbg_lvl-} -ge 1 ]]; then
 		    echo ${cmd_clm[${clm_idx}]}
 		fi # !dbg
-		if [[ ${dbg_lvl} -le 1 ]]; then
-		    if [[ -z ${par_opt} ]]; then
+		if [[ ${dbg_lvl-} -le 1 ]]; then
+		    if [[ -z ${par_opt-} ]]; then
 			eval ${cmd_clm[${clm_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
@@ -4012,7 +4012,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 		    fi # !par_opt
 		fi # !dbg
 	    done # !clm_idx
-	    if [[ ${par_opt} ]]; then
+	    if [[ ${par_opt-} ]]; then
 		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		    wait ${clm_pid[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
@@ -4023,15 +4023,15 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 	    fi # !par_opt
 	done # !bch_idx
 	# wait() for seasonal climatologies to finish
-	if [[ ${dbg_lvl} -ge 1 ]]; then
+	if [[ ${dbg_lvl-} -ge 1 ]]; then
 	    date_crr=$(date +"%s")
 	    date_dff=$((date_crr-date_clm))
 	    echo "Elapsed time to generate seasonal climos $((date_dff/60))m$((date_dff % 60))s"
 	fi # !dbg
     fi # !csn_flg
     # wait() for monthly regridding, if any, to finish
-    if [[ ${rgr_opt} ]]; then 
-	if [[ ${par_opt} ]]; then
+    if [[ ${rgr_opt-} ]]; then 
+	if [[ ${par_opt-} ]]; then
 	    for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
 		wait ${rgr_pid[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -4040,7 +4040,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 		fi # !err
 	    done # !clm_idx
 	fi # !par_opt
-	if [[ ${dbg_lvl} -ge 1 ]]; then
+	if [[ ${dbg_lvl-} -ge 1 ]]; then
 	    date_crr=$(date +"%s")
 	    date_dff=$((date_crr-date_rgr))
 	    echo "Elapsed time to regrid monthly climos $((date_dff/60))m$((date_dff % 60))s"
@@ -4048,25 +4048,25 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
     fi # !rgr_opt
     
     # Block 2: Loop 4: Regrid seasonal files. Load-balance by using idle nodes (nodes not used for annual mean).
-    if [[ ${csn_flg} == 'Yes' ]]; then
-	if [[ ${rgr_opt} ]]; then 
+    if [[ ${csn_flg-} == 'Yes' ]]; then
+	if [[ ${rgr_opt-} ]]; then 
 	    printf "Regrid seasonal data...\n"
-	    [[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
+	    [[ ${dbg_lvl-} -ge 1 ]] && date_rgr=$(date +"%s")
 	    for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
 		nd_idx=$(((clm_idx-1+csn_nbr) % nd_nbr))
-		if [[ ${nd_idx} -lt ${csn_nbr} ]]; then
+		if [[ ${nd_idx-} -lt ${csn_nbr-} ]]; then
 		    nd_idx=$((nd_idx+csn_nbr))
 		fi # !nd
 		#cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -u .pid${spt_pid}.climo.${clm_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${prc_opt} ${rmp_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
-		if [[ ${mdl_typ} == 'mpas' ]]; then
+		if [[ ${mdl_typ-} == 'mpas' ]]; then
 		    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		fi # !mdl_typ
-		if [[ ${dbg_lvl} -ge 1 ]]; then
+		if [[ ${dbg_lvl-} -ge 1 ]]; then
 		    echo ${cmd_rgr[${clm_idx}]}
 		fi # !dbg
-		if [[ ${dbg_lvl} -le 1 ]]; then
-		    if [[ -z ${par_opt} ]]; then
+		if [[ ${dbg_lvl-} -le 1 ]]; then
+		    if [[ -z ${par_opt-} ]]; then
 			eval ${cmd_rgr[${clm_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
@@ -4083,17 +4083,17 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
     fi # !csn_flg
     
     # Block 3: Climatological annual mean
-    if [[ ${ann_flg} == 'Yes' ]]; then
+    if [[ ${ann_flg-} == 'Yes' ]]; then
 	printf "Climatological annual mean...\n"
-	[[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
+	[[ ${dbg_lvl-} -ge 1 ]] && date_clm=$(date +"%s")
 	fl_lst="${fl_out[${clm_csn_mam_idx}]} ${fl_out[${clm_csn_jja_idx}]} ${fl_out[${clm_csn_son_idx}]} ${fl_out[${clm_csn_djf_idx}]}"
 	cmd_clm[${clm_nbr}]="${cmd_mpi[${clm_nbr}]} ${cmd_csn2ann} ${clm_bnd[${clm_nbr}]} -O -w 92,92,91,90 ${nco_opt} ${gaa_sng[${clm_nbr}]} ${fl_lst} ${fl_out[${clm_nbr}]}"
 	#    cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
-	if [[ ${dbg_lvl} -ge 1 ]]; then
+	if [[ ${dbg_lvl-} -ge 1 ]]; then
 	    echo ${cmd_clm[${clm_nbr}]}
 	fi # !dbg
-	if [[ ${dbg_lvl} -le 1 ]]; then
-	    if [[ -z ${par_opt} ]]; then
+	if [[ ${dbg_lvl-} -le 1 ]]; then
+	    if [[ -z ${par_opt-} ]]; then
 		eval ${cmd_clm[${clm_nbr}]}
 		if [[ "$?" -ne 0 ]]; then
 		    printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_nbr}] failed. Debug this:\n${cmd_clm[${clm_nbr}]}\n"
@@ -4106,9 +4106,9 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 	fi # !dbg
     fi # !ann_flg
     # wait() for seasonal regridding, if any, to finish
-    if [[ ${csn_flg} == 'Yes' ]]; then
-	if [[ ${rgr_opt} ]]; then 
-	    if [[ ${par_opt} ]]; then
+    if [[ ${csn_flg-} == 'Yes' ]]; then
+	if [[ ${rgr_opt-} ]]; then 
+	    if [[ ${par_opt-} ]]; then
 		for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
 		    wait ${rgr_pid[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
@@ -4117,42 +4117,42 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 		    fi # !err
 		done # !clm_idx
 	    fi # !par_opt
-	    if [[ ${dbg_lvl} -ge 1 ]]; then
+	    if [[ ${dbg_lvl-} -ge 1 ]]; then
 		date_crr=$(date +"%s")
 		date_dff=$((date_crr-date_rgr))
 		echo "Elapsed time to regrid seasonal climos $((date_dff/60))m$((date_dff % 60))s"
 	    fi # !dbg
 	fi # !rgr_opt
     fi # !csn_flg
-    if [[ ${ann_flg} == 'Yes' ]]; then
+    if [[ ${ann_flg-} == 'Yes' ]]; then
 	clm_idx=${clm_nbr}
 	# wait() for annual climatology to finish
-	if [[ ${par_opt} ]]; then
+	if [[ ${par_opt-} ]]; then
 	    wait ${clm_pid[${clm_idx}]}
 	    if [[ "$?" -ne 0 ]]; then
 		printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 		exit 1
 	    fi # !err
 	fi # !par_opt
-	if [[ ${dbg_lvl} -ge 1 ]]; then
+	if [[ ${dbg_lvl-} -ge 1 ]]; then
 	    date_crr=$(date +"%s")
 	    date_dff=$((date_crr-date_clm))
 	    echo "Elapsed time to generate annual climos $((date_dff/60))m$((date_dff % 60))s"
 	fi # !dbg
 	
 	# Block 5: Regrid climatological annual mean
-	if [[ ${rgr_opt} ]]; then 
+	if [[ ${rgr_opt-} ]]; then 
 	    printf "Regrid annual data...\n"
-	    [[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
+	    [[ ${dbg_lvl-} -ge 1 ]] && date_rgr=$(date +"%s")
 	    #cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -u .pid${spt_pid}.climo.${clm_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${prc_opt} ${rmp_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
-	    if [[ ${mdl_typ} == 'mpas' ]]; then
+	    if [[ ${mdl_typ-} == 'mpas' ]]; then
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp ${prc_opt} ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
-	    if [[ ${dbg_lvl} -ge 1 ]]; then
+	    if [[ ${dbg_lvl-} -ge 1 ]]; then
 		echo ${cmd_rgr[${clm_idx}]}
 	    fi # !dbg
-	    if [[ ${dbg_lvl} -le 1 ]]; then
+	    if [[ ${dbg_lvl-} -le 1 ]]; then
 		# NB: Do not background climatological mean regridding since it is last step
 		eval ${cmd_rgr[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -4160,7 +4160,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 		    exit 1
 		fi # !err
 	    fi # !dbg
-	    if [[ ${dbg_lvl} -ge 1 ]]; then
+	    if [[ ${dbg_lvl-} -ge 1 ]]; then
 		date_crr=$(date +"%s")
 		date_dff=$((date_crr-date_rgr))
 		echo "Elapsed time to regrid annual climo $((date_dff/60))m$((date_dff % 60))s"
@@ -4171,18 +4171,18 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
     # Link E3SM-climo to AMWG-climo filenames
     # drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
     # Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd
-    if [[ ${lnk_flg} == 'Yes' ]]; then
+    if [[ ${lnk_flg-} == 'Yes' ]]; then
 	printf "Link E3SM-climo to AMWG-climo filenames...\n"
 	for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-	    if [[ ${rgr_opt} ]]; then 
+	    if [[ ${rgr_opt-} ]]; then 
 		cmd_lnk[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr};ln -s -f ${fl_rgr[${clm_idx}]/${drc_rgr}\//} ${fl_amwg[${clm_idx}]/${drc_rgr}\//}"
 	    else
 		cmd_lnk[${clm_idx}]="cd ${drc_pwd};cd ${drc_out};ln -s -f ${fl_out[${clm_idx}]/${drc_out}\//} ${fl_amwg[${clm_idx}]/${drc_out}\//}"
 	    fi # !rgr_opt
-	    if [[ ${dbg_lvl} -ge 1 ]]; then
+	    if [[ ${dbg_lvl-} -ge 1 ]]; then
 		echo ${cmd_lnk[${clm_idx}]}
 	    fi # !dbg
-	    if [[ ${dbg_lvl} -le 1 ]]; then
+	    if [[ ${dbg_lvl-} -le 1 ]]; then
 		eval ${cmd_lnk[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
 		    printf "${spt_nm}: ERROR linking E3SM to AMWG filename cmd_lnk[${clm_idx}] failed. Debug this:\n${cmd_lnk[${clm_idx}]}\n"
@@ -4195,8 +4195,8 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${clm_hfc_or_mth} == 'Yes' ]] && [[ ${bnr_flg
 fi # !clm_md !bnr_flg
 
 # Extended climos
-if [[ ${clm_flg} == 'Yes' ]] && [[ ${xtn_flg} == 'Yes' ]]; then
-    if [[ ${drc_prv} ]] && [[ ! -d ${drc_prv} ]]; then 
+if [[ ${clm_flg-} == 'Yes' ]] && [[ ${xtn_flg-} == 'Yes' ]]; then
+    if [[ ${drc_prv-} ]] && [[ ! -d ${drc_prv-} ]]; then 
 	cmd_mkd="mkdir -p ${drc_prv}"
 	eval ${cmd_mkd}
 	if [[ "$?" -ne 0 ]]; then
@@ -4205,7 +4205,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${xtn_flg} == 'Yes' ]]; then
 	    exit 1
 	fi # !err
     fi # !drc_prv
-    if [[ ${drc_xtn} ]] && [[ ! -d ${drc_xtn} ]]; then 
+    if [[ ${drc_xtn-} ]] && [[ ! -d ${drc_xtn-} ]]; then 
 	cmd_mkd="mkdir -p ${drc_xtn}"
 	eval ${cmd_mkd}
 	if [[ "$?" -ne 0 ]]; then
@@ -4220,7 +4220,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${xtn_flg} == 'Yes' ]]; then
     yyyy_srt_prv=`printf "%04d" ${yr_srt_rth_prv}`
     yyyy_clm_srt_dec_prv=${yyyy_srt_prv}
     yr_srtm1_prv=$((yr_srt_rth_prv-1))
-    if [[ ${ncr_flg} == 'Yes' ]]; then
+    if [[ ${ncr_flg-} == 'Yes' ]]; then
 	yr_end_prv=$((yr_srt_rth-1))
     fi # !ncr_flg
     trim_leading_zeros ${yr_end_prv}
@@ -4232,7 +4232,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${xtn_flg} == 'Yes' ]]; then
 
     wgt_prv=$(echo "${yr_nbr_prv}/${yr_nbr_xtn}" | bc -l)
     wgt_crr=$(echo "${yr_nbr}/${yr_nbr_xtn}" | bc -l)
-    if [[ ${bnr_flg} == 'Yes' ]]; then
+    if [[ ${bnr_flg-} == 'Yes' ]]; then
 	printf "Produce extended climatology as weighted average of two previously computed climatologies:\n"
     else # !bnr_flg
 	printf "Produce extended climatology as weighted average of previously computed and incremental/new climatologies:\n"
@@ -4241,13 +4241,13 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${xtn_flg} == 'Yes' ]]; then
     # Replace yr_srt by yr_srt_prv in "yrs_averaged" attribute
     nco_opt="${nco_opt/${yr_srt}-/${yr_srt_prv}-}"
 
-    if [[ ${clm_md} == 'ann' ]]; then
+    if [[ ${clm_md-} == 'ann' ]]; then
 	printf "Previous/first climatology is ${yr_nbr_prv} years from ${yyyy_srt_prv} to ${yyyy_end_prv}, weight = ${wgt_prv}\n"
 	printf "Current/second climatology is ${yr_nbr} years from ${yyyy_srt} to ${yyyy_end}, weight = ${wgt_crr}\n"
 	printf "Extended climatology is ${yr_nbr_xtn} years from ${yyyy_srt_prv} to ${yyyy_end}\n"
     fi # !clm_md
 
-    if [[ ${clm_md} == 'mth' ]]; then
+    if [[ ${clm_md-} == 'mth' ]]; then
 
 	printf "Previous/first climatology is ${yr_nbr_prv} years from ${yyyy_clm_srt_dec_prv}${mm_ann_srt} to ${yyyy_end_prv}${mm_ann_end}, weight = ${wgt_prv}\n"
 	printf "Current/second climatology is ${yr_nbr} years from ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}, weight = ${wgt_crr}\n"
@@ -4285,7 +4285,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${xtn_flg} == 'Yes' ]]; then
 #	fl_xtn[15]="${drc_xtn}/${out_nm}_SON_${yyyy_srt_prv}09_${yyyy_end}11_climo.nc"
 #	fl_xtn[16]="${drc_xtn}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
 	
-	if [[ ${ann_flg} == 'Yes' ]]; then
+	if [[ ${ann_flg-} == 'Yes' ]]; then
 	    fl_prv[${clm_nbr}]="${drc_prv}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end_prv}${mm_ann_end}_climo.nc"
 	    fl_xtn[${clm_nbr}]="${drc_xtn}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
 	fi # !ann_flg
@@ -4307,11 +4307,11 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${xtn_flg} == 'Yes' ]]; then
 	printf "Weight input climos to produce extended climo...\n"
 	for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 	    cmd_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} ${gaa_sng[${clm_idx}]} -w ${wgt_prv},${wgt_crr} ${fl_prv[${clm_idx}]} ${fl_out[${clm_idx}]} ${fl_xtn[${clm_idx}]}"
-	    if [[ ${dbg_lvl} -ge 1 ]]; then
+	    if [[ ${dbg_lvl-} -ge 1 ]]; then
 		echo ${cmd_xtn[${clm_idx}]}
 	    fi # !dbg
-	    if [[ ${dbg_lvl} -le 1 ]]; then
-		if [[ -z ${par_opt} ]]; then
+	    if [[ ${dbg_lvl-} -le 1 ]]; then
+		if [[ -z ${par_opt-} ]]; then
 		    eval ${cmd_xtn[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
@@ -4323,7 +4323,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${xtn_flg} == 'Yes' ]]; then
 		fi # !par_opt
 	    fi # !dbg
 	done # !clm_idx
-	if [[ ${par_opt} ]]; then
+	if [[ ${par_opt-} ]]; then
 	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		wait ${xtn_pid[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -4334,15 +4334,15 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${xtn_flg} == 'Yes' ]]; then
 	fi # !par_opt
 	wait
 	
-	if [[ ${rgr_opt} ]]; then 
+	if [[ ${rgr_opt-} ]]; then 
 	    printf "Weight input climos to produce extended regridded climo...\n"
 	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		cmd_rgr_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
-		if [[ ${dbg_lvl} -ge 1 ]]; then
+		if [[ ${dbg_lvl-} -ge 1 ]]; then
 		    echo ${cmd_rgr_xtn[${clm_idx}]}
 		fi # !dbg
-		if [[ ${dbg_lvl} -le 1 ]]; then
-		    if [[ -z ${par_opt} ]]; then
+		if [[ ${dbg_lvl-} -le 1 ]]; then
+		    if [[ -z ${par_opt-} ]]; then
 			eval ${cmd_rgr_xtn[${clm_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
@@ -4354,7 +4354,7 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${xtn_flg} == 'Yes' ]]; then
 		    fi # !par_opt
 		fi # !dbg
 	    done # !clm_idx
-	    if [[ ${par_opt} ]]; then
+	    if [[ ${par_opt-} ]]; then
 		for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		    wait ${rgr_xtn_pid[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
@@ -4369,18 +4369,18 @@ if [[ ${clm_flg} == 'Yes' ]] && [[ ${xtn_flg} == 'Yes' ]]; then
 	# Link E3SM-climo to AMWG-climo filenames
 	# drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
 	# Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd
-	if [[ ${lnk_flg} == 'Yes' ]]; then
+	if [[ ${lnk_flg-} == 'Yes' ]]; then
 	    printf "Link extended E3SM-climo to AMWG-climo filenames...\n"
 	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-		if [[ ${rgr_opt} ]]; then 
+		if [[ ${rgr_opt-} ]]; then 
 		    cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr_xtn};ln -s -f ${fl_rgr_xtn[${clm_idx}]/${drc_rgr_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_rgr_xtn}\//}"
 		else
 		    cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_xtn};ln -s -f ${fl_xtn[${clm_idx}]/${drc_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_xtn}\//}"
 		fi # !rgr_opt
-		if [[ ${dbg_lvl} -ge 1 ]]; then
+		if [[ ${dbg_lvl-} -ge 1 ]]; then
 		    echo ${cmd_lnk_xtn[${clm_idx}]}
 		fi # !dbg
-		if [[ ${dbg_lvl} -le 1 ]]; then
+		if [[ ${dbg_lvl-} -le 1 ]]; then
 		    eval ${cmd_lnk_xtn[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR linking E3SM to AMWG filename cmd_lnk_xtn[${clm_idx}] failed. Debug this:\n${cmd_lnk_xtn[${clm_idx}]}\n"
@@ -4398,8 +4398,8 @@ else # !xtn_flg extended climos
     
 fi # !xtn_flg extended climos
 
-if [[ ${clm_flg} == 'Yes' ]]; then
-    if [[ ${clm_md} == 'dly' ]]; then
+if [[ ${clm_flg-} == 'Yes' ]]; then
+    if [[ ${clm_md-} == 'dly' ]]; then
 	echo "Quick plots of last climatological daily mean:"
 	idx_lst=$((clm_nbr-1))
     else
@@ -4407,31 +4407,31 @@ if [[ ${clm_flg} == 'Yes' ]]; then
 	idx_lst=$((clm_nbr))
     fi # !dly
     
-    if [[ ${yr_srt_prv} ]]; then
-	if [[ ${rgr_opt} ]]; then 
+    if [[ ${yr_srt_prv-} ]]; then
+	if [[ ${rgr_opt-} ]]; then 
 	    echo "ncvis ${fl_rgr_xtn[${idx_lst}]} &"
 	else
 	    echo "ncvis ${fl_xtn[${idx_lst}]} &"
 	fi # !rgr_opt    
     else
-	if [[ ${rgr_opt} ]]; then 
+	if [[ ${rgr_opt-} ]]; then 
 	    echo "ncvis ${fl_rgr[${idx_lst}]} &"
 	else
 	    echo "ncvis ${fl_out[${idx_lst}]} &"
 	fi # !rgr_opt    
     fi # !yr_srt_prv
 fi # !clm_flg
-if [[ ${tms_flg} == 'Yes' ]]; then
+if [[ ${tms_flg-} == 'Yes' ]]; then
     echo "Quick plots of last timeseries segment of last variable split:"
     idx_lst=$((var_nbr-1))
-    if [[ ${rgr_opt} ]] && [[ ${no_ntv_tms} == 'No' ]]; then 
+    if [[ ${rgr_opt-} ]] && [[ ${no_ntv_tms-} == 'No' ]]; then 
 	echo "ncvis ${fl_rgr[${idx_lst}]} &"
     else
 	echo "ncvis ${fl_out[${idx_lst}]} &"
     fi # !rgr_opt    
 fi # !tms_flg
 date_end=$(date +"%s")
-if [[ ${caseid} ]]; then
+if [[ ${caseid-} ]]; then
     printf "Completed ${yr_nbr_xtn}-year climatology operations for dataset with caseid = ${caseid} at `date`\n"
 else # !caseid
     printf "Completed ${yr_nbr_xtn}-year climatology operations for input data at `date`\n"
