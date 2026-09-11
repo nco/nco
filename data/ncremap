@@ -118,7 +118,7 @@ set -u # err_hnd Exit on unbound variable reference
 # ncremap/ncclimo implement NPO (though not getopt) logic prior to invoking NCO
 # This switch is a no-op in main getopt() block below (since it has already been parsed here)
 hrd_pth='No' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
-if [[ ${1} ]]; then
+if [[ ${1-} ]]; then
     if [[ ${1} == '--hrd_pth' ]] || [[ ${1} == '--npo' ]] || [[ ${1} == '--nco_path_override' ]] || [[ ${1} == '--NCO_PATH_OVERRIDE' ]]; then
 	hrd_pth='Yes'
 	NCO_PATH_OVERRIDE='Yes'
@@ -134,7 +134,7 @@ if [[ -z ${HOSTNAME} ]]; then
     fi # !hostname
 fi # HOSTNAME
 # Default input and output directory is ${DATA}
-if [[ -z ${DATA} ]]; then
+if [[ -z ${DATA-} ]]; then
     case "${HOSTNAME}" in 
 	andes* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	bebop* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC bebop compute nodes named bNNN, 36|64 cores|GB/node 
@@ -692,6 +692,14 @@ elif [[ -d '/tmp' ]]; then
 else
     drc_tmp=${PWD}
 fi # !gpfs
+
+# Initialize optional variables so fnc_usg_prn() is safe under "set -u"
+bb_wesn='' # [deg] Regional regridding bounding-box string in WESN order
+dat_glb='' # [sng] Global data-file for regional extraction mode
+gad_lst='' # [sng] Global attributes-to-delete list
+grd_glb='' # [sng] Global grid-file for regional extraction mode
+grd_rgn='' # [sng] Regional grid-file for regional extraction mode
+rnm_sng='' # [sng] Filename rename suffix string
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage

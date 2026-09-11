@@ -102,7 +102,7 @@ set -u # err_hnd Exit on unbound variable reference
 # ncremap/ncclimo implement NPO (though not getopt) logic prior to invoking NCO
 # This switch is a no-op in main getopt() block below (since it has already been parsed here)
 hrd_pth='No' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
-if [[ ${1} ]]; then
+if [[ ${1-} ]]; then
     if [[ ${1} == '--hrd_pth' ]] || [[ ${1} == '--npo' ]] || [[ ${1} == '--nco_path_override' ]] || [[ ${1} == '--NCO_PATH_OVERRIDE' ]]; then
 	hrd_pth='Yes'
 	NCO_PATH_OVERRIDE='Yes'
@@ -118,7 +118,7 @@ if [[ -z ${HOSTNAME} ]]; then
     fi # !hostname
 fi # HOSTNAME
 # Default input and output directory is ${DATA}
-if [[ -z ${DATA} ]]; then
+if [[ -z ${DATA-} ]]; then
     case "${HOSTNAME}" in 
 	andes* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	bebop* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC bebop compute nodes named bNNN, 36|64 cores|GB/node 
@@ -669,6 +669,11 @@ xtn_flg='No' # [sng] Produce extended climatology
 ypf_max=50 # [yr] Years-per-output-file
 yr_end='2' # [yr] End year
 yr_srt='1' # [yr] Start year
+
+# Initialize optional variables so fnc_usg_prn() is safe under "set -u"
+wnt_md='' # [sng] Deprecated winter mode selector retained for usage text
+yr_end_prv='' # [yr] End year of previous climatology extension interval
+yr_srt_prv='' # [yr] Start year of previous climatology extension interval
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage

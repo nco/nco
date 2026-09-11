@@ -127,6 +127,12 @@ vrs_prn='No' # [sng] Print version information
 function ncvarlst { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 function ncdmnlst { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
 
+# Initialize optional variables so fnc_usg_prn() is safe under "set -u"
+job_nbr='' # [nbr] Job simultaneity placeholder for usage text
+par_typ='' # [sng] Parallelism type placeholder for usage text
+tpd_out='' # [nbr] Timesteps-per-day placeholder for usage text
+var_lst='' # [sng] Variable list placeholder for usage text
+
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
     printf "${fnt_rvr}Basic usage:\n${fnt_nrm}${fnt_bld}${spt_nm} in.nc${fnt_nrm} # Default settings\n"
