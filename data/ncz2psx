@@ -82,7 +82,7 @@ spt_pid=$$ # [nbr] Script PID (process ID)
 # ncremap/ncclimo implement NPO (though not getopt) logic prior to invoking NCO
 # This switch is a no-op in main getopt() block below (since it has already been parsed here)
 hrd_pth='No' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
-if [[ ${1} ]]; then
+if [[ ${1-} ]]; then
     if [[ ${1} == '--hrd_pth' ]] || [[ ${1} == '--npo' ]] || [[ ${1} == '--nco_path_override' ]] || [[ ${1} == '--NCO_PATH_OVERRIDE' ]]; then
 	hrd_pth='Yes'
 	NCO_PATH_OVERRIDE='Yes'
@@ -226,7 +226,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # 20220131 ncclimo/ncremap commands within scripts that open E3SMU environment
 # (e.g., zppy-generated scripts) must be told where to find NCO binaries.
 # Only necessary on login nodes since Spack handles this fine on compute nodes
-if [[ ${E3SMU_MPI} == 'NOMPI' ]] && [[ ${E3SMU_SCRIPT} ]] && [[ ${CONDA_PREFIX} ]]; then
+if [[ ${E3SMU_MPI-} == 'NOMPI' ]] && [[ ${E3SMU_SCRIPT-} ]] && [[ ${CONDA_PREFIX-} ]]; then
    export PATH="${CONDA_PREFIX}/bin"\:${PATH}
 fi # !E3SMU_MPI
 # Set NCO version and directory
@@ -305,6 +305,12 @@ scm_sng='' # [sng] Scheme string to prepend/remove to/from filenames
 scm_typ="${scm_dfl}" # [sng] Scheme type
 std_chk='Yes' # [sng] Check stdin for input file list
 vrs_prn='No' # [sng] Print version information
+
+# Initialize optional variables so fnc_usg_prn() is safe under "set -u"
+frg_nm_usr='' # [sng] User-specified fragment type
+frg_sng_usr='' # [sng] User-specified fragment string
+scm_nm_usr='' # [sng] User-specified scheme type
+scm_sng_usr='' # [sng] User-specified scheme string
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
