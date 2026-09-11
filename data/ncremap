@@ -90,8 +90,8 @@ trap err_hnd ERR # err_hnd
 # NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
 spt_src="${BASH_SOURCE[0]}"
-[[ -z "${spt_src}" ]] && spt_src="${0}" # Use ${0} when BASH_SOURCE is unavailable (e.g., dash)
-while [[ -h "${spt_src}" ]]; do # Recursively resolve ${spt_src} until file is no longer a symlink
+[[ -z ${spt_src} ]] && spt_src="${0}" # Use ${0} when BASH_SOURCE is unavailable (e.g., dash)
+while [[ -h ${spt_src} ]]; do # Recursively resolve ${spt_src} until file is no longer a symlink
   drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
   spt_src="$(readlink "${spt_src}")"
   [[ ${spt_src} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
@@ -106,7 +106,7 @@ spt_pid=$$ # [nbr] Script PID (process ID)
 # 20200110 Qi Tang reports Cori batch scripts to generate map-files fail unless he sets this
 # 20200131 Necessary whenever using OpenMP and netCDF4-linked library on any non-locking filesystem?
 set +u # err_hnd Continue on unbound variable reference
-if [[ -z "${HDF5_USE_FILE_LOCKING}" ]]; then
+if [[ -z ${HDF5_USE_FILE_LOCKING} ]]; then
     export HDF5_USE_FILE_LOCKING='FALSE'
 fi # HDF5_USE_FILE_LOCKING
 set -u # err_hnd Exit on unbound variable reference
@@ -118,15 +118,15 @@ set -u # err_hnd Exit on unbound variable reference
 # ncremap/ncclimo implement NPO (though not getopt) logic prior to invoking NCO
 # This switch is a no-op in main getopt() block below (since it has already been parsed here)
 hrd_pth='No' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
-if [[ -n "${1}" ]]; then
-    if [[ "${1}" = '--hrd_pth' ]] || [[ "${1}" = '--npo' ]] || [[ "${1}" = '--nco_path_override' ]] || [[ "${1}" = '--NCO_PATH_OVERRIDE' ]]; then
+if [[ -n ${1} ]]; then
+    if [[ ${1} = '--hrd_pth' ]] || [[ ${1} = '--npo' ]] || [[ ${1} = '--nco_path_override' ]] || [[ ${1} = '--NCO_PATH_OVERRIDE' ]]; then
 	hrd_pth='Yes'
 	NCO_PATH_OVERRIDE='Yes'
     fi # !hrd_pth
 fi # !$1
 
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
-if [[ -z "${HOSTNAME}" ]]; then
+if [[ -z ${HOSTNAME} ]]; then
     if [[ -f /bin/hostname ]] && [[ -x /bin/hostname ]]; then
 	export HOSTNAME=`/bin/hostname`
     elif [[ -f /usr/bin/hostname ]] && [[ -x /usr/bin/hostname ]]; then
@@ -134,7 +134,7 @@ if [[ -z "${HOSTNAME}" ]]; then
     fi # !hostname
 fi # HOSTNAME
 # Default input and output directory is ${DATA}
-if [[ -z "${DATA}" ]]; then
+if [[ -z ${DATA} ]]; then
     case "${HOSTNAME}" in 
 	andes* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	bebop* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC bebop compute nodes named bNNN, 36|64 cores|GB/node 
@@ -146,9 +146,9 @@ if [[ -z "${DATA}" ]]; then
 	frontier* ) DATA="/lustre/orion/cli115/world-shared/${USER}" ; ;; # OLCF frontier compute nodes named frontier01276 64|512 cores|GB/node
 	ilogin* | i[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC improv compute nodes named iNNN, 128|256 cores|GB/node 
 	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
-	    if [[ "${LMOD_SYSTEM_NAME}" = 'frontier' ]]; then
+	    if [[ ${LMOD_SYSTEM_NAME} = 'frontier' ]]; then
 		DATA="/lustre/orion/cli115/world-shared/${USER}"
-	    elif [[ "${LMOD_SYSTEM_NAME}" = 'perlmutter' ]]; then
+	    elif [[ ${LMOD_SYSTEM_NAME} = 'perlmutter' ]]; then
 		DATA="${SCRATCH}"
 	    fi # !LMOD_SYSTEM_NAME
 	    ;; # !login	
@@ -171,7 +171,7 @@ OMP_PROC_BIND=false
 # Leave NCO_PATH_OVERRIDE unset or set to 'No' to prevent NCO from executing next block that overrides PATH
 # Set NCO_PATH_OVERRIDE to 'Yes' in environment to cause NCO to execute next block and to override PATH:
 # export NCO_PATH_OVERRIDE='Yes'
-if [[ "${hrd_pth}" = 'Yes' ]] && [[ "${NCO_PATH_OVERRIDE}" = 'Yes' ]]; then
+if [[ ${hrd_pth} = 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE} = 'Yes' ]]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
     case "${HOSTNAME}" in 
@@ -220,7 +220,7 @@ if [[ "${hrd_pth}" = 'Yes' ]] && [[ "${NCO_PATH_OVERRIDE}" = 'Yes' ]]; then
 		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
 		module load ncl
 	    fi # !ncremap
-	    if [[ -n "${NCARG_ROOT}" ]]; then
+	    if [[ -n ${NCARG_ROOT} ]]; then
 		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.6.2/gnu/8.3.0/bin"
 	    fi # !NCARG_ROOT
             export PATH='/glade/u/home/zender/bin'\:${PATH}
@@ -239,7 +239,7 @@ if [[ "${hrd_pth}" = 'Yes' ]] && [[ "${NCO_PATH_OVERRIDE}" = 'Yes' ]]; then
             export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
 	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
-	    if [[ "${LMOD_SYSTEM_NAME}" = 'frontier' ]]; then
+	    if [[ ${LMOD_SYSTEM_NAME} = 'frontier' ]]; then
 		if [[ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]]; then
                     E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/frontier'
 		else
@@ -247,7 +247,7 @@ if [[ "${hrd_pth}" = 'Yes' ]] && [[ "${NCO_PATH_OVERRIDE}" = 'Yes' ]]; then
 		fi
 		export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
 		export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH}
-	    elif [[ "${LMOD_SYSTEM_NAME}" = 'perlmutter' ]]; then
+	    elif [[ ${LMOD_SYSTEM_NAME} = 'perlmutter' ]]; then
 		# 20221103 Add build environment modules
 		# 20260317 Test removing these modules
 		#module load PrgEnv-gnu
@@ -258,7 +258,7 @@ if [[ "${hrd_pth}" = 'Yes' ]] && [[ "${NCO_PATH_OVERRIDE}" = 'Yes' ]]; then
 		else
 		    E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
 		fi # !E3SMU-NCO
-		if [[ -n "${NCARG_ROOT}" ]]; then
+		if [[ -n ${NCARG_ROOT} ]]; then
 		    export PATH="${PATH}:${NCARG_ROOT}/bin"
 		    export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 		fi # !NCARG_ROOT
@@ -277,7 +277,7 @@ if [[ "${hrd_pth}" = 'Yes' ]] && [[ "${NCO_PATH_OVERRIDE}" = 'Yes' ]]; then
             else
 		E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/base/envs/e3sm_unified_latest'
 	    fi # !E3SMU-NCO
-	    if [[ -n "${NCARG_ROOT}" ]]; then
+	    if [[ -n ${NCARG_ROOT} ]]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 	    fi # !NCARG_ROOT
@@ -291,7 +291,7 @@ if [[ "${hrd_pth}" = 'Yes' ]] && [[ "${NCO_PATH_OVERRIDE}" = 'Yes' ]]; then
     # ncclimo only needs access to E3SM_U libraries (e.g., libgsl, libantlr), already implemented above
     # ncremap needs access to E3SM_U binaries (ESMF_RegridWeightGen, ...) _and_ libraries
     # Append E3SM-U binaries to _end_ of PATH so NCO binaries not redirected, e.g., from CSZ's development directory to E3SM-U
-    if [[ -n "${E3SMU_ROOT}" ]] && [[ ${spt_nm} = 'ncremap' ]]; then
+    if [[ -n ${E3SMU_ROOT} ]] && [[ ${spt_nm} = 'ncremap' ]]; then
 	export PATH="${PATH}:${E3SMU_ROOT}/bin"
 	export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${E3SMU_ROOT}/lib"
     fi # !E3SMU_ROOT
@@ -448,19 +448,19 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # (e.g., zppy-generated scripts) must be told where to find NCO binaries.
 # Only necessary on login nodes since Spack handles this fine on compute nodes
 set +u # err_hnd Continue on unbound variable reference
-if [[ "${E3SMU_MPI}" = 'NOMPI' ]] && [[ -n "${E3SMU_SCRIPT}" ]] && [[ -n "${CONDA_PREFIX}" ]]; then
+if [[ ${E3SMU_MPI} = 'NOMPI' ]] && [[ -n ${E3SMU_SCRIPT} ]] && [[ -n ${CONDA_PREFIX} ]]; then
    export PATH="${CONDA_PREFIX}/bin"\:${PATH}
 fi # !E3SMU_MPI
 set -u # err_hnd Exit on unbound variable reference
 # Set NCO version and directory
 nco_exe=`which ncks`
-if [[ -z "${nco_exe}" ]]; then
+if [[ -z ${nco_exe} ]]; then
     echo "ERROR: Unable to find NCO, nco_exe = ${nco_exe}"
     echo "${spt_nm}: HINT Carefully examine your environment setup (e.g., .bashrc) to avoid inadvertently overriding (with, e.g., conda-initialization) paths intended to be provided by an analysis-package environment (e.g., E3SM-Unified)"
     exit 1
 fi # !nco_exe
 # StackOverflow method finds NCO directory
-while [[ -h "${nco_exe}" ]]; do
+while [[ -h ${nco_exe} ]]; do
   drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
   nco_exe="$(readlink "${nco_exe}")"
   [[ ${nco_exe} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
@@ -468,11 +468,11 @@ done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
 nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
 # 20190218: Die quickly when NCO is found yet cannot run, e.g., due to linker errors
-if [[ -z "${nco_vrs}" ]]; then
+if [[ -z ${nco_vrs} ]]; then
     echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
     $(ncks --version)
     # 20250905: Additional information for debugging link issues
-    if [[ "${NCO_PATH_OVERRIDE}" = 'Yes' ]]; then
+    if [[ ${NCO_PATH_OVERRIDE} = 'Yes' ]]; then
 	echo "${spt_nm}: DEBUG Next line shows contents of \$LD_LIBRARY_PATH:"
 	echo "${LD_LIBRARY_PATH}"
 	echo "${spt_nm}: DEBUG Next line shows contents of \$PATH:"
@@ -486,13 +486,13 @@ nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk -F '"' '{print $2}')
 lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 
 # Detect and warn about mixed modules (for Qi Tang 20170531)
-if [[ "${drc_spt}" != "${drc_nco}" ]]; then
+if [[ ${drc_spt} != ${drc_nco} ]]; then
     echo "INFO: Mixture of NCO scripts and binaries from different locations. Script ${spt_nm} is from directory ${drc_spt} while NCO binaries are from directory ${drc_nco}. Normally the script and binaries are from the same executables directory. This INFO may be safely ignored for customized scripts and/or binaries that the user has intentionally split into different directories."
     echo "HINT: Conflicting script and binary directories may result from 1) Hardcoding an NCO script and/or binary pathnames, 2) Incomplete NCO installations in one or more directories in the \$PATH environment variable, 3) (Re-)Installing or (re-)building NCO without issuing a \"hash -r\" command afterward to update the executable pathnames that the shell remembers from before."
 fi # drc_spt
 
 # When running in a terminal window (not in an non-interactive batch queue)...
-if [[ -n "${TERM}" ]]; then
+if [[ -n ${TERM} ]]; then
     # Set fonts for legibility
     if [[ -x /usr/bin/tput ]] && tput setaf 1 &> /dev/null; then
 	fnt_bld=`tput bold` # Bold
@@ -684,7 +684,7 @@ xtr_nsp=8 # [nbr] Extrapolation number of source points (for ESMF & NCO only)
 xtr_xpn=2.0 # [frc] Extrapolation inverse-distance exponent (absolute value) (for ESMF & NCO only)
 
 # Set temporary-file directory (must be writable by user)
-if [[ -d "${TMPDIR}" ]]; then
+if [[ -d ${TMPDIR} ]]; then
     # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
     drc_tmp="${TMPDIR%/}"
 elif [[ -d '/tmp' ]]; then
@@ -1041,12 +1041,12 @@ if [[ ${psn_nbr} -ge 1 ]]; then
     inp_psn='Yes'
     std_chk='No'
 fi # !psn_nbr
-if [[ -n "${in_fl}" ]]; then
+if [[ -n ${in_fl} ]]; then
     # 20200430 Input file as single optional command-line argument means we need not check standard-input
     inp_aut='Yes'
     std_chk='No'
 fi # !in_fl
-if [[ "${d2f_flg}" != 'Yes' ]]; then
+if [[ ${d2f_flg} != 'Yes' ]]; then
     d2f_opt=''
 fi # !d2f_flg
 
@@ -1074,58 +1074,58 @@ if [[ ${vrs_prn} = 'Yes' ]]; then
     printf "LICENSE: https://github.com/nco/nco/tree/master/LICENSE\n"
     printf "Config: ${spt_nm} script located in directory ${drc_spt}\n"
     printf "Config: NCO binaries located in directory ${drc_nco}, linked to netCDF library version ${lbr_vrs}\n"
-    if [[ "${hrd_pth_fnd}" = 'Yes' ]]; then
+    if [[ ${hrd_pth_fnd} = 'Yes' ]]; then
 	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
     else
 	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
     fi # !hrd_pth_fnd
     printf "Config: Grid & weight-generation tool availability:\n"
-    if [[ -n "${cmd_wgt_cdo}" ]]; then
+    if [[ -n ${cmd_wgt_cdo} ]]; then
 	printf "Config: CDO weight-generation command ${wgt_exe_cdo} found as ${cmd_wgt_cdo}\n"
     else
 	printf "Config: CDO weight-generation command ${wgt_exe_cdo} not found\n"
     fi # !err
-    if [[ -n "${cmd_wgt_esmf}" ]]; then
+    if [[ -n ${cmd_wgt_esmf} ]]; then
 	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} found as ${cmd_wgt_esmf}\n"
     else
 	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} not found\n"
     fi # !err
-    if [[ -n "${cmd_wgt_mbt}" ]]; then
+    if [[ -n ${cmd_wgt_mbt} ]]; then
 	printf "Config: MOAB-Tempest mesh- and weight-generation command ${wgt_exe_mbt} found as ${cmd_wgt_mbt}\n"
     else
 	printf "Config: MOAB-Tempest mesh- and weight-generation command ${wgt_exe_mbt} not found\n"
     fi # !err
-    if [[ -n "${cmd_cnv_mbt}" ]]; then
+    if [[ -n ${cmd_cnv_mbt} ]]; then
 	printf "Config: MOAB-Tempest SCRIP/Exodus conversion to H5M command ${cnv_exe_mbt} found as ${cmd_cnv_mbt}\n"
     else
 	printf "Config: MOAB-Tempest SCRIP/Exodus conversion to H5M command ${cnv_exe_mbt} not found\n"
     fi # !err
-    if [[ -n "${cmd_prt_mbt}" ]]; then
+    if [[ -n ${cmd_prt_mbt} ]]; then
 	printf "Config: MOAB-Tempest H5M partition command ${prt_exe_mbt} found as ${cmd_prt_mbt}\n"
     else
 	printf "Config: MOAB-Tempest H5M partition command ${prt_exe_mbt} not found\n"
     fi # !err
-    if [[ -n "${cmd_dpt_mpas}" ]]; then
+    if [[ -n ${cmd_dpt_mpas} ]]; then
 	printf "Config: MPAS depth coordinate addition command ${dpt_exe_mpas} found as ${cmd_dpt_mpas}\n"
     else
 	printf "Config: MPAS depth coordinate addition command ${dpt_exe_mpas} not found\n"
     fi # !err
-    if [[ -n "${cmd_wgt_nco}" ]]; then
+    if [[ -n ${cmd_wgt_nco} ]]; then
 	printf "Config: NCO mesh- and weight-generation command ${wgt_exe_nco} found as ${cmd_wgt_nco}\n"
     else
 	printf "Config: NCO mesh- and weight-generation command ${wgt_exe_nco} not found\n"
     fi # !err
-    if [[ -n "${cmd_wgt_tps}" ]]; then
+    if [[ -n ${cmd_wgt_tps} ]]; then
 	printf "Config: TempestRemap weight-generation command ${wgt_exe_tps} found as ${cmd_wgt_tps}\n"
     else
 	printf "Config: TempestRemap weight-generation command ${wgt_exe_tps} not found\n"
     fi # !err
-    if [[ -n "${cmd_msh_tps}" ]]; then
+    if [[ -n ${cmd_msh_tps} ]]; then
 	printf "Config: TempestRemap mesh-generation command ${msh_exe_tps} found as ${cmd_msh_tps}\n"
     else
 	printf "Config: TempestRemap weight-generation command ${msh_exe_tps} not found\n"
     fi # !err
-    if [[ -n "${cmd_cnv_tps}" ]]; then
+    if [[ -n ${cmd_cnv_tps} ]]; then
 	printf "Config: TempestRemap Mesh or SCRIP to Exodus conversion command ${cnv_exe_tps} found as ${cmd_cnv_tps}\n"
     else
 	printf "Config: TempestRemap Mesh or SCRIP to Exodus conversion command ${cnv_exe_tps} not found\n"
@@ -1145,14 +1145,14 @@ fi # !vrs_prn
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
 # Check stdin if user has not explicitly disallowed it with --no_stdin
 set +u # err_hnd Continue on unbound variable reference
-if [[ "${std_chk}" = 'Yes' ]]; then
-    if [[ -n "${PBS_ENVIRONMENT}" ]]; then
-	if [[ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]]; then
+if [[ ${std_chk} = 'Yes' ]]; then
+    if [[ -n ${PBS_ENVIRONMENT} ]]; then
+	if [[ ${PBS_ENVIRONMENT} = 'PBS_BATCH' ]]; then
 	    # PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
 	    bch_pbs='Yes'
 	fi # !PBS_ENVIRONMENT
     fi # !PBS
-    if [[ -n "${SLURM_JOBID}" ]] && [[ -z "${SLURM_PTY_PORT}" ]]; then
+    if [[ -n ${SLURM_JOBID} ]] && [[ -z ${SLURM_PTY_PORT} ]]; then
 	# SLURM batch detection suggested by NERSC ticket INC0096873 on 20170127
 	bch_slr='Yes'
     fi # !SLURM
@@ -1192,19 +1192,19 @@ fi # !std_chk
 #set -u # err_hnd Exit on unbound variable reference
 
 # Derived variables
-if [[ -n "${drc_usr}" ]]; then
+if [[ -n ${drc_usr} ]]; then
     chr_fst=${drc_usr:0:1}
-    if [[ "${chr_fst}" = '-' ]]; then
+    if [[ ${chr_fst} = '-' ]]; then
 	printf "${spt_nm}: WARNING first character of user-specified output directory drc_out is \"${chr_fst}\", which looks like an option itself. Be sure the ${spt_nm} '-O' option is followed by an argument that specifies the output directory for regridded files. The '-O' option requires a pathname argument, and should not be confused with the '-O' flag (which takes no argument) used in the rest of NCO to force overwriting files (${spt_nm} automatically overwrites existing output files).\n"
     fi # !chr_fst
     drc_out="${drc_usr%/}"
 else
-    if [[ -n "${out_fl}" ]]; then
+    if [[ -n ${out_fl} ]]; then
 	drc_out="$(dirname ${out_fl})"
     fi # !out_fl
 fi # !drc_usr
 
-if [[ -n "${tmp_usr}" ]]; then
+if [[ -n ${tmp_usr} ]]; then
     # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
     drc_tmp=${tmp_usr%/}
 fi # !tmp_usr
@@ -1223,11 +1223,11 @@ rgn_fl="${drc_tmp}/ncremap_tmp_rgn.nc" # [sng] Regional file with coordinates (R
 tmp_out_fl="${drc_tmp}/ncremap_tmp_out.nc" # [sng] Temporary output file
 znl_fl="${drc_tmp}/ncremap_tmp_znl.nc" # [sng] Zonal workflow (HIRDLS, MLS) default
 
-if [[ -n "${unq_usr}" ]]; then
-    if [[ "${unq_usr}" = 'noclean' ]]; then
+if [[ -n ${unq_usr} ]]; then
+    if [[ ${unq_usr} = 'noclean' ]]; then
 	cln_flg='No'
     else
-	if [[ "${unq_usr}" = 'none' ]] || [[ "${unq_usr}" = 'nil' ]]; then
+	if [[ ${unq_usr} = 'none' ]] || [[ ${unq_usr} = 'nil' ]]; then
 	    unq_sfx=""
 	else # !unq_usr
 	    unq_sfx="${unq_usr}"
@@ -1260,7 +1260,7 @@ elif [[ ${alg_typ} = 'bilinear' ]] || [[ ${alg_typ} = 'esmfbilin' ]] || [[ ${alg
     alg_opt='bilinear'
     wgt_typ='esmf'
 # 20211118 Default to nearestidavg extrapolation with bilinear algorithm (as E3SM does), unless user explicitly specifies an extrapolation type
-    if [[ -z "${esmf_typ}" ]]; then
+    if [[ -z ${esmf_typ} ]]; then
 	esmf_typ='nearestidavg'
     fi # !esmf_typ
 elif [[ ${alg_typ} = 'conserve' ]] || [[ ${alg_typ} = 'esmfaave' ]] || [[ ${alg_typ} = 'conservative' ]] || [[ ${alg_typ} = 'cns' ]] || [[ ${alg_typ} = 'c1' ]] || [[ ${alg_typ} = 'aave' ]]; then 
@@ -1413,15 +1413,15 @@ else
     exit 1
 fi # !alg_typ
 
-if [[ -n "${mpi_nbr_usr}" ]]; then
+if [[ -n ${mpi_nbr_usr} ]]; then
     mpi_nbr=${mpi_nbr_usr}
 fi # !mpi_nbr_usr
 # Specifying a TR algorithm and explicitly setting mpi_nbr implies MOAB
-if [[ ${wgt_typ} = 'tempest' ]] && [[ -n "${mpi_nbr_usr}" ]]; then
+if [[ ${wgt_typ} = 'tempest' ]] && [[ -n ${mpi_nbr_usr} ]]; then
     wgt_typ='mbtempest'
 fi # !wgt_typ
 # If user explicitly sets mpi_nbr then we need a prefix
-if [[ -n "${mpi_nbr_usr}" ]]; then
+if [[ -n ${mpi_nbr_usr} ]]; then
     # ...then set prefix for invoking MPI-enabled weight generators 
     case "${HOSTNAME}" in 
 	andes* ) mpi_pfx="srun --exclusive -n ${mpi_nbr}" ; ;; 
@@ -1439,11 +1439,11 @@ if [[ -n "${mpi_nbr_usr}" ]]; then
 	* ) mpi_pfx="srun --exclusive -n ${mpi_nbr}" ; ;; # Default
     esac # !HOSTNAME
 fi # !mpi_nbr
-if [[ -n "${mpi_pfx_usr}" ]]; then 
+if [[ -n ${mpi_pfx_usr} ]]; then 
     mpi_pfx="${mpi_pfx_usr}"
 fi # !mpi_pfx_usr
 # If MPI will be used, adjust partition number be a multiple of mpi_nbr
-if [[ -n "${mpi_pfx}" ]]; then 
+if [[ -n ${mpi_pfx} ]]; then 
     if [[ ${prt_nbr} -lt ${mpi_nbr} ]]; then
 	[[ ${dbg_lvl} -ge 1 ]] && echo "${spt_nm}: INFO Increasing partition number from ${prt_nbr} to ${mpi_nbr}"
 	prt_nbr=${mpi_nbr}
@@ -1466,40 +1466,40 @@ if [[ ${wgt_typ} = 'esmf' ]]; then
     erwg_vrs_sng="${erwg_vrs_sng#"${erwg_vrs_sng%%[![:space:]]*}"}"
     # Extract first character
     erwg_vrs_mjr="${erwg_vrs_sng:0:1}"
-    if [[ -z "${erwg_vrs_mjr}" ]]; then
+    if [[ -z ${erwg_vrs_mjr} ]]; then
 	# Version can fail when ERWG fails, e.g., due to dynamic link issues
 	printf "${spt_nm}: WARNING ${wgt_exe_esmf} (ERWG) found though does not run as expected. Possible dynamic linking issue due, e.g., to LD_LIBRARY_PATH configuration. Unable to determine ERWG version. ERWG may not be needed so continuing anyway...\n"
 	erwg_vrs_sng='ERWG_VERSION_NOT_FOUND'
 	erwg_vrs_mjr=7
-    elif [[ "${erwg_vrs_mjr}" -ge 7 ]]; then
+    elif [[ ${erwg_vrs_mjr} -ge 7 ]]; then
 	wgt_opt_esmf="${wgt_opt_esmf} --ignore_degenerate"
     fi # !erwg_vrs_mjr
 fi # !err
 
-if [[ -n "${fl_fmt}" ]]; then
-    if [[ "${fl_fmt}" = '3' ]] || [[ "${fl_fmt}" = 'classic' ]] || [[ "${fl_fmt}" = 'netcdf3' ]]; then
+if [[ -n ${fl_fmt} ]]; then
+    if [[ ${fl_fmt} = '3' ]] || [[ ${fl_fmt} = 'classic' ]] || [[ ${fl_fmt} = 'netcdf3' ]]; then
 	nco_fl_fmt='--fl_fmt=classic'
 	wgt_opt_tps="${wgt_opt_tps} --out_format Classic"
 	msh_opt_tps="${msh_opt_tps} --out_format Classic"
 	[[ ${wgt_typ} = 'mbtempest' ]] && map_nfo_sng="INFO: MOAB/mbtempest does not support writing map-file as requested type ${fmt_sng_nc3}, will write ${fmt_sng_nc4} instead"
-    elif [[ "${fl_fmt}" = '4' ]] || [[ "${fl_fmt}" = 'netcdf4' ]] || [[ "${fl_fmt}" = 'hdf5' ]]; then
+    elif [[ ${fl_fmt} = '4' ]] || [[ ${fl_fmt} = 'netcdf4' ]] || [[ ${fl_fmt} = 'hdf5' ]]; then
 	nco_fl_fmt='--fl_fmt=netcdf4'
 	wgt_opt_esmf="${wgt_opt_esmf} --netcdf4"
 	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4"
 	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4"
-    elif [[ "${fl_fmt}" = '5' ]] || [[ "${fl_fmt}" = '64bit_data' ]] || [[ "${fl_fmt}" = 'cdf5' ]]; then
+    elif [[ ${fl_fmt} = '5' ]] || [[ ${fl_fmt} = '64bit_data' ]] || [[ ${fl_fmt} = 'cdf5' ]]; then
 	nco_fl_fmt='--fl_fmt=64bit_data'
 	wgt_opt_esmf="${wgt_opt_esmf} --netcdf4" # Change when ERWG supports CDF5
 	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4"
 	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4"
 	[[ ${wgt_typ} != 'nco' ]] && map_nfo_sng="INFO: ${wgt_typ} does not support writing requested map-file as requested type ${fmt_sng_nc5}, will write ${fmt_sng_nc4} instead"
-    elif [[ "${fl_fmt}" = '6' ]] || [[ "${fl_fmt}" = '64bit_offset' ]] || [[ "${fl_fmt}" = '64' ]]; then
+    elif [[ ${fl_fmt} = '6' ]] || [[ ${fl_fmt} = '64bit_offset' ]] || [[ ${fl_fmt} = '64' ]]; then
 	nco_fl_fmt='--fl_fmt=64bit_offset'
 	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset"
 	wgt_opt_tps="${wgt_opt_tps} --out_format Offset64Bits"
 	msh_opt_tps="${msh_opt_tps} --out_format Offset64Bits"
 	[[ ${wgt_typ} = 'mbtempest' ]] && map_nfo_sng="INFO: MOAB/mbtempest does not support writing requested map-file as requested type ${fmt_sng_nc6}, will write ${fmt_sng_nc4} instead"
-    elif [[ "${fl_fmt}" = '7' ]] || [[ "${fl_fmt}" = 'netcdf4_classic' ]]; then
+    elif [[ ${fl_fmt} = '7' ]] || [[ ${fl_fmt} = 'netcdf4_classic' ]]; then
 	nco_fl_fmt='--fl_fmt=netcdf4_classic'
 	wgt_opt_esmf="${wgt_opt_esmf} --netcdf4" # Change when ERWG supports netCDF7
 	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4Classic"
@@ -1513,10 +1513,10 @@ if [[ -n "${fl_fmt}" ]]; then
     nco_opt="${nco_fl_fmt} ${nco_opt}"
 fi # !fl_fmt
 
-if [[ -n "${nsx_alg}" ]]; then
-    if [[ "${nsx_alg}" = 'adv' ]] || [[ "${nsx_alg}" = 'advfront' ]] || [[ "${nsx_alg}" = 'advancing_front' ]]; then
+if [[ -n ${nsx_alg} ]]; then
+    if [[ ${nsx_alg} = 'adv' ]] || [[ ${nsx_alg} = 'advfront' ]] || [[ ${nsx_alg} = 'advancing_front' ]]; then
 	wgt_opt_mbt="--advfront ${wgt_opt_mbt}"
-    elif [[ "${nsx_alg}" = 'kd' ]] || [[ "${nsx_alg}" = 'kdtree' ]]; then
+    elif [[ ${nsx_alg} = 'kd' ]] || [[ ${nsx_alg} = 'kdtree' ]]; then
     	wgt_opt_mbt="${wgt_opt_mbt}" # Kd-tree is default in mbtempest
     else
 	echo "${spt_nm}: ERROR User-supplied intersection algorithm specifier nsx_alg='${nsx_alg}' is invalid"
@@ -1524,14 +1524,14 @@ if [[ -n "${nsx_alg}" ]]; then
 	exit 1
     fi # !nsx_alg
 fi # !nsx_alg
-if [[ -n "${xtr_nsp_usr}" ]]; then
+if [[ -n ${xtr_nsp_usr} ]]; then
     xtr_nsp=${xtr_nsp_usr}
 fi # !xtr_nsp_usr
-if [[ -n "${xtr_xpn_usr}" ]]; then
+if [[ -n ${xtr_xpn_usr} ]]; then
     xtr_xpn=${xtr_xpn_usr}
 fi # !xtr_xpn_usr
 
-if [[ -n "${esmf_typ}" ]]; then
+if [[ -n ${esmf_typ} ]]; then
     # Configure ERWG options, if necessary
     if [[ ${esmf_typ} = 'neareststod' ]] || [[ ${esmf_typ} = 'stod' ]] || [[ ${esmf_typ} = 'nsd' ]]; then 
 	esmf_opt='neareststod'
@@ -1556,7 +1556,7 @@ elif [[ ${wgt_typ} = 'esmf' ]]; then
     wgt_exe="${wgt_exe_esmf}"
     wgt_opt="${wgt_opt_esmf}"
 elif [[ ${wgt_typ} = 'nco' ]]; then
-    if [[ "${alg_opt}" = 'ncoidw' ]]; then
+    if [[ ${alg_opt} = 'ncoidw' ]]; then
 	wgt_opt_nco="${wgt_opt_nco} --rgr wgt_typ=${alg_opt} --rgr xtr_nsp=${xtr_nsp} --rgr xtr_xpn=${xtr_xpn}"
     fi # alg_opt
     wgt_cmd="${wgt_exe_nco}"
@@ -1575,57 +1575,57 @@ else
     exit 1
 fi # !wgt_typ
 # NB: Define after wgt_typ-block so user can override default options
-if [[ -n "${wgt_opt_usr}" ]]; then 
+if [[ -n ${wgt_opt_usr} ]]; then 
     wgt_opt=${wgt_opt_usr}
 fi # !wgt_opt_usr    
-if [[ -n "${mpi_pfx}" ]]; then 
+if [[ -n ${mpi_pfx} ]]; then 
     if [[ ${wgt_typ} = 'esmf' ]] || [[ ${wgt_typ} = 'mbtempest' ]]; then
 	wgt_cmd="${mpi_pfx} ${wgt_cmd}"
     fi # !wgt_typ
 fi # !mpi_pfx
-if [[ -n "${wgt_usr}" ]]; then 
+if [[ -n ${wgt_usr} ]]; then 
     wgt_cmd=${wgt_usr}
 fi # !wgt_usr    
 
-if [[ -z "${drc_in}" ]]; then
+if [[ -z ${drc_in} ]]; then
     drc_in="${drc_pwd}"
 else # !drc_in
-    if [[ ! -d "${drc_in}" ]]; then
+    if [[ ! -d ${drc_in} ]]; then
 	echo "${spt_nm}: ERROR specified input directory \"${drc_in}\" does not exist"
 	exit 1
     fi # !drc_in
     drc_in_usr_flg='Yes'
 fi # !drc_in
-if [[ -n "${job_usr}" ]]; then 
+if [[ -n ${job_usr} ]]; then 
     job_nbr="${job_usr}"
 fi # !job_usr
-if [[ -n "${mss_val_usr}" ]]; then 
+if [[ -n ${mss_val_usr} ]]; then 
     mss_val=${mss_val_usr}
     att_flg='Yes'
 fi # !mss_val_usr    
 if [[ ${dbg_lvl} -ge 2 ]]; then
     nco_opt="--dbg_lvl=${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
-if [[ -n "${cmp_sng}" ]]; then
+if [[ -n ${cmp_sng} ]]; then
     # 20230623: Insert backslashes to protect pipe characters from shell
     nco_opt="${nco_opt} --cmp=${cmp_sng//\|/\\|}"
 fi # !cmp_sng
-if [[ -n "${bfr_sz}" ]]; then
+if [[ -n ${bfr_sz} ]]; then
     nco_opt="${nco_opt} --bfr_sz=${bfr_sz}"
 fi # !bfr_sz
-if [[ -n "${blk_sz}" ]]; then
+if [[ -n ${blk_sz} ]]; then
     nco_opt="${nco_opt} --blk_sz=${blk_sz}"
 fi # !blk_sz
-if [[ -n "${col_dmn}" ]]; then
+if [[ -n ${col_dmn} ]]; then
     rgr_opt="${rgr_opt} --rgr col_nm=${col_dmn}"
 fi # !col_dmn
-if [[ -n "${dfl_lvl}" ]]; then
+if [[ -n ${dfl_lvl} ]]; then
     nco_opt="${nco_opt} --dfl_lvl=${dfl_lvl}"
 fi # !dfl_lvl
-if [[ -n "${qnt_prc}" ]]; then
+if [[ -n ${qnt_prc} ]]; then
     nco_opt="${nco_opt} --qnt default=${qnt_prc}"
 fi # !qnt_prc
-if [[ "${dvn_flg}" = 'Yes' ]]; then
+if [[ ${dvn_flg} = 'Yes' ]]; then
 # 20210926 Omit 2>&1 since better for user to see error messages
 # 20210926 Add 2>&1 to quiet unruly non-error output from mbconvert
     [[ ${dbg_lvl} -eq 0 ]] && devnull="${devnulll} 2>&1"
@@ -1633,142 +1633,142 @@ if [[ "${dvn_flg}" = 'Yes' ]]; then
 else
     devnull=''
 fi # !dfl_lvl
-if [[ -n "${hdr_pad}" ]]; then 
+if [[ -n ${hdr_pad} ]]; then 
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
 fi # !hdr_pad
-if [[ -n "${uio_flg}" ]]; then
+if [[ -n ${uio_flg} ]]; then
     nco_opt="${nco_opt} --unbuffered_io"
 fi # !uio_flg
-if [[ -n "${gaa_sng}" ]]; then 
+if [[ -n ${gaa_sng} ]]; then 
     nco_opt="${nco_opt} ${gaa_sng}"
 fi # !gaa_sng
-if [[ -n "${gaa_sng}" ]]; then 
+if [[ -n ${gaa_sng} ]]; then 
     nco_opt="${nco_opt} ${gad_sng}"
 fi # !gad_sng
-if [[ "${no_cll_msr}" = 'Yes' ]]; then 
+if [[ ${no_cll_msr} = 'Yes' ]]; then 
     nco_opt="${nco_opt} --no_cll_msr"
 fi # !no_cll_msr
-if [[ "${no_frm_trm}" = 'Yes' ]]; then 
+if [[ ${no_frm_trm} = 'Yes' ]]; then 
     nco_opt="${nco_opt} --no_frm_trm"
 fi # !no_frm_trm
-if [[ "${msk_apl}" = 'Yes' ]]; then 
+if [[ ${msk_apl} = 'Yes' ]]; then 
     rgr_opt="${rgr_opt} --rgr mask_apply"
 fi # !msk_apl
-if [[ -n "${prs_stt_usr}" ]]; then 
-    if [[ "${prs_stt_usr}" = 'mean' ]] || [[ "${prs_stt_usr}" = 'local' ]] || [[ "${prs_stt_usr}" = 'local_mean' ]] || [[ "${prs_stt_usr}" = 'gridcell' ]] || [[ "${prs_stt_usr}" = 'gridcell_mean' ]] || [[ "${prs_stt_usr}" = 'natural_values' ]]; then
+if [[ -n ${prs_stt_usr} ]]; then 
+    if [[ ${prs_stt_usr} = 'mean' ]] || [[ ${prs_stt_usr} = 'local' ]] || [[ ${prs_stt_usr} = 'local_mean' ]] || [[ ${prs_stt_usr} = 'gridcell' ]] || [[ ${prs_stt_usr} = 'gridcell_mean' ]] || [[ ${prs_stt_usr} = 'natural_values' ]]; then
 	prs_stt='mean'
-    elif [[ "${prs_stt_usr}" = 'integral' ]] || [[ "${prs_stt_usr}" = 'global' ]] || [[ "${prs_stt_usr}" = 'global_integral' ]]; then
+    elif [[ ${prs_stt_usr} = 'integral' ]] || [[ ${prs_stt_usr} = 'global' ]] || [[ ${prs_stt_usr} = 'global_integral' ]]; then
 	prs_stt='integral'
     else
 	echo "${spt_nm}: ERROR \"${prs_stt_usr}\" is an invalid value for preserved_statistic"
 	echo "${spt_nm}: HINT The valid values for preserved_statistic are \"mean\" (or synonyms \"local\", \"local_mean\") and \"integral\" (or synonyms \"global\", \"global_integral\")"
 	exit 1
     fi # !prs_stt_usr
-    if [[ "${prs_stt}" = 'mean' ]] && [[ -z "${rnr_thr}" ]]; then 
+    if [[ ${prs_stt} = 'mean' ]] && [[ -z ${rnr_thr} ]]; then 
 	rnr_thr=0.0
     fi # !prs_stt
-    if [[ "${prs_stt}" = 'integral' ]] && [[ -n "${rnr_thr}" ]]; then 
-	if [[ "${rnr_thr}" != 'off' ]] && [[ "${rnr_thr}" != 'none' ]]; then
+    if [[ ${prs_stt} = 'integral' ]] && [[ -n ${rnr_thr} ]]; then 
+	if [[ ${rnr_thr} != 'off' ]] && [[ ${rnr_thr} != 'none' ]]; then
 	    echo "${spt_nm}: ERROR preserved_statistic = \"${prs_stt}\" conflicts with rnr_thr=${rnr_thr}"
 	    echo "${spt_nm}: HINT Explicitly specifying \"integral\" for the preserved-statistic is the same as turning-off renormalization so do not specify any value for renormalization"
 	    exit 1
 	fi # !rnr_thr
     fi # !prs_stt
 fi # !prs_stt_usr
-if [[ -n "${var_lst}" ]]; then 
-    if [[ "${xcl_flg}" = 'Yes' ]]; then
+if [[ -n ${var_lst} ]]; then 
+    if [[ ${xcl_flg} = 'Yes' ]]; then
 	nco_var_lst="-x -v ${var_lst}"
     else
 	nco_var_lst="-v ${var_lst}"
     fi # !xcl_flg
     nco_var_lst_hrz=${nco_var_lst}
 fi # !var_lst
-if [[ -n "${area_dgn}" ]]; then 
+if [[ -n ${area_dgn} ]]; then 
     nco_dgn_area="--rgr diagnose_area"
 fi # !area_dgn
-if [[ -n "${msk_dst}" ]]; then 
+if [[ -n ${msk_dst} ]]; then 
     nco_msk_dst="--rgr msk_var=${msk_dst}"
 fi # !msk_dst
-if [[ "${msk_out}" != 'No' ]]; then 
+if [[ ${msk_out} != 'No' ]]; then 
     nco_msk_out="--rgr msk_nm=${msk_out}"
 fi # !msk_out
-if [[ -n "${msk_src}" ]]; then 
+if [[ -n ${msk_src} ]]; then 
     nco_msk_src="--rgr msk_var=${msk_src}"
 fi # !msk_src
-if [[ -n "${skl_fl}" ]]; then 
+if [[ -n ${skl_fl} ]]; then 
     nco_skl_fl="--rgr skl=\"${skl_fl}\""
 fi # !skl_fl
-if [[ -n "${ugrid_fl}" ]]; then 
+if [[ -n ${ugrid_fl} ]]; then 
     nco_ugrid_fl="--rgr ugrid=\"${ugrid_fl}\""
 fi # !ugrid_fl
-if [[ -n "${var_rgr}" ]]; then 
+if [[ -n ${var_rgr} ]]; then 
     nco_var_rgr="--rgr_var=${var_rgr}"
 fi # !var_rgr
-if [[ -n "${xtn_var}" ]]; then 
+if [[ -n ${xtn_var} ]]; then 
     rgr_opt="${rgr_opt} --xtn=${xtn_var}"
 fi # !xtn_var
-if [[ -n "${out_fl}" ]]; then 
+if [[ -n ${out_fl} ]]; then 
     out_usr_flg='Yes'
 fi # !out_fl
-if [[ "${par_typ}" = ${par_bck} ]] || [[ "${par_typ}" =~ [bB]ck ]] || [[ "${par_typ}" =~ [bB]ackground ]]; then 
+if [[ ${par_typ} = ${par_bck} ]] || [[ ${par_typ} =~ [bB]ck ]] || [[ ${par_typ} =~ [bB]ackground ]]; then 
     par_typ=${par_bck}
     par_opt=' &'
-elif [[ "${par_typ}" = ${par_mpi} ]] || [[ "${par_typ}" =~ (mpi|MPI) ]]; then 
+elif [[ ${par_typ} = ${par_mpi} ]] || [[ ${par_typ} =~ (mpi|MPI) ]]; then 
     par_typ=${par_mpi}
     par_opt=' &'
     mpi_flg='Yes'
-elif [[ "${par_typ}" = ${par_srl} ]] || [[ "${par_typ}" = 'srl' ]] || [[ "${par_typ}" =~ [sS]erial ]] || [[ "${par_typ}" =~ [nN]il ]] || [[ "${par_typ}" =~ [nN]one ]]; then 
+elif [[ ${par_typ} = ${par_srl} ]] || [[ ${par_typ} = 'srl' ]] || [[ ${par_typ} =~ [sS]erial ]] || [[ ${par_typ} =~ [nN]il ]] || [[ ${par_typ} =~ [nN]one ]]; then 
     par_typ=${par_srl}
 else 
     echo "ERROR: Invalid -p par_typ option = ${par_typ}"
     echo "HINT: Valid par_typ arguments for file-level parallelism include '${par_bck}' (or 'bck'), '${par_mpi}' (or 'MPI'), and '${par_srl}' (or 'srl' or 'nil' or 'none'). For background parallelism, select '${par_bck}' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select '${par_mpi}' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism (aka serial mode), select '${par_srl}', which causes ${spt_nm} to spawn all processes serially on a single compute node."
     exit 1
 fi # !par_typ
-if [[ -n "${prc_typ}" ]]; then
-    if [[ "${prc_typ}" != 'airs' ]] && [[ "${prc_typ}" != 'cam' ]] && [[ "${prc_typ}" != 'clm' ]] && [[ "${prc_typ}" != 'cice' ]] && [[ "${prc_typ}" != 'cpl' ]] && [[ "${prc_typ}" != 'ctsm' ]] && [[ "${prc_typ}" != 'eam' ]] && [[ "${prc_typ}" != 'eamxx' ]] && [[ "${prc_typ}" != 'elm' ]] && [[ "${prc_typ}" != 'hirdls' ]] && [[ "${prc_typ}" != 'mali' ]] && [[ "${prc_typ}" != 'mls' ]] && [[ "${prc_typ}" != 'mod04' ]] && [[ "${prc_typ}" != 'mpas' ]] && [[ "${prc_typ}" != 'mpasa' ]] && [[ "${prc_typ}" != 'mpasatmosphere' ]] && [[ "${prc_typ}" != 'mpaso' ]] && [[ "${prc_typ}" != 'mpasocean' ]] && [[ "${prc_typ}" != 'mpascice' ]] && [[ "${prc_typ}" != 'mpasseaice' ]] && [[ "${prc_typ}" != 'mpassi' ]] && [[ "${prc_typ}" != 'mwf' ]] && [[ "${prc_typ}" != 'nil' ]] && [[ "${prc_typ}" != 'rrg' ]] && [[ "${prc_typ}" != 'sgs' ]]; then 
+if [[ -n ${prc_typ} ]]; then
+    if [[ ${prc_typ} != 'airs' ]] && [[ ${prc_typ} != 'cam' ]] && [[ ${prc_typ} != 'clm' ]] && [[ ${prc_typ} != 'cice' ]] && [[ ${prc_typ} != 'cpl' ]] && [[ ${prc_typ} != 'ctsm' ]] && [[ ${prc_typ} != 'eam' ]] && [[ ${prc_typ} != 'eamxx' ]] && [[ ${prc_typ} != 'elm' ]] && [[ ${prc_typ} != 'hirdls' ]] && [[ ${prc_typ} != 'mali' ]] && [[ ${prc_typ} != 'mls' ]] && [[ ${prc_typ} != 'mod04' ]] && [[ ${prc_typ} != 'mpas' ]] && [[ ${prc_typ} != 'mpasa' ]] && [[ ${prc_typ} != 'mpasatmosphere' ]] && [[ ${prc_typ} != 'mpaso' ]] && [[ ${prc_typ} != 'mpasocean' ]] && [[ ${prc_typ} != 'mpascice' ]] && [[ ${prc_typ} != 'mpasseaice' ]] && [[ ${prc_typ} != 'mpassi' ]] && [[ ${prc_typ} != 'mwf' ]] && [[ ${prc_typ} != 'nil' ]] && [[ ${prc_typ} != 'rrg' ]] && [[ ${prc_typ} != 'sgs' ]]; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
 	    echo "HINT: Valid prc_typ arguments are 'airs', 'cam', 'clm', 'cice', 'cpl', 'ctsm', 'eam', 'eamxx', 'elm', 'hirdls', 'mali', 'mls', 'mod04', 'mpas', 'mpasa', 'mpasatmosphere', 'mpaso', 'mpasocean', 'mpascice', 'mpasseaice', 'mpassi', 'mwf', 'nil', 'rrg', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
-if [[ "${prc_typ}" = 'airs' ]]; then 
-    if [[ -z "${pdq_opt}" ]] && [[ "${pdq_flg}" = 'Yes' ]]; then 
+if [[ ${prc_typ} = 'airs' ]]; then 
+    if [[ -z ${pdq_opt} ]] && [[ ${pdq_flg} = 'Yes' ]]; then 
 	pdq_opt='-a StdPressureLev,GeoTrack,GeoXTrack'
     fi # !pdq_opt
 fi # !airs
-if [[ "${prc_typ}" = 'hirdls' ]]; then 
-    if [[ -z "${pdq_opt}" ]] && [[ "${pdq_flg}" = 'Yes' ]]; then 
+if [[ ${prc_typ} = 'hirdls' ]]; then 
+    if [[ -z ${pdq_opt} ]] && [[ ${pdq_flg} = 'Yes' ]]; then 
 	pdq_opt='-a Pressure,Latitude,lon'
     fi # !pdq_opt
 fi # !hirdls
-if [[ "${prc_typ}" = 'mls' ]]; then 
-    if [[ -z "${pdq_opt}" ]] && [[ "${pdq_flg}" = 'Yes' ]]; then 
+if [[ ${prc_typ} = 'mls' ]]; then 
+    if [[ -z ${pdq_opt} ]] && [[ ${pdq_flg} = 'Yes' ]]; then 
 	pdq_opt='-a CO_Pressure,CO_Latitude,lon'
     fi # !pdq_opt
 fi # !mls
-if [[ "${prc_typ}" = 'mod04' ]]; then 
-    if [[ -z "${pdq_opt}" ]] && [[ "${pdq_flg}" = 'Yes' ]]; then 
+if [[ ${prc_typ} = 'mod04' ]]; then 
+    if [[ -z ${pdq_opt} ]] && [[ ${pdq_flg} = 'Yes' ]]; then 
 	pdq_opt='-U'
     fi # !pdq_opt
     hnt_dst='--dst_regional'
 fi # !mod04
-if [[ "${prc_typ}" = 'mali' ]] || [[ "${prc_typ}" = 'mpas' ]] || [[ "${prc_typ}" = 'mpasa' ]] || [[ "${prc_typ}" = 'mpasatmosphere' ]] || [[ "${prc_typ}" = 'mpaso' ]] || [[ "${prc_typ}" = 'mpasocean' ]] || [[ "${prc_typ}" = 'mpascice' ]] || [[ "${prc_typ}" = 'mpasseaice' ]] || [[ "${prc_typ}" = 'mpassi' ]]; then 
+if [[ ${prc_typ} = 'mali' ]] || [[ ${prc_typ} = 'mpas' ]] || [[ ${prc_typ} = 'mpasa' ]] || [[ ${prc_typ} = 'mpasatmosphere' ]] || [[ ${prc_typ} = 'mpaso' ]] || [[ ${prc_typ} = 'mpasocean' ]] || [[ ${prc_typ} = 'mpascice' ]] || [[ ${prc_typ} = 'mpasseaice' ]] || [[ ${prc_typ} = 'mpassi' ]]; then 
     prc_mpas='Yes'
 fi # !mpas, !mpasa, !mpascice, !mpaso, !mpasocean, !mpasseaice, !mpassi
-if [[ "${prc_mpas}" = 'Yes' ]]; then 
+if [[ ${prc_mpas} = 'Yes' ]]; then 
 
-    if [[ "${prc_typ}" = 'mpasatmosphere' ]]; then
+    if [[ ${prc_typ} = 'mpasatmosphere' ]]; then
 	prc_typ='mpasa'
     fi # !mpasatmosphere
 	
     # Add/alter missing metadata to MPAS files unless script was invoked by ncclimo (or with -C == --clm_flg)
     # NB: MPAS Analysis sets clm_flg=Yes to prevent ncremap from doing unnecessary _FillValue work
     # MPAS Analysis correctly deals with NaNs, masks, unset MPAS _FillValues, etc
-    if [[ "${clm_flg}" = 'No' ]] && [[ "${prc_typ}" != 'mpasa' ]]; then
+    if [[ ${clm_flg} = 'No' ]] && [[ ${prc_typ} != 'mpasa' ]]; then
 	att_flg='Yes'
     fi # !clm_flg
 
-    if [[ "${prc_typ}" = 'mali' ]]; then
+    if [[ ${prc_typ} = 'mali' ]]; then
 	mss_val='-1.0e36'
     fi # !prc_typ
 
@@ -1783,25 +1783,25 @@ if [[ "${prc_mpas}" = 'Yes' ]]; then
     # For MPAS-Ocean, this masks continents/islands
     # For MPAS-Seaice, this additionally masks open (non-sea-ice-covered) ocean
     # For MPAS-Landice (MALI), this masks (I think) non-glacier land and ocean gridcells
-    if [[ "${prc_typ}" != 'mpasa' ]]; then
+    if [[ ${prc_typ} != 'mpasa' ]]; then
 	add_fll='Yes'
     fi # !mpasa
 
     # Add depth coordinate to MPAS file when requested to by specifying coordinate file, that file exists, and commmand is found
-    if [[ -n "${dpt_fl}" ]] || [[ "${dpt_flg}" = 'Yes' ]]; then
-	if [[ -n "${dpt_fl}" ]]; then
-	    if [[ ! -f "${dpt_fl}" ]] && [[ ! -L "${dpt_fl}" ]]; then
+    if [[ -n ${dpt_fl} ]] || [[ ${dpt_flg} = 'Yes' ]]; then
+	if [[ -n ${dpt_fl} ]]; then
+	    if [[ ! -f ${dpt_fl} ]] && [[ ! -L ${dpt_fl} ]]; then
 		echo "ERROR: Unable to find specified MPAS depth coordinate file ${dpt_fl}"
 		exit 1
 	    fi # ! -f
 	    cmd_dpt_opt="-c \"${dpt_fl}\""
 	fi # !dpt_fl
-	if [[ -z "${cmd_dpt_mpas}" ]]; then
+	if [[ -z ${cmd_dpt_mpas} ]]; then
 	    printf "${spt_nm}: ERROR MPAS depth coordinate addition requested but command ${dpt_exe_mpas} not found\n"
 	fi # !err
 	dpt_flg='Yes'
     fi # !dpt_fl
-    if [[ -z "${pdq_opt}" ]] && [[ "${pdq_flg}" = 'Yes' ]]; then
+    if [[ -z ${pdq_opt} ]] && [[ ${pdq_flg} = 'Yes' ]]; then
 #	pdq_opt='-a Time,nVertLevels,nIsoLevelsT,nIsoLevelsZ,nCells' # MPAS-Atmosphere
 #	pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # MPAS-Ocean
 #	pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # MPAS-SeaIce
@@ -1815,18 +1815,18 @@ if [[ "${prc_mpas}" = 'Yes' ]]; then
     # 20181130 No known reason to include staggered grid with regridded MPAS data
     stg_grd='No'
 fi # !mpas
-if [[ -n "${rnr_thr}" ]]; then 
-    if [[ "${rnr_thr}" != 'off' ]] && [[ "${rnr_thr}" != 'none' ]]; then 
+if [[ -n ${rnr_thr} ]]; then 
+    if [[ ${rnr_thr} != 'off' ]] && [[ ${rnr_thr} != 'none' ]]; then 
 	rgr_opt="${rgr_opt} --rnr_thr=${rnr_thr}"
     fi # !rnr_thr
-elif [[ -z "${prs_stt}" ]] && [[ "${prc_mpas}" = 'Yes' ]]; then 
+elif [[ -z ${prs_stt} ]] && [[ ${prc_mpas} = 'Yes' ]]; then 
     # Default MPAS behavior (since forever) has been to renormalize
     rgr_opt="${rgr_opt} --rnr_thr=0.0"
 fi # !rnr_thr
-if [[ "${stg_grd}" = 'Yes' ]]; then 
+if [[ ${stg_grd} = 'Yes' ]]; then 
     rgr_opt="${rgr_opt} --rgr stg_grd"
 fi # !stg_grd
-if [[ "${prc_typ}" = 'mwf' ]]; then 
+if [[ ${prc_typ} = 'mwf' ]]; then 
     [[ ${dbg_lvl} -ge 1 ]] && date_mwf=$(date +"%s")
     # Replace commas with spaces so alg_lst works in for loop:
     alg_lst=$(echo ${alg_lst} | sed 's/,/ /g')
@@ -1835,10 +1835,10 @@ if [[ "${prc_typ}" = 'mwf' ]]; then
     # An independent option to distinguish FV from SE files would be useful
     # https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
     # Compute forward (src->dst) maps 
-    if [[ -n "${hnt_src}" ]]; then
+    if [[ -n ${hnt_src} ]]; then
        hnt_src_sng="--hnt_src=${hnt_src}"
     fi # !hnt_src
-    if [[ -n "${hnt_dst}" ]]; then
+    if [[ -n ${hnt_dst} ]]; then
        hnt_dst_sng="--hnt_dst=${hnt_dst}"
     fi # !hnt_dst	
     for alg_typ in ${alg_lst}; do
@@ -1853,10 +1853,10 @@ if [[ "${prc_typ}" = 'mwf' ]]; then
 	[[ ${alg_typ} = 'fv2se_alt' ]] && alg_sng='mono'
 	map_nm="${drc_out}/map_${nm_src}_to_${nm_dst}_${alg_sng}.${dt_sng}.nc"
 	wgt_sng=''
-	if [[ -n "${wgt_usr}" ]]; then 
+	if [[ -n ${wgt_usr} ]]; then 
 	    erwg_alg_typ_rx='aave blin ndtos nstod patc'
 	    # https://stackoverflow.com/questions/229551/string-contains-a-substring-in-bash
-	    if [[ ${erwg_alg_typ_rx} = *"${alg_typ}"* ]]; then
+	    if [[ ${erwg_alg_typ_rx} = *${alg_typ}* ]]; then
 		wgt_sng="--wgt_cmd='${wgt_usr}'"
 	    fi # !ERWG
 	fi # !wgt_usr
@@ -1881,10 +1881,10 @@ if [[ "${prc_typ}" = 'mwf' ]]; then
 	fi # !dbg
     done # !alg_typ
     # Compute reverse (dst->src) maps
-    if [[ -n "${hnt_src}" ]]; then 
+    if [[ -n ${hnt_src} ]]; then 
        hnt_dst_sng="--hnt_dst=${hnt_src/src/dst}"
     fi # !hnt_src
-    if [[ -n "${hnt_dst}" ]]; then
+    if [[ -n ${hnt_dst} ]]; then
        hnt_src_sng="--hnt_src=${hnt_dst/dst/src}"
     fi # !hnt_dst	
     for alg_typ in ${alg_lst}; do
@@ -1901,14 +1901,14 @@ if [[ "${prc_typ}" = 'mwf' ]]; then
 	map_nm="${drc_out}/map_${nm_dst}_to_${nm_src}_${alg_sng}.${dt_sng}.nc"
 	# MWF-mode must be invoked with ocean as grd_src, atmosphere as grd_dst
 	a2o_sng=''
-	if [[ "${alg_typ}" = 'se2fv_flx' ]] || [[ "${alg_typ}" = 'se2fv_stt' ]] || [[ "${alg_typ}" = 'se2fv_alt' ]] || [[ "${alg_typ}" = 'traave' ]] || [[ "${alg_typ}" = 'trbilin' ]] || [[ "${alg_typ}" = 'trfv2' ]] || [[ "${alg_typ}" = 'trintbilin' ]]; then
+	if [[ ${alg_typ} = 'se2fv_flx' ]] || [[ ${alg_typ} = 'se2fv_stt' ]] || [[ ${alg_typ} = 'se2fv_alt' ]] || [[ ${alg_typ} = 'traave' ]] || [[ ${alg_typ} = 'trbilin' ]] || [[ ${alg_typ} = 'trfv2' ]] || [[ ${alg_typ} = 'trintbilin' ]]; then
 	    a2o_sng='--a2o'
 	fi # !alg_typ
 	wgt_sng=''
-	if [[ -n "${wgt_usr}" ]]; then 
+	if [[ -n ${wgt_usr} ]]; then 
 	    erwg_alg_typ_rx='aave blin ndtos nstod patc'
 	    # https://stackoverflow.com/questions/229551/string-contains-a-substring-in-bash
-	    if [[ ${erwg_alg_typ_rx} = *"${alg_typ}"* ]]; then
+	    if [[ ${erwg_alg_typ_rx} = *${alg_typ}* ]]; then
 		wgt_sng="--wgt_cmd='${wgt_usr}'"
 	    fi # !ERWG
 	fi # !wgt_usr
@@ -1935,12 +1935,12 @@ if [[ "${prc_typ}" = 'mwf' ]]; then
     echo "Finished MWF mode"
     exit 0
 fi # !mwf
-if [[ "${prc_typ}" = 'rrg' ]]; then 
-    if [[ -n "${dat_rgn}" ]]; then # NB: option currently not implemented, drop it?
+if [[ ${prc_typ} = 'rrg' ]]; then 
+    if [[ -n ${dat_rgn} ]]; then # NB: option currently not implemented, drop it?
 	fl_in[0]=${dat_rgn}
     fi # !dat_glb
-    if [[ -n "${dat_glb}" ]]; then 
-	if [[ ! -f "${dat_glb}" ]] && [[ ! -L "${dat_glb}" ]]; then
+    if [[ -n ${dat_glb} ]]; then 
+	if [[ ! -f ${dat_glb} ]] && [[ ! -L ${dat_glb} ]]; then
 	    echo "ERROR: Unable to find specified global data file ${dat_glb}"
 	    exit 1
 	fi # ! -f
@@ -1948,8 +1948,8 @@ if [[ "${prc_typ}" = 'rrg' ]]; then
 	echo "${spt_nm}: ERROR Regional regridding requires global data coordinates in file specified with --rrg_dat_glb argument\n"
 	exit 1
     fi # !dat_glb
-    if [[ -n "${grd_glb}" ]]; then 
-	if [[ ! -f "${grd_glb}" ]] && [[ ! -L "${grd_glb}" ]]; then
+    if [[ -n ${grd_glb} ]]; then 
+	if [[ ! -f ${grd_glb} ]] && [[ ! -L ${grd_glb} ]]; then
 	    echo "ERROR: Unable to find specified SCRIP-format global grid file ${grd_glb}"
 	    exit 1
 	fi # ! -f
@@ -1958,25 +1958,25 @@ if [[ "${prc_typ}" = 'rrg' ]]; then
 	exit 1
     fi # !grd_glb
     # User may specify final, regional destination grid with either -g or --rrg_grd_rgn
-    if [[ -n "${grd_rgn}" ]]; then 
+    if [[ -n ${grd_rgn} ]]; then 
 	grd_dst=${grd_rgn}
     else
-	if [[ -n "${grd_dst}" ]]; then 
+	if [[ -n ${grd_dst} ]]; then 
 	    grd_rgn=${grd_dst}
 	else
 	    echo "${spt_nm}: ERROR Regional regridding requires SCRIP-format destination grid for regional data in file specified with --rrg_grd_rgn or --grd_dst argument\n"
 	    exit 1
 	fi # !grd_dst
     fi # !grd_rgn
-    if [[ ! -f "${grd_rgn}" ]] && [[ ! -L "${grd_rgn}" ]]; then
+    if [[ ! -f ${grd_rgn} ]] && [[ ! -L ${grd_rgn} ]]; then
 	echo "ERROR: Unable to find specified SCRIP-format regional grid file ${grd_rgn}"
 	exit 1
     fi # ! -f
     grd_dst_usr_flg='Yes'
     hnt_dst='--dst_regional'
 fi # !rrg
-if [[ "${prc_typ}" = 'eamxx' ]]; then 
-    if [[ -z "${pdq_opt}" ]] && [[ "${pdq_flg}" = 'Yes' ]]; then
+if [[ ${prc_typ} = 'eamxx' ]]; then 
+    if [[ -z ${pdq_opt} ]] && [[ ${pdq_flg} = 'Yes' ]]; then
 	# Permute horizontal dimensions to MRV
 	# dim2 (= 2) is used in SCREAM SurfVars to store U,V components in horiz_winds, surf_mom_flux variables
 	# 20240110: EAMXX also uses dim2 dimension for time_bnds
@@ -1987,35 +1987,35 @@ if [[ "${prc_typ}" = 'eamxx' ]]; then
 	pdq_opt='-a time,lwband,swband,ilev,lev,plev,cosp_tau,cosp_cth,cosp_prs,dim2,ncol'
 	# NB: ncpdq is invoked iff performing horizontal regridding (vertical interpolation works fine either way)
     fi # !pdq_opt && !pdq_flg
-    if [[ -z "${ps_nm}" ]]; then
+    if [[ -z ${ps_nm} ]]; then
 	ps_nm='ps'
     fi # !ps_nm
 fi # !eamxx
-if [[ "${prc_typ}" = 'clm' ]] || [[ "${prc_typ}" = 'ctsm' ]] || [[ "${prc_typ}" = 'elm' ]]; then 
+if [[ ${prc_typ} = 'clm' ]] || [[ ${prc_typ} = 'ctsm' ]] || [[ ${prc_typ} = 'elm' ]]; then 
     # Set CLM/ELM-specific options first, then change prc_typ to sgs
     # 20220129 sgs_frc is special since ncclimo may supply it (terminating a filename, even)
     # Hence must keep user-specified sgs_frc value, if any, intact
     rds_rth='6.37122e6' # [m] Radius of Earth in CLM/CTSM/ELM (SHR_CONST_REARTH)
-    if [[ -n "${sgs_frc_usr}" ]]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='landfrac'; fi
+    if [[ -n ${sgs_frc_usr} ]]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='landfrac'; fi
     sgs_msk='landmask'
     sgs_nrm='1.0'
     prc_elm='Yes'
 fi # !clm, !ctsm, !elm
-if [[ "${prc_typ}" = 'cice' ]]; then 
+if [[ ${prc_typ} = 'cice' ]]; then 
     # Set CICE-specific options first, then change prc_typ to sgs
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
-    if [[ -n "${sgs_frc_usr}" ]]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='aice'; fi
+    if [[ -n ${sgs_frc_usr} ]]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='aice'; fi
     sgs_msk='tmask'
     sgs_nrm='100.0'
     prc_cice='Yes'
     add_fll='Yes'
 fi # !cice
-if [[ "${prc_typ}" = 'mpascice' ]] || [[ "${prc_typ}" = 'mpasseaice' ]] || [[ "${prc_typ}" = 'mpassi' ]]; then 
+if [[ ${prc_typ} = 'mpascice' ]] || [[ ${prc_typ} = 'mpasseaice' ]] || [[ ${prc_typ} = 'mpassi' ]]; then 
     # NB: 'mpasseaice' is an exact synonym for 'mpascice' (which is deprecated)
     # Set MPAS-SeaIce-specific options first, then change prc_typ to sgs
     # MPAS-SeaIce requires two modes, MPAS and SGS, so set prc_mpas to 'Yes'
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
-    if [[ -n "${sgs_frc_usr}" ]]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='timeMonthly_avg_iceAreaCell'; fi
+    if [[ -n ${sgs_frc_usr} ]]; then sgs_frc="${sgs_frc_usr}"; else sgs_frc='timeMonthly_avg_iceAreaCell'; fi
     # 20190326 timeMonthly_avg_icePresent contains fraction of time in averaging interval when any ice was present
     # Thus timeMonthly_avg_icePresent is a floating point fraction, not a traditional integer mask
     # 20190910 timeMonthly_avg_icePresent should be SGS regridded like any 2D field
@@ -2025,60 +2025,60 @@ if [[ "${prc_typ}" = 'mpascice' ]] || [[ "${prc_typ}" = 'mpasseaice' ]] || [[ "$
     prc_mpas='Yes'
     prc_mpasseaice='Yes'
 fi # !mpascice
-if [[ -n "${add_fll_usr}" ]]; then add_fll="${add_fll_usr}"; fi
-if [[ "${add_fll}" = 'Yes' ]]; then 
+if [[ -n ${add_fll_usr} ]]; then add_fll="${add_fll_usr}"; fi
+if [[ ${add_fll} = 'Yes' ]]; then 
     rgr_opt="${rgr_opt} --rgr add_fill_value"
 fi # !add_fll
-if [[ "${mpt_mss}" = 'Yes' ]]; then
+if [[ ${mpt_mss} = 'Yes' ]]; then
     rgr_opt="${rgr_opt} --rgr mpt_mss"
 fi # !mpt_mss
-if [[ -n "${sgs_frc}" ]] || [[ -n "${sgs_frc_usr}" ]] || [[ "${prc_typ}" = 'sgs' ]]; then 
+if [[ -n ${sgs_frc} ]] || [[ -n ${sgs_frc_usr} ]] || [[ ${prc_typ} = 'sgs' ]]; then 
     prc_sgs='Yes'
 fi # !sgs
-if [[ "${prc_sgs}" = 'Yes' ]]; then
-    if [[ -n "${sgs_frc_usr}" ]]; then sgs_frc="${sgs_frc_usr}"; fi
-    if [[ -z "${sgs_frc}" ]]; then
+if [[ ${prc_sgs} = 'Yes' ]]; then
+    if [[ -n ${sgs_frc_usr} ]]; then sgs_frc="${sgs_frc_usr}"; fi
+    if [[ -z ${sgs_frc} ]]; then
 	echo "ERROR: SGS processing invoked without specifying sgs_frc variable name"
         echo "HINT: Specify sgs_frc variable name with --sgs_frc=var_name"
         exit 1
     fi # !sgs_frc
     rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
-    if [[ -n "${sgs_msk}" ]]; then
+    if [[ -n ${sgs_msk} ]]; then
 	rgr_opt="${rgr_opt}#sgs_msk_nm=${sgs_msk}"
     fi # !sgs_msk
-    if [[ -n "${sgs_nrm}" ]]; then
+    if [[ -n ${sgs_nrm} ]]; then
 	rgr_opt="${rgr_opt}#sgs_nrm=${sgs_nrm}"
     fi # !sgs_nrm
 fi # !prc_sgs
-if [[ -n "${thr_usr}" ]]; then 
+if [[ -n ${thr_usr} ]]; then 
     thr_nbr="${thr_usr}"
 fi # !thr_usr
-if [[ -n "${vrt_out}" ]]; then
-    if [[ ! -f "${vrt_out}" ]] && [[ ! -L "${vrt_out}" ]]; then
+if [[ -n ${vrt_out} ]]; then
+    if [[ ! -f ${vrt_out} ]] && [[ ! -L ${vrt_out} ]]; then
 	echo "ERROR: Unable to find specified vertical output grid file ${vrt_out}"
 	exit 1
     fi # ! -f
     vrt_usr_flg='Yes'
-    if [[ -n "${dpt_nm}" ]]; then
+    if [[ -n ${dpt_nm} ]]; then
 	vrt_opt="${vrt_opt} --rgr dpt_nm_in=${dpt_nm}"
     fi # !dpt_nm
-    if [[ -n "${ps_nm}" ]]; then
+    if [[ -n ${ps_nm} ]]; then
 	vrt_opt="${vrt_opt} --rgr ps_nm_in=${ps_nm}"
     fi # !ps_nm
-    if [[ "${ps_rtn}" = 'Yes' ]]; then
+    if [[ ${ps_rtn} = 'Yes' ]]; then
 	vrt_opt="${vrt_opt} --rgr ps_rtn"
     fi # !ps_rtn
-    if [[ -n "${vrt_in}" ]]; then
-	if [[ ! -f "${vrt_in}" ]] && [[ ! -L "${vrt_in}" ]]; then
+    if [[ -n ${vrt_in} ]]; then
+	if [[ ! -f ${vrt_in} ]] && [[ ! -L ${vrt_in} ]]; then
 	    echo "ERROR: Unable to find specified vertical input grid file ${vrt_in}"
 	    exit 1
 	fi # ! -f
 	vrt_opt="${vrt_opt} --rgr vrt_in=${vrt_in}"
     fi # !vrt_in
-    if [[ -n "${vrt_nm}" ]]; then
+    if [[ -n ${vrt_nm} ]]; then
 	vrt_opt="${vrt_opt} --rgr plev_nm_in=${vrt_nm}"
     fi # !vrt_nm
-    if [[ -n "${vrt_xtr}" ]]; then
+    if [[ -n ${vrt_xtr} ]]; then
 	if [[ ${vrt_xtr} = 'mss_val' ]] || [[ ${vrt_xtr} = 'missing_value' ]] || [[ ${vrt_xtr} = 'msv' ]]; then 
 	    vrt_opt="${vrt_opt} --rgr xtr_mth=mss_val"
 	elif [[ ${vrt_xtr} = 'nrs_ngh' ]] || [[ ${vrt_xtr} = 'nearest_neighbor' ]] || [[ ${vrt_xtr} = 'nn' ]]; then 
@@ -2093,7 +2093,7 @@ if [[ -n "${vrt_out}" ]]; then
 	    exit 1
 	fi # !vrt_xtr
     fi # !vrt_xtr
-    if [[ -n "${vrt_ntp}" ]]; then
+    if [[ -n ${vrt_ntp} ]]; then
 	if [[ ${vrt_ntp} = 'lin' ]] || [[ ${vrt_ntp} = 'linear' ]] || [[ ${vrt_ntp} = 'lnr' ]]; then 
 	    vrt_opt="${vrt_opt} --rgr ntp_mth=lin"
 	elif [[ ${vrt_ntp} = 'log' ]] || [[ ${vrt_ntp} = 'logarithmic' ]] || [[ ${vrt_ntp} = 'lgr' ]]; then 
@@ -2106,30 +2106,30 @@ if [[ -n "${vrt_out}" ]]; then
     fi # !vrt_ntp
 fi # !vrt_out
 
-if [[ -n "${dst_fl}" ]]; then 
-    if [[ ! -f "${dst_fl}" ]] && [[ ! -L "${dst_fl}" ]]; then
+if [[ -n ${dst_fl} ]]; then 
+    if [[ ! -f ${dst_fl} ]] && [[ ! -L ${dst_fl} ]]; then
 	echo "ERROR: Unable to find specified destination-file ${dst_fl}"
 	echo "HINT: Supply the full path-name for the destination-file"
 	exit 1
     fi # ! -f
     dst_usr_flg='Yes'
 fi # !dst_fl
-if [[ -z "${grd_sng}" ]]; then 
+if [[ -z ${grd_sng} ]]; then 
     grd_sng_dfl="grd_ttl='Default internally-generated grid'#latlon=10,10#lat_typ=uni#lon_typ=Grn_ctr" # [sng] Grid string default
     grd_sng="${grd_sng_dfl}"
 else
     grd_sng_usr_flg='Yes'
 fi # !grd_sng
-if [[ -n "${grd_dst}" ]]; then 
-    if [[ -f "${grd_dst}" ]] || [[ -L "${grd_dst}" ]]; then
-	if [[ "${dst_usr_flg}" = 'Yes' ]]; then
+if [[ -n ${grd_dst} ]]; then 
+    if [[ -f ${grd_dst} ]] || [[ -L ${grd_dst} ]]; then
+	if [[ ${dst_usr_flg} = 'Yes' ]]; then
 	    printf "${spt_nm}: WARNING ${grd_dst} already exists and will be overwritten by newly inferred grid\n"
 	fi # !dst_usr_flg
-	if [[ "${grd_sng_usr_flg}" = 'Yes' ]]; then
+	if [[ ${grd_sng_usr_flg} = 'Yes' ]]; then
 	    printf "${spt_nm}: WARNING ${grd_dst} already exists and will be overwritten by newly created grid\n"
 	fi # !grd_sng_usr_flg
     else
-	if [[ "${dst_usr_flg}" != 'Yes' ]] && [[ "${grd_sng_usr_flg}" != 'Yes' ]]; then
+	if [[ ${dst_usr_flg} != 'Yes' ]] && [[ ${grd_sng_usr_flg} != 'Yes' ]]; then
 	    echo "ERROR: Unable to find specified destination grid-file ${grd_dst}"
 	    echo "HINT: Supply full path-name for destination grid, or generate it with -G option and arguments"
 	exit 1
@@ -2139,9 +2139,9 @@ if [[ -n "${grd_dst}" ]]; then
 else
     grd_dst=${grd_dst_dfl} # [sng] Grid-file default
 fi # !grd_dst
-if [[ -n "${grd_src}" ]]; then 
-    if [[ "${prc_typ}" != 'rrg' ]]; then 
-	if [[ ! -f "${grd_src}" ]] && [[ ! -L "${grd_src}" ]]; then
+if [[ -n ${grd_src} ]]; then 
+    if [[ ${prc_typ} != 'rrg' ]]; then 
+	if [[ ! -f ${grd_src} ]] && [[ ! -L ${grd_src} ]]; then
 	    echo "ERROR: Unable to find specified source grid-file ${grd_src}"
 	    exit 1
 	fi # ! -f
@@ -2150,19 +2150,19 @@ if [[ -n "${grd_src}" ]]; then
 else
     grd_src=${grd_src_dfl} # [sng] Grid-file default
 fi # !grd_src
-if [[ "${dst_usr_flg}" = 'Yes' ]] || [[ "${grd_sng_usr_flg}" = 'Yes' ]] || [[ "${grd_dst_usr_flg}" = 'Yes' ]] || [[ "${grd_src_usr_flg}" = 'Yes' ]]; then
+if [[ ${dst_usr_flg} = 'Yes' ]] || [[ ${grd_sng_usr_flg} = 'Yes' ]] || [[ ${grd_dst_usr_flg} = 'Yes' ]] || [[ ${grd_src_usr_flg} = 'Yes' ]]; then
     # Create map-file if -d, -G, -g, or -s was specified
     map_mk='Yes'
 fi # !map_mk
-if [[ -n "${map_fl}" ]]; then 
+if [[ -n ${map_fl} ]]; then 
     map_usr_flg='Yes'
-    if [[ "${map_mk}" = 'Yes' ]]; then
+    if [[ ${map_mk} = 'Yes' ]]; then
 	# Confirm before overwriting maps
-        if [[ -f "${map_fl}" ]] || [[ -L "${map_fl}" ]]; then
+        if [[ -f ${map_fl} ]] || [[ -L ${map_fl} ]]; then
 	    # 20160803: fxm invoke iff in interactive shell (block hangs on read() in non-interactive shells)
 #	    if [[ -t 0 ]] || [[ ! -p /dev/stdin ]]; then
-#           if [[ -n "${TERM}" ]]; then
-#           if [[ -n "${PS1}" ]]; then
+#           if [[ -n ${TERM} ]]; then
+#           if [[ -n ${PS1} ]]; then
             if [[ 1 -eq 0 ]]; then
 		rsp_kbd_nbr=0
 		while [[ ${rsp_kbd_nbr} -lt 10 ]]; do
@@ -2182,7 +2182,7 @@ if [[ -n "${map_fl}" ]]; then
 	    fi # !0
 	fi # !map_fl
     else # !map_mk
-        if [[ ! -f "${map_fl}" ]] && [[ ! -L "${map_fl}" ]]; then
+        if [[ ! -f ${map_fl} ]] && [[ ! -L ${map_fl} ]]; then
 	    echo "ERROR: Unable to find specified regrid map ${map_fl}"
 	    echo "HINT: Supply a valid map-file (weight-file) name or supply the grid files or data files and let ncremap create a mapfile for you"
 	    exit 1
@@ -2193,17 +2193,17 @@ else # !map_fl
     map_fl=${map_fl_dfl}
 fi # !map_fl
 map_rsl_fl=${map_fl}
-if [[ "${map_mk}" = 'Yes' ]]; then
-    if [[ "${wgt_typ}" = 'nco' ]]; then
+if [[ ${map_mk} = 'Yes' ]]; then
+    if [[ ${wgt_typ} = 'nco' ]]; then
 	msh_fl_dfl="${drc_tmp}/ncremap_tmp_msh_ovr_${wgt_typ}.nc${unq_sfx}" # [sng] Mesh-file default
-    elif [[ "${wgt_typ}" = 'tempest' ]]; then 
+    elif [[ ${wgt_typ} = 'tempest' ]]; then 
 	msh_fl_dfl="${drc_tmp}/ncremap_tmp_msh_ovr_${wgt_typ}.g${unq_sfx}" # [sng] Mesh-file default
-	if [[ "${trn_map}" = 'Yes' ]]; then
+	if [[ ${trn_map} = 'Yes' ]]; then
 	    map_trn_fl="${drc_tmp}/ncremap_tmp_map_trn_${wgt_typ}.nc${unq_sfx}" # [sng] Map-file transpose default
 	    map_rsl_fl=${map_trn_fl}
 	fi # !trn_map
     fi # !tempest
-    if [[ -n "${msh_fl}" ]] && [[ "${wgt_typ}" = 'nco' ]]; then
+    if [[ -n ${msh_fl} ]] && [[ ${wgt_typ} = 'nco' ]]; then
 	msh_opt="--rgr msh=\"${msh_fl}\""
     else
 	msh_fl=${msh_fl_dfl}
@@ -2219,10 +2219,10 @@ fi # !map_mk
 #printf "dbg: inp_glb  = ${inp_glb}\n"
 #printf "dbg: inp_psn  = ${inp_psn}\n"
 #printf "dbg: inp_std  = ${inp_std}\n"
-if [[ ${inp_aut} = 'No' ]] && [[ ${inp_psn} = 'No' ]] && [[ ${inp_std} = 'No' ]] && [[ "${drc_in_usr_flg}" = 'Yes' ]]; then
+if [[ ${inp_aut} = 'No' ]] && [[ ${inp_psn} = 'No' ]] && [[ ${inp_std} = 'No' ]] && [[ ${drc_in_usr_flg} = 'Yes' ]]; then
     inp_glb='Yes'
 fi # !inp_psn, !inp_std
-if [[ "${map_mk}" != 'Yes' ]] && [[ ${inp_aut} = 'No' ]] && [[ ${inp_glb} = 'No' ]] && [[ ${inp_psn} = 'No' ]] && [[ ${inp_std} = 'No' ]]; then
+if [[ ${map_mk} != 'Yes' ]] && [[ ${inp_aut} = 'No' ]] && [[ ${inp_glb} = 'No' ]] && [[ ${inp_psn} = 'No' ]] && [[ ${inp_std} = 'No' ]]; then
     echo "${spt_nm}: ERROR No input data files found to regrid"
     echo "${spt_nm}: HINT Specify input file(s) with -i \$in_fl or with -I \$drc_in or with positional argument(s) or with stdin"
     if [[ ${bch_pbs} = 'Yes' ]]; then
@@ -2239,7 +2239,7 @@ if [[ ${inp_aut} = 'Yes' ]]; then
 fi # !inp_aut
 if [[ ${inp_glb} = 'Yes' ]]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-	if [[ -f "${fl}" ]] || [[ -L "${fl}" ]]; then
+	if [[ -f ${fl} ]] || [[ -L ${fl} ]]; then
 	    fl_in[${fl_nbr}]=${fl} # NB: ncremap does not use basename($fl) like ncclimo
 	    fl_nbr=$((fl_nbr+1))
 	fi # !file
@@ -2250,7 +2250,7 @@ if [[ ${inp_psn} = 'Yes' ]]; then
 	fl_in[0]=${1}
 	fl_nbr=1
     elif [[ ${psn_nbr} -eq 2 ]]; then
-	if [[ -z "${out_fl}" ]]; then
+	if [[ -z ${out_fl} ]]; then
 	    fl_in[0]=${1}
 	    out_fl=${2}
 	    out_usr_flg='Yes'
@@ -2276,14 +2276,14 @@ if [[ ${inp_std} = 'Yes' ]]; then
 fi # !inp_std
 
 # 20231214 Retain multidimensional auxiliary coordinates as needed for vertical (not horizontal) interpolation
-if [[ "${prc_typ}" = 'mpaso' ]] || [[ "${prc_typ}" = 'mpasocean' ]]; then
-    if [[ -n "${vrt_out}" ]]; then
-	if [[ -n "${nco_var_lst}" ]] && [[ "${xcl_flg}" != 'Yes' ]]; then
+if [[ ${prc_typ} = 'mpaso' ]] || [[ ${prc_typ} = 'mpasocean' ]]; then
+    if [[ -n ${vrt_out} ]]; then
+	if [[ -n ${nco_var_lst} ]] && [[ ${xcl_flg} != 'Yes' ]]; then
 	    # Search the file iff the extraction list does not already contain the depth coordinate
 	    # https://stackoverflow.com/questions/4542732/how-do-i-negate-a-test-with-regular-expressions-in-a-bash-script
-	    if [[ ! "${nco_var_lst}" =~ ${mpaso_var_zmid} ]]; then
+	    if [[ ! ${nco_var_lst} =~ ${mpaso_var_zmid} ]]; then
 		mpaso_var_lst=`nchasvar ${mpaso_var_zmid} ${fl_in[0]}`
-		if [[ "${mpaso_var_lst}" = ${mpaso_var_zmid} ]]; then
+		if [[ ${mpaso_var_lst} = ${mpaso_var_zmid} ]]; then
 		    nco_var_lst="${nco_var_lst},${mpaso_var_zmid}"
 		    # Alternatively, could create nco_var_lst_ncpdq to ensure ncpdq retains mpaso_var_zmid so vertical
 		    # interpolation finds it, yet it does not appear in horizontal regridding namelist
@@ -2294,10 +2294,10 @@ if [[ "${prc_typ}" = 'mpaso' ]] || [[ "${prc_typ}" = 'mpasocean' ]]; then
     fi # !vrt_out
 fi # !mpaso
 
-if [[ "${mpi_flg}" = 'Yes' ]]; then
-    if [[ -n "${PBS_NODEFILE}" ]]; then 
+if [[ ${mpi_flg} = 'Yes' ]]; then
+    if [[ -n ${PBS_NODEFILE} ]]; then 
 	nd_fl="${PBS_NODEFILE}"
-    elif [[ -n "${SLURM_NODELIST}" ]]; then 
+    elif [[ -n ${SLURM_NODELIST} ]]; then 
 	# SLURM returns compressed lists (e.g., "nid00[076-078,559-567]")
 	# Convert this to file with uncompressed list (like PBS)
 	# http://www.ceci-hpc.be/slurm_faq.html#Q12
@@ -2313,14 +2313,14 @@ if [[ "${mpi_flg}" = 'Yes' ]]; then
 	exit 1
     fi # !PBS
     # 20210310 MPI run command may need/use thr_nbr so set it first
-    if [[ -z "${thr_usr}" ]]; then 
-	if [[ -n "${PBS_NUM_PPN}" ]]; then
+    if [[ -z ${thr_usr} ]]; then 
+	if [[ -n ${PBS_NUM_PPN} ]]; then
 #	NB: use export OMP_NUM_THREADS when thr_nbr > 8
 #	thr_nbr=${PBS_NUM_PPN}
 	    thr_nbr=$((PBS_NUM_PPN > 8 ? 8 : PBS_NUM_PPN))
 	fi # !pbs
     fi # !thr_usr
-    if [[ -n "${nd_fl}" ]]; then 
+    if [[ -n ${nd_fl} ]]; then 
 	# NB: nodes are 0-based, e.g., [0..11]
 	nd_idx=0
 	for nd in `cat ${nd_fl} | uniq` ; do
@@ -2328,7 +2328,7 @@ if [[ "${mpi_flg}" = 'Yes' ]]; then
 	    nd_idx=$((nd_idx+1))
 	done # !nd
 	nd_nbr=${#nd_nm[@]}
-	if [[ "${nd_nbr}" -eq 0 ]]; then
+	if [[ ${nd_nbr} -eq 0 ]]; then
 	    echo "${spt_nm}: ERROR MPI-mode node number nd_nbr = ${nd_nbr}"
 	    echo "${spt_nm}: HINT Parsing the node-list for distributing MPI jobs failed"
 	    exit 1
@@ -2384,7 +2384,7 @@ if [[ "${mpi_flg}" = 'Yes' ]]; then
 		    # cmd_mpi[${fl_idx}]="${cmd_mpi[${fl_idx}]} --nodes=1 --gres=craynetwork:0 --mem=${mem_mb} --zonesort=off" ; ;; # SLURM
 	    esac # !HOSTNAME
 	done # !fl_idx
-	if [[ -n "${SLURM_NODELIST}" ]]; then 
+	if [[ -n ${SLURM_NODELIST} ]]; then 
 	    /bin/rm -f ${nd_fl}
 	fi # !SLURM
     else # !nd_fl
@@ -2393,7 +2393,7 @@ if [[ "${mpi_flg}" = 'Yes' ]]; then
 	    cmd_mpi[${fl_idx}]=''
 	done # !fl_idx
     fi # !nd_fl
-    if [[ -z "${job_usr}" ]]; then 
+    if [[ -z ${job_usr} ]]; then 
 	job_nbr=${nd_nbr}
     fi # !job_usr
 fi # !mpi_flg
@@ -2532,9 +2532,9 @@ if [[ ${dbg_lvl} -ge 2 ]]; then
 fi # !dbg
 
 # Create output directories
-if [[ -n "${drc_out}" ]] && [[ ! -d "${drc_out}" ]]; then 
+if [[ -n ${drc_out} ]] && [[ ! -d ${drc_out} ]]; then 
     chr_fst=${drc_out:0:1}
-    if [[ "${chr_fst}" = '-' ]]; then
+    if [[ ${chr_fst} = '-' ]]; then
 	echo "${spt_nm}: ERROR Attempting to mkdir user-specified output directory \"${drc_out}\" will fail because directory name begins with '-' which is an option indicator"
 	echo "${spt_nm}: HINT Specify output directory name that does not begin with '-'"
 	exit 1
@@ -2547,7 +2547,7 @@ if [[ -n "${drc_out}" ]] && [[ ! -d "${drc_out}" ]]; then
 	exit 1
     fi # !err
 fi # !drc_out
-if [[ -n "${drc_tmp}" ]] && [[ ! -d "${drc_tmp}" ]]; then 
+if [[ -n ${drc_tmp} ]] && [[ ! -d ${drc_tmp} ]]; then 
     cmd_mkd="mkdir -p ${drc_tmp}"
     eval ${cmd_mkd}
     if [[ "$?" -ne 0 ]]; then
@@ -2584,9 +2584,9 @@ if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
     printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
     printf "Parallelism mode for files = ${par_typ}\n"
     if [[ ${fl_nbr} -gt 1 ]]; then
-	if [[ "${par_typ}" = ${par_bck} ]]; then
+	if [[ ${par_typ} = ${par_bck} ]]; then
 	    printf "Background parallelism regridding files in fl_nbr/job_nbr = ${fl_nbr}/${job_nbr} = $((fl_nbr / job_nbr)) sequential batches each concurrently processing job_nbr = ${job_nbr} files\n"
-	elif [[ "${par_typ}" = ${par_mpi} ]]; then
+	elif [[ ${par_typ} = ${par_mpi} ]]; then
 	    printf "MPI parallelism regridding files in fl_nbr/job_nbr = ${fl_nbr}/${job_nbr} = $((fl_nbr / job_nbr)) sequential batches. Batches are distributed among the ${nd_nbr} available nodes via round-robin scheduling and each batch handles job_nbr = ${job_nbr} regriddings concurrently.\n"
 	else
 	    printf "No parallelism--files will be regridded serially (one at a time) on a single node. HINT: to regrid multiple files in parallel, try \'--par_typ=background\' or \'--par_typ=mpi\'\n"
@@ -2596,27 +2596,27 @@ if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
     printf "Intermediate/temporary files written to directory ${drc_tmp}\n"
     printf "Output files to directory ${drc_out}\n"
 fi # !vrb_lvl
-if [[ "${map_mk}" != 'Yes' ]] && [[ "${map_usr_flg}" = 'Yes' ]] && [[ -n "${wgt_usr}" ]]; then
+if [[ ${map_mk} != 'Yes' ]] && [[ ${map_usr_flg} = 'Yes' ]] && [[ -n ${wgt_usr} ]]; then
     printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_cmd' is only allowed when creating a map (weight-generator is superfluous when user supplies map)\n"
     exit 1
 fi # wgt_usr
     
-if [[ "${dst_usr_flg}" = 'Yes' ]]; then 
-    if [[ "${grd_dst_usr_flg}" = 'Yes' ]]; then 
+if [[ ${dst_usr_flg} = 'Yes' ]]; then 
+    if [[ ${grd_dst_usr_flg} = 'Yes' ]]; then 
 	printf "${spt_nm}: INFO Both '-d dst_fl' and '-g grd_dst' were specified so ${spt_nm} will infer grid-file ${grd_dst} from data-file ${dst_fl}\n"
     fi # !grd_dst_usr_flg
 fi # !dst_usr_flg
-if [[ "${dst_usr_flg}" != 'Yes' ]] && [[ "${grd_dst_usr_flg}" != 'Yes' ]] && [[ "${map_usr_flg}" != 'Yes' ]] && [[ "${grd_sng_usr_flg}" != 'Yes' ]] && [[ "${vrt_usr_flg}" != 'Yes' ]]; then 
+if [[ ${dst_usr_flg} != 'Yes' ]] && [[ ${grd_dst_usr_flg} != 'Yes' ]] && [[ ${map_usr_flg} != 'Yes' ]] && [[ ${grd_sng_usr_flg} != 'Yes' ]] && [[ ${vrt_usr_flg} != 'Yes' ]]; then 
     printf "${spt_nm}: ERROR Unable to determine remapping procedure\nHINT: Specify the type of remapping to perform with at least one of the following options: 1) A data/template file, '-d dst_fl'; 2) A destination grid-file, '-g grd_dst'; 3) A grid-construction command, '-G grd_sng'; 4) A map-file with weights to apply, '-m map_fl'; 5) A vertical grid to interpolate to, --vrt_out=vrt_out\n"
     exit 1
 fi # !dst_usr_flg
-if [[ "${dst_usr_flg}" != 'Yes' ]] && [[ "${grd_dst_usr_flg}" = 'Yes' ]] && [[ "${map_usr_flg}" != 'Yes' ]] && [[ "${grd_sng_usr_flg}" = 'Yes' ]] && [[ "${vrt_usr_flg}" != 'Yes' ]]; then
+if [[ ${dst_usr_flg} != 'Yes' ]] && [[ ${grd_dst_usr_flg} = 'Yes' ]] && [[ ${map_usr_flg} != 'Yes' ]] && [[ ${grd_sng_usr_flg} = 'Yes' ]] && [[ ${vrt_usr_flg} != 'Yes' ]]; then
     flg_grd_only='Yes'
 fi # !flg_grd_only
-if [[ "${map_mk}" = 'Yes' ]] || [[ "${map_usr_flg}" = 'Yes' ]]; then
+if [[ ${map_mk} = 'Yes' ]] || [[ ${map_usr_flg} = 'Yes' ]]; then
     flg_hrz='Yes'
 fi # !map_mk, !map_usr_flg
-if [[ "${flg_hrz}" != 'Yes' ]]; then
+if [[ ${flg_hrz} != 'Yes' ]]; then
     # Turn-off dimension permutation if file will not be horizontally regridded
     pdq_opt=''
     pdq_flg='No'
@@ -2631,22 +2631,22 @@ if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
     if [[ ${fl_nbr} -eq 0 ]]; then
 	printf "Map/grid-only run: no input data detected therefore will exit after generating map and/or grid\n"
     fi # !fl_nbr
-    if [[ -n "${pdq_opt}" ]] && [[ "${pdq_flg}" = 'Yes' ]]; then 
+    if [[ -n ${pdq_opt} ]] && [[ ${pdq_flg} = 'Yes' ]]; then 
 	printf "Input data shaped in native \"${prc_typ}\"-order, will permute with \"ncpdq ${pdq_opt}\" prior to horizontal regridding\n"
     fi # !pdq_opt
-    if [[ "${d2f_flg}" = 'Yes' ]]; then
+    if [[ ${d2f_flg} = 'Yes' ]]; then
 	printf "Will convert all non-coordinate double precision input fields to single precision with \"ncpdq ${d2f_opt}\"\n"
     fi # !d2f_flg
-    if [[ "${prc_mpas}" = 'Yes' ]]; then
+    if [[ ${prc_mpas} = 'Yes' ]]; then
 	printf "MPAS input specified: will automatically renormalize (with --rnr=0.0) horizontally regridded fields\n"
-	if [[ "${clm_flg}" = 'No' ]]; then
+	if [[ ${clm_flg} = 'No' ]]; then
  	    printf "MPAS input specified: will automatically annotate NC_FLOAT and NC_DOUBLE variables with _FillValue = ${mss_val} prior to horizontal regridding\n"
 	fi # !clm_flg
-	if [[ "${dpt_flg}" = 'Yes' ]]; then
+	if [[ ${dpt_flg} = 'Yes' ]]; then
  	    printf "MPAS input specified: will add depth coordinate to all 3D variables prior to horizontal regridding\n"
 	fi # !dpt_flg
     fi # !mpas
-    if [[ "${prc_sgs}" = 'Yes' ]]; then 
+    if [[ ${prc_sgs} = 'Yes' ]]; then 
 	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area and/or time-interval duration (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value). If re-normalization is also requested (e.g., with --rnr_thr option, or with --preserve=mean), then these values will be renormalized by ${sgs_frc} and will not be conservative.\n"
 	if [[ ${fl_nbr} -eq 0 ]]; then
 	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires at least one data file (for the surface fractions of each gridcell)\n"
@@ -2655,14 +2655,14 @@ if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
 	fi # !fl_nbr
     fi # !prc_sgs
 fi # !vrb_lvl
-if [[ "${flg_hrz}" = 'Yes' ]]; then
-    if [[ "${map_mk}" != 'Yes' ]] && [[ "${map_usr_flg}" = 'Yes' ]]; then 
+if [[ ${flg_hrz} = 'Yes' ]]; then
+    if [[ ${map_mk} != 'Yes' ]] && [[ ${map_usr_flg} = 'Yes' ]]; then 
 	if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
 	    printf "Source and destination grids will both be read from supplied map-file\n"
 	fi # !vrb_lvl
     else # !map_usr_flg
 	fl_idx=0 # [idx] Current file index
-	if [[ "${dst_usr_flg}" = 'Yes' ]]; then 
+	if [[ ${dst_usr_flg} = 'Yes' ]]; then 
 	    # Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
 	    # Infer destination grid-file from data file
 	    if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
@@ -2670,19 +2670,19 @@ if [[ "${flg_hrz}" = 'Yes' ]]; then
 	    fi # !vrb_lvl
 	    cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=\"${hnt_dst_fl}\" ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=\"${grd_dst}\" \"${dst_fl}\" \"${tmp_out_fl}\""
 	else # !dst_usr_flg
-	    if [[ "${grd_dst_usr_flg}" = 'Yes' ]] && [[ "${grd_sng_usr_flg}" != 'Yes' ]]; then 
+	    if [[ ${grd_dst_usr_flg} = 'Yes' ]] && [[ ${grd_sng_usr_flg} != 'Yes' ]]; then 
 		if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
 		    printf "Destination grid supplied by user\n"
 		fi # !vrb_lvl
 	    fi # !grd_dst_usr_flg
-	    if [[ "${grd_dst_usr_flg}" != 'Yes' ]] && [[ "${grd_sng_usr_flg}" != 'Yes' ]]; then 
+	    if [[ ${grd_dst_usr_flg} != 'Yes' ]] && [[ ${grd_sng_usr_flg} != 'Yes' ]]; then 
 		printf "${spt_nm}: WARNING No destination grid specified with -g, template/inferral file specified with -d, or grid string specified with -G\n"
 	    fi # !grd_dst_usr_flg
-	    if [[ "${grd_sng_usr_flg}" = 'Yes' ]]; then
+	    if [[ ${grd_sng_usr_flg} = 'Yes' ]]; then
 		# 20180903 Must quote grd_sng otherwise whitespace and shell redirection characters (e.g., in ttl argument) will confuse interpreter
 		cmd_dst[${fl_idx}]="ncks -O --dmm_in_mk ${nco_opt} --rgr scrip=\"${grd_dst}\" ${nco_skl_fl} --rgr '${grd_sng}' \"${dmm_fl}\" \"${tmp_out_fl}\""
 		if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
-		    if [[ "${grd_dst_usr_flg}" = 'Yes' ]]; then
+		    if [[ ${grd_dst_usr_flg} = 'Yes' ]]; then
 			printf "Destination grid will be generated in SCRIP format from NCO grid-formula ${grd_sng} and stored in ${grd_dst}\n"
 		    else
 			printf "Destination grid will be generated in SCRIP format from NCO grid-formula ${grd_sng} and stored in a temporary, internal location\n"
@@ -2690,7 +2690,7 @@ if [[ "${flg_hrz}" = 'Yes' ]]; then
 		fi # !vrb_lvl
 	    fi # !grd_sng_usr_flg
 	fi # !dst_usr_flg
-	if [[ "${dst_usr_flg}" = 'Yes' ]] || [[ "${grd_sng_usr_flg}" = 'Yes' ]]; then 
+	if [[ ${dst_usr_flg} = 'Yes' ]] || [[ ${grd_sng_usr_flg} = 'Yes' ]]; then 
 	    # Block 1 Loop 2: Execute and/or echo commands
 	    if [[ ${wgt_typ} != 'cdo' ]]; then
 		if [[ ${dbg_lvl} -ge 1 ]]; then
@@ -2699,14 +2699,14 @@ if [[ "${flg_hrz}" = 'Yes' ]]; then
 		if [[ ${dbg_lvl} -ne 2 ]]; then
 		    eval ${cmd_dst[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
-			if [[ "${grd_sng_usr_flg}" = 'Yes' ]]; then
+			if [[ ${grd_sng_usr_flg} = 'Yes' ]]; then
 			    printf "${spt_nm}: ERROR Failed to generate grid from user-supplied grid-string. Debug this:\n${cmd_dst[${fl_idx}]}\n"
 			else # !grd_sng_usr_flg
 			    printf "${spt_nm}: ERROR Failed to infer destination grid. Debug this:\n${cmd_dst[${fl_idx}]}\n"
 			fi # !grd_sng_usr_flg
 			exit 1
 		    fi # !err
-		    if [[ "${grd_sng_usr_flg}" = 'Yes' ]]; then 
+		    if [[ ${grd_sng_usr_flg} = 'Yes' ]]; then 
 			/bin/rm -f ${tmp_out_fl}
 		    fi # !grd_sng_usr_flg
 		fi # !dbg
@@ -2716,14 +2716,14 @@ if [[ "${flg_hrz}" = 'Yes' ]]; then
 	    printf "Weight-generation type: ${wgt_typ}\n"
 	    printf "Algorithm selected to generate weights in map-file is: ${alg_opt}\n"
 	    printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
-	    [[ -n "${map_nfo_sng}" ]] && echo "${map_nfo_sng}"
+	    [[ -n ${map_nfo_sng} ]] && echo "${map_nfo_sng}"
 	fi # !vrb_lvl
 	if [[ ${flg_grd_only} != 'Yes' ]]; then
 	    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, and/or change your PATH to find it.\n${spt_nm}: HINT The Conda 'nco' package automagically installs the 'esmf' package to provide ESMF_RegridWeightGen and the 'tempest-remap' package to install TempestRemap executables such as 'GenerateOfflineMap'. One can obtain the MOAB-Tempest executables like 'mbtempest' via the Conda 'moab' package.\n"; exit 1; }
 	fi # !flg_grd_only
 	if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
 	    if [[ ${fl_nbr} -ge 2 ]]; then 
-		if [[ "${mlt_map_flg}" = 'Yes' ]]; then 
+		if [[ ${mlt_map_flg} = 'Yes' ]]; then 
 		    printf "Input files assumed to use unique input grids\nOne source grid-file will be inferred and one map-file generated per input file\n"
 		else # !mlt_map_flg
 		    printf "Input files assumed to use same input grid\nOnly one source grid-file and one map-file will be generated\n"
@@ -2733,32 +2733,32 @@ if [[ "${flg_hrz}" = 'Yes' ]]; then
     fi # !map_usr
 fi # !flg_hrz
 
-if [[ "${prc_typ}" = 'rrg' ]]; then 
+if [[ ${prc_typ} = 'rrg' ]]; then 
     fl_idx=0
 
-    if [[ -z "${rnm_sng}" ]]; then 
+    if [[ -z ${rnm_sng} ]]; then 
 	# Discern rename string from input file, assume dimension is 'ncol', strip whitespace
 	rnm_sng=`ncks -m ${fl_in[${fl_idx}]} | cut -d ':' -f 1 | cut -d '=' -s -f 1 | grep ncol | sed 's/ncol//' | sed -e 's/^ *//' -e 's/ *$//'`
 	rgn_nbr=`echo ${rnm_sng} | wc -l`
-	if [[ "${rgn_nbr}" -ne 1 ]]; then
+	if [[ ${rgn_nbr} -ne 1 ]]; then
 	    echo "ERROR: Inferred regional regridding suffix '${rnm_sng}' indicates multiple regions present in input file. ncremap only works on one region at a time."
 	    echo "HINT: Provide a single region string as the argument to the --rrg_rnm_sng option"
 	    exit 1
 	fi # !rgn_nbr
 	echo "${spt_nm}: INFO Parsed input file dimension list to obtain regional suffix string '${rnm_sng}'"
     fi # !rnm_sng
-    if [[ -n "${rnm_sng}" ]]; then 
-	if [[ -n "${bb_wesn}" ]]; then 
+    if [[ -n ${rnm_sng} ]]; then 
+	if [[ -n ${bb_wesn} ]]; then 
 	    echo "${spt_nm}: INFO Will use explicitly specified comma-separated rectangular WESN bounding box string ${bb_wesn} instead of parsing string suffix ${rnm_sng}."
 	else # !bb_wesn
 	    rnm_rx='^_(.*)_to_(.*)_(.*)_to_(.*)$'
-	    if [[ "${rnm_sng}" =~ ${rnm_rx} ]]; then
+	    if [[ ${rnm_sng} =~ ${rnm_rx} ]]; then
 		lon1=${BASH_REMATCH[1]%?}
 		lon2=${BASH_REMATCH[2]%?}
-		if [[ "${BASH_REMATCH[1]: -1}" = 'w' ]]; then
+		if [[ ${BASH_REMATCH[1]: -1} = 'w' ]]; then
 		    lon1=$((360-lon1))
 		fi # !w
-		if [[ "${BASH_REMATCH[2]: -1}" = 'w' ]]; then
+		if [[ ${BASH_REMATCH[2]: -1} = 'w' ]]; then
 		    lon2=$((360-lon2))
 		fi # !w
 		if [[ ${lon1} -lt ${lon2} ]]; then
@@ -2772,10 +2772,10 @@ if [[ "${prc_typ}" = 'rrg' ]]; then
 		fi # !lon1
 		lat1=${BASH_REMATCH[3]%?}
 		lat2=${BASH_REMATCH[4]%?}
-		if [[ "${BASH_REMATCH[3]: -1}" = 's' ]]; then
+		if [[ ${BASH_REMATCH[3]: -1} = 's' ]]; then
 		    lat1=$((-lat1))
 		fi # !w
-		if [[ "${BASH_REMATCH[4]: -1}" = 's' ]]; then
+		if [[ ${BASH_REMATCH[4]: -1} = 's' ]]; then
 		    lat2=$((-lat2))
 		fi # !w
 		if [[ ${lat1} -lt ${lat2} ]]; then
@@ -2850,8 +2850,8 @@ fi # !rrg
 
 # 20211102 Pre-process destination grid prior to weight-generation by mbtempest
 # NB: Unlike source grid, destination grid never changes in file-loop, so pre-process here
-if [[ "${map_mk}" = 'Yes' ]]; then 
-    if [[ "${wgt_typ}" = 'mbtempest' ]]; then
+if [[ ${map_mk} = 'Yes' ]]; then 
+    if [[ ${wgt_typ} = 'mbtempest' ]]; then
 	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
 	if [[ ${grd_dst} == *.g ]] || [[ ${grd_dst} == *.exo ]] || [[ ${grd_dst} == *".nc"* ]]; then
 	    [[ ${grd_dst} == *.g ]] && grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
@@ -2883,7 +2883,7 @@ fi # !map_mk
 # If user provides source gridfile, or it was inferred in RRG or SGS modes, assume it applies to every input file
 # In that case, no need to infer source gridfiles within file loop
 # Generate map-file once outside of file loop, and re-use it for every input file
-if [[ "${grd_src_usr_flg}" = 'Yes' ]] || [[ "${prc_typ}" = 'rrg' ]]; then
+if [[ ${grd_src_usr_flg} = 'Yes' ]] || [[ ${prc_typ} = 'rrg' ]]; then
     if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
 	printf "Source grid supplied by user (or derived from RRG procedure) as ${grd_src}\n"
     fi # !vrb_lvl
@@ -2892,25 +2892,25 @@ if [[ "${grd_src_usr_flg}" = 'Yes' ]] || [[ "${prc_typ}" = 'rrg' ]]; then
 	printf "Grid(src): ${grd_src}\n"
 	printf "Grid(dst): ${grd_dst}\n"
     fi # !vrb_lvl
-    if [[ "${wgt_typ}" = 'cdo' ]]; then 
+    if [[ ${wgt_typ} = 'cdo' ]]; then 
 	cmd_map[${fl_idx}]="${wgt_cmd} -gencon,\"${dst_fl}\" \"${in_fl}\" \"${map_fl}\"${devnull}"
 	#cmd_map[${fl_idx}]="${wgt_cmd} -gencon,\"${grd_dst}\" \"${grd_src}\" \"${map_fl}\"${devnull}"
-    elif [[ "${wgt_typ}" = 'esmf' ]]; then 
+    elif [[ ${wgt_typ} = 'esmf' ]]; then 
 	rgn_opt=''
-	if [[ -n "${hnt_src}" ]]; then
+	if [[ -n ${hnt_src} ]]; then
 	    rgn_opt="${rgn_opt} ${hnt_src}"
-	elif [[ -f "${hnt_src_fl}" ]]; then
+	elif [[ -f ${hnt_src_fl} ]]; then
 	    rgn_opt="${rgn_opt} `cat ${hnt_src_fl}`"
 	fi # !hnt_src_fl
-	if [[ -n "${hnt_dst}" ]]; then
+	if [[ -n ${hnt_dst} ]]; then
 	    rgn_opt="${rgn_opt} ${hnt_dst}"
-	elif [[ -f "${hnt_dst_fl}" ]]; then
+	elif [[ -f ${hnt_dst_fl} ]]; then
 	    rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
 	fi # !hnt_dst_fl
 	cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt}${devnull}"
-    elif [[ "${wgt_typ}" = 'nco' ]]; then 
+    elif [[ ${wgt_typ} = 'nco' ]]; then 
 	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
-    elif [[ "${wgt_typ}" = 'mbtempest' ]]; then 
+    elif [[ ${wgt_typ} = 'mbtempest' ]]; then 
 	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
 	if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *".nc"* ]]; then
 	    [[ ${grd_src} == *.g ]] && grd_src_h5m_tmp="${grd_src/.g/.h5m}"
@@ -2961,13 +2961,13 @@ if [[ "${grd_src_usr_flg}" = 'Yes' ]] || [[ "${prc_typ}" = 'rrg' ]]; then
 	if [[ ${prt_alg} = 'zoltan' ]]; then
 	    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
 	fi # !prt_alg
-    elif [[ "${wgt_typ}" = 'tempest' ]]; then 
+    elif [[ ${wgt_typ} = 'tempest' ]]; then 
     	cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
-	if [[ "${a2o_flg}" = 'Yes' ]]; then 
+	if [[ ${a2o_flg} = 'Yes' ]]; then 
 	   cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	fi # !a2o_flg
 	cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_src}\" --out_mesh \"${grd_dst}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_fl}\" ${wgt_opt}${devnull}"
-	if [[ "${trn_map}" = 'Yes' ]]; then 
+	if [[ ${trn_map} = 'Yes' ]]; then 
 	    # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
 	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_dst}\" --out_mesh \"${grd_src}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_trn_fl}\" ${wgt_opt}${devnull}"
 	    cmd_trn[${fl_idx}]="GenerateTransposeMap --in \"${map_trn_fl}\" --out \"${map_fl}\"${devnull}"
@@ -2991,7 +2991,7 @@ if [[ "${grd_src_usr_flg}" = 'Yes' ]] || [[ "${prc_typ}" = 'rrg' ]]; then
 	eval ${cmd_map[${fl_idx}]}
 	if [[ "$?" -ne 0 ]] || [[ ! -f ${map_rsl_fl} ]]; then
 	    printf "${spt_nm}: ERROR Failed to generate map-file. Debug this:\n${cmd_map[${fl_idx}]}\n"
-	    if [[ "${wgt_typ}" = 'esmf' ]]; then 
+	    if [[ ${wgt_typ} = 'esmf' ]]; then 
 		printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
 	    fi # !esmf
 	    exit 1
@@ -3000,7 +3000,7 @@ if [[ "${grd_src_usr_flg}" = 'Yes' ]] || [[ "${prc_typ}" = 'rrg' ]]; then
     # 20181116: GenerateTransposeMap does not propagate global attributes from input map
     # Moreover, it does not generate any metadata of its own except "Title"
     # Hence monotr maps are naked of usual Tempest map metadata
-    if [[ "${trn_map}" = 'Yes' ]]; then 
+    if [[ ${trn_map} = 'Yes' ]]; then 
 	if [[ ${dbg_lvl} -ge 1 ]]; then
 	    echo ${cmd_trn[${fl_idx}]}
 	fi # !dbg
@@ -3012,11 +3012,11 @@ if [[ "${grd_src_usr_flg}" = 'Yes' ]] || [[ "${prc_typ}" = 'rrg' ]]; then
 	    fi # !err
 	fi # !dbg
     fi # !trn_map
-    if [[ "${map_usr_flg}" = 'Yes' ]]; then
+    if [[ ${map_usr_flg} = 'Yes' ]]; then
 	hst_att="`date`: ${cmd_ln}; ${cmd_map[${fl_idx}]}"
-	if [[ "${wgt_typ}" = 'tempest' ]]; then 
+	if [[ ${wgt_typ} = 'tempest' ]]; then 
 	    hst_att="`date`: ${cmd_ln}; ${cmd_msh[${fl_idx}]}; ${cmd_map[${fl_idx}]}"
-	    if [[ "${trn_map}" = 'Yes' ]]; then 
+	    if [[ ${trn_map} = 'Yes' ]]; then 
 		hst_att="${hst_att}; ${cmd_trn[${fl_idx}]}"
 	    fi # !trn_map
 	fi # !tempest
@@ -3056,28 +3056,28 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
     fi # !bch_flg
     for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	in_fl=${fl_in[${fl_idx}]}
-	if [[ "$(basename "${in_fl}")" = "${in_fl}" ]]; then
+	if [[ "$(basename ${in_fl})" = ${in_fl} ]]; then
 	    in_fl="${drc_pwd}/${in_fl}"
 	fi # !basename
 	idx_prn=`printf "%02d" ${fl_idx}`
 	if [[ ${vrb_lvl} -ge ${vrb_1} ]]; then
 	    printf "Input #${idx_prn}: ${in_fl}\n"
 	fi # !vrb_lvl
-	if [[ "${out_usr_flg}" = 'Yes' ]]; then 
+	if [[ ${out_usr_flg} = 'Yes' ]]; then 
 	    if [[ ${fl_nbr} -ge 2 ]]; then 
 		echo "ERROR: Single output filename specified with -o for multiple input files"
 		echo "HINT: For multiple input files use -O option to specify output directory and do not use -o or second positional option. Output files will have same name as input files, but will be in different directory."
 		exit 1
 	    fi # !fl_nbr
-	    if [[ -n "${drc_usr}" ]]; then
+	    if [[ -n ${drc_usr} ]]; then
 		out_fl="${drc_out}/${out_fl}"
 	    fi # !drc_usr
 	else # !out_usr_flg
 	    out_fl="${drc_out}/$(basename "${in_fl}")"
 	fi # !out_fl
 	# Test whether input and output filenames point to the same file (i.e., same device and inode numbers)
-	if [[ "${in_fl}" -ef "${out_fl}" ]]; then
-	# if [[ "${in_fl}" = "${out_fl}" ]]; then
+	if [[ ${in_fl} -ef ${out_fl} ]]; then
+	# if [[ ${in_fl} = ${out_fl} ]]; then
 	    echo "ERROR: Input file = ${in_fl} and Output file = ${out_fl} point to the same file, i.e., point to the same device and inode numbers"
 	    echo "HINT: To prevent inadvertent data loss/corruption, ${spt_nm} insists that the Input and Output files be distinct. Retry command after renaming the Output file to a distinct location."
 	    exit 1
@@ -3086,7 +3086,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	fl_out[${fl_idx}]=${out_fl}
 
 	# Temporary files that need fl_idx granularity
-	if [[ -n "${unq_sfx}" ]]; then
+	if [[ -n ${unq_sfx} ]]; then
 	    unq_sfx_grn="${unq_sfx}.flidx${fl_idx}"
 	fi # !unq_sfx
 	att_fl[${fl_idx}]="${drc_tmp}/ncremap_tmp_att.nc${unq_sfx_grn}" # [sng] Missing value workflow (MPAS) default
@@ -3099,10 +3099,10 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	# Multiple maps can be generated only if mlt_map_flg=Yes (temporarily borken 20190920)
 	# NB: RRG infers source grid outside file loop, and forbids multiple source grids
 	# RRG produces map before file loop, and will not make maps inside file loop
-	if [[ "${map_mk}" = 'Yes' ]] && [[ "${fl_idx}" -eq 0 ]]; then
+	if [[ ${map_mk} = 'Yes' ]] && [[ ${fl_idx} -eq 0 ]]; then
 	    
 	    # Block 1: Special cases
-	    if [[ "${prc_typ}" = 'hirdls' ]] || [[ "${prc_typ}" = 'mls' ]]; then
+	    if [[ ${prc_typ} = 'hirdls' ]] || [[ ${prc_typ} = 'mls' ]]; then
 		# Pre-process zonal input files so grid inferral works
 		# 20160214: fix record variable to work around ncpdq problem
 		cmd_znl[${fl_idx}]="ncecat -O -u lon ${nco_opt} ${nco_var_lst} \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${znl_fl/znl/znl1}\";ncap2 -O ${nco_opt} -s 'lon[\$lon]={0.0,90.0,180.0,270.0}' \"${znl_fl/znl/znl1}\" \"${znl_fl/znl/znl2}\""
@@ -3112,7 +3112,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		fi # !dbg
 		if [[ ${dbg_lvl} -ne 2 ]]; then
 		    eval ${cmd_znl[${fl_idx}]}
-		    if [[ "$?" -ne 0 ]] || [[ ! -f "${znl_fl/znl/znl2}" ]]; then
+		    if [[ "$?" -ne 0 ]] || [[ ! -f ${znl_fl/znl/znl2} ]]; then
 			printf "${spt_nm}: ERROR Failed to generate lat-lon file from zonal file. Debug this:\n${cmd_znl[${fl_idx}]}\n"
 			exit 1
 		    fi # !err
@@ -3121,13 +3121,13 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    
 	    # Block 2: Source grid
 	    # Block 2 Loop 1: Source gridfile command
-	    if [[ ! -f "${in_fl}" ]] && [[ ! -L "${in_fl}" ]]; then
+	    if [[ ! -f ${in_fl} ]] && [[ ! -L ${in_fl} ]]; then
 		echo "${spt_nm}: ERROR Unable to find input file ${in_fl}"
 		echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
 	    fi # ! -f
 
-	    if [[ "${wgt_typ}" != 'cdo' ]]; then 
+	    if [[ ${wgt_typ} != 'cdo' ]]; then 
 		# Infer source grid-file from input data file
 		cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_dgn_area} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${in_fl}\" \"${tmp_out_fl}\""
 	
@@ -3145,7 +3145,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 
 		# If source grid was just inferred in preceding block, convert and partition it
 		# Duplicate code of mbtempest source grid blocks above
-		if [[ "${wgt_typ}" = 'mbtempest' ]]; then 
+		if [[ ${wgt_typ} = 'mbtempest' ]]; then 
 		    # 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
 		    if [[ ${grd_src} == *.g ]] || [[ ${grd_src} == *.exo ]] || [[ ${grd_src} == *".nc"* ]]; then
 			[[ ${grd_src} == *.g ]] && grd_src_h5m_tmp="${grd_src/.g/.h5m}"
@@ -3201,43 +3201,43 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		printf "Grid(src): ${grd_src}\n"
 		printf "Grid(dst): ${grd_dst}\n"
 	    fi # !vrb_lvl
-	    if [[ "${wgt_typ}" = 'cdo' ]]; then 
+	    if [[ ${wgt_typ} = 'cdo' ]]; then 
 		cmd_map[${fl_idx}]="${wgt_cmd} -gencon,\"${dst_fl}\" \"${in_fl}\" \"${map_fl}\"${devnull}"
 		#cmd_map[${fl_idx}]="${wgt_cmd} -gencon,\"${grd_dst}\" \"${grd_src}\" \"${map_fl}\"${devnull}"
-	    elif [[ "${wgt_typ}" = 'esmf' ]]; then 
+	    elif [[ ${wgt_typ} = 'esmf' ]]; then 
 	    	rgn_opt=''
-		if [[ -n "${hnt_src}" ]]; then
+		if [[ -n ${hnt_src} ]]; then
 		    rgn_opt="${rgn_opt} ${hnt_src}"
-		elif [[ -f "${hnt_src_fl}" ]]; then
+		elif [[ -f ${hnt_src_fl} ]]; then
 		    rgn_opt="${rgn_opt} `cat ${hnt_src_fl}`"
 		fi # !hnt_src_fl
-		if [[ -n "${hnt_dst}" ]]; then
+		if [[ -n ${hnt_dst} ]]; then
 		    rgn_opt="${rgn_opt} ${hnt_dst}"
-		elif [[ -f "${hnt_dst_fl}" ]]; then
+		elif [[ -f ${hnt_dst_fl} ]]; then
 		    rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
 		fi # !hnt_dst_fl
 		cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt}${devnull}"
-	    elif [[ "${wgt_typ}" = 'nco' ]]; then 
+	    elif [[ ${wgt_typ} = 'nco' ]]; then 
 		if [[ ${vrb_lvl} -ge ${vrb_1} ]]; then
-		    if [[ -n "${msh_opt}" ]]; then
+		    if [[ -n ${msh_opt} ]]; then
 			printf "Mesh-File: ${msh_fl}\n"
 		    fi # !msh_opt
 		fi # !vrb_lvl
 		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
-	    elif [[ "${wgt_typ}" = 'mbtempest' ]]; then 
+	    elif [[ ${wgt_typ} = 'mbtempest' ]]; then 
 		if [[ ${prt_alg} = 'zoltan' ]]; then
 		    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
 		fi # !prt_alg
-	    elif [[ "${wgt_typ}" = 'tempest' ]]; then 
+	    elif [[ ${wgt_typ} = 'tempest' ]]; then 
 		if [[ ${vrb_lvl} -ge ${vrb_1} ]]; then
 		    printf "Mesh-File: ${msh_fl}\n"
 		fi # !vrb_lvl
 		cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
-		if [[ "${a2o_flg}" = 'Yes' ]]; then 
+		if [[ ${a2o_flg} = 'Yes' ]]; then 
 		    cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 		fi # !a2o_flg
 		cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_src}\" --out_mesh \"${grd_dst}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_fl}\" ${wgt_opt}${devnull}"
-		if [[ "${trn_map}" = 'Yes' ]]; then 
+		if [[ ${trn_map} = 'Yes' ]]; then 
 		    # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
 		    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_dst}\" --out_mesh \"${grd_src}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_trn_fl}\" ${wgt_opt}${devnull}"
 		    cmd_trn[${fl_idx}]="GenerateTransposeMap --in \"${map_trn_fl}\" --out \"${map_fl}\"${devnull}"
@@ -3263,12 +3263,12 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		eval ${cmd_map[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${map_rsl_fl} ]]; then
 		    printf "${spt_nm}: ERROR Failed to generate map-file. Debug this:\n${cmd_map[${fl_idx}]}\n"
-		    if [[ "${wgt_typ}" = 'esmf' ]]; then 
+		    if [[ ${wgt_typ} = 'esmf' ]]; then 
 			printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
 		    fi # !esmf
 		    exit 1
 		fi # !err
-		if [[ "${map_usr_flg}" = 'Yes' ]]; then
+		if [[ ${map_usr_flg} = 'Yes' ]]; then
 		    hst_att="`date`: ${cmd_ln}; ${cmd_map[${fl_idx}]}"
 		    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${gad_sng} \"${map_rsl_fl}\""
 		    eval ${cmd_att[${fl_idx}]}
@@ -3278,7 +3278,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		fi # !err
 		fi # !map_usr_flg
 	    fi # !dbg
-	    if [[ "${trn_map}" = 'Yes' ]]; then 
+	    if [[ ${trn_map} = 'Yes' ]]; then 
 		if [[ ${dbg_lvl} -ge 1 ]]; then
 		    echo ${cmd_trn[${fl_idx}]}
 		fi # !dbg
@@ -3292,7 +3292,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !trn_map
 	    
 	    # Prevent creating new source gridfile and map-file after first iteration
-	    if [[ "${mlt_map_flg}" = 'No' ]] && [[ ${fl_idx} -eq 0 ]]; then 
+	    if [[ ${mlt_map_flg} = 'No' ]] && [[ ${fl_idx} -eq 0 ]]; then 
 		map_mk='Already made map once. Never again.'
 	    fi # !mlt_map_flg
 	    
@@ -3302,7 +3302,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
     # 20190920: Nothing to wait() for here since we produce only one map
     
     # Block 4: Special cases
-    if [[ "${dpt_flg}" = 'Yes' ]]; then
+    if [[ ${dpt_flg} = 'Yes' ]]; then
 	# Block 4a: Add MPAS depth coordinate (prior to permutation)
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    if [[ ${vrb_lvl} -ge ${vrb_2} ]]; then
@@ -3315,7 +3315,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo ${cmd_dpt[${fl_idx}]}
 	    fi # !dbg
 	    if [[ ${dbg_lvl} -ne 2 ]]; then
-		if [[ -z "${par_opt}" ]]; then
+		if [[ -z ${par_opt} ]]; then
 		    eval ${cmd_dpt[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]] || [[ ! -f ${dpt_tmp_fl[${fl_idx}]} ]]; then
 			printf "${spt_nm}: ERROR Failed to add depth coordinate to MPAS file. Debug this:\n${cmd_dpt[${fl_idx}]}\nHINTS: 1) Verify that ${dpt_exe_mpas} is executable from the command-line, it requires Python and the xarray package to succeed. 2) Verify that ${dpt_fl} or ${fl_in[${fl_idx}]} contains variable \"refBottomDepth\".\n"
@@ -3331,7 +3331,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	# Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
 	# Following wait() blocks are identical except for error message and this comment is omitted
-	if [[ -n "${par_opt}" ]]; then
+	if [[ -n ${par_opt} ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${dpt_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${dpt_tmp_fl[${fl_idx}]} ]]; then
@@ -3342,7 +3342,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	fi # !par_opt
     fi # !dpt_flg
 
-    if [[ -n "${pdq_opt}" ]]; then
+    if [[ -n ${pdq_opt} ]]; then
 	# Block 4b: Generic Permutation/Unpacking (AIRS, HIRDLS, MLS, MOD04, MPAS)
 	# Do sub-setting operation (like PDQ) first so cmd_att works on smaller, sub-set files
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
@@ -3356,7 +3356,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo ${cmd_pdq[${fl_idx}]}
 	    fi # !dbg
 	    if [[ ${dbg_lvl} -ne 2 ]]; then
-		if [[ -z "${par_opt}" ]]; then
+		if [[ -z ${par_opt} ]]; then
 		    eval ${cmd_pdq[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]] || [[ ! -f ${pdq_fl[${fl_idx}]} ]]; then
 			printf "${spt_nm}: ERROR Failed to generate pdq-file. Debug this:\n${cmd_pdq[${fl_idx}]}\n"
@@ -3369,7 +3369,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ -n "${par_opt}" ]]; then
+	if [[ -n ${par_opt} ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${pdq_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${pdq_fl[${fl_idx}]} ]]; then
@@ -3380,7 +3380,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	fi # !par_opt
     fi # !pdq_opt
 	
-    if [[ "${d2f_flg}" = 'Yes' ]]; then
+    if [[ ${d2f_flg} = 'Yes' ]]; then
 	# Block 4c: Double->Float conversion (by-request and possibly default for MPAS)
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    if [[ ${vrb_lvl} -ge ${vrb_2} ]]; then
@@ -3393,7 +3393,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo ${cmd_d2f[${fl_idx}]}
 	    fi # !dbg
 	    if [[ ${dbg_lvl} -ne 2 ]]; then
-		if [[ -z "${par_opt}" ]]; then
+		if [[ -z ${par_opt} ]]; then
 		    eval ${cmd_d2f[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]] || [[ ! -f ${d2f_fl[${fl_idx}]} ]]; then
 			printf "${spt_nm}: ERROR Failed to convert double-precision to single-precision. Debug this:\n${cmd_d2f[${fl_idx}]}\n"
@@ -3406,7 +3406,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ -n "${par_opt}" ]]; then
+	if [[ -n ${par_opt} ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${d2f_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${d2f_fl[${fl_idx}]} ]]; then
@@ -3417,7 +3417,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	fi # !par_opt
     fi # !d2f_flg
 
-    if [[ "${att_flg}" = 'Yes' ]]; then
+    if [[ ${att_flg} = 'Yes' ]]; then
 	# Block 4d: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then to annotate them here, so assume ncclimo is working with annotated files)
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    if [[ ${vrb_lvl} -ge ${vrb_2} ]]; then
@@ -3430,7 +3430,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo ${cmd_att[${fl_idx}]}
 	    fi # !dbg
 	    if [[ ${dbg_lvl} -ne 2 ]]; then
-		if [[ -z "${par_opt}" ]]; then
+		if [[ -z ${par_opt} ]]; then
 		    eval ${cmd_att[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]] || [[ ! -f ${att_fl[${fl_idx}]} ]]; then
 			printf "${spt_nm}: ERROR Failed to annotate MPAS file with _FillValue. Debug this:\n${cmd_att[${fl_idx}]}\n"
@@ -3443,7 +3443,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ -n "${par_opt}" ]]; then
+	if [[ -n ${par_opt} ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${att_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${att_fl[${fl_idx}]} ]]; then
@@ -3454,14 +3454,14 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	fi # !par_opt
     fi # !att_flg
 
-    if [[ "${prc_typ}" = 'rrg' ]]; then 
+    if [[ ${prc_typ} = 'rrg' ]]; then 
 	# Block 4e: RRG
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    rrg_dmn_lst=`ncdmnlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
 	    rrg_var_lst=`ncvarlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
 	    
 	    dmn_sng=''
-	    if [[ -n "${rrg_dmn_lst}" ]]; then
+	    if [[ -n ${rrg_dmn_lst} ]]; then
 		for dmn in ${rrg_dmn_lst} ; do
 		    dmn_sng="${dmn_sng} -d ${dmn},${dmn/${rnm_sng}/}"
 		done # !dmn
@@ -3474,7 +3474,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !rrg_dmn_lst
 	    
 	    var_sng=''
-	    if [[ -n "${rrg_var_lst}" ]]; then
+	    if [[ -n ${rrg_var_lst} ]]; then
 		for var in ${rrg_var_lst} ; do
 		    var_sng="${var_sng} -v ${var},${var/${rnm_sng}/}"
 		done # !rrg_var_lst
@@ -3489,7 +3489,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo ${cmd_rnm[${fl_idx}]}
 	    fi # !dbg
 	    if [[ ${dbg_lvl} -ne 2 ]]; then
-		if [[ -z "${par_opt}" ]]; then
+		if [[ -z ${par_opt} ]]; then
 		    eval ${cmd_rnm[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]] || [[ ! -f ${rnm_fl[${fl_idx}]} ]]; then
 			printf "${spt_nm}: ERROR Failed to rename regional input file. Debug this:\n${cmd_rnm[${fl_idx}]}\n"
@@ -3502,7 +3502,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ -n "${par_opt}" ]]; then
+	if [[ -n ${par_opt} ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${rnm_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${rnm_fl[${fl_idx}]} ]]; then
@@ -3521,7 +3521,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo ${cmd_apn[${fl_idx}]}
 	    fi # !dbg
 	    if [[ ${dbg_lvl} -ne 2 ]]; then
-		if [[ -z "${par_opt}" ]]; then
+		if [[ -z ${par_opt} ]]; then
 		    eval ${cmd_apn[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]] || [[ ! -f ${rnm_fl[${fl_idx}]} ]]; then
 			printf "${spt_nm}: ERROR Failed to append regional coordinates and vertices to annotated, regional input data. Debug this:\n${cmd_apn[${fl_idx}]}\n"
@@ -3534,7 +3534,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ -n "${par_opt}" ]]; then
+	if [[ -n ${par_opt} ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${apn_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${rnm_fl[${fl_idx}]} ]]; then
@@ -3545,7 +3545,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	fi # !par_opt
     fi # !rrg
 
-    if [[ -n "${vrt_out}" ]]; then
+    if [[ -n ${vrt_out} ]]; then
 	# Block 5a: Vertical interpolation
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 
@@ -3553,7 +3553,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		printf "Vertical : ${vrt_out}\n"
 	    fi # !vrb_lvl
 	    out_fl=${fl_out[${fl_idx}]}
-	    if [[ "${flg_hrz}" = 'Yes' ]]; then
+	    if [[ ${flg_hrz} = 'Yes' ]]; then
 		out_fl="${drc_tmp}/ncremap_tmp_out_vrt.${fl_idx}.nc"
 	    fi # !flg_hrz
 	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${vrt_opt} --vrt_out=\"${vrt_out}\" \"${fl_in[${fl_idx}]}\" \"${out_fl}\""
@@ -3562,7 +3562,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo ${cmd_rgr[${fl_idx}]}
 	    fi # !dbg
 	    if [[ ${dbg_lvl} -ne 2 ]]; then
-		if [[ -z "${par_opt}" ]]; then
+		if [[ -z ${par_opt} ]]; then
 		    eval ${cmd_rgr[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR Failed to vertically interpolate. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
@@ -3575,7 +3575,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ -n "${par_opt}" ]]; then
+	if [[ -n ${par_opt} ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${rgr_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -3586,7 +3586,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	fi # !par_opt
     fi # !vrt_out
     
-    if [[ "${flg_hrz}" = 'Yes' ]]; then
+    if [[ ${flg_hrz} = 'Yes' ]]; then
 	# Block 5b: Horizontal regridding
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    if [[ ${vrb_lvl} -ge ${vrb_1} ]]; then
@@ -3597,7 +3597,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo ${cmd_rgr[${fl_idx}]}
 	    fi # !dbg
 	    if [[ ${dbg_lvl} -ne 2 ]]; then
-		if [[ -z "${par_opt}" ]]; then
+		if [[ -z ${par_opt} ]]; then
 		    eval ${cmd_rgr[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR Failed to horizontally regrid. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
@@ -3610,7 +3610,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 	
-	if [[ -n "${par_opt}" ]]; then
+	if [[ -n ${par_opt} ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${rgr_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -3622,10 +3622,10 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
     fi # !flg_hrz
     
     # Regridding is complete so delete temporary files produced by this batch
-    if [[ "${cln_flg}" = 'Yes' ]]; then
+    if [[ ${cln_flg} = 'Yes' ]]; then
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    /bin/rm -f ${att_fl[${fl_idx}]} ${d2f_fl[${fl_idx}]} ${dpt_tmp_fl[${fl_idx}]} ${pdq_fl[${fl_idx}]} ${rnm_fl[${fl_idx}]} 
-	    if [[ -n "${vrt_out}" ]] && [[ "${flg_hrz}" = 'Yes' ]]; then
+	    if [[ -n ${vrt_out} ]] && [[ ${flg_hrz} = 'Yes' ]]; then
 		# Remove vertically regridded intermediate output
 		/bin/rm -f "${drc_tmp}/ncremap_tmp_out_vrt.${fl_idx}.nc"
 	    fi # !vrt_out
@@ -3634,7 +3634,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	
     # Block 7: Parallel post-processing
     for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
-	if [[ -n "${prc_elm}" ]] && [[ "${no_cll_msr}" != 'Yes' ]]; then
+	if [[ -n ${prc_elm} ]] && [[ ${no_cll_msr} != 'Yes' ]]; then
 	    if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
 		printf "${spt_nm}: Implement idiosyncratic CLM/CTSM/ELM characteristics in regridded file...\n"
 	    fi # !vrb_lvl
@@ -3644,7 +3644,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo ${cmd_ppp[${fl_idx}]}
 	    fi # !dbg
 	    if [[ ${dbg_lvl} -ne 2 ]]; then
-		if [[ -z "${par_opt}" ]]; then
+		if [[ -z ${par_opt} ]]; then
 		    eval ${cmd_ppp[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]] || [[ ! -f ${fl_out[${fl_idx}]} ]]; then
 			printf "${spt_nm}: ERROR Failed post-processing to convert output area from [sr] to [km2]. Debug this:\n${cmd_ppp[${fl_idx}]}\n"
@@ -3657,7 +3657,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	fi # !prc_elm
 
-	if [[ -n "${prc_cice}" ]] && [[ "${no_cll_msr}" != 'Yes' ]]; then
+	if [[ -n ${prc_cice} ]] && [[ ${no_cll_msr} != 'Yes' ]]; then
 	    if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
 		printf "${spt_nm}: Implement idiosyncratic CICE characteristics in regridded file...\n"
 	    fi # !vrb_lvl
@@ -3667,7 +3667,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo ${cmd_ppp[${fl_idx}]}
 	    fi # !dbg
 	    if [[ ${dbg_lvl} -ne 2 ]]; then
-		if [[ -z "${par_opt}" ]]; then
+		if [[ -z ${par_opt} ]]; then
 		    eval ${cmd_ppp[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]] || [[ ! -f ${fl_out[${fl_idx}]} ]]; then
 			printf "${spt_nm}: ERROR Failed post-processing to convert output area from [sr] to [m2] and ${sgs_frc} from [frc] to [%]. Debug this:\n${cmd_ppp[${fl_idx}]}\n"
@@ -3681,7 +3681,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	fi # !prc_cice
 
 	# Block 8: Other special case post-processing
-	if [[ "${prc_typ}" = 'hirdls' ]] || [[ "${prc_typ}" = 'mls' ]]; then
+	if [[ ${prc_typ} = 'hirdls' ]] || [[ ${prc_typ} = 'mls' ]]; then
 	    # NB: Move file to avert problem with --no_tmp_fl causing self-overwrite
 	    # fxm: ncwa_fl is not parallel-safe, needs fl_idx suffix
 	    cmd_ppp[${fl_idx}]="/bin/mv \"${fl_out[${fl_idx}]}\" \"${ncwa_fl}\";ncwa -O -a lon ${nco_opt} ${nco_var_lst} \"${ncwa_fl}\" \"${fl_out[${fl_idx}]}\""
@@ -3690,7 +3690,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		echo ${cmd_ppp[${fl_idx}]}
 	    fi # !dbg
 	    if [[ ${dbg_lvl} -ne 2 ]]; then
-		if [[ -z "${par_opt}" ]]; then
+		if [[ -z ${par_opt} ]]; then
 		    eval ${cmd_ppp[${fl_idx}]}
 		    if [[ "$?" -ne 0 ]] || [[ ! -f ${fl_out[${fl_idx}]} ]]; then
 			printf "${spt_nm}: ERROR Failed post-processing to generate zonal file from lat-lon file. Debug this:\n${cmd_ppp[${fl_idx}]}\n"
@@ -3705,7 +3705,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
     done # !fl_idx
 
     # Block 9: Wait for post-processing tasks to complete
-    if [[ -n "${par_opt}" ]]; then
+    if [[ -n ${par_opt} ]]; then
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    wait ${ppp_pid[${fl_idx}]}
 	    if [[ "$?" -ne 0 ]]; then
@@ -3717,7 +3717,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 
 done # !bch_idx
 
-if [[ "${cln_flg}" = 'Yes' ]]; then
+if [[ ${cln_flg} = 'Yes' ]]; then
     if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
 	printf "Clean-up intermediate files...\n"
     fi # !vrb_lvl
@@ -3732,7 +3732,7 @@ fi # !cln_flg
 date_end=$(date +"%s")
 if [[ ${vrb_lvl} -ge ${vrb_3} ]]; then
     if [[ ${fl_nbr} -eq 0 ]]; then
-	if [[ "${map_mk}" != 'No' ]]; then
+	if [[ ${map_mk} != 'No' ]]; then
 	    echo "Check statistics of generated map-file:"
 	    echo "ncks --chk_map ${map_fl}"
 	    echo "AnalyzeMap --map ${map_fl}"
