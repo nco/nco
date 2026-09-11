@@ -546,6 +546,13 @@ if [[ ${fl_in[0]} ]] && [[ "$(basename ${fl_in[0]})" != ${fl_in[0]} ]]; then
     ppn_opt=''
 fi # !basename
 
+# Validate numeric options before arithmetic comparisons
+if ! [[ ${dbg_lvl} =~ ^[0-9]+$ ]]; then
+    echo "${spt_nm}: ERROR dbg_lvl='${dbg_lvl}' is not an integer"
+    echo "${spt_nm}: HINT Set --dbg to a non-negative integer, e.g., --dbg=2"
+    exit 1
+fi # !dbg_lvl
+
 # Print initial state
 if [[ ${dbg_lvl} -ge 2 ]]; then
     printf "dbg: dbg_lvl = ${dbg_lvl}\n"

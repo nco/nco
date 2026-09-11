@@ -1444,6 +1444,16 @@ if [[ ${mpi_pfx_usr} ]]; then
 fi # !mpi_pfx_usr
 # If MPI will be used, adjust partition number be a multiple of mpi_nbr
 if [[ ${mpi_pfx} ]]; then 
+    if ! [[ ${mpi_nbr} =~ ^[0-9]+$ ]]; then
+	echo "${spt_nm}: ERROR mpi_nbr='${mpi_nbr}' is not an integer"
+	echo "${spt_nm}: HINT Set --mpi_nbr to a non-negative integer, e.g., --mpi_nbr=1"
+	exit 1
+    fi # !mpi_nbr
+    if ! [[ ${prt_nbr} =~ ^[0-9]+$ ]]; then
+	echo "${spt_nm}: ERROR prt_nbr='${prt_nbr}' is not an integer"
+	echo "${spt_nm}: HINT Set --prt_nbr to a non-negative integer, e.g., --prt_nbr=8"
+	exit 1
+    fi # !prt_nbr
     if [[ ${prt_nbr} -lt ${mpi_nbr} ]]; then
 	[[ ${dbg_lvl} -ge 1 ]] && echo "${spt_nm}: INFO Increasing partition number from ${prt_nbr} to ${mpi_nbr}"
 	prt_nbr=${mpi_nbr}
