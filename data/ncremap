@@ -105,11 +105,9 @@ spt_pid=$$ # [nbr] Script PID (process ID)
 # "The file locking calls used in HDF5 1.10.0 (including patch1) will fail when the underlying file system does not support file locking or where locks have been disabled. To disable all file locking operations, an environment variable named HDF5_USE_FILE_LOCKING can be set to the five-character string 'FALSE'."
 # 20200110 Qi Tang reports Cori batch scripts to generate map-files fail unless he sets this
 # 20200131 Necessary whenever using OpenMP and netCDF4-linked library on any non-locking filesystem?
-set +u # err_hnd Continue on unbound variable reference
 if [[ -z ${HDF5_USE_FILE_LOCKING:-} ]]; then
     export HDF5_USE_FILE_LOCKING='FALSE'
 fi # HDF5_USE_FILE_LOCKING
-set -u # err_hnd Exit on unbound variable reference
 
 # 20221108: Passing environment variable NCO_PATH_OVERRIDE (NPO) to ncremap in batch queues fails on Cori
 # Approaches that fail include: 1. export NPO='Yes';ncremap ... 2. export NPO='Yes' ncremap ...
@@ -171,6 +169,7 @@ OMP_PROC_BIND=false
 # Leave NCO_PATH_OVERRIDE unset or set to 'No' to prevent NCO from executing next block that overrides PATH
 # Set NCO_PATH_OVERRIDE to 'Yes' in environment to cause NCO to execute next block and to override PATH:
 # export NCO_PATH_OVERRIDE='Yes'
+hrd_pth_fnd='No' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
 if [[ ${hrd_pth:-} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE:-} == 'Yes' ]]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
@@ -385,13 +384,12 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v FSNT,AODVIS -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
 # TempestRemap boutique:
 # GenerateCSMesh --alt --res 30 --file ${DATA}/grids/ne30.g (really should be ne30np4.g)
-# ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
-# ncremap --dbg=1 -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo_fv129x256.nc
-# ncremap --dbg=1 -a fv2se_stt --src_grd=${DATA}/grids/129x256_SCRIP.20150901.nc --dst_grd=${DATA}/grids/ne30.g -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc
-# ncremap --dbg=1 -a fv2se_flx --src_grd=${DATA}/grids/129x256_SCRIP.20150901.nc --dst_grd=${DATA}/grids/ne30.g -m ~/map_fv129x256_to_ne30np4_monotr.20180301.nc
+# ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/foo_map_ne30np4_to_fv129x256_mono.20180301.nc
+# ncremap --dbg=1 -a fv2se_stt --src_grd=${DATA}/grids/129x256_SCRIP.20150901.nc --dst_grd=${DATA}/grids/ne30.g -m ~/foo_fv129x256_to_ne30np4_highorder.20180301.nc
+# ncremap --dbg=1 -a fv2se_flx --src_grd=${DATA}/grids/129x256_SCRIP.20150901.nc --dst_grd=${DATA}/grids/ne30.g -m ~/foo_map_fv129x256_to_ne30np4_monotr.20180301.nc
 # ncremap --dbg=1 -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc ~/foo_fv129x256.nc ~/foo_ne30.nc
 # Atmosphere->Ocean:
-# ncremap --dbg=1 --a2o -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
+# ncremap --dbg=1 --a2o -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/foo_map_ne30np4_to_fv129x256_mono.20180301.nc
 # Atmosphere->Atmosphere:
 # ncremap --dbg=1 -a se2se --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/ne30.g -m ~/map_ne30np4_to_ne30np4_se2se.20190301.nc
 # RRG (201807):
@@ -447,11 +445,11 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # 20220131 ncclimo/ncremap commands within scripts that open E3SMU environment
 # (e.g., zppy-generated scripts) must be told where to find NCO binaries.
 # Only necessary on login nodes since Spack handles this fine on compute nodes
-set +u # err_hnd Continue on unbound variable reference
-if [[ ${E3SMU_MPI:-} == 'NOMPI' ]] && [[ ${E3SMU_SCRIPT:-} ]] && [[ ${CONDA_PREFIX:-} ]]; then
-   export PATH="${CONDA_PREFIX}/bin"\:${PATH}
+if [[ -n "${E3SMU_MPI:-}" ]] && [[ -n "${E3SMU_SCRIPT:-}" ]] && [[ -n "${CONDA_PREFIX:-}" ]]; then
+    if [[ ${E3SMU_MPI} == 'NOMPI' ]]; then
+	export PATH="${CONDA_PREFIX}/bin"\:${PATH}
+    fi # !E3SMU_MPI
 fi # !E3SMU_MPI
-set -u # err_hnd Exit on unbound variable reference
 # Set NCO version and directory
 nco_exe=`which ncks`
 if [[ -z ${nco_exe:-} ]]; then
@@ -555,6 +553,7 @@ dpt_fl='' # [sng] Depth file with refBottomDepth for MPAS ocean
 dpt_nm='' # [sng] Name of variable containing 3D depth/height in input file
 #drc_in="${drc_pwd}" # [sng] Input file directory
 drc_in='' # [sng] Input file directory
+drc_in_usr_flg='No' # [sng] Input file directory is user-specified
 drc_in_xmp='~/drc_in' # [sng] Input file directory for examples
 drc_out="${drc_pwd}" # [sng] Output file directory
 drc_out_xmp="~/rgr" # [sng] Output file directory for examples
@@ -633,6 +632,7 @@ prs_stt='' # [sng] Preserved statistic ('integral' or 'mean')
 ps_nm='' # [sng] Name of variable containing surface pressure in input file
 ps_nm_dfl='PS' # [sng] Name of variable containing surface pressure in input file
 ps_rtn='No' # [flg] Retain surface pressure variable in vertical interpolation output
+psn_nbr=0 # [nbr] Number of positional arguments in command-line
 qea_flg='No' # [sng] Quasi-equal area mode for TempestRemap
 qnt_prc='' # [nbr] Quantization precision
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
@@ -693,19 +693,22 @@ else
     drc_tmp=${PWD}
 fi # !gpfs
 
-if ! [[ ${dbg_lvl} =~ ^[0-9]+$ ]]; then
-    echo "${spt_nm}: ERROR dbg_lvl='${dbg_lvl}' is not an integer"
-    echo "${spt_nm}: HINT Set --dbg to a non-negative integer, e.g., --dbg=2"
-    exit 1
-fi # !dbg_lvl
-
-# Initialize potentially undefined variables to be safe under "set -u"
+# Initialize potentially undefined variables to be safe under "set -u" CEWI
 bb_wesn='' # [deg] Regional regridding bounding-box string in WESN order
 cmd_mpi=() # [sng] MPI prefix for parallel commands
 dat_glb='' # [sng] Global data-file for regional extraction mode
 gad_lst='' # [sng] Global attributes-to-delete list
 grd_glb='' # [sng] Global grid-file for regional extraction mode
 grd_rgn='' # [sng] Regional grid-file for regional extraction mode
+hnt_dst_sng='' # [sng] ERWG hint for destination grid option string
+hnt_src_sng='' # [sng] ERWG hint for source grid option string
+msh_fl_dfl='' # [sng] Mesh-file default
+nco_dgn_area='' # [sng] Diagnose-area regridder option string
+nco_msk_dst='' # [sng] Mask-template variable in destination file option string
+nco_msk_out='' # [flg] Put mask variable in regridded file option string
+nco_msk_src='' # [sng] Mask-template variable in source file option string
+nco_ugrid_fl='' # [sng] UGRID file option string
+nco_var_rgr='' # [sng] CF template variable option string
 rnm_sng='' # [sng] Filename rename suffix string
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
@@ -1064,6 +1067,13 @@ fi # !in_fl
 if [[ ${d2f_flg:-} != 'Yes' ]]; then
     d2f_opt=''
 fi # !d2f_flg
+
+# Validate integer input with regular expressions (security measure)
+if ! [[ ${dbg_lvl} =~ ^[0-9]+$ ]]; then
+    echo "${spt_nm}: ERROR dbg_lvl='${dbg_lvl}' is not an integer"
+    echo "${spt_nm}: HINT Set --dbg to a non-negative integer, e.g., --dbg=2"
+    exit 1
+fi # !dbg_lvl
 
 # https://stackoverflow.com/questions/37056192/which-vs-command-v-in-bash
 # 20260830 Appending || true ensures built-in command() returns success code when argument is not found
@@ -1709,7 +1719,7 @@ if [[ ${var_lst:-} ]]; then
     nco_var_lst_hrz=${nco_var_lst}
 fi # !var_lst
 if [[ ${area_dgn:-} ]]; then 
-    nco_dgn_area="--rgr diagnose_area"
+    nco_dgn_area='--rgr diagnose_area'
 fi # !area_dgn
 if [[ ${msk_dst:-} ]]; then 
     nco_msk_dst="--rgr msk_var=${msk_dst}"
