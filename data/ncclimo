@@ -2500,6 +2500,9 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 	echo "${spt_nm}: HINT Parsing the node-list for distributing MPI jobs failed"
 	exit 1
     fi # !nd_nbr
+    if [[ -z ${job_usr:-} ]]; then 
+	job_nbr=${nd_nbr}
+    fi # !job_usr
     # NB: ncclimo and ncremap employ different node-allocation algorithms:
     # ncclimo (monthly climatology mode) assigns monthly regridding and seasonal climos to different nodes (i.e., load-balances), and likewise for seasonal-regridding and annual climo
     # ncclimo (splitter mode) uses simple round robin based on position in variable list
@@ -2560,9 +2563,6 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
     if [[ ${SLURM_NODELIST:-} ]]; then 
 	/bin/rm -f ${nd_fl}
     fi # !SLURM
-    if [[ -z ${job_usr:-} ]]; then 
-	job_nbr=${nd_nbr}
-    fi # !job_usr
 else # !mpi_flg
     mpi_flg='No'
     for ((mpi_idx_zro=0;mpi_idx_zro<mpi_nbr;mpi_idx_zro++)); do
