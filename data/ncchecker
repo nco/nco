@@ -25,11 +25,11 @@ unset IFS
 # NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
 spt_src="${BASH_SOURCE[0]}"
-[[ -z "${spt_src}" ]] && spt_src="${0}" # Use ${0} when BASH_SOURCE is unavailable (e.g., dash)
-while [ -h "${spt_src}" ]; do # Recursively resolve ${spt_src} until file is no longer a symlink
+[[ -z ${spt_src-} ]] && spt_src="${0}" # Use ${0} when BASH_SOURCE is unavailable (e.g., dash)
+while [[ -h ${spt_src-} ]]; do # Recursively resolve ${spt_src} until file is no longer a symlink
   drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
   spt_src="$(readlink "${spt_src}")"
-  [[ ${spt_src} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
+  [[ ${spt_src-} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
 done
 cmd_ln="${spt_src} ${@}"
 drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
@@ -57,33 +57,33 @@ spt_pid=$$ # [nbr] Script PID (process ID)
 # screen -r <ID> # Re-attach screen
 
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
-if [ -z "${HOSTNAME}" ]; then
-    if [ -f /bin/hostname ] && [ -x /bin/hostname ]; then
+if [[ -z ${HOSTNAME-} ]]; then
+    if [[ -f /bin/hostname ]] && [[ -x /bin/hostname ]]; then
 	export HOSTNAME=`/bin/hostname`
-    elif [ -f /usr/bin/hostname ] && [ -x /usr/bin/hostname ]; then
+    elif [[ -f /usr/bin/hostname ]] && [[ -x /usr/bin/hostname ]]; then
 	export HOSTNAME=`/usr/bin/hostname`
     fi # !hostname
 fi # HOSTNAME
 
 # Set NCO version and directory
 nco_exe=`which ncks`
-if [ -z "${nco_exe}" ]; then
+if [[ -z ${nco_exe-} ]]; then
     echo "${spt_nm}: ERROR Unable to find NCO, \${nco_exe} = ${nco_exe}"
     echo "${spt_nm}: HINT Carefully examine your environment setup (e.g., .bashrc) to avoid inadvertently overriding (with, e.g., conda-initialization) paths intended to be provided by an analysis-package environment (e.g., Anaconda)"
     exit 1
 fi # !nco_exe
 # StackOverflow method finds NCO directory
-while [ -h "${nco_exe}" ]; do
+while [[ -h ${nco_exe-} ]]; do
   drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
   nco_exe="$(readlink "${nco_exe}")"
-  [[ ${nco_exe} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
+  [[ ${nco_exe-} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
 nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
 nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk -F '"' '{print $2}')
 
 # 20190218: Die quickly when NCO is found yet cannot run, e.g., due to linker errors
-if [ -z "${nco_vrs}" ]; then
+if [[ -z ${nco_vrs-} ]]; then
     echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
     $(ncks --version)
     exit 1
@@ -91,9 +91,9 @@ fi # !nco_vrs
 lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 
 # When running in a terminal window (not in an non-interactive batch queue)...
-if [ -n "${TERM}" ]; then
+if [[ ${TERM-} ]]; then
     # Set fonts for legibility
-    if [ -x /usr/bin/tput ] && tput setaf 1 &> /dev/null; then
+    if [[ -x /usr/bin/tput ]] && tput setaf 1 &> /dev/null; then
 	fnt_bld=`tput bold` # Bold
 	fnt_nrm=`tput sgr0` # Normal
 	fnt_rvr=`tput smso` # Reverse
@@ -126,6 +126,12 @@ vrs_prn='No' # [sng] Print version information
 # NCO filters documented in http://nco.sf.net/nco.html#filter
 function ncvarlst { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 function ncdmnlst { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
+
+# Initialize optional variables so fnc_usg_prn() is safe under "set -u"
+job_nbr='' # [nbr] Job simultaneity placeholder for usage text
+par_typ='' # [sng] Parallelism type placeholder for usage text
+tpd_out='' # [nbr] Timesteps-per-day placeholder for usage text
+var_lst='' # [sng] Variable list placeholder for usage text
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
@@ -166,7 +172,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
 # Check argument number and complain accordingly
 arg_nbr=$#
 #printf "\ndbg: Number of arguments: ${arg_nbr}"
-if [ ${arg_nbr} -eq 0 ]; then
+if [[ ${arg_nbr-} -eq 0 ]]; then
   fnc_usg_prn
 fi # !arg_nbr
 
@@ -221,18 +227,18 @@ while getopts :34567c:d:f:i:o:p:s:v:x-: OPT; do
 done # !getopts
 shift $((OPTIND-1)) # Advance one argument
 psn_nbr=$#
-if [ ${psn_nbr} -ge 1 ]; then
+if [[ ${psn_nbr-} -ge 1 ]]; then
     inp_psn='Yes'
     # 20200430 Input files on command-line mean we need not check standard-input
     std_chk='No'
 fi # !psn_nbr
 
-if [ ${vrs_prn} = 'Yes' ]; then
+if [[ ${vrs_prn-} == 'Yes' ]]; then
     printf "${spt_nm}, runs DIWG recommendation compliance checks, version ${nco_vrs} \"${nco_sng}\"\n"
     printf "Authors: \n"
     printf "Config: ${spt_nm} script located in directory ${drc_spt}\n"
     printf "Config: NCO binaries located in directory ${drc_nco}, linked to netCDF library version ${lbr_vrs}\n"
-    if [ "${hrd_pth_fnd}" = 'Yes' ]; then
+    if [[ ${hrd_pth_fnd-} == 'Yes' ]]; then
 	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
     else
 	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
@@ -241,15 +247,15 @@ if [ ${vrs_prn} = 'Yes' ]; then
 fi # !vrs_prn
 
 # Determine mode first (this helps determine other defaults)
-if [ ${tst_lst} = 'none' ]; then
+if [[ ${tst_lst-} == 'none' ]]; then
     tst_nbr=0
     tst_flg='No'
 fi # !tst_lst
 
-if [ -z "${drc_in}" ]; then
+if [[ -z ${drc_in-} ]]; then
     drc_in="${drc_pwd}"
 else # !drc_in
-    if [ ! -d "${drc_in}" ]; then
+    if [[ ! -d ${drc_in-} ]]; then
 	echo "${spt_nm}: ERROR specified input directory \"${drc_in}\" does not exist"
 	exit 1
     fi # !drc_in
@@ -257,7 +263,7 @@ else # !drc_in
 fi # !drc_in
 
 # 20170807 Custom tests (code borrowed from ncremap seasons (csn) treatment)
-if [ "${tst_flg}" = 'Yes' ]; then
+if [[ ${tst_flg-} == 'Yes' ]]; then
 
     # Standard test enumeration
     # Index into test definition table
@@ -341,7 +347,7 @@ if [ "${tst_flg}" = 'Yes' ]; then
 	tst_rqs[${tst_nbr}]=${tst}
 	# NB: Requested seasons are 0-based, defined seasons are 0-based
 	for ((tst_dfn_idx=${tst_idx_srt};tst_dfn_idx<${tst_nbr_max};tst_dfn_idx++)); do
-	    if [[ "${tst}" =~ "${tst_abb[${tst_dfn_idx}]}" ]] || [[ "${tst}" =~ "${tst_abb_lc[${tst_dfn_idx}]}" ]]; then
+	    if [[ ${tst} =~ "${tst_abb[${tst_dfn_idx}]}" ]] || [[ ${tst} =~ "${tst_abb_lc[${tst_dfn_idx}]}" ]]; then
 		# Map requested to defined (r2d) tests and inverse (d2r)
 		# map_r2d[0]=3 means first test that user requested (i.e., in tst_lst) is fourth defined in table
 		# map_d2r[3]=0 means fourth defined test is first requested
@@ -351,7 +357,7 @@ if [ "${tst_flg}" = 'Yes' ]; then
 		break
 	    fi # !match
 	done # !tst_dfn_idx
-	if [ "${tst_dfn_idx}" -eq "${tst_nbr_max}" ]; then
+	if [[ ${tst_dfn_idx-} -eq ${tst_nbr_max-} ]]; then
 	    printf "${spt_nm}: ERROR Requested test ${tst} not defined\n"
 	    exit 1
 	fi # !match
@@ -366,9 +372,9 @@ fi # !tst_flg
 #printf "dbg: inp_std  = ${inp_std}\n"
 
 # Derived variables
-if [ -n "${drc_out_usr}" ]; then
+if [[ ${drc_out_usr-} ]]; then
     chr_fst=${drc_out_usr:0:1}
-    if [ "${chr_fst}" = '-' ]; then
+    if [[ ${chr_fst-} == '-' ]]; then
 	printf "${spt_nm}: WARNING first character of user-specified output directory drc_out is \"${chr_fst}\", which looks like an option itself. Be sure the ${spt_nm} '-O' option is followed by an argument that specifies the output directory for processed files. The '-O' option requires a pathname argument, and should not be confused with the '-O' flag (which takes no argument) used in the rest of NCO to force overwriting files (${spt_nm} automatically overwrites existing output files).\n"
     fi # !chr_fst
     # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
@@ -377,22 +383,22 @@ fi # !drc_out_usr
 
 # Doubly-derived variables
 
-if [ ${inp_glb} = 'Yes' ]; then 
+if [[ ${inp_glb-} == 'Yes' ]]; then 
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-	if [ -f "${fl}" ]; then
+	if [[ -f ${fl-} ]]; then
 	    fl_in[${fl_nbr}]=${fl}
 	    fl_nbr=$((fl_nbr+1))
 	fi # !file
     done
 fi # !inp_glb
-if [ ${inp_psn} = 'Yes' ]; then
+if [[ ${inp_psn-} == 'Yes' ]]; then
     # Read any positional arguments
     for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
 	fl_in[(${psn_idx}-1)]=${!psn_idx}
 	fl_nbr=${psn_nbr}
     done # !psn_idx
 fi # !inp_psn
-if [ ${inp_std} = 'Yes' ]; then
+if [[ ${inp_std-} == 'Yes' ]]; then
     # Input awaits on unit 0, i.e., on stdin
     while read -r line; do # NeR05 p. 179
 	fl_in[${fl_nbr}]=${line}
@@ -401,24 +407,31 @@ if [ ${inp_std} = 'Yes' ]; then
 fi # !inp_std
 
 # Create output directory
-if [ -n "${drc_out}" ] && [ ! -d "${drc_out}" ]; then 
+if [[ ${drc_out-} ]] && [[ ! -d ${drc_out-} ]]; then 
     chr_fst=${drc_out:0:1}
-    if [ "${chr_fst}" = '-' ]; then
+    if [[ ${chr_fst-} == '-' ]]; then
 	echo "${spt_nm}: ERROR Attempting to mkdir user-specified output directory \"${drc_out}\" will fail because directory name begins with '-' which is an option indicator"
 	echo "${spt_nm}: HINT Specify an output directory name that does not begin with '-'"
 	exit 1
     fi # !chr_fst
     cmd_mkd="mkdir -p ${drc_out}"
     eval ${cmd_mkd}
-    if [ "$?" -ne 0 ]; then
+    if [[ "$?" -ne 0 ]]; then
 	printf "${spt_nm}: ERROR Failed to create output directory. Debug this:\n${cmd_mkd}\n"
 	printf "${spt_nm}: HINT Creating a directory requires proper write permissions\n"
 	exit 1
     fi # !err
 fi # !drc_out
 
+# Validate numeric options before arithmetic comparisons
+if ! [[ ${dbg_lvl} =~ ^[0-9]+$ ]]; then
+    echo "${spt_nm}: ERROR dbg_lvl='${dbg_lvl}' is not an integer"
+    echo "${spt_nm}: HINT Set --dbg to a non-negative integer, e.g., --dbg=2"
+    exit 1
+fi # !dbg_lvl
+
 # Print initial state
-if [ ${dbg_lvl} -ge 2 ]; then
+if [[ ${dbg_lvl-} -ge 2 ]]; then
     printf "dbg: dbg_lvl = ${dbg_lvl}\n"
     printf "dbg: drc_in  = ${drc_in}\n"
     printf "dbg: drc_out = ${drc_out}\n"
@@ -432,15 +445,15 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: var_lst = ${var_lst}\n"
     printf "dbg: xcl_flg = ${xcl_flg}\n"
 fi # !dbg
-if [ ${dbg_lvl} -ge 2 ]; then
+if [[ ${dbg_lvl-} -ge 2 ]]; then
     psn_nbr=$#
-    if [ ${psn_nbr} -ge 1 ]; then
+    if [[ ${psn_nbr-} -ge 1 ]]; then
 	printf "dbg: Found ${psn_nbr} positional parameters (besides \$0):\n"
 	for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
 	    printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
 	done # !psn_idx
     fi # !psn_nbr
-    if [ "${fl_nbr}" -ge 1 ]; then
+    if [[ ${fl_nbr-} -ge 1 ]]; then
 	printf "dbg: Processing ${fl_nbr} raw input files:\n"
 	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	    printf "dbg: fl_in[${fl_idx}] = ${fl_in[${fl_idx}]}\n"
@@ -450,7 +463,7 @@ fi # !dbg
 
 # Human-readable summary
 date_srt=$(date +"%s")
-if [ ${dbg_lvl} -ge 0 ]; then
+if [[ ${dbg_lvl-} -ge 0 ]]; then
     printf "ncchecker, a DIWG recommendation compliance checker, invoked with command:\n"
     echo "${cmd_ln}"
     printf "Started DIWG checker at `date`\n"
@@ -463,7 +476,7 @@ if [ ${dbg_lvl} -ge 0 ]; then
     printf "\n"
 fi # !dbg
 
-if [ "${fl_nbr}" -lt 1 ]; then
+if [[ ${fl_nbr-} -lt 1 ]]; then
     echo "${spt_nm}: ERROR Checker did not receive any input files, fl_nbr = ${fl_nbr}"
     exit 1
 fi # fl_nbr
@@ -487,17 +500,17 @@ for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	printf "\nTest ${tst_idxp1}: Check that ${tst_ngl[${idx_dfn}]} ...\n"
 	printf "Recommendation ${tst_rfc[${idx_dfn}]}: ${tst_rcm[${idx_dfn}]}\n"
 	echo "URL: ${tst_url[${idx_dfn}]}"
-	[[ ${dbg_lvl} -ge 0 ]] && date_chr=$(date +"%s")
+	[[ ${dbg_lvl-} -ge 0 ]] && date_chr=$(date +"%s")
 	
 	cmd_tst[${fl_idx}]="ncks --dbg_lvl=${dbg_lvl} ${tst_opt[${idx_dfn}]} ${fl_in[${fl_idx}]}"
 	
-	if [ ${dbg_lvl} -ge 2 ]; then
+	if [[ ${dbg_lvl-} -ge 2 ]]; then
 	    echo ${cmd_tst[${fl_idx}]}
 	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
-	    if [ -z "${par_opt}" ]; then
+	if [[ ${dbg_lvl-} -le 1 ]]; then
+	    if [[ -z ${par_opt-} ]]; then
 		eval ${cmd_tst[${fl_idx}]}
-		if [ "$?" -ne 0 ]; then
+		if [[ "$?" -ne 0 ]]; then
 		    printf "Result: FAILURE ${tst_sht[${idx_dfn}]} check failed. Reproduce this single check with:\n${cmd_tst[${fl_idx}]}\n"
 		else # !err
 		    printf "Result: SUCCESS ${tst_sht[${idx_dfn}]} check passed.\n"
@@ -508,7 +521,7 @@ for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	    fi # !par_opt
 	fi # !dbg
 	
-	if [ ${dbg_lvl} -ge 1 ]; then
+	if [[ ${dbg_lvl-} -ge 1 ]]; then
 	    date_crr=$(date +"%s")
 	    date_dff=$((date_crr-date_chr))
 	    echo "Elapsed time for ${tst_sht[${idx_dfn}]} check = $((date_dff/60))m$((date_dff % 60))s"
@@ -519,7 +532,7 @@ for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 done # !fl_idx
 
 date_end=$(date +"%s")
-if [ ${dbg_lvl} -ge 0 ]; then
+if [[ ${dbg_lvl-} -ge 0 ]]; then
     printf "\nCompleted DIWG Compliance Checker at `date`\n"
     date_dff=$((date_end-date_srt))
     echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
