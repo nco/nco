@@ -294,11 +294,12 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo -C ann -m cism -h h -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 1852 -i /gpfs/alpine/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -C ann -m mpas -s 1851 -e 1852 -i ${DATA}/hdf/mpasLIoutput.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 
-# High-frequency climos:
+# High-frequency HFC and HFS:
 # drc_in=${DATA}/ne30/raw
 # caseid=famipc5_ne30_v0.3_00007.cam.h4 # 3-hour resolution
 # cd ${drc_in};ls ${caseid}*.nc | ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc # Multi-file input
-# ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ~/PRECT_200101_200212.nc # Single file input
+# cd ${drc_in};ls ${caseid}*.nc | ncclimo --split --var=PRECT --clm_md=hfs --ypf=1 --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME}
+# ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ~/PRECT_200101_200112.nc # Single file input
 
 # Flexible months:
 # ncclimo -v FSNT -c v2.LR.historical_0101 -s 2013 -e 2014 --mth_srt=10 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
