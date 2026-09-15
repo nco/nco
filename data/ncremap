@@ -133,7 +133,7 @@ if [[ -z ${HOSTNAME:-} ]]; then
 fi # HOSTNAME
 # Default input and output directory is ${DATA}
 if [[ -z ${DATA:-} ]]; then
-    case "${HOSTNAME}" in 
+    case "${HOSTNAME:-}" in 
 	andes* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	bebop* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC bebop compute nodes named bNNN, 36|64 cores|GB/node 
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
@@ -173,7 +173,7 @@ hrd_pth_fnd='No' # [sng] Machine-dependent paths/modules for HOSTNAME found in d
 if [[ ${hrd_pth:-} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE:-} == 'Yes' ]]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
-    case "${HOSTNAME}" in 
+    case "${HOSTNAME:-}" in 
 	andes* )
 	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
@@ -398,15 +398,15 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 0 --vrb=1 -a esmfaave --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a esmfaave --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
 # MWF (202401):
-# ncremap -D 1 -P mwf -s ${DATA}/grids/ocean.QU.240km.scrip.181106.nc -g ${DATA}/grids/ne11np4.g --nm_src=QU240 --nm_dst=ne11np4 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
+# ncremap -D 1 -P mwf -s ${DATA}/grids/ocean.QU.240km.scrip.181106.nc -g ${DATA}/grids/ne11pg2.g --nm_src=QU240 --nm_dst=ne11pg2 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/ne30pg2.g --nm_src=IcoswISC30E3r5 --nm_dst=ne30pg2 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --alg_lst='traave,trbilin,trfv2' --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/ne30pg2.g --nm_src=IcoswISC30E3r5 --nm_dst=ne30pg2 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.nc --nm_src=IcoswISC30E3r5 --nm_dst=cmip6_180x360 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/cmip6_180x360.g --nm_src=IcoswISC30E3r5 --nm_dst=cmip6_180x360 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ne30pg2.g --grd_dst=${DATA}/grids/cmip6_180x360.g --nm_src=ne30pg2 --nm_dst=cmip6_180x360 --dt_sng=20240201 --drc_out=${DATA}/maps > ~/ncremap.out 2>&1 &
-# ncremap -D 2 -P mwf --wgt_cmd='mpirun -np 12 ESMF_RegridWeightGen' --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/cmip6_180x360.nc --nm_src=IcoswISC30E3r5 --nm_dst=cmip6_180x360 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
+# ncremap -D 2 -P mwf --wgt_cmd='mpirun -np 12 ESMF_RegridWeightGen' --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --nm_src=IcoswISC30E3r5 --nm_dst=cmip6_180x360 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # Add depth (201901):
-# ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_L60.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
+# ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_L60.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc # noticed borken on 20260914
 # Vertical interpolation (201903):
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_ne30np4l72_ps.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc # PS in "fat" template file
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # skinny template file
@@ -703,6 +703,7 @@ grd_rgn='' # [sng] Regional grid-file for regional extraction mode
 hnt_dst_sng='' # [sng] ERWG hint for destination grid option string
 hnt_src_sng='' # [sng] ERWG hint for source grid option string
 msh_fl_dfl='' # [sng] Mesh-file default
+msh_opt='' # [sng] Mesh-generation option string
 nco_dgn_area='' # [sng] Diagnose-area regridder option string
 nco_msk_dst='' # [sng] Mask-template variable in destination file option string
 nco_msk_out='' # [flg] Put mask variable in regridded file option string
@@ -1169,7 +1170,6 @@ fi # !vrs_prn
 # This is because PBS uses stdin to set the job name
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
 # Check stdin if user has not explicitly disallowed it with --no_stdin
-#set +u # err_hnd Continue on unbound variable reference
 if [[ ${std_chk:-} == 'Yes' ]]; then
     if [[ ${PBS_ENVIRONMENT:-} ]]; then
 	if [[ ${PBS_ENVIRONMENT:-} == 'PBS_BATCH' ]]; then
@@ -1448,7 +1448,7 @@ fi # !wgt_typ
 # If user explicitly sets mpi_nbr then we need a prefix
 if [[ ${mpi_nbr_usr:-} ]]; then
     # ...then set prefix for invoking MPI-enabled weight generators 
-    case "${HOSTNAME}" in 
+    case "${HOSTNAME:-}" in 
 	andes* ) mpi_pfx="srun --exclusive -n ${mpi_nbr}" ; ;; 
 	bebop* | blogin* | b[0123456789][0123456789][0123456789] ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun --exclusive -n ${mpi_nbr}" ; ;; 
@@ -2377,7 +2377,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 	# Copy host-specific mpirun syntax but not node-allocation algorithms or loop indices between ncclimo and ncremap
 	# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
 	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
-	    case "${HOSTNAME}" in 
+	    case "${HOSTNAME:-}" in 
 		andes* | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | compy* | constance* | frontier* | login[0123456789][0123456789] | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | perlmutter* )
 		    # 20220518: Non-interactive batch jobs at NERSC/Perlmutter return HOSTNAME as login??, and nodes as nid??????
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
@@ -2403,7 +2403,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 #		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # Other (PBS)
 #		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
-	    case "${HOSTNAME}" in 
+	    case "${HOSTNAME:-}" in 
 		perlmutter* | login[0123456789][0123456789] | nid* )
 		    # 20210319: Multiple srun commands cannot run concurrently on single Cori node without special options
 		    # --gres=craynetwork:0 --mem=20000 tested by me, Noel Keen documented here:
@@ -2464,7 +2464,7 @@ if [[ ${dbg_lvl:-} -ge 2 ]]; then
     printf "dbg: drc_out  = ${drc_out}\n"
     printf "dbg: drc_tmp  = ${drc_tmp}\n"
     printf "dbg: dst_fl   = ${dst_fl}\n"
-    printf "dbg: erwg_vrs = ${erwg_vrs_sng}\n"
+    printf "dbg: erwg_vrs = ${erwg_vrs_sng:-}\n"
     printf "dbg: esmf_typ = ${esmf_typ}\n"
     printf "dbg: fl_fmt   = ${fl_fmt}\n"
     printf "dbg: fl_in[0] = ${fl_in[0]}\n"
@@ -2481,7 +2481,7 @@ if [[ ${dbg_lvl:-} -ge 2 ]]; then
     printf "dbg: inp_std  = ${inp_std}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
     printf "dbg: hrd_pth  = ${hrd_pth}\n"
-    printf "dbg: hst_att  = ${hst_att}\n"
+    printf "dbg: hst_att  = ${hst_att:-}\n"
     printf "dbg: job_nbr  = ${job_nbr}\n"
     printf "dbg: in_fl    = ${in_fl}\n"
     printf "dbg: map_fl   = ${map_fl}\n"
@@ -2530,7 +2530,7 @@ if [[ ${dbg_lvl:-} -ge 2 ]]; then
     printf "dbg: stg_grd  = ${stg_grd}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: ugrid_fl = ${ugrid_fl}\n"
-    printf "dbg: uio_flg  = ${uio_flg}\n"
+    printf "dbg: uio_flg  = ${uio_flg:-}\n"
     printf "dbg: unq_sfx  = ${unq_sfx}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: var_rgr  = ${var_rgr}\n"
@@ -2543,7 +2543,7 @@ if [[ ${dbg_lvl:-} -ge 2 ]]; then
     printf "dbg: wgt_cmd  = ${wgt_cmd}\n"
     printf "dbg: wgt_opt  = ${wgt_opt}\n"
     printf "dbg: wgt_typ  = ${wgt_typ}\n"
-    printf "dbg: wgt_usr  = ${wgt_usr}\n"
+    printf "dbg: wgt_usr  = ${wgt_usr:-}\n"
     printf "dbg: xtr_nsp  = ${xtr_nsp}\n"
     printf "dbg: xtr_xpn  = ${xtr_xpn}\n"
     printf "dbg: Will regrid ${fl_nbr} files:\n"
@@ -3366,7 +3366,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	# Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
 	# Following wait() blocks are identical except for error message and this comment is omitted
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${dpt_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${dpt_tmp_fl[${fl_idx}]} ]]; then
@@ -3404,7 +3404,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${pdq_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${pdq_fl[${fl_idx}]} ]]; then
@@ -3441,7 +3441,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${d2f_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${d2f_fl[${fl_idx}]} ]]; then
@@ -3478,7 +3478,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${att_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${att_fl[${fl_idx}]} ]]; then
@@ -3537,7 +3537,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${rnm_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${rnm_fl[${fl_idx}]} ]]; then
@@ -3569,7 +3569,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${apn_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]] || [[ ! -f ${rnm_fl[${fl_idx}]} ]]; then
@@ -3610,7 +3610,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${rgr_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -3645,7 +3645,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    fi # !dbg
 	done # !fl_idx
 	
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 		wait ${rgr_pid[${fl_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -3740,7 +3740,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
     done # !fl_idx
 
     # Block 9: Wait for post-processing tasks to complete
-    if [[ ${par_opt:-} ]]; then
+    if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    wait ${ppp_pid[${fl_idx}]}
 	    if [[ "$?" -ne 0 ]]; then

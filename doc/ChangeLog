@@ -1,8 +1,18 @@
-2026-09-10  Charlie Zender  <zender@uci.edu>
+2026-09-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha07: Tropical Heatwave';git push
-	git tag -a 5.4.0-alpha07 -m 'all: nco_usg_prn(); ncclimo: set +u';git push --tags
+	git tag -a 5.4.0-alpha07 -m 'all: nco_usg_prn(); ncclimo: set -u';git push --tags
+
+	* ncremap/ncclimo: Safely define dozens of unbound variables
+
+	* ncremap/ncclimo: Replace if [] constructs by [[]] constructs
+
+	* ncremap/ncclimo: Activate set -u everywhere
+
+	* ncremap/ncclimo: Fix excessive prepending of input path to filenames in splitter mode
+
+2026-09-10  Charlie Zender  <zender@uci.edu>
 
 	* Fix nco_usg_prn(), wordsmithing, fix set +u so ncclimo can run
 

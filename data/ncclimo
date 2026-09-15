@@ -117,7 +117,7 @@ if [[ -z ${HOSTNAME:-} ]]; then
 fi # HOSTNAME
 # Default input and output directory is ${DATA}
 if [[ -z ${DATA:-} ]]; then
-    case "${HOSTNAME}" in 
+    case "${HOSTNAME:-}" in 
 	andes* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	bebop* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC bebop compute nodes named bNNN, 36|64 cores|GB/node 
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/group/e3sm/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
@@ -155,7 +155,7 @@ hrd_pth_fnd='No' # [sng] Machine-dependent paths/modules for HOSTNAME found in d
 if [[ ${hrd_pth:-} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE:-} == 'Yes' ]]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
-    case "${HOSTNAME}" in 
+    case "${HOSTNAME:-}" in 
 	andes* )
 	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
@@ -319,7 +319,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo > ~/ncclimo.out 2>&1 &
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
 # ncclimo -c ne30_gx1.B1850c5d -s 6 -e 7 > ~/ncclimo.out 2>&1 &
-# ncclimo -d 2 -v FSNT -m cam2 -c essgcm14 -s 1 -e 20 -i ${DATA}/essgcm14 -o ${DATA}/anl > ~/ncclimo.out 2>&1 &
+# ncclimo -d 2 -v FSNT -m cam2 -c essgcm14 -s 1 -e 20 -i ${DATA}/essgcm14 -o $TMPDIR > ~/ncclimo.out 2>&1 &
 # MPAS: Prior to running ncclimo on MPAS output, annotate missing values of input with, e.g.,
 # for fl in `ls hist.*` ; do
 #  ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${fl}
@@ -337,7 +337,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Split stdin switch:
 # cd ${DATA}/ne30/raw;ls *piControl*000[12]-??*.nc | ncclimo --split --dbg=1 --stdin -s 1 -e 2 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
 # Split positional arguments:
-# ncclimo --split --dbg=1 -s 1 -e 1 --var=FSNT,AODVIS,T --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-??.nc
+# ncclimo --split --dbg=1 -s 1 -e 1 --var=FSNT,AODVIS,T --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/v2.LR.historical_0101.eam.h0.2013-??.nc
 # Split directory:
 # ncclimo --dbg=1 --ypf=50 -s 1 -e 2 --var=FSNT,AODVIS --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split global mean
@@ -579,6 +579,7 @@ caseid_xmp_eamxx='output.scream.decadal.monthlyAVG_ne30pg2.AVERAGE.nmonths_x1' #
 cf_flg='Yes' # [sng] Produce CF climatology attribute?
 clm_flg='Yes' # [sng] Generate climatology
 clm_hfc_or_mth='No' # [sng] Generate monthly output climatology from monthly or HFC input
+clm_idx=0 # [idx] Climatology index
 clm_md='mth' # [sng] Climatology mode ('ann', 'dly', 'hfc', 'hfs', or 'mth')
 cmp_sng='' # [sng] Compression string
 csn_flg='No' # [flg] Trigger season-processing code
@@ -628,6 +629,7 @@ mdl_nm_usr='' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indicates unlimited RAM)
 mpi_flg='No' # [sng] Parallelize over nodes
+mpi_nbr=0 # [nbr] Number of MPI processes there would be in parallel mode
 mth_end='12' # [mth] End month
 mth_end_usr='' # [mth] User-specified end month
 mth_flg='No' # [flg] Timeseries is not from Jan->Dec
@@ -661,6 +663,7 @@ tms_flg='No' # [sng] Split (subset into timeseries) climatologies
 tpd_out=1 # [nbr] Timesteps-per-day in output
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
+var_nbr=0 # [nbr] Number of split (subset into timeseries) files
 var_xtr='' # [sng] Extra variables for splitter timeseries
 vrs_prn='No' # [sng] Print version information
 vrt_out='' # [sng] Vertical grid file for output
@@ -675,11 +678,19 @@ yr_end_prv='' # [yr] End year previous
 yr_srt_prv='' # [yr] Start year previous
 
 # Initialize potentially undefined variables to be safe under "set -u" CEWI
-clm_idx='' # [idx] Climatology index
-drc_out_usr='' # [sng] Output file directory, user-specified
+cll_pid=() # [id] Cull PID
+clm_pid=() # [id] Climatology PID
+cmd_cll=() # [sng] Cull command
 cmd_clm=() # [sng] Climatology command
 cmd_mpi=() # [sng] MPI prefix for parallel commands
-rgr_pid=() # [sng] Regrid PID
+cmd_rgr=() # [sng] Regrid command
+cmd_sbs=() # [sng] Subset command
+cmd_tpd=() # [sng] TPD command
+drc_out_usr='' # [sng] Output file directory, user-specified
+prc_opt='' # [sng] Processing type option string
+rgr_pid=() # [id] Regrid PID
+sbs_pid=() # [id] Subset PID
+tpd_pid=() # [id] TPD PID
 var_idx='' # [idx] Variable index
 wnt_md='' # [sng] Deprecated winter mode selector retained for usage text
 yr_end_prv='' # [yr] End year of previous climatology extension interval
@@ -1138,7 +1149,6 @@ fi # !vrs_prn
 # This is because PBS uses stdin to set the job name
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
 # Check stdin if user has not explicitly disallowed it with --no_stdin
-set +u # err_hnd Continue on unbound variable reference
 if [[ ${std_chk:-} == 'Yes' ]]; then
     if [[ ${PBS_ENVIRONMENT:-} ]]; then
 	if [[ ${PBS_ENVIRONMENT:-} == 'PBS_BATCH' ]]; then
@@ -1733,8 +1743,8 @@ if [[ ${inp_aut:-} == 'Yes' ]] && [[ ${clm_md:-} == 'mth' ]] || [[ ${clm_md:-} =
 	    MM=`printf "%02d" ${clm_idx}`
 	    # Only construct filenames for months that are used
 	    # 20260410 this statements should be triggered during climos!
-	    if [[ ${mth_flg:-} == 'Yes' ]] && [[ ${yr:-} -eq ${yr_srt_all:-} ]] && [[ ${MM:-} -lt ${mth_srt_rth:-} ]]; then continue; fi
-	    if [[ ${mth_flg:-} == 'Yes' ]] && [[ ${yr:-} -eq ${yr_end_all:-} ]] && [[ ${MM:-} -gt ${mth_end_rth:-} ]]; then continue; fi
+	    if [[ ${mth_flg:-} == 'Yes' ]] && [[ ${yr:-} -eq ${yr_srt_all:-} ]] && [[ ${mth:-} -lt ${mth_srt_rth:-} ]]; then continue; fi
+	    if [[ ${mth_flg:-} == 'Yes' ]] && [[ ${yr:-} -eq ${yr_end_all:-} ]] && [[ ${mth:-} -gt ${mth_end_rth:-} ]]; then continue; fi
 	    if [[ ${nm_typ:-} == 'cesm' ]]; then
 		fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 	    elif [[ ${nm_typ:-} == 'mpas' ]]; then # Use MPAS not CESM conventions
@@ -1815,8 +1825,8 @@ fi # !clm_flg, !clm_md
 # Prepend drc_in to fl_in in MFOs (ncra, ncrcat)
 # 20240401 Also prepend drc_in to fl_in in SFOs (ncks, ncap2) used in hfc/hfs modes and in rgn_stt
 # Otherwise operators will fail to find input files when cwd != drc_in
-ppn_sng="${drc_in}/"
-ppn_opt="-p ${drc_in}"
+ppn_sng="${drc_in}/" # [sng] String prepended to construct full filepath from directory plus filename
+ppn_opt="-p ${drc_in}" # [sng] NCO option for operators to construct full filepath themselves
 # 20220111 If input files include absolute path, then use fl_in as-is later on
 if [[ ${fl_in[0]} ]]; then
     if [[ "$(basename ${fl_in[0]})" != ${fl_in[0]} ]] || [[ ${fl_in[0]:0:1} == '/' ]]; then
@@ -1961,7 +1971,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	fi # !dbg
 
 	# Re-assemble extraction array into standard list
-	var_nbr=0 # [sng] Number of split (subset into timeseries) files
+	var_nbr=0 # [nbr] Number of split (subset into timeseries) files
 	var_lst='' # [sng] Variables to process
 	for var in "${!var_lst_xtr[@]}"; do
 	    var_lst="${var_lst},${var}"
@@ -1973,7 +1983,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
     fi # !xcl_flg
 
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
-    var_nbr=0 # [sng] Number of split (subset into timeseries) files. 'sbs' stands for 'subset'.
+    var_nbr=0 # [nbr] Number of split (subset into timeseries) files. 'sbs' stands for 'subset'.
     for var in ${var_lst//,/ }; do
 	# NB:
 	var_sbs[${var_nbr}]=${var}
@@ -2442,6 +2452,12 @@ if [[ ${csn_flg:-} == 'Yes' ]]; then
     
 fi # !csn_flg
     
+# 20260915: Define mpi_nbr even when MPI-parallelism is not invoked, so that cmd_mpi() is fully initialized
+if [[ ${tms_flg:-} == 'Yes' ]]; then 
+    mpi_nbr=${var_nbr}
+else
+    mpi_nbr=${clm_nbr}
+fi # !tms_flg
 if [[ ${mpi_flg:-} == 'Yes' ]]; then
     if [[ ${PBS_NODEFILE:-} ]]; then 
 	nd_fl="${PBS_NODEFILE}"
@@ -2460,11 +2476,6 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 	echo "${spt_nm}: HINT: Requesting MPI-parallelism (i.e., invoking ${spt_nm} with \"-p mpi\") in a non-MPI environment will trigger this error. Use \"-p mpi\" only when one of the preceding schedulers has allocated (for interactive use) or will allocate (for non-interactive use) the compute nodes. Otherwise use the default background parallelism (use \"-p bck\" or omit the option completely) or use serial mode (use \"-p serial\"). See http://nco.sf.net/nco.html#par_typ for more information on parallelism."
 	exit 1
     fi # !PBS
-    if [[ ${tms_flg:-} == 'Yes' ]]; then 
-	mpi_nbr=${var_nbr}
-    else
-	mpi_nbr=${clm_nbr}
-    fi # !tms_flg
     # 20210310 MPI run command may need/use thr_nbr so set it first
     if [[ -z ${thr_usr:-} ]]; then 
 	if [[ ${PBS_NUM_PPN:-} ]]; then
@@ -2502,7 +2513,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 		# Offset MPI index from 0- to 1-based for traditional monthly-based climo generation
 		mpi_idx=$((mpi_idx_zro+1))
 	    fi # !tms_flg
-	    case "${HOSTNAME}" in 
+	    case "${HOSTNAME:-}" in 
 		andes* | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | compy* | constance* | frontier* | login[0123456789][0123456789] | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | perlmutter* )
 		    # 20220518: Non-interactive batch jobs at NERSC/Perlmutter return HOSTNAME as login??, and nodes as nid??????
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
@@ -2529,7 +2540,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 #		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # Other (PBS)
 #		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
-	    case "${HOSTNAME}" in 
+	    case "${HOSTNAME:-}" in 
 		perlmutter* | login[0123456789][0123456789] | nid* )
 		    # 20210319: Multiple srun commands cannot run concurrently on single Cori node without special options
 		    # --gres=craynetwork:0 --mem=20000 tested by me, Noel Keen documented here:
@@ -2635,10 +2646,10 @@ if [[ ${dbg_lvl:-} -ge 2 ]]; then
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
     printf "dbg: nm_typ   = ${nm_typ}\n"
     printf "dbg: no_ntv   = ${no_ntv_tms}\n"
-    printf "dbg: out_nm   = ${out_nm}\n"
+    printf "dbg: out_nm   = ${out_nm:-}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: ppn_opt  = ${ppn_opt}\n"
-    printf "dbg: prc_opt  = ${prc_opt}\n"
+    printf "dbg: prc_opt  = ${prc_opt:-}\n"
     printf "dbg: prc_typ  = ${prc_typ}\n"
     printf "dbg: qnt_prc  = ${qnt_prc}\n"
     printf "dbg: rgn_avg  = ${rgn_avg}\n"
@@ -2993,7 +3004,6 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 		fi # !ssc2_ntg
 
 		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_mth[${clm_idx}]}"
-
 		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yyyy_srt_mth[${clm_idx}]},${yyyy_end_mth[${clm_idx}]},${clm_idx},${clm_idx},${tpd_out} -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,,,,${ssc2},${tpd_out} ${fl_mth[${clm_idx}]} ${fl_out[${clm_idx}]}"
 		    
 	    else # !fl_nbr
@@ -3008,7 +3018,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 		# Concatenate individual timestep means into full diurnal timeseries
 		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O --clm_bnd=${yyyy_srt_mth[${clm_idx}]},${yyyy_end_mth[${clm_idx}]},${clm_idx},${clm_idx},${tpd_out} ${nco_opt} ${gaa_sng[${clm_idx}]} ${drc_out}/${out_nm}_${MM}_tpd* ${fl_out[${clm_idx}]}"
 	    fi # !fl_nbr
-	    # Combine monthly into seasonal and annual means with nces (preserving diurnal timesteps)
+	    # Combine monthly into seasonal and annual means with nces (thereby preserving diurnal timesteps)
 	    cmd_mth2csn='nces'
 	    cmd_csn2ann='nces'
 	elif [[ ${clm_md:-} == 'mth' ]]; then 
@@ -3060,7 +3070,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 		    fi # !par_opt
 		fi # !dbg
 	    done # !clm_idx
-	    if [[ ${par_opt:-} ]]; then
+	    if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		    wait ${cll_pid[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
@@ -3113,7 +3123,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 			    fi # !par_opt
 			fi # !dbg
 		    done # !clm_idx
-		    if [[ ${par_opt:-} ]]; then
+		    if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 			for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 			    wait ${tpd_pid[${clm_idx}]}
 			    if [[ "$?" -ne 0 ]]; then
@@ -3307,9 +3317,9 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 
 	# Sanity check that all files exist before wasting time and space on concatenation
 	for fl_crr in ${fl_sgm[${sgm_idx}]} ; do
-	    if [[ ! -f ${drc_in:-}/${fl_crr:-} ]] && [[ ! -L ${drc_in:-}/${fl_crr:-} ]]; then
+	    if [[ ! -f ${ppn_sng:-}/${fl_crr:-} ]] && [[ ! -L ${ppn_sng:-}/${fl_crr:-} ]]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
-		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
+		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must exist before ${spt_nm} will proceed"
 		exit 1
 	    fi # ! -f
 	done # !fl_crr
@@ -3458,7 +3468,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	    # Block NNN: Wait
 	    # Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-	    if [[ ${par_opt:-} ]]; then
+	    if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 		#printf "${spt_nm}: DEBUG var_idx = ${var_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 		    wait ${sbs_pid[${var_idx}]}
@@ -3522,7 +3532,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 		done # !var_idx
 
 		# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-		if [[ ${par_opt:-} ]]; then
+		if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 			if [[ ${is_hrz[${var_idx}]} == 'Yes' ]]; then
 			    wait ${avg_pid[${var_idx}]}
@@ -3591,7 +3601,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 		# Block NNN: Wait
 		# Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 		# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-		if [[ ${par_opt:-} ]]; then
+		if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 			wait ${rgr_pid[${var_idx}]}
 			if [[ "$?" -eq 0 ]]; then
@@ -3633,9 +3643,9 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'ann' ]]; then
     # Check for existence of raw input only when file will be used (NB: next ~12 lines duplicate monthly code)
     if [[ ${bnr_flg:-} == 'No' ]]; then
 	for fl_crr in ${fl_all} ; do
-	    if [[ ! -f ${drc_in:-}/${fl_crr:-} ]] && [[ ! -L ${drc_in:-}/${fl_crr:-} ]]; then
+	    if [[ ! -f ${ppn_sng:-}${fl_crr:-} ]] && [[ ! -L ${ppn_sng:-}${fl_crr:-} ]]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
-		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
+		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must exist before ${spt_nm} will proceed"
 		exit 1
 	    fi # ! -f
 	done # !fl_crr
@@ -3778,10 +3788,10 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 	# Block NNN: Wait
 	# Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-	if [[ ${par_opt:-} ]]; then
-	    if [[ ${dbg_lvl:-} -ge 1 ]] && [[ ${clm_idx_srt:-} -le ${clm_idx_end:-} ]]; then
-		printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at clm_idx = ${clm_idx}...\n"
-	    fi # !dbg
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -ge 1 ]] && [[ ${clm_idx_srt:-} -le ${clm_idx_end:-} ]]; then
+	    printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at clm_idx = ${clm_idx}...\n"
+	fi # !dbg
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		wait ${clm_pid[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -3836,7 +3846,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 	    # Block NNN: Wait
 	    # Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-	    if [[ ${par_opt:-} ]]; then
+	    if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		    wait ${rgr_pid[${clm_idx}]}
 		    if [[ "$?" -eq 0 ]]; then
@@ -3902,7 +3912,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		fi # !par_opt
 	    fi # !dbg
 	done # !clm_idx
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		wait ${clm_pid[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -4022,7 +4032,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		    fi # !par_opt
 		fi # !dbg
 	    done # !clm_idx
-	    if [[ ${par_opt:-} ]]; then
+	    if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		    wait ${clm_pid[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
@@ -4041,7 +4051,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
     fi # !csn_flg
     # wait() for monthly regridding, if any, to finish
     if [[ ${rgr_opt:-} ]]; then 
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
 		wait ${rgr_pid[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -4118,7 +4128,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
     # wait() for seasonal regridding, if any, to finish
     if [[ ${csn_flg:-} == 'Yes' ]]; then
 	if [[ ${rgr_opt:-} ]]; then 
-	    if [[ ${par_opt:-} ]]; then
+	    if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 		for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
 		    wait ${rgr_pid[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
@@ -4137,7 +4147,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
     if [[ ${ann_flg:-} == 'Yes' ]]; then
 	clm_idx=${clm_nbr}
 	# wait() for annual climatology to finish
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    wait ${clm_pid[${clm_idx}]}
 	    if [[ "$?" -ne 0 ]]; then
 		printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
@@ -4333,7 +4343,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 		fi # !par_opt
 	    fi # !dbg
 	done # !clm_idx
-	if [[ ${par_opt:-} ]]; then
+	if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		wait ${xtn_pid[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -4364,7 +4374,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 		    fi # !par_opt
 		fi # !dbg
 	    done # !clm_idx
-	    if [[ ${par_opt:-} ]]; then
+	    if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
 		for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		    wait ${rgr_xtn_pid[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
