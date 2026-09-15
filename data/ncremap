@@ -1469,9 +1469,9 @@ if [[ ${mpi_pfx_usr:-} ]]; then
 fi # !mpi_pfx_usr
 # If MPI will be used, adjust partition number be a multiple of mpi_nbr
 if [[ ${mpi_pfx:-} ]]; then 
-    if ! [[ ${mpi_nbr} =~ ^[0-9]+$ ]]; then
-	echo "${spt_nm}: ERROR mpi_nbr='${mpi_nbr}' is not an integer"
-	echo "${spt_nm}: HINT Set --mpi_nbr to a non-negative integer, e.g., --mpi_nbr=1"
+    if ! [[ ${mpi_nbr} =~ ^[1-9][0-9]*$ ]]; then
+	echo "${spt_nm}: ERROR mpi_nbr='${mpi_nbr}' is not a positive integer"
+	echo "${spt_nm}: HINT Set --mpi_nbr to a positive integer, e.g., --mpi_nbr=1"
 	exit 1
     fi # !mpi_nbr
     if ! [[ ${prt_nbr} =~ ^[0-9]+$ ]]; then
@@ -1632,6 +1632,11 @@ else # !drc_in
     drc_in_usr_flg='Yes'
 fi # !drc_in
 if [[ ${job_usr:-} ]]; then 
+    if ! [[ ${job_usr} =~ ^[1-9][0-9]*$ ]]; then
+	echo "${spt_nm}: ERROR job_nbr='${job_usr}' is not a positive integer"
+	echo "${spt_nm}: HINT Set --job_nbr to a positive integer, e.g., --job_nbr=2"
+	exit 1
+    fi # !job_usr
     job_nbr="${job_usr}"
 fi # !job_usr
 if [[ ${mss_val_usr:-} ]]; then 
@@ -2902,7 +2907,7 @@ if [[ ${map_mk:-} == 'Yes' ]]; then
 	    fi # !dbg
 	    if [[ ${dbg_lvl:-} -ne 2 ]]; then
 		eval ${cmd_g2m[${fl_idx}]}
-		if [[ "$?" -ne 0 ]] || [[ ! -f ${grd_src_h5m:-} ]]; then
+		if [[ "$?" -ne 0 ]] || [[ ! -f ${grd_dst_h5m_tmp:-} ]]; then
 		    printf "${spt_nm}: ERROR Failed to convert destination grid to MOAB H5M format. Debug this:\n${cmd_g2m[${fl_idx}]}\n"
 		    printf "${cnv_exe_hnt}"
 		    exit 1
