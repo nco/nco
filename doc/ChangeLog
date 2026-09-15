@@ -1,5 +1,9 @@
 2026-09-15  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.4.0-alpha08 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha08: Molly Baz Lentils, Pork Sausage, and Celery/Parsley';git push
+	git tag -a 5.4.0-alpha08 -m '';git push --tags
+
 	* NCO 5.4.0-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha07: Tropical Heatwave';git push
 	git tag -a 5.4.0-alpha07 -m 'all: nco_usg_prn(); ncclimo: set -u, cmd_mpi, ppn fix';git push --tags
