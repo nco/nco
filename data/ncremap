@@ -393,6 +393,16 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Atmosphere->Atmosphere:
 # ncremap --dbg=1 -a se2se --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/ne30.g -m ~/map_ne30np4_to_ne30np4_se2se.20190301.nc
 # RRG (201807):
+if false; then
+    ncks -O -v TREFHT ${DATA}/bm/v3.NARRM.amip_0101.eam.h0.2014-12.nc ~/eamv3_narrmpg2_TREFHT.nc
+    dat_glb=${HOME}/eamv3_narrmpg2_TREFHT.nc
+    grd_glb=${DATA}/grids/northamericax4v1pg2_scrip.nc
+    dat_rrg=${DATA}/bm/v2.NARRM.amip_0101_bonus.eam.h9.2010-01-06-03600.nc
+    grd_rgn=${HOME}/grd_rgn.nc
+    ncremap -G latlon=64,64#snwe=30.0,45.0,255.0,270.0 -g ${grd_rgn}
+    dat_rgr=${HOME}/dat_rgr.nc
+    ncremap --dat_glb=${dat_glb} --grd_glb=${grd_glb} -g ${grd_rgn} ${dat_rrg} ${dat_rgr}
+fi # !false
 # ncremap -D 1 -a esmfaave --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_rgn=${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc > ~/ncremap.out 2>&1 &
 # ncremap -D 0 --vrb=1 -a esmfaave --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a esmfaave --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
@@ -709,6 +719,7 @@ nco_msk_dst='' # [sng] Mask-template variable in destination file option string
 nco_msk_out='' # [flg] Put mask variable in regridded file option string
 nco_msk_src='' # [sng] Mask-template variable in source file option string
 nco_ugrid_fl='' # [sng] UGRID file option string
+nco_skl_fl='' # [sng] "Skeleton" file for RRG generation
 nco_var_rgr='' # [sng] CF template variable option string
 rnm_sng='' # [sng] Filename rename suffix string
 

@@ -1,8 +1,12 @@
-2026-09-15  Charlie Zender  <zender@uci.edu>
+2026-09-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha08: Molly Baz Lentils, Pork Sausage, and Celery/Parsley';git push
 	git tag -a 5.4.0-alpha08 -m '';git push --tags
+
+	* ncremap: Fix unbound RRG variable, add RRG regression test to	source code
+
+2026-09-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha07: Tropical Heatwave';git push
@@ -22,7 +26,7 @@
 
 2026-09-10  Charlie Zender  <zender@uci.edu>
 
-	* Fix nco_usg_prn(), wordsmithing, fix set +u so ncclimo can run
+	* Fix nco_usg_prn(), wordsmithing, use set +u so ncclimo can run
 
 2026-09-09  Charlie Zender  <zender@uci.edu>
 
