@@ -126,9 +126,9 @@ fi # !$1
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
 if [[ -z ${HOSTNAME:-} ]]; then
     if [[ -f /bin/hostname ]] && [[ -x /bin/hostname ]]; then
-	export HOSTNAME=`/bin/hostname`
+	export HOSTNAME=$(/bin/hostname)
     elif [[ -f /usr/bin/hostname ]] && [[ -x /usr/bin/hostname ]]; then
-	export HOSTNAME=`/usr/bin/hostname`
+	export HOSTNAME=$(/usr/bin/hostname)
     fi # !hostname
 fi # HOSTNAME
 # Default input and output directory is ${DATA}
@@ -461,7 +461,7 @@ if [[ -n "${E3SMU_MPI:-}" ]] && [[ -n "${E3SMU_SCRIPT:-}" ]] && [[ -n "${CONDA_P
     fi # !E3SMU_MPI
 fi # !E3SMU_MPI
 # Set NCO version and directory
-nco_exe=`which ncks`
+nco_exe=$(which ncks)
 if [[ -z ${nco_exe:-} ]]; then
     echo "ERROR: Unable to find NCO, nco_exe = ${nco_exe}"
     echo "${spt_nm}: HINT Carefully examine your environment setup (e.g., .bashrc) to avoid inadvertently overriding (with, e.g., conda-initialization) paths intended to be provided by an analysis-package environment (e.g., E3SM-Unified)"
@@ -503,10 +503,10 @@ fi # drc_spt
 if [[ ${TERM:-} ]]; then
     # Set fonts for legibility
     if [[ -x /usr/bin/tput ]] && tput setaf 1 &> /dev/null; then
-	fnt_bld=`tput bold` # Bold
-	fnt_nrm=`tput sgr0` # Normal
-	fnt_rvr=`tput smso` # Reverse
-	fnt_tlc=`tput sitm` # Italic
+	fnt_bld=$(tput bold) # Bold
+	fnt_nrm=$(tput sgr0) # Normal
+	fnt_rvr=$(tput smso) # Reverse
+	fnt_tlc=$(tput sitm) # Italic
     else
 	fnt_bld="\e[1m" # Bold
 	fnt_nrm="\e[0m" # Normal
@@ -572,7 +572,7 @@ mpi_pfx_usr='' # [sng] Prefix for MPI-enabled weight generators (user-specified)
 drc_usr='' # [sng] Output directory (user-specified)
 dst_fl='' # [sng] Destination file
 dst_xmp='dst.nc' # [sng] Destination file for examples
-dt_sng=`date +%Y%m%d` # [sng] Date string for MWF map names
+dt_sng=$(date +%Y%m%d) # [sng] Date string for MWF map names
 dvn_flg='Yes' # [flg] Send internal NCO regridder output to /dev/null
 esmf_typ='' # [sng] ESMF extrapolation type (nearestidavg|neareststod|none)
 fl_fmt='' # [enm] Output file format
@@ -1507,7 +1507,7 @@ fi # !mpi_pfx
 if [[ ${wgt_typ:-} == 'esmf' ]]; then
     # 20180830 Add --ignore_degenerate to default ERWG options for ESMF >= 7.1.0r
     # 20181114 Add --no_log so ERWG does not try to write logfile into current (possibly write-protected) directory 
-    erwg_vrs_sng=`${mpi_pfx} ${wgt_exe_esmf} --no_log --version | grep ESMF_VERSION_STRING | cut -f 2 -d ':'`
+    erwg_vrs_sng=$(${mpi_pfx} ${wgt_exe_esmf} --no_log --version | grep ESMF_VERSION_STRING | cut -f 2 -d ':')
     # Remove whitespace, answer should be something like "7.1.0r" or "6.3.0rp1"
     erwg_vrs_sng="${erwg_vrs_sng#"${erwg_vrs_sng%%[![:space:]]*}"}"
     # Extract first character
@@ -2333,7 +2333,7 @@ if [[ ${prc_typ:-} == 'mpaso' ]] || [[ ${prc_typ:-} == 'mpasocean' ]]; then
 	    # Search the file iff the extraction list does not already contain the depth coordinate
 	    # https://stackoverflow.com/questions/4542732/how-do-i-negate-a-test-with-regular-expressions-in-a-bash-script
 	    if [[ ! ${nco_var_lst:-} =~ ${mpaso_var_zmid:-} ]]; then
-		mpaso_var_lst=`nchasvar ${mpaso_var_zmid} ${fl_in[0]}`
+		mpaso_var_lst=$(nchasvar ${mpaso_var_zmid} ${fl_in[0]})
 		if [[ ${mpaso_var_lst:-} == ${mpaso_var_zmid:-} ]]; then
 		    nco_var_lst="${nco_var_lst},${mpaso_var_zmid}"
 		    # Alternatively, could create nco_var_lst_ncpdq to ensure ncpdq retains mpaso_var_zmid so vertical
@@ -2354,7 +2354,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 	# http://www.ceci-hpc.be/slurm_faq.html#Q12
 	# Ensure file is in writable directory
 	nd_fl="${drc_out}/${spt_nm}.slurm_nodelist.pid${spt_pid}.tmp"
-	nd_lst=`scontrol show hostname ${SLURM_NODELIST}`
+	nd_lst=$(scontrol show hostname ${SLURM_NODELIST})
 	echo ${nd_lst} > ${nd_fl}
     else
 	echo "${spt_nm}: ERROR MPI master process unable to find node-list for distributing jobs"
@@ -2373,7 +2373,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
     fi # !thr_usr
 	# NB: nodes are 0-based, e.g., [0..11]
 	nd_idx=0
-	for nd in `cat ${nd_fl} | uniq` ; do
+	for nd in $(cat ${nd_fl} | uniq) ; do
 	    nd_nm[${nd_idx}]=${nd}
 	    nd_idx=$((nd_idx+1))
 	done # !nd
@@ -2628,7 +2628,7 @@ if [[ -f 'PET0.RegridWeightGen.Log' ]]; then
     /bin/rm -f PET0.*
 fi # !PETO
 if [[ ${vrb_lvl:-} -ge ${vrb_3:-} ]]; then
-    printf "Started processing at `date`.\n"
+    printf "Started processing at $(date).\n"
     printf "Running remap script ${spt_nm} from directory ${drc_spt}\n"
     printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
     printf "Parallelism mode for files = ${par_typ}\n"
@@ -2787,8 +2787,8 @@ if [[ ${prc_typ:-} == 'rrg' ]]; then
 
     if [[ -z ${rnm_sng:-} ]]; then 
 	# Discern rename string from input file, assume dimension is 'ncol', strip whitespace
-	rnm_sng=`ncks -m ${fl_in[${fl_idx}]} | cut -d ':' -f 1 | cut -d '=' -s -f 1 | grep ncol | sed 's/ncol//' | sed -e 's/^ *//' -e 's/ *$//'`
-	rgn_nbr=`echo ${rnm_sng} | wc -l`
+	rnm_sng=$(ncks -m ${fl_in[${fl_idx}]} | cut -d ':' -f 1 | cut -d '=' -s -f 1 | grep ncol | sed 's/ncol//' | sed -e 's/^ *//' -e 's/ *$//')
+	rgn_nbr=$(echo ${rnm_sng} | wc -l)
 	if [[ ${rgn_nbr:-} -ne 1 ]]; then
 	    echo "ERROR: Inferred regional regridding suffix '${rnm_sng}' indicates multiple regions present in input file. ncremap only works on one region at a time."
 	    echo "HINT: Provide a single region string as the argument to the --rrg_rnm_sng option"
@@ -2949,12 +2949,12 @@ if [[ ${grd_src_usr_flg:-} == 'Yes' ]] || [[ ${prc_typ:-} == 'rrg' ]]; then
 	if [[ ${hnt_src:-} ]]; then
 	    rgn_opt="${rgn_opt} ${hnt_src}"
 	elif [[ -f ${hnt_src_fl:-} ]]; then
-	    rgn_opt="${rgn_opt} `cat ${hnt_src_fl}`"
+	    rgn_opt="${rgn_opt} $(cat ${hnt_src_fl})"
 	fi # !hnt_src_fl
 	if [[ ${hnt_dst:-} ]]; then
 	    rgn_opt="${rgn_opt} ${hnt_dst}"
 	elif [[ -f ${hnt_dst_fl:-} ]]; then
-	    rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
+	    rgn_opt="${rgn_opt} $(cat ${hnt_dst_fl})"
 	fi # !hnt_dst_fl
 	cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt}${devnull}"
     elif [[ ${wgt_typ:-} == 'nco' ]]; then 
@@ -3062,9 +3062,9 @@ if [[ ${grd_src_usr_flg:-} == 'Yes' ]] || [[ ${prc_typ:-} == 'rrg' ]]; then
 	fi # !dbg
     fi # !trn_map
     if [[ ${map_usr_flg:-} == 'Yes' ]]; then
-	hst_att="`date`: ${cmd_ln}; ${cmd_map[${fl_idx}]}"
+	hst_att="$(date): ${cmd_ln}; ${cmd_map[${fl_idx}]}"
 	if [[ ${wgt_typ:-} == 'tempest' ]]; then 
-	    hst_att="`date`: ${cmd_ln}; ${cmd_msh[${fl_idx}]}; ${cmd_map[${fl_idx}]}"
+	    hst_att="$(date): ${cmd_ln}; ${cmd_msh[${fl_idx}]}; ${cmd_map[${fl_idx}]}"
 	    if [[ ${trn_map:-} == 'Yes' ]]; then 
 		hst_att="${hst_att}; ${cmd_trn[${fl_idx}]}"
 	    fi # !trn_map
@@ -3108,7 +3108,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	if [[ "$(basename ${in_fl:-})" == ${in_fl:-} ]]; then
 	    in_fl="${drc_pwd}/${in_fl}"
 	fi # !basename
-	idx_prn=`printf "%02d" ${fl_idx}`
+	idx_prn=$(printf "%02d" ${fl_idx})
 	if [[ ${vrb_lvl:-} -ge ${vrb_1:-} ]]; then
 	    printf "Input #${idx_prn}: ${in_fl}\n"
 	fi # !vrb_lvl
@@ -3258,12 +3258,12 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		if [[ ${hnt_src:-} ]]; then
 		    rgn_opt="${rgn_opt} ${hnt_src}"
 		elif [[ -f ${hnt_src_fl:-} ]]; then
-		    rgn_opt="${rgn_opt} `cat ${hnt_src_fl}`"
+		    rgn_opt="${rgn_opt} $(cat ${hnt_src_fl})"
 		fi # !hnt_src_fl
 		if [[ ${hnt_dst:-} ]]; then
 		    rgn_opt="${rgn_opt} ${hnt_dst}"
 		elif [[ -f ${hnt_dst_fl:-} ]]; then
-		    rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
+		    rgn_opt="${rgn_opt} $(cat ${hnt_dst_fl})"
 		fi # !hnt_dst_fl
 		cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt}${devnull}"
 	    elif [[ ${wgt_typ:-} == 'nco' ]]; then 
@@ -3318,7 +3318,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		    exit 1
 		fi # !err
 		if [[ ${map_usr_flg:-} == 'Yes' ]]; then
-		    hst_att="`date`: ${cmd_ln}; ${cmd_map[${fl_idx}]}"
+		    hst_att="$(date): ${cmd_ln}; ${cmd_map[${fl_idx}]}"
 		    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${gad_sng} \"${map_rsl_fl}\""
 		    eval ${cmd_att[${fl_idx}]}
 		if [[ "$?" -ne 0 ]]; then
@@ -3506,8 +3506,8 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
     if [[ ${prc_typ:-} == 'rrg' ]]; then 
 	# Block 4e: RRG
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
-	    rrg_dmn_lst=`ncdmnlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
-	    rrg_var_lst=`ncvarlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
+	    rrg_dmn_lst=$(ncdmnlst ${fl_in[${fl_idx}]} | grep ${rnm_sng})
+	    rrg_var_lst=$(ncvarlst ${fl_in[${fl_idx}]} | grep ${rnm_sng})
 	    
 	    dmn_sng=''
 	    if [[ ${rrg_dmn_lst:-} ]]; then
@@ -3786,9 +3786,9 @@ if [[ ${vrb_lvl:-} -ge ${vrb_3:-} ]]; then
 	    echo "ncks --chk_map ${map_fl}"
 	    echo "AnalyzeMap --map ${map_fl}"
 	fi # !map_mk
-	printf "Completed generating map/grid-file(s) at `date`.\n"
+	printf "Completed generating map/grid-file(s) at $(date).\n"
     else # !fl_nbr
-	printf "Completed regridding data file(s) at `date`.\n"
+	printf "Completed regridding data file(s) at $(date).\n"
 	echo "Quick plots of results from last regridded file:"
 	echo "ncvis ${out_fl} &"
     fi # !fl_nbr

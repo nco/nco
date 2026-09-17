@@ -59,14 +59,14 @@ spt_pid=$$ # [nbr] Script PID (process ID)
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
 if [[ -z ${HOSTNAME-} ]]; then
     if [[ -f /bin/hostname ]] && [[ -x /bin/hostname ]]; then
-	export HOSTNAME=`/bin/hostname`
+	export HOSTNAME=$(/bin/hostname)
     elif [[ -f /usr/bin/hostname ]] && [[ -x /usr/bin/hostname ]]; then
-	export HOSTNAME=`/usr/bin/hostname`
+	export HOSTNAME=$(/usr/bin/hostname)
     fi # !hostname
 fi # HOSTNAME
 
 # Set NCO version and directory
-nco_exe=`which ncks`
+nco_exe=$(which ncks)
 if [[ -z ${nco_exe-} ]]; then
     echo "${spt_nm}: ERROR Unable to find NCO, \${nco_exe} = ${nco_exe}"
     echo "${spt_nm}: HINT Carefully examine your environment setup (e.g., .bashrc) to avoid inadvertently overriding (with, e.g., conda-initialization) paths intended to be provided by an analysis-package environment (e.g., Anaconda)"
@@ -94,10 +94,10 @@ lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 if [[ ${TERM-} ]]; then
     # Set fonts for legibility
     if [[ -x /usr/bin/tput ]] && tput setaf 1 &> /dev/null; then
-	fnt_bld=`tput bold` # Bold
-	fnt_nrm=`tput sgr0` # Normal
-	fnt_rvr=`tput smso` # Reverse
-	fnt_tlc=`tput sitm` # Italic
+	fnt_bld=$(tput bold) # Bold
+	fnt_nrm=$(tput sgr0) # Normal
+	fnt_rvr=$(tput smso) # Reverse
+	fnt_tlc=$(tput sitm) # Italic
     else
 	fnt_bld="\e[1m" # Bold
 	fnt_nrm="\e[0m" # Normal
@@ -466,7 +466,7 @@ date_srt=$(date +"%s")
 if [[ ${dbg_lvl-} -ge 0 ]]; then
     printf "ncchecker, a DIWG recommendation compliance checker, invoked with command:\n"
     echo "${cmd_ln}"
-    printf "Started DIWG checker at `date`\n"
+    printf "Started DIWG checker at $(date)\n"
     printf "# of recommendations that will be checked: ${tst_nbr}/${tst_nbr_max}\n"
     printf "Recommendations that will be checked: "
     for ((tst_idx=0;tst_idx<tst_nbr;tst_idx++)); do
@@ -533,7 +533,7 @@ done # !fl_idx
 
 date_end=$(date +"%s")
 if [[ ${dbg_lvl-} -ge 0 ]]; then
-    printf "\nCompleted DIWG Compliance Checker at `date`\n"
+    printf "\nCompleted DIWG Compliance Checker at $(date)\n"
     date_dff=$((date_end-date_srt))
     echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 fi # !dbg
