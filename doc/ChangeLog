@@ -1,8 +1,20 @@
-2026-09-16  Charlie Zender  <zender@uci.edu>
+2026-09-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha08: Molly Baz Lentils, Pork Sausage, and Celery/Parsley';git push
-	git tag -a 5.4.0-alpha08 -m 'ncclimo/ncremap: refmt xmp; ncremap: fix unbound';git push --tags
+	git tag -a 5.4.0-alpha08 -m 'ncclimo/ncremap: refmt xmp, getopt $((10#foo)), use $() not `` for cmd sbs, refct err hnd ; ncremap: fix unbound';git push --tags
+
+	* Revamp error handling, add to ncremap
+
+	* ncremap/ncclimo: Remove extra quotation marks around base10 conversions
+
+	* Fortify ncremap integer input with base10 conversion to protect against leading zeros
+
+	* ncremap/ncclimo: Convert legacy backtick substitutions to POSIX $()
+
+2026-09-16  Charlie Zender  <zender@uci.edu>
+
+	* Fortify ncclimo integer input with base10 conversion to protect against leading zeros
 
 	* ncremap/ncclimo: Reformat examples and regression tests to take advantage of syntax highlighting
 

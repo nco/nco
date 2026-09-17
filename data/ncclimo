@@ -56,26 +56,39 @@ drc_pwd=${PWD}
 # Security: Explicitly unset IFS before wordsplitting, so Bash uses default IFS=<space><tab><newline>
 unset IFS
 # Safety: Exit immediately when any command returns non-zero exit status, uninitialized variables are used, or pipes fail
-set -e # err_hnd Exit on command failure
-set -u # err_hnd Exit on unbound variable reference
+
+set -u # Exit on unbound variable reference
+set -o errexit # Abort on non-zero command exit status failure (long form of set -e)
+set -o errtrace # Pass custom ERR error handler into functions and subshells (long form of set -E)
 set -o pipefail # err_hnd Exit on pipe failure
-# Define error handler function
-function err_hnd {
+
+# Define error handlers
+function hnd_err {
+    # SIGERR Error handler. Called after non-zero return code.
     local exit_code=$?
     local line_number=${BASH_LINENO[0]}
     local failed_command="$BASH_COMMAND"
     
-    echo "❌ CRASH DETECTED!" >&2
+    echo "❌ ABORT DUE TO NON-ZERO COMMAND EXIT CODE" >&2
     echo "Failed Command: '$failed_command'" >&2
     echo "Line Number   : $line_number" >&2
     echo "Exit Status   : $exit_code" >&2
-} # !err_hnd()
-# Register error handler
-trap err_hnd ERR # err_hnd
-# Track last-executed line number
-trap 'last_line=${LINENO}' DEBUG
-# Handle Ctrl-C (SIGINT), print line where it happened, exit with standard SIGINT code
-trap 'echo -e "\nInterrupted on line: ${last_line}"; exit 130' INT
+} # !hnd_err()
+
+function hnd_int {
+    # SIGINT Error handler. Trap set by interrupting with Ctrl-C.
+    # Print line where it happened, exit with standard SIGINT code
+    local line_number=${1}
+    local exit_code=130
+    echo "\nInterrupted by Ctrl-C at line ${line_number}" >&2
+    echo "Exiting with SIGINT status ${exit_code}" >&2
+    exit ${exit_code}
+} # !hnd_int()
+
+# Register error handlers
+trap 'printf "\nInterrupted by Ctrl-C\n"' INT # Call hnd_int() on SIGINT, i.e., Ctrl-C
+trap hnd_err ERR # Call hnd_err() on SIGERR, i.e., non-zero return code
+#trap 'hnd_int ${LINENO}' INT # Call hnd_int() on SIGINT, i.e., Ctrl-C
 
 # Set these before 'module' command which can overwrite ${BASH_SOURCE[0]}
 # NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
@@ -992,14 +1005,14 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	a) wnt_md_usr="${OPTARG}" ;; # Winter mode
 	C) clm_md_usr="${OPTARG}" ;; # Climatology mode
 	c) caseid="${OPTARG}" ;; # CASEID
-	d) dbg_lvl=$((10#"${OPTARG}")) ;; # Debugging level
-	E) yr_end_prv=$((10#"${OPTARG}")) ;; # End year previous
-	e) yr_end=$((10#"${OPTARG}")) ;; # End year
+	d) dbg_lvl=$((10#${OPTARG})) ;; # Debugging level
+	E) yr_end_prv=$((10#${OPTARG})) ;; # End year previous
+	e) yr_end=$((10#${OPTARG})) ;; # End year
 	f) fml_nm_usr="${OPTARG}" ;; # Family name
 	h) hst_nm="${OPTARG}" ;; # History tape name
 	i) drc_in="${OPTARG}" ;; # Input directory
 	j) job_usr="${OPTARG}" ;; # Job simultaneity
-	L) dfl_lvl=$((10#"${OPTARG}")) ;; # Deflate level
+	L) dfl_lvl=$((10#${OPTARG})) ;; # Deflate level
 	l) lnk_flg="${OPTARG}" ;; # Link E3SM to AMWG name
 	m) mdl_nm_usr="${OPTARG}" ;; # Model name string
 	n) nco_opt="${OPTARG} ${nco_opt}" ;; # NCO options
@@ -1009,15 +1022,15 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	p) par_typ="${OPTARG}" ;; # Parallelism type for files
 	R) rgr_opt_usr="${OPTARG}" ;; # Regridding options
 	r) rgr_map="${OPTARG}" ;; # Regridding map (horizontal)
-	S) yr_srt_prv=$((10#"${OPTARG}")) ;; # Start year previous
-	s) yr_srt=$((10#"${OPTARG}")) ;; # Start year
-	t) thr_usr=$((10#"${OPTARG}")) ;; # Thread number
+	S) yr_srt_prv=$((10#${OPTARG})) ;; # Start year previous
+	s) yr_srt=$((10#${OPTARG})) ;; # Start year
+	t) thr_usr=$((10#${OPTARG})) ;; # Thread number
 	v) var_lst="${OPTARG}" ;; # Variables
 	X) drc_xtn="${OPTARG}" ;; # Extended climo directory
 	x) drc_prv="${OPTARG}" ;; # Previous climo directory
 	Y) drc_rgr_xtn="${OPTARG}" ;; # Regridded extended climo directory
 	y) drc_rgr_prv="${OPTARG}" ;; # Regridded previous climo directory
-	z) ypf_max_usr=$((10#"${OPTARG}")) ;; # Years-per-output-file maximum
+	z) ypf_max_usr=$((10#${OPTARG})) ;; # Years-per-output-file maximum
 	-) LONG_OPTARG="${OPTARG#*=}"
 	   case ${OPTARG} in
 	       # Hereafter ${OPTARG} is long argument key, and ${LONG_OPTARG}, if any, is long argument value
@@ -1045,7 +1058,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
 	       hrd_pth | hard_path | npo | nco_path_override | NCO_PATH_OVERRIDE ) hrd_pth='Yes' ;; # # Use hard-coded paths on known machines (intentional no-op because already handled prior to getopt())
 	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* | NCO_PATH_OVERRIDE=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
-	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr=$((10#"${LONG_OPTARG}")) ;; # -j # Job simultaneity
+	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr=$((10#${LONG_OPTARG})) ;; # -j # Job simultaneity
 	       lnk_flg=?* | link_flag=?* ) lnk_flg="${LONG_OPTARG}" ;; # -l # Link E3SM to AMWG name
 	       amwg_link | amwg_links | AMWG_link | AMWG_links ) lnk_flg='Yes' ;; # # Link E3SM to AMWG name
 	       amwg_link=?* | amwg_links=?* | AMWG_link=?* | AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Link E3SM to AMWG name
@@ -1053,8 +1066,8 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       no_amwg_link=?* | no_amwg_links=?* | no_amwg=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link E3SM to AMWG name
 	       mdl_nm=?* | mdl=?* | model_name=?* | model=?* ) mdl_nm_usr="${LONG_OPTARG}" ;; # -m # Model name string
 	       mem_mb=?* | mmr_mb=?* | memory_mb=? | memory_megabytes=?* ) mem_mb="${LONG_OPTARG}" ;; # # Megabytes of RAM per srun job in Cori SLURM in MPI mode
-	       mth_end=?* | end_mth=?* | month_end=?* | end_month=?* ) mth_end_usr=$((10#"${LONG_OPTARG}")); mth_end="${LONG_OPTARG}" ;; # # End month
-	       mth_srt=?* | start_mth=?* | month_start=?* | start_month=?* ) mth_srt=$((10#"${LONG_OPTARG}")) ;; # # Start month
+	       mth_end=?* | end_mth=?* | month_end=?* | end_month=?* ) mth_end_usr=$((10#${LONG_OPTARG})); mth_end="${LONG_OPTARG}" ;; # # End month
+	       mth_srt=?* | start_mth=?* | month_start=?* | start_month=?* ) mth_srt=$((10#${LONG_OPTARG})) ;; # # Start month
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_opt="${LONG_OPTARG} ${nco_opt}" ;; # -n # NCO options
 	       no_area | no_cll_msr | no_cell_measures ) no_cll_msr='Yes' ;; # # Omit cell_measures variables
 	       no_area=?* | no_cell_msr=?* | no_cell_measures=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit cell_measures variables
@@ -1074,8 +1087,8 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       rgn_stt=?* | glb_stt=?* | hms_stt=?* | global_statistic=?* | regional_statistic=?* ) rgn_stt="${LONG_OPTARG}" ;; # # Regional/global statistical timeseries
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt_usr="${LONG_OPTARG}" ;; # -R # Regridding options
 	       rgr_map=?* | regrid_map=?* | map=?* | map_fl=?* | map_file=?* ) rgr_map="${LONG_OPTARG}" ;; # -r # Regridding map (horizontal)
-	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv=$((10#"${LONG_OPTARG}")) ;; # -S # Start year previous
-	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt=$((10#"${LONG_OPTARG}")) ;; # -s # Start year
+	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv=$((10#${LONG_OPTARG})) ;; # -S # Start year previous
+	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt=$((10#${LONG_OPTARG})) ;; # -s # Start year
 	       seasons=?* | csn_lst=?* | csn=?* | season=?* ) csn_lst="${LONG_OPTARG}" ;; # # Seasons to output
 	       sgs_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | subgrid_fraction=?* ) sgs_frc="${LONG_OPTARG}" ;; # # Sub-grid fraction variable
 	       split | splitter | tms_flg | timeseries ) tms_flg='Yes' ;; # # Split input files into single-variable timeseries
@@ -1084,8 +1097,8 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       stdin | inp_std | std_flg | redirect | standard_input ) printf "ERROR: ncclimo deprecated --stdin in version 5.0.4.\nHINT: Use --split to unambiguously invoke the splitter. This supercedes the old use for --stdin in ncclimo." ; exit 1 ;; # # Input file list from stdin
 	       no_stdin | no_inp_std | no_redirect | no_standard_input ) std_chk='No' ;; # # Do not check stdin for input file list
 	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Do not check stdin for input file list
-	       thr_nbr=?* | thr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr=$((10#"${LONG_OPTARG}")) ;; # -t # Thread number
-	       tpd_out=?* | tpd=?* | timesteps_per_day=?* ) tpd_usr=$((10#"${LONG_OPTARG}")) ;; # # Timesteps-per-day in output
+	       thr_nbr=?* | thr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr=$((10#${LONG_OPTARG})) ;; # -t # Thread number
+	       tpd_out=?* | tpd=?* | timesteps_per_day=?* ) tpd_usr=$((10#${LONG_OPTARG})) ;; # # Timesteps-per-day in output
 	       uio | unbuffered | share ) uio_flg='Yes' ;; # # Unbuffered I/O (NC_SHARE) for netCDF3 files
 	       uio=?* | unbuffered=?* | share=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Unbuffered I/O (NC_SHARE) for netCDF3 files
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
@@ -1100,7 +1113,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       drc_rgr_prv=?* | drc_prv_rgr=?* | regridded_previous=?* | previous_regridded=?* ) drc_rgr_prv="${LONG_OPTARG}" ;; # -y # Regridded previous climo directory
 	       xcl_var | xcl | exclude | exclude_variables ) xcl_flg='Yes' ;; # # Exclude rather than extract variable list
 	       xcl_var=?* | xcl=?* | exclude=?* | exclude_variables=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Exclude rather than extract variable list
-	       ypf_max=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_max_usr=$((10#"${LONG_OPTARG}")) ;; # -z # Years-per-output-file maximum
+	       ypf_max=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_max_usr=$((10#${LONG_OPTARG})) ;; # -z # Years-per-output-file maximum
                '' ) break ;; # "--" terminates argument processing
                * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;; # !OPTARG
@@ -1198,7 +1211,6 @@ if [[ ${std_chk:-} == 'Yes' ]]; then
 	exit 1
     fi # !inp_std
 fi # !std_chk
-set -u # err_hnd Exit on unbound variable reference
 
 # Determine mode first (this helps determine other defaults)
 if [[ ${yr_srt_prv:-} ]]; then
