@@ -2,7 +2,7 @@
 
 	* NCO 5.4.0-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha08: Molly Baz Lentils, Pork Sausage, and Celery/Parsley';git push
-	git tag -a 5.4.0-alpha08 -m 'ncremap: fix unbound';git push --tags
+	git tag -a 5.4.0-alpha08 -m 'ncclimo/ncremap: refmt xmp; ncremap: fix unbound';git push --tags
 
 	* ncremap/ncclimo: Reformat examples and regression tests to take advantage of syntax highlighting
 
