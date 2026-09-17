@@ -114,9 +114,9 @@ fi # !$1
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
 if [[ -z ${HOSTNAME:-} ]]; then
     if [[ -f /bin/hostname ]] && [[ -x /bin/hostname ]]; then
-	export HOSTNAME=`/bin/hostname`
+	export HOSTNAME=$(/bin/hostname)
     elif [[ -f /usr/bin/hostname ]] && [[ -x /usr/bin/hostname ]]; then
-	export HOSTNAME=`/usr/bin/hostname`
+	export HOSTNAME=$(/usr/bin/hostname)
     fi # !hostname
 fi # HOSTNAME
 # Default input and output directory is ${DATA}
@@ -323,7 +323,7 @@ if false; then
     ncclimo -v TOTEXTTAU -c merra2_198001.nc4 -s 1980 -e 2015 -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm # borken as of 20260915
     ncclimo -d 2 -v FSNT -m cam2 -c essgcm14 -s 1 -e 20 -i ${DATA}/essgcm14 -o $TMPDIR > ~/ncclimo.out 2>&1 &
     # MPAS: Prior to running ncclimo on MPAS output, annotate missing values of input with, e.g.,
-    for fl in `ls hist.*` ; do
+    for fl in $(ls hist.*) ; do
 	ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${fl}
     done
     # New MPAS filename conventions (as of ~201612):
@@ -499,7 +499,7 @@ if [[ -n "${E3SMU_MPI:-}" ]] && [[ -n "${E3SMU_SCRIPT:-}" ]] && [[ -n "${CONDA_P
     fi # !E3SMU_MPI
 fi # !E3SMU_MPI
 # Set NCO version and directory
-nco_exe=`which ncks`
+nco_exe=$(which ncks)
 if [[ -z ${nco_exe:-} ]]; then
     echo "${spt_nm}: ERROR Unable to find NCO, \${nco_exe} = ${nco_exe}"
     echo "${spt_nm}: HINT Carefully examine your environment setup (e.g., .bashrc) to avoid inadvertently overriding (with, e.g., conda-initialization) paths intended to be provided by an analysis-package environment (e.g., E3SM-Unified)"
@@ -542,10 +542,10 @@ fi # drc_spt
 if [[ ${TERM:-} ]]; then
     # Set fonts for legibility
     if [[ -x /usr/bin/tput ]] && tput setaf 1 &> /dev/null; then
-	fnt_bld=`tput bold` # Bold
-	fnt_nrm=`tput sgr0` # Normal
-	fnt_rvr=`tput smso` # Reverse
-	fnt_tlc=`tput sitm` # Italic
+	fnt_bld=$(tput bold) # Bold
+	fnt_nrm=$(tput sgr0) # Normal
+	fnt_rvr=$(tput smso) # Reverse
+	fnt_tlc=$(tput sitm) # Italic
     else
 	fnt_bld="\e[1m" # Bold
 	fnt_nrm="\e[0m" # Normal
@@ -1355,33 +1355,33 @@ if [[ ${arg_lng:-} -eq 6 ]]; then
     yyyymm_end=${yr_end}
     
     yr_srt_rth=$((10#${yyyymm_srt}/100))
-    yr_srt=`printf "%d" ${yr_srt_rth}`
-    yyyy_srt=`printf "%04d" ${yr_srt_rth}`
+    yr_srt=$(printf "%d" ${yr_srt_rth})
+    yyyy_srt=$(printf "%04d" ${yr_srt_rth})
     mth_srt_rth=$((10#${yyyymm_srt}%100))
-    mth_srt=`printf ${mth_srt_rth}`
-    mm_srt=`printf "%02d" ${mth_srt_rth}`
+    mth_srt=$(printf ${mth_srt_rth})
+    mm_srt=$(printf "%02d" ${mth_srt_rth})
     
     yr_end_rth=$((10#${yyyymm_end}/100))
-    yr_end=`printf "%d" ${yr_end_rth}`
-    yyyy_end=`printf "%04d" ${yr_end_rth}`
+    yr_end=$(printf "%d" ${yr_end_rth})
+    yyyy_end=$(printf "%04d" ${yr_end_rth})
     mth_end_rth=$((10#${yyyymm_end}%100))
-    mth_end=`printf ${mth_end_rth}`
-    mm_end=`printf "%02d" ${mth_end_rth}`
+    mth_end=$(printf ${mth_end_rth})
+    mm_end=$(printf "%02d" ${mth_end_rth})
 else # !arg_lng
     # Input is in traditional format of one to four digit integers
     trim_leading_zeros ${yr_srt}
     yr_srt_rth=${sng_trm}
-    yyyy_srt=`printf "%04d" ${yr_srt_rth}`
+    yyyy_srt=$(printf "%04d" ${yr_srt_rth})
     trim_leading_zeros ${yr_end}
     yr_end_rth=${sng_trm}
-    yyyy_end=`printf "%04d" ${yr_end_rth}`
+    yyyy_end=$(printf "%04d" ${yr_end_rth})
     
     trim_leading_zeros ${mth_srt}
     mth_srt_rth=${sng_trm}
-    mm_srt=`printf "%02d" ${mth_srt_rth}`
+    mm_srt=$(printf "%02d" ${mth_srt_rth})
     trim_leading_zeros ${mth_end}
     mth_end_rth=${sng_trm}
-    mm_end=`printf "%02d" ${mth_end_rth}`
+    mm_end=$(printf "%02d" ${mth_end_rth})
 fi # !arg_lng
 
 if false; then
@@ -1393,11 +1393,11 @@ fi # !false
 
 yr_srtm1=$((yr_srt_rth-1))
 yr_srtp1=$((yr_srt_rth+1))
-yyyy_srtp1=`printf "%04d" ${yr_srtp1}`
+yyyy_srtp1=$(printf "%04d" ${yr_srtp1})
 
 yr_endm1=$((yr_end_rth-1))
 yr_endp1=$((yr_end_rth+1))
-yyyy_endm1=`printf "%04d" ${yr_endm1}`
+yyyy_endm1=$(printf "%04d" ${yr_endm1})
 
 if [[ ${mth_srt_rth:-} -eq 0 ]]; then
     echo "${spt_nm}: ERROR User-defined start month is ${mth_srt}. Please use 1-based (not 0-based) indexing for months, where [Jan..Dec] = [1..12]"
@@ -1423,13 +1423,13 @@ if [[ ${mth_srtm1:-} -eq 0 ]]; then
     mth_srtm1=$((12))
     mm_srtm1='12'
 else # !mth_srtm1
-    mm_srtm1=`printf "%02d" ${mth_srtm1}`
+    mm_srtm1=$(printf "%02d" ${mth_srtm1})
 fi # !mth_srtm1
 if [[ ${mth_endp1:-} -eq 13 ]]; then
     mth_endp1=$((1))
     mm_endp1='01'
 else # !mth_endp1
-    mm_endp1=`printf "%02d" ${mth_endp1}`
+    mm_endp1=$(printf "%02d" ${mth_endp1})
 fi # !mth_endp1
 if [[ ${mm_srt:-} != '01' ]] || [[ ${mm_end:-} != '12' ]]; then
     mth_flg='Yes'
@@ -1736,8 +1736,8 @@ if [[ ${inp_aut:-} == 'Yes' ]] && [[ ${clm_md:-} == 'mth' ]] || [[ ${clm_md:-} =
     yr_end_all=$((10#${yyyy_end}))
     # Bash brace expansion like {1..12} only works with naked numbers. Variables must use seq().
 #    printf "quark3 yr_srt_all=${yr_srt_all}, yr_end_all=${yr_end_all}, yyyy_srt=${yyyy_srt}, yyyy_end=${yyyy_end}\n"
-    for yr in `seq ${yr_srt_all} ${yr_end_all}`; do
-	YYYY=`printf "%04d" ${yr}`
+    for yr in $(seq ${yr_srt_all} ${yr_end_all}); do
+	YYYY=$(printf "%04d" ${yr})
 	clm_idx=0
 	if [[ ${clm_md:-} == 'ann' ]]; then
 	    fl_in[${fl_nbr}]="${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${ann_sfx}.nc"
@@ -1746,7 +1746,7 @@ if [[ ${inp_aut:-} == 'Yes' ]] && [[ ${clm_md:-} == 'mth' ]] || [[ ${clm_md:-} =
 	fi # !ann
 	for mth in {1..12}; do
 	    clm_idx=$((clm_idx+1))
-	    MM=`printf "%02d" ${clm_idx}`
+	    MM=$(printf "%02d" ${clm_idx})
 	    # Only construct filenames for months that are used
 	    # 20260410 these statements should be triggered during climos!
 	    if [[ ${mth_flg:-} == 'Yes' ]] && (( ${yr:-} == ${yr_srt_all:-} )) && (( ${mth:-} < ${mth_srt_rth:-} )); then continue; fi
@@ -1846,7 +1846,7 @@ if [[ ${clm_md:-} == 'hfc' ]] || [[ ${clm_md:-} == 'hfs' ]]; then
 	# User requested high-frequency mode and did not specify tpd so (try to) infer it
 	# Examine bounds of second timestep in case first timestep is instantaneous (e.g., restart values)
 	tm_var='time'
-	tm_bnd=`ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
+	tm_bnd=$(ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g')
 	if [[ -z ${tm_bnd:-} ]]; then
 	    # 20250509 Use time-coordinate values when time bounds DNE
 	    tm_bnd_flg='No'
@@ -1857,7 +1857,7 @@ if [[ ${clm_md:-} == 'hfc' ]] || [[ ${clm_md:-} == 'hfs' ]]; then
 	# 20210815: Prefer to hyperslab second time index since some files contain an "instantaneous" (i.e., zero-duration) first timestep.
 	# However this presumes file has multiple timesteps---fails with monthly data
 	# 20210902: Use first time index if file has only one timestep
-	tm_nbr=`ncks --trd -M ${ppn_opt} ${fl_in[0]} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
+	tm_nbr=$(ncks --trd -M ${ppn_opt} ${fl_in[0]} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' ')
 
 	# 20260602: HFCs can slow to a crawl for, e.g., a decade of daily files with tpd=8
 	# HFC works well when input 3-hourly data are in monthly files with tpd=8 and tpf=240
@@ -1871,13 +1871,13 @@ if [[ ${clm_md:-} == 'hfc' ]] || [[ ${clm_md:-} == 'hfs' ]]; then
 
 	if [[ ${tm_bnd_flg:-} == 'Yes' ]]; then
 	    [[ ${tm_nbr:-} -gt 1 ]] 2>/dev/null && tm_idx='1' || tm_idx='0'
-	    tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_bnd} -d ${tm_var},${tm_idx} -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
+	    tpd_out=$(ncks --trd -H -s '%25.15f ' -v ${tm_bnd} -d ${tm_var},${tm_idx} -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }')
 	else # !tm_bnd_flg
 	    if [[ ${tm_nbr:-} -le 1 ]]; then
 		printf "${spt_nm}: ERROR High-frequency mode needs to know temporal resolution in timesteps-per-day and user did not did not explicitly specify the number of timesteps-per-day with the --tpd=\$tpd option. Therefore ${spt_nm} attempted to infer it. No time bounds variable was found for the record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\", therefore ${spt_nm} attempted to infer tpd from the interval between the first two values of \"${tm_var}\". However the time coordinate has only one value in the first input file so no time interval could be computed.\nHINT: Put multiple timesteps in the first input file and/or add a time bounds variable to it.\n"
 		exit 1
 	    fi # !tm_nbr
-	    tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_var} -d ${tm_var},0,1 -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }'`
+	    tpd_out=$(ncks --trd -H -s '%25.15f ' -v ${tm_var} -d ${tm_var},0,1 -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }')
 	fi # !tm_bnd_flg
 	# Ensure result is positive integer
 	[[ ${tpd_out:-} -ge 0 ]] 2>/dev/null && tpd_ntg='Yes' || tpd_ntg='No'
@@ -1897,7 +1897,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	# Only necessary in subset mode to extract distinct timeseries
 	# https://stackoverflow.com/questions/26621736/how-to-check-if-a-string-contains-a-special-character
 	if [[ ${var_lst} == *[\^\$\+\?\.\&\(\)\[\]\{\}\|]* ]]; then
-	    var_lst=`ncks -C -v ${var_lst} --lst_xtr ${ppn_opt} ${fl_in[0]}`
+	    var_lst=$(ncks -C -v ${var_lst} --lst_xtr ${ppn_opt} ${fl_in[0]})
 	fi # !rx
 
 	# Turn var_lst into array of excluded variables if so requested
@@ -1924,7 +1924,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	    # Timeseries of any rank >= 2 are OK
 	    var_lst_flg_opt='--lst_rnk_ge2'
 	fi # !rgn_stt
-	var_lst=`ncks ${var_lst_flg_opt} ${ppn_opt} ${fl_in[0]}`
+	var_lst=$(ncks ${var_lst_flg_opt} ${ppn_opt} ${fl_in[0]})
 	if [[ ${xcl_flg:-} == 'Yes' ]]; then
 	    var_lst_all=( ${var_lst//,/ } )
 	fi # !xcl_flg
@@ -2020,15 +2020,15 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	    # Solution: Base dpf on second file, not first file, if it exists
 	    fl_idx=$((fl_nbr > 1 ? 1 : 0))
 	    tm_var='time'
-	    tm_bnd=`ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[${fl_idx}]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
+	    tm_bnd=$(ncks --trd -M -m -v ${tm_var} ${ppn_opt} ${fl_in[${fl_idx}]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g')
 	    if [[ -z ${tm_bnd:-} ]]; then
 		# 20250509 Use time-coordinate values when time bounds DNE
 		tm_bnd_flg='No'
 	    fi # !tm_bnd
 	    if [[ ${tm_bnd_flg:-} == 'Yes' ]]; then
-		dpf=`ncks --trd -H -s '%25.15f ' -v ${tm_bnd} -d ${tm_var},0 -d ${tm_var},-1 -C ${ppn_opt} ${fl_in[${fl_idx}]} | awk '{ print $4-$1; exit }'`
+		dpf=$(ncks --trd -H -s '%25.15f ' -v ${tm_bnd} -d ${tm_var},0 -d ${tm_var},-1 -C ${ppn_opt} ${fl_in[${fl_idx}]} | awk '{ print $4-$1; exit }')
 	    else # !tm_bnd_flg
-		dpf=`ncks --trd -H -s '%25.15f ' -v ${tm_var} -d ${tm_var},0 -d ${tm_var},-1 -C ${ppn_opt} ${fl_in[${fl_idx}]} | awk '{ printf "%.0f\n",$2-$1; exit }'`
+		dpf=$(ncks --trd -H -s '%25.15f ' -v ${tm_var} -d ${tm_var},0 -d ${tm_var},-1 -C ${ppn_opt} ${fl_in[${fl_idx}]} | awk '{ printf "%.0f\n",$2-$1; exit }')
 		# This is a time coordinate not a time bounds so last-first value is often a decimal fraction not an integer
 		# For example, output files at 3 hourly resolution often have multiples of 8 timesteps with first at
 		# dayM day-fraction 0.0, last at dayN day-fraction 0.875, and difference is integer N-M plus 0.875.
@@ -2152,8 +2152,8 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	# 20240329 Simplify life by automatically determining hrz_dmn from area_nm in first file
 	# Works for EAM, ELM, unstructured, structured, ...
 	# https://unix.stackexchange.com/questions/108250/print-the-string-between-two-parentheses
-	#hrz_dmn=`ncks -C -m -v ${area_nm} ${ppn_opt} ${fl_in[0]} | grep "${area_nm}\(" | sed 's/^.*(//;s/) ;$//'` # Works at prompt, not in script
-	hrz_dmn=`ncks -C -m -v ${area_nm} ${ppn_opt} ${fl_in[0]} | grep -E "float.*${area_nm}|double.*${area_nm}" | sed 's/^.*(//;s/) ;$//'`
+	#hrz_dmn=$(ncks -C -m -v ${area_nm} ${ppn_opt} ${fl_in[0]} | grep "${area_nm}\(" | sed 's/^.*(//;s/) ;$//') # Works at prompt, not in script
+	hrz_dmn=$(ncks -C -m -v ${area_nm} ${ppn_opt} ${fl_in[0]} | grep -E "float.*${area_nm}|double.*${area_nm}" | sed 's/^.*(//;s/) ;$//')
 	if [[ ${hrz_dmn:-} ]]; then
 	    # 20240329 Prepend string literal '$' to each horizontal dimension for use in argument to ncap2 avg() function  (e.g., 'lat,lon' -> '$lat,$lon')
 	    hrz_arg="\$${hrz_dmn/,/,\$}"
@@ -2352,8 +2352,8 @@ if [[ ${csn_flg:-} == 'Yes' ]]; then
     csn_end_idx[${csn_ann}]=12
 
     for ((csn_idx=0;csn_idx<${csn_nbr_max};csn_idx++)); do
-	csn_srt_mm[${csn_idx}]=`printf "%02d" ${csn_srt_idx[${csn_idx}]}`
-	csn_end_mm[${csn_idx}]=`printf "%02d" ${csn_end_idx[${csn_idx}]}`
+	csn_srt_mm[${csn_idx}]=$(printf "%02d" ${csn_srt_idx[${csn_idx}]})
+	csn_end_mm[${csn_idx}]=$(printf "%02d" ${csn_end_idx[${csn_idx}]})
     done # !csn_idx
 
     # Seasonal number of months
@@ -2474,7 +2474,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 	# http://www.ceci-hpc.be/slurm_faq.html#Q12
 	# Save file in writable directory
 	nd_fl="${drc_out}/${spt_nm}.slurm_nodelist.pid${spt_pid}.tmp"
-	nd_lst=`scontrol show hostname ${SLURM_NODELIST}`
+	nd_lst=$(scontrol show hostname ${SLURM_NODELIST})
 	echo ${nd_lst} > ${nd_fl}
     else
 	echo "${spt_nm}: ERROR MPI master process unable to find node-list for distributing jobs"
@@ -2495,7 +2495,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
     # For climo generation MPI index loops over months    and is 1-based, e.g., [1..17] (December is 12 and ANN is 17)
     # For climo subsetting MPI index loops over variables and is 0-based, e.g., [0..5], as are input files
     nd_idx=0
-    for nd in `cat ${nd_fl} | uniq` ; do
+    for nd in $(cat ${nd_fl} | uniq) ; do
 	nd_nm[${nd_idx}]=${nd}
 	nd_idx=$((nd_idx+1))
     done # !nd
@@ -2764,9 +2764,9 @@ if [[ ${dbg_lvl:-} -ge 2 ]]; then
     printf "************************************************************************\n"
 fi # !dbg
 if [[ ${tms_flg:-} == 'Yes' ]]; then
-    printf "Started climatology splitting at `date`\n"
+    printf "Started climatology splitting at $(date)\n"
 else
-    printf "Started climatology generation at `date`\n"
+    printf "Started climatology generation at $(date)\n"
 fi # !tms_flg
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
@@ -2938,7 +2938,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
     # NB: Use {1..12} because {01..12} produces octal numbers!
     for mth in {1..12}; do
 	clm_idx=$((clm_idx+1))
-	MM=`printf "%02d" ${clm_idx}`
+	MM=$(printf "%02d" ${clm_idx})
 	# The same month-of-year appears every twelve filenames in input list
 	if [[ ${clm_md:-} == 'mth' ]]; then 
 	    fl_all=''
@@ -3006,15 +3006,15 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 	    # 1. E3SM-diags post-processing may not like new 'hour' dimension
 	    # 2. No corresponding examples in CF Conventions
 	    # 3. Any utility in multiple-variables per output file, e.g., TS, PRECT? Would single variables suffice?
-	    DD=`printf "%02d" ${dpm[${clm_idx}]}` 
+	    DD=$(printf "%02d" ${dpm[${clm_idx}]}) 
 	    tm_srt="${yyyy_clm_srt}-${MM}-01T00:00:01"
 	    mthp1=$((clm_idx + 1))
-	    MMp1=`printf "%02d" ${mthp1}`
+	    MMp1=$(printf "%02d" ${mthp1})
 	    tm_end="${yyyy_clm_end}-${MMp1}-01T00:00:00"
-	    yyyy_clm_endp1=`printf "%04d" ${yr_endp1}`
+	    yyyy_clm_endp1=$(printf "%04d" ${yr_endp1})
 	    if [[ ${clm_idx:-} -eq 12 ]]; then
 		tm_srt="${yyyy_clm_srt_dec}-${MM}-01T00:00:01"
-		yyyy_clm_endp1=`printf "%04d" ${yr_endp1}`
+		yyyy_clm_endp1=$(printf "%04d" ${yr_endp1})
 		tm_end="${yyyy_clm_endp1}-01-01T00:00:00"
 	    fi # !December
 	    srd=$((dpy*tpd_out))
@@ -3027,7 +3027,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 	    if [[ ${fl_nbr:-} -eq 1 ]]; then
 		# Compute interleaved mean of single-file input (e.g., CMIP timeseries format)
 		#cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]}"
-		tm_nbr=`ncks --trd -M ${ppn_opt} ${fl_in} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
+		tm_nbr=$(ncks --trd -M ${ppn_opt} ${fl_in} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' ')
 		ssc2=$((tm_nbr*tpd_out/srd))
 		# Ensure result is positive integer
 		[[ ${ssc2:-} -ge 0 ]] 2>/dev/null && ssc2_ntg='Yes' || ssc2_ntg='No'
@@ -3129,7 +3129,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 	    [[ ${dbg_lvl:-} -ge 1 ]] && date_tpd=$(date +"%s")
 
 	    for ((tpd_idx=0;tpd_idx<tpd_out;tpd_idx++)); do
-		TT=`printf "%02d" ${tpd_idx}`
+		TT=$(printf "%02d" ${tpd_idx})
 		printf "Compute monthly means for diurnal timestep ${tpd_idx}...\n"
 		bch_nbr=$((12 / job_nbr))
 		for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
@@ -3228,7 +3228,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
     fi # !ann_flg
     # Derive all regridded and AMWG names from output names
     for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-	fl_amwg[${clm_idx}]=`expr match "${fl_out[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
+	fl_amwg[${clm_idx}]=$(expr match "${fl_out[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc') # Prune _YYYYYMM_YYYYMM_climo.nc
 	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
 	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_out}\//}" # Delete prepended path to ease symlinking
 	if [[ ${rgr_opt:-} ]]; then
@@ -3237,17 +3237,17 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 		# Append geometry suffix to regridded files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
 		dfl_sfx='rgr'
-		rgr_sfx=`expr match "${rgr_map}" '.*_to_\(.*\).nc'`
+		rgr_sfx=$(expr match "${rgr_map}" '.*_to_\(.*\).nc')
 		if [[ ${#rgr_sfx} -eq 0 ]]; then
 		    printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
 		    rgr_sfx=${dfl_sfx}
 		else
-		    yyyymmdd_sng=`expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)'` # Find YYYYYMMDD
+		    yyyymmdd_sng=$(expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)') # Find YYYYYMMDD
 		    if [[ ${#yyyymmdd_sng} -ne 0 ]]; then
 			rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
 		    fi # !strlen
 		fi # !strlen
-		#    rgr_sfx=`expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]'` # 
+		#    rgr_sfx=$(expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]') # 
 		fl_rgr[${clm_idx}]="${fl_rgr[${clm_idx}]/.nc/_${rgr_sfx}.nc}"
 	    fi # !drc_rgr
 	fi # !rgr_opt
@@ -3328,11 +3328,11 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	for ((fl_idx=fl_idx_srt;fl_idx<fl_idx_end;fl_idx++)); do
 	    fl_sgm[${sgm_idx}]="${fl_sgm[${sgm_idx}]} ${fl_in[${fl_idx}]}"
 	done # !fl_idx
-	yyyy_srt_sgm[${sgm_idx}]=`printf "%04d" ${yr_srt_sgm}`
-	yyyy_end_sgm[${sgm_idx}]=`printf "%04d" ${yr_end_sgm}`
+	yyyy_srt_sgm[${sgm_idx}]=$(printf "%04d" ${yr_srt_sgm})
+	yyyy_end_sgm[${sgm_idx}]=$(printf "%04d" ${yr_end_sgm})
 	# 202401001: fxm: presumably could cause value too great for base error?
 	yr_endp1_sgm=$((yr_end_sgm+1))
-	yyyy_endp1_sgm[${sgm_idx}]=`printf "%04d" ${yr_endp1_sgm}`
+	yyyy_endp1_sgm[${sgm_idx}]=$(printf "%04d" ${yr_endp1_sgm})
 
 	mm_srt_sgm[${sgm_idx}]='01'
 	mm_end_sgm[${sgm_idx}]='12'
@@ -3346,7 +3346,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	fi # !sgm_idx
 	# 202401001: fxm: Causes error "value too great for base (error token is "08")"
 	mm_endp1_sgm=$((mth_end_sgm+1))
-	mm_endp1_sgm[${sgm_idx}]=`printf "%02d" ${mm_endp1_sgm}`
+	mm_endp1_sgm[${sgm_idx}]=$(printf "%02d" ${mm_endp1_sgm})
 
 	# Sanity check that all files exist before wasting time and space on concatenation
 	for fl_crr in ${fl_sgm[${sgm_idx}]} ; do
@@ -3412,17 +3412,17 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 		# Append geometry suffix to regridded files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
 		dfl_sfx='rgr'
-		rgr_sfx=`expr match "${rgr_map}" '.*_to_\(.*\).nc'`
+		rgr_sfx=$(expr match "${rgr_map}" '.*_to_\(.*\).nc')
 		if [[ ${#rgr_sfx} -eq 0 ]]; then
 		    printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
 		    rgr_sfx=${dfl_sfx}
 		else
-		    yyyymmdd_sng=`expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)'` # Find YYYYYMMDD
+		    yyyymmdd_sng=$(expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)') # Find YYYYYMMDD
 		    if [[ ${#yyyymmdd_sng} -ne 0 ]]; then
 			rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
 		    fi # !strlen
 		fi # !strlen
-		#    rgr_sfx=`expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]'` # 
+		#    rgr_sfx=$(expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]') # 
 		fl_rgr_tpl[${sgm_idx}]="${fl_rgr_tpl[${sgm_idx}]/.nc/_${rgr_sfx}.nc}"
 	    fi # !drc_rgr
 	fi # !rgr_opt
@@ -3473,9 +3473,9 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 			    fl_tpd_all="${fl_tpd_all} ${fl_tpd[${tpd_idx}]}"
 			done # !tpd_idx
 			# 20200627: Average all timesteps into one climatological record as data(time,space)
-			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_out[${var_idx}]};done;/bin/rm -f ${fl_rcat[${var_idx}]}"
+			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in $(seq 0 $((tpd_out-1))); do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_out[${var_idx}]};done;/bin/rm -f ${fl_rcat[${var_idx}]}"
 			# 20200628: Output one record per year as data(time,tpd,space), easier to regrid
-			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
+			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng_tms} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in $(seq 0 $((tpd_out-1))); do ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
 		    fi # !tpd_out
 		else
 		    # Normal splitting, non-high-frequency 
@@ -3506,7 +3506,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 		    wait ${sbs_pid[${var_idx}]}
 		    if [[ "$?" -eq 0 ]]; then
-			printf "`date`: Generated ${cmd_sbs[${var_idx}]##* }\n"
+			printf "$(date): Generated ${cmd_sbs[${var_idx}]##* }\n"
 		    else
 			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${var_idx}] failed. Debug this:\n${cmd_sbs[${var_idx}]}\n"
 			# 20190323: exiting parent here creates orphans, kill live children then exit
@@ -3524,7 +3524,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 		    # However, regional statistics are fragile and break on non-horozontal variables
 		    # Moreover, it is difficult for users to know which of the potentially hundreds of variables are not horizontal
 		    # Starting today we always check first and skip regional statistics for non-horizontal variables
-		    is_hrz[${var_idx}]=`ncks --is_hrz ${var_sbs[${var_idx}]} ${fl_out[${var_idx}]}` 
+		    is_hrz[${var_idx}]=$(ncks --is_hrz ${var_sbs[${var_idx}]} ${fl_out[${var_idx}]}) 
 		    if [[ ${is_hrz[${var_idx}]} == 'No' ]]; then
 			echo "${spt_nm}: WARNING Splitter is skipping regional statistics for variable ${var_sbs[${var_idx}]} which is not a purely horizontal timeseries"
 			continue;
@@ -3570,7 +3570,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 			if [[ ${is_hrz[${var_idx}]} == 'Yes' ]]; then
 			    wait ${avg_pid[${var_idx}]}
 			    if [[ "$?" -eq 0 ]]; then
-				printf "`date`: Global and regional statistics ${cmd_stt[${var_idx}]##* }\n"
+				printf "$(date): Global and regional statistics ${cmd_stt[${var_idx}]##* }\n"
 			    else
 				printf "${spt_nm}: ERROR Failed in global and regional statistics. cmd_stt[${var_idx}] failed. Debug this:\n${cmd_stt[${var_idx}]}\n"
 				# 20190323: exiting parent here creates orphans, kill live children then exit
@@ -3638,7 +3638,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 			wait ${rgr_pid[${var_idx}]}
 			if [[ "$?" -eq 0 ]]; then
-			    printf "`date`: Regridded ${cmd_rgr[${var_idx}]##* }\n"
+			    printf "$(date): Regridded ${cmd_rgr[${var_idx}]##* }\n"
 			else
 			    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${var_idx}] failed. Debug this:\n${cmd_rgr[${var_idx}]}\n"
 			    # 20190323: exiting parent here creates orphans, kill live children then exit
@@ -3656,7 +3656,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 		# Omit native-grid split timeseries by overwriting fl_out with fl_rgr
 		for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
 		    /bin/mv -f ${fl_rgr[${var_idx}]} ${fl_out[${var_idx}]}
-		    printf "`date`: Overwrote native timeseries with regridded for ${var_sbs[${var_idx}]}\n"
+		    printf "$(date): Overwrote native timeseries with regridded for ${var_sbs[${var_idx}]}\n"
 		done # !var_idx
 	    fi # !no_ntv_tms
 
@@ -3734,16 +3734,16 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
     srd=$((dpy*tpd_out))
     drn=${tpd_out}
     
-    yyyy_srt=`printf "%04d" ${yr_srt}`
-    yyyy_end=`printf "%04d" ${yr_end}`
+    yyyy_srt=$(printf "%04d" ${yr_srt})
+    yyyy_end=$(printf "%04d" ${yr_end})
 # 20200625 Off-by-one bug?
 #    let yr_endp1=${yr_end}+1
-#    yyyy_endp1=`printf "%04d" ${yr_endp1}`
+#    yyyy_endp1=$(printf "%04d" ${yr_endp1})
     clm_idx=0
-    for mth in `seq 1 12`; do
-	MM=`printf "%02d" ${mth}`
-	for day in `seq 1 ${dpm[${mth}]}`; do
-	    DD=`printf "%02d" ${day}`
+    for mth in $(seq 1 12); do
+	MM=$(printf "%02d" ${mth})
+	for day in $(seq 1 ${dpm[${mth}]}); do
+	    DD=$(printf "%02d" ${day})
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${yyyy_srt}${MM}${DD}_${yyyy_end}${MM}${DD}_climo.nc"
 	    fl_cat[${clm_idx}]="${drc_out}/${out_nm}_${yyyy_srt}${MM}${DD}_${yyyy_end}${MM}${DD}_ncrcat.nc"
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
@@ -3753,7 +3753,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},1 ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    else
 		# 20170619: Diurnal mode is really slow on MacOS (UDUnits parsing sluggishness?)
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${drn} ${ppn_opt} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]:-} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${drn} ${ppn_opt} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in $(seq 0 $((tpd_out-1))); do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng[${clm_idx}]} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
 	    fi # !tpd
 	    clm_idx=$((clm_idx+1))
 	done # !day
@@ -3766,17 +3766,17 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 		# Append geometry suffix to regridded files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
 		dfl_sfx='rgr'
-		rgr_sfx=`expr match "${rgr_map}" '.*_to_\(.*\).nc'`
+		rgr_sfx=$(expr match "${rgr_map}" '.*_to_\(.*\).nc')
 		if [[ ${#rgr_sfx} -eq 0 ]]; then
 		    printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
 		    rgr_sfx=${dfl_sfx}
 		else
-		    yyyymmdd_sng=`expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)'` # Find YYYYYMMDD
+		    yyyymmdd_sng=$(expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)') # Find YYYYYMMDD
 		    if [[ ${#yyyymmdd_sng} -ne 0 ]]; then
 			rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
 		    fi # !strlen
 		fi # !strlen
-		#    rgr_sfx=`expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]'` # 
+		#    rgr_sfx=$(expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]') # 
 		fl_rgr[${clm_idx}]="${fl_rgr[${clm_idx}]/.nc/_${rgr_sfx}.nc}"
 	    fi # !drc_rgr
 	done # !clm_idx
@@ -3883,7 +3883,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		    wait ${rgr_pid[${clm_idx}]}
 		    if [[ "$?" -eq 0 ]]; then
-			printf "`date`: Regridded ${cmd_rgr[${clm_idx}]##* }\n"
+			printf "$(date): Regridded ${cmd_rgr[${clm_idx}]##* }\n"
 		    else
 			printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
 			# 20190323: exiting parent here creates orphans, kill live children then exit
@@ -4270,7 +4270,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
     
     trim_leading_zeros ${yr_srt_prv}
     yr_srt_rth_prv=${sng_trm}
-    yyyy_srt_prv=`printf "%04d" ${yr_srt_rth_prv}`
+    yyyy_srt_prv=$(printf "%04d" ${yr_srt_rth_prv})
     yyyy_clm_srt_dec_prv=${yyyy_srt_prv}
     yr_srtm1_prv=$((yr_srt_rth_prv-1))
     if [[ ${ncr_flg:-} == 'Yes' ]]; then
@@ -4278,7 +4278,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
     fi # !ncr_flg
     trim_leading_zeros ${yr_end_prv}
     yr_end_rth_prv=${sng_trm}
-    yyyy_end_prv=`printf "%04d" ${yr_end_rth_prv}`
+    yyyy_end_prv=$(printf "%04d" ${yr_end_rth_prv})
     yr_endm1_prv=$((yr_end_rth_prv-1))
     yr_nbr_prv=$((yr_end_rth_prv-yr_srt_rth_prv+1))
     yr_nbr_xtn=$((yr_nbr_prv+yr_nbr))
@@ -4309,7 +4309,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 	clm_idx=0
 	for mth in {1..12}; do
 	    clm_idx=$((clm_idx+1))
-	    MM=`printf "%02d" ${clm_idx}`
+	    MM=$(printf "%02d" ${clm_idx})
 	    fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end_prv}${MM}_climo.nc"
 	    fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${MM}_${yyyy_srt_prv}${MM}_${yyyy_end}${MM}_climo.nc"
 	done # !mth
@@ -4357,7 +4357,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 	# Derive AMWG names from output names
 	if [[ ${lnk_flg:-} == 'Yes' ]]; then
 	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-		fl_amwg_xtn[${clm_idx}]=`expr match "${fl_xtn[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
+		fl_amwg_xtn[${clm_idx}]=$(expr match "${fl_xtn[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc') # Prune _YYYYYMM_YYYYMM_climo.nc
 		fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
 		fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_xtn}\//}" # Delete prepended path to ease symlinking
 	    done # !clm_idx
@@ -4491,9 +4491,9 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 fi # !tms_flg
 date_end=$(date +"%s")
 if [[ ${caseid:-} ]]; then
-    printf "Completed ${yr_nbr_xtn}-year climatology operations for dataset with caseid = ${caseid} at `date`\n"
+    printf "Completed ${yr_nbr_xtn}-year climatology operations for dataset with caseid = ${caseid} at $(date)\n"
 else # !caseid
-    printf "Completed ${yr_nbr_xtn}-year climatology operations for input data at `date`\n"
+    printf "Completed ${yr_nbr_xtn}-year climatology operations for input data at $(date)\n"
 fi # !caseid
 date_dff=$((date_end-date_srt))
 echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
