@@ -8,7 +8,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha08: Molly Baz Lentils, Pork Sausage, and Celery/Parsley';git push
 	git tag -a 5.4.0-alpha08 -m 'ncclimo/ncremap: refmt xmp, getopt $((10#foo)), use $() not `` for cmd sbs, refct err hnd ; ncremap: fix unbound';git push --tags
 
-	* ncremap/ncclimo: Install SIGEXIT handler to reset screen after error exits
+	* ncclimo: Avoid base10 conversion of yr_srt so --yr_srt=00YYMM	parses as YYYYMM
+
+	* ncremap/ncclimo: Trap SIGEXIT hnd_xit() to reset screen after error exits
 
 2026-09-17  Charlie Zender  <zender@uci.edu>
 

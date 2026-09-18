@@ -30,10 +30,13 @@ start month.  Now --mth_end is automatically set to mth_srt+11 (mod
 annual cycle).  Explicitly-specified --mth_end values are still
 accepted and take precedence.  In timeseries mode, --mth_end may
 still be explicitly specified when the range of months spans a
-non-integral number of years.
+non-integral number of years. Alternatively, one can now avoid
+the --mth_srt and --mth_end options entirely even with non-January
+start months. Do this by entering the years in YYYYMM format:
 
 ncclimo -s 2013 -e 2014 --mth_srt=5 ... # mth_end automatically set to 4
 ncclimo -s 2013 -e 2014 --mth_srt=5 --mth_end=4 ... # same, explicit
+ncclimo -s 201305 -e 201404 ... # Omit --mth_srt/end options 
 
 http://nco.sf.net/nco.html#mth_end
 
@@ -42,21 +45,31 @@ data operators: ncap2, ncecat, nces, ncflint, ncpdq, and ncwa.
 Previously only ncks supported --rad. When --rad is specified,
 dimensions that are not referenced by any extracted variable (orphaned
 dimensions) are retained in the output file rather than silently
-dropped.  Synonyms --retain_all_dimensions, --orphan_dimensions, and
---rph_dmn are also accepted. 
+dropped. The E3SM ELM model, for example, uses orphan dimensions to
+trigger different physics treatments. When ncks is invoked in printing
+mode, --rad also causes orphaned dimensions to be printed
+(they are not printed by default). Synonyms --retain_all_dimensions,
+--orphan_dimensions, and --rph_dmn are also accepted. 
 
-ncra --rad -O -v T in.nc out.nc   # retain all dimensions even if not used by T
+ncap2 --rad -s 'one=1' in.nc out.nc # Keep all dimensions
+nces --rad in.nc out.nc # Keep all dimensions
+ncks --rad -m -v T in.nc # Print all dimensions
 
 http://nco.sf.net/nco.html#rad
 
 c. All data operators now support the newish netCDF ability
 to set the metadata block size in netCDF4 files. Option --blk_sz
 allows users to specify sizes other than the default 2048 bytes.
-Setting blk_sz=0 will reset the block size to the default value
-of the netCDF4/HDF5 library, currently 2048 B.
-Large files chunked files often require much more space to fxm
+Large files chunked files often require much more space because
+the metadata block is where HDF5 stores the location of every
+chunk. If this list grows too long it must point to another
+metadata block and HDF5 must follow the trail, possibly through
+thousands of metadata blocks, just to find a single chunk.
 CMIP7 submissions will need to take advantage of larger sizes.
 One megabyte is a good size for large, chunked, netCDF4 files.
+Setting blk_sz=0 will reset the block size to the default value
+of the active netCDF4/HDF5 library (which may increase beyond
+2048 B in the future). This option only affects HDF5 files.
 
 ncks -4 -O ~/nco/data/in.nc ~/foo.nc # Default 2048 B
 ncks -4 -O --blk=0 ~/nco/data/in.nc ~/foo.nc # Default

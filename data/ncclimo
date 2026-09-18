@@ -64,7 +64,7 @@ set -o pipefail # err_hnd Exit on pipe failure
 
 # Define error handlers
 function hnd_err {
-    # SIGERR Error handler. Called after non-zero return code.
+    # ERR Error handler. Called after Bash non-zero return code.
     local exit_code=$?
     local line_number=${BASH_LINENO[0]}
     local failed_command="$BASH_COMMAND"
@@ -75,11 +75,12 @@ function hnd_err {
 } # !hnd_err()
 
 function hnd_xit {
-    # SIGEXIT Error handler. Called after exit().
+    # EXIT Error handler. Called after exit().
     # Return terminal to normal state after errors
     local exit_code=$?
-    if (( exit_code != 0 && exit_code != 3 )); then
-	tput reset
+    if (( exit_code == 3 )); then
+#	tput reset
+	tput "\e[0m" # Normal
     fi # !exit_code
 } # !hnd_xit()
 
@@ -94,9 +95,9 @@ function hnd_int {
 } # !hnd_int()
 
 # Register error handlers
-trap 'printf "\nInterrupted by Ctrl-C\n"' INT # Call hnd_int() on SIGINT, i.e., Ctrl-C
-trap hnd_err ERR # Call hnd_err() on Bash SIGERR pseudosignal, i.e., non-zero return code
-trap hnd_xit EXIT # Call hnd_xit() on Bash SIGEXIT pseudosignal, i.e., after exit()
+trap 'printf "\nInterrupted by Ctrl-C\n"' INT # Call hnd_int() on SIGINT signal, i.e., Ctrl-C
+trap hnd_err ERR # Call hnd_err() on Bash ERR pseudosignal, i.e., non-zero return code
+trap hnd_xit EXIT # Call hnd_xit() on Bash EXIT pseudosignal, i.e., after exit()
 #trap 'hnd_int ${LINENO}' INT # Call hnd_int() on SIGINT signal, i.e., Ctrl-C
 
 # Set these before 'module' command which can overwrite ${BASH_SOURCE[0]}
@@ -1035,7 +1036,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	R) rgr_opt_usr="${OPTARG}" ;; # Regridding options
 	r) rgr_map="${OPTARG}" ;; # Regridding map (horizontal)
 	S) yr_srt_prv=$((10#${OPTARG})) ;; # Start year previous
-	s) yr_srt=$((10#${OPTARG})) ;; # Start year
+	s) yr_srt="${OPTARG}" ;; # Start year
 	t) thr_usr=$((10#${OPTARG})) ;; # Thread number
 	v) var_lst="${OPTARG}" ;; # Variables
 	X) drc_xtn="${OPTARG}" ;; # Extended climo directory
@@ -1100,7 +1101,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt_usr="${LONG_OPTARG}" ;; # -R # Regridding options
 	       rgr_map=?* | regrid_map=?* | map=?* | map_fl=?* | map_file=?* ) rgr_map="${LONG_OPTARG}" ;; # -r # Regridding map (horizontal)
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv=$((10#${LONG_OPTARG})) ;; # -S # Start year previous
-	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt=$((10#${LONG_OPTARG})) ;; # -s # Start year
+	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
 	       seasons=?* | csn_lst=?* | csn=?* | season=?* ) csn_lst="${LONG_OPTARG}" ;; # # Seasons to output
 	       sgs_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | subgrid_fraction=?* ) sgs_frc="${LONG_OPTARG}" ;; # # Sub-grid fraction variable
 	       split | splitter | tms_flg | timeseries ) tms_flg='Yes' ;; # # Split input files into single-variable timeseries
@@ -1380,6 +1381,7 @@ if [[ ${arg_lng:-} -eq 6 ]]; then
     
     yr_srt_rth=$((10#${yyyymm_srt}/100))
     yr_srt=$(printf "%d" ${yr_srt_rth})
+    yr_srt=$((10#${yr_srt}))
     yyyy_srt=$(printf "%04d" ${yr_srt_rth})
     mth_srt_rth=$((10#${yyyymm_srt}%100))
     mth_srt=$(printf ${mth_srt_rth})
@@ -1387,6 +1389,7 @@ if [[ ${arg_lng:-} -eq 6 ]]; then
     
     yr_end_rth=$((10#${yyyymm_end}/100))
     yr_end=$(printf "%d" ${yr_end_rth})
+    yr_end=$((10#${yr_end}))
     yyyy_end=$(printf "%04d" ${yr_end_rth})
     mth_end_rth=$((10#${yyyymm_end}%100))
     mth_end=$(printf ${mth_end_rth})

@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.4.0-alpha08
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 15 September 2026
+@set update-date 18 September 2026
 @set update-month September 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -5755,12 +5755,13 @@ A @acronym{PDF} version of these instructions is available
 @cindex @code{--retain_all_dimensions}
 @cindex @code{--orphan_dimensions}
 @cindex @code{--rph_dmn}
+@cindex @acronym{ELM}
+@cindex restart files
 @cindex Retaining Orphaned Dimensions
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{ncecat},
-@command{nces}, @command{ncfe}, @command{ncflint}, @command{ncge},
-@command{ncks}, @command{ncpdq}, @command{ncra}, @command{ncrcat},
-@command{ncwa}@*
+Availability: @command{ncap2}, @command{ncecat},
+@command{nces}, @command{ncfe}, @command{ncflint},
+@command{ncks}, @command{ncpdq}, @command{ncwa}@*
 Long options: @samp{--rad}, @samp{--retain_all_dimensions},
 @samp{--orphan_dimensions}, @samp{--rph_dmn}@*
 @end cartouche
@@ -5768,13 +5769,20 @@ Long options: @samp{--rad}, @samp{--retain_all_dimensions},
 When invoked with @code{--rad} (Retain All Dimensions), @acronym{NCO}
 copies each dimension in the input file to the output file, regardless
 of whether the dimension is utilized by any variables.
+Also @samp{--retain_all_dimensions}, @samp{--orphan_dimensions}, and
+@samp{--rph_dmn}.
 Normally @acronym{NCO} discards ``orphan dimensions'', i.e., dimensions
 not referenced by any variables.
 This switch allows users to keep non-referenced dimensions in the workflow.
+The @acronym{E3SM ELM} model, for example, uses orphan dimensions to
+trigger different physics treatments.
 When @command{ncks} is invoked in printing mode, @code{--rad} also causes
 orphaned dimensions to be printed (they are not printed by default).
-Also @samp{--retain_all_dimensions}, @samp{--orphan_dimensions}, and
-@samp{--rph_dmn}.
+@example
+ncap2 --rad -s 'one=1' in.nc out.nc # Keep all dimensions
+nces --rad in.nc out.nc # Keep all dimensions
+ncks --rad -m -v T in.nc # Print all dimensions
+@end example
 
 @html
 <a name="fortran"></a> <!-- http://nco.sf.net/nco.html#fortran -->

@@ -91,8 +91,9 @@ function hnd_xit {
     # SIGEXIT Error handler. Called after exit().
     # Return terminal to normal state after errors
     local exit_code=$?
-    if (( exit_code != 0 && exit_code != 3 )); then
-	tput reset
+    if (( exit_code == 3 )); then
+#	tput reset
+	tput "\e[0m" # Normal
     fi # !exit_code
 } # !hnd_xit()
 
