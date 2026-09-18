@@ -6,14 +6,14 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-Version 5.4.0 contains one major improvement and one bugfix.
-The default buffer size for all operators on classic files is 32 MiB.
-This will increase I/O speed in most cases. ncremap had a syntax
-error in a rarely used branch of code that caused Bash to emit scary
-messages even when the branch was not executed.
+Version 5.4.0 contains a raft of features and fixes:
+Some notable features:
+All operators allow setting the netCDF4 metadata block size.
+Many operators now optionally preserve orphaned dimensions.
+ncclimo can now climatologize simulation ensembles.
+ncremap tolerates absent hybrid p0/P0 variables.
 
-Users who want more speed without have to change any commands should
-upgrade to 5.4.0. 
+Users interested in these features should upgrade to 5.4.0. 
 
 Enjoy,
 Charlie
@@ -37,21 +37,36 @@ ncclimo -s 2013 -e 2014 --mth_srt=5 --mth_end=4 ... # same, explicit
 
 http://nco.sf.net/nco.html#mth_end
 
-B. The --rad (retain_all_dimensions) option is now supported by all
-remaining data operators: ncap2, ncbo, ncecat, nces, ncfe, ncflint,
-ncge, ncpdq, ncra, ncrcat, and ncwa.  Previously only ncks supported
---rad.  When --rad is specified, dimensions that are not referenced by
-any extracted variable (orphaned dimensions) are retained in the output
-file rather than silently dropped.  Synonyms --retain_all_dimensions,
---orphan_dimensions, and --rph_dmn are also accepted.
+B. The --rad (retain_all_dimensions) option is now supported by many
+data operators: ncap2, ncecat, nces, ncflint, ncpdq, and ncwa.
+Previously only ncks supported --rad. When --rad is specified,
+dimensions that are not referenced by any extracted variable (orphaned
+dimensions) are retained in the output file rather than silently
+dropped.  Synonyms --retain_all_dimensions, --orphan_dimensions, and
+--rph_dmn are also accepted. 
 
 ncra --rad -O -v T in.nc out.nc   # retain all dimensions even if not used by T
 
 http://nco.sf.net/nco.html#rad
 
+c. All data operators now support the newish netCDF ability
+to set the metadata block size in netCDF4 files. Option --blk_sz
+allows users to specify sizes other than the default 2048 bytes.
+Setting blk_sz=0 will reset the block size to the default value
+of the netCDF4/HDF5 library, currently 2048 B.
+Large files chunked files often require much more space to fxm
+CMIP7 submissions will need to take advantage of larger sizes.
+One megabyte is a good size for large, chunked, netCDF4 files.
+
+ncks -4 -O ~/nco/data/in.nc ~/foo.nc # Default 2048 B
+ncks -4 -O --blk=0 ~/nco/data/in.nc ~/foo.nc # Default
+ncks -4 -O --blk=1048576 ~/nco/data/in.nc ~/foo.nc # 1 MB
+
+http://nco.sf.net/nco.html#blk_sz
+
 BUG FIXES:
 
-A.
+A. 
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     

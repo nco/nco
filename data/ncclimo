@@ -68,12 +68,20 @@ function hnd_err {
     local exit_code=$?
     local line_number=${BASH_LINENO[0]}
     local failed_command="$BASH_COMMAND"
-    
     echo "❌ ABORT DUE TO NON-ZERO COMMAND EXIT CODE" >&2
     echo "Failed Command: '$failed_command'" >&2
     echo "Line Number   : $line_number" >&2
     echo "Exit Status   : $exit_code" >&2
 } # !hnd_err()
+
+function hnd_xit {
+    # SIGEXIT Error handler. Called after exit().
+    # Return terminal to normal state after errors
+    local exit_code=$?
+    if (( exit_code != 0 && exit_code != 3 )); then
+	tput reset
+    fi # !exit_code
+} # !hnd_xit()
 
 function hnd_int {
     # SIGINT Error handler. Trap set by interrupting with Ctrl-C.
@@ -87,8 +95,9 @@ function hnd_int {
 
 # Register error handlers
 trap 'printf "\nInterrupted by Ctrl-C\n"' INT # Call hnd_int() on SIGINT, i.e., Ctrl-C
-trap hnd_err ERR # Call hnd_err() on SIGERR, i.e., non-zero return code
-#trap 'hnd_int ${LINENO}' INT # Call hnd_int() on SIGINT, i.e., Ctrl-C
+trap hnd_err ERR # Call hnd_err() on Bash SIGERR pseudosignal, i.e., non-zero return code
+trap hnd_xit EXIT # Call hnd_xit() on Bash SIGEXIT pseudosignal, i.e., after exit()
+#trap 'hnd_int ${LINENO}' INT # Call hnd_int() on SIGINT signal, i.e., Ctrl-C
 
 # Set these before 'module' command which can overwrite ${BASH_SOURCE[0]}
 # NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
@@ -555,29 +564,29 @@ fi # drc_spt
 if [[ ${TERM:-} ]]; then
     # Set fonts for legibility
     if [[ -x /usr/bin/tput ]] && tput setaf 1 &> /dev/null; then
-	fnt_bld=$(tput bold) # Bold
-	fnt_nrm=$(tput sgr0) # Normal
-	fnt_rvr=$(tput smso) # Reverse
-	fnt_tlc=$(tput sitm) # Italic
+	readonly fnt_bld=$(tput bold) # Bold
+	readonly fnt_nrm=$(tput sgr0) # Normal
+	readonly fnt_rvr=$(tput smso) # Reverse
+	readonly fnt_tlc=$(tput sitm) # Italic
     else
-	fnt_bld="\e[1m" # Bold
-	fnt_nrm="\e[0m" # Normal
-	fnt_rvr="\e[07m" # Reverse
-	fnt_tlc="\e[3m" # Italic
+	readonly fnt_bld="\e[1m" # Bold
+	readonly fnt_nrm="\e[0m" # Normal
+	readonly fnt_rvr="\e[07m" # Reverse
+	readonly fnt_tlc="\e[3m" # Italic
     fi # !tput
 fi # !TERM
     
 # Pre-define enumerated types used in defaults
-par_bck='background' # [sng] Parallelism: background
-par_mpi='mpi' # [sng] Parallelism: MPI
-par_srl='serial' # [sng] Parallelism: serial
-rtn_yyyy_frs=1 # [enm] Key for csn_nfo_get() to echo yyyy_frs
-rtn_yyyy_lst=2 # [enm] Key for csn_nfo_get() to echo yyyy_lst
-rtn_yyyymm_frs=3 # [enm] Key for csn_nfo_get() to echo yyyymm_frs
-rtn_yyyymm_lst=4 # [enm] Key for csn_nfo_get() to echo yyyymm_lst
-rtn_yyyymm_rng=5 # [enm] Key for csn_nfo_get() to echo yyyymm_rng
-rtn_clm_bnd_arg=6 # [enm] Key for csn_nfo_get() to echo clm_bnd_arg
-rtn_yyyy_rng=7 # [enm] Key for csn_nfo_get() to echo yyyy_rng
+readonly par_bck='background' # [sng] Parallelism: background
+readonly par_mpi='mpi' # [sng] Parallelism: MPI
+readonly par_srl='serial' # [sng] Parallelism: serial
+readonly rtn_yyyy_frs=1 # [enm] Key for csn_nfo_get() to echo yyyy_frs
+readonly rtn_yyyy_lst=2 # [enm] Key for csn_nfo_get() to echo yyyy_lst
+readonly rtn_yyyymm_frs=3 # [enm] Key for csn_nfo_get() to echo yyyymm_frs
+readonly rtn_yyyymm_lst=4 # [enm] Key for csn_nfo_get() to echo yyyymm_lst
+readonly rtn_yyyymm_rng=5 # [enm] Key for csn_nfo_get() to echo yyyymm_rng
+readonly rtn_clm_bnd_arg=6 # [enm] Key for csn_nfo_get() to echo clm_bnd_arg
+readonly rtn_yyyy_rng=7 # [enm] Key for csn_nfo_get() to echo yyyy_rng
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
@@ -805,7 +814,10 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "impro: qsub -I -A E3SM -l select=1:ncpus=128:mpiprocs=128,walltime=00:30:00 -q compute\n"
     printf "perlm: salloc -A e3sm --constraint=cpu --nodes=1 --time=00:30:00 --qos=debug --job-name=ncclimo\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
-    exit 1
+    # Terminal currently has boldface, italic, and reverse fonts
+    # Resetting terminal would translate those back into escape code gibberish
+    # Use exit code 3 (not reserved by system) so hnd_exit() does not reset screen
+    exit 3
 } # !fnc_usg_prn()
 
 function bsh_mjr_vrs_lt_4 {
