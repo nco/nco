@@ -1020,7 +1020,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	c) caseid="${OPTARG}" ;; # CASEID
 	d) dbg_lvl=$((10#${OPTARG})) ;; # Debugging level
 	E) yr_end_prv=$((10#${OPTARG})) ;; # End year previous
-	e) yr_end=$((10#${OPTARG})) ;; # End year
+	e) yr_end="${OPTARG}" ;; # End year
 	f) fml_nm_usr="${OPTARG}" ;; # Family name
 	h) hst_nm="${OPTARG}" ;; # History tape name
 	i) drc_in="${OPTARG}" ;; # Input directory
@@ -1063,7 +1063,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       dfl_lvl=?* | deflate=?* | dfl=?* ) dfl_lvl="${LONG_OPTARG}" ;; # -L # Deflate level
 	       dpf=?* | days_per_file=?* ) dpf="${LONG_OPTARG}" ;; # # Days-per-file
 	       dpt_fl=?* | mpas_fl=?* | mpas_file=?* | depth_file=?* ) dpt_opt="--dpt_fl=${LONG_OPTARG}" ;; # # Depth file with refBottomDepth for MPAS ocean
-	       yr_end_prv=?* | prv_yr_end=?* | previous_end=?* ) yr_end_prv="${LONG_OPTARG}" ;; # -E # End year previous
+	       yr_end_prv=?* | prv_yr_end=?* | previous_end=?* ) yr_end_prv=$((10#${LONG_OPTARG})) ;; # -E # End year previous
 	       yr_end=?* | end_yr=?* | year_end=?* | end_year=?* | end=?* ) yr_end="${LONG_OPTARG}" ;; # -e # End year
 	       fml_nm=?* | fml=?* | family_name=?* | family=?* ) fml_nm_usr="${LONG_OPTARG}" ;; # -f # Family name
 	       hst_nm=?* | history_name=?* | history=?* ) hst_nm="${LONG_OPTARG}" ;; # -h # History tape name

@@ -20,6 +20,32 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. ncclimo now generates ensemble monthly climatologies.
+Simply feed the files from all ensemble members to ncclimo
+using any supported input method. Redirecting standard input
+is often most concise. Consider three ensemble members:
+
+# Example: Three Member Decadal-mean Ensemble Climatology
+drc_top=/big/doe/computer/E3SMv3
+caseid1=v3.LR.historical_0051
+caseid2=v3.LR.historical_0101
+caseid3=v3.LR.historical_0151
+fl_nsm1=${drc_top}/${caseid1}/run/${caseid1}.elm.h0.185?-??.nc
+fl_nsm2=${drc_top}/${caseid2}/run/${caseid2}.elm.h0.185?-??.nc
+fl_nsm3=${drc_top}/${caseid3}/run/${caseid3}.elm.h0.185?-??.nc
+ls ${fl_nsm1} ${fl_nsm2} ${fl_nsm3} | ncclimo --fml_nm=ensemble ...
+
+This approach scales to any number of ensemble members.
+All the usual climo-mode options, such as regridding, work.
+For N-member ensembles, ncclimo averages N-times
+as many months as a single member climo to get the mean
+January, February, etc. This takes about N-times longer.
+Seasonal and annual means are computed from monthly means so
+their speed is unchanged, as is regridding speed.
+For now, the output statistics are climatological means.
+Future work could support outputting standard deviations.
+Let us know what you would like to see in future versions.
+
 A. ncclimo --mth_end now defaults to 11 months after --mth_srt.
 Formerly, users specifying a non-January start month (--mth_srt)
 were required to also explicitly provide --mth_end, even though in
@@ -32,15 +58,17 @@ accepted and take precedence.  In timeseries mode, --mth_end may
 still be explicitly specified when the range of months spans a
 non-integral number of years. Alternatively, one can now avoid
 the --mth_srt and --mth_end options entirely even with non-January
-start months. Do this by entering the years in YYYYMM format:
+start months. Do this by specifying the years in YYYYMM format:
 
 ncclimo -s 2013 -e 2014 --mth_srt=5 ... # mth_end automatically set to 4
 ncclimo -s 2013 -e 2014 --mth_srt=5 --mth_end=4 ... # same, explicit
-ncclimo -s 201305 -e 201404 ... # Omit --mth_srt/end options 
+ncclimo -s 201305 -e 201404 ... # Omit --mth_srt/end options.
 
+http://nco.sf.net/nco.html#yr_srt
+http://nco.sf.net/nco.html#mth_srt
 http://nco.sf.net/nco.html#mth_end
 
-B. The --rad (retain_all_dimensions) option is now supported by many
+A. The --rad (retain_all_dimensions) option is now supported by many
 data operators: ncap2, ncecat, nces, ncflint, ncpdq, and ncwa.
 Previously only ncks supported --rad. When --rad is specified,
 dimensions that are not referenced by any extracted variable (orphaned
@@ -49,7 +77,8 @@ dropped. The E3SM ELM model, for example, uses orphan dimensions to
 trigger different physics treatments. When ncks is invoked in printing
 mode, --rad also causes orphaned dimensions to be printed
 (they are not printed by default). Synonyms --retain_all_dimensions,
---orphan_dimensions, and --rph_dmn are also accepted. 
+--orphan_dimensions, and --rph_dmn are also accepted. Thanks to Jon
+Wolfe (LANL) for prompting this feature.
 
 ncap2 --rad -s 'one=1' in.nc out.nc # Keep all dimensions
 nces --rad in.nc out.nc # Keep all dimensions
@@ -57,7 +86,7 @@ ncks --rad -m -v T in.nc # Print all dimensions
 
 http://nco.sf.net/nco.html#rad
 
-c. All data operators now support the newish netCDF ability
+A. All data operators now support the newish netCDF ability
 to set the metadata block size in netCDF4 files. Option --blk_sz
 allows users to specify sizes other than the default 2048 bytes.
 Large files chunked files often require much more space because
@@ -77,9 +106,47 @@ ncks -4 -O --blk=1048576 ~/nco/data/in.nc ~/foo.nc # 1 MB
 
 http://nco.sf.net/nco.html#blk_sz
 
+A. ncremap now gracefully tolerates the absence of the reference
+surface pressure variable in hybrid sigma-pressure coordinate
+datasets. Previouly these variables (usually named p0 or P0) had to be
+contained in the the vertical grid of the input data. However, the
+de facto convention is that p0=P0=100000 Pa. Now when the reference
+pressure is missing (as is the case with older versions of EAMxx),
+ncremap supplies this value internally and completes without failing.
+
+A. ncremap now supports regridding MODIS MOD10CM datasets.
+The dimensions in those dataset have been added to ncremap's
+internal database so explicitly specifying which is latitude
+and which is longitude is unnecessary.
+
+A. ncclimo and ncremap now use the srun "--exclusive" option
+to prevent compute nodes from sharing their resources with
+concurrently running others jobs. This been shown to substantially
+increase throughput of some NCO-based analysis workflows such as
+LIVVkit. Thanks to Mike Kelleher (ORNL) for suggesting this.
+
+A. In ncremap the --alg option is now a synonym for --alg_typ.
+Just a small change to reduce typing.
+
+A. ncremap and ncclimo have been significantly refactored.
+They now run in "set -eou" mode and use modernized expression
+evaluation and test constructs that fail on any Bash-reported errors.
+This makes debugging easier. Both codes have now been tested with
+the most common use-cases. However, we might have missed some
+"unbound variables". Please send us an error report if you notice
+this. The workaround is to run with an earlier version of NCO.
+
 BUG FIXES:
 
-A. 
+A. Previous versions of the BitGroom algorithm could produce
+incorrect answers when single-precision variables were
+quantized with NSD=7 significant digits. The maximum value
+now accepted is NSD=6. Thanks to Ed Hartnett for catching this.
+
+B. Certain combinations of climo-mode and input-mode could
+cause the CASEID to be prepended to filenames twice.
+The workaround is to use a different input method.
+The solution is to upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
