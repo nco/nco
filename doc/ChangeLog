@@ -1,8 +1,10 @@
 2026-09-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.0-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 5.4.0-beta01: Fauda';git push
-	git tag -a 5.4.0-beta01 -m 'all: NSD<=6, blk_sz ; ncclimo/ncremap: refct, nsm clm, xmp, ppn, $((10#x)), $() not ``, hnd_err, set euo, yr_srt YYYYMM, MOD10CM, mss p0/P0, srun, alg; ncap2: c++23';git push --tags
+	cd ~/nco;git commit -a -m 'Version 5.4.0: Fauda';git push
+	git tag -a 5.4.0 -m 'all: NSD<=6, blk_sz ; ncclimo/ncremap: refct, nsm clm, xmp, ppn, $((10#x)), $() not ``, hnd_err, set euo, yr_srt YYYYMM, MOD10CM, mss p0/P0, srun, alg; ncap2: c++23';git push --tags
+
+	* Update nco_exit_lbr_rcd() for forward compatibility
 
 	* NCO 5.4.0-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.0-alpha08: Molly Baz Lentils, Pork Sausage, and Celery/Parsley';git push

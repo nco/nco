@@ -599,12 +599,19 @@ nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code 
   rcd=400;
   /* Detect buggy netCDF version 4.1 so that workarounds may be implemented
      Other versions used to enable version-specific regression tests in NCO_rgr.pm
-     20250215: Modify identification of version 4.1 to disambiguate identification of version 4.10 (below) */
+     20250215: Modify identification of version 4.1 to disambiguate identification of version 4.10 (below)
+     For lack of a better policy, use rcd=50X for netCDF versions 4.10.X
+     Easy to change unless/until we start hardcoding convention in NCO_rgr.pm */
   if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '1'){
     if(lbr_sng[3] == '.'){rcd=410;}
     else if(lbr_sng[3] == '0' && lbr_sng[4] == '.' && lbr_sng[5] == '0' ){rcd=500;}
     else if(lbr_sng[3] == '0' && lbr_sng[4] == '.' && lbr_sng[5] == '1' ){rcd=501;}
-  }
+    else if(lbr_sng[3] == '0' && lbr_sng[4] == '.' && lbr_sng[5] == '2' ){rcd=502;}
+    else if(lbr_sng[3] == '0' && lbr_sng[4] == '.' && lbr_sng[5] == '3' ){rcd=502;} /* 20260918 Not released yet */
+    else if(lbr_sng[3] == '1' && lbr_sng[4] != '.'                      ){rcd=510;} /* 4.11 */
+    else if(lbr_sng[3] == '1' && lbr_sng[4] == '.' && lbr_sng[5] == '0' ){rcd=511;} /* 4.11.0 */
+    else if(lbr_sng[3] == '1' && lbr_sng[4] == '.' && lbr_sng[5] == '1' ){rcd=510;} /* 4.11.1 */
+  } /* !lbr_sng */
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '0'){rcd=430;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '1'){rcd=431;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '2'){rcd=432;}

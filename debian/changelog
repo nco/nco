@@ -1,8 +1,8 @@
 nco (5.4.0-1) unstable; urgency=low
 
-  * new upstream version fxm:
+  * new upstream version Fauda: all: NSD<=6, blk_sz ; ncclimo/ncremap: refct, nsm clm, xmp, ppn, $((10#x)), $() not ``, hnd_err, set euo, yr_srt YYYYMM, MOD10CM, mss p0/P0, srun, alg; ncap2: c++23
 
- -- Charlie Zender <zender@uci.edu> Fri, 29 May 2026 12:26:27 -0700
+ -- Charlie Zender <zender@uci.edu> Fri, 18 September 2026 12:26:27 -0700
 
 nco (5.3.9-1) unstable; urgency=low
 
