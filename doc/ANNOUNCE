@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.4.0 sets sail
+netCDF Operators NCO version 5.4.0 set sail
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
@@ -46,7 +46,7 @@ For now, the output statistics are climatological means.
 Future work could support outputting standard deviations.
 Let us know what you would like to see in future versions.
 
-A. ncclimo --mth_end now defaults to 11 months after --mth_srt.
+B. ncclimo --mth_end now defaults to 11 months after --mth_srt.
 Formerly, users specifying a non-January start month (--mth_srt)
 were required to also explicitly provide --mth_end, even though in
 climatology mode the end month must always be 11 months after the
@@ -68,7 +68,7 @@ http://nco.sf.net/nco.html#yr_srt
 http://nco.sf.net/nco.html#mth_srt
 http://nco.sf.net/nco.html#mth_end
 
-A. The --rad (retain_all_dimensions) option is now supported by many
+C. The --rad (retain_all_dimensions) option is now supported by many
 data operators: ncap2, ncecat, nces, ncflint, ncpdq, and ncwa.
 Previously only ncks supported --rad. When --rad is specified,
 dimensions that are not referenced by any extracted variable (orphaned
@@ -86,7 +86,7 @@ ncks --rad -m -v T in.nc # Print all dimensions
 
 http://nco.sf.net/nco.html#rad
 
-A. All data operators now support the newish netCDF ability
+D. All data operators now support the newish netCDF ability
 to set the metadata block size in netCDF4 files. Option --blk_sz
 allows users to specify sizes other than the default 2048 bytes.
 Large files chunked files often require much more space because
@@ -106,7 +106,7 @@ ncks -4 -O --blk=1048576 ~/nco/data/in.nc ~/foo.nc # 1 MB
 
 http://nco.sf.net/nco.html#blk_sz
 
-A. ncremap now gracefully tolerates the absence of the reference
+E. ncremap now gracefully tolerates the absence of the reference
 surface pressure variable in hybrid sigma-pressure coordinate
 datasets. Previouly these variables (usually named p0 or P0) had to be
 contained in the the vertical grid of the input data. However, the
@@ -114,21 +114,21 @@ de facto convention is that p0=P0=100000 Pa. Now when the reference
 pressure is missing (as is the case with older versions of EAMxx),
 ncremap supplies this value internally and completes without failing.
 
-A. ncremap now supports regridding MODIS MOD10CM datasets.
+F. ncremap now supports regridding MODIS MOD10CM datasets.
 The dimensions in those dataset have been added to ncremap's
 internal database so explicitly specifying which is latitude
 and which is longitude is unnecessary.
 
-A. ncclimo and ncremap now use the srun "--exclusive" option
+G. ncclimo and ncremap now use the srun "--exclusive" option
 to prevent compute nodes from sharing their resources with
 concurrently running others jobs. This been shown to substantially
 increase throughput of some NCO-based analysis workflows such as
 LIVVkit. Thanks to Mike Kelleher (ORNL) for suggesting this.
 
-A. In ncremap the --alg option is now a synonym for --alg_typ.
+H. In ncremap the --alg option is now a synonym for --alg_typ.
 Just a small change to reduce typing.
 
-A. ncremap and ncclimo have been significantly refactored.
+I. ncremap and ncclimo have been significantly refactored.
 They now run in "set -eou" mode and use modernized expression
 evaluation and test constructs that fail on any Bash-reported errors.
 This makes debugging easier. Both codes have now been tested with
