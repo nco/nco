@@ -2,9 +2,11 @@
 
 	* NCO 5.4.1-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.1-alpha01: Wiry Guy';git push
-	git tag -a 5.4.1-alpha01 -m 'Functionally identical to 5.4.0 except fxm';git push --tags
+	git tag -a 5.4.1-alpha01 -m 'Functionally identical to 5.4.0 except for tty text formats';git push --tags
 
-	* 
+	* ncremap/ncclimo: Only format text and reset screen when stdout connected to terminal
+
+	* Fortify ensemble climatology documentation
 
 2026-09-18  Charlie Zender  <zender@uci.edu>
 

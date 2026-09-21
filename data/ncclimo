@@ -79,8 +79,9 @@ function hnd_xit {
     # Return terminal to normal state after errors
     local exit_code=$?
     if (( exit_code == 3 )); then
-#	tput reset
-	tput "\e[0m" # Normal
+	if [[ -t 1 ]]; then
+	    printf "\e[0m" # Normal font
+	fi # !TERM
     fi # !exit_code
 } # !hnd_xit()
 
@@ -563,18 +564,27 @@ fi # drc_spt
 
 # When running in a terminal window (not in an non-interactive batch queue)...
 if [[ ${TERM:-} ]]; then
-    # Set fonts for legibility
-    if [[ -x /usr/bin/tput ]] && tput setaf 1 &> /dev/null; then
-	readonly fnt_bld=$(tput bold) # Bold
-	readonly fnt_nrm=$(tput sgr0) # Normal
-	readonly fnt_rvr=$(tput smso) # Reverse
-	readonly fnt_tlc=$(tput sitm) # Italic
-    else
-	readonly fnt_bld="\e[1m" # Bold
-	readonly fnt_nrm="\e[0m" # Normal
-	readonly fnt_rvr="\e[07m" # Reverse
-	readonly fnt_tlc="\e[3m" # Italic
-    fi # !tput
+    # If stdout is connected to a terminal
+    if [[ -t 1 ]]; then
+	# Set fonts for legibility
+	if [[ -x /usr/bin/tput ]]; then
+	    readonly fnt_bld=$(tput bold) # Bold
+	    readonly fnt_nrm=$(tput sgr0) # Normal
+	    readonly fnt_rvr=$(tput smso) # Reverse
+	    readonly fnt_tlc=$(tput sitm) # Italic
+	else
+	    readonly fnt_bld="\e[1m" # Bold
+	    readonly fnt_nrm="\e[0m" # Normal
+	    readonly fnt_rvr="\e[07m" # Reverse
+	    readonly fnt_tlc="\e[3m" # Italic
+	fi # !tput
+    else # !t
+	# Otherwise do not specially format text
+	readonly fnt_bld='' # Bold
+	readonly fnt_nrm='' # Normal
+	readonly fnt_rvr='' # Reverse
+	readonly fnt_tlc='' # Italic
+    fi # !t
 fi # !TERM
     
 # Pre-define enumerated types used in defaults

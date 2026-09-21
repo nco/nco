@@ -19896,7 +19896,14 @@ cd ${drc_in};ls ${caseid}*.h4.nc | ncclimo --clm_md=hfs -v=T \
 @end verbatim
 @end example
 
-@command{ncclimo} now generates ensemble monthly climatologies. 
+@html
+<a name="nsm_clm"></a> <!-- http://nco.sf.net/nco.html#nsm_clm -->
+<a name="clm_nsm"></a> <!-- http://nco.sf.net/nco.html#clm_nsm -->
+<a name="ensemble_climatology"></a> <!-- http://nco.sf.net/nco.html#ensemble_climatology -->
+<a name="nsm_ncclimo"></a> <!-- http://nco.sf.net/nco.html#nsm_ncclimo -->
+@end html
+As of @acronym{NCO} version 5.4.0 (September, 2026) @command{ncclimo}
+generates ensemble monthly climatologies.  
 Simply feed the files from all ensemble members to
 @command{ncclimo} using any supported input method.
 Redirecting standard input is often most concise.
@@ -19908,12 +19915,21 @@ drc_top=/big/doe/computer/E3SMv3
 caseid1=v3.LR.historical_0051
 caseid2=v3.LR.historical_0101
 caseid3=v3.LR.historical_0151
-fl_nsm1=${drc_top}/${caseid1}/run/${caseid1}.elm.h0.185?-??.nc
-fl_nsm2=${drc_top}/${caseid2}/run/${caseid2}.elm.h0.185?-??.nc
-fl_nsm3=${drc_top}/${caseid3}/run/${caseid3}.elm.h0.185?-??.nc
+fl_nsm1=${drc_top}/${caseid1}/run/${caseid1}.eam.h0.185?-??.nc
+fl_nsm2=${drc_top}/${caseid2}/run/${caseid2}.eam.h0.185?-??.nc
+fl_nsm3=${drc_top}/${caseid3}/run/${caseid3}.eam.h0.185?-??.nc
 ls ${fl_nsm1} ${fl_nsm2} ${fl_nsm3} | ncclimo --fml=ensemble ...
 @end verbatim
 @end example
+Keep in mind a few caveats about ensemble climatologies:
+@command{ncclimo} expects twelve files per year per ensemble member
+for monthly-mean input files, which is perhaps the most common case.
+High-frequency climos (@samp{--clm_md=hfc}) for ensembles are not
+yet supported.
+Input files of each ensemble member must be in chronological order.
+This works for the example above because the files are named in
+lexicographic order such that listing them with @command{ls} is
+the same as sorting them chronologically.
 
 This approach scales to any number of ensemble members.
 All the usual climo-mode options, such as regridding, work.
