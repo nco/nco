@@ -128,8 +128,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.4.0
-@set doc-edition 5.4.0
+@set nco-edition 5.4.1-alpha01
+@set doc-edition 5.4.1-alpha01
 @set copyright-years 1995--2026
 @set update-year 2026
 @set update-date 18 September 2026
@@ -20186,7 +20186,7 @@ As of @acronym{NCO} version 5.3.7 (April, 2026), climos can be
 instructed to an integral number of years after the starting month by
 invoking the @samp{--mth_srt} and @samp{--mth_end} options.  
 
-As of @acronym{NCO} version 5.4.0 (June, 2026), the arguments passed
+As of @acronym{NCO} version 5.4.0 (September, 2026), the arguments passed
 to the @code{--yr_srt} and @code{--yr_end} options may be six-digit
 integers of the form @var{YYYYMM}, i.e., a four-digit year followed by
 a two-digit month.
@@ -20908,7 +20908,7 @@ ncclimo --split --yr_srt=000104 --yr_end=000205 ...
 As of @acronym{NCO} version 5.3.7 (April, 2026), climos can be
 instructed to start in any month by explicitly setting the start
 month option, e.g., @samp{--mth_srt=12}.
-As of @acronym{NCO} version 5.4.0 (April, 2026), @samp{--mth_end}
+As of @acronym{NCO} version 5.4.0 (September, 2026), @samp{--mth_end}
 defaults to 11 months after @samp{--mth_srt} when not explicitly
 specified, so specifying @samp{--mth_end} is no longer necessary in
 climatology mode.
@@ -20942,7 +20942,7 @@ As of @acronym{NCO} version 5.3.7 (April, 2026), climos can be
 instructed to start in any month of the starting year by invoking the
 @samp{--mth_srt} option.  
 
-As of @acronym{NCO} version 5.4.0 (June, 2026), the arguments passed
+As of @acronym{NCO} version 5.4.0 (September, 2026), the arguments passed
 to the @code{--yr_srt} and @code{--yr_end} options may be six-digit
 integers of the form @var{YYYYMM}, i.e., a four-digit year followed by
 a two-digit month.

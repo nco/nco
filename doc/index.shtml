@@ -719,7 +719,7 @@ netCDF4 user-defined types support;
 <li><b>NCO 5.3.3</b>: 
 <tt>all</tt> Quantization fix so -0.0, NaN do not trigger SIGFPE;
 <tt>ncks --fpe</tt> activates IEEE Floating Point Exception WARNINGs;
-<tt>ncks --chk_map</tt> prints grids' angular resolutions;
+<tt>ncks --chk_map</tt> prints grids angular resolutions;
 <tt>ncks --s1d</tt> saves frc_column frc_landunit correctly;
 <tt>ncremap --vrt</tt> interpolates prs->hyb with fat templates;
 <tt>ncclimo --rgn_stt</tt> selects only 2D spatial variables;
