@@ -609,8 +609,8 @@ nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code 
     else if(lbr_sng[3] == '0' && lbr_sng[4] == '.' && lbr_sng[5] == '2' ){rcd=502;}
     else if(lbr_sng[3] == '0' && lbr_sng[4] == '.' && lbr_sng[5] == '3' ){rcd=502;} /* 20260918 Not released yet */
     else if(lbr_sng[3] == '1' && lbr_sng[4] != '.'                      ){rcd=510;} /* 4.11 */
-    else if(lbr_sng[3] == '1' && lbr_sng[4] == '.' && lbr_sng[5] == '0' ){rcd=511;} /* 4.11.0 */
-    else if(lbr_sng[3] == '1' && lbr_sng[4] == '.' && lbr_sng[5] == '1' ){rcd=510;} /* 4.11.1 */
+    else if(lbr_sng[3] == '1' && lbr_sng[4] == '.' && lbr_sng[5] == '0' ){rcd=510;} /* 4.11.0 */
+    else if(lbr_sng[3] == '1' && lbr_sng[4] == '.' && lbr_sng[5] == '1' ){rcd=511;} /* 4.11.1 */
   } /* !lbr_sng */
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '0'){rcd=430;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '1'){rcd=431;}

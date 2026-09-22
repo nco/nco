@@ -391,12 +391,14 @@ if false; then
     # Seasons:
     ncclimo -P cam -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
     ncclimo -P cam -d 1 --csn_lst=jfm,jas,ann -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
-    # Compy Jobs or MPI:
-    ncclimo -P cam -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc # ne30 climo on 1 node in full-background (12 jobs) mode
-    ncclimo -P cam --jobs=3 -c famipc5_ne120_v0.3_00003 -s 1979 -e 1979 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_cmip6_720x1440_aave.20181001.nc # ne120 climo on 1 node in background mode with 3-jobs (to stay under 192 GB RAM limit)
+    # MPI:
+    ncclimo -P cam -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc # ne30 climo on 1 node in full-background (12 jobs) mode
+    ncclimo -P cam --jobs=3 -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc # ne30 climo on 1 node in background mode with 3-jobs (to stay under RAM limit for, e.g., ne120)
     echo '#!/bin/bash' > ~/ncclimo.slurm
-    echo "ncclimo -p mpi -c famipc5_ne120_v0.3_00003 -s 1 -e 2 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -O ${DATA}/ne120/rgr -r ${DATA}/maps/map_ne120np4_to_cmip6_720x1440_aave.20181001.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm # ne120 climo on 4 nodes, MPI mode:
-    sbatch -A e3sm --nodes=4 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
+    echo "ncclimo --dbg=1 -p mpi -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
+    # ne30 climo on 2 nodes, MPI mode:
+    sbatch -A e3sm --nodes=2 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm # Chrysalis
+    sbatch -A e3sm --constraint=cpu --nodes=2 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm # Perlmutter
 fi # !false
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
@@ -443,7 +445,7 @@ fi # !false
 #             echo "ncclimo -a djf -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1 -e 2 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Andes b): sbatch -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Bebop b): qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
-#   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
+#   Chrys b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Derec b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Front b): sbatch -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Perlm b): sbatch -A e3sm --constraint=cpu --nodes=12 --time=00:30:00 --qos=debug --job-name=ncclimo --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncclimo.out ~/ncclimo.slurm
@@ -2561,16 +2563,20 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 	fi # !tms_flg
 	case "${HOSTNAME:-}" in 
 	    andes* | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | compy* | constance* | frontier* | login[0123456789][0123456789] | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | perlmutter* )
-		# 20220518: Non-interactive batch jobs at NERSC/Perlmutter return HOSTNAME as login??, and nodes as nid??????
+		# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
 		# 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		# 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
 		# 20210310: srun option<->long option equivalences are -N = --nodes, -n = --ntasks, -c = --cpus-per-task
+		# 20220518: Non-interactive batch jobs at NERSC/Perlmutter return HOSTNAME as login??, and nodes as nid??????
 		# 20260601: srun --exclusive option added per Mike K. to resolve timing with 100-year climos
 		# NB: NERSC staff say srun automatically assigns to unique nodes even without "-L $node" argument?
- 		cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
-	    # cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
-	    # cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=1" ; ;; # SLURM
-	    bebop* | blogin* | b[0123456789][0123456789][0123456789] | derecho* | ilogin* | i[0123456789][0123456789][0123456789] )
+		# 20260922: srun --exclusive requires --ntasks on Chrysalis (not PM), implement that below
+		# 20260922: SLURM reserves sufficient CPUs for OpenMP iff --cpus-per-task=thr_nbr
+		# 20260922: Otherwise, OpenMP threads may be pushed onto same CPUs
+		# cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
+		# cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
+		cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=${thr_nbr}" ; ;; # SLURM
+		bebop* | blogin* | b[0123456789][0123456789][0123456789] | derecho* | ilogin* | i[0123456789][0123456789][0123456789] )
 		# 20180120: Non-interactive batch jobs at NCAR return HOSTNAME as derecho?
 		# Derecho prefers 'mpiexec_mpt dplace -s 1 ncclimo ...'
 		# Unsure how to specify nd_nm to mpiexec_mpt

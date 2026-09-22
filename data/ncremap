@@ -2434,19 +2434,23 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 	# Only ncclimo monthly climatology-mode uses 1-based cmd_mpi array
 	# ncclimo splitter-mode, and daily and annual climatology-mode, and ncremap all use 0-based cmd_mpi array
 	# Copy host-specific mpirun syntax but not node-allocation algorithms or loop indices between ncclimo and ncremap
-	# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
 	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
 	    case "${HOSTNAME:-}" in 
 		andes* | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | compy* | constance* | frontier* | login[0123456789][0123456789] | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | perlmutter* )
-		    # 20220518: Non-interactive batch jobs at NERSC/Perlmutter return HOSTNAME as login??, and nodes as nid??????
+		    # 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
 		    # 20210310: srun option<->long option equivalences are -N = --nodes, -n = --ntasks, -c = --cpus-per-task
+		    # 20220518: Non-interactive batch jobs at NERSC/Perlmutter return HOSTNAME as login??, and nodes as nid??????
 		    # 20260601: srun --exclusive option added per Mike K. to resolve timing with 100-year climos
-		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
- 		    cmd_mpi[${fl_idx}]="srun --exclusive --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
+		    # NB: NERSC staff say srun automatically assigns to unique nodes even without "-L $node" argument?
+		    # 20260922: srun --exclusive requires --ntasks on Chrysalis (not PM), implement that below
+		    # 20260922: SLURM reserves sufficient CPUs for OpenMP iff --cpus-per-task=thr_nbr
+		    # 20260922: Otherwise, OpenMP threads may be pushed onto same CPUs
+
+ 		    # cmd_mpi[${fl_idx}]="srun --exclusive --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
 		    # cmd_mpi[${fl_idx}]="srun --exclusive --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
-		    # cmd_mpi[${fl_idx}]="srun --exclusive --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=1" ; ;; # SLURM
+		    cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=${thr_nbr}" ; ;; # SLURM
 		bebop* | blogin* | b[0123456789][0123456789][0123456789] | derecho* | ilogin* | i[0123456789][0123456789][0123456789] )
 		    # 20180120: Non-interactive batch jobs at NCAR return HOSTNAME as cheyenne?
 		    # Cheyenne prefers 'mpiexec_mpt dplace -s 1 ncclimo ...'
