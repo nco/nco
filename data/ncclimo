@@ -186,43 +186,43 @@ if [[ ${hrd_pth:-} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE:-} == 'Yes' ]]; then
     case "${HOSTNAME:-}" in 
 	andes* )
 	    # 20190827: Must guarantee finding mpirun
-	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
-            if [[ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]]; then
+	    if [[ ${MODULESHOME:-} ]]; then
+		source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
+	    fi # !MODULESHOME
+	    if [[ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]]; then
 		E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco/andes'
             else
 		E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
             fi
-            export PATH='/ccs/home/zender/bin_andes'\:${PATH}
-	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
+            export PATH='/ccs/home/zender/bin_andes'\:${PATH-}
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH:-} ; ;;
 	bebop* | blogin* | b[0123456789][0123456789][0123456789] )
             if [[ -d '/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco' ]]; then
 		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/anvil'
             else
 		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
             fi
-	    export PATH='/home/zender/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/zender/lib'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/home/zender/bin'\:${PATH-}
+	    export LD_LIBRARY_PATH='/home/zender/lib'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH:-} ; ;;
 	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | ilogin* | i[0123456789][0123456789][0123456789] )
             if [[ -d '/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco' ]]; then
 		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/e3smu_latest_for_nco/chrysalis'
             else
 		E3SMU_ROOT='/lcrc/soft/climate/e3sm-unified/base/envs/e3sm_unified_latest'
             fi
-	    export PATH='/home/ac.zender/bin_chrysalis'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis:/home/ac.zender/anaconda/lib'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/home/ac.zender/bin_chrysalis'\:${PATH-}
+	    export LD_LIBRARY_PATH='/home/ac.zender/lib_chrysalis:/home/ac.zender/anaconda/lib'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH:-} ; ;;
 	compy* | n[0123456789][0123456789][0123456789][0123456789] )
 	    module purge
 	    module load gcc/10.2.0
 	    # 20210519: This script takes significant time (5-10 seconds) to load
-	    # 20230914: Deprecate special MOAB paths, rely on E3SMU
-	    # source /compyfs/software/mbtempest.envs.sh
             if [[ -d '/share/apps/E3SM/conda_envs/e3smu_latest_for_nco' ]]; then
 		E3SMU_ROOT='/share/apps/E3SM/conda_envs/e3smu_latest_for_nco/compy'
             else
 		E3SMU_ROOT='/share/apps/E3SM/conda_envs/base/envs/e3sm_unified_latest'
             fi
-	    export PATH='/qfs/people/zender/bin:/qfs/people/zender/anaconda/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/qfs/people/zender/lib:/qfs/people/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/qfs/people/zender/bin:/qfs/people/zender/anaconda/bin'\:${PATH-}
+	    export LD_LIBRARY_PATH='/qfs/people/zender/lib:/qfs/people/zender/anaconda/lib'\:${LD_LIBRARY_PATH:-} ; ;;
 	derecho* )
 	    # 20240107: Derecho support not yet tested in batch mode
 	    if [[ ${spt_nm:-} == 'ncremap' ]]; then
@@ -230,13 +230,13 @@ if [[ ${hrd_pth:-} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE:-} == 'Yes' ]]; then
 		module load ncl
 	    fi # !ncremap
 	    if [[ ${NCARG_ROOT:-} ]]; then
-		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.6.2/gnu/8.3.0/bin"
+		export PATH="${PATH:-}:/glade/u/apps/ch/opt/ncl/6.6.2/gnu/8.3.0/bin"
 	    fi # !NCARG_ROOT
-            export PATH='/glade/u/home/zender/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t/lib:/glade/u/apps/derecho/23.06/spack/opt/spack/udunits/2.2.28/gcc/12.2.0/vls2/lib:/glade/u/apps/ch/opt/gsl/2.7/gnu/12.1.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+            export PATH='/glade/u/home/zender/bin'\:${PATH-}
+            export LD_LIBRARY_PATH='/glade/u/apps/derecho/23.06/spack/opt/spack/netcdf/4.9.2/gcc/12.2.0/ok4t/lib:/glade/u/apps/derecho/23.06/spack/opt/spack/udunits/2.2.28/gcc/12.2.0/vls2/lib:/glade/u/apps/ch/opt/gsl/2.7/gnu/12.1.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH:-} ; ;;
 	e3sm* )
-	    export PATH='/home/zender/bin:/home/zender/anaconda/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/home/zender/bin:/home/zender/anaconda/bin'\:${PATH-}
+	    export LD_LIBRARY_PATH='/home/zender/lib:/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH:-} ; ;;
 	frontier* )
 	    if [[ ${spt_nm:-} == 'ncremap' ]]; then
 		if [[ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]]; then
@@ -245,8 +245,8 @@ if [[ ${hrd_pth:-} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE:-} == 'Yes' ]]; then
                     E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
 		fi
 	    fi # !ncremap
-            export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH} ; ;;
+            export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH-}
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH:-} ; ;;
 	login[0123456789][0123456789] ) # 20230831 Frontier and Perlmutter login nodes share this name :(
 	    if [[ ${LMOD_SYSTEM_NAME:-} == 'frontier' ]]; then
 		if [[ -d '/ccs/proj/cli115/software/e3sm-unified/e3smu_latest_for_nco' ]]; then
@@ -254,14 +254,9 @@ if [[ ${hrd_pth:-} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE:-} == 'Yes' ]]; then
 		else
                     E3SMU_ROOT='/ccs/proj/cli115/software/e3sm-unified/base/envs/e3sm_unified_latest'
 		fi
-		export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH}
-		export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH}
+		export PATH='/ccs/home/zender/bin_frontier:/ccs/home/zender/anaconda/bin'\:${PATH-}
+		export LD_LIBRARY_PATH='/ccs/home/zender/lib_frontier:/ccs/home/zender/anaconda/lib'\:${LD_LIBRARY_PATH:-}
 	    elif [[ ${LMOD_SYSTEM_NAME:-} == 'perlmutter' ]]; then
-		# 20221103 Add build environment modules
-		# 20260317 Test removing these modules
-		#module load PrgEnv-gnu
-		#module load cray-hdf5/1.12.2.9
-		#module load cray-netcdf/4.9.0.9
 		if [[ -d '/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco' ]]; then
 		    E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu'
 		else
@@ -271,16 +266,11 @@ if [[ ${hrd_pth:-} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE:-} == 'Yes' ]]; then
 		    export PATH="${PATH}:${NCARG_ROOT}/bin"
 		    export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 		fi # !NCARG_ROOT
-		export PATH='/global/cfs/cdirs/e3sm/zender/bin_perlmutter:/global/cfs/cdirs/e3sm/zender/anaconda/bin'\:${PATH}
-		export LD_LIBRARY_PATH='/global/cfs/cdirs/e3sm/zender/lib_perlmutter:/global/cfs/cdirs/e3sm/zender/anaconda/lib'\:${LD_LIBRARY_PATH}
+		export PATH='/global/cfs/cdirs/e3sm/zender/bin_perlmutter:/global/cfs/cdirs/e3sm/zender/anaconda/bin'\:${PATH-}
+		export LD_LIBRARY_PATH='/global/cfs/cdirs/e3sm/zender/lib_perlmutter:/global/cfs/cdirs/e3sm/zender/anaconda/lib'\:${LD_LIBRARY_PATH:-}
 	    fi # !LMOD_SYSTEM_NAME
 	    ;; # !login	
 	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] )
-	    # 20221103 Add build environment modules
-	    # 20260317 Test removing these modules
-	    #module load PrgEnv-gnu
-	    #module load cray-hdf5/1.12.2.9
-	    #module load cray-netcdf/4.9.0.9
             if [[ -d '/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco' ]]; then
 		E3SMU_ROOT='/global/common/software/e3sm/anaconda_envs/e3smu_latest_for_nco/pm-cpu'
             else
@@ -290,8 +280,8 @@ if [[ ${hrd_pth:-} == 'Yes' ]] && [[ ${NCO_PATH_OVERRIDE:-} == 'Yes' ]]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 		export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${NCARG_ROOT}/lib"
 	    fi # !NCARG_ROOT
-	    export PATH='/global/cfs/cdirs/e3sm/zender/bin_perlmutter:/global/cfs/cdirs/e3sm/zender/anaconda/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/global/cfs/cdirs/e3sm/zender/lib_perlmutter:/global/cfs/cdirs/e3sm/zender/anaconda/lib'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/global/cfs/cdirs/e3sm/zender/bin_perlmutter:/global/cfs/cdirs/e3sm/zender/anaconda/bin'\:${PATH-}
+            export LD_LIBRARY_PATH='/global/cfs/cdirs/e3sm/zender/lib_perlmutter:/global/cfs/cdirs/e3sm/zender/anaconda/lib'\:${E3SMU_ROOT}/lib\:${LD_LIBRARY_PATH:-} ; ;;
 	* ) # Default fall-through
 	    hrd_pth_fnd='No' ; ;;
     esac # !HOSTNAME
@@ -521,7 +511,7 @@ fi # !false
 # Only necessary on login nodes since Spack handles this fine on compute nodes
 if [[ -n "${E3SMU_MPI:-}" ]] && [[ -n "${E3SMU_SCRIPT:-}" ]] && [[ -n "${CONDA_PREFIX:-}" ]]; then
     if [[ ${E3SMU_MPI} == 'NOMPI' ]]; then
-	export PATH="${CONDA_PREFIX}/bin"\:${PATH}
+	export PATH="${CONDA_PREFIX}/bin"\:${PATH-}
     fi # !E3SMU_MPI
 fi # !E3SMU_MPI
 # Set NCO version and directory
@@ -2554,7 +2544,6 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
     # Only ncclimo monthly climatology-mode uses 1-based cmd_mpi array
     # ncclimo splitter-mode, and daily and annual climatology-mode, and ncremap all use 0-based cmd_mpi array
     # Copy host-specific mpirun syntax but not node-allocation algorithms or loop indices between ncclimo and ncremap
-    # 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
     for ((mpi_idx_zro=0;mpi_idx_zro<mpi_nbr;mpi_idx_zro++)); do
 	mpi_idx=${mpi_idx_zro}
 	if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then 
