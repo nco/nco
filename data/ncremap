@@ -102,6 +102,7 @@ function hnd_xit {
     # Return terminal to normal state after errors
     local exit_code=$?
     if (( exit_code == 3 )); then
+	# exit_code 3 is only used by fnc_usg_prn()
 	if [[ -t 1 ]]; then
 	    printf "\e[0m" # Normal font
 	fi # !TERM
@@ -541,7 +542,7 @@ fi # drc_spt
 if [[ ${TERM:-} ]]; then
     # If stdout is connected to a terminal
     if [[ -t 1 ]]; then
-	# Set fonts for legibility
+	# Set terminal fonts for legibility
 	if [[ -x /usr/bin/tput ]]; then
 	    fnt_bld=$(tput bold) # Bold
 	    fnt_nrm=$(tput sgr0) # Normal
@@ -909,7 +910,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
     # Terminal currently has boldface, italic, and reverse fonts
     # Resetting terminal would translate those back into escape code gibberish
-    # Use exit code 3 (not reserved by system) so hnd_exit() does not reset screen
+    # Use exit code 3 (not reserved by system) so hnd_xit() does not reset screen
     exit_gracefully 3
 } # !fnc_usg_prn()
 
@@ -1140,16 +1141,16 @@ fi # !dbg_lvl
 # https://stackoverflow.com/questions/37056192/which-vs-command-v-in-bash
 # 20260830 Appending || true ensures built-in command() returns success code when argument is not found
 # This prevents command() from triggering the error handler in set -e mode
-cmd_wgt_esmf=$(command -v "${wgt_exe_esmf}" --no_log 2>/dev/null) || true
-cmd_cnv_mbt=$(command -v "${cnv_exe_mbt}" 2>/dev/null) || true
-cmd_cnv_tps=$(command -v "${cnv_exe_tps}" 2>/dev/null) || true
-cmd_dpt_mpas=$(command -v "${dpt_exe_mpas}" --no_log 2> /dev/null) || true
-cmd_prt_mbt=$(command -v "${prt_exe_mbt}" 2>/dev/null) || true
-cmd_wgt_cdo=$(command -v "${wgt_exe_cdo}" 2>/dev/null) || true
-cmd_wgt_mbt=$(command -v "${wgt_exe_mbt}" 2>/dev/null) || true
-cmd_wgt_nco=$(command -v "${wgt_exe_nco}" 2>/dev/null) || true
-cmd_wgt_tps=$(command -v "${wgt_exe_tps}" 2>/dev/null) || true
-cmd_msh_tps=$(command -v "${msh_exe_tps}" 2>/dev/null) || true
+cmd_wgt_esmf=$(command -v "${wgt_exe_esmf}" --no_log 2>/dev/null || true)
+cmd_cnv_mbt=$(command -v "${cnv_exe_mbt}" 2>/dev/null || true)
+cmd_cnv_tps=$(command -v "${cnv_exe_tps}" 2>/dev/null || true)
+cmd_dpt_mpas=$(command -v "${dpt_exe_mpas}" --no_log 2> /dev/null || true)
+cmd_prt_mbt=$(command -v "${prt_exe_mbt}" 2>/dev/null || true)
+cmd_wgt_cdo=$(command -v "${wgt_exe_cdo}" 2>/dev/null || true)
+cmd_wgt_mbt=$(command -v "${wgt_exe_mbt}" 2>/dev/null || true)
+cmd_wgt_nco=$(command -v "${wgt_exe_nco}" 2>/dev/null || true)
+cmd_wgt_tps=$(command -v "${wgt_exe_tps}" 2>/dev/null || true)
+cmd_msh_tps=$(command -v "${msh_exe_tps}" 2>/dev/null || true)
 if [[ ${vrs_prn:-} == 'Yes' ]]; then
     printf "${spt_nm}, the NCO regridder and grid, map, and weight-generator, version ${nco_vrs} \"${nco_sng}\"\n"
     printf "Copyright (C) 2016--present Charlie Zender\n"
