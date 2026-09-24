@@ -345,11 +345,18 @@ if false; then
     ncremap -P eamxx -7 -L 1 -m ${DATA}/maps/map_ne1024pg2_to_fv256x512_mono.20201201.nc ${DATA}/bm/screamv1_ne1024pg2l128.nc ~/foo_eamxx.nc
     ncremap --ps_nm=lnsp -v asn,t --vrt_out=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/hdf/ecmwf_ifs_f640L137.nc ~/foo.nc
     # Regrid:
-    ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr
-    ls ${DATA}/ne30/raw/*1979*.nc | ncremap -j 3 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr # Batch-parallelism
-    ncremap -a esmfaave -v FSNT -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw -O ${DATA}/ne30/rgr
-    ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a esmfaave -M -d ${DATA}/dstmch90/dstmch90_clm.nc -O ${DATA}/ne30/rgr
-    ncremap -a esmfaave -v FSNT -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw -O ${DATA}/ne30/rgr
+    ls ${DATA}/ne30/raw/v3.LR.piControl.eam.h0.0461*.nc | ncremap --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc --drc_out=${DATA}/ne30/rgr # Background-parallelism
+    ls ${DATA}/ne30/raw/v3.LR.piControl.eam.h0.0461*.nc | ncremap --jobs=3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc --drc_out=${DATA}/ne30/rgr # Batch-parallelism
+    # MPI Batch:
+    echo '#!/bin/bash' > ~/ncremap.slurm
+    echo "ls ${DATA}/ne30/raw/v3.LR.piControl.eam.h0.0461*.nc | ncremap --dbg=1 --jobs=3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc --drc_out=${DATA}/ne30/rgr" >> ~/ncremap.slurm;chmod a+x ~/ncremap.slurm
+    # ne30 climo on 2 nodes, MPI mode:
+    sbatch -A e3sm --nodes=2 --time=00:30:00 --job-name=ncremap --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncremap.out ~/ncremap.slurm # Chrysalis
+    sbatch -A e3sm --constraint=cpu --nodes=2 --time=00:30:00 --job-name=ncremap --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncremap.out ~/ncremap.slurm # Perlmutter
+    # Infer grid, build map, then regrid
+    ncremap -a esmfaave -v FSNT -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw --drc_out=${DATA}/ne30/rgr
+    ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a esmfaave -M -d ${DATA}/dstmch90/dstmch90_clm.nc --drc_out=${DATA}/ne30/rgr
+    ncremap -a esmfaave -v FSNT -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw --drc_out=${DATA}/ne30/rgr
     ncremap -P airs -v TSurfAir -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2014.10.01.202.L2.RetStd.v6.0.11.0.G14275134307.hdf ~/airs_out.nc
     ncremap -v CloudFrc_A -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf ~/foo.nc
     ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf ~/foo.nc
@@ -393,7 +400,7 @@ if false; then
     ncremap --sgs_frc=${DATA}/grids/elm_landfrac_ne30np4.nc/landfrac -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/bm/elmv1_ne30np4l15.nc ~/foo.nc # External sgs_frc
     ncremap --vrb=3 --sgs_frc=landfrac --var=area,FSDS,landfrac,landmask,TBOT -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${DATA}/bm/elmv1_ne30np4l15.nc ~/elm_sgs.nc # 20190918 1D->2D works
     ncremap --vrb=3 --sgs_frc=landfrac --var=area,FSDS,landfrac,landmask,TBOT -m ${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20190918 2D->2D
-    ncremap --vrb=3 -p serial --sgs_frc=landfrac -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
+    ncremap --vrb=3 -p serial --sgs_frc=landfrac -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc --drc_out=${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
     ncremap --vrb=3 -a esmfaave --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 normalization required to get mask right
     ncremap --vrb=3 -a esmfaave -P cice --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 cice short-cut
     # CICE/CESM on POP grid: full grid inferral (and thus conservative remapping) fails because masked vertices/cells missing, must use bilinear or supply grid-file for conservative
@@ -424,6 +431,10 @@ if false; then
     ncremap -D 0 --vrb=1 -a esmfaave --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
     ncremap -D 0 --vrb=1 -a esmfaave --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
     ncremap -D 0 --vrb=1 -a esmfaave --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
+    # add_fll
+    ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=1' --add_fll --map=${DATA}/maps/map_racmo_566x438_icemask_to_greenland_r025_100x250_nco.20210701.nc ${HOME}/racmo.smb.nofill.nc ~/foo_nco.nofill.nc
+    # msk_apl
+    ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=1' --msk_apl --map=${DATA}/maps/map_racmo_566x438_icemask_to_greenland_r025_100x250_nco.20210701.nc ${HOME}/racmo.smb.nofill.nc ~/foo_nco.nofill.nc
     # MWF (202401):
     ncremap -D 1 -P mwf -s ${DATA}/grids/ocean.QU.240km.scrip.181106.nc -g ${DATA}/grids/ne11pg2.g --nm_src=QU240 --nm_dst=ne11pg2 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
     ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.IcoswISC30E3r5.mask.scrip.20231120.nc --grd_dst=${DATA}/grids/ne30pg2.g --nm_src=IcoswISC30E3r5 --nm_dst=ne30pg2 --dt_sng=20240201 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
@@ -459,10 +470,6 @@ if false; then
     # CDO
     # cdo verifygrid grid_CMN-5x5.nc
     ncremap --dbg=1 --vrb=3 --devnull=No --alg_typ=cdo_bil --in_fl=${DATA}/grids/t42_skl.nc --dst_fl=${DATA}/ne30/rgr/hfc_ANN_200001_200012_climo.nc --map=${DATA}/maps/map_t42_to_cmip6_180x360_cdo.20210701.nc
-    # add_fll
-    ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=1' --add_fll --map=${DATA}/maps/map_racmo_566x438_icemask_to_greenland_r025_100x250_nco.20210701.nc ${HOME}/racmo.smb.nofill.nc ~/foo_nco.nofill.nc
-    # msk_apl
-    ncremap --dbg=1 --thr_nbr=6 --vrb=3 --devnull=No --nco='--dbg=1' --msk_apl --map=${DATA}/maps/map_racmo_566x438_icemask_to_greenland_r025_100x250_nco.20210701.nc ${HOME}/racmo.smb.nofill.nc ~/foo_nco.nofill.nc
 fi # !false
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation

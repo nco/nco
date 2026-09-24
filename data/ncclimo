@@ -51,16 +51,26 @@
 # scp dust.ess.uci.edu:bin/ncclimo ${MY_BIN_DIR}
 # scp zender@dust.ess.uci.edu:bin/ncclimo ${MY_BIN_DIR}
 
-# Set script name, directory, PID, run directory
-drc_pwd=${PWD}
-# Security: Explicitly unset IFS before wordsplitting, so Bash uses default IFS=<space><tab><newline>
-unset IFS
 # Safety: Exit immediately when any command returns non-zero exit status, uninitialized variables are used, or pipes fail
-
 set -u # Exit on unbound variable reference
 set -o errexit # Abort on non-zero command exit status failure (long form of set -e)
 set -o errtrace # Pass custom ERR error handler into functions and subshells (long form of set -E)
 set -o pipefail # err_hnd Exit on pipe failure
+
+# Security: Explicitly unset IFS before wordsplitting, so Bash uses default IFS=<space><tab><newline>
+unset IFS
+
+function exit_gracefully {
+    local exit_code=${1:-0} # Default to exit code 0 if not specified
+    
+    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+	# If script was invoked via "source ${spt_nm}" then return() so as not to exit() current shell
+        return "$exit_code"
+    else
+	# If script was invoked via "${spt_nm}" then exit() current sub-shell to parent shell
+        exit "$exit_code"
+    fi
+} # !exit_gracefully()
 
 # Define error handlers
 function hnd_err {
@@ -92,7 +102,7 @@ function hnd_int {
     local exit_code=130
     echo "\nInterrupted by Ctrl-C at line ${line_number}" >&2
     echo "Exiting with SIGINT status ${exit_code}" >&2
-    exit ${exit_code}
+    exit_gracefully ${exit_code}
 } # !hnd_int()
 
 # Register error handlers
@@ -101,9 +111,11 @@ trap hnd_err ERR # Call hnd_err() on Bash ERR pseudosignal, i.e., non-zero retur
 trap hnd_xit EXIT # Call hnd_xit() on Bash EXIT pseudosignal, i.e., after exit()
 #trap 'hnd_int ${LINENO}' INT # Call hnd_int() on SIGINT signal, i.e., Ctrl-C
 
+# Set script name, directory, PID, run directory
 # Set these before 'module' command which can overwrite ${BASH_SOURCE[0]}
 # NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+drc_pwd=${PWD} # [sng] Run directory
 spt_src="${BASH_SOURCE[0]}"
 [[ -z ${spt_src:-} ]] && spt_src="${0}" # Use ${0} when BASH_SOURCE is unavailable (e.g., dash)
 while [[ -h ${spt_src:-} ]]; do # Recursively resolve ${spt_src} until file is no longer a symlink
@@ -381,9 +393,10 @@ if false; then
     # Seasons:
     ncclimo -P cam -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
     ncclimo -P cam -d 1 --csn_lst=jfm,jas,ann -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
-    # MPI:
+    # Jobs:
     ncclimo -P cam -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc # ne30 climo on 1 node in full-background (12 jobs) mode
     ncclimo -P cam --jobs=3 -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc # ne30 climo on 1 node in background mode with 3-jobs (to stay under RAM limit for, e.g., ne120)
+    # MPI Batch:
     echo '#!/bin/bash' > ~/ncclimo.slurm
     echo "ncclimo --dbg=1 -p mpi -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
     # ne30 climo on 2 nodes, MPI mode:
@@ -519,7 +532,7 @@ nco_exe=$(which ncks)
 if [[ -z ${nco_exe:-} ]]; then
     echo "${spt_nm}: ERROR Unable to find NCO, \${nco_exe} = ${nco_exe}"
     echo "${spt_nm}: HINT Carefully examine your environment setup (e.g., .bashrc) to avoid inadvertently overriding (with, e.g., conda-initialization) paths intended to be provided by an analysis-package environment (e.g., E3SM-Unified)"
-    exit 1
+    exit_gracefully 1
 fi # !nco_exe
 # StackOverflow method finds NCO directory
 while [[ -h ${nco_exe:-} ]]; do
@@ -542,7 +555,7 @@ if [[ -z ${nco_vrs:-} ]]; then
     else # !NCO_PATH_OVERRIDE
 	printf "HINT: Run-time error due to link issues (e.g., libraries missing or not found) might be solved at supported national labs (ALCF, NCAR, NERSC, OLCF, PNNL) by employing machine-dependent hardcoded paths/modules. To try this, re-run command with \"--npo\" as first option, i.e., \"${spt_src} --npo ...\" or after setting \"export NCO_PATH_OVERRIDE=Yes\".\n"
     fi # !NCO_PATH_OVERRIDE
-    exit 1
+    exit_gracefully 1
 fi # !nco_vrs
 nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk -F '"' '{print $2}')
 lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
@@ -820,7 +833,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     # Terminal currently has boldface, italic, and reverse fonts
     # Resetting terminal would translate those back into escape code gibberish
     # Use exit code 3 (not reserved by system) so hnd_exit() does not reset screen
-    exit 3
+    exit_gracefully 3
 } # !fnc_usg_prn()
 
 function bsh_mjr_vrs_lt_4 {
@@ -1059,7 +1072,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       caseid=?* | case_id=?* | case=?* ) caseid="${LONG_OPTARG}" ;; # -c # CASEID
 	       cmp=?* | cmp_sng=?* | compress=? | compression=?* | cpr=?* | cdc=?* | codec=?* ) cmp_sng="${LONG_OPTARG}" ;; # # Compression string
 	       d2f | d2s | dbl_flt | dbl_sgl | double_float ) d2f_flg='Yes'; d2f_opt='--d2f' ;; # # Convert double-precision fields to single-precision
-	       d2f=?* | d2s=?* | dbl_flt=?* | dbl_sgl=?* | double_float=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # D2F
+	       d2f=?* | d2s=?* | dbl_flt=?* | dbl_sgl=?* | double_float=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # D2F
 	       wnt_md=?* | dcm_md=? | december_mode=?* | winter_mode=?* | dec_md=?* ) wnt_md_usr="${LONG_OPTARG}" ;; # -a # Winter mode
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
 	       dfl_lvl=?* | deflate=?* | dfl=?* ) dfl_lvl="${LONG_OPTARG}" ;; # -L # Deflate level
@@ -1072,33 +1085,33 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
 	       hrd_pth | hard_path | npo | nco_path_override | NCO_PATH_OVERRIDE ) hrd_pth='Yes' ;; # # Use hard-coded paths on known machines (intentional no-op because already handled prior to getopt())
-	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* | NCO_PATH_OVERRIDE=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
+	       hrd_pth=?* | hard_path=?* | npo=?* | nco_path_override=?* | NCO_PATH_OVERRIDE=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Use hard-coded paths on known machines
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr=$((10#${LONG_OPTARG})) ;; # -j # Job simultaneity
 	       lnk_flg=?* | link_flag=?* ) lnk_flg="${LONG_OPTARG}" ;; # -l # Link E3SM to AMWG name
 	       amwg_link | amwg_links | AMWG_link | AMWG_links ) lnk_flg='Yes' ;; # # Link E3SM to AMWG name
-	       amwg_link=?* | amwg_links=?* | AMWG_link=?* | AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Link E3SM to AMWG name
+	       amwg_link=?* | amwg_links=?* | AMWG_link=?* | AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Link E3SM to AMWG name
 	       no_amwg_link | no_amwg_links | no_amwg | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # # Link E3SM to AMWG name
-	       no_amwg_link=?* | no_amwg_links=?* | no_amwg=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link E3SM to AMWG name
+	       no_amwg_link=?* | no_amwg_links=?* | no_amwg=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # -l # Link E3SM to AMWG name
 	       mdl_nm=?* | mdl=?* | model_name=?* | model=?* ) mdl_nm_usr="${LONG_OPTARG}" ;; # -m # Model name string
 	       mem_mb=?* | mmr_mb=?* | memory_mb=? | memory_megabytes=?* ) mem_mb="${LONG_OPTARG}" ;; # # Megabytes of RAM per srun job in Cori SLURM in MPI mode
 	       mth_end=?* | end_mth=?* | month_end=?* | end_month=?* ) mth_end_usr=$((10#${LONG_OPTARG})); mth_end="${LONG_OPTARG}" ;; # # End month
 	       mth_srt=?* | start_mth=?* | month_start=?* | start_month=?* ) mth_srt=$((10#${LONG_OPTARG})) ;; # # Start month
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_opt="${LONG_OPTARG} ${nco_opt}" ;; # -n # NCO options
 	       no_area | no_cll_msr | no_cell_measures ) no_cll_msr='Yes' ;; # # Omit cell_measures variables
-	       no_area=?* | no_cell_msr=?* | no_cell_measures=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit cell_measures variables
+	       no_area=?* | no_cell_msr=?* | no_cell_measures=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Omit cell_measures variables
 	       no_frm_trm | no_frm | no_formula_terms ) no_frm_trm='Yes' ;; # # Omit formula_terms variables
-	       no_frm_trm=?* | no_frm=?* | no_formula_terms=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit formula_terms variables
+	       no_frm_trm=?* | no_frm=?* | no_formula_terms=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Omit formula_terms variables
 	       no_ntv_tms | no_ntv | no_native | no_native_timeseries | delete_native ) no_ntv_tms='Yes' ;; # # Omit native-grid split files
-	       no_ntv_tms=?* | no_ntv=?* | no_native=?* | no_native_timeseries=?* | delete_native=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit native-grid split files
+	       no_ntv_tms=?* | no_ntv=?* | no_native=?* | no_native_timeseries=?* | delete_native=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Omit native-grid split files
 	       no_stg_grd | no_stg | no_stagger | no_staggered_grid ) no_stg_grd='Yes' ;; # # Omit staggered grid variables
-	       no_stg_grd=?* | no_stg=?* | no_stagger=?* | no_staggered_grid ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit staggered grid variables
+	       no_stg_grd=?* | no_stg=?* | no_stagger=?* | no_staggered_grid ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Omit staggered grid variables
 	       drc_out=?* | out_drc=?* | dir_out=?* | out_dir=?* | output=?* ) drc_out_usr="${LONG_OPTARG}" ;; # -o # Output directory
 	       drc_rgr=?* | rgr_drc=?* | dir_regrid=?* | regrid_dir=?* | regrid=?* ) drc_rgr_usr="${LONG_OPTARG}" ;; # -O # Regridded directory
 	       prc_typ=?* | procedure=?* ) prc_typ="${LONG_OPTARG}" ;; # -P # Procedure type
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type for files
 	       qnt=?* | qnt_prc=?* | precision=?* | ppc=?* | ppc_prc=?* | quantize=?* ) qnt_prc="${LONG_OPTARG}" ;; # # Quantization precision
 	       rgn_avg | glb_avg | hms_avg | regional_average ) rgn_avg='Yes'; rgn_stt='avg' ;; # # Regional/global average timeseries
-	       rgn_avg=?* | glb_avg=?* | hms_avg=?* | regional_average=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Regional average timeseries
+	       rgn_avg=?* | glb_avg=?* | hms_avg=?* | regional_average=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Regional average timeseries
 	       rgn_stt=?* | glb_stt=?* | hms_stt=?* | global_statistic=?* | regional_statistic=?* ) rgn_stt="${LONG_OPTARG}" ;; # # Regional/global statistical timeseries
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt_usr="${LONG_OPTARG}" ;; # -R # Regridding options
 	       rgr_map=?* | regrid_map=?* | map=?* | map_fl=?* | map_file=?* ) rgr_map="${LONG_OPTARG}" ;; # -r # Regridding map (horizontal)
@@ -1107,19 +1120,19 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       seasons=?* | csn_lst=?* | csn=?* | season=?* ) csn_lst="${LONG_OPTARG}" ;; # # Seasons to output
 	       sgs_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | subgrid_fraction=?* ) sgs_frc="${LONG_OPTARG}" ;; # # Sub-grid fraction variable
 	       split | splitter | tms_flg | timeseries ) tms_flg='Yes' ;; # # Split input files into single-variable timeseries
-	       split=?* | splitter=?* | tms_flg=?* | timeseries=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Split input files into single-variable timeseries
+	       split=?* | splitter=?* | tms_flg=?* | timeseries=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Split input files into single-variable timeseries
 	       sum_scl=?* | scl_fct=?* | sum_scale=?* | scale_factor=?* ) sum_scl="${LONG_OPTARG}" ;; # # Factor to convert area, time units ([sr], [km2], [s]) to desired units (e.g., [m2], [yr]) in sums
-	       stdin | inp_std | std_flg | redirect | standard_input ) printf "ERROR: ncclimo deprecated --stdin in version 5.0.4.\nHINT: Use --split to unambiguously invoke the splitter. This supercedes the old use for --stdin in ncclimo." ; exit 1 ;; # # Input file list from stdin
+	       stdin | inp_std | std_flg | redirect | standard_input ) printf "ERROR: ncclimo deprecated --stdin in version 5.0.4.\nHINT: Use --split to unambiguously invoke the splitter. This supercedes the old use for --stdin in ncclimo." ; exit_gracefully 1 ;; # # Input file list from stdin
 	       no_stdin | no_inp_std | no_redirect | no_standard_input ) std_chk='No' ;; # # Do not check stdin for input file list
-	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Do not check stdin for input file list
+	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Do not check stdin for input file list
 	       thr_nbr=?* | thr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr=$((10#${LONG_OPTARG})) ;; # -t # Thread number
 	       tpd_out=?* | tpd=?* | timesteps_per_day=?* ) tpd_usr=$((10#${LONG_OPTARG})) ;; # # Timesteps-per-day in output
 	       uio | unbuffered | share ) uio_flg='Yes' ;; # # Unbuffered I/O (NC_SHARE) for netCDF3 files
-	       uio=?* | unbuffered=?* | share=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Unbuffered I/O (NC_SHARE) for netCDF3 files
+	       uio=?* | unbuffered=?* | share=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Unbuffered I/O (NC_SHARE) for netCDF3 files
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
 	       var_xtr=?* | var_extra=?* | variables_extra=?* | extra_variables=?* ) var_xtr=",${LONG_OPTARG}" ;; # # Extra variables for splitter timeseries (NB: initial comma is required/intentional"
 	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
-	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Print version information
+	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Print version information
 	       vrt_out=?* | vrt_fl=?* | vrt=?* | vrt_crd=?* | vrt_grd_out=?* ) vrt_out="${LONG_OPTARG}" ;; # # Vertical grid file for output
 	       vrt_xtr=?* | xtr_mth=?* | extrapolation_type=?* | extrapolation_method=?* ) vrt_xtr="${LONG_OPTARG}" ;; # # Vertical extrapolation type (mss_val|nrs_ngh)
 	       drc_xtn=?* | xtn_drc=?* | extended_dir=?* | extended_climo=?* | extended=?* ) drc_xtn="${LONG_OPTARG}" ;; # -X # Extended climo directory
@@ -1127,7 +1140,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       drc_rgr_xtn=?* | drc_xtn_rgr=?* | regridded_extended=?* | extended_regridded=?* ) drc_rgr_xtn="${LONG_OPTARG}" ;; # -Y # Regridded extended climo directory
 	       drc_rgr_prv=?* | drc_prv_rgr=?* | regridded_previous=?* | previous_regridded=?* ) drc_rgr_prv="${LONG_OPTARG}" ;; # -y # Regridded previous climo directory
 	       xcl_var | xcl | exclude | exclude_variables ) xcl_flg='Yes' ;; # # Exclude rather than extract variable list
-	       xcl_var=?* | xcl=?* | exclude=?* | exclude_variables=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Exclude rather than extract variable list
+	       xcl_var=?* | xcl=?* | exclude=?* | exclude_variables=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Exclude rather than extract variable list
 	       ypf_max=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_max_usr=$((10#${LONG_OPTARG})) ;; # -z # Years-per-output-file maximum
                '' ) break ;; # "--" terminates argument processing
                * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
@@ -1149,7 +1162,7 @@ fi # !psn_nbr
 if ! [[ ${dbg_lvl} =~ ^[0-9]+$ ]]; then
     echo "${spt_nm}: ERROR dbg_lvl='${dbg_lvl}' is not an integer"
     echo "${spt_nm}: HINT Set --dbg to a non-negative integer, e.g., --dbg=2"
-    exit 1
+    exit_gracefully 1
 fi # !dbg_lvl
 
 if [[ ${vrs_prn:-} == 'Yes' ]]; then
@@ -1168,7 +1181,7 @@ if [[ ${vrs_prn:-} == 'Yes' ]]; then
     else
 	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
     fi # !hrd_pth_fnd
-    exit 0
+    exit_gracefully 0
 fi # !vrs_prn
 
 # Detect input on pipe to stdin:
@@ -1223,7 +1236,7 @@ if [[ ${std_chk:-} == 'Yes' ]]; then
     fi # !bch
     if [[ ${inp_std:-} == 'Yes' ]] && [[ ${inp_psn:-} == 'Yes' ]]; then
 	echo "${spt_nm}: ERROR expecting input from both stdin and positional command-line arguments"
-	exit 1
+	exit_gracefully 1
     fi # !inp_std
 fi # !std_chk
 
@@ -1292,7 +1305,7 @@ if [[ -z ${drc_in:-} ]]; then
 else # !drc_in
     if [[ ! -d ${drc_in:-} ]]; then
 	echo "${spt_nm}: ERROR specified input directory \"${drc_in}\" does not exist"
-	exit 1
+	exit_gracefully 1
     fi # !drc_in
     drc_in_usr_flg='Yes'
 fi # !drc_in
@@ -1306,7 +1319,7 @@ if [[ ${drc_rgr_usr:-} ]]; then
     if [[ -z ${rgr_map:-} ]]; then
 	printf "${spt_nm}: ERROR specified directory for regridded files without supplying map-file name for regridding\n"
 	printf "${spt_nm}: HINT Provide a map-file name with -m map.nc or --map=map.nc or remove the option (-O or --drc_rgr) that sets the directory for regridded files\n"
-	exit 1
+	exit_gracefully 1
     fi # !err
     drc_rgr="${drc_rgr_usr%/}"
 else 
@@ -1346,14 +1359,14 @@ if [[ ${drc_out:-} ]] && [[ ! -d ${drc_out:-} ]]; then
     if [[ ${chr_fst:-} == '-' ]]; then
 	echo "${spt_nm}: ERROR Attempting to mkdir user-specified output directory \"${drc_out}\" will fail because directory name begins with '-' which is an option indicator"
 	echo "${spt_nm}: HINT Specify output directory name that does not begin with '-'"
-	exit 1
+	exit_gracefully 1
     fi # !chr_fst
     cmd_mkd="mkdir -p ${drc_out}"
     eval ${cmd_mkd}
     if [[ "$?" -ne 0 ]]; then
 	printf "${spt_nm}: ERROR Failed to create output directory. Debug this:\n${cmd_mkd}\n"
 	printf "${spt_nm}: HINT Creating a directory requires proper write permissions\n"
-	exit 1
+	exit_gracefully 1
     fi # !err
 fi # !drc_out
 if [[ ${drc_rgr:-} ]] && [[ ! -d ${drc_rgr:-} ]]; then 
@@ -1361,14 +1374,14 @@ if [[ ${drc_rgr:-} ]] && [[ ! -d ${drc_rgr:-} ]]; then
     if [[ ${chr_fst:-} == '-' ]]; then
 	echo "${spt_nm}: ERROR Attempting to mkdir user-specified regrid directory \"${drc_rgr}\" will fail because directory name begins with '-' which is an option indicator"
 	echo "${spt_nm}: HINT Specify regrid directory name that does not begin with '-'"
-	exit 1
+	exit_gracefully 1
     fi # !chr_fst
     cmd_mkd="mkdir -p ${drc_rgr}"
     eval ${cmd_mkd}
     if [[ "$?" -ne 0 ]]; then
 	printf "${spt_nm}: ERROR Attempt to create regrid directory. Debug this:\n${cmd_mkd}\n"
 	printf "${spt_nm}: HINT Creating a directory requires proper write permissions\n"
-	exit 1
+	exit_gracefully 1
     fi # !err
 fi # !drc_rgr
 
@@ -1430,11 +1443,11 @@ yyyy_endm1=$(printf "%04d" ${yr_endm1})
 
 if [[ ${mth_srt_rth:-} -eq 0 ]]; then
     echo "${spt_nm}: ERROR User-defined start month is ${mth_srt}. Please use 1-based (not 0-based) indexing for months, where [Jan..Dec] = [1..12]"
-    exit 1
+    exit_gracefully 1
 fi # !mth_srt
 if [[ ${mth_end_rth:-} -gt 12 ]]; then
     echo "${spt_nm}: ERROR User-defined end month is ${mth_end_rth}. Ending month must be <= 12."
-    exit 1
+    exit_gracefully 1
 fi # !mth_srt_rth
 
 # Determine first full year
@@ -1573,7 +1586,7 @@ if [[ ${inp_aut:-} == 'No' ]] && [[ ${inp_glb:-} == 'No' ]] && [[ ${inp_psn:-} =
     else # !bch_pbs
 	echo "${spt_nm}: HINT Provide a list of lengthy or complex filenames as a pipe to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
     fi # !bch_pbs
-    exit 1
+    exit_gracefully 1
 fi # !tms_flg
 if [[ ${inp_aut:-} != 'Yes' ]] && [[ -z ${mdl_nm_usr:-} ]]; then 
     mdl_nm='nil' # Unset default model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
@@ -1590,7 +1603,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ -z ${out_nm:-} ]] && [[ -z ${fml_nm:-} ]]; 
 fi # !out_nm
 if [[ ${clm_md:-} != 'ann' ]] && [[ ${clm_md:-} != 'dly' ]] && [[ ${clm_md:-} != 'hfc' ]] && [[ ${clm_md:-} != 'hfs' ]] && [[ ${clm_md:-} != 'mth' ]]; then 
     echo "${spt_nm}: ERROR User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', hfc', 'hfs', and 'mth' (default)"
-    exit 1
+    exit_gracefully 1
 fi # !clm_md
 if [[ ${clm_md:-} == 'ann' ]]; then 
     clm_nbr=1
@@ -1626,7 +1639,7 @@ if [[ ${fl_fmt:-} ]]; then
     else
 	echo "${spt_nm}: ERROR User-supplied file-format specifier fl_fmt='${fl_fmt}' is invalid"
 	echo "${spt_nm}: HINT Valid format-specifiers include '3', '4', '5', '6', and '7'"
-	exit 1
+	exit_gracefully 1
     fi # !fl_fmt
     nco_opt="${nco_fl_fmt} ${nco_opt}"
 fi # !fl_fmt
@@ -1683,7 +1696,7 @@ elif [[ ${par_typ:-} == ${par_srl:-} ]] || [[ ${par_typ:-} == 'srl' ]] || [[ ${p
 else 
     echo "ERROR: Invalid -p par_typ option = ${par_typ}"
     echo "HINT: Valid par_typ arguments for file-level parallelism include '${par_bck}' (or 'bck'), '${par_mpi}' (or 'MPI'), and '${par_srl}' (or 'srl' or 'nil' or 'none'). For background parallelism, select '${par_bck}' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select '${par_mpi}' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism (aka serial mode), select '${par_srl}', which causes ${spt_nm} to spawn all processes serially on a single compute node."
-    exit 1
+    exit_gracefully 1
 fi # !par_typ
 if [[ ${rgr_opt_usr:-} ]]; then
     rgr_opt="${rgr_opt_usr}"
@@ -1693,7 +1706,7 @@ if [[ ${rgr_map:-} ]]; then
     if [[ ! -f ${rgr_map:-} ]] && [[ ! -L ${rgr_map:-} ]]; then
 	echo "${spt_nm}: ERROR Unable to find specified regrid map ${rgr_map}"
 	echo "${spt_nm}: HINT Supply the full path-name for the regridding map"
-	exit 1
+	exit_gracefully 1
     fi # ! -f
     if [[ ${mdl_nm:-} == 'clm2' ]] || [[ ${mdl_nm:-} == 'elm' ]] && [[ -z ${sgs_frc:-} ]]; then
 	printf "${spt_nm}: WARNING ${spt_nm} CLM/ELM output typically uses sub-gridscale (SGS) fractions that can only be properly renormalized if the SGS variable option to ncclimo is invoked, but that option was not invoked\n"
@@ -1706,7 +1719,7 @@ else # !rgr_map
     if [[ ${dpt_opt:-} ]]; then
 	echo "${spt_nm}: ERROR Cannot add depth coordinate unless horizontal regridding is invoked"
 	echo "${spt_nm}: HINT Specify a regridding map or run add_depth.py on these files yourself. To request that add_depth.py work directly in ncclimo, contact Charlie."
-	exit 1
+	exit_gracefully 1
     fi # !dpt_opt
 fi # !rgr_map
 if [[ ${tms_flg:-} == 'Yes' ]]; then
@@ -1730,7 +1743,7 @@ fi # !tpd_usr
 if [[ ${vrt_out:-} ]]; then
     if [[ ! -f ${vrt_out:-} ]] && [[ ! -L ${vrt_out:-} ]]; then
 	echo "ERROR: Unable to find specified vertical coordinate file ${vrt_out}"
-	exit 1
+	exit_gracefully 1
     fi # ! -f
     vrt_opt="--vrt_out=${vrt_out}"
     rmp_opt="--vrt_out=${vrt_out} ${rmp_opt}"
@@ -1744,7 +1757,7 @@ if [[ ${vrt_out:-} ]]; then
 	else 
 	    echo "${spt_nm}: ERROR ${vrt_xtr} is not a valid extrapolation method"
 	    echo "${spt_nm}: HINT Valid vertical extrapolation methods and synonyms are mss_val,missing_value,msv | nrs_ngh,nearest_neighbor,nn"
-	    exit 1
+	    exit_gracefully 1
 	fi # !vrt_xtr
     fi # !vrt_xtr
     rgr_opt="${rgr_opt} ${vrt_opt}"
@@ -1840,7 +1853,7 @@ if [[ ${fl_nbr:-} -eq 0 ]] || [[ -z ${fl_in[0]} ]]; then
     if [[ ${inp_std:-} == 'Yes' ]]; then
 	printf "${spt_nm}: HINT Expecting input from stdin. If you did not intend to provide input files on stdin, then perhaps an ${spt_nm} parent process (e.g., batch queue system or parent script) is controlling stdin. This can lead ${spt_nm} to expect input filenames on stdin. To prevent this from occurring, trying invoking with the --no_stdin switch, i.e., \'${spt_nm} --no_stdin ...\'.\n"
     fi # inp_std
-    exit 1
+    exit_gracefully 1
 fi # !fl_nbr
 
 # Sanity check that monthly climatologies received a multiple of twelve files
@@ -1853,7 +1866,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'mth' ]]; then
     if [[ ${fl_rmd:-} -ne 0 ]]; then
 	printf "${spt_nm}: ERROR User requested climatology of monthly files and supplied ${fl_nbr} (not a multiple of 12) input files.\n"
 	printf "${spt_nm}: HINT Climatologies of monthly resolution data are only supported for whole numbers of years, not partial years. Provide monthly input files in multiples of 12. Use the --mth_srt (default 1) and --mth_end (default 12) options to indicate the starting and ending months if the first year does not start in January.\n"
-	exit 1
+	exit_gracefully 1
     fi # !fl_rmn
 fi # !clm_flg, !clm_md
 
@@ -1880,7 +1893,7 @@ if [[ ${clm_md:-} == 'hfc' ]] || [[ ${clm_md:-} == 'hfs' ]]; then
 	    # 20250509 Use time-coordinate values when time bounds DNE
 	    tm_bnd_flg='No'
 	    #printf "${spt_nm}: ERROR High-frequency mode needs but failed to find bounds variable for record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\". CF requires bounds variable name to be specified as value of \"bounds\" attribute of coordinate used for time-mean output. Typically record bounds variable is named \"time_bnds\" or \"time_bounds\".\nHINT: A workaround, that also works for temporally instantaneous data (e.g., cell_methods=\"time: point\") that lacks a time bounds variable, is to explicitly specify the number of timesteps-per-day in every input file with the --tpd=\$tpd option.\n"
-	    #exit 1
+	    #exit_gracefully 1
 	fi # !tm_bnd
 	# 20201220: Using %g not %f in format results in tpd=10 not tpd=8 for 3-hourly EAM data!
 	# 20210815: Prefer to hyperslab second time index since some files contain an "instantaneous" (i.e., zero-duration) first timestep.
@@ -1904,7 +1917,7 @@ if [[ ${clm_md:-} == 'hfc' ]] || [[ ${clm_md:-} == 'hfs' ]]; then
 	else # !tm_bnd_flg
 	    if [[ ${tm_nbr:-} -le 1 ]]; then
 		printf "${spt_nm}: ERROR High-frequency mode needs to know temporal resolution in timesteps-per-day and user did not did not explicitly specify the number of timesteps-per-day with the --tpd=\$tpd option. Therefore ${spt_nm} attempted to infer it. No time bounds variable was found for the record coordinate named \"${tm_var}\" in input file \"${fl_in[0]}\", therefore ${spt_nm} attempted to infer tpd from the interval between the first two values of \"${tm_var}\". However the time coordinate has only one value in the first input file so no time interval could be computed.\nHINT: Put multiple timesteps in the first input file and/or add a time bounds variable to it.\n"
-		exit 1
+		exit_gracefully 1
 	    fi # !tm_nbr
 	    tpd_out=$(ncks --trd -H -s '%25.15f ' -v ${tm_var} -d ${tm_var},0,1 -C ${ppn_opt} ${fl_in[0]} | awk '{ print 1.0/($2-$1); exit }')
 	fi # !tm_bnd_flg
@@ -1912,7 +1925,7 @@ if [[ ${clm_md:-} == 'hfc' ]] || [[ ${clm_md:-} == 'hfs' ]]; then
 	[[ ${tpd_out:-} -ge 0 ]] 2>/dev/null && tpd_ntg='Yes' || tpd_ntg='No'
 	if [[ ${tpd_ntg:-} != 'Yes' ]]; then
 	    printf "${spt_nm}: ERROR Inferred value of tpd=${tpd_out} is not a positive integer. User requested high-frequency climatology or splitter operations without specifying the number of timesteps per day (tpd) in the input files, so ${spt_nm} tried to infer tpd from the first input file. This operation resulted in a nonsense value. This is not surprising since a number of assumptions must hold true for the inferral to work correctly.\nHINT: Explicitly specify the number of timesteps-per-day in every input file with the --tpd=\$tpd option.\n"
-	    exit 1
+	    exit_gracefully 1
 	fi # !tpd_ntg
     fi # !tpd_usr
 fi # !hfc && !hfs
@@ -1939,7 +1952,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
     if [[ -z ${var_lst:-} ]] && [[ ${xcl_flg:-} == 'Yes' ]]; then
 	echo "${spt_nm}: ERROR Exclude option (--xcl_var | --xcl | --exclude | --exclude_variables) only works in conjunction with explicitly specified variable extraction list"
 	echo "${spt_nm}: HINT Re-run with explicitly specified variable list (-v var_lst)"
-	exit 1
+	exit_gracefully 1
     fi # !var_lst
     if [[ -z ${var_lst:-} ]] || [[ ${xcl_flg:-} == 'Yes' ]]; then
 	if [[ -z ${var_lst:-} ]]; then
@@ -1965,7 +1978,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	if bsh_mjr_vrs_lt_4; then
 	    echo "${spt_nm}: ERROR Exclude flag (--xcl_var | --xcl | --exclude | --exclude_variables) in timeseries mode only works with Bash v. 4.0+ and this Bash is version ${BASH_VERSION}"
 	    echo "${spt_nm}: HINT Re-run in Bash v. 4.0+ shell"
-	    exit 1
+	    exit_gracefully 1
         fi # !bsh_mjr_vrs_lt_4()
 	    
 	if [[ ${dbg_lvl:-} -ge 2 ]]; then
@@ -2068,7 +2081,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	    [[ ${dpf:-} -ge 0 ]] 2>/dev/null && dpf_ntg='Yes' || dpf_ntg='No'
 	    if [[ ${dpf_ntg:-} != 'Yes' ]]; then
 		printf "${spt_nm}: ERROR Inferred value of dpf=${dpf} is not a positive integer. User requested high-frequency splitter operations without specifying the number of days-per-file (dpf) in the input files, so ${spt_nm} tried to infer dpf from the first input file. This operation resulted in a nonsense value. This is not surprising since a number of assumptions must hold true for the inferral to work correctly.\nHINT: Explicitly specify the number of days-per-file in every input file with the --dpf option.\n"
-		exit 1
+		exit_gracefully 1
 	    fi # !dpf_ntg
 	fi # !dpf
 	# 20220818
@@ -2091,19 +2104,19 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	    if [[ ${mth_nbr:-} -ne ${fl_nbr:-} ]]; then
 		printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} differs from number of months = ${mth_nbr} computed from calendar inputs\n"
 		printf "${spt_nm}: HINT In this mode (clm_md=${clm_md}) splitter expects one monthly file per calendar month\n"
-		exit 1
+		exit_gracefully 1
 	    fi # !mth_nbr
 	else # !mth_flg
 	    if [[ ${fl_rmd:-} -ne 0 ]]; then
 		printf "${spt_nm}: ERROR ${fl_nbr} files of clm_md=${clm_md} input contain non-integral number of years, ${fl_rmd} files leftover in final year\n"
 		printf "${spt_nm}: HINT Provide input filenames in multiples of ${fpy}\n"
-		exit 1
+		exit_gracefully 1
 	    fi # !fl_rmd
 	    if [[ ${yr_sbs:-} -ne ${yr_nbr:-} ]]; then
 		# Sanity check that number of files specified matches number expected from date switches
 		printf "${spt_nm}: ERROR The ${fl_nbr} files specified (via stdin pipe, positional, or input directory) are expected to contain ${yr_sbs} years of data whereas the date options specify ${yr_nbr} years of data\n"
 		printf "${spt_nm}: HINT Number of files at ${fpy} files-per-year must match number of years implied by arguments to start- and end-year switches (--yr_srt=${yr_srt} and --yr_end=${yr_end}, respectively). Check that the stdin pipe, positional arguments, or globbed input directory contain the intended number of filenames.\n"
-		exit 1
+		exit_gracefully 1
 	    fi # !yr_sbs
 	fi # !mth_flg
     fi # !flg_dct
@@ -2146,7 +2159,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	else
 	    echo "${spt_nm}: ERROR \"${rgn_stt}\" is an invalid value for regional_statistic"
 	    echo "${spt_nm}: HINT The valid values for regional_statistic are \"avg\" (or synonyms \"average\", and \"mean\") and \"sum\" (or synonyms \"ttl\", \"total\", and \"integral\")"
-	    exit 1
+	    exit_gracefully 1
 	fi # !rgn_stt
 
 	if [[ ${prc_mpas:-} == 'Yes' ]]; then
@@ -2201,7 +2214,7 @@ else # !tms_flg
 	    if [[ ${mth_rmd:-} -ne 0 ]]; then
 		printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} unequal to and not evenly divisible by number of months = ${mth_nbr} computed from calendar inputs\n"
 		printf "${spt_nm}: HINT In this mode (clm_md=${clm_md}) ${spt_nm} expects one monthly file per calendar month for single datasets, or an integer number input files per calendar month for ensemble climatologies\n"
-		exit 1
+		exit_gracefully 1
 	    fi # !mth_rmd
 	fi # !mth_nbr
 
@@ -2211,7 +2224,7 @@ else # !tms_flg
 	echo "${spt_nm}: ERROR Regional/global statistical timeseries functionality is supported for time-series (splitting) mode only. If you would like ${spt_nm} to provide global and regional statistical output for other types of climatologies, please talk to Charlie."
 	echo "${spt_nm}: HINT Create global statistics of climos with, e.g., \"ncwa -w ${area_nm} in.nc out.nc\""
 	echo "${spt_nm}: HINT See averaging documentation at http://nco.sf.net/nco.html#ncwa"
-	exit 1
+	exit_gracefully 1
     fi # !rgn_stt
 
     if [[ -z ${out_nm:-} ]]; then
@@ -2219,7 +2232,7 @@ else # !tms_flg
 	echo "${spt_nm}: HINT Generating input filenames for climos requires that users specify a case ID with -c \$caseid or specify with -m \$mdl_nm a recognized MPAS model name (like \"mpaso\"). Output filenames for climos are based on these inputs as well, or on the family name if specified with --fml_nm=\$fml_nm. When input filenames are not internally generated, but instead provided via stdin, positional arguments, or globbing, then the output filenames will be based on the family name or caseid, or model name, in that order of precedence."
 	echo "${spt_nm}: HINT ${spt_nm} needs this information to generate output filenames"
 	echo "${spt_nm}: HINT See invocation examples at http://nco.sf.net/nco.html#ncclimo"
-	exit 1
+	exit_gracefully 1
     fi # out_nm
 
     # 20211118 fxm: re-do these messages?
@@ -2228,7 +2241,7 @@ else # !tms_flg
 	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files or in daily, monthly, or high-frequency climatology mode"
 	echo "${spt_nm}: HINT In annual climo generation mode, one must specify the year/month boundaries and ${caseid}, and from these ${spt_nm} will automatically generate the correct input file names"
 	echo "${spt_nm}: HINT See invocation examples at http://nco.sf.net/nco.html#ncclimo"
-	exit 1
+	exit_gracefully 1
     fi # !stdin
 
 fi # !tms_flg
@@ -2239,7 +2252,7 @@ if [[ ${csn_flg:-} == 'Yes' ]]; then
     if [[ ${clm_md:-} != 'hfc' ]] && [[ ${clm_md:-} != 'mth' ]]; then
 	echo "${spt_nm}: ERROR Custom seasons available only in high-frequency or monthly climatology mode"
 	echo "${spt_nm}: HINT Re-run with --clm_md=hfc or --clm_md=mth or without --csn_lst/--seasons"
-	exit 1
+	exit_gracefully 1
     fi # !mth
 
     # Standard and custom season definitions
@@ -2458,7 +2471,7 @@ if [[ ${csn_flg:-} == 'Yes' ]]; then
 	done # !csn_dfn_idx
 	if [[ ${csn_dfn_idx:-} -eq ${csn_nbr_max:-} ]]; then
 	    printf "${spt_nm}: ERROR Requested season ${csn} not defined\n"
-	    exit 1
+	    exit_gracefully 1
 	fi # !match
     done # !csn_lst
 
@@ -2510,7 +2523,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 	echo "${spt_nm}: ${spt_nm} uses first node-list found in \$PBS_NODEFILE or \$SLURM_NODELIST"
 	echo "${spt_nm}: However, none of these environment variables are set so there is no node-list for distributing MPI jobs"
 	echo "${spt_nm}: HINT: Requesting MPI-parallelism (i.e., invoking ${spt_nm} with \"-p mpi\") in a non-MPI environment will trigger this error. Use \"-p mpi\" only when one of the preceding schedulers has allocated (for interactive use) or will allocate (for non-interactive use) the compute nodes. Otherwise use the default background parallelism (use \"-p bck\" or omit the option completely) or use serial mode (use \"-p serial\"). See http://nco.sf.net/nco.html#par_typ for more information on parallelism."
-	exit 1
+	exit_gracefully 1
     fi # !PBS
     # 20210310 MPI run command may need/use thr_nbr so set it first
     if [[ -z ${thr_usr:-} ]]; then 
@@ -2532,7 +2545,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
     if [[ ${nd_nbr:-} -eq 0 ]]; then
 	echo "${spt_nm}: ERROR MPI-mode node number nd_nbr = ${nd_nbr}"
 	echo "${spt_nm}: HINT Parsing the node-list for distributing MPI jobs failed"
-	exit 1
+	exit_gracefully 1
     fi # !nd_nbr
     if [[ -z ${job_usr:-} ]]; then 
 	job_nbr=${nd_nbr}
@@ -2991,7 +3004,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 		    if [[ ! -f ${ppn_sng:-}${fl_crr:-} ]] && [[ ! -L ${ppn_sng:-}${fl_crr:-} ]]; then
 			echo "${spt_nm}: ERROR Unable to find required input file ${ppn_sng}${fl_crr}"
 			echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must exist before ${spt_nm} will proceed"
-			exit 1
+			exit_gracefully 1
 		    fi # ! -f
 		done # !fl_crr
 	    else # !bnr_flg
@@ -3065,7 +3078,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 		[[ ${ssc2:-} -ge 0 ]] 2>/dev/null && ssc2_ntg='Yes' || ssc2_ntg='No'
 		if [[ ${ssc2_ntg:-} != 'Yes' ]]; then
 		    printf "${spt_nm}: ERROR Inferred value of ssc2=${ssc2} is not a positive integer. User requested high-frequency climatology with one input file. ${spt_nm} attempted to divine the sub-cycle length based on the assumption that the file contains and integral number of years (at any temporal resolution) of input data. The divination resulted in a non-integral sub-cycle length. This is not surprising since a number of assumptions must hold true for the inferral to work correctly.\nHINT: Clip the input timeseries to an integral number of years.\n"
-		    exit 1
+		    exit_gracefully 1
 		fi # !ssc2_ntg
 
 		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng[${clm_idx}]} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_mth[${clm_idx}]}"
@@ -3108,7 +3121,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 	    echo "Successful match of job_nbr to list of permissible values" > /dev/null
 	else
 	    echo "${spt_nm}: ERROR Job number job_nbr=${job_nbr} is invalid in monthly climo mode. Must be a factor of 12. Valid values are 1, 2, 3, 4, 6, and 12. Please re-submit with valid job_nbr."
-	    exit 1
+	    exit_gracefully 1
 	fi # !job_nbr
 
 	# Batch number is inverse to job number, so job_nbr=1->bch_nbr=12 (serial mode, slowest), job_nbr=2->bch_nbr=6, ... job_nbr=12->bch_nbr=1 (full background mode, fastest)
@@ -3127,7 +3140,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 			eval ${cmd_cll[${clm_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR monthly cull cmd_cll[${clm_idx}] failed. Debug this:\n${cmd_cll[${clm_idx}]}\n"
-			    exit 1
+			    exit_gracefully 1
 			fi # !err
 		    else # !par_opt
 			eval ${cmd_cll[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
@@ -3144,7 +3157,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 			for ((kid_idx=clm_idx+1;kid_idx<=clm_idx_end;kid_idx++)); do
 			    kill -9 ${cll_pid[${kid_idx}]}
 			done # !kid_idx
-			exit 1
+			exit_gracefully 1
 		    fi # !err
 		done # !clm_idx
 	    fi # !par_opt
@@ -3180,7 +3193,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 				eval ${cmd_tpd[${clm_idx}]}
 				if [[ "$?" -ne 0 ]]; then
 				    printf "${spt_nm}: ERROR monthly de-interleave and average command cmd_tpd[${clm_idx}] failed. Debug this:\n${cmd_tpd[${clm_idx}]}\n"
-				    exit 1
+				    exit_gracefully 1
 				fi # !err
 			    else # !par_opt
 				eval ${cmd_tpd[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
@@ -3197,7 +3210,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 				for ((kid_idx=clm_idx+1;kid_idx<=clm_idx_end;kid_idx++)); do
 				    kill -9 ${tpd_pid[${kid_idx}]}
 				done # !kid_idx
-				exit 1
+				exit_gracefully 1
 			    fi # !err
 			done # !clm_idx
 		    fi # !par_opt
@@ -3385,7 +3398,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	    if [[ ! -f ${ppn_sng:-}/${fl_crr:-} ]] && [[ ! -L ${ppn_sng:-}/${fl_crr:-} ]]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must exist before ${spt_nm} will proceed"
-		exit 1
+		exit_gracefully 1
 	    fi # ! -f
 	done # !fl_crr
 
@@ -3521,7 +3534,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 			eval ${cmd_sbs[${var_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR subset cmd_sbs[${var_idx}] failed. Debug this:\n${cmd_sbs[${var_idx}]}\n"
-			    exit 1
+			    exit_gracefully 1
 			fi # !err
 		    else # !par_opt
 			eval ${cmd_sbs[${var_idx}]} ${par_opt}
@@ -3545,7 +3558,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 			for ((kid_idx=var_idx+1;kid_idx<=var_idx_end;kid_idx++)); do
 			    kill -9 ${sbs_pid[${kid_idx}]}
 			done # !kid_idx
-			exit 1
+			exit_gracefully 1
 		    fi # !err
 		done # !var_idx
 	    fi # !par_opt
@@ -3587,7 +3600,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 			    eval ${cmd_stt[${var_idx}]}
 			    if [[ "$?" -ne 0 ]]; then
 				printf "${spt_nm}: ERROR global and regional statistics cmd_stt[${var_idx}] failed. Debug this:\n${cmd_stt[${var_idx}]}\n"
-				exit 1
+				exit_gracefully 1
 			    fi # !err
 			else # !par_opt
 			    eval ${cmd_stt[${var_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
@@ -3609,7 +3622,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 				for ((kid_idx=var_idx+1;kid_idx<=var_idx_end;kid_idx++)); do
 				    kill -9 ${avg_pid[${kid_idx}]}
 				done # !kid_idx
-				exit 1
+				exit_gracefully 1
 			    fi # !err
 			fi # !is_hrz
 		    done # !var_idx
@@ -3654,7 +3667,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 			    eval ${cmd_rgr[${var_idx}]}
 			    if [[ "$?" -ne 0 ]]; then
 				printf "${spt_nm}: ERROR regrid cmd_rgr[${var_idx}] failed. Debug this:\n${cmd_rgr[${var_idx}]}\n"
-				exit 1
+				exit_gracefully 1
 			    fi # !err
 			else # !par_opt
 			    eval ${cmd_rgr[${var_idx}]} ${par_opt}
@@ -3677,7 +3690,7 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 			    for ((kid_idx=var_idx+1;kid_idx<=var_idx_end;kid_idx++)); do
 				kill -9 ${rgr_pid[${kid_idx}]}
 			    done # !kid_idx
-			    exit 1
+			    exit_gracefully 1
 			fi # !err
 		    done # !var_idx
 		fi # !par_opt
@@ -3711,7 +3724,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'ann' ]]; then
 	    if [[ ! -f ${ppn_sng:-}${fl_crr:-} ]] && [[ ! -L ${ppn_sng:-}${fl_crr:-} ]]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
 		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must exist before ${spt_nm} will proceed"
-		exit 1
+		exit_gracefully 1
 	    fi # ! -f
 	done # !fl_crr
     else # !bnr_flg
@@ -3730,7 +3743,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'ann' ]]; then
 	eval ${cmd_clm[${clm_idx}]}
 	if [[ "$?" -ne 0 ]]; then
 	    printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_idx}] failed\n"
-	    exit 1
+	    exit_gracefully 1
 	fi # !err
     fi # !dbg
     wait
@@ -3746,7 +3759,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'ann' ]]; then
 	    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
 	    if [[ "$?" -ne 0 ]]; then
 		printf "${spt_nm}: ERROR annual regrid cmd_rgr[${clm_idx}] failed\n"
-		exit 1
+		exit_gracefully 1
 	    fi # !err
 	fi # !dbg
 	wait
@@ -3841,7 +3854,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 		    eval ${cmd_clm[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR daily cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-			exit 1
+			exit_gracefully 1
 		    fi # !err
 		else # !par_opt
 		    eval ${cmd_clm[${clm_idx}]} ${par_opt}
@@ -3861,7 +3874,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 		wait ${clm_pid[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
 		    printf "${spt_nm}: ERROR Failed daily average. cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-		    exit 1
+		    exit_gracefully 1
 		fi # !err
 	    done # !clm_idx
 	fi # !par_opt
@@ -3899,7 +3912,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 			eval ${cmd_rgr[${clm_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
-			    exit 1
+			    exit_gracefully 1
 			fi # !err
 		    else # !par_opt
 			eval ${cmd_rgr[${clm_idx}]} ${par_opt}
@@ -3922,7 +3935,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 			for ((kid_idx=clm_idx+1;kid_idx<=clm_idx_end;kid_idx++)); do
 			    kill -9 ${rgr_pid[${kid_idx}]}
 			done # !kid_idx
-			exit 1
+			exit_gracefully 1
 		    fi # !err
 		done # !clm_idx
 	    fi # !par_opt
@@ -3942,7 +3955,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 	echo "Successful match of job_nbr to list of permissible values" > /dev/null
     else
 	echo "${spt_nm}: ERROR Job number job_nbr=${job_nbr} is invalid in monthly climo mode. Must be a factor of 12. Valid values are 1, 2, 3, 4, 6, and 12. Please re-submit with valid job_nbr."
-	exit 1
+	exit_gracefully 1
     fi # !job_nbr
 
     # Batch number is inverse to job number, so job_nbr=1->bch_nbr=12 (serial mode, slowest), job_nbr=2->bch_nbr=6, ... job_nbr=12->bch_nbr=1 (full background mode, fastest)
@@ -3962,7 +3975,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		    eval ${cmd_clm[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR monthly climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-			exit 1
+			exit_gracefully 1
 		    fi # !err
 		else # !par_opt
 		    eval ${cmd_clm[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
@@ -3982,7 +3995,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		wait ${clm_pid[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
 		    printf "${spt_nm}: ERROR monthly climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-		    exit 1
+		    exit_gracefully 1
 		fi # !err
 	    done # !clm_idx
 	fi # !par_opt
@@ -4031,7 +4044,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		    eval ${cmd_rgr[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR monthly regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
-			exit 1
+			exit_gracefully 1
 		    fi # !err
 		else # !par_opt
 		    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
@@ -4089,7 +4102,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 			eval ${cmd_clm[${clm_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-			    exit 1
+			    exit_gracefully 1
 			fi # !err
 		    else # !par_opt
 			eval ${cmd_clm[${clm_idx}]} ${par_opt}
@@ -4102,7 +4115,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		    wait ${clm_pid[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-			exit 1
+			exit_gracefully 1
 		    fi # !err
 		done # !clm_idx
 	    fi # !par_opt
@@ -4121,7 +4134,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		wait ${rgr_pid[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
 		    printf "${spt_nm}: ERROR monthly regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
-		    exit 1
+		    exit_gracefully 1
 		fi # !err
 	    done # !clm_idx
 	fi # !par_opt
@@ -4155,7 +4168,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 			eval ${cmd_rgr[${clm_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
-			    exit 1
+			    exit_gracefully 1
 			fi # !err
 		    else # !par_opt
 			eval ${cmd_rgr[${clm_idx}]} ${par_opt}
@@ -4182,7 +4195,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		eval ${cmd_clm[${clm_nbr}]}
 		if [[ "$?" -ne 0 ]]; then
 		    printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_nbr}] failed. Debug this:\n${cmd_clm[${clm_nbr}]}\n"
-		    exit 1
+		    exit_gracefully 1
 		fi # !err
 	    else # !par_opt
 		eval ${cmd_clm[${clm_nbr}]} ${par_opt}
@@ -4198,7 +4211,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		    wait ${rgr_pid[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
-			exit 1
+			exit_gracefully 1
 		    fi # !err
 		done # !clm_idx
 	    fi # !par_opt
@@ -4216,7 +4229,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 	    wait ${clm_pid[${clm_idx}]}
 	    if [[ "$?" -ne 0 ]]; then
 		printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-		exit 1
+		exit_gracefully 1
 	    fi # !err
 	fi # !par_opt
 	if [[ ${dbg_lvl:-} -ge 1 ]]; then
@@ -4242,7 +4255,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		eval ${cmd_rgr[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
 		    printf "${spt_nm}: ERROR annual regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
-		    exit 1
+		    exit_gracefully 1
 		fi # !err
 	    fi # !dbg
 	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
@@ -4271,7 +4284,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]] && [[ ${bnr
 		eval ${cmd_lnk[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
 		    printf "${spt_nm}: ERROR linking E3SM to AMWG filename cmd_lnk[${clm_idx}] failed. Debug this:\n${cmd_lnk[${clm_idx}]}\n"
-		    exit 1
+		    exit_gracefully 1
 		fi # !err
 	    fi # !dbg
 	done # !clm_idx
@@ -4287,7 +4300,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 	if [[ "$?" -ne 0 ]]; then
 	    printf "${spt_nm}: ERROR Failed to create previous climatology directory. Debug this:\n${cmd_mkd}\n"
 	    printf "${spt_nm}: HINT Creating a directory requires proper write permissions\n"
-	    exit 1
+	    exit_gracefully 1
 	fi # !err
     fi # !drc_prv
     if [[ ${drc_xtn:-} ]] && [[ ! -d ${drc_xtn:-} ]]; then 
@@ -4296,7 +4309,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 	if [[ "$?" -ne 0 ]]; then
 	    printf "${spt_nm}: ERROR Failed to create extended climatology directory. Debug this:\n${cmd_mkd}\n"
 	    printf "${spt_nm}: HINT Creating a directory requires proper write permissions\n"
-	    exit 1
+	    exit_gracefully 1
 	fi # !err
     fi # !drc_xtn
     
@@ -4406,7 +4419,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 		    eval ${cmd_xtn[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
-			exit 1
+			exit_gracefully 1
 		    fi # !err
 		else # !par_opt
 		    eval ${cmd_xtn[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
@@ -4419,7 +4432,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 		wait ${xtn_pid[${clm_idx}]}
 		if [[ "$?" -ne 0 ]]; then
 		    printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
-		    exit 1
+		    exit_gracefully 1
 		fi # !err
 	    done # !clm_idx
 	fi # !par_opt
@@ -4437,7 +4450,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 			eval ${cmd_rgr_xtn[${clm_idx}]}
 			if [[ "$?" -ne 0 ]]; then
 			    printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
-			    exit 1
+			    exit_gracefully 1
 			fi # !err
 		    else # !par_opt
 			eval ${cmd_rgr_xtn[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
@@ -4450,7 +4463,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 		    wait ${rgr_xtn_pid[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
-			exit 1
+			exit_gracefully 1
 		    fi # !err
 		done # !clm_idx
 	    fi # !par_opt
@@ -4475,7 +4488,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 		    eval ${cmd_lnk_xtn[${clm_idx}]}
 		    if [[ "$?" -ne 0 ]]; then
 			printf "${spt_nm}: ERROR linking E3SM to AMWG filename cmd_lnk_xtn[${clm_idx}] failed. Debug this:\n${cmd_lnk_xtn[${clm_idx}]}\n"
-			exit 1
+			exit_gracefully 1
 		    fi # !err
 		fi # !dbg
 	    done # !clm_idx
@@ -4530,4 +4543,4 @@ fi # !caseid
 date_dff=$((date_end-date_srt))
 echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 
-exit 0
+exit_gracefully 0
