@@ -2440,7 +2440,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 
  		    # cmd_mpi[${fl_idx}]="srun --exclusive --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
 		    # cmd_mpi[${fl_idx}]="srun --exclusive --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
-		    cmd_mpi[${mpi_idx}]="srun --exclusive --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=${thr_nbr}" ; ;; # SLURM
+		    cmd_mpi[${fl_idx}]="srun --exclusive --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=${thr_nbr}" ; ;; # SLURM
 		bebop* | blogin* | b[0123456789][0123456789][0123456789] | derecho* | ilogin* | i[0123456789][0123456789][0123456789] )
 		    # 20180120: Non-interactive batch jobs at NCAR return HOSTNAME as cheyenne?
 		    # Cheyenne prefers 'mpiexec_mpt dplace -s 1 ncclimo ...'

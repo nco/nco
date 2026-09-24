@@ -320,17 +320,17 @@ if false; then
     ncclimo --var=PRECT --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ~/PRECT_200101_200112.nc # Single file input
     
     # Flexible months:
-    ncclimo -v FSNT -c v2.LR.historical_0101 -s 2013 -e 2014 --mth_srt=10 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
+    ncclimo -v FSNT -c v3.LR.historical_0101 -s 460 -e 461 --mth_srt=10 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
     
     # Debugging and Benchmarking:
     # E3SM v3:
     ncclimo -7 --cmp='gbr|shf|zst' -P eam -v FSNT,AODVIS,TREFHT -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc # Compression!
     # E3SM v2:
     ncclimo -7 --bfr=134217728 --blk=4098 --cmp='gbr|shf|zst' -P eam -v FSNT,AODVIS,TREFHT -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc # Compression!
-    ncclimo -P eam -v FSNT,AODVIS,TREFHT -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc
-    cd ${DATA}/ne30/raw;ls v2.LR*eam*201[34]-??*.nc | ncclimo --split --dbg=1 --rgn_avg -s 2013 -e 2014 --var=TREFHT,FSNT,AODVIS --drc_out=${DATA}/ne30/clm
-    cd ${DATA}/ne30/raw;ls v2.LR*elm*201[34]-??*.nc | ncclimo -P elm --split --dbg=1 --rgn_avg -s 2013 -e 2014 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm
-    ncclimo -P eam --var_lst=FSNT,AODVIS,TREFHT --caseid=v2.LR.historical_0101 --yr_srt=2013 --yr_end=2014 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc
+    ncclimo -P eam -v FSNT,AODVIS,TREFHT -c v3.LR.historical_0101 -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc
+    cd ${DATA}/ne30/raw;ls v3.LR*eam*046[01]-??*.nc | ncclimo --split --dbg=1 --rgn_avg -s 460 -e 461 --var=TREFHT,FSNT,AODVIS --drc_out=${DATA}/ne30/clm
+    cd ${DATA}/ne30/raw;ls v3.LR*elm*046[01]-??*.nc | ncclimo -P elm --split --dbg=1 --rgn_avg -s 460 -e 461 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm
+    ncclimo -P eam --var_lst=FSNT,AODVIS,TREFHT --caseid=v3.LR.historical_0101 --yr_srt=460 --yr_end=461 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc
     # E3SM v1:
     ncclimo -P eam -m cam -v FSNT,AODVIS,TREFHT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
     ncclimo -P eam -m cam --var_lst=FSNT,AODVIS,TREFHT --caseid=20180129.DECKv1b_piControl.ne30_oEC.edison --yr_srt=1 --yr_end=2 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --drc_rgr=${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
@@ -353,7 +353,7 @@ if false; then
     # Split stdin switch:
     cd ${DATA}/ne30/raw;ls *piControl*000[12]-??*.nc | ncclimo --split --dbg=1 --stdin -s 1 -e 2 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
     # Split positional arguments:
-    ncclimo --split --dbg=1 -s 1 -e 1 --var=FSNT,AODVIS,T --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/v2.LR.historical_0101.eam.h0.2013-??.nc
+    ncclimo --split --dbg=1 -s 1 -e 1 --var=FSNT,AODVIS,T --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/v3.LR.historical_0101.eam.h0.0460-??.nc
     # Split directory:
     ncclimo --dbg=1 --ypf=50 -s 1 -e 2 --var=FSNT,AODVIS --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
     # Split global mean
@@ -377,7 +377,7 @@ if false; then
     # SGS:
     ncclimo -P elm -m clm2 -d 1 -v TBOT,FSDS -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc --sgs_frc=${DATA}/grids/clm2_landfrac_t42.nc/landfrac 
     ncclimo -P elm -m clm2 -d 1 -v TBOT,FSDS -c F_acmev03_enso_camse_clm45bgc_ne30_co2cycle -s 2000 -e 2000 -i ${DATA}/ne30/raw -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30np4.nc/landfrac
-    ncclimo -P elm -d 1 -v TBOT,FSDS -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30pg2.nc/landfrac
+    ncclimo -P elm -d 1 -v TBOT,FSDS -c v3.LR.historical_0101 -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30pg2.nc/landfrac
     # Seasons:
     ncclimo -P cam -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
     ncclimo -P cam -d 1 --csn_lst=jfm,jas,ann -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
@@ -602,7 +602,7 @@ blk_sz=2048 # [B] Block size for netCDF4 metadata (ignored/harmless for netCDF3)
 bnr_flg='No' # [sng] Binary method
 caseid='' # [sng] Case ID
 #caseid_xmp='20180129.DECKv1b_piControl.ne30_oEC.edison' # [sng] Case ID for v1 examples
-caseid_xmp='v2.LR.historical_0101' # [sng] Case ID for v2 examples
+caseid_xmp='v3.LR.historical_0101' # [sng] Case ID for v2 examples
 caseid_xmp_eamxx='output.scream.decadal.monthlyAVG_ne30pg2.AVERAGE.nmonths_x1' # [sng] Case ID for EAMXX examples
 cf_flg='Yes' # [sng] Produce CF climatology attribute?
 clm_flg='Yes' # [sng] Generate climatology
