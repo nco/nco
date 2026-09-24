@@ -330,6 +330,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 if false; then
     # Debugging:
     ncremap --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
+    source ncremap --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc ${DATA}/bm/eamv3_ne30pg2l80.nc ~/foo.nc 2>&1 | m
     ncks -O --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc 2>&1 | m
     ncks -O --dbg=1 --var=TREFHT --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc 2>&1 | m
     ncks -O --dbg=1 --var=FSDS --map=${DATA}/maps/map_ne30pg2_to_r05_traave.20240701.nc --nlm=${DATA}/maps/map_ne30pg2_to_r05_trfv2.20240701.nc ${DATA}/bm/eamv3_ne30pg2l80.nc ~/foo.nc 2>&1 | m
@@ -537,45 +538,44 @@ if [[ ${drc_spt:-} != ${drc_nco:-} ]]; then
 fi # drc_spt
 
 # When running in a terminal window (not in an non-interactive batch queue)...
-# When running in a terminal window (not in an non-interactive batch queue)...
 if [[ ${TERM:-} ]]; then
     # If stdout is connected to a terminal
     if [[ -t 1 ]]; then
 	# Set fonts for legibility
 	if [[ -x /usr/bin/tput ]]; then
-	    readonly fnt_bld=$(tput bold) # Bold
-	    readonly fnt_nrm=$(tput sgr0) # Normal
-	    readonly fnt_rvr=$(tput smso) # Reverse
-	    readonly fnt_tlc=$(tput sitm) # Italic
+	    fnt_bld=$(tput bold) # Bold
+	    fnt_nrm=$(tput sgr0) # Normal
+	    fnt_rvr=$(tput smso) # Reverse
+	    fnt_tlc=$(tput sitm) # Italic
 	else
-	    readonly fnt_bld="\e[1m" # Bold
-	    readonly fnt_nrm="\e[0m" # Normal
-	    readonly fnt_rvr="\e[07m" # Reverse
-	    readonly fnt_tlc="\e[3m" # Italic
+	    fnt_bld="\e[1m" # Bold
+	    fnt_nrm="\e[0m" # Normal
+	    fnt_rvr="\e[07m" # Reverse
+	    fnt_tlc="\e[3m" # Italic
 	fi # !tput
     else # !t
 	# Otherwise do not specially format text
-	readonly fnt_bld='' # Bold
-	readonly fnt_nrm='' # Normal
-	readonly fnt_rvr='' # Reverse
-	readonly fnt_tlc='' # Italic
+	fnt_bld='' # Bold
+	fnt_nrm='' # Normal
+	fnt_rvr='' # Reverse
+	fnt_tlc='' # Italic
     fi # !t
 fi # !TERM
 
 # Pre-define enumerated types used in defaults
-readonly par_bck='background' # [sng] Parallelism: background
-readonly par_mpi='mpi' # [sng] Parallelism: MPI
-readonly par_srl='serial' # [sng] Parallelism: serial
-readonly vrb_0=0 # [enm] Verbosity level: Quiet
-readonly vrb_1=1 # [enm] Verbosity level: Standard, minimal file I/O
-readonly vrb_2=2 # [enm] Verbosity level: All file I/O
-readonly vrb_3=3 # [enm] Verbosity level: English
-readonly vrb_4=4 # [enm] Verbosity level: Pedantic
-readonly fmt_sng_nc3='CLASSIC (netCDF3 classic CDF1)'
-readonly fmt_sng_nc4='NETCDF4 (netCDF4 extended HDF5)'
-readonly fmt_sng_nc5='64BIT_DATA (netCDF3/pnetCDF CDF5)'
-readonly fmt_sng_nc6='64BIT_OFFSET (netCDF3 64bit CDF2)'
-readonly fmt_sng_nc7='NETCDF4_CLASSIC (netCDF4 classic HDF5)'
+par_bck='background' # [sng] Parallelism: background
+par_mpi='mpi' # [sng] Parallelism: MPI
+par_srl='serial' # [sng] Parallelism: serial
+vrb_0=0 # [enm] Verbosity level: Quiet
+vrb_1=1 # [enm] Verbosity level: Standard, minimal file I/O
+vrb_2=2 # [enm] Verbosity level: All file I/O
+vrb_3=3 # [enm] Verbosity level: English
+vrb_4=4 # [enm] Verbosity level: Pedantic
+fmt_sng_nc3='CLASSIC (netCDF3 classic CDF1)'
+fmt_sng_nc4='NETCDF4 (netCDF4 extended HDF5)'
+fmt_sng_nc5='64BIT_DATA (netCDF3/pnetCDF CDF5)'
+fmt_sng_nc6='64BIT_OFFSET (netCDF3 64bit CDF2)'
+fmt_sng_nc7='NETCDF4_CLASSIC (netCDF4 classic HDF5)'
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later

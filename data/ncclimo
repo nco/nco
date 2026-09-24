@@ -576,36 +576,36 @@ if [[ ${TERM:-} ]]; then
     if [[ -t 1 ]]; then
 	# Set fonts for legibility
 	if [[ -x /usr/bin/tput ]]; then
-	    readonly fnt_bld=$(tput bold) # Bold
-	    readonly fnt_nrm=$(tput sgr0) # Normal
-	    readonly fnt_rvr=$(tput smso) # Reverse
-	    readonly fnt_tlc=$(tput sitm) # Italic
+	    fnt_bld=$(tput bold) # Bold
+	    fnt_nrm=$(tput sgr0) # Normal
+	    fnt_rvr=$(tput smso) # Reverse
+	    fnt_tlc=$(tput sitm) # Italic
 	else
-	    readonly fnt_bld="\e[1m" # Bold
-	    readonly fnt_nrm="\e[0m" # Normal
-	    readonly fnt_rvr="\e[07m" # Reverse
-	    readonly fnt_tlc="\e[3m" # Italic
+	    fnt_bld="\e[1m" # Bold
+	    fnt_nrm="\e[0m" # Normal
+	    fnt_rvr="\e[07m" # Reverse
+	    fnt_tlc="\e[3m" # Italic
 	fi # !tput
     else # !t
 	# Otherwise do not specially format text
-	readonly fnt_bld='' # Bold
-	readonly fnt_nrm='' # Normal
-	readonly fnt_rvr='' # Reverse
-	readonly fnt_tlc='' # Italic
+	fnt_bld='' # Bold
+	fnt_nrm='' # Normal
+	fnt_rvr='' # Reverse
+	fnt_tlc='' # Italic
     fi # !t
 fi # !TERM
     
 # Pre-define enumerated types used in defaults
-readonly par_bck='background' # [sng] Parallelism: background
-readonly par_mpi='mpi' # [sng] Parallelism: MPI
-readonly par_srl='serial' # [sng] Parallelism: serial
-readonly rtn_yyyy_frs=1 # [enm] Key for csn_nfo_get() to echo yyyy_frs
-readonly rtn_yyyy_lst=2 # [enm] Key for csn_nfo_get() to echo yyyy_lst
-readonly rtn_yyyymm_frs=3 # [enm] Key for csn_nfo_get() to echo yyyymm_frs
-readonly rtn_yyyymm_lst=4 # [enm] Key for csn_nfo_get() to echo yyyymm_lst
-readonly rtn_yyyymm_rng=5 # [enm] Key for csn_nfo_get() to echo yyyymm_rng
-readonly rtn_clm_bnd_arg=6 # [enm] Key for csn_nfo_get() to echo clm_bnd_arg
-readonly rtn_yyyy_rng=7 # [enm] Key for csn_nfo_get() to echo yyyy_rng
+par_bck='background' # [sng] Parallelism: background
+par_mpi='mpi' # [sng] Parallelism: MPI
+par_srl='serial' # [sng] Parallelism: serial
+rtn_yyyy_frs=1 # [enm] Key for csn_nfo_get() to echo yyyy_frs
+rtn_yyyy_lst=2 # [enm] Key for csn_nfo_get() to echo yyyy_lst
+rtn_yyyymm_frs=3 # [enm] Key for csn_nfo_get() to echo yyyymm_frs
+rtn_yyyymm_lst=4 # [enm] Key for csn_nfo_get() to echo yyyymm_lst
+rtn_yyyymm_rng=5 # [enm] Key for csn_nfo_get() to echo yyyymm_rng
+rtn_clm_bnd_arg=6 # [enm] Key for csn_nfo_get() to echo clm_bnd_arg
+rtn_yyyy_rng=7 # [enm] Key for csn_nfo_get() to echo yyyy_rng
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
