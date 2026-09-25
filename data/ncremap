@@ -752,9 +752,21 @@ else
 fi # !gpfs
 
 # Initialize potentially undefined variables to be safe under "set -u" CEWI
+apn_pid=() # [id] Append PID
+att_pid=() # [id] Attribute PID
 bb_wesn='' # [deg] Regional regridding bounding-box string in WESN order
+cmd_apn=() # [sng] Append command
+cmd_att=() # [sng] Attribute command
+cmd_d2f=() # [sng] Double-to-float command
+cmd_dpt=() # [sng] Depth command
 cmd_mpi=() # [sng] MPI prefix for parallel commands
+cmd_pdq=() # [sng] Permute command
+cmd_ppp=() # [sng] Post-processing command
+cmd_rgr=() # [sng] Regrid command
+cmd_rnm=() # [sng] Rename command
+d2f_pid=() # [id] Double-to-float PID
 dat_glb='' # [sng] Global data-file for regional extraction mode
+dpt_pid=() # [id] Depth PID
 gad_lst='' # [sng] Global attributes-to-delete list
 grd_glb='' # [sng] Global grid-file for regional extraction mode
 grd_rgn='' # [sng] Regional grid-file for regional extraction mode
@@ -769,6 +781,10 @@ nco_msk_src='' # [sng] Mask-template variable in source file option string
 nco_ugrid_fl='' # [sng] UGRID file option string
 nco_skl_fl='' # [sng] "Skeleton" file for RRG generation
 nco_var_rgr='' # [sng] CF template variable option string
+ppp_pid=() # [id] Post-processing PID
+pdq_pid=() # [id] Permute PID
+rgr_pid=() # [id] Regrid PID
+rnm_pid=() # [id] Rename PID
 rnm_sng='' # [sng] Filename rename suffix string
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax

@@ -2,7 +2,9 @@
 
 	* NCO 5.4.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.1-alpha02: Pandor';git push
-	git tag -a 5.4.1-alpha02 -m 'srun --ntasks, LD_LIBRARY_PATH, exit_gracefully(), rdr hdr';git push --tags
+	git tag -a 5.4.1-alpha02 -m 'srun --ntasks, LD_LIBRARY_PATH, exit_gracefully(), rdr hdr, no readonly';git push --tags
+
+	* ncremap: Initialize all command and PID arrays to empty prior to use
 
 	* ncremap/ncclimo: Eliminate "readonly" variables so can "source" scripts multiple times in same shell
 
