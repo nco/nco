@@ -624,6 +624,7 @@ dt_sng=$(date +%Y%m%d) # [sng] Date string for MWF map names
 dvn_flg='Yes' # [flg] Send internal NCO regridder output to /dev/null
 esmf_typ='' # [sng] ESMF extrapolation type (nearestidavg|neareststod|none)
 fl_fmt='' # [enm] Output file format
+fl_idx=0 # [idx] File index
 fl_nbr=0 # [nbr] Number of files to remap
 flg_grd_only='No' # [flg] Create grid then exit before regridding
 flg_hrz='No' # [flg] Perform horizontal regridding
