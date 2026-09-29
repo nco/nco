@@ -4,12 +4,12 @@
 # /home/ac.zender/bin_chrysalis/ncremap: line 3831: ppp_pid[${fl_idx}]: unbound variable
 
 # Usage:
-# sbatch ~/nco/data/e3smu_dbg.sh
+# sbatch --output=${HOME}/e3smu_dbg.o%j --mail-type=fail,end --mail-user=zender@uci.edu ~/nco/data/e3smu_dbg.sh
+# m ~/e3smu_dbg.o*
 
 #SBATCH --job-name=e3smu_dbg.sh
 #SBATCH --account=e3sm
 #SBATCH --nodes=1
-#SBATCH --output=e3smu_dbg.o%j
 #SBATCH --exclusive
 #SBATCH --time=00:10:00
 #SBATCH --partition=debug

@@ -682,6 +682,7 @@ out_xmp='out.nc' # [sng] Output file for examples
 par_typ="${par_srl}" # [sng] Parallelism type for files
 pdq_flg='Yes' # [sng] Permute dimensions before regridding
 pdq_opt='' # [sng] ncpdq dimension permutation option
+ppp_flg='No' # [flg] Model-specific parallel post-processing was performed
 prc_sgs='No' # [sng] SGS requested
 prc_typ='' # [sng] Procedure type
 prt_alg='zoltan' # [sng] MOAB-Tempest H5M partition algorithm
@@ -3753,7 +3754,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	done # !fl_idx
     fi # !cln_flg
 	
-    # Block 7: Parallel post-processing
+    # Block 7: Model-specific Parallel post-processing
     for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	if [[ ${prc_elm:-} ]] && [[ ${no_cll_msr:-} != 'Yes' ]]; then
 	    if [[ ${vrb_lvl:-} -ge ${vrb_3:-} ]]; then
@@ -3774,6 +3775,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		else # !par_typ
 		    eval ${cmd_ppp[${fl_idx}]} ${par_opt}
 		    ppp_pid[${fl_idx}]=$!
+		    ppp_flg='Yes'
 		fi # !par_typ
 	    fi # !dbg
 	fi # !prc_elm
@@ -3797,6 +3799,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		else # !par_typ
 		    eval ${cmd_ppp[${fl_idx}]} ${par_opt}
 		    ppp_pid[${fl_idx}]=$!
+		    ppp_flg='Yes'
 		fi # !par_typ
 	    fi # !dbg
 	fi # !prc_cice
@@ -3820,13 +3823,15 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		else # !par_typ
 		    eval ${cmd_ppp[${fl_idx}]} ${par_opt}
 		    ppp_pid[${fl_idx}]=$!
+		    ppp_flg='Yes'
 		fi # !par_typ
 	    fi # !dbg
 	fi # !znl
+
     done # !fl_idx
 
-    # Block 9: Wait for post-processing tasks to complete
-    if [[ ${par_opt:-} && ${dbg_lvl:-} -le 1 ]]; then
+    # Block 9: Wait for model-specific post-processing tasks to complete
+    if [[ ${ppp_flg} == 'Yes' ]]; then
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    wait ${ppp_pid[${fl_idx}]}
 	    if [[ "$?" -ne 0 ]]; then
@@ -3834,7 +3839,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		exit_gracefully 1
 	    fi # !err
 	done # !fl_idx
-    fi # !par_opt
+    fi # !ppp_flg
 
 done # !bch_idx
 
