@@ -3277,7 +3277,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
     fi # !ann_flg
     # Derive all regridded and AMWG names from output names
     for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-	fl_amwg[${clm_idx}]=$(expr match "${fl_out[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc') # Prune _YYYYYMM_YYYYMM_climo.nc
+	fl_amwg[${clm_idx}]=$(expr match "${fl_out[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc' || true) # Prune _YYYYYMM_YYYYMM_climo.nc
 	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
 	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_out}\//}" # Delete prepended path to ease symlinking
 	if [[ ${rgr_opt:-} ]]; then
@@ -3291,7 +3291,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 		    printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
 		    rgr_sfx=${dfl_sfx}
 		else
-		    yyyymmdd_sng=$(expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)') # Find YYYYYMMDD
+		    yyyymmdd_sng=$(expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)' || true) # Find YYYYYMMDD
 		    if [[ ${#yyyymmdd_sng} -ne 0 ]]; then
 			rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
 		    fi # !strlen
@@ -4406,7 +4406,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${xtn_flg:-} == 'Yes' ]]; then
 	# Derive AMWG names from output names
 	if [[ ${lnk_flg:-} == 'Yes' ]]; then
 	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-		fl_amwg_xtn[${clm_idx}]=$(expr match "${fl_xtn[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc') # Prune _YYYYYMM_YYYYMM_climo.nc
+		fl_amwg_xtn[${clm_idx}]=$(expr match "${fl_xtn[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc' || true) # Prune _YYYYYMM_YYYYMM_climo.nc
 		fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
 		fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_xtn}\//}" # Delete prepended path to ease symlinking
 	    done # !clm_idx

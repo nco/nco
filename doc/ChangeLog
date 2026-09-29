@@ -2,7 +2,13 @@
 
 	* NCO 5.4.1-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.1-alpha03: Three-peat';git push
-	git tag -a 5.4.1-alpha03 -m '';git push --tags
+	git tag -a 5.4.1-alpha03 -m 'nco_e3sm.sh';git push --tags
+
+	* Rename e3smu_dbg.sh as nco_e3smu.sh and refactor to run on any machine
+
+	* ncclimo: Cause 'expr match' to alway return success
+
+	* e3smu_dbg.sh: Add three comprehensive ncclimo/ncremap tests
 
 	* ncclimo: Fix filename suffix construction when source and destination co-exist in same directory
 
