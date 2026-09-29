@@ -1,5 +1,9 @@
 2026-09-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.4.1-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.1-alpha03: Three-peat';git push
+	git tag -a 5.4.1-alpha03 -m '';git push --tags
+
 	* NCO 5.4.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.1-alpha02: Pandor';git push
 	git tag -a 5.4.1-alpha02 -m 'srun --ntasks, LD_LIBRARY_PATH, exit_gracefully(), rdr hdr, no readonly, e3smu_dbg.sh, ppp PID fix';git push --tags
