@@ -1,8 +1,12 @@
-2026-09-28  Charlie Zender  <zender@uci.edu>
+2026-09-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.1-alpha02: Pandor';git push
-	git tag -a 5.4.1-alpha02 -m 'srun --ntasks, LD_LIBRARY_PATH, exit_gracefully(), rdr hdr, no readonly';git push --tags
+	git tag -a 5.4.1-alpha02 -m 'srun --ntasks, LD_LIBRARY_PATH, exit_gracefully(), rdr hdr, no readonly, e3smu_dbg.sh';git push --tags
+
+	* Add e3smu_dbg.sh regression test for E3SM-Unified batch mode climos
+
+2026-09-28  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: Final tweak to avoid unbound variable error
 
