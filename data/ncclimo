@@ -381,8 +381,8 @@ if false; then
     # Split ELM:
     ncclimo --split --dbg=1 -s 2000 -e 2000 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc
     # Split vertical:
-    cd ${DATA}/ne30/raw;ls *piControl*000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=T --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc --drc_out=${DATA}/ne30/clm
-    cd ${DATA}/ne30/raw;ls *piControl*000[12]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=T --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc --vrt_xtr=mss_val --drc_out=${DATA}/ne30/clm # Missing value interpolation
+    cd ${DATA}/ne30/raw;ls v3.LR.piControl.eam*046[01]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=T --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc --drc_out=${DATA}/ne30/clm
+    cd ${DATA}/ne30/raw;ls v3.LR.piControl.eam*046[01]-??*.nc | ncclimo --split --dbg=1 -s 1 -e 2 --var=T --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc --vrt_xtr=mss_val --drc_out=${DATA}/ne30/clm # Missing value interpolation
     # Split production:
     cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --split --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
     cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --split --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
@@ -635,6 +635,7 @@ dpt_fl='' # [sng] Depth file with refBottomDepth for MPAS ocean
 dpt_opt='' # [sng] Option string to add depth coordinate to regridded MPAS files
 dbg_lvl=0 # [nbr] Debugging level
 dfl_lvl='' # [enm] Deflate level
+dfl_sfx='' # [sng] Regridding/interpolation suffix when destination and source files co-exist in same directory
 drc_in='' # [sng] Input file directory
 drc_in_mps="${DATA}/mpas/raw" # [sng] Input file directory for MPAS examples
 drc_in_usr_flg='No' # [sng] Input file directory is user-specified
@@ -696,6 +697,7 @@ rgn_stt='No' # [sng] Regional/global statistics
 rgr_map='' # [sng] Regridding (horizontal) map
 rgr_opt='' # [sng] Regridding options in ncks format (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 rmp_opt='' # [sng] Regridding options in passing format for ncremap (e.g., '-R '--rgr col_nm=lndgrid', '--rgr col_nm=nCells'')
+rgr_sfx='' # [sng] Regridding suffix when destination and source files co-exist in same directory
 sgm_nbr=0 # [nbr] Segment number (often in months)
 sgm_rmd=0 # [nbr] Segment remainder (usually in months)
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
@@ -1781,7 +1783,6 @@ if [[ ${inp_aut:-} == 'Yes' ]] && [[ ${clm_md:-} == 'mth' ]] || [[ ${clm_md:-} =
     yr_srt_all=$((10#${yyyy_srt}))
     yr_end_all=$((10#${yyyy_end}))
     # Bash brace expansion like {1..12} only works with naked numbers. Variables must use seq().
-#    printf "quark3 yr_srt_all=${yr_srt_all}, yr_end_all=${yr_end_all}, yyyy_srt=${yyyy_srt}, yyyy_end=${yyyy_end}\n"
     for yr in $(seq ${yr_srt_all} ${yr_end_all}); do
 	YYYY=$(printf "%04d" ${yr})
 	clm_idx=0
@@ -1865,7 +1866,6 @@ fi # !fl_nbr
 # 20250509: Provision of filenames via other methods never checked this until NCO 5.3.4
 if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'mth' ]]; then 
     fpy=12
-#    printf "quark1 fl_nbr = ${fl_nbr}, fpy = ${fpy}\n" # 20260830 Computing as let fl_rmd=${fl_nbr} % ${fpy} causes error
     fl_rmd=$(( fl_nbr % fpy ))
     if [[ ${fl_rmd:-} -ne 0 ]]; then
 	printf "${spt_nm}: ERROR User requested climatology of monthly files and supplied ${fl_nbr} (not a multiple of 12) input files.\n"
@@ -3283,10 +3283,10 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 	if [[ ${rgr_opt:-} ]]; then
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
 	    if [[ ${drc_out:-} == "${drc_rgr:-}" ]]; then 
-		# Append geometry suffix to regridded files in same directory as native climo
+		# Append geometry suffix to regridded/interpolated files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
-		dfl_sfx='rgr'
-		rgr_sfx=$(expr match "${rgr_map}" '.*_to_\(.*\).nc')
+		[[ ${rgr_map:-} ]] && dfl_sfx='rgr' || dfl_sfx='vrt'
+		rgr_sfx=$(expr match "${rgr_map}" '.*_to_\(.*\).nc' || true)
 		if [[ ${#rgr_sfx} -eq 0 ]]; then
 		    printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
 		    rgr_sfx=${dfl_sfx}
@@ -3296,7 +3296,7 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_hfc_or_mth:-} == 'Yes' ]]; then
 			rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
 		    fi # !strlen
 		fi # !strlen
-		#    rgr_sfx=$(expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]') # 
+		#    rgr_sfx=$(expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]' || true) # 
 		fl_rgr[${clm_idx}]="${fl_rgr[${clm_idx}]/.nc/_${rgr_sfx}.nc}"
 	    fi # !drc_rgr
 	fi # !rgr_opt
@@ -3458,20 +3458,20 @@ if [[ ${tms_flg:-} == 'Yes' ]]; then
 	if [[ ${rgr_opt:-} ]]; then
 	    fl_rgr_tpl[${sgm_idx}]="${fl_out_tpl[${sgm_idx}]/${drc_out}/${drc_rgr}}"
 	    if [[ ${drc_out:-} == "${drc_rgr:-}" ]]; then 
-		# Append geometry suffix to regridded files in same directory as native climo
+		# Append geometry suffix to regridded/interpolated files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
-		dfl_sfx='rgr'
-		rgr_sfx=$(expr match "${rgr_map}" '.*_to_\(.*\).nc')
+		[[ ${rgr_map:-} ]] && dfl_sfx='rgr' || dfl_sfx='vrt'
+		rgr_sfx=$(expr match "${rgr_map}" '.*_to_\(.*\).nc' || true)
 		if [[ ${#rgr_sfx} -eq 0 ]]; then
 		    printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
 		    rgr_sfx=${dfl_sfx}
 		else
-		    yyyymmdd_sng=$(expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)') # Find YYYYYMMDD
+		    yyyymmdd_sng=$(expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)' || true) # Find YYYYYMMDD
 		    if [[ ${#yyyymmdd_sng} -ne 0 ]]; then
 			rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
 		    fi # !strlen
 		fi # !strlen
-		#    rgr_sfx=$(expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]') # 
+		#    rgr_sfx=$(expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]' || true) # 
 		fl_rgr_tpl[${sgm_idx}]="${fl_rgr_tpl[${sgm_idx}]/.nc/_${rgr_sfx}.nc}"
 	    fi # !drc_rgr
 	fi # !rgr_opt
@@ -3812,20 +3812,20 @@ if [[ ${clm_flg:-} == 'Yes' ]] && [[ ${clm_md:-} == 'dly' ]]; then
 	for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
 	    if [[ ${drc_out:-} == "${drc_rgr:-}" ]]; then 
-		# Append geometry suffix to regridded files in same directory as native climo
+		# Append geometry suffix to regridded/interpolated files in same directory as native climo
 		# http://tldp.org/LDP/abs/html/string-manipulation.html
-		dfl_sfx='rgr'
-		rgr_sfx=$(expr match "${rgr_map}" '.*_to_\(.*\).nc')
+		[[ ${rgr_map:-} ]] && dfl_sfx='rgr' || dfl_sfx='vrt'
+		rgr_sfx=$(expr match "${rgr_map}" '.*_to_\(.*\).nc' || true)
 		if [[ ${#rgr_sfx} -eq 0 ]]; then
 		    printf "${spt_nm}: WARNING Unable to extract geometric suffix from mapfile, will suffix regridded files with \"${dfl_sfx}\" instead\n"
 		    rgr_sfx=${dfl_sfx}
 		else
-		    yyyymmdd_sng=$(expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)') # Find YYYYYMMDD
+		    yyyymmdd_sng=$(expr match "${rgr_sfx}" '.*\(\.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\)' || true) # Find YYYYYMMDD
 		    if [[ ${#yyyymmdd_sng} -ne 0 ]]; then
 			rgr_sfx=${rgr_sfx%%${yyyymmdd_sng}} # Delete YYYYYMMDD
 		    fi # !strlen
 		fi # !strlen
-		#    rgr_sfx=$(expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]') # 
+		#    rgr_sfx=$(expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]' || true) # 
 		fl_rgr[${clm_idx}]="${fl_rgr[${clm_idx}]/.nc/_${rgr_sfx}.nc}"
 	    fi # !drc_rgr
 	done # !clm_idx
