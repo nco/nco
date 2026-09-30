@@ -87,12 +87,12 @@ if [[ ${HOST_FFC} == 'chrysalis' ]]; then
     cd "${WORKDIR}" || exit 1
     cp -s "${SRC_FILE}" ./test.nc
 
-    echo "Running: ${NCREMAP} -p mpi --vrt_ntp=log --vrt_xtr=mss_val --vrt_out=${VRT_MAP} test.nc test.nc.plev"
+    printf "\nRyan's test of vertical interpolation...\n"
     ${NCREMAP} -p mpi --vrt_ntp=log --vrt_xtr=mss_val --vrt_out="${VRT_MAP}" test.nc test.nc.plev
     printf "\nExit code: $?\n"
 fi # !Chrysalis
     
-printf "\nTest climos, compression, and regridding...\n"
+printf "\nTest climos, compression, and regridding...(Expect harmless filter WARNINGs on Chrysalis, why?)\n"
 ${NCCLIMO} -7 --cmp='gbr|shf|zst' -P eam -v FSNT,AODVIS,TREFHT -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc
 printf "\nExit code: $?\n"
 
