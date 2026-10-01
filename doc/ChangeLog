@@ -1,8 +1,14 @@
-2026-09-29  Charlie Zender  <zender@uci.edu>
+2026-10-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.1-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.1-alpha03: Three-peat';git push
 	git tag -a 5.4.1-alpha03 -m 'nco_e3sm.sh works; ncclimo expr match true';git push --tags
+
+	* Correct test v3 EAM caseids
+
+	* Hone e3smu_dbg.sh
+
+2026-09-29  Charlie Zender  <zender@uci.edu>
 
 	* Rename e3smu_dbg.sh as nco_e3smu.sh and refactor to run on any machine
 
