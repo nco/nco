@@ -83,7 +83,7 @@ case "${HOST_FFC:-}" in
     imua* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
     maluhia* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
     spectral* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
-    perlmutter* ) source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified.sh ; ;;
+    perlmutter* ) source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh ; ;;
     * ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;; # default
 esac # !${HOST_FFC}
 

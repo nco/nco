@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.4.1: Granddude';git push
 	git tag -a 5.4.1 -m 'all: nco_e3sm.sh E3SMU tests; ncremap/ncclimo: fix unbound, rdr hdr, ppp PID, srun ntasks, expr match, exit_gracefully';git push --tags
 
+	* nco_e3smu.sh: Fix perlmutter E3SMU command
+
 	* nco.texi: Clarify mpi_pfx and srun settings
 
 2026-10-01  Charlie Zender  <zender@uci.edu>

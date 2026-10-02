@@ -6,6 +6,7 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
+This is a small, bug-fix release.
 Version 5.4.1 contains fixes necessary for ncremap and ncclimo
 to work smoothly. The method of using MPI has changed to
 accomodate SLURM settings on some DOE supercomputers.
