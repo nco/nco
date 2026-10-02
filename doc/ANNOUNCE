@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.4.1 breach consciousness
+netCDF Operators NCO version 5.4.1 reach consciousness
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
@@ -23,6 +23,10 @@ internally spawn jobs to other nodes using srun.
 Now they invoke srun --exclusive to fully control each node.
 This has lead to significant workflow speedup in situations
 involving lengthy climatologies.
+
+B. A new regression script has been added. data/nco_e3smu.sh
+now tests NCO in batch mode on compute nodes in the E3SM-Unified
+environment. Thanks to Ryan Forsyth (LLNL) for this suggestion.
 
 BUG FIXES:
 

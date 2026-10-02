@@ -71,15 +71,15 @@ esac # !${HOST_FFC}
 
 # Set Conda environment
 case "${HOST_FFC:-}" in 
-    andes* | frontier* ) source /ccs/proj/cli115/software/e3sm-unified/load_latest_e3sm_unified.sh ; ;;
-    bebop* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified.sh ; ;;
+    andes* | frontier* ) source /ccs/proj/cli115/software/e3sm-unified/load_latest_e3sm_unified_andes.sh ; ;;
+    bebop* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh ; ;;
 #    chrysalis* ) source /home/ac.forsyth2/miniforge3/etc/profile.d/conda.sh ; conda activate test-e3sm-to-cmip-master-20260928_run2 ; ;; # Ryan's development path
-    chrysalis* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified.sh ; ;;
-    compy* ) source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified.sh ; ;;
+    chrysalis* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh ; ;;
+    compy* ) source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh ; ;;
     derecho* ) source fxm/load_latest_e3sm_unified.sh ; ;;
     e3sm* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
-    frontier* ) source /load_latest_e3sm_unified.sh ; ;;
-    ilogin* ) source fxm/load_latest_e3sm_unified.sh ; ;;
+    frontier* ) source /load_latest_e3sm_unified_frontier.sh ; ;;
+    ilogin* ) source fxm/load_latest_e3sm_unified_chrysalis.sh ; ;;
     imua* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
     maluhia* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
     spectral* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
