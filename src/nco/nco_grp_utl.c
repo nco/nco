@@ -7303,7 +7303,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
 (dmn_sct **dmn_xtr,                    /* I [sct] Array of dimensions associated with variables to be extracted  */
  const int nbr_dmn_xtr,                /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
- dmn_sct ***dmn_out,                   /* O [sct] Array of dimensions on ouput */
+ dmn_sct ***dmn_out,                   /* O [sct] Array of dimensions on output */
  int *nbr_dmn_out)                     /* O [nbr] Number of dimensions on output (size of above array) */
 {
   /* Purpose: Create list of dimensions from list of dimension name strings */
