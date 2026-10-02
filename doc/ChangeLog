@@ -1,12 +1,22 @@
+2026-10-02  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.4.1 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.1: Granddude';git push
+	git tag -a 5.4.1 -m 'all: nco_e3sm.sh E3SMU tests; ncremap/ncclimo: fix unbound, rdr hdr, ppp PID, srun ntasks, expr match, exit_gracefully';git push --tags
+
+	* nco.texi: Clarify mpi_pfx and srun settings
+
 2026-10-01  Charlie Zender  <zender@uci.edu>
+
+	* nco_e3smu.sh: Remove specialized and fragile Chrysalis test/behavior
 
 	* NCO 5.4.1-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.1-alpha03: Three-peat';git push
-	git tag -a 5.4.1-alpha03 -m 'nco_e3sm.sh works; ncclimo expr match true';git push --tags
+	git tag -a 5.4.1-alpha03 -m 'nco_e3sm.sh works; ncremap/ncclimo: fix unbound, rdr hdr, ppp PID, srun ntasks, expr match, exit_gracefully';git push --tags
 
 	* Correct test v3 EAM caseids
 
-	* Hone e3smu_dbg.sh
+	* Hone nco_e3smu.sh
 
 2026-09-29  Charlie Zender  <zender@uci.edu>
 

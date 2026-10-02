@@ -73,8 +73,8 @@ esac # !${HOST_FFC}
 case "${HOST_FFC:-}" in 
     andes* | frontier* ) source /ccs/proj/cli115/software/e3sm-unified/load_latest_e3sm_unified.sh ; ;;
     bebop* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified.sh ; ;;
-    chrysalis* ) source /home/ac.forsyth2/miniforge3/etc/profile.d/conda.sh ; conda activate test-e3sm-to-cmip-master-20260928_run2 ; ;; # Ryan's development path
-#    chrysalis* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified.sh ; ;;
+#    chrysalis* ) source /home/ac.forsyth2/miniforge3/etc/profile.d/conda.sh ; conda activate test-e3sm-to-cmip-master-20260928_run2 ; ;; # Ryan's development path
+    chrysalis* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified.sh ; ;;
     compy* ) source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified.sh ; ;;
     derecho* ) source fxm/load_latest_e3sm_unified.sh ; ;;
     e3sm* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
@@ -96,21 +96,6 @@ NCCLIMO="${CSZ_BIN_DIR}/ncclimo --npo"
 WORKDIR=$(mktemp -d)
 cd "${WORKDIR}" || exit 1
 
-if [[ ${HOST_FFC} == 'chrysalis' ]]; then
-    # Activate same Conda environment that Ryan Forsyth uses in
-    # https://github.com/E3SM-Project/zppy/issues/875#issuecomment-5876811567
-
-    VRT_MAP=/lcrc/group/e3sm/diagnostics/e3sm_to_cmip_data/maps/vrt_remap_plev19.nc
-    SRC_FILE=/lcrc/group/e3sm/ac.forsyth2/zppy_weekly_comprehensive_v3_output/zppy_main_branch_test_20260928_run2/v3.LR.historical_0051/post/atm/180x360_aave/ts/monthly/2yr/U_198501_198612.nc
-
-    cp -s "${SRC_FILE}" ./test.nc
-
-    printf "\nRyan's test of vertical interpolation...\n"
-    ${NCREMAP} -p mpi --vrt_ntp=log --vrt_xtr=mss_val --vrt_out="${VRT_MAP}" test.nc test.nc.plev
-    printf "\nExit code: $?\n"
-
-fi # !Chrysalis
-    
 printf "\nTest climos and regridding...\n"
 ${NCCLIMO} -P eam -v FSNT,AODVIS,TREFHT -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${WORKDIR}/ne30/clm -O ${WORKDIR}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc
 printf "\nExit code: $?\n"

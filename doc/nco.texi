@@ -128,12 +128,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 5.4.1-alpha03
-@set doc-edition 5.4.1-alpha03
+@set nco-edition 5.4.1
+@set doc-edition 5.4.1
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 29 September 2026
-@set update-month September 2026
+@set update-date 2 October 2026
+@set update-month October 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -28236,21 +28236,16 @@ are unaffected by this option since they are not
 @acronym{MPI}-enabled. 
 @var{mpi_pfx} defaults to @code{mpirun -n $@{@var{mpi_nbr}@}} on all
 machines except those whose @code{$HOSTNAME} matches an internal
-database of @acronym{DOE}-operated supercomputers where 
-@var{mpi_pfx} usually defaults to
-@code{srun --exclusive -n $@{@var{mpi_nbr}@}}
-When invoking @samp{--mpi_pfx}, be sure to explicitly define the
-number of @acronym{MPI} tasks-per-node, e.g.,
-@example
-@verbatim
-ncremap --mpi_pfx='srun --exclusive -n 16' ...
-ncremap --mpi_pfx='srun --mpi=pmi2 -n 4' ...
-@end verbatim
-@end example
-As of June 2026 and @acronym{NCO} @w{version 5.4}, @acronym{NCO} by
-default gives the @code{--exclusive} option to @command{srun}.
+database of @acronym{DOE}-operated supercomputers that use
+@acronym{SLURM}. 
+As of September 2026 and @acronym{NCO} @w{version 5.4.0},
+@acronym{NCO} by default gives the @code{--exclusive} option to
+@command{srun}. 
 You can disable this behavior by using the @code{--mpi_pfx} option
 as above and omitting @code{--exclusive} in the argument.
+On @acronym{SLURM} machines the default @var{mpi_pfx} for
+The default @var{mpi_pfx} for @command{ncclimo} is 
+@code{srun --exclusive --ntasks=1 --cpus-per-task=$@{@var{thr_nbr}@}}.
 
 The separate @samp{--mpi_nbr=@var{mpi_nbr}} option specifies the
 number of tasks-per-node that @acronym{MPI}-enabled weight generators
@@ -28267,6 +28262,18 @@ Thus @samp{--mpi_nbr=@var{mpi_nbr}} can be used to create
 host-independent @command{ncremap} commands to facilitate benchmarking
 the scaling of weight-generators across hosts that work with the
 default value of @var{mpi_pfx}.
+
+The default @var{mpi_pfx} for @command{ncremap} is now
+@code{srun --exclusive -n $@{@var{mpi_nbr}@}}.
+When invoking @samp{--mpi_pfx} for @command{ncremap}, be sure to
+explicitly define the number of @acronym{MPI} tasks-per-node, e.g.,
+@example
+@verbatim
+ncremap --mpi_pfx='srun --exclusive -n 16' ...
+ncremap --mpi_pfx='srun --mpi=pmi2 -n 4' ...
+@end verbatim
+@end example
+
 The @samp{--mpi_pfx} option will prevail and @samp{--mpi_nbr} will be
 ignored if both are used in the same @command{ncremap} invocation.
 Note that @samp{mpi_pfx} is only used internally by @command{ncremap}
