@@ -340,9 +340,9 @@ if false; then
     
     # Debugging and Benchmarking:
     # E3SM v3:
-    ncclimo -P eam -7 --cmp='gbr|shf|zst' -v FSNT,AODVIS,TREFHT -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc # Compression!
+    ncclimo -P eam -7 --cmp='btr|shf|zst' -v FSNT,AODVIS,TREFHT -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc # Compression!
     # E3SM v2:
-    ncclimo -P eam -7 --bfr=134217728 --blk=4098 --cmp='gbr|shf|zst' -v FSNT,AODVIS,TREFHT -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc # Compression!
+    ncclimo -P eam -7 --bfr=134217728 --blk=4098 --cmp='btr|shf|zst' -v FSNT,AODVIS,TREFHT -c v2.LR.historical_0101 -s 2013 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc # Compression!
     ncclimo -P eam -v FSNT,AODVIS,TREFHT -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_nco.20200901.nc
     cd ${DATA}/ne30/raw;ls v3.LR*eam*046[01]-??*.nc | ncclimo --split --dbg=1 --rgn_avg -s 460 -e 461 --var=TREFHT,FSNT,AODVIS --drc_out=${DATA}/ne30/clm
     cd ${DATA}/ne30/raw;ls v3.LR*elm*046[01]-??*.nc | ncclimo -P elm --split --dbg=1 --rgn_avg -s 460 -e 461 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm

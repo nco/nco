@@ -1,3 +1,11 @@
+2026-10-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 5.4.2-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha01: Shanahan Ridge';git push
+	git tag -a 5.4.2-alpha01 -m 'Functionally identical to 5.4.1 except for fxm';git push --tags
+
+	* fxm
+
 2026-10-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.1 release procedure:
