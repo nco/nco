@@ -1,10 +1,16 @@
-2026-10-08  Charlie Zender  <zender@uci.edu>
+2026-10-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.2-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha01: Shanahan Ridge';git push
-	git tag -a 5.4.2-alpha01 -m 'Functionally identical to 5.4.1 except for fxm';git push --tags
+	git tag -a 5.4.2-alpha01 -m 'Functionally identical to 5.4.1 except for printing mapfile and output file names';git push --tags
 
-	* fxm
+	* ncremap print mapfile only when not called by ncclimo
+
+	* ncremap determine name of calling script in cross-platform way
+
+	* ncremap Use mpa_flg and ncc_flg instead of clm_flg internally
+
+	* ncremap always print output file
 
 2026-10-02  Charlie Zender  <zender@uci.edu>
 
