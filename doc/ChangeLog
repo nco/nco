@@ -1,8 +1,12 @@
-2026-10-12  Charlie Zender  <zender@uci.edu>
+2026-10-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha02: SurFilMusic';git push
-	git tag -a 5.4.2-alpha02 -m 'fxm';git push --tags
+	git tag -a 5.4.2-alpha02 -m 'ncclimo: use --mpa_flg not -C';git push --tags
+
+	* fxm
+
+2026-10-12  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo: Use --mpa_flg not -C which is now deprecated
 
