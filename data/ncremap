@@ -487,6 +487,7 @@ if false; then
     ncremap --dbg=3 -v FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.201301_201302.nc ~/foo.nc
     # MOAB
     ncremap --mpi_nbr=8 -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=traave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
+    ncremap --mpi_pfx='mpirun -n 8' -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=traave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
     # CDO
     # cdo verifygrid grid_CMN-5x5.nc
     ncremap --dbg=1 --vrb=3 --devnull=No --alg_typ=cdo_bil --in_fl=${DATA}/grids/t42_skl.nc --dst_fl=${DATA}/ne30/rgr/hfc_ANN_200001_200012_climo.nc --map=${DATA}/maps/map_t42_to_cmip6_180x360_cdo.20210701.nc
@@ -599,7 +600,7 @@ chk_map='Yes' # [flg] Check map-file quality
 cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
 cmp_sng='' # [sng] Compression string
 cnv_exe_mbt='mbconvert' # [sng] MOAB-Tempest SCRIP/Exodus conversion to H5M executable
-cnv_exe_hnt="${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) SCRIP and standard Exodus grid-files are read in parallel, but only if they are in netCDF3 file format. The parallel reader will fail with netCDF4 input grids. This can be worked-around in two ways. First, you could rename the grid file to end with a .g suffix, spoofing a TempestRemap Exodus file. Then ncremap will invoke the serial (not parallel) grid reader. Second, you could convert the input grid from netCDF4 to netCDF3 using, e.g., ncks -5 in.nc out.nc. 2) ncremap invokes mbconvert in parallel (i.e., with srun or mpirun) unless the grid name ends in \".g\". Be sure you are on a node with access to working srun or mpi_run commands. 3) mbconvert must support the -B option for TempestRemap Exodus grids. Older versions of mbconvert do not. 4) mbconvert must support the PARALLEL option. Serial versions of mbconvert do not.\n${spt_nm}: HINT a simple way to install a MOAB compatible with ncremap is install them both into their own environment, e.g., \n\tconda create -n moab_nco -c conda-forge moab=5.6.0=*mpich_tempest* nco\n"
+cnv_exe_hnt="${spt_nm}: HINT ${cnv_exe_mbt} can fail for a number of reasons including 1) SCRIP and standard (i.e., non-TempestRemap) Exodus grid-files are read in parallel only if they are in netCDF3 file format. The parallel reader will fail with netCDF4 input grids. This can be worked-around in two ways. First, you could rename the grid file to end with a .g suffix, spoofing a TempestRemap Exodus file. Then ncremap will invoke the serial (not parallel) grid reader. Second, you could convert the input grid from netCDF4 to netCDF3 using, e.g., ncks -5 in.nc out.nc. 2) ncremap invokes mbconvert in parallel (i.e., with srun or mpirun) unless the grid name ends in \".g\". Be sure you are on a node with access to working srun or mpi_run commands. 3) mbconvert must support the -B option for TempestRemap Exodus grids. Older versions of mbconvert do not. 4) mbconvert must support the PARALLEL option. Serial versions of mbconvert do not.\n${spt_nm}: HINT a simple way to install a MOAB compatible with ncremap is install them both into their own environment, e.g., \n\tconda create -n moab_nco -c conda-forge moab=5.6.0=*mpich_tempest* nco\n"
 #cnv_exe_tps='ConvertSCRIPToExodus' # Command was deprecated in 2022
 cnv_exe_tps='ConvertMeshToExodus' # [sng] TempestRemap SCRIP and Mesh-to-Exodus conversion executable
 cnv_opt_prl_e2m='-o PARALLEL=WRITE_PART -O PARALLEL=BCAST_DELETE -O PARTITION=TRIVIAL -O PARALLEL_RESOLVE_SHARED_ENTS' # [sng] Recommended options to mbconvert for parallel conversion of (high-resolution) SCRIP to MOAB grids https://acme-climate.atlassian.net/wiki/spaces/ED/pages/932380820/Offline+remapping+workflow+with+mbtempest
@@ -1535,7 +1536,7 @@ if [[ ${mpi_nbr_usr:-} ]]; then
     mpi_nbr=${mpi_nbr_usr}
 fi # !mpi_nbr_usr
 # Specifying a TR algorithm and explicitly setting mpi_nbr implies MOAB
-if [[ ${wgt_typ:-} == 'tempest' ]] && [[ ${mpi_nbr_usr:-} ]]; then
+if [[ ${wgt_typ:-} == 'tempest' ]] && [[ ${mpi_nbr_usr:-} || ${mpi_pfx_usr:-} ]]; then
     wgt_typ='mbtempest'
 fi # !wgt_typ
 # If user explicitly sets mpi_nbr then we need a prefix
