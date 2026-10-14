@@ -3198,9 +3198,9 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	if [[ "$(basename ${in_fl:-})" == ${in_fl:-} ]]; then
 	    in_fl="${drc_pwd}/${in_fl}"
 	fi # !basename
-	idx_prn=$(printf "%02d" ${fl_idx})
 	if [[ ${vrb_lvl:-} -ge ${vrb_1:-} ]]; then
-	    printf "Input #${idx_prn}: ${in_fl}\n"
+	    [[ ${fl_nbr} -gt 1 ]] && idx_sng=$(printf "#%02d" ${fl_idx}) || idx_sng=''
+	    printf "Input ${idx_sng}: ${in_fl}\n"
 	fi # !vrb_lvl
 	if [[ ${out_usr_flg:-} == 'Yes' ]]; then 
 	    if [[ ${fl_nbr:-} -ge 2 ]]; then 
@@ -3689,7 +3689,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 
 	    if [[ ${vrb_lvl:-} -ge ${vrb_1:-} ]] && [[ ${ncc_flg:-} = "No" ]]; then
-		printf "Vertical : ${vrt_out}\n"
+		printf "VrtGrd: ${vrt_out}\n"
 	    fi # !vrb_lvl
 	    out_fl=${fl_out[${fl_idx}]}
 	    if [[ ${flg_hrz:-} == 'Yes' ]]; then
@@ -3708,7 +3708,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			exit_gracefully 1
 		    fi # !err
 		    if [[ ${vrb_lvl:-} -ge ${vrb_1:-} ]]; then
-			printf "Output   : ${out_fl}\n"
+			printf "Output: ${out_fl}\n"
 		    fi # !vrb_lvl
 		else # !par_typ
 		    eval ${cmd_rgr[${fl_idx}]} ${par_opt}
@@ -3722,7 +3722,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		wait ${rgr_pid[${fl_idx}]}
 		if [[ "$?" -eq 0 ]]; then
 		    if [[ ${vrb_lvl:-} -ge ${vrb_1:-} ]]; then
-			printf "Output   : ${out_fl}\n"
+			printf "Output: ${out_fl}\n"
 		    fi # !vrb_lvl
 		else
 		    printf "${spt_nm}: ERROR Failed to vertically interpolate. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
@@ -3736,7 +3736,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	# Block 5b: Horizontal regridding
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    if [[ ${vrb_lvl:-} -ge ${vrb_1:-} ]] && [[ ${ncc_flg:-} = "No" ]]; then
-		printf "Map/Wgt  : ${map_fl}\n"
+		printf "MapWgt: ${map_fl}\n"
 	    fi # !vrb_lvl
 	    out_fl=${fl_out[${fl_idx}]}
 	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]:-} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr:-} ${nco_var_lst_hrz:-} ${nco_msk_out:-} ${rgr_opt} --map_fl=\"${map_fl}\" \"${fl_in[${fl_idx}]}\" \"${out_fl}\""
@@ -3751,7 +3751,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			exit_gracefully 1
 		    fi # !err
 		    if [[ ${vrb_lvl:-} -ge ${vrb_1:-} ]]; then
-			printf "Output   : ${out_fl}\n"
+			printf "Output: ${out_fl}\n"
 		    fi # !vrb_lvl
 		else # !par_typ
 		    eval ${cmd_rgr[${fl_idx}]} ${par_opt}
@@ -3765,7 +3765,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		wait ${rgr_pid[${fl_idx}]}
 		if [[ "$?" -eq 0 ]]; then
 		    if [[ ${vrb_lvl:-} -ge ${vrb_1:-} ]]; then
-			printf "Output   : ${out_fl}\n"
+			printf "Output: ${out_fl}\n"
 		    fi # !vrb_lvl
 		else
 		    printf "${spt_nm}: ERROR Failed to horizontally regrid. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
