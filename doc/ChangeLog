@@ -1,8 +1,14 @@
-2026-10-14  Charlie Zender  <zender@uci.edu>
+2026-10-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha02: SurFilMusic';git push
 	git tag -a 5.4.2-alpha02 -m 'ncclimo: use --mpa_flg not -C; ncremap: cln prn';git push --tags
+
+	* nco_e3sm.sh: Migrate Chrys. and PM to E3SM-U testing releases (1.14-rc3)
+
+2026-10-14  Charlie Zender  <zender@uci.edu>
+
+	* ncremap: Expand -n to --ntasks= in mpi_pfx
 
 	* ncremap: Set wgt_typ to mbtempest if user sets mpi_pfx
 

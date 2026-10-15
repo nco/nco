@@ -485,9 +485,10 @@ if false; then
     ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc --drc_out=${DATA}/ne30/rgr ${DATA}/ne30/raw/v2.LR.historical_0101.eam.h0.2013-0[123].nc
     # ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.2013-0[12].nc ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.201301_201302.nc
     ncremap --dbg=3 -v FSNT,AODVIS,T,Q,U,V,Z3 --vrt_out=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/ne30/rgr/v2.LR.historical_0101.eam.h0.201301_201302.nc ~/foo.nc
-    # MOAB
-    ncremap --mpi_nbr=8 -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=traave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
-    ncremap --mpi_pfx='mpirun -n 8' -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=traave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
+    # MPI-enabled map-generation
+    ncremap --mpi_nbr=8 -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=esmfaave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # ESMF
+    ncremap --mpi_nbr=8 -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=traave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # MOAB
+    ncremap --mpi_pfx='mpirun -n 8' -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=traave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc # Maluhia
     # CDO
     # cdo verifygrid grid_CMN-5x5.nc
     ncremap --dbg=1 --vrb=3 --devnull=No --alg_typ=cdo_bil --in_fl=${DATA}/grids/t42_skl.nc --dst_fl=${DATA}/ne30/rgr/hfc_ANN_200001_200012_climo.nc --map=${DATA}/maps/map_t42_to_cmip6_180x360_cdo.20210701.nc
@@ -1543,19 +1544,19 @@ fi # !wgt_typ
 if [[ ${mpi_nbr_usr:-} ]]; then
     # ...then set prefix for invoking MPI-enabled weight generators 
     case "${HOSTNAME:-}" in 
-	andes* ) mpi_pfx="srun --exclusive -n ${mpi_nbr}" ; ;; 
+	andes* ) mpi_pfx="srun --exclusive --ntasks=${mpi_nbr}" ; ;; 
 	bebop* | blogin* | b[0123456789][0123456789][0123456789] ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
-	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun --exclusive -n ${mpi_nbr}" ; ;; 
-	compy* | n[0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun --exclusive --mpi=pmi2 -n ${mpi_nbr}" ; ;; 
+	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun --exclusive --ntasks=${mpi_nbr}" ; ;; 
+	compy* | n[0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun --exclusive --mpi=pmi2 --ntasks=${mpi_nbr}" ; ;; 
 	constance* | node* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
 	*derecho* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
-	frontier* ) mpi_pfx="srun --exclusive -n ${mpi_nbr}" ; ;; 
+	frontier* ) mpi_pfx="srun --exclusive --ntasks=${mpi_nbr}" ; ;; 
 	ilogin* | i[0123456789][0123456789][0123456789] ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; 
-	login[0123456789][0123456789] ) mpi_pfx="srun --exclusive -n ${mpi_nbr}" ; ;; 
-	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun --exclusive -n ${mpi_nbr}" ; ;; 
+	login[0123456789][0123456789] ) mpi_pfx="srun --exclusive --ntasks=${mpi_nbr}" ; ;; 
+	perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) mpi_pfx="srun --exclusive --ntasks=${mpi_nbr}" ; ;; 
 	# 20250122: Shift default node manager from mpirun to srun
 	#	* ) mpi_pfx="mpirun -n ${mpi_nbr}" ; ;; # Default
-	* ) mpi_pfx="srun --exclusive -n ${mpi_nbr}" ; ;; # Default
+	* ) mpi_pfx="srun --exclusive --ntasks=${mpi_nbr}" ; ;; # Default
     esac # !HOSTNAME
 fi # !mpi_nbr
 if [[ ${mpi_pfx_usr:-} ]]; then 
@@ -2505,7 +2506,7 @@ if [[ ${mpi_flg:-} == 'Yes' ]]; then
 		* )
 		    # 20260311: Shift default node manager from mpirun to srun
 		    cmd_mpi[${fl_idx}]="srun --exclusive --nodelist ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
-#		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # Other (PBS)
+#		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} --ntasks=1" ; ;; # Other (PBS)
 #		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
 	    case "${HOSTNAME:-}" in 

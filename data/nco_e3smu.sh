@@ -73,8 +73,9 @@ esac # !${HOST_FFC}
 case "${HOST_FFC:-}" in 
     andes* | frontier* ) source /ccs/proj/cli115/software/e3sm-unified/load_latest_e3sm_unified_andes.sh ; ;;
     bebop* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh ; ;;
+#    chrysalis* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh ; ;;
 #    chrysalis* ) source /home/ac.forsyth2/miniforge3/etc/profile.d/conda.sh ; conda activate test-e3sm-to-cmip-master-20260928_run2 ; ;; # Ryan's development path
-    chrysalis* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh ; ;;
+    chrysalis* ) source /lcrc/soft/climate/e3sm-unified/test_e3sm_unified_1.14.0rc3_chrysalis.sh; ;;
     compy* ) source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh ; ;;
     derecho* ) source fxm/load_latest_e3sm_unified.sh ; ;;
     e3sm* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
@@ -83,7 +84,8 @@ case "${HOST_FFC:-}" in
     imua* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
     maluhia* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
     spectral* ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;;
-    perlmutter* ) source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh ; ;;
+#    perlmutter* ) source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh ; ;;
+    perlmutter* ) source /global/common/software/e3sm/anaconda_envs/test_e3sm_unified_1.14.0rc3_pm-cpu.sh ; ;;
     * ) echo "No E3SM-Unified environment specified for ${HOST_FFC}" ; ;; # default
 esac # !${HOST_FFC}
 
@@ -110,6 +112,15 @@ printf "\nExit code: $?\n"
 
 printf "\nTest flexible months...\n"
 ${NCCLIMO} -v FSNT -c v3.LR.piControl -s 460 -e 461 --mth_srt=10 -i ${DATA}/ne30/raw -o ${WORKDIR}/ne30/clm
+printf "\nExit code: $?\n"
+
+printf "\nTest parallel ESMF map generation...\n"
+${NCREMAP} --mpi_nbr=4 -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=esmfaave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
+printf "\nExit code: $?\n"
+
+printf "\nTest parallel MOAB map generation...\n"
+${NCREMAP} --mpi_nbr=4 -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=traave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
+printf "\nExit code: $?\n"
 
 printf "\nCleaning up...\n"
 /bin/rm -r ${WORKDIR}
