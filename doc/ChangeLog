@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha02: SurFilMusic';git push
 	git tag -a 5.4.2-alpha02 -m 'ncclimo: use --mpa_flg not -C; ncremap: cln prn';git push --tags
 
+	* nco_e3sm.sh: Isolate map-construction tests, run --config first
+
 	* nco_e3sm.sh: Migrate Chrys. and PM to E3SM-U testing releases (1.14-rc3)
 
 2026-10-14  Charlie Zender  <zender@uci.edu>

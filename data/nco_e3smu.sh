@@ -54,19 +54,19 @@ export HOST_FFC
 
 # Default input and output directory root is ${DATA}
 case "${HOST_FFC:-}" in 
-    andes* | frontier* ) DATA="/lustre/orion/cli115/world-shared/zender" ; CSZ_BIN_DIR="~zender/bin_andes" ; ;;
-    bebop* ) DATA="/lcrc/group/e3sm/ac.zender/data" ; CSZ_BIN_DIR="/home/ac.zender/bin" ; ;;
-    chrysalis* ) DATA="/home/ac.zender/data" ; CSZ_BIN_DIR="/home/ac.zender/bin_chrysalis" ; ;;
-    compy* ) DATA="/qfs/people/zender/data" ; CSZ_BIN_DIR="/qfs/people/zender/bin" ; ;;
-    derecho* ) DATA="/glade/work/zender" ; CSZ_BIN_DIR="/glade/home/zender/bin" ; ;;
-    e3sm* ) DATA="/home/zender/data" ; CSZ_BIN_DIR="/home/zender/bin" ; ;;
-    frontier* ) DATA="/lustre/orion/cli115/world-shared/zender" ; CSZ_BIN_DIR="~zender/bin_frontier" ; ;;
-    ilogin* ) DATA="/home/ac.zender/data" ; CSZ_BIN_DIR="/home/ac.zender/bin_chrysalis" ; ;;
-    imua* ) DATA="/home/zender/data" ; CSZ_BIN_DIR="/Users/home/zender/bin" ; ;;
-    maluhia* ) DATA="/Users/zender/data" ; CSZ_BIN_DIR="/Users/zender/bin" ; ;;
-    spectral* ) DATA="/Users/zender/data" ; CSZ_BIN_DIR="/Users/zender/bin" ; ;;
-    perlmutter* ) DATA="/global/cfs/cdirs/e3sm/zender" ; CSZ_BIN_DIR="/global/cfs/cdirs/e3sm/zender/bin_perlmutter" ; ;;
-    * ) DATA="/home/zender/data" ; CSZ_BIN_DIR="/home/zender/bin" ; ;; # default
+    andes* | frontier* ) DATA="/lustre/orion/cli115/world-shared/zender" ; MY_BIN_DIR="~zender/bin_andes" ; ;;
+    bebop* ) DATA="/lcrc/group/e3sm/ac.zender/data" ; MY_BIN_DIR="/home/ac.zender/bin" ; ;;
+    chrysalis* ) DATA="/home/ac.zender/data" ; MY_BIN_DIR="/home/ac.zender/bin_chrysalis" ; ;;
+    compy* ) DATA="/qfs/people/zender/data" ; MY_BIN_DIR="/qfs/people/zender/bin" ; ;;
+    derecho* ) DATA="/glade/work/zender" ; MY_BIN_DIR="/glade/home/zender/bin" ; ;;
+    e3sm* ) DATA="/home/zender/data" ; MY_BIN_DIR="/home/zender/bin" ; ;;
+    frontier* ) DATA="/lustre/orion/cli115/world-shared/zender" ; MY_BIN_DIR="~zender/bin_frontier" ; ;;
+    ilogin* ) DATA="/home/ac.zender/data" ; MY_BIN_DIR="/home/ac.zender/bin_chrysalis" ; ;;
+    imua* ) DATA="/home/zender/data" ; MY_BIN_DIR="/Users/home/zender/bin" ; ;;
+    maluhia* ) DATA="/Users/zender/data" ; MY_BIN_DIR="/Users/zender/bin" ; ;;
+    spectral* ) DATA="/Users/zender/data" ; MY_BIN_DIR="/Users/zender/bin" ; ;;
+    perlmutter* ) DATA="/global/cfs/cdirs/e3sm/zender" ; MY_BIN_DIR="/global/cfs/cdirs/e3sm/zender/bin_perlmutter" ; ;;
+    * ) DATA="/home/zender/data" ; MY_BIN_DIR="/home/zender/bin" ; ;; # default
 esac # !${HOST_FFC}
 
 # Set Conda environment
@@ -91,12 +91,15 @@ esac # !${HOST_FFC}
 
 # Use scripts from my latest snapshot (not from Conda-Forge)
 # Invoke scripts with --npo to access my latest binaries as well
-NCREMAP="${CSZ_BIN_DIR}/ncremap --npo"
-NCCLIMO="${CSZ_BIN_DIR}/ncclimo --npo"
+NCREMAP="${MY_BIN_DIR}/ncremap --npo"
+NCCLIMO="${MY_BIN_DIR}/ncclimo --npo"
 
 # Work in temporary directory to reduce unecessary bloat
 WORKDIR=$(mktemp -d)
 cd "${WORKDIR}" || exit 1
+
+${NCREMAP} --config
+printf "\nExit code: $?\n"
 
 printf "\nTest climos and regridding...\n"
 ${NCCLIMO} -P eam -v FSNT,AODVIS,TREFHT -c v3.LR.piControl -s 460 -e 461 -i ${DATA}/ne30/raw -o ${WORKDIR}/ne30/clm -O ${WORKDIR}/ne30/rgr -r ${DATA}/maps/map_ne30pg2_to_cmip6_180x360_traave.20231201.nc
@@ -115,10 +118,18 @@ ${NCCLIMO} -v FSNT -c v3.LR.piControl -s 460 -e 461 --mth_srt=10 -i ${DATA}/ne30
 printf "\nExit code: $?\n"
 
 printf "\nTest parallel ESMF map generation...\n"
-${NCREMAP} --mpi_nbr=4 -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=esmfaave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
+${NCREMAP} --wgt_opt=' ' --mpi_nbr=4 --alg_typ=esmfaave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
 printf "\nExit code: $?\n"
 
 printf "\nTest parallel MOAB map generation...\n"
+${NCREMAP} --mpi_nbr=4 --alg_typ=traave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
+printf "\nExit code: $?\n"
+
+printf "\nTest parallel ESMF map generation and regridding...\n"
+${NCREMAP} --wgt_opt=' ' --mpi_nbr=4 -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=esmfaave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
+printf "\nExit code: $?\n"
+
+printf "\nTest parallel MOAB map generation and regridding...\n"
 ${NCREMAP} --mpi_nbr=4 -v FSNT,AODVIS --dbg=1 --vrb=3 --devnull=No --alg_typ=traave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc ${DATA}/bm/eamv2_ne30pg2l72.nc ~/foo.nc
 printf "\nExit code: $?\n"
 
