@@ -1,8 +1,16 @@
-2026-10-15  Charlie Zender  <zender@uci.edu>
+2026-10-16  Charlie Zender  <zender@uci.edu>
+
+	* ncremap: Find mpirun and srun executables for PBS and SLURM, respectively
 
 	* NCO 5.4.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha02: SurFilMusic';git push
 	git tag -a 5.4.2-alpha02 -m 'ncclimo: use --mpa_flg not -C; ncremap: cln prn';git push --tags
+
+	* nco_e3sm.sh: Add getopt() flags to controls setting NPO, loading E3SM-U, and hiding CSZ binaries
+
+	* ncremap: Remove srun from command to get erwg_vrs_sng
+
+2026-10-15  Charlie Zender  <zender@uci.edu>
 
 	* nco_e3sm.sh: Isolate map-construction tests, run --config first
 

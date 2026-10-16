@@ -374,9 +374,9 @@ if false; then
     sbatch -A e3sm --nodes=2 --time=00:30:00 --job-name=ncremap --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncremap.out ~/ncremap.slurm # Chrysalis
     sbatch -A e3sm --constraint=cpu --nodes=2 --time=00:30:00 --job-name=ncremap --mail-type=fail,end --mail-user=zender@uci.edu --output=${HOME}/ncremap.out ~/ncremap.slurm # Perlmutter
     # Infer grid, build map, then regrid
-    ncremap -a esmfaave -v FSNT -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw --drc_out=${DATA}/ne30/rgr
-    ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a esmfaave -M -d ${DATA}/dstmch90/dstmch90_clm.nc --drc_out=${DATA}/ne30/rgr
-    ncremap -a esmfaave -v FSNT -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw --drc_out=${DATA}/ne30/rgr
+    ncremap -a esmfaave -v FSNT -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw --drc_out=${TMPDIR}
+    ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a esmfaave -M -d ${DATA}/dstmch90/dstmch90_clm.nc --drc_out=${TMPDIR}
+    ncremap -a esmfaave -v FSNT -s ${DATA}/grids/ne30np4_pentagons.20190501.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw --drc_out=${TMPDIR}
     ncremap -P airs -v TSurfAir -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2014.10.01.202.L2.RetStd.v6.0.11.0.G14275134307.hdf ~/airs_out.nc
     ncremap -v CloudFrc_A -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf ~/foo.nc
     ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf ~/foo.nc
@@ -670,6 +670,8 @@ mem_mb=0 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode (0 indic
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpa_flg='No' # [flg] MPAS attributes have already been fiddled with
 mpaso_var_zmid='timeMonthly_avg_zMid' # [sng] Name of MPAS-O 3D depth variable
+mpi_exe_pbs='mpirun' # [sng] PBS MPI command
+mpi_exe_slr='srun' # [sng] SLURM MPI command
 mpi_flg='No' # [sng] Parallelize over nodes
 mpi_nbr=1 # [nbr] Number of tasks-per-node that MPI-enabled weight generators will request (should be >= prt_nbr)
 mpi_nbr_usr='' # [nbr] Number of tasks-per-node that MPI-enabled weight generators will request (user_specified)
@@ -1174,16 +1176,18 @@ fi # !dbg_lvl
 # https://stackoverflow.com/questions/37056192/which-vs-command-v-in-bash
 # 20260830 Appending || true ensures built-in command() returns success code when argument is not found
 # This prevents command() from triggering the error handler in set -e mode
-cmd_wgt_esmf=$(command -v "${wgt_exe_esmf}" --no_log 2>/dev/null || true)
 cmd_cnv_mbt=$(command -v "${cnv_exe_mbt}" 2>/dev/null || true)
 cmd_cnv_tps=$(command -v "${cnv_exe_tps}" 2>/dev/null || true)
 cmd_dpt_mpas=$(command -v "${dpt_exe_mpas}" --no_log 2> /dev/null || true)
+cmd_mpi_pbs=$(command -v "${mpi_exe_pbs}" 2>/dev/null || true)
+cmd_mpi_slr=$(command -v "${mpi_exe_slr}" 2>/dev/null || true)
+cmd_msh_tps=$(command -v "${msh_exe_tps}" 2>/dev/null || true)
 cmd_prt_mbt=$(command -v "${prt_exe_mbt}" 2>/dev/null || true)
 cmd_wgt_cdo=$(command -v "${wgt_exe_cdo}" 2>/dev/null || true)
+cmd_wgt_esmf=$(command -v "${wgt_exe_esmf}" --no_log 2>/dev/null || true)
 cmd_wgt_mbt=$(command -v "${wgt_exe_mbt}" 2>/dev/null || true)
 cmd_wgt_nco=$(command -v "${wgt_exe_nco}" 2>/dev/null || true)
 cmd_wgt_tps=$(command -v "${wgt_exe_tps}" 2>/dev/null || true)
-cmd_msh_tps=$(command -v "${msh_exe_tps}" 2>/dev/null || true)
 if [[ ${vrs_prn:-} == 'Yes' ]]; then
     printf "${spt_nm}, the NCO regridder and grid, map, and weight-generator, version ${nco_vrs} \"${nco_sng}\"\n"
     printf "Copyright (C) 2016--present Charlie Zender\n"
@@ -1250,6 +1254,16 @@ if [[ ${vrs_prn:-} == 'Yes' ]]; then
 	printf "Config: TempestRemap Mesh or SCRIP to Exodus conversion command ${cnv_exe_tps} found as ${cmd_cnv_tps}\n"
     else
 	printf "Config: TempestRemap Mesh or SCRIP to Exodus conversion command ${cnv_exe_tps} not found\n"
+    fi # !err
+    if [[ ${cmd_mpi_pbs:-} ]]; then
+	printf "Config: MPI invocation command for PBS ${mpi_exe_pbs} found as ${cmd_mpi_pbs}\n"
+    else
+	printf "Config: PBS MPI invocation command ${mpi_exe_pbs} not found\n"
+    fi # !err
+    if [[ ${cmd_mpi_slr:-} ]]; then
+	printf "Config: MPI invocation command for SLURM ${mpi_exe_slr} found as ${cmd_mpi_slr}\n"
+    else
+	printf "Config: SLURM MPI invocation command ${mpi_exe_slr} not found\n"
     fi # !err
     exit_gracefully 0
 fi # !vrs_prn
@@ -1591,7 +1605,7 @@ fi # !mpi_pfx
 if [[ ${wgt_typ:-} == 'esmf' ]]; then
     # 20180830 Add --ignore_degenerate to default ERWG options for ESMF >= 7.1.0r
     # 20181114 Add --no_log so ERWG does not try to write logfile into current (possibly write-protected) directory 
-    erwg_vrs_sng=$(${mpi_pfx} ${wgt_exe_esmf} --no_log --version | grep ESMF_VERSION_STRING | cut -f 2 -d ':')
+    erwg_vrs_sng=$(${wgt_exe_esmf} --no_log --version | grep ESMF_VERSION_STRING | cut -f 2 -d ':')
     # Remove whitespace, answer should be something like "7.1.0r" or "6.3.0rp1"
     erwg_vrs_sng="${erwg_vrs_sng#"${erwg_vrs_sng%%[![:space:]]*}"}"
     # Extract first character
