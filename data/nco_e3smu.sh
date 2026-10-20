@@ -38,6 +38,18 @@ function exit_gracefully {
     fi
 } # !exit_gracefully()
 
+# Define error handlers
+function hnd_err {
+    # ERR Error handler. Called after Bash non-zero return code.
+    local exit_code=$?
+    local line_number=${BASH_LINENO[0]}
+    local failed_command="$BASH_COMMAND"
+    echo "❌ ABORT DUE TO NON-ZERO COMMAND EXIT CODE" >&2
+    echo "Failed Command: '$failed_command'" >&2
+    echo "Line Number   : $line_number" >&2
+    echo "Exit Status   : $exit_code" >&2
+} # !hnd_err()
+
 function hnd_xit {
     # EXIT Error handler. Called after exit().
     # Return terminal to normal state after errors
@@ -77,7 +89,7 @@ while [[ -h ${spt_src:-} ]]; do # Recursively resolve ${spt_src} until file is n
   spt_src="$(readlink "${spt_src}")"
   [[ ${spt_src:-} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
 done
-cmd_ln="${spt_src} ${@}"
+cmd_ln="${spt_src} $@"
 drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
 spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
 spt_pid=$$ # [nbr] Script PID (process ID)
@@ -168,6 +180,9 @@ fl_fmt='' # [enm] Output file format
 hyd_flg='No' # [sng] Hide CSZ executables
 npo_flg='Yes' # [sng] Set --npo (NCO-Path-Override) option
 npo_opt='' # [sng] Set --npo (NCO-Path-Override) option
+wgt_exe_nco='ncks' # [sng] NCO executable (both mesh- and weight-generation)
+spt_ncremap='ncremap' # [sng] NCO ncremap script
+spt_ncclimo='ncclimo' # [sng] NCO ncclimo script
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
@@ -232,53 +247,73 @@ done # !getopts
 shift $((OPTIND-1)) # Advance one argument
 psn_nbr=$#
 
-printf "nco_e3smu.sh config:\n"
+printf "nco_e3smu.sh, the NCO regression tester for E3SM-Unified compatibility:\n"
 
 if [[ ${e3smu_flg} == 'Yes' ]]; then
     # Set Conda environment
     case "${HOST_FFC:-}" in 
-	andes* ) source /ccs/proj/cli115/software/e3sm-unified/load_latest_e3sm_unified_andes.sh ; ;;
-	bebop* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh ; ;;
+	andes* ) echo "Config: Loading E3SM-Unified"; source /ccs/proj/cli115/software/e3sm-unified/load_latest_e3sm_unified_andes.sh ; ;;
+	bebop* ) echo "Config: Loading E3SM-Unified"; source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh ; ;;
 	#    chrysalis* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh ; ;;
 	#    chrysalis* ) source /home/ac.forsyth2/miniforge3/etc/profile.d/conda.sh ; conda activate test-e3sm-to-cmip-master-20260928_run2 ; ;; # Ryan's development path
-	chrysalis* ) source /lcrc/soft/climate/e3sm-unified/test_e3sm_unified_1.14.0rc3_chrysalis.sh; ;;
-	compy* ) source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh ; ;;
-	derecho* ) "E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
-	e3sm* ) echo "E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
-	frontier* ) source /load_latest_e3sm_unified_frontier.sh ; ;;
-	ilogin* ) source fxm/load_latest_e3sm_unified_chrysalis.sh ; ;;
-	imua* ) echo "E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
-	maluhia* ) echo "E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
-	spectral* ) echo "E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
-	#    perlmutter* ) source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh ; ;;
-	perlmutter* ) source /global/common/software/e3sm/anaconda_envs/test_e3sm_unified_1.14.0rc3_pm-cpu.sh ; ;;
-	* ) echo "E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;; # default
+	chrysalis* ) echo "Config: Loading E3SM-Unified"; source /lcrc/soft/climate/e3sm-unified/test_e3sm_unified_1.14.0rc3_chrysalis.sh; ;;
+	compy* ) echo "Config: Loading E3SM-Unified"; source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh ; ;;
+	derecho* ) "Config: E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
+	e3sm* ) echo "Config: E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
+	frontier* ) echo "Config: Loading E3SM-Unified"; source /load_latest_e3sm_unified_frontier.sh ; ;;
+	ilogin* ) echo "Config: Loading E3SM-Unified"; source fxm/load_latest_e3sm_unified_chrysalis.sh ; ;;
+	imua* ) echo "Config: E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
+	maluhia* ) echo "Config: E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
+	spectral* ) echo "Config: E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
+	#    perlmutter* ) echo "Config: Loading E3SM-Unified"; source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh ; ;;
+	perlmutter* ) echo "Config: Loading E3SM-Unified"; source /global/common/software/e3sm/anaconda_envs/test_e3sm_unified_1.14.0rc3_pm-cpu.sh ; ;;
+	* ) echo "Config: E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;; # default
     esac # !${HOST_FFC}
 else # !e3smu_flg
-    echo "E3SM-Unified environment not requested"
+    echo "Config: E3SM-Unified environment not requested"
 fi # !e3smu_flg
 
 if [[ ${hyd_flg} == 'Yes' ]]; then
-    echo "Removing CSZ binaries..."
+    echo "Config: Hiding CSZ binaries"
     /bin/rm -r -f ${MY_BIN_DIR}_tmp ${MY_LIB_DIR}_tmp;mv ${MY_BIN_DIR} ${MY_BIN_DIR}_tmp;mv ${MY_LIB_DIR} ${MY_LIB_DIR}_tmp # Remove my NCO from PATH
     /bin/rm -r -f anaconda_tmp;mv ~/anaconda ~/anaconda_tmp # Remove my Anaconda from PATH
 else # !hyd_flg
-    echo "Not hiding CSZ binaries"
+    echo "Config: Not hiding CSZ binaries"
 fi # !hyd_flg
 
 if [[ ${npo_flg} == 'Yes' ]]; then
     npo_opt='--npo'
-    echo "Setting NPO option with ${npo_opt}"
+    echo "Config: Setting NPO option with ${npo_opt}"
 else # !npo_flg
-    echo "Not setting NPO option"
+    echo "Config: Not setting NPO option"
 fi # !npo_flg
+
+cmd_nco_exe=$(command -v "${wgt_exe_nco}" 2>/dev/null || true)
+cmd_ncremap=$(command -v "${spt_ncremap}" 2>/dev/null || true)
+cmd_ncclimo=$(command -v "${spt_ncclimo}" 2>/dev/null || true)
+printf "Config: Script & binary executables availability:\n"
+if [[ ${cmd_nco_exe:-} ]]; then
+    printf "Config: NCO binary executable command ${wgt_exe_nco} found as ${cmd_nco_exe}\n"
+else
+    printf "Config: NCO binary executable command ${wgt_exe_nco} not found\n"
+fi # !err
+if [[ ${cmd_ncclimo:-} ]]; then
+    printf "Config: NCO script executable command ${spt_ncclimo} found as ${cmd_ncclimo}\n"
+else
+    printf "Config: NCO binary executable command ${spt_ncclimo} not found\n"
+fi # !err
+if [[ ${cmd_ncremap:-} ]]; then
+    printf "Config: NCO script executable command ${spt_ncremap} found as ${cmd_ncremap}\n"
+else
+    printf "Config: NCO binary executable command ${spt_ncremap} not found\n"
+fi # !err
 
 printf "\n"
 
 # Use scripts from my latest snapshot (not from Conda-Forge)
 # Invoke scripts with --npo to access my latest binaries as well
-NCREMAP="${MY_BIN_DIR}/ncremap ${npo_opt}"
-NCCLIMO="${MY_BIN_DIR}/ncclimo ${npo_opt}"
+NCCLIMO="${spt_ncclimo} ${npo_opt}"
+NCREMAP="${spt_ncremap} ${npo_opt}"
 
 # Work in temporary directory to reduce unecessary bloat
 WORKDIR=$(mktemp -d)
