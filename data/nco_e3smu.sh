@@ -24,7 +24,7 @@ if false; then
 fi # !false
 
 # Safety: Exit immediately when ...
-#set -u # Exit on unbound variable reference
+set -u # Exit on unbound variable reference
 
 function exit_gracefully {
     local exit_code=${1:-0} # Default to exit code 0 if not specified
@@ -249,6 +249,8 @@ psn_nbr=$#
 
 printf "nco_e3smu.sh, the NCO regression tester for E3SM-Unified compatibility:\n"
 
+# 20261020: E3SM-U scripts in activate.d directory (e.g., cartopy_offline_data-activate.sh) contain unbound variables
+set +u # Allow unbound variable reference 
 if [[ ${e3smu_flg} == 'Yes' ]]; then
     # Set Conda environment
     case "${HOST_FFC:-}" in 
@@ -272,6 +274,7 @@ if [[ ${e3smu_flg} == 'Yes' ]]; then
 else # !e3smu_flg
     echo "Config: E3SM-Unified environment not requested"
 fi # !e3smu_flg
+set -u # Exit on unbound variable reference
 
 if [[ ${hyd_flg} == 'Yes' ]]; then
     echo "Config: Hiding CSZ binaries"

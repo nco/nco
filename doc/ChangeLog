@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha02: SurFilMusic';git push
 	git tag -a 5.4.2-alpha02 -m 'ncclimo: use --mpa_flg not -C; ncremap: cln prn, mpirun/srun chk; nco_e3sm.sh: config, getopt()';git push --tags
 
-	* nco_e3sm.sh: Remove "set -u" because cartopy load in E3SM-U fails. Update to rc4.
+	* nco_e3sm.sh: Fencepost E3SM-U loads with "set +/-u" because cartopy load in E3SM-U fails
+
+	* Update to rc4
 
 	* ncremap: Fix ${@}. Reformat config labels. Add hnd_err().
 
