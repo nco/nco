@@ -24,7 +24,7 @@ if false; then
 fi # !false
 
 # Safety: Exit immediately when ...
-set -u # Exit on unbound variable reference
+#set -u # Exit on unbound variable reference
 
 function exit_gracefully {
     local exit_code=${1:-0} # Default to exit code 0 if not specified
@@ -256,7 +256,7 @@ if [[ ${e3smu_flg} == 'Yes' ]]; then
 	bebop* ) echo "Config: Loading E3SM-Unified"; source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh ; ;;
 	#    chrysalis* ) source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh ; ;;
 	#    chrysalis* ) source /home/ac.forsyth2/miniforge3/etc/profile.d/conda.sh ; conda activate test-e3sm-to-cmip-master-20260928_run2 ; ;; # Ryan's development path
-	chrysalis* ) echo "Config: Loading E3SM-Unified"; source /lcrc/soft/climate/e3sm-unified/test_e3sm_unified_1.14.0rc3_chrysalis.sh; ;;
+	chrysalis* ) echo "Config: Loading E3SM-Unified"; source /lcrc/soft/climate/e3sm-unified/test_e3sm_unified_1.14.0rc4_chrysalis.sh; ;;
 	compy* ) echo "Config: Loading E3SM-Unified"; source /share/apps/E3SM/conda_envs/load_latest_e3sm_unified_compy.sh ; ;;
 	derecho* ) "Config: E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
 	e3sm* ) echo "Config: E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
@@ -266,7 +266,7 @@ if [[ ${e3smu_flg} == 'Yes' ]]; then
 	maluhia* ) echo "Config: E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
 	spectral* ) echo "Config: E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;;
 	#    perlmutter* ) echo "Config: Loading E3SM-Unified"; source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh ; ;;
-	perlmutter* ) echo "Config: Loading E3SM-Unified"; source /global/common/software/e3sm/anaconda_envs/test_e3sm_unified_1.14.0rc3_pm-cpu.sh ; ;;
+	perlmutter* ) echo "Config: Loading E3SM-Unified"; source /global/common/software/e3sm/anaconda_envs/test_e3sm_unified_1.14.0rc4_pm-cpu.sh ; ;;
 	* ) echo "Config: E3SM-Unified environment requested but unavailable on ${HOST_FFC}" ; ;; # default
     esac # !${HOST_FFC}
 else # !e3smu_flg
