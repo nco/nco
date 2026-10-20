@@ -17,13 +17,13 @@ if false; then
     /bin/rm ~/nco_e3smu.o*; sbatch --output=${HOME}/nco_e3smu.o%j --mail-type=fail,end --mail-user=zender@uci.edu ~/nco/data/nco_e3smu.sh
     # Maluhia
     /bin/rm ~/nco_e3smu.o*; ~/nco/data/nco_e3smu.sh > ~/nco_e3smu.o$! 2>&1 # Default
-    /bin/rm ~/nco_e3smu.o*; ~/nco/data/nco_e3smu.sh --no_e3smu --no_npo > ~/nco_e3smu.o$! 2>&1 # 
+    /bin/rm ~/nco_e3smu.o*; ~/nco/data/nco_e3smu.sh --no_e3smu --no_npo > ~/nco_e3smu.o$! 2>&1 # Similar to Default
     # Perlmutter:
     /bin/rm ~/nco_e3smu.o*; sbatch --output=${HOME}/nco_e3smu.o%j --mail-type=fail,end --mail-user=zender@uci.edu --constraint=cpu ~/nco/data/nco_e3smu.sh
     m ~/nco_e3smu.o*
 fi # !false
 
-# Safety: Exit immediately when any command returns non-zero exit status, uninitialized variables are used, or pipes fail
+# Safety: Exit immediately when ...
 set -u # Exit on unbound variable reference
 
 function exit_gracefully {
@@ -37,6 +37,56 @@ function exit_gracefully {
         exit "$exit_code"
     fi
 } # !exit_gracefully()
+
+function hnd_xit {
+    # EXIT Error handler. Called after exit().
+    # Return terminal to normal state after errors
+    local exit_code=$?
+    if (( exit_code == 3 )); then
+	# exit_code 3 is only used by fnc_usg_prn()
+	if [[ -t 1 ]]; then
+	    printf "\e[0m" # Normal font
+	fi # !TERM
+    fi # !exit_code
+} # !hnd_xit()
+
+function hnd_int {
+    # SIGINT Error handler. Trap set by interrupting with Ctrl-C.
+    # Print line where it happened, exit with standard SIGINT code
+    local line_number=${1}
+    local exit_code=130
+    echo "\nInterrupted by Ctrl-C at line ${line_number}" >&2
+    echo "Exiting with SIGINT status ${exit_code}" >&2
+    exit_gracefully ${exit_code}
+} # !hnd_int()
+
+# Register error handlers
+trap 'printf "\nInterrupted by Ctrl-C\n"' INT # Call hnd_int() on SIGINT signal, i.e., Ctrl-C
+trap hnd_err ERR # Call hnd_err() on Bash ERR pseudosignal, i.e., non-zero return code
+trap hnd_xit EXIT # Call hnd_xit() on Bash EXIT pseudosignal, i.e., after exit()
+
+# Set script name, directory, PID, run directory
+# Set these before 'module' command which can overwrite ${BASH_SOURCE[0]}
+# NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
+# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+drc_pwd=${PWD} # [sng] Run directory
+spt_src="${BASH_SOURCE[0]}"
+[[ -z ${spt_src:-} ]] && spt_src="${0}" # Use ${0} when BASH_SOURCE is unavailable (e.g., dash)
+while [[ -h ${spt_src:-} ]]; do # Recursively resolve ${spt_src} until file is no longer a symlink
+  drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
+  spt_src="$(readlink "${spt_src}")"
+  [[ ${spt_src:-} != /* ]] && spt_src="${drc_spt}/${spt_src}" # If ${spt_src} was relative symlink, resolve it relative to path where symlink file was located
+done
+cmd_ln="${spt_src} ${@}"
+drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
+spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
+spt_pid=$$ # [nbr] Script PID (process ID)
+# Fetch parent process command line using cross-platform 'ps' target
+prn_cmd=$(ps -p $PPID -o command= 2>/dev/null || ps -p $PPID -o args=)
+# Extract target script path (skipping interpreter if present)
+prn_pth=$(echo "$prn_cmd" | awk '{print ($1 ~ /sh$/) ? $2 : $1}')
+# Isolate pure filename
+prn_nm=$(basename -- "$prn_pth")
 
 if [[ -z ${HOSTNAME:-} ]]; then
     if [[ -f /bin/hostname ]] && [[ -x /bin/hostname ]]; then
@@ -85,6 +135,31 @@ case "${HOST_FFC:-}" in
     * ) DATA="/home/zender/data" ; MY_BIN_DIR="/home/zender/bin" ; ;; # default
 esac # !${HOST_FFC}
 
+# When running in a terminal window (not in an non-interactive batch queue)...
+if [[ ${TERM:-} ]]; then
+    # If stdout is connected to a terminal
+    if [[ -t 1 ]]; then
+	# Set terminal fonts for legibility
+	if [[ -x /usr/bin/tput ]]; then
+	    fnt_bld=$(tput bold) # Bold
+	    fnt_nrm=$(tput sgr0) # Normal
+	    fnt_rvr=$(tput smso) # Reverse
+	    fnt_tlc=$(tput sitm) # Italic
+	else
+	    fnt_bld="\e[1m" # Bold
+	    fnt_nrm="\e[0m" # Normal
+	    fnt_rvr="\e[07m" # Reverse
+	    fnt_tlc="\e[3m" # Italic
+	fi # !tput
+    else # !t
+	# Otherwise do not specially format text
+	fnt_bld='' # Bold
+	fnt_nrm='' # Normal
+	fnt_rvr='' # Reverse
+	fnt_tlc='' # Italic
+    fi # !t
+fi # !TERM
+
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 dbg_lvl=0 # [nbr] Debugging level
@@ -93,6 +168,27 @@ fl_fmt='' # [enm] Output file format
 hyd_flg='No' # [sng] Hide CSZ executables
 npo_flg='Yes' # [sng] Set --npo (NCO-Path-Override) option
 npo_opt='' # [sng] Set --npo (NCO-Path-Override) option
+
+function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
+    # Print usage
+    printf "${fnt_rvr}Basic usage:\n"
+    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --map=map.nc in_fl out_fl${fnt_nrm} # Apply existing map from in->out\n"
+    echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
+    echo "${fnt_rvr}-3${fnt_nrm}          Output file format ${fmt_sng_nc3} [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
+    echo "${fnt_rvr}-4${fnt_nrm}          Output file format ${fmt_sng_nc4} [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
+    echo "${fnt_rvr}-5${fnt_nrm}          Output file format ${fmt_sng_nc5} [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
+    echo "${fnt_rvr}-6${fnt_nrm}          Output file format ${fmt_sng_nc6} [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
+    echo "${fnt_rvr}-7${fnt_nrm}          Output file format ${fmt_sng_nc7} [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
+    echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
+    echo " ${fnt_bld}--no_add_fll${fnt_nrm}  Do not add _FillValue to fields with empty destination cells [${fnt_tlc}no_add_fll, no_add_fill_value, no_fll_mpt, no_fill_empty${fnt_nrm}]"
+    printf "\n"
+    printf "Examples: ${fnt_bld}${spt_nm} -m ${map_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
+    # Terminal currently has boldface, italic, and reverse fonts
+    # Resetting terminal would translate those back into escape code gibberish
+    # Use exit code 3 (not reserved by system) so hnd_xit() does not reset screen
+    exit_gracefully 3
+} # !fnc_usg_prn()
 
 while getopts :34567D:n:-: OPT; do
     case ${OPT} in

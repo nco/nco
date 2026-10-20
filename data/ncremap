@@ -1256,12 +1256,12 @@ if [[ ${vrs_prn:-} == 'Yes' ]]; then
 	printf "Config: TempestRemap Mesh or SCRIP to Exodus conversion command ${cnv_exe_tps} not found\n"
     fi # !err
     if [[ ${cmd_mpi_pbs:-} ]]; then
-	printf "Config: MPI invocation command for PBS ${mpi_exe_pbs} found as ${cmd_mpi_pbs}\n"
+	printf "Config: PBS MPI invocation command ${mpi_exe_pbs} found as ${cmd_mpi_pbs}\n"
     else
 	printf "Config: PBS MPI invocation command ${mpi_exe_pbs} not found\n"
     fi # !err
     if [[ ${cmd_mpi_slr:-} ]]; then
-	printf "Config: MPI invocation command for SLURM ${mpi_exe_slr} found as ${cmd_mpi_slr}\n"
+	printf "Config: SLURM MPI invocation command ${mpi_exe_slr} found as ${cmd_mpi_slr}\n"
     else
 	printf "Config: SLURM MPI invocation command ${mpi_exe_slr} not found\n"
     fi # !err
