@@ -14,7 +14,9 @@
 # Invoke machine-specific SBATCH parameters on command line, and the rest as shell comments
 if false; then
     # Chrysalis:
-    /bin/rm ~/nco_e3smu.o*; sbatch --output=${HOME}/nco_e3smu.o%j --mail-type=fail,end --mail-user=zender@uci.edu ~/nco/data/nco_e3smu.sh
+    /bin/rm ~/nco_e3smu.o*; sbatch --output=${HOME}/nco_e3smu.o%j --mail-type=fail,end --mail-user=zender@uci.edu ~/nco/data/nco_e3smu.sh --no_e3smu # Environment during my normal NCO development
+    /bin/rm ~/nco_e3smu.o*; sbatch --output=${HOME}/nco_e3smu.o%j --mail-type=fail,end --mail-user=zender@uci.edu ~/nco/data/nco_e3smu.sh --e3smu --hide_csz --no_npo # Environment typically experienced by E3SM-U users
+    /bin/rm ~/nco_e3smu.o*; sbatch --output=${HOME}/nco_e3smu.o%j --mail-type=fail,end --mail-user=zender@uci.edu ~/nco/data/nco_e3smu.sh --e3smu --hide_csz --npo # Environment during E3SMU testing with --npo
     # Maluhia
     /bin/rm ~/nco_e3smu.o*; ~/nco/data/nco_e3smu.sh > ~/nco_e3smu.o$! 2>&1 # Default
     /bin/rm ~/nco_e3smu.o*; ~/nco/data/nco_e3smu.sh --no_e3smu --no_npo > ~/nco_e3smu.o$! 2>&1 # Similar to Default
@@ -172,6 +174,13 @@ if [[ ${TERM:-} ]]; then
     fi # !t
 fi # !TERM
 
+# Pre-define enumerated types used in defaults
+fmt_sng_nc3='CLASSIC (netCDF3 classic CDF1)'
+fmt_sng_nc4='NETCDF4 (netCDF4 extended HDF5)'
+fmt_sng_nc5='64BIT_DATA (netCDF3/pnetCDF CDF5)'
+fmt_sng_nc6='64BIT_OFFSET (netCDF3 64bit CDF2)'
+fmt_sng_nc7='NETCDF4_CLASSIC (netCDF4 classic HDF5)'
+
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 dbg_lvl=0 # [nbr] Debugging level
@@ -187,7 +196,7 @@ spt_ncclimo='ncclimo' # [sng] NCO ncclimo script
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
     printf "${fnt_rvr}Basic usage:\n"
-    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --map=map.nc in_fl out_fl${fnt_nrm} # Apply existing map from in->out\n"
+    printf "${fnt_nrm} ${fnt_bld}${spt_nm}${fnt_nrm} # Use default settings\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
     echo "${fnt_rvr}-3${fnt_nrm}          Output file format ${fmt_sng_nc3} [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
     echo "${fnt_rvr}-4${fnt_nrm}          Output file format ${fmt_sng_nc4} [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
@@ -195,9 +204,15 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-6${fnt_nrm}          Output file format ${fmt_sng_nc6} [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format ${fmt_sng_nc7} [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
-    echo " ${fnt_bld}--no_add_fll${fnt_nrm}  Do not add _FillValue to fields with empty destination cells [${fnt_tlc}no_add_fll, no_add_fill_value, no_fll_mpt, no_fill_empty${fnt_nrm}]"
+    echo " ${fnt_bld}--e3smu${fnt_nrm}    Load E3SM-Unified [${fnt_tlc}e3smu, e3smu_flg${fnt_nrm}]"
+    echo " ${fnt_bld}--help${fnt_nrm}     Print usage summary [${fnt_tlc}help, hlp, usage, usg${fnt_nrm}]"
+    echo " ${fnt_bld}--hyd${fnt_nrm}      Load E3SM-Unified [${fnt_tlc}hyd, hide, hide_csz, hide_csz_exe, hyd_flg${fnt_nrm}]"
+    echo " ${fnt_bld}--npo${fnt_nrm}      Set --npo (NCO-Path-Override) option [${fnt_tlc}npo, npo_flg${fnt_nrm}]"
+    echo " ${fnt_bld}--no_e3smu${fnt_nrm} Do not load E3SM-Unified [${fnt_tlc}no_e3smu, no_e3smu_flg${fnt_nrm}]"
+    echo " ${fnt_bld}--no_hyd${fnt_nrm}   Do not load E3SM-Unified [${fnt_tlc}no_hyd, no_hide, no_hide_csz, no_hide_csz_exe, no_hyd_flg${fnt_nrm}]"
+    echo " ${fnt_bld}--no_npo${fnt_nrm}   Do not set --npo (NCO-Path-Override) option [${fnt_tlc}no_npo, no_npo_flg${fnt_nrm}]"
     printf "\n"
-    printf "Examples: ${fnt_bld}${spt_nm} -m ${map_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "Examples: ${fnt_bld}${spt_nm} --no_e3smu ${fnt_nrm}\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
     # Terminal currently has boldface, italic, and reverse fonts
     # Resetting terminal would translate those back into escape code gibberish
@@ -205,6 +220,15 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     exit_gracefully 3
 } # !fnc_usg_prn()
 
+# Check argument number and complain accordingly
+arg_nbr=$#
+if [[ ${arg_nbr:-} -eq 73 ]]; then
+  fnc_usg_prn
+fi # !arg_nbr
+
+# Parse command-line options:
+# http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
+# http://tuxtweaks.com/2014/05/bash-getopts
 while getopts :34567D:n:-: OPT; do
     case ${OPT} in
 	3) fl_fmt='3' ;; # File format
@@ -224,13 +248,13 @@ while getopts :34567D:n:-: OPT; do
 	       # Long options with short counterparts, ordered by short option key
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl=$((10#${LONG_OPTARG})) ;; # -d # Debugging level
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
-	       hyd | hide | hide_csz_exe | hyd_flg ) hyd_flg='Yes' ;; # -h # Hide CSZ executable directories
-	       hyd=?* | hide | hide_csz_exe | hyd_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # -e # Hide CSZ executable directories
-	       no_hyd | no_hide | no_hide_csz_exe | no_hyd_flg ) hyd_flg='No' ;; # -h # Do not hide CSZ executables
-	       no_hyd=?* | no_hide | no_hide_csz_exe | hyd_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Do not hide CSZ executables
+	       help | hlp | usage | usg ) fnc_usg_prn ;; # # Print usage summary
+	       help=?* | hlp=?* | usage=?* | usg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Print usage summary
+	       hyd | hide | hide_csz | hide_csz_exe | hyd_flg ) hyd_flg='Yes' ;; # -h # Hide CSZ executable directories
+	       no_hyd=?* | no_hide=?* | no_hide_csz_exe=?* | hyd_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Do not hide CSZ executables
 	       e3smu | e3smu_flg ) e3smu_flg='Yes' ;; # -e # Load E3SM-Unified
 	       e3smu=?* | e3smu_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # -e # Load E3SM-Unified
-	       no_e3smu | no_e3smu_flg ) e3smu_flg='No' ;; # # No not load E3SM-Unified
+	       no_e3smu | no_e3smu_flg ) e3smu_flg='No' ;; # # Do not load E3SM-Unified
 	       no_e3smu=?* | no_e3smu_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Do not load E3SM-Unified
 	       no_npo | no_npo_flg ) npo_flg='No' ;; # -n # Do not set --npo (NCO-Path-Override) option
 	       no_npo=?* | no_npo_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # -n # Do not set --npo (NCO-Path-Override) option
@@ -240,8 +264,7 @@ while getopts :34567D:n:-: OPT; do
                * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;; # !OPTARG
 	\?) # Unrecognized option
-	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not recognized\n" >&2
-	    fnc_usg_prn ;;
+	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not recognized\n" >&2; fnc_usg_prn ;;
     esac # !OPT
 done # !getopts
 shift $((OPTIND-1)) # Advance one argument
@@ -341,8 +364,12 @@ printf "\nTest flexible months...\n"
 ${NCCLIMO} -v FSNT -c v3.LR.piControl -s 460 -e 461 --mth_srt=10 -i ${DATA}/ne30/raw -o ${WORKDIR}/ne30/clm
 printf "\nExit code: $?\n"
 
+printf "\nTest serial NCO map generation...\n"
+${NCREMAP} --alg_typ=ncoaave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
+printf "\nExit code: $?\n"
+
 printf "\nTest parallel ESMF map generation...\n"
-${NCREMAP} --wgt_opt=' ' --mpi_nbr=4 --alg_typ=esmfaave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
+${NCREMAP} --wgt_opt=' ' --mpi_nbr=4 --alg_typ=esmfaave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc # Setting wgt_opt=' ' forces serial execution
 printf "\nExit code: $?\n"
 
 printf "\nTest parallel MOAB map generation...\n"
