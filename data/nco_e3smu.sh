@@ -113,7 +113,7 @@ fi # HOSTNAME
 # Disambiguate to find effective host name = HOST_FFC
 # HOST_FFC is common machine name instead of login or compute node name
 HOST_FFC="${HOSTNAME}"
-case "${HOST_FFC}" in
+case "${HOSTNAME}" in
     andes* ) HOST_FFC='andes' ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
     bebop* | blogin* | b[0123456789][0123456789][0123456789] ) HOST_FFC='bebop' ; ;; # ALCF LCRC bebop compute nodes named bNNN, 16|64 cores|GB/node 
     chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | ilogin* | i[0123456789][0123456789][0123456789] ) HOST_FFC='chrysalis' ; ;; # ANL LCRC
@@ -130,7 +130,7 @@ case "${HOST_FFC}" in
 	fi # !LMOD_SYSTEM_NAME
 	;; # !login	
     perlmutter* | nid[0123456789][0123456789][0123456789][0123456789][0123456789][0123456789] ) HOST_FFC='perlmutter' ; ;; # NERSC
-esac # !${HOST_FFC}
+esac # !${HOSTNAME}
 export HOST_FFC
 
 # Default input and output directory root is ${DATA}
