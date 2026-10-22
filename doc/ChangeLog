@@ -1,8 +1,14 @@
-2026-10-20  Charlie Zender  <zender@uci.edu>
+2026-10-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha02: SurFilMusic';git push
-	git tag -a 5.4.2-alpha02 -m 'ncclimo: use --mpa_flg not -C; ncremap: cln prn, mpirun/srun chk; nco_e3sm.sh: config, getopt(), fnc_usg_prn';git push --tags
+	git tag -a 5.4.2-alpha02 -m 'all: HOST_FFC; ncclimo: use --mpa_flg not -C; ncremap: cln prn, mpirun/srun chk; nco_e3sm.sh: config, getopt(), fnc_usg_prn';git push --tags
+
+	* 
+
+	* nco_e3sm.sh/ncremap/ncclimo: Use HOST_FFC for machine-dependent branches. Add uci_mbp, uci_lnx.
+
+2026-10-20  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo/ncremap: Add help options
 
