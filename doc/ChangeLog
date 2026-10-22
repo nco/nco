@@ -1,5 +1,9 @@
 2026-10-22  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.4.2-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha03: Amos and Donovan';git push
+	git tag -a 5.4.2-alpha03 -m 'fxm';git push --tags
+
 	* NCO 5.4.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha02: SurFilMusic';git push
 	git tag -a 5.4.2-alpha02 -m 'all: HOST_FFC; ncclimo: use --mpa_flg not -C; ncremap: cln prn, mpirun/srun chk; nco_e3sm.sh: config, getopt(), fnc_usg_prn';git push --tags
