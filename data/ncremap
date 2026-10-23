@@ -946,6 +946,41 @@ function ncvarlst { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | se
 function ncdmnlst { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
 function nchasvar { ncks --trd -C -m -v ${1} ${2} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' ; }
 
+function grd_fmt_typ {
+    # Purpose: Return enumerated grid format type (nc3, nc4, trg, exo)
+    # Usage: grd_fmt_typ ${fl}
+    if [[ $# -ne 1 ]]; then
+        echo "${spt_nm}: ERROR grd_fmt_typ requires one filename" >&2
+        return 1
+    fi
+    local fl="${1}"
+    local fmt=''
+
+    case "${fl}" in
+        *.g) printf 'trg' ; return 0 ;;
+        *.exo) printf 'exo' ; return 0 ;;
+    esac
+
+    if [[ ! -f "${fl}" || ! -r "${fl}" ]]; then
+        echo "${spt_nm}: ERROR grd_fmt_typ cannot read file ${fl}" >&2
+        return 1
+    fi
+    # Prefix relative paths so filenames beginning with "-" are not options
+    [[ "${fl}" == /* ]] || fl="./${fl}"
+    # ncks -k reports the format on stderr
+    if ! fmt=$(ncks -k "${fl}" 2>&1); then
+        echo "${spt_nm}: ERROR grd_fmt_typ cannot determine format for ${fl}" >&2
+        return 1
+    fi
+
+    case "${fmt}" in
+        *NC_FORMAT_NETCDF4*) printf 'nc4' ;;
+        *NC_FORMAT_CLASSIC* | *NC_FORMAT_64BIT_OFFSET* | \
+        *NC_FORMAT_64BIT_DATA* | *NC_FORMAT_CDF5*) printf 'nc3' ;;
+        *) echo "${spt_nm}: ERROR grd_fmt_typ unsupported format in ${fl}" >&2 ; return 1 ;;
+    esac
+} # !grd_fmt_typ()
+
 function dst_is_grd {
     # Purpose: Is destination grid specified as SCRIP grid-file?
     # fxm: Not working yet
