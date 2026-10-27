@@ -3003,13 +3003,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_char_att_put(out_id,"P0","long_name","Reference pressure");
     rcd=nco_char_att_put(out_id,"P0","standard_name","reference_air_pressure_for_atmosphere_vertical_coordinate");
     rcd=nco_char_att_put(out_id,"P0","units","Pa");
-    rcd=nco_char_att_put(out_id,"hyai","standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+    rcd=nco_char_att_put(out_id,"hyai","long_name","hybrid A coefficient at layer interfaces");
     rcd=nco_char_att_put(out_id,"hyai","units","1");
-    rcd=nco_char_att_put(out_id,"hybi","standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+    rcd=nco_char_att_put(out_id,"hybi","long_name","hybrid B coefficient at layer interfaces");
     rcd=nco_char_att_put(out_id,"hybi","units","1");
-    rcd=nco_char_att_put(out_id,"hyam","standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+    rcd=nco_char_att_put(out_id,"hyam","long_name","hybrid A coefficient at layer midpoints");
     rcd=nco_char_att_put(out_id,"hyam","units","1");
-    rcd=nco_char_att_put(out_id,"hybm","standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+    rcd=nco_char_att_put(out_id,"hybm","long_name","hybrid B coefficient at layer midpoints");
     rcd=nco_char_att_put(out_id,"hybm","units","1");
 
     if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
