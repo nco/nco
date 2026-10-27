@@ -983,8 +983,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      prs_ntf[time,lev,col]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
 
   /* Formula-terms for hybrid sigma-pressure vertical grid on unstructured SCREAM/EAMxx horizontal grid:
-     prs_mdp[time,col,lev]=P0*hyam[lev] +PS[time,col]*hybm[lev]
-     prs_ntf[time,col,lev]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
+     prs_mdp[time,col,lev]=P0*hyam[lev] +ps[time,col]*hybm[lev]
+     prs_ntf[time,col,lev]=P0*hyai[ilev]+ps[time,col]*hybi[ilev] */
 
   /* Formula-terms for hybrid sigma-pressure vertical grid on ECMWF RLL horizontal grid:
      prs_mdp[time,lev,lat,lon]=hyam[lev] +exp(lnsp[time,lat,lon])*hybm[lev]
@@ -1073,6 +1073,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Determine output grid type */
   if((rcd=nco_inq_varid_flg(tpl_id,"hyai",&hyai_id)) == NC_NOERR){
     nco_vrt_grd_out=nco_vrt_grd_hyb; /* EAM */
+    flg_grd_out_hyb=True;
+  }else if((rcd=nco_inq_varid_flg(tpl_id,"hyam",&hyam_id)) == NC_NOERR){
+    nco_vrt_grd_out=nco_vrt_grd_hyb; /* EAMxx */
     flg_grd_out_hyb=True;
   }else if((rcd=nco_inq_varid_flg(tpl_id,plev_nm_tpl,&plev_id)) == NC_NOERR){
     nco_vrt_grd_out=nco_vrt_grd_prs; /* NCEP */
@@ -1635,13 +1638,16 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if((rcd=nco_inq_varid_flg(vrt_in_id,"hyai",&hyai_id)) == NC_NOERR){
     nco_vrt_grd_in=nco_vrt_grd_hyb; /* EAM */
     flg_grd_in_hyb=True;
+  }else if((rcd=nco_inq_varid_flg(vrt_in_id,"hyam",&hyam_id)) == NC_NOERR){
+    nco_vrt_grd_in=nco_vrt_grd_hyb; /* EAMxx */
+    flg_grd_in_hyb=True;
   }else if((rcd=nco_xtr_var_get(&fl_xtr_id,&plev_nm_in,&plev_nm_out,&rgr->plev_nm_out,&plev_id)) == NC_NOERR){
     /* Identifying whether pressure field is present, and therefore whether input grid is pressure is distinct from other input grid types
        Hybrid and depth grids have required markers (e.g., "hyai" or depth-dimension names) in the input data file
        Pressure grids do not
        1D pressure variables are relatively easy to spot because then plev is likely in the input file
        3D pressure variables, however, are voluminous and so may be stored in an external file 
-       Much check both input data file and (potential) filepath embedded in pressure-variable name to determine whether input grid is 3D pressure
+       Must check both input data file and (potential) filepath embedded in pressure-variable name to determine whether input grid is 3D pressure
        This combined search (of input and external file) means we must always read input plev from fl_xtr_id, not from vrt_in_id */
     nco_vrt_grd_in=nco_vrt_grd_prs; /* NCEP, MERRA2 */
     flg_grd_in_prs=True;

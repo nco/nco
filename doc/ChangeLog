@@ -1,8 +1,12 @@
-2026-10-22  Charlie Zender  <zender@uci.edu>
+2026-10-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha03: Amos and Donovan';git push
 	git tag -a 5.4.2-alpha03 -m 'fxm';git push --tags
+
+	* nco_rgr.c: Set vertical grid nco_vrt_grd_hyb when hyai or hybi is found
+
+2026-10-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha02: SurFilMusic';git push
