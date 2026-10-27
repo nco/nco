@@ -1159,14 +1159,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(flg_grd_out_hyb_has_prm_mdp){
       rcd=nco_inq_varid(tpl_id,"hyam",&hyam_id);
       rcd=nco_inq_varid(tpl_id,"hybm",&hybm_id);
+      rcd=nco_inq_varid_flg(tpl_id,"lev",&lev_id);
     } /* !flg_grd_out_hyb_has_prm_mdp */
     if(flg_grd_out_hyb_has_prm_ntf){
       rcd=nco_inq_varid(tpl_id,"hyai",&hyai_id);
       rcd=nco_inq_varid(tpl_id,"hybi",&hybi_id);
+      rcd=nco_inq_varid_flg(tpl_id,"ilev",&ilev_id);
     } /* !flg_grd_out_hyb_has_prm_ntf */
     rcd=nco_inq_varid(tpl_id,"P0",&p0_id);
-    rcd=nco_inq_varid_flg(tpl_id,"ilev",&ilev_id);
-    rcd=nco_inq_varid_flg(tpl_id,"lev",&lev_id);
     rcd=nco_inq_varid_flg(tpl_id,ps_nm_tpl,&ps_id);
   } /* !flg_grd_out_hyb */
   
@@ -1297,15 +1297,20 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     
   if(flg_grd_out_hyb){
     /* Interrogate hyai/hyam to obtain output ilev/lev dimensions */
-    rcd=nco_inq_vardimid(tpl_id,hyai_id,&dmn_id_ilev_out);
-    rcd=nco_inq_vardimid(tpl_id,hyam_id,&dmn_id_lev_out);
-    rcd=nco_inq_dimlen(tpl_id,dmn_id_ilev_out,&ilev_nbr_out);
-    rcd=nco_inq_dimlen(tpl_id,dmn_id_lev_out,&lev_nbr_out);
-    rcd=nco_inq_dimname(tpl_id,dmn_id_ilev_out,dmn_nm);
-    ilev_nm_out=strdup(dmn_nm);
-    rcd=nco_inq_dimname(tpl_id,dmn_id_lev_out,dmn_nm);
-    lev_nm_out=strdup(dmn_nm);
-    
+    if(flg_grd_out_hyb_has_prm_mdp){
+      rcd=nco_inq_vardimid(tpl_id,hyam_id,&dmn_id_lev_out);
+      rcd=nco_inq_dimlen(tpl_id,dmn_id_lev_out,&lev_nbr_out);
+      rcd=nco_inq_dimname(tpl_id,dmn_id_lev_out,dmn_nm);
+      lev_nm_out=strdup(dmn_nm);
+    } /* !flg_grd_out_hyb_has_prm_mdp */
+    if(flg_grd_out_hyb_has_prm_ntf){
+      rcd=nco_inq_vardimid(tpl_id,hyai_id,&dmn_id_ilev_out);
+      rcd=nco_inq_dimlen(tpl_id,dmn_id_ilev_out,&ilev_nbr_out);
+      rcd=nco_inq_dimname(tpl_id,dmn_id_ilev_out,dmn_nm);
+      ilev_nm_out=strdup(dmn_nm);
+    } /* !flg_grd_out_hyb_has_prm_ntf */
+    if(flg_grd_out_hyb_has_prm_mdp && flg_grd_out_hyb_has_prm_ntf) assert(ilev_nbr_out == lev_nbr_out+1);
+								  
     /* Interrogate PS, if any, for horizontal dimensions */ 
     if(ps_id_tpl != NC_MIN_INT){
       rcd=nco_inq_varndims(tpl_id,ps_id,&dmn_nbr_ps);
@@ -1579,10 +1584,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     ilev_out=(double *)nco_malloc(ilev_nbr_out*nco_typ_lng(var_typ_rgr));
     lev_out=(double *)nco_malloc(lev_nbr_out*nco_typ_lng(var_typ_rgr));
     
-    rcd=nco_get_var(tpl_id,hyai_id,hyai_out,crd_typ_out);
-    rcd=nco_get_var(tpl_id,hyam_id,hyam_out,crd_typ_out);
-    rcd=nco_get_var(tpl_id,hybi_id,hybi_out,crd_typ_out);
-    rcd=nco_get_var(tpl_id,hybm_id,hybm_out,crd_typ_out);
+    if(flg_grd_out_hyb_has_prm_mdp){
+      rcd=nco_get_var(tpl_id,hyam_id,hyam_out,crd_typ_out);
+      rcd=nco_get_var(tpl_id,hybm_id,hybm_out,crd_typ_out);
+    } /* !flg_grd_out_hyb_has_prm_mdp */
+    if(flg_grd_out_hyb_has_prm_ntf){
+      rcd=nco_get_var(tpl_id,hyai_id,hyai_out,crd_typ_out);
+      rcd=nco_get_var(tpl_id,hybi_id,hybi_out,crd_typ_out);
+    } /* !flg_grd_out_hyb_has_prm_ntf */
     rcd=nco_get_var(tpl_id,p0_id,&p0_out,crd_typ_out);
     if(ilev_id_tpl != NC_MIN_INT){
       rcd=nco_get_var(tpl_id,ilev_id,ilev_out,crd_typ_out);
