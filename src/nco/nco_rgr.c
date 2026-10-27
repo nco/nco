@@ -1605,7 +1605,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	hyam_out[lev_idx]=0.5*(hyai_out[lev_idx]+hyai_out[lev_idx+1]);
 	hybm_out[lev_idx]=0.5*(hybi_out[lev_idx]+hybi_out[lev_idx+1]);
       } /* !lev_idx */
-      (void)fprintf(stdout,"%s: WARNING Output grid-file lacks midpoint vertical grid parameters. Computing hyam and hybm as centered half-way between interface parameters hyai and hybi.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: WARNING Output hybrid grid-file lacks midpoint vertical grid parameters. Computing hyam and hybm as centered half-way between interface parameters hyai and hybi.\n",nco_prg_nm_get());
     } /* !flg_grd_out_hyb_has_prm_mdp */
 
     if(!flg_grd_out_hyb_has_prm_ntf){
@@ -1619,7 +1619,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       hybi_out[0]=hybi_out[1]-hybm_out[0]; /* Top interface usually has no surface pressure component, i.e., this will evaluate to zero */
       hyai_out[ilev_nbr_out-1]=0.0; /* Bottom interface has no reference pressure component */
       hybi_out[ilev_nbr_out-1]=1.0; /* Bottom interface is pure surface pressure */
-      (void)fprintf(stdout,"%s: WARNING Output grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: WARNING Output hybrid grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure.\n",nco_prg_nm_get());
     } /* !flg_grd_out_hyb_has_prm_ntf */
 
     if(ilev_id_tpl != NC_MIN_INT){
@@ -2056,8 +2056,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(vrt_in_id != in_id){
       dmn_id_ilev_in=NC_MIN_INT;
       dmn_id_lev_in=NC_MIN_INT;
-      rcd=nco_inq_dimid_flg(in_id,ilev_nm_in,&dmn_id_ilev_in);
-      rcd=nco_inq_dimid_flg(in_id,lev_nm_in,&dmn_id_lev_in);
+      if(flg_grd_in_hyb_has_prm_ntf){
+	rcd=nco_inq_dimid_flg(in_id,ilev_nm_in,&dmn_id_ilev_in);
+      } /* !flg_grd_in_hyb_has_prm_ntf */
+      if(flg_grd_in_hyb_has_prm_mdp){
+	rcd=nco_inq_dimid_flg(in_id,lev_nm_in,&dmn_id_lev_in);
+      } /* !flg_grd_in_hyb_has_prm_mdp */
       if(dmn_id_ilev_in == NC_MIN_INT && dmn_id_lev_in == NC_MIN_INT){
 	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") unable to find at least one hybrid sigma-pressure vertical dimension (searched for %s and %s) in input data file. Possible that external vertical grid file uses different dimension names than input data file.\n",nco_prg_nm_get(),fnc_nm,ilev_nm_in,lev_nm_in);
 	nco_exit(EXIT_FAILURE);
@@ -2420,13 +2424,32 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     hybi_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
     hybm_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
     
-    rcd=nco_get_var(vrt_in_id,hyai_id,hyai_in,crd_typ_out);
-    rcd=nco_get_var(vrt_in_id,hyam_id,hyam_in,crd_typ_out);
-    rcd=nco_get_var(vrt_in_id,hybi_id,hybi_in,crd_typ_out);
-    rcd=nco_get_var(vrt_in_id,hybm_id,hybm_in,crd_typ_out);
+    if(flg_grd_in_hyb_has_prm_ntf){
+      rcd=nco_get_var(vrt_in_id,hyai_id,hyai_in,crd_typ_out);
+      rcd=nco_get_var(vrt_in_id,hybi_id,hybi_in,crd_typ_out);
+    } /* !flg_grd_in_hyb_has_prm_ntf */
+    if(flg_grd_in_hyb_has_prm_mdp){
+      rcd=nco_get_var(vrt_in_id,hyam_id,hyam_in,crd_typ_out);
+      rcd=nco_get_var(vrt_in_id,hybm_id,hybm_in,crd_typ_out);
+    } /* !flg_grd_in_hyb_has_prm_mdp */
     if(flg_grd_hyb_cameam){
       if(flg_grd_hyb_no_p0) p0_in=p0_dfl; else rcd=nco_get_var(vrt_in_id,p0_id,&p0_in,crd_typ_out);
     } /* !flg_grd_hyb_cameam */
+
+    if(!flg_grd_in_hyb_has_prm_ntf){
+      /* Compute interface vertical grid parameters from midpoint parameters
+	 NB: This requires extrapolation for the top interface!!! */
+      for(ilev_idx=1;ilev_idx<ilev_nbr_in-1;ilev_idx++){ 
+	hyai_in[ilev_idx]=0.5*(hyam_in[ilev_idx]+hyam_in[ilev_idx+1]);
+	hybi_in[ilev_idx]=0.5*(hybm_in[ilev_idx]+hybm_in[ilev_idx+1]);
+      } /* !lev_idx */
+      hyai_in[0]=hyai_in[1]-hyam_in[0]; /* Top interface is usually pure sigma component */
+      hybi_in[0]=hybi_in[1]-hybm_in[0]; /* Top interface usually has no surface pressure component, i.e., this will evaluate to zero */
+      hyai_in[ilev_nbr_in-1]=0.0; /* Bottom interface has no reference pressure component */
+      hybi_in[ilev_nbr_in-1]=1.0; /* Bottom interface is pure surface pressure */
+      (void)fprintf(stdout,"%s: WARNING Input hybrid grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure.\n",nco_prg_nm_get());
+    } /* !flg_grd_in_hyb_has_prm_ntf */
+
     /* ECMWF distributes IFS forecasts with lnsp = log(surface pressure) */
     if(flg_grd_hyb_ecmwf){
       /* Decompose ECMWF hya? convention into CAM/EAM-like product of P0 and hya? */
