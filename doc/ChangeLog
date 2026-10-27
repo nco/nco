@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha03: Amos and Donovan';git push
 	git tag -a 5.4.2-alpha03 -m 'fxm';git push --tags
 
-	* Infer missing hybrid grid dimension sizes and coordinate names
+	* nco_rgr.c: Interpolate missing output grid hybrid component variables
+
+	* nco_rgr.c: Infer missing hybrid grid dimension sizes and coordinate names
 
 	* nco_rgr.c: Only read output vertical grid hybrid parameters that exist
 

@@ -1601,9 +1601,26 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
     if(!flg_grd_out_hyb_has_prm_mdp){
       /* Compute midpoint vertical grid parameters from interface parameters */
-      for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++) lev_out[lev_idx]=p0_out*(hyam_out[lev_idx]+hybm_out[lev_idx])/100.0;
-      
+      for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++){
+	hyam_out[lev_idx]=0.5*(hyai_out[lev_idx]+hyai_out[lev_idx+1]);
+	hybm_out[lev_idx]=0.5*(hybi_out[lev_idx]+hybi_out[lev_idx+1]);
+      } /* !lev_idx */
+      (void)fprintf(stdout,"%s: WARNING Output grid-file lacks midpoint vertical grid parameters. Computing hyam and hybm as centered half-way between interface parameters hyai and hybi.\n",nco_prg_nm_get());
     } /* !flg_grd_out_hyb_has_prm_mdp */
+
+    if(!flg_grd_out_hyb_has_prm_ntf){
+      /* Compute interface vertical grid parameters from midpoint parameters
+	 NB: This requires extrapolation for the top interface!!! */
+      for(ilev_idx=1;ilev_idx<ilev_nbr_out-1;ilev_idx++){ 
+	hyai_out[ilev_idx]=0.5*(hyam_out[ilev_idx]+hyam_out[ilev_idx+1]);
+	hybi_out[ilev_idx]=0.5*(hybm_out[ilev_idx]+hybm_out[ilev_idx+1]);
+      } /* !lev_idx */
+      hyai_out[0]=hyai_out[1]-hyam_out[0]; /* Top interface is usually pure sigma component */
+      hybi_out[0]=hybi_out[1]-hybm_out[0]; /* Top interface usually has no surface pressure component, i.e., this will evaluate to zero */
+      hyai_out[ilev_nbr_out-1]=0.0; /* Bottom interface has no reference pressure component */
+      hybi_out[ilev_nbr_out-1]=1.0; /* Bottom interface is pure surface pressure */
+      (void)fprintf(stdout,"%s: WARNING Output grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure.\n",nco_prg_nm_get());
+    } /* !flg_grd_out_hyb_has_prm_ntf */
 
     if(ilev_id_tpl != NC_MIN_INT){
       rcd=nco_get_var(tpl_id,ilev_id,ilev_out,crd_typ_out);
@@ -1661,15 +1678,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int fl_xtr_id; /* [id] netCDF file ID for external surface pressure or 3D pressure or depth/height-variable file */
   fl_xtr_id=vrt_in_id;
   plev_id=NC_MIN_INT;
-  if((rcd=nco_inq_varid_flg(vrt_in_id,"hyai",&hyai_id)) == NC_NOERR){
-    nco_vrt_grd_in=nco_vrt_grd_hyb; /* EAM */
-    flg_grd_in_hyb=True;
-  }else if((rcd=nco_inq_varid_flg(vrt_in_id,"hyam",&hyam_id)) == NC_NOERR){
-    nco_vrt_grd_in=nco_vrt_grd_hyb; /* EAMxx */
+  if(((rcd=nco_inq_varid_flg(vrt_in_id,"hyai",&hyai_id)) == NC_NOERR) || ((rcd=nco_inq_varid_flg(vrt_in_id,"hyam",&hyam_id)) == NC_NOERR)){
+    nco_vrt_grd_in=nco_vrt_grd_hyb; /* EAMxx may have only midpoints or interfaces. CESM+EAM always have both. */
     flg_grd_in_hyb=True;
   }else if((rcd=nco_xtr_var_get(&fl_xtr_id,&plev_nm_in,&plev_nm_out,&rgr->plev_nm_out,&plev_id)) == NC_NOERR){
     /* Identifying whether pressure field is present, and therefore whether input grid is pressure is distinct from other input grid types
-       Hybrid and depth grids have required markers (e.g., "hyai" or depth-dimension names) in the input data file
+       Hybrid and depth grids have required markers (e.g., "hyai", "hybi", or depth-dimension names) in the input data file
        Pressure grids do not
        1D pressure variables are relatively easy to spot because then plev is likely in the input file
        3D pressure variables, however, are voluminous and so may be stored in an external file 
@@ -1705,9 +1719,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* SOL? */
   if(!flg_grd_in_hyb && !flg_grd_in_prs && !flg_grd_in_dpt){
     (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid sigma-pressure or pure-pressure or depth vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. The signal variables default to \"hyai\" for hybrid sigma-pressure, \"plev\" for pure pressure, and the signature dimension defaults to \"nVertLevels\" for height/depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. The signal variables default to \"hyai\" and/or \"hyam\" for hybrid sigma-pressure, \"plev\" for pure pressure, and the signature dimension defaults to \"nVertLevels\" for height/depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
     return NCO_ERR;
-  } /* !hyai */
+  } /* !flg_grd_in_* */
 
   /* Discriminate between globally uniform (1D) and spatially varying pressure and depth grids */
   if(flg_grd_in_prs){
