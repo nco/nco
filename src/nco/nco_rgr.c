@@ -1800,11 +1800,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_in_dpt */
   const int mlc_id_in=mlc_id; /* [id] Index (1-based) to last active cell in each column ID */
 
+  nco_bool flg_grd_in_hyb_has_prm_mdp=False; /* [flg] Input hybrid vertical grid has midpoint parameters */
+  nco_bool flg_grd_in_hyb_has_prm_ntf=False; /* [flg] Input hybrid vertical grid has interface parameters */
   if(flg_grd_in_hyb){
-    rcd=nco_inq_varid(vrt_in_id,"hyai",&hyai_id);
-    rcd=nco_inq_varid(vrt_in_id,"hyam",&hyam_id);
-    rcd=nco_inq_varid(vrt_in_id,"hybi",&hybi_id);
-    rcd=nco_inq_varid(vrt_in_id,"hybm",&hybm_id);
+    if((rcd=nco_inq_varid_flg(vrt_in_id,"hyai",&hyai_id)) == NC_NOERR) flg_grd_in_hyb_has_prm_ntf=True;
+    if((rcd=nco_inq_varid_flg(vrt_in_id,"hyam",&hyam_id)) == NC_NOERR) flg_grd_in_hyb_has_prm_mdp=True;
+    if(flg_grd_in_hyb_has_prm_mdp){
+      rcd=nco_inq_varid(vrt_in_id,"hyam",&hyam_id);
+      rcd=nco_inq_varid(vrt_in_id,"hybm",&hybm_id);
+    } /* !flg_grd_in_hyb_has_prm_mdp */
+    if(flg_grd_in_hyb_has_prm_ntf){
+      rcd=nco_inq_varid(vrt_in_id,"hyai",&hyai_id);
+      rcd=nco_inq_varid(vrt_in_id,"hybi",&hybi_id);
+    } /* !flg_grd_in_hyb_has_prm_ntf */
 
     /* Assume ECMWF files use "lnsp" for (log) surface pressure, otherwise CAM/EAM style */
     if(!strcmp(ps_nm_in,ps_nm_ecmwf)){
@@ -1844,10 +1852,16 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports that input vertical grid lacks reference pressure variable named \"p0\" or \"P0\". Vertical interpolation will continue with an assumed p0/P0 value = %g Pa. Please encourage the dataset creator to place p0 or P0 alongside variables based on a hybrid sigma-pressure vertical coordinate.\n",nco_prg_nm_get(),fnc_nm,p0_dfl);
 	} /* !rcd */
       } /* !rcd */
+
       ilev_id=NC_MIN_INT;
       lev_id=NC_MIN_INT;
+      if(flg_grd_in_hyb_has_prm_mdp){
+	if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(vrt_in_id,"lev",&lev_id);
+      } /* !flg_grd_in_hyb_has_prm_mdp */
+      if(flg_grd_in_hyb_has_prm_ntf){
+	if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(vrt_in_id,"ilev",&ilev_id);
+      } /* !flg_grd_in_hyb_has_prm_ntf */
       if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(vrt_in_id,"ilev",&ilev_id);
-      if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(vrt_in_id,"lev",&lev_id);
     } /* !flg_grd_hyb_cameam */
 
     /* 20190603: Require ECMWF IFS input to have a "lev" coordinate so we can use "lev" dimension not "nhyb" */
@@ -2001,21 +2015,37 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(flg_grd_in_dpt_1D && flg_grd_out_dpt_1D) grd_sz_out=grd_sz_in;
   } /* flg_grd_in_dpt */
 
+      if(flg_grd_in_hyb_has_prm_mdp){
+      } /* !flg_grd_in_hyb_has_prm_mdp */
+      if(flg_grd_in_hyb_has_prm_ntf){
+      } /* !flg_grd_in_hyb_has_prm_ntf */
+
+
   if(flg_grd_in_hyb){
     /* Get input hybrid sigma-pressure grid vertical information */
     rcd=nco_inq_varndims(fl_xtr_id,ps_id,&dmn_nbr_in);
-    rcd=nco_inq_vardimid(vrt_in_id,hyai_id,&dmn_id_ilev_in);
-    if(flg_grd_hyb_cameam) rcd=nco_inq_vardimid(vrt_in_id,hyam_id,&dmn_id_lev_in);
-    if(flg_grd_hyb_ecmwf) rcd=nco_inq_vardimid(vrt_in_id,lev_id,&dmn_id_lev_in);
-    rcd=nco_inq_dimlen(vrt_in_id,dmn_id_ilev_in,&ilev_nbr_in);
-    rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
-    rcd=nco_inq_dimname(vrt_in_id,dmn_id_ilev_in,dmn_nm);
-    /* Copy hybrid sigma-pressure coordinate names from dimension names since ilev and lev are 1D coordinates */
-    //if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in); // 20221204: Causes double free() in nco_rgr_free()
-    ilev_nm_in=strdup(dmn_nm); // 20221204: Never free()'d
-    rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
-    //if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in); // 20221204: Causes double free() in nco_rgr_free()
-    lev_nm_in=strdup(dmn_nm); // 20221204: Never free()'d
+    if(flg_grd_in_hyb_has_prm_ntf){
+      rcd=nco_inq_vardimid(vrt_in_id,hyai_id,&dmn_id_ilev_in);
+      rcd=nco_inq_dimlen(vrt_in_id,dmn_id_ilev_in,&ilev_nbr_in);
+      rcd=nco_inq_dimname(vrt_in_id,dmn_id_ilev_in,dmn_nm);
+      //if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in); // 20221204: Causes double free() in nco_rgr_free()
+      ilev_nm_in=strdup(dmn_nm); // 20221204: Never free()'d
+    } /* !flg_grd_in_hyb_has_prm_ntf */
+    if(flg_grd_in_hyb_has_prm_mdp){
+      if(flg_grd_hyb_cameam) rcd=nco_inq_vardimid(vrt_in_id,hyam_id,&dmn_id_lev_in);
+      if(flg_grd_hyb_ecmwf) rcd=nco_inq_vardimid(vrt_in_id,lev_id,&dmn_id_lev_in);
+      rcd=nco_inq_dimlen(vrt_in_id,dmn_id_lev_in,&lev_nbr_in);
+      /* Copy hybrid sigma-pressure coordinate names from dimension names since ilev and lev are 1D coordinates */
+      rcd=nco_inq_dimname(vrt_in_id,dmn_id_lev_in,dmn_nm);
+      //if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in); // 20221204: Causes double free() in nco_rgr_free()
+      lev_nm_in=strdup(dmn_nm); // 20221204: Never free()'d
+    } /* !flg_grd_in_hyb_has_prm_mdp */
+    /* Infer missing hybrid grid dimension sizes and coordinate names */
+    if(flg_grd_in_hyb_has_prm_mdp && !flg_grd_in_hyb_has_prm_ntf) ilev_nbr_in=lev_nbr_in+1;
+    if(!flg_grd_in_hyb_has_prm_mdp && flg_grd_in_hyb_has_prm_ntf) lev_nbr_in=ilev_nbr_in-1;
+    assert(ilev_nbr_in == lev_nbr_in+1);
+    if(!ilev_nm_in) ilev_nm_in=strdup("ilev");
+    if(!lev_nm_in) lev_nm_in=strdup("lev");
     /* 20221103:
        Interface and midpoint dimension names are only guaranteed to both exist together in vrt_in_id, not in_id
        Use vrt_in_id to get their names and sizes, then gather and exit this block with their IDs from in_id
