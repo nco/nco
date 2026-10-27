@@ -1309,7 +1309,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       rcd=nco_inq_dimname(tpl_id,dmn_id_ilev_out,dmn_nm);
       ilev_nm_out=strdup(dmn_nm);
     } /* !flg_grd_out_hyb_has_prm_ntf */
-    if(flg_grd_out_hyb_has_prm_mdp && flg_grd_out_hyb_has_prm_ntf) assert(ilev_nbr_out == lev_nbr_out+1);
+    /* Infer missing hybrid grid dimension sizes and coordinate names */
+    if(flg_grd_out_hyb_has_prm_mdp && !flg_grd_out_hyb_has_prm_ntf) ilev_nbr_out=lev_nbr_out+1;
+    if(!flg_grd_out_hyb_has_prm_mdp && flg_grd_out_hyb_has_prm_ntf) lev_nbr_out=ilev_nbr_out-1;
+    assert(ilev_nbr_out == lev_nbr_out+1);
+    if(!ilev_nm_out) ilev_nm_out=strdup("ilev");
+    if(!lev_nm_out) lev_nm_out=strdup("lev");
 								  
     /* Interrogate PS, if any, for horizontal dimensions */ 
     if(ps_id_tpl != NC_MIN_INT){
@@ -1593,6 +1598,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       rcd=nco_get_var(tpl_id,hybi_id,hybi_out,crd_typ_out);
     } /* !flg_grd_out_hyb_has_prm_ntf */
     rcd=nco_get_var(tpl_id,p0_id,&p0_out,crd_typ_out);
+
+    if(!flg_grd_out_hyb_has_prm_mdp){
+      /* Compute midpoint vertical grid parameters from interface parameters */
+      for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++) lev_out[lev_idx]=p0_out*(hyam_out[lev_idx]+hybm_out[lev_idx])/100.0;
+      
+    } /* !flg_grd_out_hyb_has_prm_mdp */
+
     if(ilev_id_tpl != NC_MIN_INT){
       rcd=nco_get_var(tpl_id,ilev_id,ilev_out,crd_typ_out);
     }else{
