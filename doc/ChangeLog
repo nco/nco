@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha03: Amos and Donovan';git push
 	git tag -a 5.4.2-alpha03 -m 'fxm';git push --tags
 
+	* nco_rgr.c: Output only non-interpolated/extrapolated midpoint or interface pressures
+
 	* nco_rgr.c: Interpolate missing input grid hybrid component variables
 
 	* nco_rgr.c: Infer missing hybrid grid dimension sizes and coordinate names

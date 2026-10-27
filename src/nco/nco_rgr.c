@@ -1605,12 +1605,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	hyam_out[lev_idx]=0.5*(hyai_out[lev_idx]+hyai_out[lev_idx+1]);
 	hybm_out[lev_idx]=0.5*(hybi_out[lev_idx]+hybi_out[lev_idx+1]);
       } /* !lev_idx */
-      (void)fprintf(stdout,"%s: WARNING Output hybrid grid-file lacks midpoint vertical grid parameters. Computing hyam and hybm as centered half-way between interface parameters hyai and hybi.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: WARNING Output hybrid grid-file lacks midpoint vertical grid parameters. Computing hyam and hybm as centered half-way between interface parameters hyai and hybi. These interpolated/extrapolated parameter values do not affect the geophysical field interpolations yet they are written to the output file.\n",nco_prg_nm_get());
     } /* !flg_grd_out_hyb_has_prm_mdp */
 
     if(!flg_grd_out_hyb_has_prm_ntf){
-      /* Compute interface vertical grid parameters from midpoint parameters
-	 NB: This requires extrapolation for the top interface!!! */
+      /* Interpolate interface vertical grid parameters from adjacent midpoint parameters
+	 Extrapolate the top interface
+	 NB: Implementation assumes pressure increases with idx (valid for CAM/EAM) */
       for(ilev_idx=1;ilev_idx<ilev_nbr_out-1;ilev_idx++){ 
 	hyai_out[ilev_idx]=0.5*(hyam_out[ilev_idx]+hyam_out[ilev_idx+1]);
 	hybi_out[ilev_idx]=0.5*(hybm_out[ilev_idx]+hybm_out[ilev_idx+1]);
@@ -2437,8 +2438,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !flg_grd_hyb_cameam */
 
     if(!flg_grd_in_hyb_has_prm_ntf){
-      /* Compute interface vertical grid parameters from midpoint parameters
-	 NB: This requires extrapolation for the top interface!!! */
+      /* Interpolate interface vertical grid parameters from adjacent midpoint parameters
+	 Extrapolat the top interface
+	 NB: Implementation assumes pressure increases with idx (valid for CAM/EAM) */
       for(ilev_idx=1;ilev_idx<ilev_nbr_in-1;ilev_idx++){ 
 	hyai_in[ilev_idx]=0.5*(hyam_in[ilev_idx]+hyam_in[ilev_idx+1]);
 	hybi_in[ilev_idx]=0.5*(hybm_in[ilev_idx]+hybm_in[ilev_idx+1]);
@@ -2447,7 +2449,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       hybi_in[0]=hybi_in[1]-hybm_in[0]; /* Top interface usually has no surface pressure component, i.e., this will evaluate to zero */
       hyai_in[ilev_nbr_in-1]=0.0; /* Bottom interface has no reference pressure component */
       hybi_in[ilev_nbr_in-1]=1.0; /* Bottom interface is pure surface pressure */
-      (void)fprintf(stdout,"%s: WARNING Input hybrid grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: INFO Input hybrid grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure. These interpolated/extrapolated values do not affect the geophysical field interpolations.\n",nco_prg_nm_get());
     } /* !flg_grd_in_hyb_has_prm_ntf */
 
     /* ECMWF distributes IFS forecasts with lnsp = log(surface pressure) */
@@ -2826,6 +2828,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_out_dpt_3D */
 
   if(flg_grd_out_hyb){
+    /* 20261027: Add flag to output only midpoint or only interface pressures? */
     rcd=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev_out);
     rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
     /* Horizontal dimensions necessary to define PS variable */
@@ -3045,24 +3048,28 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_out_dpt_3D */
   
   if(flg_grd_out_hyb){
-    rcd+=nco_def_var(out_id,"hyai",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&hyai_id);
-    if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,hyai_id,NULL,nco_flt_flg_prc_fll);
-    var_crt_nbr++;
-    rcd+=nco_def_var(out_id,"hyam",crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&hyam_id);
-    if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,hyam_id,NULL,nco_flt_flg_prc_fll);
-    var_crt_nbr++;
-    rcd+=nco_def_var(out_id,"hybi",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&hybi_id);
-    if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,hybi_id,NULL,nco_flt_flg_prc_fll);
-    var_crt_nbr++;
-    rcd+=nco_def_var(out_id,"hybm",crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&hybm_id);
-    if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,hybm_id,NULL,nco_flt_flg_prc_fll);
-    var_crt_nbr++;
-    rcd+=nco_def_var(out_id,ilev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&ilev_id);
-    if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,ilev_id,NULL,nco_flt_flg_prc_fll);
-    var_crt_nbr++;
-    rcd+=nco_def_var(out_id,lev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&lev_id);
-    if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,lev_id,NULL,nco_flt_flg_prc_fll);
-    var_crt_nbr++;
+    if(flg_grd_out_hyb_has_prm_ntf){
+      rcd+=nco_def_var(out_id,"hyai",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&hyai_id);
+      if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,hyai_id,NULL,nco_flt_flg_prc_fll);
+      var_crt_nbr++;
+      rcd+=nco_def_var(out_id,"hybi",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&hybi_id);
+      if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,hybi_id,NULL,nco_flt_flg_prc_fll);
+      var_crt_nbr++;
+      rcd+=nco_def_var(out_id,ilev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&ilev_id);
+      if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,ilev_id,NULL,nco_flt_flg_prc_fll);
+      var_crt_nbr++;
+    } /* !flg_grd_out_hyb_has_prm_ntf */
+    if(flg_grd_out_hyb_has_prm_mdp){
+      rcd+=nco_def_var(out_id,"hyam",crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&hyam_id);
+      if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,hyam_id,NULL,nco_flt_flg_prc_fll);
+      var_crt_nbr++;
+      rcd+=nco_def_var(out_id,"hybm",crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&hybm_id);
+      if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,hybm_id,NULL,nco_flt_flg_prc_fll);
+      var_crt_nbr++;
+      rcd+=nco_def_var(out_id,lev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&lev_id);
+      if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,lev_id,NULL,nco_flt_flg_prc_fll);
+      var_crt_nbr++;
+    } /* !flg_grd_out_hyb_has_prm_mdp */
     rcd+=nco_def_var(out_id,"P0",crd_typ_out,dmn_nbr_0D,(int *)NULL,&p0_id);
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,p0_id,NULL,nco_flt_flg_prc_fll);
     var_crt_nbr++;
@@ -3088,22 +3095,32 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !flg_grd_hyb_ecmwf */
     if(nco_cmp_glb_get()) rcd+=nco_flt_def_out(out_id,ps_id,NULL,nco_flt_flg_prc_fll);
     var_crt_nbr++;
-    (void)nco_att_cpy(tpl_id,out_id,hyai_id_tpl,hyai_id,PCK_ATT_CPY);
-    (void)nco_att_cpy(tpl_id,out_id,hyam_id_tpl,hyam_id,PCK_ATT_CPY);
-    (void)nco_att_cpy(tpl_id,out_id,hybi_id_tpl,hybi_id,PCK_ATT_CPY);
-    (void)nco_att_cpy(tpl_id,out_id,hybm_id_tpl,hybm_id,PCK_ATT_CPY);
+    /* 20261027: Add flag to output only midpoint or only interface pressures? */
+    if(flg_grd_out_hyb_has_prm_ntf){
+      (void)nco_att_cpy(tpl_id,out_id,hyai_id_tpl,hyai_id,PCK_ATT_CPY);
+      (void)nco_att_cpy(tpl_id,out_id,hybi_id_tpl,hybi_id,PCK_ATT_CPY);
+    } /* !flg_grd_out_hyb_has_prm_ntf */
+    if(flg_grd_out_hyb_has_prm_mdp){
+      (void)nco_att_cpy(tpl_id,out_id,hyam_id_tpl,hyam_id,PCK_ATT_CPY);
+      (void)nco_att_cpy(tpl_id,out_id,hybm_id_tpl,hybm_id,PCK_ATT_CPY);
+    } /* !flg_grd_out_hyb_has_prm_mdp */
     if(p0_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY); /* p0 not expected to be in ECMWF grids */
     rcd=nco_char_att_put(out_id,"P0","long_name","Reference pressure");
     rcd=nco_char_att_put(out_id,"P0","standard_name","reference_air_pressure_for_atmosphere_vertical_coordinate");
     rcd=nco_char_att_put(out_id,"P0","units","Pa");
-    rcd=nco_char_att_put(out_id,"hyai","long_name","hybrid A coefficient at layer interfaces");
-    rcd=nco_char_att_put(out_id,"hyai","units","1");
-    rcd=nco_char_att_put(out_id,"hybi","long_name","hybrid B coefficient at layer interfaces");
-    rcd=nco_char_att_put(out_id,"hybi","units","1");
-    rcd=nco_char_att_put(out_id,"hyam","long_name","hybrid A coefficient at layer midpoints");
-    rcd=nco_char_att_put(out_id,"hyam","units","1");
-    rcd=nco_char_att_put(out_id,"hybm","long_name","hybrid B coefficient at layer midpoints");
-    rcd=nco_char_att_put(out_id,"hybm","units","1");
+    /* 20261027: Add flag to output only midpoint or only interface pressures? */
+    if(flg_grd_out_hyb_has_prm_ntf){
+      rcd=nco_char_att_put(out_id,"hyai","long_name","Atmospheric hybrid sigma-pressure coordinate A coefficient at layer interfaces");
+      rcd=nco_char_att_put(out_id,"hyai","units","1");
+      rcd=nco_char_att_put(out_id,"hybi","long_name","Atmospheric hybrid sigma-pressure coordinate B coefficient at layer interfaces");
+      rcd=nco_char_att_put(out_id,"hybi","units","1");
+    } /* !flg_grd_out_hyb_has_prm_ntf */
+    if(flg_grd_out_hyb_has_prm_mdp){
+      rcd=nco_char_att_put(out_id,"hyam","long_name","Atmospheric hybrid sigma-pressure coordinate A coefficient at layer midpoints");
+      rcd=nco_char_att_put(out_id,"hyam","units","1");
+      rcd=nco_char_att_put(out_id,"hybm","long_name","Atmospheric hybrid sigma-pressure coordinate B coefficient at layer midpoints");
+      rcd=nco_char_att_put(out_id,"hybm","units","1");
+    } /* !flg_grd_out_hyb_has_prm_mdp */
 
     if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
     if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
@@ -3409,12 +3426,17 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_out_prs || !flg_grd_out_dpt_1D */
   
   if(flg_grd_out_hyb){
-    (void)nco_put_var(out_id,hyai_id,hyai_out,crd_typ_out);
-    (void)nco_put_var(out_id,hyam_id,hyam_out,crd_typ_out);
-    (void)nco_put_var(out_id,hybi_id,hybi_out,crd_typ_out);
-    (void)nco_put_var(out_id,hybm_id,hybm_out,crd_typ_out);
-    (void)nco_put_var(out_id,ilev_id,ilev_out,crd_typ_out);
-    (void)nco_put_var(out_id,lev_id,lev_out,crd_typ_out);
+    /* 20261027: Add flag to output only midpoint or only interface pressures? */
+    if(flg_grd_out_hyb_has_prm_ntf){
+      (void)nco_put_var(out_id,hyai_id,hyai_out,crd_typ_out);
+      (void)nco_put_var(out_id,hybi_id,hybi_out,crd_typ_out);
+      (void)nco_put_var(out_id,ilev_id,ilev_out,crd_typ_out);
+    } /* !flg_grd_out_hyb_has_prm_ntf */
+    if(flg_grd_out_hyb_has_prm_mdp){
+      (void)nco_put_var(out_id,hyam_id,hyam_out,crd_typ_out);
+      (void)nco_put_var(out_id,hybm_id,hybm_out,crd_typ_out);
+      (void)nco_put_var(out_id,lev_id,lev_out,crd_typ_out);
+    } /* !flg_grd_out_hyb_has_prm_mdp */
     (void)nco_put_var(out_id,p0_id,&p0_out,crd_typ_out);
     (void)nco_put_var(out_id,ps_id,ps_out,crd_typ_out);
   } /* !flg_grd_out_hyb */
