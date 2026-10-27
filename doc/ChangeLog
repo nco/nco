@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha03: Amos and Donovan';git push
 	git tag -a 5.4.2-alpha03 -m 'fxm';git push --tags
 
+	* nco_rgr.c: Only read output vertical grid hybrid parameters that exist
+
 	* nco_rgr.c: Give hyam, hyai, hybm, hybi long_name attributes, remove standard_name
 
 	* nco_rgr.c: Set vertical grid nco_vrt_grd_hyb when hyai or hybi is found

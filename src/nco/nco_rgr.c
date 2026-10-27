@@ -1071,11 +1071,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   mlc_nm=(char *)strdup("maxLevelCell");
 
   /* Determine output grid type */
-  if((rcd=nco_inq_varid_flg(tpl_id,"hyai",&hyai_id)) == NC_NOERR){
-    nco_vrt_grd_out=nco_vrt_grd_hyb; /* EAM */
-    flg_grd_out_hyb=True;
-  }else if((rcd=nco_inq_varid_flg(tpl_id,"hyam",&hyam_id)) == NC_NOERR){
-    nco_vrt_grd_out=nco_vrt_grd_hyb; /* EAMxx */
+  if(((rcd=nco_inq_varid_flg(tpl_id,"hyai",&hyai_id)) == NC_NOERR) || ((rcd=nco_inq_varid_flg(tpl_id,"hyam",&hyam_id)) == NC_NOERR)){
+    nco_vrt_grd_out=nco_vrt_grd_hyb; /* EAMxx may have only midpoints or interfaces. CESM+EAM always have both. */
     flg_grd_out_hyb=True;
   }else if((rcd=nco_inq_varid_flg(tpl_id,plev_nm_tpl,&plev_id)) == NC_NOERR){
     nco_vrt_grd_out=nco_vrt_grd_prs; /* NCEP */
@@ -1154,11 +1151,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO Output grid flags: flg_grd_out_hyb = %d, flg_grd_out_prs = %d, flg_grd_out_dpt_1D = %d, flg_grd_out_dpt_3D = %d\n",nco_prg_nm_get(),flg_grd_out_hyb,flg_grd_out_prs,flg_grd_out_dpt_1D,flg_grd_out_dpt_3D);
 
+  nco_bool flg_grd_out_hyb_has_prm_mdp=False; /* [flg] Output hybrid vertical grid has midpoint parameters */
+  nco_bool flg_grd_out_hyb_has_prm_ntf=False; /* [flg] Output hybrid vertical grid has interface parameters */
   if(flg_grd_out_hyb){
-    rcd=nco_inq_varid(tpl_id,"hyai",&hyai_id);
-    rcd=nco_inq_varid(tpl_id,"hyam",&hyam_id);
-    rcd=nco_inq_varid(tpl_id,"hybi",&hybi_id);
-    rcd=nco_inq_varid(tpl_id,"hybm",&hybm_id);
+    if((rcd=nco_inq_varid_flg(tpl_id,"hyai",&hyai_id)) == NC_NOERR) flg_grd_out_hyb_has_prm_ntf=True;
+    if((rcd=nco_inq_varid_flg(tpl_id,"hyam",&hyam_id)) == NC_NOERR) flg_grd_out_hyb_has_prm_mdp=True;
+    if(flg_grd_out_hyb_has_prm_mdp){
+      rcd=nco_inq_varid(tpl_id,"hyam",&hyam_id);
+      rcd=nco_inq_varid(tpl_id,"hybm",&hybm_id);
+    } /* !flg_grd_out_hyb_has_prm_mdp */
+    if(flg_grd_out_hyb_has_prm_ntf){
+      rcd=nco_inq_varid(tpl_id,"hyai",&hyai_id);
+      rcd=nco_inq_varid(tpl_id,"hybi",&hybi_id);
+    } /* !flg_grd_out_hyb_has_prm_ntf */
     rcd=nco_inq_varid(tpl_id,"P0",&p0_id);
     rcd=nco_inq_varid_flg(tpl_id,"ilev",&ilev_id);
     rcd=nco_inq_varid_flg(tpl_id,"lev",&lev_id);
@@ -3015,6 +3020,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
     if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(fl_xtr_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
+
+    /* 20261027: fxm Ensure lev, ilev have attribute standard_name="atmosphere_hybrid_sigma_pressure_coordinate" and attribute formula_terms="yada yada yada" */
+
     if(flg_grd_hyb_ecmwf && ps_id_tpl == NC_MIN_INT){
       (void)fprintf(stdout,"%s: INFO Output surface pressure variable %s adheres to CAM/EAM hybrid sigma-pressure vertical grid conventions and is the actual surface pressure, even though the input dataset surface pressure variable %s was in ECMWF/IFS format and contained the natural log of the surface pressure. All variable metadata was copied directly from input %s to output %s though some was likely incorrect. For example, input %s long_name attribute might be \"Logarithm of surface pressure\". For this reason, the regridder overwrote the output variable attributes long_name, standard_name, and units to accurately reflect the actual output variable contents.\n",nco_prg_nm_get(),ps_nm_out,ps_nm_in,ps_nm_in,ps_nm_out,ps_nm_in);
       rcd=nco_char_att_put(out_id,ps_nm_out,"long_name","Surface pressure");
