@@ -3122,8 +3122,41 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       rcd=nco_char_att_put(out_id,"hybm","units","1");
     } /* !flg_grd_out_hyb_has_prm_mdp */
 
-    if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
-    if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
+    /* 20261027: If hybrid component is missing in input file, then lev/ilev will have no attributes
+       in output file unless vertical gridfile defines lev/ilev with good attributes.
+       However, many gridfiles do not define lev/ilev at all, backfill their attributes */
+    if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY);
+    else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
+    else{
+      char *frm_trm_sng; /* [sng] CF Formula terms string */
+      char frm_trm_fmt[]="p0: P0 a: hyai b: hybi ps: %s"; /* [sng] CF Formula terms format string */
+      int frm_trm_lng=strlen(frm_trm_fmt)+strlen(ps_nm_out);
+      frm_trm_sng[0]='\0';
+      frm_trm_sng=(char *)nco_malloc(frm_trm_lng+1L);
+      (void)snprintf(frm_trm_sng,(size_t)(frm_trm_lng+1L),frm_trm_fmt,ps_nm_out);
+      rcd=nco_char_att_put(out_id,ilev_nm_out,"long_name","Hybrid level at interfaces (1000*(A+B))");
+      rcd=nco_char_att_put(out_id,ilev_nm_out,"standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+      rcd=nco_char_att_put(out_id,ilev_nm_out,"units","mb");
+      rcd=nco_char_att_put(out_id,ilev_nm_out,"formula_terms",frm_trm_sng);
+      rcd=nco_char_att_put(out_id,ilev_nm_out,"positive","down");
+      if(frm_trm_sng) frm_trm_sng=(char *)nco_free(frm_trm_sng);
+    } /* !ilev_id_tpl */
+    if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY);
+    else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
+    else{
+      char *frm_trm_sng; /* [sng] CF Formula terms string */
+      char frm_trm_fmt[]="p0: P0 a: hyam b: hybm ps: %s"; /* [sng] CF Formula terms format string */
+      int frm_trm_lng=strlen(frm_trm_fmt)+strlen(ps_nm_out);
+      frm_trm_sng[0]='\0';
+      frm_trm_sng=(char *)nco_malloc(frm_trm_lng+1L);
+      (void)snprintf(frm_trm_sng,(size_t)(frm_trm_lng+1L),frm_trm_fmt,ps_nm_out);
+      rcd=nco_char_att_put(out_id,ilev_nm_out,"long_name","Hybrid level at midpoints (1000*(A+B))");
+      rcd=nco_char_att_put(out_id,ilev_nm_out,"standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+      rcd=nco_char_att_put(out_id,ilev_nm_out,"units","mb");
+      rcd=nco_char_att_put(out_id,ilev_nm_out,"formula_terms",frm_trm_sng);
+      rcd=nco_char_att_put(out_id,ilev_nm_out,"positive","down");
+      if(frm_trm_sng) frm_trm_sng=(char *)nco_free(frm_trm_sng);
+    } /* !lev_id_tpl */
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(fl_xtr_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
 
     /* 20261027: fxm Ensure lev, ilev have attribute standard_name="atmosphere_hybrid_sigma_pressure_coordinate" and attribute formula_terms="yada yada yada" */
