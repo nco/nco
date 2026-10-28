@@ -2264,7 +2264,7 @@ nco_char_att_get /* [fnc] Get a character string attribute from an open file */
 } /* !nco_char_att_get() */
 
 int /* O [rcd] Return code */
-nco_char_att_put /* [fnc] Put a character string attribute into an open file */
+nco_char_att_put /* [fnc] Put a character string attribute to an open file */
 (const int out_id, /* I [id] netCDF output-file ID */
  const char * const var_nm_sng, /* [sng] Variable name */
  const char * const att_nm_sng, /* [sng] Attribute name */
