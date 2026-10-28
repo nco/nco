@@ -2,7 +2,7 @@
 
 	* NCO 5.4.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha03: Amos and Donovan';git push
-	git tag -a 5.4.2-alpha03 -m 'ncremap: tolerate only ntf or mdp lvls';git push --tags
+	git tag -a 5.4.2-alpha03 -m 'ncremap: tolerate only ntf or mdp lvl';git push --tags
 
 	* nco_rgr.c: Preemptively exit() with explanation when input and output hybrid grids are mismatched
 
