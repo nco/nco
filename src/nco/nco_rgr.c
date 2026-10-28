@@ -1806,6 +1806,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(flg_grd_in_hyb){
     if((rcd=nco_inq_varid_flg(vrt_in_id,"hyai",&hyai_id)) == NC_NOERR) flg_grd_in_hyb_has_prm_ntf=True;
     if((rcd=nco_inq_varid_flg(vrt_in_id,"hyam",&hyam_id)) == NC_NOERR) flg_grd_in_hyb_has_prm_mdp=True;
+
     if(flg_grd_in_hyb_has_prm_mdp){
       rcd=nco_inq_varid(vrt_in_id,"hyam",&hyam_id);
       rcd=nco_inq_varid(vrt_in_id,"hybm",&hybm_id);
@@ -1868,6 +1869,18 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     /* 20190603: Require ECMWF IFS input to have a "lev" coordinate so we can use "lev" dimension not "nhyb" */
     if(flg_grd_hyb_ecmwf) rcd=nco_inq_varid(vrt_in_id,"lev",&lev_id);
   } /* !flg_grd_in_hyb */
+
+  /* Trouble in River City if input and output grids are mutually exclusive... */
+  if(flg_grd_in_hyb && flg_grd_out_hyb){
+    if(!flg_grd_in_hyb_has_prm_mdp && !flg_grd_out_hyb_has_prm_ntf){
+      (void)fprintf(stderr,"%s: ERROR Input hybrid grid lacks layer midpoint component variables and output hybrid grid lacks interface component variables. Unable to interpolate from interfaces to midpoints.\nHINT: Ensure the destination vertical grid has interface component variables hyai and hybi.\n",nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* !mismatch */
+    if(!flg_grd_in_hyb_has_prm_ntf && !flg_grd_out_hyb_has_prm_mdp){
+      (void)fprintf(stderr,"%s: ERROR Input hybrid grid lacks layer interface component variables and output hybrid grid lacks midpoint component variables. Unable to interpolate from midpoints to interfaces.\nHINT: Ensure the destination vertical grid has midpoint component variables hyam and hybm.\n",nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* !mismatch */
+  } /* !(flg_grd_in_hyb && flg_grd_out_hyb) */
 
   if(flg_grd_in_prs){
     rcd=nco_inq_varid(fl_xtr_id,plev_nm_in,&lev_id);
