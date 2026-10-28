@@ -1,14 +1,24 @@
-2026-10-27  Charlie Zender  <zender@uci.edu>
+2026-10-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha03: Amos and Donovan';git push
-	git tag -a 5.4.2-alpha03 -m 'fxm';git push --tags
+	git tag -a 5.4.2-alpha03 -m 'ncremap: tolerate only ntf or mdp lvls';git push --tags
+
+	* nco_rgr.c: Only add lev/ilev attributes when coordinates present
+
+	* nco_rgr.c: Interpolate missing input grid hybrid component midpoint variables
+
+	* nco_rgr.c: Define ntf/mdp dimension in output iff present in output grid
+
+	* nco_rgr.c: Change formula_terms to agree with CF ordering
+
+2026-10-27  Charlie Zender  <zender@uci.edu>
 
 	* nco_rgr.c: Backfill lev/ilev attributes when values were interpolated/extrapolated
 
 	* nco_rgr.c: Output only non-interpolated/extrapolated midpoint or interface pressures
 
-	* nco_rgr.c: Interpolate missing input grid hybrid component variables
+	* nco_rgr.c: Interpolate missing input grid hybrid component interface variables
 
 	* nco_rgr.c: Infer missing hybrid grid dimension sizes and coordinate names
 

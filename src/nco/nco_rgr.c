@@ -1605,7 +1605,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	hyam_out[lev_idx]=0.5*(hyai_out[lev_idx]+hyai_out[lev_idx+1]);
 	hybm_out[lev_idx]=0.5*(hybi_out[lev_idx]+hybi_out[lev_idx+1]);
       } /* !lev_idx */
-      (void)fprintf(stdout,"%s: WARNING Output hybrid grid-file lacks midpoint vertical grid parameters. Computing hyam and hybm as centered half-way between interface parameters hyai and hybi. These interpolated/extrapolated parameter values do not affect the geophysical field interpolations yet they are written to the output file.\n",nco_prg_nm_get());
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO Output hybrid grid-file lacks midpoint vertical grid parameters. Computing hyam and hybm as centered half-way between adjacent interface parameters hyai and hybi. These interpolated midpoint parameter values do not affect the geophysical field interpolations and are not written to the output file.\n",nco_prg_nm_get());
     } /* !flg_grd_out_hyb_has_prm_mdp */
 
     if(!flg_grd_out_hyb_has_prm_ntf){
@@ -1620,7 +1620,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       hybi_out[0]=hybi_out[1]-hybm_out[0]; /* Top interface usually has no surface pressure component, i.e., this will evaluate to zero */
       hyai_out[ilev_nbr_out-1]=0.0; /* Bottom interface has no reference pressure component */
       hybi_out[ilev_nbr_out-1]=1.0; /* Bottom interface is pure surface pressure */
-      (void)fprintf(stdout,"%s: WARNING Output hybrid grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure.\n",nco_prg_nm_get());
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO Output hybrid grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure. These interpolated/extrapolated parameter values do not affect the geophysical field interpolations and are not written to the output file.\n",nco_prg_nm_get());
     } /* !flg_grd_out_hyb_has_prm_ntf */
 
     if(ilev_id_tpl != NC_MIN_INT){
@@ -2015,12 +2015,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !flg_grd_in_dpt_1D */
     if(flg_grd_in_dpt_1D && flg_grd_out_dpt_1D) grd_sz_out=grd_sz_in;
   } /* flg_grd_in_dpt */
-
-      if(flg_grd_in_hyb_has_prm_mdp){
-      } /* !flg_grd_in_hyb_has_prm_mdp */
-      if(flg_grd_in_hyb_has_prm_ntf){
-      } /* !flg_grd_in_hyb_has_prm_ntf */
-
 
   if(flg_grd_in_hyb){
     /* Get input hybrid sigma-pressure grid vertical information */
@@ -2437,6 +2431,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(flg_grd_hyb_no_p0) p0_in=p0_dfl; else rcd=nco_get_var(vrt_in_id,p0_id,&p0_in,crd_typ_out);
     } /* !flg_grd_hyb_cameam */
 
+    if(!flg_grd_in_hyb_has_prm_mdp){
+      /* Compute midpoint vertical grid parameters from interface parameters */
+      for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++){
+	hyam_in[lev_idx]=0.5*(hyai_in[lev_idx]+hyai_in[lev_idx+1]);
+	hybm_in[lev_idx]=0.5*(hybi_in[lev_idx]+hybi_in[lev_idx+1]);
+      } /* !lev_idx */
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO Input hybrid grid-file lacks midpoint vertical grid parameters. Computing hyam and hybm as centered half-way between adjacent interface parameters hyai and hybi. These interpolated midpoint parameter values do not affect the geophysical field interpolations and are not written to the output file.\n",nco_prg_nm_get());
+    } /* !flg_grd_in_hyb_has_prm_mdp */
+
     if(!flg_grd_in_hyb_has_prm_ntf){
       /* Interpolate interface vertical grid parameters from adjacent midpoint parameters
 	 Extrapolat the top interface
@@ -2449,7 +2452,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       hybi_in[0]=hybi_in[1]-hybm_in[0]; /* Top interface usually has no surface pressure component, i.e., this will evaluate to zero */
       hyai_in[ilev_nbr_in-1]=0.0; /* Bottom interface has no reference pressure component */
       hybi_in[ilev_nbr_in-1]=1.0; /* Bottom interface is pure surface pressure */
-      (void)fprintf(stdout,"%s: INFO Input hybrid grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure. These interpolated/extrapolated values do not affect the geophysical field interpolations.\n",nco_prg_nm_get());
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO Input hybrid grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure. These interpolated/extrapolated values do not affect the geophysical field interpolations and are not written to the output file.\n",nco_prg_nm_get());
     } /* !flg_grd_in_hyb_has_prm_ntf */
 
     /* ECMWF distributes IFS forecasts with lnsp = log(surface pressure) */
@@ -2829,8 +2832,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   if(flg_grd_out_hyb){
     /* 20261027: Add flag to output only midpoint or only interface pressures? */
-    rcd=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev_out);
-    rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
+    if(flg_grd_out_hyb_has_prm_ntf) rcd=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev_out);
+    if(flg_grd_out_hyb_has_prm_mdp) rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
     /* Horizontal dimensions necessary to define PS variable */
     for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
       if(ps_id_tpl != NC_MIN_INT){
@@ -3125,38 +3128,40 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     /* 20261027: If hybrid component is missing in input file, then lev/ilev will have no attributes
        in output file unless vertical gridfile defines lev/ilev with good attributes.
        However, many gridfiles do not define lev/ilev at all, backfill their attributes */
-    if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY);
-    else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
-    else{
-      char *frm_trm_sng; /* [sng] CF Formula terms string */
-      char frm_trm_fmt[]="p0: P0 a: hyai b: hybi ps: %s"; /* [sng] CF Formula terms format string */
-      int frm_trm_lng=strlen(frm_trm_fmt)+strlen(ps_nm_out);
-      frm_trm_sng[0]='\0';
-      frm_trm_sng=(char *)nco_malloc(frm_trm_lng+1L);
-      (void)snprintf(frm_trm_sng,(size_t)(frm_trm_lng+1L),frm_trm_fmt,ps_nm_out);
-      rcd=nco_char_att_put(out_id,ilev_nm_out,"long_name","Hybrid level at interfaces (1000*(A+B))");
-      rcd=nco_char_att_put(out_id,ilev_nm_out,"standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
-      rcd=nco_char_att_put(out_id,ilev_nm_out,"units","mb");
-      rcd=nco_char_att_put(out_id,ilev_nm_out,"formula_terms",frm_trm_sng);
-      rcd=nco_char_att_put(out_id,ilev_nm_out,"positive","down");
-      if(frm_trm_sng) frm_trm_sng=(char *)nco_free(frm_trm_sng);
-    } /* !ilev_id_tpl */
-    if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY);
-    else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
-    else{
-      char *frm_trm_sng; /* [sng] CF Formula terms string */
-      char frm_trm_fmt[]="p0: P0 a: hyam b: hybm ps: %s"; /* [sng] CF Formula terms format string */
-      int frm_trm_lng=strlen(frm_trm_fmt)+strlen(ps_nm_out);
-      frm_trm_sng[0]='\0';
-      frm_trm_sng=(char *)nco_malloc(frm_trm_lng+1L);
-      (void)snprintf(frm_trm_sng,(size_t)(frm_trm_lng+1L),frm_trm_fmt,ps_nm_out);
-      rcd=nco_char_att_put(out_id,ilev_nm_out,"long_name","Hybrid level at midpoints (1000*(A+B))");
-      rcd=nco_char_att_put(out_id,ilev_nm_out,"standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
-      rcd=nco_char_att_put(out_id,ilev_nm_out,"units","mb");
-      rcd=nco_char_att_put(out_id,ilev_nm_out,"formula_terms",frm_trm_sng);
-      rcd=nco_char_att_put(out_id,ilev_nm_out,"positive","down");
-      if(frm_trm_sng) frm_trm_sng=(char *)nco_free(frm_trm_sng);
-    } /* !lev_id_tpl */
+    if(flg_grd_out_hyb_has_prm_ntf){
+      if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY);
+      else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
+      else{
+	char *frm_trm_sng=NULL; /* [sng] CF Formula terms string */
+	char frm_trm_fmt[]="a: hyai b: hybi ps: %s p0: P0"; /* [sng] CF Formula terms format string */
+	int frm_trm_lng=strlen(frm_trm_fmt)+strlen(ps_nm_out);
+	frm_trm_sng=(char *)nco_malloc(frm_trm_lng+1L);
+	(void)snprintf(frm_trm_sng,(size_t)(frm_trm_lng+1L),frm_trm_fmt,ps_nm_out);
+	rcd=nco_char_att_put(out_id,ilev_nm_out,"long_name","Hybrid level at interfaces (1000*(A+B))");
+	rcd=nco_char_att_put(out_id,ilev_nm_out,"standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+	rcd=nco_char_att_put(out_id,ilev_nm_out,"units","mb");
+	rcd=nco_char_att_put(out_id,ilev_nm_out,"formula_terms",frm_trm_sng);
+	rcd=nco_char_att_put(out_id,ilev_nm_out,"positive","down");
+	if(frm_trm_sng) frm_trm_sng=(char *)nco_free(frm_trm_sng);
+      } /* !ilev_id_tpl */
+    } /* !flg_grd_out_hyb_has_prm_ntf */
+    if(flg_grd_out_hyb_has_prm_mdp){
+      if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY);
+      else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
+      else{
+	char *frm_trm_sng=NULL; /* [sng] CF Formula terms string */
+	char frm_trm_fmt[]="p0: P0 a: hyam b: hybm ps: %s"; /* [sng] CF Formula terms format string */
+	int frm_trm_lng=strlen(frm_trm_fmt)+strlen(ps_nm_out);
+	frm_trm_sng=(char *)nco_malloc(frm_trm_lng+1L);
+	(void)snprintf(frm_trm_sng,(size_t)(frm_trm_lng+1L),frm_trm_fmt,ps_nm_out);
+	rcd=nco_char_att_put(out_id,ilev_nm_out,"long_name","Hybrid level at midpoints (1000*(A+B))");
+	rcd=nco_char_att_put(out_id,ilev_nm_out,"standard_name","atmosphere_hybrid_sigma_pressure_coordinate");
+	rcd=nco_char_att_put(out_id,ilev_nm_out,"units","mb");
+	rcd=nco_char_att_put(out_id,ilev_nm_out,"formula_terms",frm_trm_sng);
+	rcd=nco_char_att_put(out_id,ilev_nm_out,"positive","down");
+	if(frm_trm_sng) frm_trm_sng=(char *)nco_free(frm_trm_sng);
+      } /* !lev_id_tpl */
+    } /* !flg_grd_out_hyb_has_prm_mdp */
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(fl_xtr_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
 
     /* 20261027: fxm Ensure lev, ilev have attribute standard_name="atmosphere_hybrid_sigma_pressure_coordinate" and attribute formula_terms="yada yada yada" */
