@@ -3145,7 +3145,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
       /* Always add/overwrite CF-compliant attributes to the vertical coordinate
 	 These attributes are often incomplete in vertical gridfiles */
-      if(true){
+      if(True){
 	char *frm_trm_sng=NULL; /* [sng] CF Formula terms string */
 	char frm_trm_fmt[]="a: hyai b: hybi ps: %s p0: P0"; /* [sng] CF Formula terms format string */
 	int frm_trm_lng=strlen(frm_trm_fmt)+strlen(ps_nm_out);
@@ -3159,16 +3159,16 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	rcd=nco_char_att_put(out_id,ilev_nm_out,"positive","down");
 	rcd=nco_char_att_put(out_id,ilev_nm_out,"axis","Z");
 	if(frm_trm_sng) frm_trm_sng=(char *)nco_free(frm_trm_sng);
-      } /* !true */
+      } /* !True */
     } /* !flg_grd_out_hyb_has_prm_ntf */
     if(flg_grd_out_hyb_has_prm_mdp){
       if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY);
       else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(vrt_in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
       /* Always add/overwrite CF-compliant attributes to the vertical coordinate
 	 These attributes are often incomplete in vertical gridfiles */
-      if(true){
+      if(True){
 	char *frm_trm_sng=NULL; /* [sng] CF Formula terms string */
-	char frm_trm_fmt[]="p0: P0 a: hyam b: hybm ps: %s"; /* [sng] CF Formula terms format string */
+	char frm_trm_fmt[]="a: hyam b: hybm ps: %s p0: P0"; /* [sng] CF Formula terms format string */
 	int frm_trm_lng=strlen(frm_trm_fmt)+strlen(ps_nm_out);
 	frm_trm_sng=(char *)nco_malloc(frm_trm_lng+1L);
 	(void)snprintf(frm_trm_sng,(size_t)(frm_trm_lng+1L),frm_trm_fmt,ps_nm_out);
@@ -3180,7 +3180,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	rcd=nco_char_att_put(out_id,lev_nm_out,"positive","down");
 	rcd=nco_char_att_put(out_id,lev_nm_out,"axis","Z");
 	if(frm_trm_sng) frm_trm_sng=(char *)nco_free(frm_trm_sng);
-      } /* !true */
+      } /* !True */
     } /* !flg_grd_out_hyb_has_prm_mdp */
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(fl_xtr_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
 
