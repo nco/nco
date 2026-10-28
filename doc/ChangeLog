@@ -2,7 +2,9 @@
 
 	* NCO 5.4.2-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha04: Flooding and Friends';git push
-	git tag -a 5.4.2-alpha04 -m '';git push --tags
+	git tag -a 5.4.2-alpha04 -m 'ncremap: fix ilev ntp, ovr lev/ilev att, new lev/ilev atts';git push --tags
+
+	* nco_rgr.c: Fix linear interpolation of interface components based on Claude Code results from Jill Z.
 
 	* nco_rgr.c: Always overwrite vertical grid attributes with correct CF conventions
 

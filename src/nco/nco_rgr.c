@@ -1613,11 +1613,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	 Extrapolate the top interface
 	 NB: Implementation assumes pressure increases with idx (valid for CAM/EAM) */
       for(ilev_idx=1;ilev_idx<ilev_nbr_out-1;ilev_idx++){ 
-	hyai_out[ilev_idx]=0.5*(hyam_out[ilev_idx]+hyam_out[ilev_idx+1]);
-	hybi_out[ilev_idx]=0.5*(hybm_out[ilev_idx]+hybm_out[ilev_idx+1]);
+	hyai_out[ilev_idx]=0.5*(hyam_out[ilev_idx-1]+hyam_out[ilev_idx]);
+	hybi_out[ilev_idx]=0.5*(hybm_out[ilev_idx-1]+hybm_out[ilev_idx]);
       } /* !lev_idx */
-      hyai_out[0]=hyai_out[1]-hyam_out[0]; /* Top interface is usually pure sigma component */
-      hybi_out[0]=hybi_out[1]-hybm_out[0]; /* Top interface usually has no surface pressure component, i.e., this will evaluate to zero */
+      hyai_out[0]=2.0*hyam_out[0]-hyai_out[1]; /* Top interface is usually pure sigma component */
+      hybi_out[0]=2.0*hybm_out[0]-hybi_out[1]; /* Top interface usually has no surface pressure component, i.e., this will evaluate to zero */
       hyai_out[ilev_nbr_out-1]=0.0; /* Bottom interface has no reference pressure component */
       hybi_out[ilev_nbr_out-1]=1.0; /* Bottom interface is pure surface pressure */
       if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO Output hybrid grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure. These interpolated/extrapolated parameter values do not affect the geophysical field interpolations and are not written to the output file.\n",nco_prg_nm_get());
@@ -2458,11 +2458,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	 Extrapolat the top interface
 	 NB: Implementation assumes pressure increases with idx (valid for CAM/EAM) */
       for(ilev_idx=1;ilev_idx<ilev_nbr_in-1;ilev_idx++){ 
-	hyai_in[ilev_idx]=0.5*(hyam_in[ilev_idx]+hyam_in[ilev_idx+1]);
-	hybi_in[ilev_idx]=0.5*(hybm_in[ilev_idx]+hybm_in[ilev_idx+1]);
+	hyai_in[ilev_idx]=0.5*(hyam_in[ilev_idx-1]+hyam_in[ilev_idx]);
+	hybi_in[ilev_idx]=0.5*(hybm_in[ilev_idx-1]+hybm_in[ilev_idx]);
       } /* !lev_idx */
-      hyai_in[0]=hyai_in[1]-hyam_in[0]; /* Top interface is usually pure sigma component */
-      hybi_in[0]=hybi_in[1]-hybm_in[0]; /* Top interface usually has no surface pressure component, i.e., this will evaluate to zero */
+      hyai_in[0]=2.0*hyam_in[0]-hyai_in[1]; /* Top interface is usually pure sigma component */
+      hybi_in[0]=2.0*hybm_in[0]-hybi_in[1]; /* Top interface usually has no surface pressure component, i.e., this will evaluate to zero */
       hyai_in[ilev_nbr_in-1]=0.0; /* Bottom interface has no reference pressure component */
       hybi_in[ilev_nbr_in-1]=1.0; /* Bottom interface is pure surface pressure */
       if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO Input hybrid grid-file lacks interface vertical grid parameters. Computing inner-level hyai and hybi as centered half-way between midpoint parameters hyam and hybm, linearly extrapolating top level interface values, and setting bottom layer interface values to equal surface pressure. These interpolated/extrapolated values do not affect the geophysical field interpolations and are not written to the output file.\n",nco_prg_nm_get());
