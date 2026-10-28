@@ -1,5 +1,9 @@
 2026-10-28  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.4.2-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha04: Flooding and Friends';git push
+	git tag -a 5.4.2-alpha04 -m '';git push --tags
+
 	* NCO 5.4.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha03: Amos and Donovan';git push
 	git tag -a 5.4.2-alpha03 -m 'ncremap: tolerate only ntf or mdp lvl';git push --tags
