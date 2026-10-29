@@ -3643,7 +3643,11 @@ printf '%s\n' "$ac_cv_path_EGREP" >&6; }
 
 
 # Get hostname and user
-if test "${USER}"; then
+# Reproducible builds: with SOURCE_DATE_EPOCH set, record "nobody" and
+# "nowhere" instead of the build user and host
+if test -n "${SOURCE_DATE_EPOCH}"; then
+    nco_user="nobody";
+elif test "${USER}"; then
     nco_user=${USER};
 elif test "${LOGNAME}"; then
     nco_user="${LOGNAME}";
@@ -3655,7 +3659,9 @@ cat >>confdefs.h <<_ACEOF
 #define USER ${nco_user}
 _ACEOF
 
-if test "${HOSTNAME}"; then
+if test -n "${SOURCE_DATE_EPOCH}"; then
+    nco_hostname="nowhere";
+elif test "${HOSTNAME}"; then
     nco_hostname="${HOSTNAME}"
 # following line $HOST will not be set (from AC_CANONICAL_HOST - will set $host
 elif test "${HOST}"; then

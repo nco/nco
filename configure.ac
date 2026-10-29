@@ -90,7 +90,11 @@ AC_DEFINE(NCO_BUILDENGINE,Autoconf,System used to build/install NCO)
 AC_PROG_EGREP
 
 # Get hostname and user
-if test "${USER}"; then
+# Reproducible builds: with SOURCE_DATE_EPOCH set, record "nobody" and
+# "nowhere" instead of the build user and host
+if test -n "${SOURCE_DATE_EPOCH}"; then
+    nco_user="nobody";
+elif test "${USER}"; then
     nco_user=${USER};
 elif test "${LOGNAME}"; then
     nco_user="${LOGNAME}";
@@ -98,7 +102,9 @@ else
     nco_user="nobody";
 fi
 AC_DEFINE_UNQUOTED(USER,${nco_user},User)
-if test "${HOSTNAME}"; then
+if test -n "${SOURCE_DATE_EPOCH}"; then
+    nco_hostname="nowhere";
+elif test "${HOSTNAME}"; then
     nco_hostname="${HOSTNAME}"
 # following line $HOST will not be set (from AC_CANONICAL_HOST - will set $host
 elif test "${HOST}"; then
