@@ -3125,15 +3125,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_char_att_put(out_id,"P0","standard_name","reference_air_pressure_for_atmosphere_vertical_coordinate");
     rcd=nco_char_att_put(out_id,"P0","units","Pa");
     if(flg_grd_out_hyb_has_prm_ntf){
-      rcd=nco_char_att_put(out_id,"hyai","long_name","Atmospheric hybrid sigma-pressure coordinate A coefficient at layer interfaces");
+      rcd=nco_char_att_put(out_id,"hyai","long_name","Atmospheric hybrid sigma-pressure coordinate coefficient A for layer interfaces");
       rcd=nco_char_att_put(out_id,"hyai","units","1");
-      rcd=nco_char_att_put(out_id,"hybi","long_name","Atmospheric hybrid sigma-pressure coordinate B coefficient at layer interfaces");
+      rcd=nco_char_att_put(out_id,"hybi","long_name","Atmospheric hybrid sigma-pressure coordinate coefficient B for layer interfaces");
       rcd=nco_char_att_put(out_id,"hybi","units","1");
     } /* !flg_grd_out_hyb_has_prm_ntf */
     if(flg_grd_out_hyb_has_prm_mdp){
-      rcd=nco_char_att_put(out_id,"hyam","long_name","Atmospheric hybrid sigma-pressure coordinate A coefficient at layer midpoints");
+      rcd=nco_char_att_put(out_id,"hyam","long_name","Atmospheric hybrid sigma-pressure coordinate coefficient A for layer midpoints");
       rcd=nco_char_att_put(out_id,"hyam","units","1");
-      rcd=nco_char_att_put(out_id,"hybm","long_name","Atmospheric hybrid sigma-pressure coordinate B coefficient at layer midpoints");
+      rcd=nco_char_att_put(out_id,"hybm","long_name","Atmospheric hybrid sigma-pressure coordinate coefficient B for layer midpoints");
       rcd=nco_char_att_put(out_id,"hybm","units","1");
     } /* !flg_grd_out_hyb_has_prm_mdp */
 

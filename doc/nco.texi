@@ -132,7 +132,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.4.2-alpha04
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 12 October 2026
+@set update-date 29 October 2026
 @set update-month October 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -4949,8 +4949,8 @@ indicates that @emph{only} user-defined variables should be output.
 @cindex @command{egrep}
 @cindex @command{ncatted}
 @cindex @acronym{GNU}
-Regular expressions the syntax that @acronym{NCO} use pattern-match
-object names in netCDF file against user requests.
+Regular expressions are the syntax that @acronym{NCO} uses to
+pattern-match object names in netCDF files against user requests.
 The user can select all variables beginning with the string @samp{DST}
 from an input file by supplying the regular expression @samp{^DST} to
 the @samp{-v} switch, i.e., @samp{-v '^DST'}. 
