@@ -1,8 +1,12 @@
 2026-10-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.4.2-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha05: Swim Past Lysanne';git push
+	git tag -a 5.4.2-alpha05 -m '';git push --tags
+
 	* NCO 5.4.2-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha04: Flooding and Friends';git push
-	git tag -a 5.4.2-alpha04 -m 'ncremap: fix ilev ntp, ovr lev/ilev att, new lev/ilev atts';git push --tags
+	git tag -a 5.4.2-alpha04 -m 'all: dbn rpr bld; ncremap: fix ilev ntp, ovr lev/ilev att, new lev/ilev atts';git push --tags
 
 	* nco_rgr.c: Clarify meaning of hybrid-sigma component variable interface boundaries
 
