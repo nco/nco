@@ -28,6 +28,9 @@ fi # !false
 # Safety: Exit immediately when ...
 set -u # Exit on unbound variable reference
 
+EXIT_SUCCESS=0
+EXIT_FAILURE=1
+
 function exit_gracefully {
     local exit_code=${1:-0} # Default to exit code 0 if not specified
     
@@ -249,17 +252,17 @@ while getopts :34567D:n:-: OPT; do
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl=$((10#${LONG_OPTARG})) ;; # -d # Debugging level
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
 	       help | hlp | usage | usg ) fnc_usg_prn ;; # # Print usage summary
-	       help=?* | hlp=?* | usage=?* | usg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Print usage summary
+	       help=?* | hlp=?* | usage=?* | usg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully ${EXIT_FAILURE} ;; # # Print usage summary
 	       hyd | hide | hide_csz | hide_csz_exe | hyd_flg ) hyd_flg='Yes' ;; # -h # Hide CSZ executable directories
-	       no_hyd=?* | no_hide=?* | no_hide_csz_exe=?* | hyd_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Do not hide CSZ executables
+	       no_hyd=?* | no_hide=?* | no_hide_csz_exe=?* | hyd_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully ${EXIT_FAILURE} ;; # # Do not hide CSZ executables
 	       e3smu | e3smu_flg ) e3smu_flg='Yes' ;; # -e # Load E3SM-Unified
-	       e3smu=?* | e3smu_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # -e # Load E3SM-Unified
+	       e3smu=?* | e3smu_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully ${EXIT_FAILURE} ;; # -e # Load E3SM-Unified
 	       no_e3smu | no_e3smu_flg ) e3smu_flg='No' ;; # # Do not load E3SM-Unified
-	       no_e3smu=?* | no_e3smu_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # # Do not load E3SM-Unified
+	       no_e3smu=?* | no_e3smu_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully ${EXIT_FAILURE} ;; # # Do not load E3SM-Unified
 	       no_npo | no_npo_flg ) npo_flg='No' ;; # -n # Do not set --npo (NCO-Path-Override) option
-	       no_npo=?* | no_npo_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # -n # Do not set --npo (NCO-Path-Override) option
+	       no_npo=?* | no_npo_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully ${EXIT_FAILURE} ;; # -n # Do not set --npo (NCO-Path-Override) option
 	       npo | npo_flg ) npo_flg='Yes' ;; # -n # Set --npo (NCO-Path-Override) option
-	       npo=?* | npo_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully 1 ;; # -n # Set --npo (NCO-Path-Override) option
+	       npo=?* | npo_flg=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit_gracefully ${EXIT_FAILURE} ;; # -n # Set --npo (NCO-Path-Override) option
                '' ) break ;; # "--" terminates argument processing
                * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;; # !OPTARG
@@ -396,4 +399,4 @@ fi # !hyd_flg
 printf "\nCleaning up...\n"
 /bin/rm -r ${WORKDIR}
 
-exit_gracefully 0
+exit_gracefully ${EXIT_SUCCESS}
