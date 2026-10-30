@@ -634,9 +634,11 @@ flg_hrz='No' # [flg] Perform horizontal regridding
 gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_hostname=${HOST_FFC} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
 gad_sng='' # [sng] Global attributes to delete
 grd_dst='' # [sng] Destination grid-file
+grd_dst_typ='' # [enm] Destination grid-file format
 grd_dst_xmp='grd_dst.nc' # [sng] Destination grid-file for examples
 grd_sng='' # [sng] Grid string
 grd_src='' # [sng] Source grid-file
+grd_src_typ='' # [enm] Source grid-file format
 grd_src_xmp='grd_src.nc' # [sng] Source grid-file for examples
 grd_vrt_xmp='grd_vrt.nc' # [sng] Vertical grid-file for examples
 hdr_pad='10000' # [B] Pad at end of header section
@@ -2314,7 +2316,7 @@ if [[ ${grd_dst:-} ]]; then
 	if [[ ${dst_usr_flg:-} != 'Yes' ]] && [[ ${grd_sng_usr_flg:-} != 'Yes' ]]; then
 	    echo "ERROR: Unable to find specified destination grid-file ${grd_dst}"
 	    echo "HINT: Supply full path-name for destination grid, or generate it with -G option and arguments"
-	exit_gracefully ${EXIT_FAILURE}
+	    exit_gracefully ${EXIT_FAILURE}
 	fi # !dst_usr_flg
     fi # ! -f
     grd_dst_usr_flg='Yes'

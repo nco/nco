@@ -2,7 +2,13 @@
 
 	* NCO 5.4.2-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha05: Swim Past Lysanne';git push
-	git tag -a 5.4.2-alpha05 -m '';git push --tags
+	git tag -a 5.4.2-alpha05 -m 'all: .appveyor.yml; spt: EXIT_SUCCESS; ncremap: grd_fmt_get()';git push --tags
+
+	* CI: prevent duplicate AppVeyor builds for Pull Requests
+
+	* ncremap: Add grd_fmt_get() to determine gridfile type
+
+	* Use named exit status tokens in Bash scripts
 
 	* NCO 5.4.2-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha04: Flooding and Friends';git push
