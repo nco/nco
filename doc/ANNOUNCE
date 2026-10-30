@@ -1,38 +1,52 @@
 $Header$ -*-text-*-
 
-netCDF Operators NCO version 5.4.1 reach consciousness
+netCDF Operators NCO version 5.4.2 afflict the comfortable
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco/nco (Source Code, Issues, Releases)
 
 What's new?
-This is a small, bug-fix release.
-Version 5.4.1 contains fixes necessary for ncremap and ncclimo
-to work smoothly. The method of using MPI has changed to
-accomodate SLURM settings on some DOE supercomputers.
+This release improves support for vertically interpolating atmospheric
+hybrid sigma-pressure vertical coordinate data, refactors parts of
+ncremap, and improves CF attributes.
 
-Users interested in these features should upgrade to 5.4.1. 
+Users interested in these features should upgrade to 5.4.3. 
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. When run in MPI mode (--par=mpi), ncclimo and ncremap
-internally spawn jobs to other nodes using srun.
-Now they invoke srun --exclusive to fully control each node.
-This has lead to significant workflow speedup in situations
-involving lengthy climatologies.
+A. The atmospheric hybrid sigma-pressure vertical coordinate, as
+defined by CF, is heavily used by CAM, E3SM, and ECMWF. Previously NCO
+required datasets to contain the full hybrid grid specification before  
+(i.e., both the the midpoint and the interface components) it would
+interpolate such data. This breaks when input datasets only contain
+the specification for one of the componenents, which is perfectly
+legal in CF. The new version supports input files and destination
+grids that contain only the midpoint or the vertical component.
+The missing component is not necessary, and is not output when this
+occurs. 
 
-B. A new regression script has been added. data/nco_e3smu.sh
-now tests NCO in batch mode on compute nodes in the E3SM-Unified
-environment. Thanks to Ryan Forsyth (LLNL) for this suggestion.
+ncremap --ps_nm=ps --vrt_grd=vrt_grd.nc in.nc out.nc
+http://nco.sf.net/nco.html#vrt
+
+B. ncremap has significantly improved the CF attributes output by
+the regridder, especially for hybrid sigma-pressure coordinates.
+Users may notice that formula_terms, standard_name,
+computed_standard_name, positive, and axis attributes are now attached
+to lev/ilev.
+
+C. ncremap's printed output is now more concise and legible.
+
+D. The new regression script data/nco_e3smu.sh is more robust.
 
 BUG FIXES:
 
-A. ncremap and ncclimo in release 5.4.0 emitted "unbound variable"
-errors in certain situations. This has been remedied.
-There is no workaround. The solution is to upgrade.
+A. The hybrid coordinate parameters hyai, hyam, hybi, and hybm 
+formerly were written with standard_name attributes. These were
+incorrect. They have been converted and clarified as long_name
+attributes. 
 
 Full release statement at http://nco.sf.net/ANNOUNCE
     
@@ -40,7 +54,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
 This section of ANNOUNCE reports and reminds users of the
 existence and severity of known, not yet fixed, problems. 
-These problems occur with NCO 5.4.1 built/tested under
+These problems occur with NCO 5.4.2 built/tested under
 MacOS 26.6.2 with netCDF 4.10.2-development on HDF5 2.2.0.
 and with Linux FC42 with netCDF 4.9.2 on HDF5 1.14.4.
 

@@ -29939,13 +29939,20 @@ at each level.
 @cindex @code{hybi}
 @cindex @code{hybm}
 @cindex @code{formula_terms} attribute
-The hybrid sigma-pressure gridfile must specify @var{A} and @var{B}
+Prior to @acronym{NCO} version 5.4.2 (October, 2026) the hybrid
+sigma-pressure gridfile had to specify @var{A} and @var{B} 
 coefficients for both layer midpoints and interfaces with these
 standard (as employed by @acronym{CESM} and @acronym{E3SM}) names and 
 dimensions: @code{hyai(ilev)}, @code{hybi(ilev)}, @code{hyam(lev)}, 
 and @code{hybm(lev)}.
-The reference pressure and surface pressure must be named
-@code{P0} and @code{PS}, respectively.
+Now the vertical grid destination file may omit either (but not both)
+the midpoint coefficients or the interface coefficients so long as
+they are not needed/referenced by the dataset to be regridded.
+The reference pressure pressure must be named @code{P0} (although
+the regridder tolerates its absence as of @acronym{NCO} version 5.4.0
+(September, 2026). 
+The surface pressure is assumed to be named @code{PS} though that
+name can be overridden using the @samp{ps_nm=@var{ps_nm}} option.
 The pressures at all midpoints and interfaces are then defined as 
 @example
 @verbatim
@@ -30128,8 +30135,8 @@ vertical grid, must first completely convert that grid to
 Once again, the destination grid must be in @acronym{CESM/E3SM}
 hybrid sigma-pressure grid format.
 
-When interpolating ECMWF/IFS data the only surface pressure variable
-in the input data file should be @code{lnsp}.
+When interpolating @acronym{ECMWF/IFS} data the only surface pressure
+variable in the input data file should be @code{lnsp}.
 Do not include a variable named @code{PS} in the input data file.
 (It will probably be ignored, and so will confuse everyone).
 The desired output surface pressure can be placed as @code{PS} in the
@@ -30150,11 +30157,20 @@ lev[lev]=P0*(hyam+hybm)/100.0;
 @end verbatim
 @end example
 
-A vertical hybrid grid file @var{vrt_fl} must contain at least
-@code{hyai}, @code{hybi}, @code{hyam}, @code{hybm(lev)} and
-@code{P0}.
-The @code{PS}, @code{lev}, and @code{ilev} fields are optional. 
+Prior to @acronym{NCO} version 5.4.2 (October, 2026)
+a vertical hybrid grid file @var{vrt_fl} had to contain
+both the midpoint and interface parameters that describe
+the hybrid sigma-pressure coordinate, as well as the reference
+pressure. 
+These variable are named @code{hyai}, @code{hybi}, @code{hyam},
+@code{hybm(lev)} and @code{P0}.
 (Exceptions for @acronym{ECMWF} grids are noted above).
+As of @acronym{NCO} version 5.4.2 (October, 2026) the input
+data file and vertical grid destination file may omit either
+(but not both) the midpoint coefficients or the interface
+coefficients.
+The @code{PS}, @code{lev}, and @code{ilev} fields have always been
+optional.  
 All hybrid-coordinate data files must be associated with a
 @code{PS} field.
 @code{PS} is normally in hybrid data input files, but can
