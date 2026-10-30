@@ -1,8 +1,12 @@
 2026-10-30  Charlie Zender  <zender@uci.edu>
 
+	* NCO 5.4.2 release procedure:
+	cd ~/nco;git commit -a -m 'Version 5.4.2: Flooded with Friends';git push
+	git tag -a 5.4.2 -m 'all: .appveyor.yml, dpn rpr bld; spt: nco_e3smu.sh, HOST_FFC, EXIT_SUCCESS; ncclimo: mpa_flg; ncremap: prn fmt, only ntf/mdp lvl, new cf atts, grd_fmt_get(), nc42nc4, dst2h5m';git push --tags
+
 	* NCO 5.4.2-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha05: Swim, Past, Lysanne';git push
-	git tag -a 5.4.2-alpha05 -m 'all: .appveyor.yml; spt: EXIT_SUCCESS; ncremap: grd_fmt_get(); mbt_nc42nc4 mbt_dst2h5m';git push --tags
+	git tag -a 5.4.2-alpha05 -m 'all: .appveyor.yml; spt: EXIT_SUCCESS; ncremap new cf atts, grd_fmt_get(), mbt_nc42nc4, mbt_dst2h5m';git push --tags
 
 	* ncremap: Tidy Copilot logic
 
