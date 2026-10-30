@@ -994,55 +994,39 @@ function grd_fmt_get {
 
 function mbt_nc42nc4_chk {
     # Determine whether both existing grids are SCRIP netCDF4 files
-    if [[ ${dbg_lvl:-} -eq 2 ]]; then
-        return 0
-    fi # !dbg
     grd_src_fmt=$(grd_fmt_get "${grd_src}")
     grd_dst_fmt=$(grd_fmt_get "${grd_dst}")
     [[ ${grd_src_fmt} == "nc4" && ${grd_dst_fmt} == "nc4" ]] && mbt_nc42nc4='Yes'
 } # !mbt_nc42nc4_chk()
 
-function mbt_dst_prp {
+function mbt_dst2h5m {
     # Pre-process destination grid to MOAB H5M format when required
-    if [[ ${map_mk:-} == 'Yes' ]] && [[ ${wgt_typ:-} == 'mbtempest' ]] && [[ ${mbt_nc42nc4} != 'Yes' ]]; then
-        # 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
-        if [[ ${grd_dst:-} == *.g ]] || [[ ${grd_dst:-} == *.exo ]] || [[ ${grd_dst:-} == *".nc"* ]]; then
-            [[ ${grd_dst:-} == *.g ]] && grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
-            [[ ${grd_dst:-} == *.exo ]] && grd_dst_h5m_tmp="${grd_dst/.exo/.h5m}"
-            [[ ${grd_dst:-} == *".nc"* ]] && grd_dst_h5m_tmp="${grd_dst/.nc/.h5m}"
-            # 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
-            # mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
-            # "g2m" stands for "grid-to-MOAB", meaning command converts any grid-type to MOAB
-            [[ ${grd_dst:-} == *.g ]] || [[ ${mbt_grd_nc4:-} == 'Yes' ]] && mbt_grd_rd_srl='Yes' || mbt_grd_rd_srl='No'
-            [[ ${mbt_grd_rd_srl:-} == 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || [[ ${grd_dst:-} == *.exo ]] && cnv_opt_g2m=${cnv_opt_prl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
-            cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_g2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
-            [[ ${mbt_grd_rd_srl:-} == 'No' ]] && cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"
-            if [[ ${dbg_lvl:-} -ge 1 ]]; then
-                echo ${cmd_g2m[${fl_idx}]}
-            fi # !dbg
-            if [[ ${dbg_lvl:-} -ne 2 ]]; then
-                eval ${cmd_g2m[${fl_idx}]}
-                if [[ "$?" -ne 0 ]] || [[ ! -f ${grd_dst_h5m_tmp:-} ]]; then
-                    printf "${spt_nm}: ERROR Failed to convert destination grid to MOAB H5M format. Debug this:\n${cmd_g2m[${fl_idx}]}\n"
-                    printf "${cnv_exe_hnt}"
-                    exit_gracefully ${EXIT_FAILURE}
-                fi # !err
-            fi # !dbg
-            grd_dst=${grd_dst_h5m_tmp}
-        fi # !grd_dst
-    fi # !mbtempest
-} # !mbt_dst_prp()
-
-function dst_is_grd {
-    # Purpose: Is destination grid specified as SCRIP grid-file?
-    # fxm: Not working yet
-    # Figure-out whether data-file or grid-file and proceed accordingly
-    # Allow ncremap to combine -d and -g switches
-    # Usage: dst_is_grd ${fl}
-    fl=${1}
-    flg='Yes'
-    #flg='No'
-} # !dst_is_grd()
+    # 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
+    if [[ ${grd_dst:-} == *.g ]] || [[ ${grd_dst:-} == *.exo ]] || [[ ${grd_dst:-} == *".nc"* ]]; then
+        [[ ${grd_dst:-} == *.g ]] && grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
+        [[ ${grd_dst:-} == *.exo ]] && grd_dst_h5m_tmp="${grd_dst/.exo/.h5m}"
+        [[ ${grd_dst:-} == *".nc"* ]] && grd_dst_h5m_tmp="${grd_dst/.nc/.h5m}"
+        # 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
+        # mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
+        # "g2m" stands for "grid-to-MOAB", meaning command converts any grid-type to MOAB
+        [[ ${grd_dst:-} == *.g ]] || [[ ${mbt_grd_nc4:-} == 'Yes' ]] && mbt_grd_rd_srl='Yes' || mbt_grd_rd_srl='No'
+        [[ ${mbt_grd_rd_srl:-} == 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || [[ ${grd_dst:-} == *.exo ]] && cnv_opt_g2m=${cnv_opt_prl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
+        cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_dst} ${cnv_opt_g2m} \"${grd_dst}\" \"${grd_dst_h5m_tmp}\"${devnull}"
+        [[ ${mbt_grd_rd_srl:-} == 'No' ]] && cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"
+        if [[ ${dbg_lvl:-} -ge 1 ]]; then
+            echo ${cmd_g2m[${fl_idx}]}
+        fi # !dbg
+        if [[ ${dbg_lvl:-} -ne 2 ]]; then
+            eval ${cmd_g2m[${fl_idx}]}
+            if [[ "$?" -ne 0 ]] || [[ ! -f ${grd_dst_h5m_tmp:-} ]]; then
+                printf "${spt_nm}: ERROR Failed to convert destination grid to MOAB H5M format. Debug this:\n${cmd_g2m[${fl_idx}]}\n"
+                printf "${cnv_exe_hnt}"
+                exit_gracefully ${EXIT_FAILURE}
+            fi # !err
+        fi # !dbg
+        grd_dst=${grd_dst_h5m_tmp}
+    fi # !grd_dst
+} # !mbt_dst2h5m()
 
 # Check argument number and complain accordingly
 arg_nbr=$#
@@ -3092,8 +3076,10 @@ fi # !rrg
 # NB: Unlike source grid, destination grid never changes in file-loop, so pre-process here when source grid is available
 if [[ ${map_mk:-} == 'Yes' ]] && { [[ ${grd_src_usr_flg:-} == 'Yes' ]] || [[ ${prc_typ:-} == 'rrg' ]]; }; then
     if [[ ${wgt_typ:-} == 'mbtempest' ]]; then
-        mbt_nc42nc4_chk
-        mbt_dst_prp
+	mbt_nc42nc4_chk
+	if [[ ${mbt_nc42nc4} != 'Yes' ]]; then
+	    mbt_dst2h5m
+	fi # !mbt_nc42nc4
     fi # !mbtempest
 fi # !grd_src
 
@@ -3365,7 +3351,9 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 
 		if [[ ${wgt_typ:-} == 'mbtempest' ]]; then
 		    mbt_nc42nc4_chk
-		    mbt_dst_prp
+		    if [[ ${mbt_nc42nc4} != 'Yes' ]]; then
+			mbt_dst2h5m
+		    fi # !mbt_nc42nc4
 		fi # !mbtempest
 
 		# If source grid was just inferred in preceding block, convert and partition it

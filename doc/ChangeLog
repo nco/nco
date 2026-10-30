@@ -2,7 +2,9 @@
 
 	* NCO 5.4.2-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha05: Swim Past Lysanne';git push
-	git tag -a 5.4.2-alpha05 -m 'all: .appveyor.yml; spt: EXIT_SUCCESS; ncremap: grd_fmt_get(); mbt_nc42nc4';git push --tags
+	git tag -a 5.4.2-alpha05 -m 'all: .appveyor.yml; spt: EXIT_SUCCESS; ncremap: grd_fmt_get(); mbt_nc42nc4 mbt_dst2h5m';git push --tags
+
+	* ncremap: Tidy Copilot logic
 
 	* ncremap: mbtempest omit mpiskip conversion and partitioning for nc4->nc4
 
