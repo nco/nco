@@ -634,11 +634,11 @@ flg_hrz='No' # [flg] Perform horizontal regridding
 gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_hostname=${HOST_FFC} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
 gad_sng='' # [sng] Global attributes to delete
 grd_dst='' # [sng] Destination grid-file
-grd_dst_typ='' # [enm] Destination grid-file format
+grd_dst_fmt='' # [enm] Destination grid-file format
 grd_dst_xmp='grd_dst.nc' # [sng] Destination grid-file for examples
 grd_sng='' # [sng] Grid string
 grd_src='' # [sng] Source grid-file
-grd_src_typ='' # [enm] Source grid-file format
+grd_src_fmt='' # [enm] Source grid-file format
 grd_src_xmp='grd_src.nc' # [sng] Source grid-file for examples
 grd_vrt_xmp='grd_vrt.nc' # [sng] Vertical grid-file for examples
 hdr_pad='10000' # [B] Pad at end of header section
@@ -658,6 +658,7 @@ map_trn_fl='' # [sng] Map-file transpose (for Tempest)
 map_mk='No' # [flg] Generate map-file (i.e., map does not yet exist)
 map_usr_flg='No' # [flg] User supplied argument to --map option
 map_xmp='map.nc' # [sng] Map-file for examples
+mbt_nc42nc4='No' # [sng] Source and destination grids are both netCDF4 SCRIP
 mbt_grd_nc4='No' # [sng] Either grid for MOAB mbconvert to read is netCDF4 format
 mbt_grd_rd_srl='No' # [sng] MOAB mbconvert is to read grids in serial
 mbt_typ_grd=0 # [flg] mbtempest mesh type (CS=0, RLL=1, ICO=2, OVERLAP_FILES=3, OVERLAP_MEMORY=4, OVERLAP_MOAB=5])
@@ -952,39 +953,42 @@ function ncdmnlst { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; 
 function nchasvar { ncks --trd -C -m -v ${1} ${2} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' ; }
 
 function grd_fmt_get {
-    # Purpose: Return enumerated grid format type (nc3, nc4, trg, exo)
-    # Usage: grd_fmt_get ${fl}
+    # Purpose: Return enumerated grid format type as either nc3, nc4, trg, exo
+    # Usage: grd_fmt_get ${fl_nm}
+    # nc3 = SCRIP netCDF3 (usually has a .nc suffix)
+    # nc4 = SCRIP netCDF4 (usually has a .nc suffix)
+    # trg = TempestRemap Exodus format (usually has a .g suffix)
+    # exo = Exodus native format (usually has a .exo suffix)
     local arg_nbr=$#
     if [[ ${arg_nbr} -ne 1 ]]; then
         echo "${spt_nm}: ERROR grd_fmt_get requires one filename" >&2
         exit_gracefully ${EXIT_FAILURE}
     fi # !arg_nbr
-    local fl="${1}"
-    local fmt=''
+    local fl_nm="${1}"
+    local fl_fmt=''
 
-    case "${fl}" in
+    case "${fl_nm}" in
         *.g) printf 'trg' ; return 0 ;;
         *.exo) printf 'exo' ; return 0 ;;
-    esac # !fl
+    esac # !fl_nm
 
-    if [[ ! -f "${fl}" || ! -r "${fl}" ]]; then
-        echo "${spt_nm}: ERROR grd_fmt_get cannot read file ${fl}" >&2
+    if [[ ! -f "${fl_nm}" || ! -r "${fl_nm}" ]]; then
+        echo "${spt_nm}: ERROR grd_fmt_get cannot read file ${fl_nm}" >&2
         exit_gracefully ${EXIT_FAILURE}
-    fi # !fl
+    fi # !fl_nm
     # Prefix relative paths so filenames beginning with "-" are not options
-    [[ "${fl}" == /* ]] || fl="./${fl}"
+    [[ "${fl_nm}" == /* ]] || fl_nm="./${fl_nm}"
     # ncks -k reports the format on stderr
-    if ! fmt=$(ncks -k "${fl}" 2>&1); then
-        echo "${spt_nm}: ERROR grd_fmt_get cannot determine format for ${fl}" >&2
+    if ! fl_fmt=$(ncks -k "${fl_nm}" 2>&1); then
+        echo "${spt_nm}: ERROR grd_fmt_get cannot determine format for ${fl_nm}" >&2
         exit_gracefully ${EXIT_FAILURE}
-    fi # !fmt
+    fi # !fl_fmt
 
-    case "${fmt}" in
+    case "${fl_fmt}" in
         *NC_FORMAT_NETCDF4*) printf 'nc4' ;;
-        *NC_FORMAT_CLASSIC* | *NC_FORMAT_64BIT_OFFSET* | \
-        *NC_FORMAT_64BIT_DATA* | *NC_FORMAT_CDF5*) printf 'nc3' ;;
-        *) echo "${spt_nm}: ERROR grd_fmt_get unsupported format in ${fl}" >&2 ; exit_gracefully ${EXIT_FAILURE} ;;
-    esac # !fmt
+        *NC_FORMAT_CLASSIC* | *NC_FORMAT_64BIT_OFFSET* | *NC_FORMAT_64BIT_DATA* | *NC_FORMAT_CDF5*) printf 'nc3' ;;
+        *) echo "${spt_nm}: ERROR grd_fmt_get unsupported format in ${fl_nm}" >&2 ; exit_gracefully ${EXIT_FAILURE} ;;
+    esac # !fl_fmt
 } # !grd_fmt_get()
 
 function dst_is_grd {
@@ -1583,15 +1587,17 @@ else
     exit_gracefully ${EXIT_FAILURE}
 fi # !alg_typ
 
-if [[ ${mpi_nbr_usr:-} ]]; then
-    mpi_nbr=${mpi_nbr_usr}
-fi # !mpi_nbr_usr
 # Specifying a TR algorithm and explicitly setting mpi_nbr implies MOAB
 if [[ ${wgt_typ:-} == 'tempest' ]] && [[ ${mpi_nbr_usr:-} || ${mpi_pfx_usr:-} ]]; then
     wgt_typ='mbtempest'
+    # Invoking MOAB with mpi_nbr_usr = 0 or 1 means run MOAB in serial, so do not set mpi_nbr
+    [[ ${mpi_nbr_usr} -eq 0 || ${mpi_nbr_usr} -eq 1 ]] && mpi_nbr_usr=''
 fi # !wgt_typ
-# If user explicitly sets mpi_nbr then we need a prefix
 if [[ ${mpi_nbr_usr:-} ]]; then
+    mpi_nbr=${mpi_nbr_usr}
+fi # !mpi_nbr_usr
+# Setting mpi_nbr > 1 means we need a prefix
+if [[ ${mpi_nbr:-} -gt 1 ]]; then
     # ...then set prefix for invoking MPI-enabled weight generators 
     case "${HOST_FFC:-}" in 
 	andes* ) mpi_pfx="srun --exclusive --ntasks=${mpi_nbr}" ; ;; 
@@ -2347,7 +2353,7 @@ if [[ ${map_fl:-} ]]; then
 #	    if [[ -t 0 ]] || [[ ! -p /dev/stdin ]]; then
 #           if [[ ${TERM:-} ]]; then
 #           if [[ ${PS1:-} ]]; then
-            if [[ 1 -eq 0 ]]; then
+            if false; then
 		rsp_kbd_nbr=0
 		while [[ ${rsp_kbd_nbr:-} -lt 10 ]]; do
 		    echo "WARNING: Map-file ${map_fl} already exists and will be over-written."
@@ -2363,7 +2369,7 @@ if [[ ${map_fl:-} ]]; then
 		    echo "ERROR: Too many invalid responses, exiting"
 		    exit_gracefully ${EXIT_FAILURE}
 		fi # !rsp_kbd_nbr
-	    fi # !0
+	    fi # !false
 	fi # !map_fl
     else # !map_mk
         if [[ ! -f ${map_fl:-} ]] && [[ ! -L ${map_fl:-} ]]; then
@@ -2386,7 +2392,11 @@ if [[ ${map_mk:-} == 'Yes' ]]; then
 	    map_trn_fl="${drc_tmp}/ncremap_tmp_map_trn_${wgt_typ}.nc${unq_sfx}" # [sng] Map-file transpose default
 	    map_rsl_fl=${map_trn_fl}
 	fi # !trn_map
-    fi # !tempest
+    elif [[ ${wgt_typ:-} == 'mbtempest' ]]; then 
+	grd_src_fmt=$(grd_fmt_get ${grd_src})
+	grd_dst_fmt=$(grd_fmt_get ${grd_dst})
+	[[ ${grd_src_fmt} == "nc4" && ${grd_dst_fmt} == "nc4" ]] && mbt_nc42nc4="Yes"
+    fi # !wgt_typ
     if [[ ${msh_fl:-} ]] && [[ ${wgt_typ:-} == 'nco' ]]; then
 	msh_opt="--rgr msh=\"${msh_fl}\""
     else
@@ -2623,8 +2633,10 @@ if [[ ${dbg_lvl:-} -ge 2 ]]; then
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
     printf "dbg: gad_sng  = ${gad_sng}\n"
     printf "dbg: grd_dst  = ${grd_dst}\n"
+    printf "dbg: grdd_fmt = ${grd_dst_fmt}\n"
     printf "dbg: grd_sng  = ${grd_sng}\n"
     printf "dbg: grd_src  = ${grd_src}\n"
+    printf "dbg: grds_fmt = ${grd_src_fmt}\n"
     printf "dbg: inp_aut  = ${inp_aut}\n"
     printf "dbg: inp_glb  = ${inp_glb}\n"
     printf "dbg: inp_psn  = ${inp_psn}\n"
@@ -2649,6 +2661,7 @@ if [[ ${dbg_lvl:-} -ge 2 ]]; then
     printf "dbg: msk_dst  = ${msk_dst}\n"
     printf "dbg: msk_out  = ${msk_out}\n"
     printf "dbg: msk_src  = ${msk_src}\n"
+    printf "dbg: nc42nc4  = ${mbt_nc42nc4}\n"
     printf "dbg: ncc_flg  = ${ncc_flg}\n"
     printf "dbg: nco_opt  = ${nco_opt}\n"
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
@@ -3040,7 +3053,7 @@ fi # !rrg
 # 20211102 Pre-process destination grid prior to weight-generation by mbtempest
 # NB: Unlike source grid, destination grid never changes in file-loop, so pre-process here
 if [[ ${map_mk:-} == 'Yes' ]]; then 
-    if [[ ${wgt_typ:-} == 'mbtempest' ]]; then
+    if [[ ${wgt_typ:-} == 'mbtempest' && ${mbt_nc42nc4} != 'Yes' ]]; then
 	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
 	if [[ ${grd_dst:-} == *.g ]] || [[ ${grd_dst:-} == *.exo ]] || [[ ${grd_dst:-} == *".nc"* ]]; then
 	    [[ ${grd_dst:-} == *.g ]] && grd_dst_h5m_tmp="${grd_dst/.g/.h5m}"
@@ -3100,56 +3113,56 @@ if [[ ${grd_src_usr_flg:-} == 'Yes' ]] || [[ ${prc_typ:-} == 'rrg' ]]; then
     elif [[ ${wgt_typ:-} == 'nco' ]]; then 
 	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
     elif [[ ${wgt_typ:-} == 'mbtempest' ]]; then 
-	# 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
-	if [[ ${grd_src:-} == *.g ]] || [[ ${grd_src:-} == *.exo ]] || [[ ${grd_src:-} == *".nc"* ]]; then
-	    [[ ${grd_src:-} == *.g ]] && grd_src_h5m_tmp="${grd_src/.g/.h5m}"
-	    [[ ${grd_src:-} == *.exo ]] && grd_src_h5m_tmp="${grd_src/.exo/.h5m}"
-	    [[ ${grd_src:-} == *".nc"* ]] && grd_src_h5m_tmp="${grd_src/.nc/.h5m}"
-	    # 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
-	    # mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
-	    [[ ${grd_src:-} == *.g ]] || [[ ${mbt_grd_nc4:-} == 'Yes' ]] && mbt_grd_rd_srl='Yes' || mbt_grd_rd_srl='No'
-	    [[ ${mbt_grd_rd_srl:-} == 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || [[ ${grd_dst:-} == *.exo ]] && cnv_opt_g2m=${cnv_opt_prl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
-	    cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_g2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
-	    [[ ${mbt_grd_rd_srl:-} == 'No' ]] && cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"
-	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
-		echo ${cmd_g2m[${fl_idx}]}
-	    fi # !dbg
-	    if [[ ${dbg_lvl:-} -ne 2 ]]; then
-		eval ${cmd_g2m[${fl_idx}]}
-		if [[ "$?" -ne 0 ]] || [[ ! -f ${grd_src_h5m_tmp:-} ]]; then
-		    printf "${spt_nm}: ERROR Failed to convert source grid to MOAB H5M format. Debug this:\n${cmd_g2m[${fl_idx}]}\n"
-		    printf "${cnv_exe_hnt}"
-		    exit_gracefully ${EXIT_FAILURE}
-		fi # !err
-	    fi # !dbg
-	    grd_src=${grd_src_h5m_tmp}
-	fi # !grd_src
-	# 20260226: NB: this fails if non-MOAB .h5m grid-name ends with "p"
-	if [[ ${grd_src:-} == *.h5m ]] && [[ ${grd_src:-} != *p.h5m ]]; then
-	    grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
-	    grd_dst_prt_tmp="${grd_dst/.h5m/_inferred.h5m}"
-	    if [[ ${prt_alg:-} == 'zoltan' ]]; then
-		# 20260302: Use Recursive Coordinate Bisection (RCB) repartitioning scheme
-		# mbpart runs in serial to create meshes for mbtempest to read in parallel
-		cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --project_on_sphere 2 --scale_sphere --imbalance 1.002 --inferred \"${grd_dst}\" \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
-	    fi # !prt_alg
-	    if [[ ${dbg_lvl:-} -ge 1 ]]; then
-		echo ${cmd_prt[${fl_idx}]}
-	    fi # !dbg
-	    if [[ ${dbg_lvl:-} -ne 2 ]]; then
-		eval ${cmd_prt[${fl_idx}]}
-		if [[ "$?" -ne 0 ]] || [[ ! -f ${grd_src_prt_tmp:-} ]]; then
-		    printf "${spt_nm}: ERROR Failed to partition MOAB version of source grid. Debug this:\n${cmd_prt[${fl_idx}]}\n"
-		    printf "${spt_nm}: HINT ${prt_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
-		    exit_gracefully ${EXIT_FAILURE}
-		fi # !err
-	    fi # !dbg
-	    grd_src=${grd_src_prt_tmp}
-	    grd_dst=${grd_dst_prt_tmp}
-	fi # !grd_src
-	if [[ ${prt_alg:-} == 'zoltan' ]]; then
-	    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
-	fi # !prt_alg
+	if [[ ${mbt_nc42nc4} != 'Yes' ]]; then
+	    # 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
+	    if [[ ${grd_src:-} == *.g ]] || [[ ${grd_src:-} == *.exo ]] || [[ ${grd_src:-} == *".nc"* ]]; then
+		[[ ${grd_src:-} == *.g ]] && grd_src_h5m_tmp="${grd_src/.g/.h5m}"
+		[[ ${grd_src:-} == *.exo ]] && grd_src_h5m_tmp="${grd_src/.exo/.h5m}"
+		[[ ${grd_src:-} == *".nc"* ]] && grd_src_h5m_tmp="${grd_src/.nc/.h5m}"
+		# 20260220: Vijay says on Slack DM that TR Exodus *.g files require (serial) TR Exodus reader accessed via -B
+		# mbconvert can only parallelize conversion of true, official Exodus (*.exo) and SCRIP files
+		[[ ${grd_src:-} == *.g ]] || [[ ${mbt_grd_nc4:-} == 'Yes' ]] && mbt_grd_rd_srl='Yes' || mbt_grd_rd_srl='No'
+		[[ ${mbt_grd_rd_srl:-} == 'Yes' ]] && cnv_opt_g2m=${cnv_opt_srl_e2m} || [[ ${grd_dst:-} == *.exo ]] && cnv_opt_g2m=${cnv_opt_prl_e2m} || cnv_opt_g2m=${cnv_opt_prl_n2m}
+		cmd_g2m[${fl_idx}]="${cmd_cnv_mbt} ${cnv_opt_src} ${cnv_opt_g2m} \"${grd_src}\" \"${grd_src_h5m_tmp}\"${devnull}"
+		[[ ${mbt_grd_rd_srl:-} == 'No' ]] && cmd_g2m[${fl_idx}]="${mpi_pfx} ${cmd_g2m[${fl_idx}]}"
+		if [[ ${dbg_lvl:-} -ge 1 ]]; then
+		    echo ${cmd_g2m[${fl_idx}]}
+		fi # !dbg
+		if [[ ${dbg_lvl:-} -ne 2 ]]; then
+		    eval ${cmd_g2m[${fl_idx}]}
+		    if [[ "$?" -ne 0 ]] || [[ ! -f ${grd_src_h5m_tmp:-} ]]; then
+			printf "${spt_nm}: ERROR Failed to convert source grid to MOAB H5M format. Debug this:\n${cmd_g2m[${fl_idx}]}\n"
+			printf "${cnv_exe_hnt}"
+			exit_gracefully ${EXIT_FAILURE}
+		    fi # !err
+		fi # !dbg
+		grd_src=${grd_src_h5m_tmp}
+	    fi # !grd_src
+	    # 20260226: NB: this fails if non-MOAB .h5m grid-name ends with "p"
+	    if [[ ${grd_src:-} == *.h5m ]] && [[ ${grd_src:-} != *p.h5m ]]; then
+		grd_src_prt_tmp="${grd_src/.h5m/_${prt_nbr}p.h5m}"
+		grd_dst_prt_tmp="${grd_dst/.h5m/_inferred.h5m}"
+		if [[ ${prt_alg:-} == 'zoltan' ]]; then
+		    # 20260302: Use Recursive Coordinate Bisection (RCB) repartitioning scheme
+		    # mbpart runs in serial to create meshes for mbtempest to read in parallel
+		    cmd_prt[${fl_idx}]="${cmd_prt_mbt} ${prt_nbr} --zoltan RCB --recompute_rcb_box --project_on_sphere 2 --scale_sphere --imbalance 1.002 --inferred \"${grd_dst}\" \"${grd_src}\" \"${grd_src_prt_tmp}\"${devnull}"
+		fi # !prt_alg
+		if [[ ${dbg_lvl:-} -ge 1 ]]; then
+		    echo ${cmd_prt[${fl_idx}]}
+		fi # !dbg
+		if [[ ${dbg_lvl:-} -ne 2 ]]; then
+		    eval ${cmd_prt[${fl_idx}]}
+		    if [[ "$?" -ne 0 ]] || [[ ! -f ${grd_src_prt_tmp:-} ]]; then
+			printf "${spt_nm}: ERROR Failed to partition MOAB version of source grid. Debug this:\n${cmd_prt[${fl_idx}]}\n"
+			printf "${spt_nm}: HINT ${prt_exe_mbt} can fail for a number of reasons including 1) fxm ...\n"
+			exit_gracefully ${EXIT_FAILURE}
+		    fi # !err
+		fi # !dbg
+		grd_src=${grd_src_prt_tmp}
+		grd_dst=${grd_dst_prt_tmp}
+	    fi # !grd_src
+	fi # !mbt_nc42nc4
+	cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
     elif [[ ${wgt_typ:-} == 'tempest' ]]; then 
     	cmd_msh[${fl_idx}]="${cmd_msh_tps} ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	if [[ ${a2o_flg:-} == 'Yes' ]]; then 
@@ -3337,7 +3350,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 
 		# If source grid was just inferred in preceding block, convert and partition it
 		# Duplicate code of mbtempest source grid blocks above
-		if [[ ${wgt_typ:-} == 'mbtempest' ]]; then 
+		if [[ ${wgt_typ:-} == 'mbtempest' && ${mbt_nc42nc4} != 'Yes' ]]; then 
 		    # 20210827 Pre-process input .nc, .g, and .h5m files to partitioned .h5m files
 		    if [[ ${grd_src:-} == *.g ]] || [[ ${grd_src:-} == *.exo ]] || [[ ${grd_src:-} == *".nc"* ]]; then
 			[[ ${grd_src:-} == *.g ]] && grd_src_h5m_tmp="${grd_src/.g/.h5m}"
@@ -3417,9 +3430,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		fi # !vrb_lvl
 		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
 	    elif [[ ${wgt_typ:-} == 'mbtempest' ]]; then 
-		if [[ ${prt_alg:-} == 'zoltan' ]]; then
-		    cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
-		fi # !prt_alg
+		cmd_map[${fl_idx}]="${wgt_cmd} --type ${mbt_typ_map} --weights --load \"${grd_src}\" --load \"${grd_dst}\" ${wgt_opt} --file \"${map_fl}\"${devnull}"
 	    elif [[ ${wgt_typ:-} == 'tempest' ]]; then 
 		if [[ ${vrb_lvl:-} -ge ${vrb_1:-} ]]; then
 		    printf "Mesh-File: ${msh_fl}\n"

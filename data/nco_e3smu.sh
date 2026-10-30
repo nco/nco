@@ -378,8 +378,8 @@ printf "\nTest parallel ESMF map generation...\n"
 ${NCREMAP} --mpi_nbr=4 --alg_typ=esmfaave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
 printf "\nExit code: $?\n"
 
-printf "\nTest parallel MOAB map generation...\n"
-${NCREMAP} --mpi_nbr=4 --alg_typ=traave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${HOME}/map.nc
+printf "\nTest serial MOAB map generation...\n"
+${NCREMAP} --mpi_nbr=1 --alg_typ=traave --grd_src=${DATA}/grids/ne30pg2.nc --grd_dst=${DATA}/grids/ne11pg2.nc --map=${HOME}/map.nc
 printf "\nExit code: $?\n"
 
 printf "\nTest parallel ESMF map generation and regridding...\n"

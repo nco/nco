@@ -1,12 +1,20 @@
-2026-10-29  Charlie Zender  <zender@uci.edu>
+2026-10-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.2-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.2-alpha05: Swim Past Lysanne';git push
 	git tag -a 5.4.2-alpha05 -m 'all: .appveyor.yml; spt: EXIT_SUCCESS; ncremap: grd_fmt_get()';git push --tags
 
+	* ncremap: mbtempest skip conversion and partitioning for nc4->nc4
+
+	* ncremap: Conda moab nompi_tempest fails on nc3->nc3, nc3->nc4, nc4->nc3, works on nc4->nc4 map generation
+
+	* ncremap: Obtain and verify gridfile formats
+
+2026-10-29  Charlie Zender  <zender@uci.edu>
+
 	* CI: prevent duplicate AppVeyor builds for Pull Requests
 
-	* ncremap: Add grd_fmt_get() to determine gridfile type
+	* ncremap: Add grd_fmt_get() to determine gridfile format
 
 	* Use named exit status tokens in Bash scripts
 
