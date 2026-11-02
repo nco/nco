@@ -849,16 +849,26 @@ endif()
 # CMake for speed and consistency runs commands using the most basic UNIX shell, sh, which does not set HOSTNAME
 #//////////////////////////
 
-set(nco_user "$ENV{USER}")
-if(NOT nco_user)
- set(nco_user "$ENV{USERNAME}")
+# Reproducible builds: with SOURCE_DATE_EPOCH set, record "nobody" and
+# "nowhere" instead of the build user and host
+if(NOT "$ENV{SOURCE_DATE_EPOCH}" STREQUAL "")
+ set(nco_user "nobody")
+else()
+ set(nco_user "$ENV{USER}")
+ if(NOT nco_user)
+  set(nco_user "$ENV{USERNAME}")
+ endif()
 endif()
 if(nco_user)
  message("-- USER is set to: " ${nco_user})
  add_definitions(-DUSER=${nco_user})
 endif()
 
-cmake_host_system_information(RESULT nco_hostname QUERY HOSTNAME)
+if(NOT "$ENV{SOURCE_DATE_EPOCH}" STREQUAL "")
+ set(nco_hostname "nowhere")
+else()
+ cmake_host_system_information(RESULT nco_hostname QUERY HOSTNAME)
+endif()
 if(nco_hostname)
  message("-- HOSTNAME is set to: " ${nco_hostname})
  add_definitions(-DHOSTNAME=${nco_hostname})
