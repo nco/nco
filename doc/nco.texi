@@ -132,8 +132,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 5.4.2
 @set copyright-years 1995--2026
 @set update-year 2026
-@set update-date 30 October 2026
-@set update-month October 2026
+@set update-date 2 November 2026
+@set update-month November 2026
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -29939,7 +29939,7 @@ at each level.
 @cindex @code{hybi}
 @cindex @code{hybm}
 @cindex @code{formula_terms} attribute
-Prior to @acronym{NCO} version 5.4.2 (October, 2026) the hybrid
+Prior to @acronym{NCO} version 5.4.2 (November, 2026) the hybrid
 sigma-pressure gridfile had to specify @var{A} and @var{B} 
 coefficients for both layer midpoints and interfaces with these
 standard (as employed by @acronym{CESM} and @acronym{E3SM}) names and 
@@ -30157,7 +30157,7 @@ lev[lev]=P0*(hyam+hybm)/100.0;
 @end verbatim
 @end example
 
-Prior to @acronym{NCO} version 5.4.2 (October, 2026)
+Prior to @acronym{NCO} version 5.4.2 (November, 2026)
 a vertical hybrid grid file @var{vrt_fl} had to contain
 both the midpoint and interface parameters that describe
 the hybrid sigma-pressure coordinate, as well as the reference
@@ -30165,7 +30165,7 @@ pressure.
 These variable are named @code{hyai}, @code{hybi}, @code{hyam},
 @code{hybm(lev)} and @code{P0}.
 (Exceptions for @acronym{ECMWF} grids are noted above).
-As of @acronym{NCO} version 5.4.2 (October, 2026) the input
+As of @acronym{NCO} version 5.4.2 (November, 2026) the input
 data file and vertical grid destination file may omit either
 (but not both) the midpoint coefficients or the interface
 coefficients.
