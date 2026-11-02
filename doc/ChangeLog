@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 5.4.2: Flooded with Friends';git push
 	git tag -a 5.4.2 -m 'all: .appveyor.yml, dbn rpr bld; spt: nco_e3smu.sh, HOST_FFC, EXIT_SUCCESS; ncclimo: mpa_flg; ncremap: prn fmt, only ntf/mdp lvl, new cf atts, grd_fmt_get(), nc42nc4, dst2h5m';git push --tags
 
-	* CMake: do not record build user and host when SOURCE_DATE_EPOCH (from Debian)
+	* CI: Merge Debian CMake patch for reproducible builds "by nobody at nowhere"
 
 2026-10-30  Charlie Zender  <zender@uci.edu>
 

@@ -41,6 +41,9 @@ C. ncremap's printed output is now more concise and legible.
 
 D. The new regression script data/nco_e3smu.sh is more robust.
 
+E. CI changes include fewer Appveyor builds, and removing name/host
+data from Debian builds to make them reproducible.
+
 BUG FIXES:
 
 A. The hybrid coordinate parameters hyai, hyam, hybi, and hybm 
