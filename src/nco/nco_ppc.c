@@ -113,6 +113,8 @@ nco_ppc_ini /* Set PPC based on user specifications */
      Operational definition of maximum PPC is maximum decimal precision of float/double = FLT_DIG/DBL_DIG = 7/15 */
   const int nco_max_ppc_dbl=15;
   const int nco_max_ppc_flt=7;
+  const int nco_max_ppc_f16=3;
+  const int nco_max_ppc_bf16=2;
   /* Maximum digits for integers taken based on LONG_MAX ... from limits.h */
   const int nco_max_ppc_short=5;
   const int nco_max_ppc_ushort=5;
@@ -124,8 +126,16 @@ nco_ppc_ini /* Set PPC based on user specifications */
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     if(trv_tbl->lst[idx_tbl].ppc != NC_MAX_INT){
+      if(NCO_TYP_IS_HALF(trv_tbl->lst[idx_tbl].var_typ) &&
+	 (!trv_tbl->lst[idx_tbl].flg_nsd ||
+	  (nco_baa_cnv_get() != nco_baa_btg && nco_baa_cnv_get() != nco_baa_gbr && nco_baa_cnv_get() != nco_baa_btr))){
+	(void)fprintf(stderr,"%s: ERROR Half-precision quantization supports only BitGroom, Granular BitRound, and BitRound with NSD/NSB (not DSD) precision specifications\n",nco_prg_nm_get());
+	nco_exit(EXIT_FAILURE);
+      }
       switch(trv_tbl->lst[idx_tbl].var_typ){
       case NC_FLOAT: nco_max_ppc=nco_max_ppc_flt; break;
+      case NC_FLOAT16: nco_max_ppc=nco_max_ppc_f16; break;
+      case NC_BFLOAT16: nco_max_ppc=nco_max_ppc_bf16; break;
       case NC_DOUBLE: nco_max_ppc=nco_max_ppc_dbl; break;
       case NC_SHORT: nco_max_ppc=nco_max_ppc_short; break;
       case NC_USHORT: nco_max_ppc=nco_max_ppc_ushort; break;
@@ -146,13 +156,20 @@ nco_ppc_ini /* Set PPC based on user specifications */
       switch(trv_tbl->lst[idx_tbl].var_typ){
 	/* Floating point types */
       case NC_FLOAT: 
+      case NC_FLOAT16:
+      case NC_BFLOAT16:
       case NC_DOUBLE: 
 	if(nco_baa_cnv_get() != nco_baa_btr && nco_baa_cnv_get() != nco_baa_sh2){
 	  if(trv_tbl->lst[idx_tbl].ppc > nco_max_ppc){
-	    if(trv_tbl->lst[idx_tbl].flg_nsd) (void)fprintf(stdout,"%s: INFO Number of Significant Digits (NSD) requested = %d too high for variable %s which is of type %s. No quantization or rounding will be performed for this variable. HINT: Maximum precisions for NC_FLOAT and NC_DOUBLE are %d and %d, respectively.\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].ppc,trv_tbl->lst[idx_tbl].nm,nco_typ_sng(trv_tbl->lst[idx_tbl].var_typ),nco_max_ppc_flt,nco_max_ppc_dbl);
+	    if(trv_tbl->lst[idx_tbl].flg_nsd) (void)fprintf(stdout,"%s: INFO Number of Significant Digits (NSD) requested = %d too high for variable %s which is of type %s. No quantization or rounding will be performed for this variable. HINT: Maximum decimal precision for this type is %d.\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].ppc,trv_tbl->lst[idx_tbl].nm,nco_typ_sng(trv_tbl->lst[idx_tbl].var_typ),nco_max_ppc);
 	    trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
 	  } /* !nco_max_ppc */
 	} /* !nco_baa_btr, nco_baa_sh2 */
+	if(NCO_TYP_IS_HALF(trv_tbl->lst[idx_tbl].var_typ) && nco_baa_cnv_get() != nco_baa_gbr && trv_tbl->lst[idx_tbl].ppc != NC_MAX_INT){
+	  const int frc_nbr=trv_tbl->lst[idx_tbl].var_typ == NC_FLOAT16 ? 10 : 7;
+	  const int keepbits=nco_baa_cnv_get() == nco_baa_btr ? trv_tbl->lst[idx_tbl].ppc : (int)ceil(trv_tbl->lst[idx_tbl].ppc*M_LN10/M_LN2)+1;
+	  if(keepbits >= frc_nbr) trv_tbl->lst[idx_tbl].ppc=NC_MAX_INT;
+	}
 	break;
 	/* Integer types */
       case NC_SHORT:
@@ -215,7 +232,7 @@ nco_ppc_set_dflt /* Set PPC value for all non-coordinate variables for --ppc def
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !trv_tbl->lst[idx_tbl].is_crd_var){
       /* Allow "default" to affect only floating point types */
-      if(trv_tbl->lst[idx_tbl].var_typ == NC_FLOAT || trv_tbl->lst[idx_tbl].var_typ == NC_DOUBLE){
+      if(trv_tbl->lst[idx_tbl].var_typ == NC_FLOAT || NCO_TYP_IS_HALF(trv_tbl->lst[idx_tbl].var_typ) || trv_tbl->lst[idx_tbl].var_typ == NC_DOUBLE){
 	/* Prevent "default" from applying to coordinate and bounds variables */
 	int grp_id;
 	int var_id;
@@ -598,6 +615,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   const double dgt_per_bit_dgr=0.301029996; /* 0.301 [frc] Decimal digits per bit of precision = log10(2) used in DigitRound algorithm and code */
   
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
+  const int bit_xpl_nbr_sgn_f16=10; /* [nbr] binary16: 1 sign, 5 exponent, 10 explicit significand bits */
+  const int bit_xpl_nbr_sgn_bf16=7; /* [nbr] bfloat16: 1 sign, 8 exponent, 7 explicit significand bits */
   const int bit_xpl_nbr_sgn_dbl=52; /* [nbr] Bits 0-51 of DP significands are explicit. Bit 52 is implicitly 1. */
   //const int ieee_xpn_fst_flt=127; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
   //const int ieee_xpn_fst_dbl=1023; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
@@ -692,9 +711,13 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   nsd_lmt=nsd;
 
   /* Only floating point types can be quantized */
-  if(type != NC_FLOAT && type != NC_DOUBLE) return;
+  if(type != NC_FLOAT && !NCO_TYP_IS_HALF(type) && type != NC_DOUBLE) return;
 
   nco_baa_cnv_typ=nco_baa_cnv_get(); /* [enm] Bit-adjustment algorithm type */
+  if(NCO_TYP_IS_HALF(type) && nco_baa_cnv_typ != nco_baa_btg && nco_baa_cnv_typ != nco_baa_gbr && nco_baa_cnv_typ != nco_baa_btr){
+    (void)fprintf(stderr,"%s: ERROR %s supports only BitGroom, Granular BitRound, and BitRound for half-precision types\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  }
 
   /* Step 1: Determine # keepbits for algorithms that use a uniform number 
      For NSD algorithms this involves using log2() math and some fine-tuning
@@ -760,6 +783,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   } /* !nco_baa_cnv_typ */
 
   if(type == NC_FLOAT  && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_flt) return;
+  if(type == NC_FLOAT16 && nco_baa_cnv_typ != nco_baa_gbr && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_f16) return;
+  if(type == NC_BFLOAT16 && nco_baa_cnv_typ != nco_baa_gbr && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_bf16) return;
   if(type == NC_DOUBLE && prc_bnr_xpl_rqr >= bit_xpl_nbr_sgn_dbl) return;
 
   /* Step 2: Set type-dependent _FillValue, # significand bits, initial unsigned pointer for all algorithms
@@ -768,6 +793,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     if(has_mss_val) mss_val_cmp_flt=*mss_val.fp; else mss_val_cmp_flt=NC_FILL_FLOAT;
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_flt;
     u32_ptr=op1.uip;
+  }else if(NCO_TYP_IS_HALF(type)){
+    bit_xpl_nbr_sgn=type == NC_FLOAT16 ? bit_xpl_nbr_sgn_f16 : bit_xpl_nbr_sgn_bf16;
   }else if(type == NC_DOUBLE){
     if(has_mss_val) mss_val_cmp_dbl=*mss_val.dp; else mss_val_cmp_dbl=NC_FILL_DOUBLE;
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
@@ -1094,6 +1121,48 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       break;
     } /* !nco_baa_typ_get() */
     break; /* !NC_FLOAT */
+  case NC_FLOAT16:
+  case NC_BFLOAT16: {
+    uint16_t * const u16_ptr=(uint16_t *)op1.vp;
+    const uint16_t xpn_msk=type == NC_FLOAT16 ? 0x7c00U : 0x7f80U;
+    uint16_t mss_val_cmp_f16=0;
+    if(has_mss_val) memcpy(&mss_val_cmp_f16,mss_val.vp,sizeof(mss_val_cmp_f16));
+    for(idx=0L;idx<sz;idx++){
+      const uint16_t raw=u16_ptr[idx];
+      const uint16_t mag=raw & 0x7fffU;
+      int bit_nbr=bit_xpl_nbr_sgn;
+      /* Preserve signed zeros, infinities, NaN payloads, and missing values bit-for-bit. */
+      if(mag == 0U || (raw & xpn_msk) == xpn_msk || (has_mss_val && raw == mss_val_cmp_f16)) continue;
+      if(nco_baa_cnv_typ == nco_baa_gbr){
+	val_dbl=nco_f16_to_dbl(raw,type);
+	mnt=frexp(val_dbl,&xpn_bs2);
+	mnt_fabs=fabs(mnt);
+	mnt_log10_fabs=log10(mnt_fabs);
+	dgt_nbr=(int)floor(xpn_bs2*dgt_per_bit+mnt_log10_fabs)+1;
+	qnt_pwr=(int)floor(bit_per_dgt*(dgt_nbr-nsd_lmt));
+	prc_bnr_xpl_rqr=abs((int)floor(xpn_bs2-bit_per_dgt*mnt_log10_fabs)-qnt_pwr)-1;
+      }
+      /* Subnormals have fewer significant bits than a normalized significand. */
+      if((raw & xpn_msk) == 0U){
+	bit_nbr=0;
+	for(uint16_t frc=mag;frc >>= 1;) bit_nbr++;
+      }
+      bit_xpl_nbr_zro=bit_nbr-prc_bnr_xpl_rqr;
+      if(bit_xpl_nbr_zro <= 0) continue;
+      assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn);
+      const uint16_t msk_zro=(uint16_t)(UINT16_MAX << bit_xpl_nbr_zro);
+      const uint16_t msk_one=(uint16_t)~msk_zro;
+      if(nco_baa_cnv_typ == nco_baa_btg){
+	u16_ptr[idx]=idx % 2L ? raw | msk_one : raw & msk_zro;
+      }else{
+	const uint16_t msk_hshv=(uint16_t)(1U << (bit_xpl_nbr_zro-1));
+	const uint16_t rnd=(uint16_t)((raw+msk_hshv) & msk_zro);
+	/* No coarser finite value exists above the largest exponent: retain the input. */
+	if((rnd & xpn_msk) != xpn_msk) u16_ptr[idx]=rnd;
+      }
+    }
+    break;
+  } /* !NC_FLOAT16, !NC_BFLOAT16 */
   case NC_DOUBLE:
     switch(nco_baa_cnv_typ){
     case nco_baa_btg:
@@ -1297,6 +1366,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
      Careful readers and nco_qnt_mtd() know how to determine that */
   switch(type){
   case NC_FLOAT: 
+  case NC_FLOAT16:
+  case NC_BFLOAT16:
   case NC_DOUBLE: 
     (void)nco_qnt_mtd(nc_out_id,var_out_id,(const enum nco_baa_cnv)nco_baa_cnv_typ,(nco_flt_typ_enm)0,nsd_lmt);
   break;
