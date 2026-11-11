@@ -981,6 +981,7 @@ extern "C" {
   /* Pointer union */
   typedef union{ /* ptr_unn */
     float * restrict fp;
+    uint16_t * restrict f16p; /* Raw NC_FLOAT16/NC_BFLOAT16 bits */
     double * restrict dp;
     nco_int * restrict ip;
     short * restrict sp;

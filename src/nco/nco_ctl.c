@@ -1139,6 +1139,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--mk_rec_dmn")) (void)fprintf(stdout,"    --mk_rec_dmn dim\tDefine dim as record dimension in output file\n");
   if(strstr(opt_sng,"--mro")) (void)fprintf(stdout,"    --mro\t\tMulti-Record Output\n");
   if(strstr(opt_sng,"--msa")) (void)fprintf(stdout,"    --msa, msa_usr_rdr\tMulti-Slab-Algorithm output in User-Order\n");
+  if(prg_lcl == ncks) (void)fprintf(stdout,"    --nextcdf4\t\tUse NEP NEXTCDF-4 for input and output (including half precision)\n");
   if(strstr(opt_sng,"[-N]")){
     if(prg_lcl == ncflint) (void)fprintf(stdout,"-N, --nrm, normalize\tNormalize input weights so w1:=w1/(w1+w2), w2:=w2/(w1+w2)\n");
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-N, --nmr, numerator\tNo normalization\n");

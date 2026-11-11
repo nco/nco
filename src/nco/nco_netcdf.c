@@ -160,6 +160,9 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
   switch(nco_typ){
   case NC_FLOAT:
     return sizeof(float);
+  case NC_FLOAT16:
+  case NC_BFLOAT16:
+    return sizeof(uint16_t);
   case NC_DOUBLE:
     return sizeof(double);
   case NC_INT:
@@ -199,10 +202,13 @@ nco_typ_lng_udt /* [fnc] Convert netCDF type enum to native type size */
      This is only routine in nco_netcdf which needs NCO opaque type definitions
      nco_byte, nco_char, and nco_int defined in nco_typ.h */
 
-  if(nco_typ <= NC_MAX_ATOMIC_TYPE){
+  if(NCO_TYP_IS_ATOMIC(nco_typ)){
     switch(nco_typ){
     case NC_FLOAT:
       return sizeof(float);
+    case NC_FLOAT16:
+    case NC_BFLOAT16:
+      return sizeof(uint16_t);
     case NC_DOUBLE:
       return sizeof(double);
     case NC_INT:
@@ -251,6 +257,10 @@ nco_typ_sng /* [fnc] Convert netCDF type enum to string */
   switch(type){
   case NC_FLOAT:
     return "NC_FLOAT";
+  case NC_FLOAT16:
+    return "NC_FLOAT16";
+  case NC_BFLOAT16:
+    return "NC_BFLOAT16";
   case NC_DOUBLE:
     return "NC_DOUBLE";
   case NC_INT:
@@ -296,6 +306,10 @@ cdl_typ_nm /* [fnc] Return string describing native CDL type */
   switch(type){
   case NC_FLOAT:
     return "float";
+  case NC_FLOAT16:
+    return "float16";
+  case NC_BFLOAT16:
+    return "bfloat16";
   case NC_DOUBLE:
     return "double";
   case NC_INT:
@@ -335,10 +349,14 @@ cdl_typ_nm_udt /* [fnc] Return string describing native CDL type */
      nco_netcdf.c:314:14: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
      return "float"; */
   char typ_nm[NC_MAX_NAME+1L];
-  if(type <= NC_MAX_ATOMIC_TYPE){
+  if(NCO_TYP_IS_ATOMIC(type)){
     switch(type){
     case NC_FLOAT:
       return "float";
+    case NC_FLOAT16:
+      return "float16";
+    case NC_BFLOAT16:
+      return "bfloat16";
     case NC_DOUBLE:
       return "double";
     case NC_INT:
@@ -382,6 +400,8 @@ xml_typ_nm /* [fnc] Return string describing native XML type */
   /* Purpose: Divine XML type string from netCDF external type enum */
   switch(type){
   case NC_FLOAT:
+  case NC_FLOAT16:
+  case NC_BFLOAT16:
     return "float";
   case NC_DOUBLE:
     return "double";
@@ -420,6 +440,10 @@ jsn_typ_nm /* [fnc] Return string describing native JSON type */
   switch(type){
   case NC_FLOAT:
     return "float";
+  case NC_FLOAT16:
+    return "float16";
+  case NC_BFLOAT16:
+    return "bfloat16";
   case NC_DOUBLE:
     return "double";
   case NC_INT:
@@ -457,6 +481,9 @@ cdl_typ_sfx /* [fnc] Return suffix string for CDL type */
   switch(type){
   case NC_FLOAT:
     return ".f";
+  case NC_FLOAT16:
+  case NC_BFLOAT16:
+    return "";
   case NC_DOUBLE:
     return ".";
   case NC_INT:
@@ -497,6 +524,9 @@ c_typ_nm /* [fnc] Return string describing native C type */
   switch(type){
   case NC_FLOAT:
     return "float";
+  case NC_FLOAT16:
+  case NC_BFLOAT16:
+    return "uint16_t";
   case NC_DOUBLE:
     return "double";
   case NC_INT:
@@ -686,6 +716,10 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
       return "NC_FORMATX_DAP4";
     case NC_FORMATX_NCZARR:
       return "NC_FORMATX_NCZARR";
+#ifdef NC_NEXTCDF4
+    case NC_FORMATX_UDF9:
+      return "NC_FORMATX_NEXTCDF4";
+#endif
     case NC_FORMATX_UNDEFINED:
       return "NC_FORMATX_UNDEFINED";
 #endif /* !NC_LIB_VERSION */
@@ -2684,6 +2718,8 @@ nco_put_var(const int nc_id,const int var_id,const void * const vp,const nc_type
   int rcd=NC_NOERR;
   switch(var_typ){
   case NC_FLOAT: rcd=nc_put_var_float(nc_id,var_id,(const float *)vp); break;
+  case NC_FLOAT16:
+  case NC_BFLOAT16: rcd=nc_put_var(nc_id,var_id,vp); break;
   case NC_DOUBLE: rcd=nc_put_var_double(nc_id,var_id,(const double *)vp); break;
   case NC_INT: rcd=NCO_PUT_VAR_INT(nc_id,var_id,(const nco_int *)vp); break;
   case NC_SHORT: rcd=nc_put_var_short(nc_id,var_id,(const short *)vp); break;
@@ -2775,6 +2811,8 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
   } /* !srt */
   switch(var_typ){
   case NC_FLOAT: rcd=nc_put_var1_float(nc_id,var_id,srt_sz_t,(const float *)vp); break;
+  case NC_FLOAT16:
+  case NC_BFLOAT16: rcd=nc_put_var1(nc_id,var_id,srt_sz_t,vp); break;
   case NC_DOUBLE: rcd=nc_put_var1_double(nc_id,var_id,srt_sz_t,(const double *)vp); break;
   case NC_INT: rcd=NCO_PUT_VAR1_INT(nc_id,var_id,srt_sz_t,(const nco_int *)vp); break;
   case NC_SHORT: rcd=nc_put_var1_short(nc_id,var_id,srt_sz_t,(const short *)vp); break;
@@ -2918,6 +2956,8 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   } /* !dmn_idx */
   switch(var_typ){
   case NC_FLOAT: rcd=nc_put_vara_float(nc_id,var_id,srt_sz_t,cnt_sz_t,(const float *)vp); break;
+  case NC_FLOAT16:
+  case NC_BFLOAT16: rcd=nc_put_vara(nc_id,var_id,srt_sz_t,cnt_sz_t,vp); break;
   case NC_DOUBLE: rcd=nc_put_vara_double(nc_id,var_id,srt_sz_t,cnt_sz_t,(const double *)vp); break;
   case NC_INT: rcd=NCO_PUT_VARA_INT(nc_id,var_id,srt_sz_t,cnt_sz_t,(const nco_int *)vp); break;
   case NC_SHORT: rcd=nc_put_vara_short(nc_id,var_id,srt_sz_t,cnt_sz_t,(const short *)vp); break;
@@ -3051,6 +3091,8 @@ nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long 
   } /* !dmn_idx */
   switch(var_typ){
   case NC_FLOAT: rcd=nc_put_vars_float(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t, (const float *)vp); break;
+  case NC_FLOAT16:
+  case NC_BFLOAT16: rcd=nc_put_vars(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t,vp); break;
   case NC_DOUBLE: rcd=nc_put_vars_double(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t,(const double *)vp); break;
   case NC_INT: rcd=NCO_PUT_VARS_INT(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t,(const nco_int *)vp); break;
   case NC_SHORT: rcd=nc_put_vars_short(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t, (const short *)vp); break;
@@ -3143,6 +3185,8 @@ nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long 
   } /* !dmn_idx */
   switch(var_typ){
   case NC_FLOAT: rcd=nc_put_varm_float(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t,map_pd_t,(const float *)vp); break;
+  case NC_FLOAT16:
+  case NC_BFLOAT16: rcd=nc_put_varm(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t,map_pd_t,vp); break;
   case NC_DOUBLE: rcd=nc_put_varm_double(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t,map_pd_t,(const double *)vp); break;
   case NC_INT: rcd=NCO_PUT_VARM_INT(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t,map_pd_t,(const nco_int *)vp); break;
   case NC_SHORT: rcd=nc_put_varm_short(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t,map_pd_t,(const short *)vp); break;
@@ -3348,6 +3392,8 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
   int rcd=NC_NOERR;
   switch(att_typ){
   case NC_FLOAT: rcd=nc_put_att_float(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const float *)vp); break;
+  case NC_FLOAT16:
+  case NC_BFLOAT16: rcd=nc_put_att(nc_id,var_id,att_nm,att_typ,(size_t)att_len,vp); break;
   case NC_DOUBLE: rcd=nc_put_att_double(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const double *)vp); break;
   case NC_INT: rcd=NCO_PUT_ATT_INT(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const nco_int *)vp); break;
   case NC_SHORT: rcd=nc_put_att_short(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(const short *)vp); break;
@@ -3378,6 +3424,8 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
     nm_nc=nm2sng_nc(att_nm);
     switch(att_typ){
     case NC_FLOAT: rcd=nc_put_att_float(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const float *)vp); break;
+    case NC_FLOAT16:
+    case NC_BFLOAT16: rcd=nc_put_att(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,vp); break;
     case NC_DOUBLE: rcd=nc_put_att_double(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const double *)vp); break;
     case NC_INT: rcd=NCO_PUT_ATT_INT(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const nco_int *)vp); break;
     case NC_SHORT: rcd=nc_put_att_short(nc_id,var_id,nm_nc,att_typ,(size_t)att_len,(const short *)vp); break;

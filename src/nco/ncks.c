@@ -407,6 +407,7 @@ main(int argc,char **argv)
     {"mpi_implementation",no_argument,0,0},
     {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     {"msa_user_order",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+    {"nextcdf4",no_argument,0,0}, /* [flg] Use NEP NEXTCDF-4 for input and output */
     {"no_abc",no_argument,0,0},
     {"no-abc",no_argument,0,0},
     {"no_alphabetize",no_argument,0,0},
@@ -816,6 +817,15 @@ main(int argc,char **argv)
 	optarg_lcl=(char *)nco_free(optarg_lcl);
       } /* !gad */
       if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
+      if(!strcmp(opt_crr,"nextcdf4")){
+#ifdef NC_NEXTCDF4
+	nco_fmt_xtn=NC_FORMATX_UDF9;
+	fl_out_fmt=NC_FORMAT_NETCDF4;
+#else
+	(void)fprintf(stderr,"%s: ERROR --nextcdf4 requires a build with NEP NEXTCDF-4 support\n",nco_prg_nm_get());
+	nco_exit(EXIT_FAILURE);
+#endif
+      }
       if(!strcmp(opt_crr,"hdn") || !strcmp(opt_crr,"hidden")) PRN_HDN=True; /* [flg] Print hidden attributes */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
