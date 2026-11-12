@@ -1,3 +1,7 @@
+2026-11-12  Charlie Zender  <zender@uci.edu>
+
+	* nco_flt.c: Tidy debug levels for filter WARNINGs in nco_cdc_lst_bld()
+
 2026-11-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.3-alpha01 release procedure:
