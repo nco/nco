@@ -303,8 +303,16 @@ set -u # Exit on unbound variable reference
 
 if [[ ${hyd_flg} == 'Yes' ]]; then
     echo "Config: Hiding CSZ binaries"
-    /bin/rm -r -f ${MY_BIN_DIR}_tmp ${MY_LIB_DIR}_tmp;mv ${MY_BIN_DIR} ${MY_BIN_DIR}_tmp;mv ${MY_LIB_DIR} ${MY_LIB_DIR}_tmp # Remove my NCO from PATH
-    /bin/rm -r -f anaconda_tmp;mv ~/anaconda ~/anaconda_tmp # Remove my Anaconda from PATH
+    [[ -d ${MY_BIN_DIR}_tmp ]] && echo "Hiding problem: ${MY_BIN_DIR}_tmp already exists" || flg_rst='No'
+    [[ -d ${MY_LIB_DIR}_tmp ]] && echo "Hiding problem: ${MY_LIB_DIR}_tmp already exists" || flg_rst='No'
+    [[ -d ~/anaconda_tmp ]] && echo "Hiding problem: ~/anaconda_tmp already exists" || flg_rst='No'
+    [[ ! -d ${MY_BIN_DIR} ]] && echo "Hiding problem: ${MY_BIN_DIR} does not exist" || flg_rst='No'
+    [[ ! -d ${MY_LIB_DIR} ]] && echo "Hiding problem: ${MY_LIB_DIR} does not exist" || flg_rst='No'
+    [[ ! -d ~/anaconda ]] && echo "Hiding problem: ~/anaconda does not exist" || flg_rst='No'
+    if [[ flg_rst == 'Yes' ]]; then
+	/bin/rm -r -f ${MY_BIN_DIR}_tmp ${MY_LIB_DIR}_tmp;mv ${MY_BIN_DIR} ${MY_BIN_DIR}_tmp;mv ${MY_LIB_DIR} ${MY_LIB_DIR}_tmp # Remove my NCO from PATH
+	/bin/rm -r -f anaconda_tmp;mv ~/anaconda ~/anaconda_tmp # Remove my Anaconda from PATH
+    fi # !flg_rst
 else # !hyd_flg
     echo "Config: Not hiding CSZ binaries"
 fi # !hyd_flg
@@ -400,8 +408,17 @@ printf "\nExit code: $?\n"
 
 if [[ ${hyd_flg} == 'Yes' ]]; then
     echo "Restoring CSZ binaries..."
-    /bin/rm -r -f ${MY_BIN_DIR} ${MY_LIB_DIR};mv ${MY_BIN_DIR}_tmp ${MY_BIN_DIR};mv ${MY_LIB_DIR}_tmp ${MY_LIB_DIR} # Restore my NCO to PATH
-    /bin/rm -r -f anaconda;mv ~/anaconda_tmp ~/anaconda # Restore my Anaconda to PATH
+    flg_rst='Yes'
+    [[ -d ${MY_BIN_DIR} ]] && echo "Restoring problem: ${MY_BIN_DIR} already exists" || flg_rst='No'
+    [[ -d ${MY_LIB_DIR} ]] && echo "Restoring problem: ${MY_LIB_DIR} already exists" || flg_rst='No'
+    [[ -d ~/anaconda ]] && echo "Restoring problem: ~/anaconda already exists" || flg_rst='No'
+    [[ ! -d ${MY_BIN_DIR}_tmp ]] && echo "Restoring problem: ${MY_BIN_DIR}_tmp does not exist" || flg_rst='No'
+    [[ ! -d ${MY_LIB_DIR}_tmp ]] && echo "Restoring problem: ${MY_LIB_DIR}_tmp does not exist" || flg_rst='No'
+    [[ ! -d ~/anaconda_tmp ]] && echo "Restoring problem: ~/anaconda does_tmp not exist" || flg_rst='No'
+    if [[ flg_rst == 'Yes' ]]; then
+	/bin/rm -r -f ${MY_BIN_DIR} ${MY_LIB_DIR};mv ${MY_BIN_DIR}_tmp ${MY_BIN_DIR};mv ${MY_LIB_DIR}_tmp ${MY_LIB_DIR} # Restore my NCO to PATH
+	/bin/rm -r -f anaconda;mv ~/anaconda_tmp ~/anaconda # Restore my Anaconda to PATH
+    fi # !flg_rst
 fi # !hyd_flg
 
 printf "\nCleaning up...\n"
