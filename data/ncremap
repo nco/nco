@@ -144,11 +144,17 @@ cmd_ln="${spt_src} ${@}"
 drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
 spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
 spt_pid=$$ # [nbr] Script PID (process ID)
-# Fetch parent process command line using cross-platform 'ps' target
-prn_cmd=$(ps -p $PPID -o command= 2>/dev/null || ps -p $PPID -o args=)
+# Fetch parent process command line to determine if ncclimo is the parent process
+# Prefer /proc on Linux, which needs no 'ps': minimal images lack 'ps', and some 'ps' builds exit non-zero despite printing the command line
+# Parent command line is only used to configure output verbosity, so never abort (errexit) when it cannot be determined
+if [[ -r /proc/$PPID/cmdline ]]; then
+    prn_cmd=$(tr '\0' ' ' < /proc/$PPID/cmdline 2>/dev/null || true)
+else
+    prn_cmd=$(ps -p $PPID -o command= 2>/dev/null || ps -p $PPID -o args= 2>/dev/null || true)
+fi # !/proc
 # Extract target script path (skipping interpreter if present)
 prn_pth=$(echo "$prn_cmd" | awk '{print ($1 ~ /sh$/) ? $2 : $1}')
-# Isolate pure filename
+# Isolate pure filename of parent
 prn_nm=$(basename -- "$prn_pth")
 
 # https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.1/src/hdf5-1.10.1-RELEASE.txt
