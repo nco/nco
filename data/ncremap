@@ -145,7 +145,8 @@ drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
 spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
 spt_pid=$$ # [nbr] Script PID (process ID)
 # Fetch parent process command line to determine if ncclimo is the parent process
-# Prefer /proc on Linux, which needs no 'ps': minimal images lack 'ps', and some 'ps' builds exit non-zero despite printing the command line
+# Prefer /proc method on Linux, which needs no 'ps'
+# Minimal images lack 'ps', and some 'ps' builds exit non-zero despite printing the command line (!)
 # Parent command line is only used to configure output verbosity, so never abort (errexit) when it cannot be determined
 if [[ -r /proc/$PPID/cmdline ]]; then
     prn_cmd=$(tr '\0' ' ' < /proc/$PPID/cmdline 2>/dev/null || true)
