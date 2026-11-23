@@ -1003,7 +1003,11 @@ function mbt_nc42nc4_chk {
     # Determine whether both existing grids are SCRIP netCDF4 files
     grd_src_fmt=$(grd_fmt_get "${grd_src}")
     grd_dst_fmt=$(grd_fmt_get "${grd_dst}")
-    [[ ${grd_src_fmt} == "nc4" && ${grd_dst_fmt} == "nc4" ]] && mbt_nc42nc4='Yes'
+    # 20261121: Use if-statement, not [[ ]] && ..., so function returns 0 when grids are not both netCDF4
+    # Otherwise final [[ ]] returns 1, which triggers errexit and hnd_err() in caller
+    if [[ ${grd_src_fmt} == "nc4" && ${grd_dst_fmt} == "nc4" ]]; then
+	mbt_nc42nc4='Yes'
+    fi # !nc4
 } # !mbt_nc42nc4_chk()
 
 function mbt_dst2h5m {
