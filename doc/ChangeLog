@@ -1,8 +1,12 @@
-2026-11-17  Charlie Zender  <zender@uci.edu>
+2026-11-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.3-alpha02: SST 73 in November!';git push
 	git tag -a 5.4.3-alpha02 -m '';git push --tags
+
+	* 
+
+2026-11-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 5.4.3-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 5.4.3-alpha01: Skyglow Redux';git push

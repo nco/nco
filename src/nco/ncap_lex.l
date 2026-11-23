@@ -817,7 +817,11 @@ M_PI {return NAMED_CONSTANT;}
   
   if(0){ /* Remove some compiler warning messages CEWI */
     /* Following two statements remove "defined but not used" messages in ncap_lex.c (lex.yy.c) */
-    (void)yyunput((int)0,(char *)NULL);
+    (void)yyunput((int)0);
+    /* 20261123 It appears that default compilers on Arch and Mageia Cauldron Linux now abort when yyunput() has two arguments
+       This though the function is never called, so either the prototype changed (doubtful) or compilers more strict (likely)
+       GitHub user @winslop11 says a single argument yyunput() (one-line above works */
+    /* (void)yyunput((int)0,(char *)NULL); */
     /*    (void)yy_flex_realloc((void *)NULL,(size_t)NULL);*/
     /* Remove warnings which only occur on SGI IRIX cc */
     yy_full_match=yy_full_match+0;
