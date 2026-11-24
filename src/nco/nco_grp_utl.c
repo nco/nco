@@ -3401,7 +3401,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     /* Concatenate variable to absolute group path */
     strcat(var_nm_fll,var_nm);
 
-    if(var_typ <= NC_MAX_ATOMIC_TYPE){
+    if(NCO_TYP_IS_ATOMIC(var_typ)){
       obj_typ=nco_obj_typ_var;
       typ_nm[0]='\0'; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
       cls_typ=NC_NAT; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
@@ -3433,8 +3433,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].nm_fll=strdup(var_nm_fll);
     trv_tbl->lst[idx].nm_fll_lng=strlen(var_nm_fll);  
 
-    trv_tbl->lst[idx].flg_udt=var_typ > NC_MAX_ATOMIC_TYPE ? True : False;
-    trv_tbl->lst[idx].typ_nm=var_typ > NC_MAX_ATOMIC_TYPE ? strdup(typ_nm) : NULL; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
+    trv_tbl->lst[idx].flg_udt=NCO_TYP_IS_ATOMIC(var_typ) ? False : True;
+    trv_tbl->lst[idx].typ_nm=NCO_TYP_IS_ATOMIC(var_typ) ? NULL : strdup(typ_nm); /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
     trv_tbl->lst[idx].cls_typ=cls_typ; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
     trv_tbl->lst[idx].bs_typ=bs_typ; /* [enm] netCDF atomic type underlying vlen and enum types */
     trv_tbl->lst[idx].fld_nbr=fld_nbr; /* [nbr] Number of fields in enum and compound types */

@@ -362,7 +362,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
     
     /* Store mss_val in memory as scalar of same type as variable */
     var->mss_val.vp=(void *)nco_malloc(1L*nco_typ_lng_udt(nc_id,var->type));
-    if((att_typ <= NC_MAX_ATOMIC_TYPE) && (var->type <= NC_MAX_ATOMIC_TYPE)){
+    if(NCO_TYP_IS_ATOMIC(att_typ) && NCO_TYP_IS_ATOMIC(var->type)){
       (void)nco_val_cnf_typ(att_typ,mss_tmp,var->type,var->mss_val);
     }else{
       /* Assume att_typ equals var_typ for user-defined types otherwise things get too hairy */
@@ -383,7 +383,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
     } /* !NC_MAX_ATOMIC_TYPE */
 
     /* Release temporary memory */
-    if(att_typ > NC_MAX_ATOMIC_TYPE && cls_typ == NC_VLEN) (void)nco_free_vlens(att_sz,mss_tmp.vlnp); else mss_tmp.vp=nco_free(mss_tmp.vp);
+    if(!NCO_TYP_IS_ATOMIC(att_typ) && cls_typ == NC_VLEN) (void)nco_free_vlens(att_sz,mss_tmp.vlnp); else mss_tmp.vp=nco_free(mss_tmp.vp);
       
     break;
   } /* end loop over att */

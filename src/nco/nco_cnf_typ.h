@@ -33,6 +33,16 @@
 extern "C" {
 #endif /* __cplusplus */
 
+double
+nco_f16_to_dbl /* [fnc] Decode raw half-precision floating-point bits */
+(const uint16_t val,
+ const nc_type type);
+
+uint16_t
+nco_dbl_to_f16 /* [fnc] Encode half precision, rounding to nearest, ties to even */
+(const double val,
+ const nc_type type);
+
 void
 cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
 (const nc_type type, /* I [enm] netCDF type to cast void pointer to */

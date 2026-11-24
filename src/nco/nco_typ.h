@@ -18,8 +18,12 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
+#include <stdint.h> /* uint16_t */
 
 /* 3rd party vendors */
+#if ENABLE_NEP
+# include <nep.h> /* NEXTCDF-4 types and modes */
+#endif /* !ENABLE_NEP */
 
 /* Personal headers */
 
@@ -105,6 +109,16 @@ C code." */
 #ifndef NC_FIRSTUSERTYPEID
 #define NC_FIRSTUSERTYPEID 32
 #endif
+
+/* NEP include/nep.h: untyped I/O exchanges raw 16-bit floating-point bits. */
+#ifndef NC_FLOAT16
+# define NC_FLOAT16 17
+#endif
+#ifndef NC_BFLOAT16
+# define NC_BFLOAT16 18
+#endif
+#define NCO_TYP_IS_HALF(typ) ((typ) == NC_FLOAT16 || (typ) == NC_BFLOAT16)
+#define NCO_TYP_IS_ATOMIC(typ) ((typ) <= NC_MAX_ATOMIC_TYPE || NCO_TYP_IS_HALF(typ))
 
 /* Fill values for netCDF4 datatypes. Referenced in nco_mss_val.c: */
 #ifndef NC_FILL_UBYTE

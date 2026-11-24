@@ -527,7 +527,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     } /* idx == att_nbr */
     
     bs_typ=cls_typ=att[idx].type;
-    if(att[idx].type > NC_MAX_ATOMIC_TYPE) rcd=nco_inq_user_type(grp_id,att[idx].type,NULL,NULL,&bs_typ,&fld_nbr,&cls_typ);
+    if(!NCO_TYP_IS_ATOMIC(att[idx].type)) rcd=nco_inq_user_type(grp_id,att[idx].type,NULL,NULL,&bs_typ,&fld_nbr,&cls_typ);
 
     /* Copy value to avoid indirection in loop over att_sz */
     att_sz=att[idx].sz;
@@ -538,7 +538,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       nm_cdl=nm2sng_cdl(att[idx].nm);
       typ_nm=cdl_typ_nm_udt(grp_id,att[idx].type);
       if(cls_typ >= NC_MAX_ATOMIC_TYPE) (void)fprintf(fp_out,"%*s%s %s:%s = ",prn_ndn,spc_sng,typ_nm,src_sng,nm_cdl); else (void)fprintf(fp_out,"%*s%s:%s = ",prn_ndn,spc_sng,src_sng,nm_cdl); 
-      if(cls_typ > NC_MAX_ATOMIC_TYPE) typ_nm=(char *)nco_free(typ_nm);
+      if(!NCO_TYP_IS_ATOMIC(cls_typ)) typ_nm=(char *)nco_free(typ_nm);
       nm_cdl=(char *)nco_free(nm_cdl);
     } /* !cdl */
 
@@ -567,7 +567,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
       char *typ_nm;
       char *xml_att_nm;   
-      if(att[idx].type <=NC_MAX_ATOMIC_TYPE)
+      if(NCO_TYP_IS_ATOMIC(att[idx].type))
 	typ_nm=strdup(xml_typ_nm(att[idx].type));
       else
         typ_nm=cdl_typ_nm_udt(grp_id,att[idx].type);  			     
@@ -626,6 +626,14 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       // if(!(int)strcasecmp(att[idx].nm,nco_mss_val_sng_get())) has_fll_val=True;
     } /* !xml */
     
+    if(NCO_TYP_IS_HALF(att[idx].type)){
+      float * const val_f32=(float *)nco_malloc(att_sz*sizeof(float));
+      for(lmn=0L;lmn<att_sz;lmn++) val_f32[lmn]=(float)nco_f16_to_dbl(((uint16_t *)att[idx].val.vp)[lmn],att[idx].type);
+      att[idx].val.vp=nco_free(att[idx].val.vp);
+      att[idx].val.fp=val_f32;
+      bs_typ=cls_typ=NC_FLOAT;
+    }
+
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(cls_typ,&att[idx].val);
     
@@ -894,7 +902,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   /* Free space holding attribute values */
   for(idx=0;idx<att_nbr_ttl;idx++){
-    if(att[idx].type <= NC_MAX_ATOMIC_TYPE) att[idx].val.vp=nco_free(att[idx].val.vp);
+    if(NCO_TYP_IS_ATOMIC(att[idx].type)) att[idx].val.vp=nco_free(att[idx].val.vp);
     att[idx].nm=(char *)nco_free(att[idx].nm);
   } /* end loop over attributes */
 
@@ -1775,7 +1783,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   /* Get number of dimensions, type, and number of attributes for variable */
   (void)nco_inq_var(grp_id,var_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,&nbr_att);
   bs_typ=cls_typ=var_typ;
-  if(var_typ > NC_MAX_ATOMIC_TYPE) nco_inq_user_type(nc_id,var_typ,NULL,NULL,&bs_typ,NULL,&cls_typ);
+  if(!NCO_TYP_IS_ATOMIC(var_typ)) nco_inq_user_type(nc_id,var_typ,NULL,NULL,&bs_typ,NULL,&cls_typ);
   
   /* Storage properties */
   if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || (NC_LIB_VERSION >= 433 && NC_LIB_VERSION != 474)){
@@ -1869,7 +1877,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     
     (void)fprintf(fp_out,"%*s<ncml:variable name=\"%s\" ",prn_ndn,spc_sng,var_trv->nm);
     
-    if(cls_typ <= NC_MAX_ATOMIC_TYPE){
+    if(NCO_TYP_IS_ATOMIC(cls_typ)){
       (void)fprintf(fp_out,"type=\"%s\"",xml_typ_nm(var_typ));    
     }else if(cls_typ == NC_ENUM){
 
@@ -1947,7 +1955,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     typ_nm=cdl_typ_nm_udt(nc_id,var_typ);
     nm_cdl=nm2sng_cdl(var_trv->nm);
     (void)fprintf(fp_out,"%*s%s %s%s ;",prn_ndn,spc_sng,typ_nm,nm_cdl,dmn_sng);
-    if(var_typ > NC_MAX_ATOMIC_TYPE) typ_nm=(char *)nco_free(typ_nm);
+    if(!NCO_TYP_IS_ATOMIC(var_typ)) typ_nm=(char *)nco_free(typ_nm);
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       if(cls_typ == NC_VLEN) (void)fprintf(fp_out," // RAM size = %s = %li*%g*%lu = %lu bytes",sz_sng,var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_udt(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out," // RAM size = %s = %li*%lu = %lu bytes",sz_sng,var_sz,(unsigned long)nco_typ_lng_udt(nc_id,bs_typ),(unsigned long)ram_sz_crr);
     } /* !dbg */
@@ -1970,7 +1978,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     
     // (void)fprintf(fp_out,"%*s\"type\": \"%s\"",prn_ndn+prn_flg->sxn_fst,spc_sng,jsn_typ_nm(var_typ));
     (void)fprintf(fp_out,"%*s\"type\": \"%s\"",prn_ndn+prn_flg->sxn_fst,spc_sng,typ_nm);
-    if(var_typ > NC_MAX_ATOMIC_TYPE) typ_nm=(char *)nco_free(typ_nm);
+    if(!NCO_TYP_IS_ATOMIC(var_typ)) typ_nm=(char *)nco_free(typ_nm);
   } /* !xml */
 
   if(dmn_sng) dmn_sng=(char *)nco_free(dmn_sng);
@@ -2161,6 +2169,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   /* Refresh missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
+
+  /* Widen only the display buffer; disk I/O and quantization retain raw half bits. */
+  if(NCO_TYP_IS_HALF(var->type)) var=nco_var_cnf_typ(NC_FLOAT,var);
 
   /* Only TRD and CDL need units at this stage and might have this flag set */
   if(prn_flg->PRN_DMN_UNITS) {

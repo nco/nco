@@ -1168,7 +1168,7 @@ nco_flt_def_out /* [fnc]  */
       break;
 
     case nco_flt_lz4: /* Accept LZ4 from NEP */
-#if ENABLE_NEP
+#if ENABLE_NEP && HAVE_DECL_NC_DEF_VAR_LZ4
       if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_lz4(nc_out_id,var_out_id,flt_lvl[flt_idx]);
 #else /* !NEP */
       cdc_has_flt=False;
@@ -1176,7 +1176,7 @@ nco_flt_def_out /* [fnc]  */
       break;
 
     case nco_flt_lzf: /* Accept LZF from NEP */
-#if ENABLE_NEP
+#if ENABLE_NEP && HAVE_DECL_NC_DEF_VAR_LZF
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG quark INFO invoking LZF with cmp_sng=%s, flt_nbr=%d, flt_idx=%d, flt_enm=%d, rcd=%d\n",nco_prg_nm_get(),cmp_sng,flt_nbr,flt_idx,(int)flt_alg[flt_idx],rcd);
       if(flt_lvl[flt_idx] > 0) rcd+=nc_def_var_lzf(nc_out_id,var_out_id);
 #else /* !ENABLE_NEP */
@@ -1672,6 +1672,11 @@ nco_qnt_mtd /* [fnc] Define output filters based on input filters */
       qnt_mre_flt=qnt_mre_dbl=0.5*pow(2.0,-1.0*qnt_lvl_dpl);
       aed_ppc_mre.att_nm=qnt_lvl_mre_nm;
       if(var_typ == NC_FLOAT){aed_ppc_mre.val.fp=&qnt_mre_flt;}
+      else if(NCO_TYP_IS_HALF(var_typ)){
+	/* Store half-precision diagnostics in standard floating-point metadata. */
+	aed_ppc_mre.type=NC_FLOAT;
+	aed_ppc_mre.val.fp=&qnt_mre_flt;
+      }
       else if(var_typ == NC_DOUBLE){aed_ppc_mre.val.dp=&qnt_mre_dbl;}
       else{
 	(void)fprintf(stderr,"%s: ERROR %s reports variable %s is type %s. Maximum relative error (MRE) diagnostic is only available for floating-point types\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_typ_sng(var_typ));

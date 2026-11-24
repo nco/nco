@@ -106,6 +106,14 @@
 /* Define to 1 if you have the <cstdlib> header file. */
 #undef HAVE_CSTDLIB
 
+/* Define to 1 if you have the declaration of `nc_def_var_lz4', and to 0 if
+   you don't. */
+#undef HAVE_DECL_NC_DEF_VAR_LZ4
+
+/* Define to 1 if you have the declaration of `nc_def_var_lzf', and to 0 if
+   you don't. */
+#undef HAVE_DECL_NC_DEF_VAR_LZF
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 

@@ -1839,6 +1839,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   const char fnc_nm[]="nco_fl_open()"; /* [sng] Function name */
 
   int rcd=NC_NOERR; /* [rcd] Return code */
+  int md_open_lcl=md_open;
   int fl_fmt_xtn_prv; /* I [enm] Previous extended file format */
   int fl_fmt_xtn_crr; /* I [enm] Current  extended file format */
   int mode; /* I [enm] Mode flag for nc_inq_format_extended() call */
@@ -1849,6 +1850,10 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   size_t bfr_sz_hnt_lcl; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
 
   static nco_bool FIRST_INFO=True;
+
+#ifdef NC_NEXTCDF4
+  if(nco_fmt_xtn_get() == NC_FORMATX_UDF9) md_open_lcl|=NC_NEXTCDF4;
+#endif
 
   /* Initialize local buffer size hint with user-input value */
   bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size for netCDF-classic I/O (ignored/harmless for netCDF4) */
@@ -1865,12 +1870,12 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 
   /* Pass local copy of size hint otherwise user-specified value is overwritten on first call */
 #ifdef ENABLE_MPI
-  rcd=nco_open_par(fl_nm,md_open|NC_MPIIO,MPI_COMM_WORLD,MPI_INFO_NULL,nc_id);
+  rcd=nco_open_par(fl_nm,md_open_lcl|NC_MPIIO,MPI_COMM_WORLD,MPI_INFO_NULL,nc_id);
 #else /* !ENABLE_MPI */
   /* 20220621 netCDF 4.9.0 seems to emit (or flush?) stderr messages from nc__open() and nc_open():
      Messages print value of HOME as CWD, e.g., ">>> HOME=|/Users/zender/nco|"
      Perhaps this results from building netCDF with --enable-logging? */
-  rcd=nco__open(fl_nm,md_open,&bfr_sz_hnt_lcl,nc_id);
+  rcd=nco__open(fl_nm,md_open_lcl,&bfr_sz_hnt_lcl,nc_id);
   //rcd=nco_open(fl_nm,md_open,nc_id);
 #endif /* !ENABLE_MPI */
 
@@ -2027,6 +2032,15 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   md_create=NC_CLOBBER; /* [enm] Mode flag for nco_create() call */
   /* [fnc] Merge clobber mode with user-specified file format */
   md_create=nco_create_mode_mrg(md_create,fl_out_fmt);
+#ifdef NC_NEXTCDF4
+  if(nco_fmt_xtn_get() == NC_FORMATX_UDF9){
+    if(fl_out_fmt != NC_FORMAT_NETCDF4){
+      (void)fprintf(stderr,"%s: ERROR NEXTCDF-4 half-precision output requires the enhanced data model (not a classic output format)\n",nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    }
+    md_create=(md_create & ~NC_NETCDF4)|NC_NEXTCDF4;
+  }
+#endif
   if(RAM_CREATE) md_create|=NC_DISKLESS|NC_WRITE;
   if(SHARE_CREATE) md_create|=NC_SHARE;
 

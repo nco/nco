@@ -10820,6 +10820,55 @@ The upper limits of @acronym{NSB} are the number of explicitly
 represented bits in the @acronym{IEEE} single- and double-precision
 formats (the implicit bit does not count).
 
+BitGroom, Granular BitRound (@code{gbr}, sometimes called Granular
+BitGroom), and BitRound also accept the half-precision types
+@code{NC_FLOAT16} and @code{NC_BFLOAT16} defined by the
+@uref{https://github.com/Intelligent-Data-Design-Inc/NEP,netCDF Expansion Pack}.
+@uref{https://en.wikipedia.org/wiki/Half-precision_floating-point_format,IEEE binary16}
+has one sign bit, five exponent bits, and ten explicitly stored
+significand bits (eleven including the implicit bit).
+@uref{https://en.wikipedia.org/wiki/Bfloat16_floating-point_format,bfloat16}
+has one sign bit, eight exponent bits, and seven explicitly stored
+significand bits (eight including the implicit bit).
+The maximum @acronym{NSD} settings are three and two, respectively;
+@acronym{NSB} settings at or above ten and seven preserve all bits.
+BitGroom also preserves all bits when the requested decimal precision
+requires the entire significand.
+Granular BitRound determines the precision separately for each value
+and leaves values unchanged when no bits can be discarded.
+Signed zeros, infinities, NaNs, and declared missing values are preserved.
+Subnormal values retain the requested significant precision, and values
+whose rounding would overflow to infinity are left unchanged.
+The other quantization algorithms and @acronym{DSD} rounding are not
+supported for these types.
+
+To copy, hyperslab, print, and quantize half-precision variables with
+@command{ncks}, build @acronym{NCO} with @samp{--enable-nep} against a
+NEXTCDF-4-enabled NEP installation and register its backend using NEP's
+@file{.ncrc} configuration.
+The @samp{--nextcdf4} switch selects this backend for input and output;
+half-precision data are transferred as raw 16-bit patterns.
+This requires the NEP-supported versions of netCDF-C and HDF5.
+NEXTCDF-4 is experimental.  Its backend must support file-wide
+@code{nc_set_fill()}, return complete file/group IDs for root-group
+inquiries, and support filter-count inquiries with a null ID array
+(including files without filters).
+NEP revision @code{f70da2e} requires backend fixes for these operations
+before the @command{ncks} examples below work.
+Half-precision @code{_FillValue} attributes also depend on backend
+support; the end-to-end examples were verified without fill attributes.
+Use the internal @samp{--qnt} algorithms, not the library
+@samp{--cmp} quantizers.
+The BitRound maximum-relative-error attribute is stored as
+@code{NC_FLOAT}, so the diagnostic does not lose precision in binary16.
+For example:
+@example
+ncks --nextcdf4 -O --qnt_alg=btg --qnt default=1 in.nc out.nc
+ncks --nextcdf4 -O --qnt_alg=gbr --qnt default=1 in.nc out.nc
+ncks --nextcdf4 -O --qnt_alg=btr --qnt default=3 in.nc out.nc
+ncks --nextcdf4 -H out.nc
+@end example
+
 It is safe to attempt @acronym{PPC} on input that has already been
 rounded. 
 Variables can be made rounder, not sharper, i.e., variables cannot be

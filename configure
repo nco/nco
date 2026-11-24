@@ -21631,20 +21631,19 @@ echo "########################################"
 echo "#     Testing for NEP support          #"
 echo "########################################"
 # Begin NEP
-{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking whether netCDF Expansion Pack should be used" >&5
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether netCDF Expansion Pack should be used" >&5
 printf %s "checking whether netCDF Expansion Pack should be used... " >&6; }
 # Check whether --enable-nep was given.
 if test ${enable_nep+y}
 then :
   enableval=$enable_nep; enable_nep=${enableval}
-else case e in #(
-  e) enable_nep=no ;;
-esac
+else $as_nop
+  enable_nep=no
 fi
 
 test "x$enable_nep" = xyes || enable_nep=no
-{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $enable_nep" >&5
-printf '%s\n' "$enable_nep" >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $enable_nep" >&5
+printf "%s\n" "$enable_nep" >&6; }
 
 # Check for NEP library
 if test "x$enable_nep" = xyes; then
@@ -21656,33 +21655,84 @@ if test "x$enable_nep" = xyes; then
 if test "x$ac_cv_header_nep_h" = xyes
 then :
 
-printf '%s\n' "#define HAVE_NEP_H 1" >>confdefs.h
+printf "%s\n" "#define HAVE_NEP_H 1" >>confdefs.h
 
-else case e in #(
-  e) nco_have_nep=no ;;
-esac
+else $as_nop
+  nco_have_nep=no
 fi
 
-    { printf '%s\n' "$as_me:${as_lineno-$LINENO}: checking for library containing nc_def_var_lz4" >&5
-printf %s "checking for library containing nc_def_var_lz4... " >&6; }
-if test ${ac_cv_search_nc_def_var_lz4+y}
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing nep_set_log_level" >&5
+printf %s "checking for library containing nep_set_log_level... " >&6; }
+if test ${ac_cv_search_nep_set_log_level+y}
 then :
   printf %s "(cached) " >&6
-else case e in #(
-  e) ac_func_search_save_LIBS=$LIBS
+else $as_nop
+  ac_func_search_save_LIBS=$LIBS
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 /* Override any GCC internal prototype to avoid an error.
    Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char nc_def_var_lz4 (void);
+   builtin and then its argument prototype would still apply.  */
+char nep_set_log_level ();
+int
+main (void)
+{
+return nep_set_log_level ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' nep
+do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_search_nep_set_log_level=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext
+  if test ${ac_cv_search_nep_set_log_level+y}
+then :
+  break
+fi
+done
+if test ${ac_cv_search_nep_set_log_level+y}
+then :
+
+else $as_nop
+  ac_cv_search_nep_set_log_level=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_nep_set_log_level" >&5
+printf "%s\n" "$ac_cv_search_nep_set_log_level" >&6; }
+ac_res=$ac_cv_search_nep_set_log_level
+if test "$ac_res" != no
+then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  enable_nep=yes
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for library containing nc_def_var_lz4" >&5
+printf %s "checking for library containing nc_def_var_lz4... " >&6; }
+if test ${ac_cv_search_nc_def_var_lz4+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+char nc_def_var_lz4 ();
 int
 main (void)
 {
@@ -21713,38 +21763,55 @@ done
 if test ${ac_cv_search_nc_def_var_lz4+y}
 then :
 
-else case e in #(
-  e) ac_cv_search_nc_def_var_lz4=no ;;
-esac
+else $as_nop
+  ac_cv_search_nc_def_var_lz4=no
 fi
 rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS ;;
-esac
+LIBS=$ac_func_search_save_LIBS
 fi
-{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_nc_def_var_lz4" >&5
-printf '%s\n' "$ac_cv_search_nc_def_var_lz4" >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_nc_def_var_lz4" >&5
+printf "%s\n" "$ac_cv_search_nc_def_var_lz4" >&6; }
 ac_res=$ac_cv_search_nc_def_var_lz4
 if test "$ac_res" != no
 then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
   enable_nep=yes
-else case e in #(
-  e) { printf '%s\n' "$as_me:${as_lineno-$LINENO}: Cannot find or link to the NEP library, set CPPFLAGS/LDFLAGS" >&5
-printf '%s\n' "$as_me: Cannot find or link to the NEP library, set CPPFLAGS/LDFLAGS" >&6;} ;;
-esac
+else $as_nop
+  enable_nep=no
+fi
+
 fi
 
     test "x$enable_nep" = xyes || enable_nep=no
     if test "x$enable_nep" = xno; then
-	{ printf '%s\n' "$as_me:${as_lineno-$LINENO}: WARNING: NEP support disabled (missing/unusable library or header file)" >&5
-printf '%s\n' "$as_me: WARNING: NEP support disabled (missing/unusable library or header file)" >&2;}
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: NEP support disabled (missing/unusable library or header file)" >&5
+printf "%s\n" "$as_me: WARNING: NEP support disabled (missing/unusable library or header file)" >&2;}
 	CPPFLAGS="${CPPFLAGS_backup}"
 	LIBS="${LIBS_backup}"
 	LDFLAGS="${LDFLAGS_backup}"
     fi
     if test "x$enable_nep" = xyes; then
 
-printf '%s\n' "#define ENABLE_NEP 1" >>confdefs.h
+printf "%s\n" "#define ENABLE_NEP 1" >>confdefs.h
+
+	ac_fn_check_decl "$LINENO" "nc_def_var_lz4" "ac_cv_have_decl_nc_def_var_lz4" "#include <nep.h>
+" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_nc_def_var_lz4" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+printf "%s\n" "#define HAVE_DECL_NC_DEF_VAR_LZ4 $ac_have_decl" >>confdefs.h
+ac_fn_check_decl "$LINENO" "nc_def_var_lzf" "ac_cv_have_decl_nc_def_var_lzf" "#include <nep.h>
+" "$ac_c_undeclared_builtin_options" "CFLAGS"
+if test "x$ac_cv_have_decl_nc_def_var_lzf" = xyes
+then :
+  ac_have_decl=1
+else $as_nop
+  ac_have_decl=0
+fi
+printf "%s\n" "#define HAVE_DECL_NC_DEF_VAR_LZF $ac_have_decl" >>confdefs.h
 
     fi
 fi

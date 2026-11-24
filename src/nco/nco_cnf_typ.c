@@ -9,6 +9,56 @@
 
 #include "nco_cnf_typ.h" /* Conform variable types */
 
+double
+nco_f16_to_dbl
+(const uint16_t val,
+ const nc_type type)
+{
+  assert(NCO_TYP_IS_HALF(type));
+  const int frc_nbr=type == NC_FLOAT16 ? 10 : 7;
+  const int xpn_max=type == NC_FLOAT16 ? 31 : 255;
+  const int xpn_bias=type == NC_FLOAT16 ? 15 : 127;
+  const unsigned int frc=val & ((1U << frc_nbr)-1U);
+  const int xpn=(val >> frc_nbr) & xpn_max;
+  double val_dbl;
+  if(xpn == xpn_max) val_dbl=frc ? NAN : INFINITY;
+  else if(xpn == 0) val_dbl=ldexp((double)frc,1-xpn_bias-frc_nbr);
+  else val_dbl=ldexp((double)((1U << frc_nbr)+frc),xpn-xpn_bias-frc_nbr);
+  return val & 0x8000U ? -val_dbl : val_dbl;
+}
+
+uint16_t
+nco_dbl_to_f16
+(const double val,
+ const nc_type type)
+{
+  assert(NCO_TYP_IS_HALF(type));
+  const int frc_nbr=type == NC_FLOAT16 ? 10 : 7;
+  const int xpn_max=type == NC_FLOAT16 ? 31 : 255;
+  const int xpn_bias=type == NC_FLOAT16 ? 15 : 127;
+  const uint16_t sgn=signbit(val) ? 0x8000U : 0U;
+  const uint16_t inf=(uint16_t)(xpn_max << frc_nbr);
+  int xpn;
+  if(isnan(val)) return sgn | inf | (1U << (frc_nbr-1));
+  if(isinf(val)) return sgn | inf;
+  if(val == 0.0) return sgn;
+  (void)frexp(fabs(val),&xpn);
+  xpn+=xpn_bias-1;
+  if(xpn >= xpn_max) return sgn | inf;
+  if(xpn < 0) xpn=0;
+  const double scl=ldexp(fabs(val),frc_nbr+xpn_bias-(xpn ? xpn : 1));
+  unsigned int sgnf=(unsigned int)floor(scl);
+  const double rmd=scl-sgnf;
+  if(rmd > 0.5 || (rmd == 0.5 && (sgnf & 1U))) sgnf++;
+  if(xpn == 0) return (uint16_t)(sgn | sgnf);
+  if(sgnf == (1U << (frc_nbr+1))){
+    sgnf >>= 1;
+    xpn++;
+  }
+  if(xpn == xpn_max) return sgn | inf;
+  return (uint16_t)(sgn | (xpn << frc_nbr) | (sgnf & ((1U << frc_nbr)-1U)));
+}
+
 void
 cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
 (const nc_type type, /* I [enm] netCDF type to cast void pointer to */
@@ -18,6 +68,10 @@ cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
   switch(type){
   case NC_FLOAT:
     ptr->fp=(float *)ptr->vp;
+    break;
+  case NC_FLOAT16:
+  case NC_BFLOAT16:
+    ptr->f16p=(uint16_t *)ptr->vp;
     break;
   case NC_DOUBLE:
     ptr->dp=(double *)ptr->vp;
@@ -77,6 +131,10 @@ cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type ty
   switch(type){
   case NC_FLOAT:
     ptr->vp=(void *)ptr->fp;
+    break;
+  case NC_FLOAT16:
+  case NC_BFLOAT16:
+    ptr->vp=(void *)ptr->f16p;
     break;
   case NC_DOUBLE:
     ptr->vp=(void *)ptr->dp;
@@ -321,8 +379,16 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   (void)cast_void_nctype(var_in_typ,&val_in);
   (void)cast_void_nctype(var_out_typ,&val_out);
   
-  /* Copy and typecast entire array of values, using C implicit coercion */
-  switch(var_out_typ){
+  /* Half-precision buffers contain bits, not native C floating-point values. */
+  if(NCO_TYP_IS_HALF(var_in_typ) || NCO_TYP_IS_HALF(var_out_typ)){
+    for(idx=0L;idx<sz;idx++){
+      ptr_unn val_lmn_in;
+      ptr_unn val_lmn_out;
+      val_lmn_in.vp=(char *)val_in.vp+idx*nco_typ_lng(var_in_typ);
+      val_lmn_out.vp=(char *)val_out.vp+idx*nco_typ_lng(var_out_typ);
+      nco_val_cnf_typ(var_in_typ,val_lmn_in,var_out_typ,val_lmn_out);
+    }
+  }else switch(var_out_typ){
   case NC_FLOAT:
     switch(var_in_typ){
     case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.fp[idx];} break; 
@@ -879,6 +945,21 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(typ_in,&val_in);
   (void)cast_void_nctype(typ_out,&val_out);
+
+  if(NCO_TYP_IS_HALF(typ_in) || NCO_TYP_IS_HALF(typ_out)){
+    double val_dbl;
+    ptr_unn val_tmp;
+    val_tmp.dp=&val_dbl;
+    if(typ_in == typ_out){
+      *val_out.f16p=*val_in.f16p;
+      return;
+    }
+    if(NCO_TYP_IS_HALF(typ_in)) val_dbl=nco_f16_to_dbl(*val_in.f16p,typ_in);
+    else nco_val_cnf_typ(typ_in,val_in,NC_DOUBLE,val_tmp);
+    if(NCO_TYP_IS_HALF(typ_out)) *val_out.f16p=nco_dbl_to_f16(val_dbl,typ_out);
+    else nco_val_cnf_typ(NC_DOUBLE,val_tmp,typ_out,val_out);
+    return;
+  }
   
   /* Copy and typecast single value using implicit coercion rules of C */
   switch(typ_out){
@@ -1300,6 +1381,8 @@ nco_typ_ntg /* [fnc] Identify integer types */
     flg_ntg=True;
     break;
   case NC_FLOAT: 
+  case NC_FLOAT16:
+  case NC_BFLOAT16:
   case NC_DOUBLE: 
   case NC_CHAR: 
   case NC_NAT: 
@@ -1319,6 +1402,8 @@ nco_typ_sgn /* [fnc] Identify signed types */
 
   switch(typ_in){
   case NC_FLOAT: 
+  case NC_FLOAT16:
+  case NC_BFLOAT16:
   case NC_DOUBLE: 
   case NC_INT64: 
   case NC_INT: 
